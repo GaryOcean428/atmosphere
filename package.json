@@ -32,7 +32,7 @@
     "*.{ts,tsx,js,json}": []
   },
   "scripts": {
-    "bootstrap": "pnpm --filter=atmosphere-sdk install && pnpm --filter=atmosphere-sdk run build && pnpm --filter=atmosphere --filter=atmosphere-lib-gui --filter=atmosphere-gui install && pnpm run integrations:build && pnpm run registerIntegrations",
+    "bootstrap": "pnpm --filter=atmosphere-sdk install && pnpm --filter=atmosphere-sdk run build && pnpm --filter=atmosphere --filter=atmosphere-lib-gui --filter=atmosphere-gui install && pnpm --filter=atmosphere-gui run preinstall && pnpm run integrations:build && pnpm run registerIntegrations",
     "integrations:build": "cd ./packages/atmosphere-integrations/ && pnpm i && pnpm run build",
     "start:frontend": "pnpm --filter=atmosphere-gui run dev",
     "start:backend": "pnpm --filter=atmosphere run start",

@@ -22,8 +22,7 @@
   "scripts": {
     "dev": "nuxt dev",
     "lint": "eslint --ext \".js,.jsx,.ts,.tsx,.vue\" --fix --ignore-path .gitignore .",
-    "preinstall": "npx only-allow pnpm",
-    "prebuild": "pnpm -w --filter atmosphere-sdk install && pnpm -w --filter atmosphere-sdk run build",
+    "preinstall": "npx only-allow pnpm && pnpm -w --filter atmosphere-sdk install && pnpm -w --filter atmosphere-sdk run build",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
