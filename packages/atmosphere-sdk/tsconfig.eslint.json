@@ -3,11 +3,23 @@
   "compilerOptions": {
     "noEmit": true,
     "paths": {
-      "~/*": ["./src/ee/*", "./src/*"],
-      "@/*": ["./src/ee/*", "./src/*"],
-      "src/*": ["./src/*"]
+      "~/*": [
+        "./src/ee/*",
+        "./src/*"
+      ],
+      "@/*": [
+        "./src/ee/*",
+        "./src/*"
+      ],
+      "src/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules/**"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules/**"
+  ]
 }

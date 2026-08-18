@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { AtButtonProps } from '../atm/Button.vue'
 
-export interface GeneralCopyButtonProps extends AtButtonProps {
+export interface GeneralCopyButtonProps extends /* @vue-ignore */ AtButtonProps {
   content?: string | number
   timeout?: number
   showToast?: boolean
