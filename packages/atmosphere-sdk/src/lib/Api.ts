@@ -7285,6 +7285,8 @@ export type IdOrNullType = IdType | null;
 export interface TableType {
   /** Unique Source ID */
   source_id?: string;
+  /** ID of the base-level section this table is grouped under, if any */
+  fk_base_section_id?: string | null;
   /** Date dependency rule for this table */
   date_dependency?: DateDependencyType | null;
   /** The columns included in this table */
@@ -18610,6 +18612,8 @@ export class Api<
         extensionId?: string;
         /** Team ID */
         teamId?: string;
+        /** User ID */
+        userId?: string;
         /** Client ID */
         clientId?: string;
         /** Token ID */
@@ -18715,6 +18719,8 @@ export class Api<
         extensionId?: string;
         /** Team ID */
         teamId?: string;
+        /** User ID */
+        userId?: string;
         /** Client ID */
         clientId?: string;
         /** Token ID */
