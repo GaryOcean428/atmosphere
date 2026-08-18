@@ -15,6 +15,9 @@
     "url": "https://github.com/GaryOcean428/atmosphere/issues"
   },
   "license": "Sustainable Use License",
+  "engines": {
+    "node": "24.x"
+  },
   "devDependencies": {
     "husky": "^8.0.3",
     "lerna": "^8.2.2",
