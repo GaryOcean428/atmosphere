@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ErrorBoundary from './components/atm/ErrorBoundary.vue'
+import ErrorBoundary from './components/nc/ErrorBoundary.vue'
 
 const router = useRouter()
 
