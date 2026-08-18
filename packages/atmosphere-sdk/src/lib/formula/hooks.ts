@@ -1,4 +1,4 @@
-import jsep from 'atm-jsep';
+import jsep from 'nc-jsep';
 
 // opening and closing string code
 const OCURLY_CODE = 123; // '{'
@@ -64,11 +64,11 @@ export const jsepCurlyHook = {
               type: jsep.IDENTIFIER,
               name: /^{{.*}}$/.test(identifier)
                 ? // start would be the position of the first curly bracket
-                  // add 2 to point to the first character for expressions like {{col1}}
-                  identifier.slice(2, -2)
+                // add 2 to point to the first character for expressions like {{col1}}
+                identifier.slice(2, -2)
                 : // start would be the position of the first curly bracket
-                  // add 1 to point to the first character for expressions like {col1}
-                  identifier.slice(1, -1),
+                // add 1 to point to the first character for expressions like {col1}
+                identifier.slice(1, -1),
               raw: identifier,
             };
 

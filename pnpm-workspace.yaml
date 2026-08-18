@@ -2,9 +2,8 @@ packages:
   - "packages/atmosphere-sdk"
   - "packages/atmosphere-sdk-v2"
   - "packages/atmosphere-gui"
-  - "packages/atm-mail-templates"
+  - "packages/atmosphere-lib-gui"
   - "packages/atmosphere"
-
   - "packages/atmosphere-secret-mgr"
 
 # Supply chain security settings (pnpm 10.16+)

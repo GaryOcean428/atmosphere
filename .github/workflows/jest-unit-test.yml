@@ -12,8 +12,20 @@ on:
       - "packages/atmosphere/**"
       - ".github/workflows/jest-unit-test.yml"
   workflow_call:
+    inputs:
+      force:
+        description: "Run tests even when the pull request is a draft"
+        type: boolean
+        required: false
+        default: false
   # Triggered manually
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Run tests even when the pull request is a draft"
+        type: boolean
+        required: false
+        default: false
 jobs:
   jest-unit-test:
     runs-on: ubicloud-standard-2
