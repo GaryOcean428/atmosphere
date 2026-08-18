@@ -131,7 +131,7 @@ abstract class KnexClient extends SqlClient {
         ),
       );
       return (
-        packageJson.name === 'nocodb' || 'nocodb' in packageJson.dependencies
+        packageJson.name === 'atmosphere' || 'atmosphere' in packageJson.dependencies
       );
     } catch (e) {}
     return true;

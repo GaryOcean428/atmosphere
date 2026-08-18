@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, extractRolesObj, OrgUserRoles } from 'nocodb-sdk';
+import { AppEvents, extractRolesObj, OrgUserRoles } from 'atmosphere-sdk';
 import type { User } from '~/models';
-import type { ApiTokenReqType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+import type { ApiTokenReqType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { ApiToken } from '~/models';
 
@@ -13,7 +13,7 @@ import { ApiToken } from '~/models';
 export class OrgTokensService {
   constructor(protected readonly appHooksService: AppHooksService) {}
 
-  async apiTokenList(param: { user: User; query: any; req?: NcRequest }) {
+  async apiTokenList(param: { user: User; query: any; req?: AtRequest }) {
     const fk_user_id = param.user.id;
     let includeUnmappedToken = false;
     if (extractRolesObj(param.user.roles)[OrgUserRoles.SUPER_ADMIN]) {
@@ -45,7 +45,7 @@ export class OrgTokensService {
   async apiTokenCreate(param: {
     user: User;
     apiToken: ApiTokenReqType;
-    req: NcRequest;
+    req: AtRequest;
   }) {
     validatePayload(
       'swagger.json#/components/schemas/ApiTokenReq',
@@ -71,17 +71,17 @@ export class OrgTokensService {
     return apiToken;
   }
 
-  async apiTokenDelete(param: { user: User; tokenId: string; req: NcRequest }) {
+  async apiTokenDelete(param: { user: User; tokenId: string; req: AtRequest }) {
     const fk_user_id = param.user.id;
     const apiToken = await ApiToken.get(param.tokenId);
     if (!apiToken) {
-      NcError.notFound('Token not found');
+      AtError.notFound('Token not found');
     }
     if (
       !extractRolesObj(param.user.roles)[OrgUserRoles.SUPER_ADMIN] &&
       apiToken.fk_user_id !== fk_user_id
     ) {
-      NcError._.notFound('Token not found');
+      AtError._.notFound('Token not found');
     }
     const res = await ApiToken.delete(param.tokenId);
 

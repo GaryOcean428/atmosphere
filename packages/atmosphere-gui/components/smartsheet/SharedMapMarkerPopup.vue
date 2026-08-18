@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type ColumnType, isVirtualCol } from 'nocodb-sdk'
+import { type ColumnType, isVirtualCol } from 'atmosphere-sdk'
 
 const props = defineProps<{
   fields: ColumnType[]
@@ -37,15 +37,15 @@ useProvideSmartsheetRowStore(currentRow)
     <a-card
       hoverable
       class="!rounded-lg h-full overflow-hidden break-all max-w-[450px]"
-      :data-testid="`nc-shared-map-marker-popup-card-${currentRow.row.id}`"
+      :data-testid="`atm-shared-map-marker-popup-card-${currentRow.row.id}`"
     >
       <div v-for="col in fields" :key="`record-${currentRow.row.id}-${col.id}`">
         <div
           v-if="!isRowEmpty(currentRow, col) || isLTAR(col.uidt, colOptions)"
-          class="flex flex-col space-y-1 px-4 mb-6 bg-nc-bg-gray-extralight rounded-lg w-full"
+          class="flex flex-col space-y-1 px-4 mb-6 bg-atm-bg-gray-extralight rounded-lg w-full"
         >
-          <div class="flex flex-row w-full justify-start border-b-1 border-nc-border-gray-light py-2.5">
-            <div class="w-full text-nc-content-gray-subtle2">
+          <div class="flex flex-row w-full justify-start border-b-1 border-atm-border-gray-light py-2.5">
+            <div class="w-full text-atm-content-gray-subtle2">
               <LazySmartsheetHeaderVirtualCell v-if="isVirtualCol(col)" :column="col" :hide-menu="true" />
 
               <LazySmartsheetHeaderCell v-else :column="col" :hide-menu="true" />

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SourceType } from 'nocodb-sdk'
+import type { SourceType } from 'atmosphere-sdk'
 
 const props = defineProps<{
   visible: boolean
@@ -46,17 +46,17 @@ async function openAirtableImportDialog(baseId?: string, sourceId?: string) {
   }
 }
 
-async function openNocoDbImportDialog(baseId?: string) {
+async function openAtmosphereImportDialog(baseId?: string) {
   if (!baseId) return
 
-  // $e('a:actions:import-nocodb')
+  // $e('a:actions:import-atmosphere')
 
   const isOpen = ref(true)
 
   await nextTick()
   visible.value = false
 
-  const { close } = useDialog(resolveComponent('DlgNocoDbImport'), {
+  const { close } = useDialog(resolveComponent('DlgAtmosphereImport'), {
     'modelValue': isOpen,
     'baseId': baseId,
     'onUpdate:modelValue': closeDialog,
@@ -102,13 +102,13 @@ async function openQuickImportDialog(type: 'csv' | 'excel' | 'json') {
   }
 }
 
-const onClick = (type: 'airtable' | 'csv' | 'excel' | 'json' | 'nocodb') => {
+const onClick = (type: 'airtable' | 'csv' | 'excel' | 'json' | 'atmosphere') => {
   if (showRecordPlanLimitExceededModal()) return
 
   if (type === 'airtable') {
     openAirtableImportDialog(source.value.base_id, source.value.id)
-  } else if (type === 'nocodb') {
-    openNocoDbImportDialog(source.value.base_id)
+  } else if (type === 'atmosphere') {
+    openAtmosphereImportDialog(source.value.base_id)
   } else {
     openQuickImportDialog(type)
   }
@@ -121,33 +121,33 @@ const onClick = (type: 'airtable' | 'csv' | 'excel' | 'json' | 'nocodb') => {
       <div class="flex items-center gap-3 mb-4 md:mb-6">
         <div class="text-base font-weight-700">{{ $t('labels.importDataFrom') }}</div>
       </div>
-      <NcMenu class="border-1 divide-y-1 nc-import-items-menu overflow-clip">
-        <NcMenuItem @click="onClick('airtable')">
+      <AtMenu class="border-1 divide-y-1 atm-import-items-menu overflow-clip">
+        <AtMenuItem @click="onClick('airtable')">
           <GeneralIcon icon="importAirtable" class="w-5 h-5" />
           <span class="ml-1 text-[13px] font-weight-700"> {{ $t('labels.airtable') }} </span>
           <GeneralIcon icon="chevronRight" class="ml-auto text-lg" />
-        </NcMenuItem>
-        <NcMenuItem @click="onClick('csv')">
+        </AtMenuItem>
+        <AtMenuItem @click="onClick('csv')">
           <GeneralIcon icon="importCsv" class="w-5 h-5" />
           <span class="ml-1 text-[13px] font-weight-700"> {{ $t('labels.csv') }} </span>
           <GeneralIcon icon="chevronRight" class="ml-auto text-lg" />
-        </NcMenuItem>
-        <NcMenuItem @click="onClick('json')">
+        </AtMenuItem>
+        <AtMenuItem @click="onClick('json')">
           <GeneralIcon icon="importJson" class="w-5 h-5" />
           <span class="ml-1 text-[13px] font-weight-700"> {{ $t('labels.jsonCapitalized') }} </span>
           <GeneralIcon icon="chevronRight" class="ml-auto text-lg" />
-        </NcMenuItem>
-        <NcMenuItem @click="onClick('excel')">
+        </AtMenuItem>
+        <AtMenuItem @click="onClick('excel')">
           <GeneralIcon icon="importExcel" class="w-5 h-5" />
           <span class="ml-1 text-[13px] font-weight-700"> {{ $t('labels.excel') }} </span>
           <GeneralIcon icon="chevronRight" class="ml-auto text-lg" />
-        </NcMenuItem>
-        <NcMenuItem v-if="isEeUI && !isEEFeatureBlocked && !isMobileMode" @click="onClick('nocodb')">
-          <GeneralIcon icon="nocodb1" class="w-5 h-5" />
-          <span class="ml-1 text-[13px] font-weight-700"> {{ $t('objects.syncData.nocodb') }} </span>
+        </AtMenuItem>
+        <AtMenuItem v-if="isEeUI && !isEEFeatureBlocked && !isMobileMode" @click="onClick('atmosphere')">
+          <GeneralIcon icon="atmosphere1" class="w-5 h-5" />
+          <span class="ml-1 text-[13px] font-weight-700"> {{ $t('objects.syncData.atmosphere') }} </span>
           <GeneralIcon icon="chevronRight" class="ml-auto text-lg" />
-        </NcMenuItem>
-        <!-- <NcMenuItem disabled>
+        </AtMenuItem>
+        <!-- <AtMenuItem disabled>
           <GeneralIcon icon="importSheets" class="w-5 h-5 opacity-50" />
           <span class="ml-1 text-[13px] font-weight-700 text-[#6A7184]">
             Sheet
@@ -156,8 +156,8 @@ const onClick = (type: 'airtable' | 'csv' | 'excel' | 'json' | 'nocodb') => {
             {{ $t('title.comingSoon') }}
           </span>
           <GeneralIcon icon="chevronRight" class="text-lg" />
-        </NcMenuItem> -->
-        <!-- <NcMenuItem disabled>
+        </AtMenuItem> -->
+        <!-- <AtMenuItem disabled>
           <GeneralIcon icon="importSalesforce" class="w-5 h-5 text-white" />
           <span class="ml-1 text-[13px] font-weight-700 text-[#6A7184]">
             Salesforce
@@ -166,8 +166,8 @@ const onClick = (type: 'airtable' | 'csv' | 'excel' | 'json' | 'nocodb') => {
             {{ $t('title.comingSoon') }}
           </span>
           <GeneralIcon icon="chevronRight" class="text-lg" />
-        </NcMenuItem> -->
-        <!-- <NcMenuItem disabled>
+        </AtMenuItem> -->
+        <!-- <AtMenuItem disabled>
           <GeneralIcon icon="importMonday" class="w-5 h-5" />
           <span class="ml-1 text-[13px] font-weight-700 text-[#6A7184]">
             Monday.com
@@ -176,30 +176,30 @@ const onClick = (type: 'airtable' | 'csv' | 'excel' | 'json' | 'nocodb') => {
             {{ $t('title.comingSoon') }}
           </span>
           <GeneralIcon icon="chevronRight" class="text-lg" />
-        </NcMenuItem> -->
-      </NcMenu>
+        </AtMenuItem> -->
+      </AtMenu>
     </div>
   </GeneralModal>
 </template>
 
 <style lang="scss" scoped>
-.nc-import-items-menu {
+.atm-import-items-menu {
   padding: 0 !important;
   border-radius: 8px !important;
-  & :deep(.nc-menu-item) {
+  & :deep(.atm-menu-item) {
     border: 0px !important;
     &:hover {
-      @apply bg-nc-bg-gray-extralight text-nc-content-gray-extreme;
+      @apply bg-atm-bg-gray-extralight text-atm-content-gray-extreme;
     }
     margin: 0 !important;
     &.ant-menu-item-disabled {
-      @apply bg-nc-bg-gray-extralight;
+      @apply bg-atm-bg-gray-extralight;
     }
     & .ant-menu-title-content {
       width: 100%;
       display: flex;
       align-items: center;
-      & .nc-menu-item-inner {
+      & .atm-menu-item-inner {
         width: 100%;
       }
     }
@@ -209,6 +209,6 @@ const onClick = (type: 'airtable' | 'csv' | 'excel' | 'json' | 'nocodb') => {
 .ant-menu-inline,
 .ant-menu-vertical,
 .ant-menu-vertical-left {
-  @apply border-r-nc-border-gray-medium;
+  @apply border-r-atm-border-gray-medium;
 }
 </style>

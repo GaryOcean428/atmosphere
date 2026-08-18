@@ -7,11 +7,11 @@
 // break with "refused to connect": SharePage, ShareBase, ShareDashboard,
 // ShareInterface, SharePageDoc.
 //
-// The `nc/base` and `nc/p` alternatives are the pre-v2 shared-base forms, still
+// The `atm/base` and `atm/p` alternatives are the pre-v2 shared-base forms, still
 // listed as embeddable by extensions/url-preview-ee/utils.ts and still served by
 // the dummy redirect page at pages/index/[typeOrId]/base/[baseId].vue.
 const EMBEDDABLE_SHARE_ROUTE =
-  /^\/(?:nc\/(?:view|form|grid|gallery|kanban|calendar|map|list|timeline|gantt|dashboard|interface|base|p)|base|doc)\/[^/]+/;
+  /^\/(?:atm\/(?:view|form|grid|gallery|kanban|calendar|map|list|timeline|gantt|dashboard|interface|base|p)|base|doc)\/[^/]+/;
 
 // `/p/<customPath>` 302s to a share route. Browsers check frame ancestors on
 // redirect responses too, so this hop must stay header-free as well.
@@ -20,7 +20,7 @@ function isCustomUrlRedirect(path: string): boolean {
 }
 
 // Legacy hash-fragment embeds put the share route in the FRAGMENT, which is
-// never sent to the server: `/dashboard/#/nc/view/<uuid>` and `/#/nc/view/<uuid>`
+// never sent to the server: `/dashboard/#/atm/view/<uuid>` and `/#/atm/view/<uuid>`
 // (both still listed by extensions/url-preview-ee/utils.ts) arrive here as plain
 // `GET /dashboard/` and `GET /`. plugins/hashRedirect.client.ts rewrites them to
 // the clean URL, but only once the document is allowed to load at all — so
@@ -29,7 +29,7 @@ function isCustomUrlRedirect(path: string): boolean {
 // dashboard load.
 //
 // These two paths therefore carry no frame header. The boundary is still
-// enforced, one layer up: nc-gui's middleware/02.security.global.ts throws 403
+// enforced, one layer up: atmosphere-gui's middleware/02.security.global.ts throws 403
 // for any framed route that is not a share route, and it re-runs on every
 // navigation — so a framed shell can only ever resolve to a share view. Keep
 // that middleware and this exemption in sync.

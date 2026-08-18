@@ -1,21 +1,21 @@
-# NocoDB Quickstart: local evaluation on Mac, Windows, or Linux.
+# Atmosphere Quickstart: local evaluation on Mac, Windows, or Linux.
 #
 #   docker compose up -d      then open http://localhost:8080
 #
-# This stack is for trying NocoDB locally. For a production install with HTTPS,
+# This stack is for trying Atmosphere locally. For a production install with HTTPS,
 # automatic SSL, and hardening, use the installer instead:
 #
-#   bash <(curl -sSL https://install.nocodb.com/noco.sh)
+#   bash <(curl -sSL https://install.atmosphere.dev/atmosphere.sh)
 
 services:
 
-  nocodb:
-    image: nocodb/nocodb:latest
+  atmosphere:
+    image: atmosphere/atmosphere:latest
     environment:
-      NC_DB: 'pg://db:5432?u=nocodb&p=nocodb&d=nocodb'
-      NC_REDIS_URL: 'redis://redis:6379'
-      NC_SITE_URL: 'http://localhost:8080'
-      NC_DISABLE_MUX: 'true'
+      ATMOSPHERE_DB: 'pg://db:5432?u=atmosphere&p=atmosphere&d=atmosphere'
+      ATMOSPHERE_REDIS_URL: 'redis://redis:6379'
+      ATMOSPHERE_SITE_URL: 'http://localhost:8080'
+      ATMOSPHERE_DISABLE_MUX: 'true'
     depends_on:
       db:
         condition: service_healthy
@@ -23,9 +23,9 @@ services:
         condition: service_healthy
     restart: unless-stopped
     volumes:
-      - nocodb_data:/usr/app/data
+      - atmosphere_data:/usr/app/data
     networks:
-      - nocodb-network
+      - atmosphere-network
     ports:
       - '8080:8080'
     healthcheck:
@@ -36,37 +36,37 @@ services:
       start_period: 30s
 
   worker:
-    image: nocodb/nocodb:latest
+    image: atmosphere/atmosphere:latest
     environment:
-      NC_DB: 'pg://db:5432?u=nocodb&p=nocodb&d=nocodb'
-      NC_REDIS_URL: 'redis://redis:6379'
-      NC_SITE_URL: 'http://localhost:8080'
-      NC_WORKER_CONTAINER: 'true'
+      ATMOSPHERE_DB: 'pg://db:5432?u=atmosphere&p=atmosphere&d=atmosphere'
+      ATMOSPHERE_REDIS_URL: 'redis://redis:6379'
+      ATMOSPHERE_SITE_URL: 'http://localhost:8080'
+      ATMOSPHERE_WORKER_CONTAINER: 'true'
     depends_on:
-      nocodb:
+      atmosphere:
         condition: service_healthy
     restart: unless-stopped
     volumes:
-      - nocodb_data:/usr/app/data
+      - atmosphere_data:/usr/app/data
     networks:
-      - nocodb-network
+      - atmosphere-network
 
   db:
     image: postgres:17.10
     environment:
-      POSTGRES_USER: nocodb
-      POSTGRES_PASSWORD: nocodb
-      POSTGRES_DB: nocodb
+      POSTGRES_USER: atmosphere
+      POSTGRES_PASSWORD: atmosphere
+      POSTGRES_DB: atmosphere
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U nocodb -d nocodb']
+      test: ['CMD-SHELL', 'pg_isready -U atmosphere -d atmosphere']
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - nocodb-network
+      - atmosphere-network
 
   redis:
     image: redis:7
@@ -79,13 +79,13 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - nocodb-network
+      - atmosphere-network
 
 networks:
-  nocodb-network:
+  atmosphere-network:
     driver: bridge
 
 volumes:
-  nocodb_data:
+  atmosphere_data:
   postgres_data:
   redis_data:

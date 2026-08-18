@@ -19,31 +19,31 @@ const emits = defineEmits(['update:activeTab', 'close'])
 
 const activeTab = useVModel(props, 'activeTab', emits)
 
-const { aiLoading } = useNocoAi()
+const { aiLoading } = useAtmosphereAi()
 </script>
 
 <template>
-  <NcTabs
+  <AtTabs
     v-model:active-key="activeTab"
     theme="ai"
-    class="nc-ai-wizard-tabs"
+    class="atm-ai-wizard-tabs"
     :class="{
-      'nc-ai-loading': aiLoading,
+      'atm-ai-loading': aiLoading,
     }"
   >
     <template #leftExtra>
       <div class="w-0"></div>
     </template>
     <template #rightExtra>
-      <NcTooltip
-        :title="closeBtnTooltip ?? $t('labels.disableNocoAI')"
+      <AtTooltip
+        :title="closeBtnTooltip ?? $t('labels.disableAtmosphereAI')"
         :disabled="ncIsNull(closeBtnTooltip)"
         class="flex children:flex-none"
       >
-        <NcButton v-if="showCloseBtn" size="small" type="text" @click.stop="emits('close')">
-          <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-        </NcButton>
-      </NcTooltip>
+        <AtButton v-if="showCloseBtn" size="small" type="text" @click.stop="emits('close')">
+          <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+        </AtButton>
+      </AtTooltip>
     </template>
     <a-tab-pane :key="AiWizardTabsType.AUTO_SUGGESTIONS" class="w-full" :disabled="aiLoading">
       <template #tab>
@@ -63,20 +63,20 @@ const { aiLoading } = useNocoAi()
 
     <a-tab-pane :key="AiWizardTabsType.PROMPT" class="w-full" disabled>
       <template #tab>
-        <NcTooltip class="flex">
+        <AtTooltip class="flex">
           <template #title> {{ $t('msg.toast.futureRelease') }}</template>
           <div class="tab-title">{{ $t('labels.usePrompt') }}</div>
-        </NcTooltip>
+        </AtTooltip>
       </template>
       <div>
         <slot name="PromptContent"></slot>
       </div>
     </a-tab-pane>
-  </NcTabs>
+  </AtTabs>
 </template>
 
 <style lang="scss" scoped>
-.nc-ai-wizard-tabs {
+.atm-ai-wizard-tabs {
   :deep(.ant-tabs-nav) {
     @apply !pl-0 mx-5;
   }
@@ -88,7 +88,7 @@ const { aiLoading } = useNocoAi()
     }
   }
 
-  &.nc-ai-loading {
+  &.atm-ai-loading {
     :deep(.ant-tabs-tab) {
       @apply !cursor-wait;
     }
@@ -99,12 +99,12 @@ const { aiLoading } = useNocoAi()
   }
 
   .tab-title {
-    @apply text-xs leading-[24px] px-2 rounded hover:bg-nc-bg-gray-light transition-colors;
+    @apply text-xs leading-[24px] px-2 rounded hover:bg-atm-bg-gray-light transition-colors;
   }
 
   :deep(.ant-tabs-tab-disabled) {
     .tab-title {
-      @apply text-nc-content-gray-muted hover:bg-transparent;
+      @apply text-atm-content-gray-muted hover:bg-transparent;
     }
   }
 }

@@ -1,7 +1,7 @@
 import TipTapMention, { type MentionNodeAttrs, type MentionOptions } from '@tiptap/extension-mention'
 import type MarkdownIt from 'markdown-it'
 import regexp from 'markdown-it-regexp'
-import type { UserType } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
 import type { MarkdownNodeSpec } from '../../../../types'
 
 const USER_ID_REGEXP = /@\(([^)]+)\)/
@@ -25,7 +25,7 @@ export const parseUserMention = (
 
     let className = 'mention'
     if (bUser.id === currentUser?.id) {
-      className += ' nc-current-user'
+      className += ' atm-current-user'
     }
 
     return `<span class="${className}" data-id='${JSON.stringify({
@@ -88,7 +88,7 @@ export const UserMention = TipTapMention.extend<MentionOptions<any, MentionNodeA
       : ''
 
     const styles =
-      ncIsObject(attributes) && (attributes.isSameUser === true || attributes.isSameUser === 'true') ? 'nc-current-user' : ''
+      ncIsObject(attributes) && (attributes.isSameUser === true || attributes.isSameUser === 'true') ? 'atm-current-user' : ''
 
     return [
       'span',

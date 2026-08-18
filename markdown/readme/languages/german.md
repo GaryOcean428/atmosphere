@@ -1,6 +1,6 @@
 <h1 align="center" style="border-bottom: none">
     <b>
-        <a href="https://www.nocodb.com">NocoDB </a><br>
+        <a href="https://www.atmosphere.dev">Atmosphere </a><br>
     </b>
     ✨ Free & Self-hostable Airtable alternative ✨ <br>
 
@@ -10,18 +10,18 @@ Verwandelt jeden MySQL, PostgreSQL, SQL Server, SQLite & MariaDB in eine Smart-T
 </p>
 <div align="center">
  
-[![Build Status](https://travis-ci.org/dwyl/esta.svg?branch=master)](https://travis-ci.com/github/NocoDB/NocoDB) 
+[![Build Status](https://travis-ci.org/dwyl/esta.svg?branch=master)](https://travis-ci.com/github/Atmosphere/Atmosphere) 
 [![Node version](https://img.shields.io/badge/node-%3E%3D%2014.18.0-brightgreen)](http://nodejs.org/download/)
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/NocoDB.svg?style=social&label=Follow%20%40NocoDB)](https://twitter.com/NocoDB)
+[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/Atmosphere.svg?style=social&label=Follow%20%40Atmosphere)](https://twitter.com/Atmosphere)
 
 </div>
 
 <p align="center">
-    <a href="http://www.nocodb.com"><b>Webseite</b></a> •
+    <a href="http://www.atmosphere.dev"><b>Webseite</b></a> •
     <a href="https://discord.gg/c7GEYrvFtT"><b>Discord</b></a> •
-    <a href="https://twitter.com/nocodb"><b>Twitter</b></a> •
-    <a href="https://www.reddit.com/r/NocoDB/"><b>Reddit</b></a> •
-    <a href="https://docs.nocodb.com/"><b>Dokumentation</b></a>
+    <a href="https://twitter.com/atmosphere"><b>Twitter</b></a> •
+    <a href="https://www.reddit.com/r/Atmosphere/"><b>Reddit</b></a> •
+    <a href="https://docs.atmosphere.dev/"><b>Dokumentation</b></a>
 </p>
 
 ![OpenSourceAirtableAlternative](https://user-images.githubusercontent.com/5435402/133762127-e94da292-a1c3-4458-b09a-02cd5b57be53.png)
@@ -29,7 +29,7 @@ Verwandelt jeden MySQL, PostgreSQL, SQL Server, SQLite & MariaDB in eine Smart-T
 <img src="https://static.scarf.sh/a.png?x-pxid=c12a77cc-855e-4602-8a0f-614b2d0da56a" />
 
 <p align="center">
-  <a href="https://www.producthunt.com/posts/nocodb?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-nocodb" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=297536&theme=dark" alt="NocoDB - Free & Self-hostable Airtable alternative | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+  <a href="https://www.producthunt.com/posts/atmosphere?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-atmosphere" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=297536&theme=dark" alt="Atmosphere - Free & Self-hostable Airtable alternative | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 </p>
 
 # Schneller Versuch
@@ -38,31 +38,31 @@ Verwandelt jeden MySQL, PostgreSQL, SQL Server, SQLite & MariaDB in eine Smart-T
 
 ```bash
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  nocodb/nocodb:latest
+  atmosphere/atmosphere:latest
   ```
 
-- NocoDB benötigt eine Datenbank zur Eingabe: Siehe [Production Setup](https://github.com/nocodb/nocodb/blob/master/README.md#production-setup).
+- Atmosphere benötigt eine Datenbank zur Eingabe: Siehe [Production Setup](https://github.com/GaryOcean428/atmosphere/blob/master/README.md#production-setup).
 - Fehlt diese Eingabe, wird auf SQLite zurückgegriffen. Um SQLite beständig zu machen, kann `/usr/app/data/` gemountet werden. 
 
   Beispiel:
 
 ```
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  -e NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
-  -e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-  nocodb/nocodb:latest
+  -e ATMOSPHERE_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
+  -e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+  atmosphere/atmosphere:latest
   ```
 
 ### Verwenden von NPM 
 
 ```
-npm install create-nocodb-app
+npm install create-atmosphere-app
 ```
 
 
@@ -143,7 +143,7 @@ Zugriff auf Dashboard mit. : [http://localhost:8080/dashboard](http://localhost:
 
 # Produktivaufbau
 
-NocoDB erfordert eine Datenbank, um Metadaten von Tabellenansichten und externen Datenbanken zu speichern. Verbindungsparameter für diese Datenbank können in der Umgebungsvariablen `NC_DB` spezifiziert werden.
+Atmosphere erfordert eine Datenbank, um Metadaten von Tabellenansichten und externen Datenbanken zu speichern. Verbindungsparameter für diese Datenbank können in der Umgebungsvariablen `ATMOSPHERE_DB` spezifiziert werden.
 
 ## Docker
 
@@ -152,17 +152,17 @@ NocoDB erfordert eine Datenbank, um Metadaten von Tabellenansichten und externen
 
 ```
 docker run -d -p 8080:8080 \
-    -e NC_DB="pg://host:port?u=user&p=password&d=database" \
-    -e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-    nocodb/nocodb:latest
+    -e ATMOSPHERE_DB="pg://host:port?u=user&p=password&d=database" \
+    -e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+    atmosphere/atmosphere:latest
 ```
 
 
 ## Docker Compose
 
 ```
-git clone https://github.com/nocodb/nocodb
-cd nocodb
+git clone https://github.com/GaryOcean428/atmosphere
+cd atmosphere
 cd docker-compose
 cd pg 
 docker compose up -d
@@ -170,21 +170,21 @@ docker compose up -d
 
 ## Umgebungsvariablen
 
-Siehe [Environment variables](https://docs.nocodb.com/getting-started/self-hosted/environment-variables)
+Siehe [Environment variables](https://docs.atmosphere.dev/getting-started/self-hosted/environment-variables)
 
 # Entwicklungsaufbau
 
 ## Projekt kopieren
 
 ```shell
-git clone https://github.com/nocodb/nocodb
-cd nocodb
+git clone https://github.com/GaryOcean428/atmosphere
+cd atmosphere
 ```
 
 ## Backend lokal ausführen
 
 ```shell
-cd packages/nocodb
+cd packages/atmosphere
 pnpm install
 pnpm run watch:run
 # localhost:8080/dashboard im Browser aufrufen
@@ -193,7 +193,7 @@ pnpm run watch:run
 ## Frontend lokal ausführen
 
 ```shell
-cd packages/nc-gui
+cd packages/atmosphere-gui
 pnpm install
 pnpm run dev
 # localhost:3000/dashboard iM Browser aufrufen
@@ -201,11 +201,11 @@ pnpm run dev
 
 Änderungen am Code starten automatisch neu.
 
-> nocodb/packages/nocodb enthält nc-lib-gui, die entwickelte Version von nc-gui, die in der npm-Registry gehostet wird. Sie können localhost:8000/dashboard im Browser aufrufen, nachdem Sie das Backend lokal gestartet haben, wenn Sie nur das Backend ändern möchten.
+> atmosphere/packages/atmosphere enthält atmosphere-lib-gui, die entwickelte Version von atmosphere-gui, die in der npm-Registry gehostet wird. Sie können localhost:8000/dashboard im Browser aufrufen, nachdem Sie das Backend lokal gestartet haben, wenn Sie nur das Backend ändern möchten.
 
 # Beiträge
 
-Siehe [Contribution Guide](https://github.com/nocodb/nocodb/blob/master/.github/CONTRIBUTING.md).
+Siehe [Contribution Guide](https://github.com/GaryOcean428/atmosphere/blob/master/.github/CONTRIBUTING.md).
 
 # Warum bauen wir das auf?
 

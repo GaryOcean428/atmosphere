@@ -1,9 +1,9 @@
 <template>
-  <div class="nc-text-avatar"></div>
+  <div class="atm-text-avatar"></div>
 </template>
 
 <style scoped>
-.nc-text-avatar {
+.atm-text-avatar {
   @apply rounded-3xl;
 }
 </style>

@@ -11,7 +11,7 @@ const isAvailable = computed(() => {
   return (
     !isEeUI &&
     user.value?.email &&
-    !/^[a-zA-Z0-9._%+-]+@(gmail|yahoo|hotmail|outlook|aol|icloud|qq|163|126|sina|nocodb)(\.com)?$/i.test(user.value?.email) &&
+    !/^[a-zA-Z0-9._%+-]+@(gmail|yahoo|hotmail|outlook|aol|icloud|qq|163|126|sina|atmosphere)(\.com)?$/i.test(user.value?.email) &&
     (!giftBannerDismissedCount.value || giftBannerDismissedCount.value < 5)
   )
 })
@@ -65,24 +65,24 @@ const closeAndShowAgain = () => {
       <img src="~assets/img/giftCard.svg" />
     </div>
 
-    <NcButton type="text" size="small" class="close-icon" @click.stop="closeBanner">
+    <AtButton type="text" size="small" class="close-icon" @click.stop="closeBanner">
       <GeneralIcon icon="close" size="xlarge" />
-    </NcButton>
-    <NcModal v-model:visible="confirmDialog" size="small">
+    </AtButton>
+    <AtModal v-model:visible="confirmDialog" size="small">
       <div>
         <div class="mt-1 text-sm">Do you want to remind later on your next visit?</div>
         <div class="flex justify-end mt-7 gap-x-2">
-          <NcButton type="secondary" size="small" @click="dontShowAgain"> Don’t show again </NcButton>
-          <NcButton type="primary" size="small" @click="closeAndShowAgain"> {{ $t('general.yes') }} </NcButton>
+          <AtButton type="secondary" size="small" @click="dontShowAgain"> Don’t show again </AtButton>
+          <AtButton type="primary" size="small" @click="closeAndShowAgain"> {{ $t('general.yes') }} </AtButton>
         </div>
       </div>
-    </NcModal>
+    </AtModal>
   </div>
 </template>
 
 <style scoped lang="scss">
 .container {
-  @apply relative bg-nc-bg-default hover:(shadow-default bg-nc-bg-gray-light) overflow-hidden cursor-pointer rounded-lg;
+  @apply relative bg-atm-bg-default hover:(shadow-default bg-atm-bg-gray-light) overflow-hidden cursor-pointer rounded-lg;
   .wrapper {
     @apply p-3;
 
@@ -98,12 +98,12 @@ const closeAndShowAgain = () => {
     }
 
     .body {
-      @apply text-nc-content-gray-subtle2;
+      @apply text-atm-content-gray-subtle2;
     }
   }
 
   .img-wrapper {
-    @apply flex justify-center items-center bg-nc-bg-maroon-light py-5 px-2 w-full;
+    @apply flex justify-center items-center bg-atm-bg-maroon-light py-5 px-2 w-full;
     img {
       @apply !max-w-[170px];
     }

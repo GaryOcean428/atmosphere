@@ -35,7 +35,7 @@ function useSelectedCellKeydownListener(
 
       if (
         isActiveInputElementExist() &&
-        !(document.activeElement as HTMLElement).closest('table, .nc-group-table, .nc-grid-wrapper')
+        !(document.activeElement as HTMLElement).closest('table, .atm-group-table, .atm-grid-wrapper')
       ) {
         return
       }

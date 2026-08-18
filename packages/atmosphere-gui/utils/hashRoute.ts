@@ -2,7 +2,7 @@
  * Resolve a legacy hash-fragment route to its clean-URL equivalent.
  *
  * Old bookmarks and embed snippets carry the route in the fragment
- * (`/#/signin`, `/dashboard/#/nc/view/<uuid>`). The fragment is never sent to
+ * (`/#/signin`, `/dashboard/#/atm/view/<uuid>`). The fragment is never sent to
  * the server, so both the redirect plugin and the iframe guard have to resolve
  * it client-side — they share this one implementation so the open-redirect guard
  * below cannot drift between them.

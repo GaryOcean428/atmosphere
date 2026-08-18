@@ -1,5 +1,5 @@
 import { Controller, Delete, Get, UseGuards } from '@nestjs/common';
-import { OrgUserRoles } from 'nocodb-sdk';
+import { OrgUserRoles } from 'atmosphere-sdk';
 import { CachesService } from '~/services/caches.service';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';

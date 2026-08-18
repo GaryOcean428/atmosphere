@@ -1,10 +1,10 @@
 import {
   extractFilterFromXwhere,
   isLinksOrLTAR,
-  NcApiVersion,
-} from 'nocodb-sdk';
-import type { FilterType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+  AtApiVersion,
+} from 'atmosphere-sdk';
+import type { FilterType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import type { LinkToAnotherRecordColumn, Model } from '~/models';
 import { Column } from '~/models';
 import { hasTableVisibilityAccess } from '~/helpers/tableHelpers';
@@ -123,13 +123,13 @@ function sanitizeSortValue(
   sort: string | string[] | { field?: string; direction?: string }[],
   aliasColObjMap: { [columnAlias: string]: Column },
   exposedColumnIds: Set<string>,
-  apiVersion?: NcApiVersion,
+  apiVersion?: AtApiVersion,
 ): string | string[] | { field?: string; direction?: string }[] | undefined {
   const isExposedOrUnknown = (colId?: string) =>
     !colId || exposedColumnIds.has(colId);
 
   // V3 — JSON array of `{ field, direction }`, as a JSON string or parsed array.
-  if (apiVersion === NcApiVersion.V3) {
+  if (apiVersion === AtApiVersion.V3) {
     const wasString = typeof sort === 'string';
     let parsed: any = sort;
     if (wasString) {
@@ -210,7 +210,7 @@ function sanitizeSortValue(
  * Mutates `query` in place — both the data fetch and the count read from it.
  */
 export async function restrictNestedLinkQuery(
-  context: NcContext,
+  context: AtContext,
   colOptions: LinkToAnotherRecordColumn,
   relatedModel: Model,
   query: Record<string, any>,
@@ -311,7 +311,7 @@ export async function restrictNestedLinkQuery(
  * No-op for non-LTAR columns.
  */
 export async function restrictNestedLinkQueryForColumn(
-  context: NcContext,
+  context: AtContext,
   column: Column,
   query: Record<string, any>,
   options?: { hasLimitedAccess?: boolean },

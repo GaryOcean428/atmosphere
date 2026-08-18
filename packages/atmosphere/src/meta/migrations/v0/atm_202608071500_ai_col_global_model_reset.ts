@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
-const logger = new Logger('nc_202608071500_ai_col_global_model_reset');
+const logger = new Logger('atm_202608071500_ai_col_global_model_reset');
 
 const RETIRED_TIER_NAMES = ['high', 'medium', 'low'];
 

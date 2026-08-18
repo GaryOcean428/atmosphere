@@ -35,59 +35,59 @@ const formattedPayload = computed(() => {
     <div class="detail-title font-weight-bold">{{ title }}</div>
     <div class="content">
       <div v-if="headers" class="detail-headers">
-        <span v-if="!headers['nc-script-id']" class="text-nc-content-gray-muted font-weight-bold text-small1">Header</span>
-        <div v-if="headers['nc-script-id']" class="log-details">
+        <span v-if="!headers['atm-script-id']" class="text-atm-content-gray-muted font-weight-bold text-small1">Header</span>
+        <div v-if="headers['atm-script-id']" class="log-details">
           <div class="log-detail-item">
-            <NcTooltip class="text-small1 min-w-40" show-on-truncate-only>
+            <AtTooltip class="text-small1 min-w-40" show-on-truncate-only>
               <template #title>Script ID</template>
               <span class="label script"> Script ID </span>
-            </NcTooltip>
-            <NcTooltip class="text-small1 max-w-[calc(100%_-_160px)] truncate" show-on-truncate-only>
-              <template #title>{{ headers['nc-script-id'] }}</template>
-              <span class="value"> {{ headers['nc-script-id'] }}</span>
-            </NcTooltip>
+            </AtTooltip>
+            <AtTooltip class="text-small1 max-w-[calc(100%_-_160px)] truncate" show-on-truncate-only>
+              <template #title>{{ headers['atm-script-id'] }}</template>
+              <span class="value"> {{ headers['atm-script-id'] }}</span>
+            </AtTooltip>
           </div>
           <div class="log-detail-item">
-            <NcTooltip class="text-small1 min-w-40" show-on-truncate-only>
+            <AtTooltip class="text-small1 min-w-40" show-on-truncate-only>
               <template #title>Script Title</template>
               <span class="label script"> Script Title </span>
-            </NcTooltip>
-            <NcTooltip class="text-small1 max-w-[calc(100%_-_160px)] truncate" show-on-truncate-only>
-              <template #title>{{ headers['nc-script-title'] }}</template>
-              <span class="value"> {{ headers['nc-script-title'] }}</span>
-            </NcTooltip>
+            </AtTooltip>
+            <AtTooltip class="text-small1 max-w-[calc(100%_-_160px)] truncate" show-on-truncate-only>
+              <template #title>{{ headers['atm-script-title'] }}</template>
+              <span class="value"> {{ headers['atm-script-title'] }}</span>
+            </AtTooltip>
           </div>
         </div>
         <div v-else class="log-details">
           <div v-for="(value, key) in headers" :key="key" class="log-detail-item">
-            <NcTooltip class="text-small1 min-w-40" show-on-truncate-only>
+            <AtTooltip class="text-small1 min-w-40" show-on-truncate-only>
               <template #title>{{ key }}</template>
               <span class="label"> {{ key }} </span>
-            </NcTooltip>
-            <NcTooltip class="text-small1 max-w-[calc(100%_-_160px)] truncate" show-on-truncate-only>
+            </AtTooltip>
+            <AtTooltip class="text-small1 max-w-[calc(100%_-_160px)] truncate" show-on-truncate-only>
               <template #title>{{ value }}</template>
               <span class="value"> {{ value }}</span>
-            </NcTooltip>
+            </AtTooltip>
           </div>
         </div>
       </div>
       <div v-if="params && Object.keys(params).length" class="detail-params">
-        <span class="text-nc-content-gray-muted font-weight-bold text-small1">{{ $t('title.parameter') }}</span>
+        <span class="text-atm-content-gray-muted font-weight-bold text-small1">{{ $t('title.parameter') }}</span>
         <div class="log-details">
           <div v-for="(value, key) in params" :key="key" class="log-detail-item">
-            <NcTooltip class="text-small1 min-w-40" show-on-truncate-only>
+            <AtTooltip class="text-small1 min-w-40" show-on-truncate-only>
               <template #title>{{ key }}</template>
               <span class="label"> {{ key }}</span>
-            </NcTooltip>
-            <NcTooltip class="text-small1 max-w-[calc(100%_-_160px)]" show-on-truncate-only>
+            </AtTooltip>
+            <AtTooltip class="text-small1 max-w-[calc(100%_-_160px)]" show-on-truncate-only>
               <template #title>{{ value }}</template>
               <span class="value"> {{ value }}</span>
-            </NcTooltip>
+            </AtTooltip>
           </div>
         </div>
       </div>
       <div v-if="payload && Object.keys(payload).length" class="detail-payload -mt-1">
-        <div class="text-sm text-nc-content-gray-muted font-weight-bold pb-2 flex justify-between items-center">
+        <div class="text-sm text-atm-content-gray-muted font-weight-bold pb-2 flex justify-between items-center">
           <span class="text-xs leading-[18px]">Payload</span>
           <GeneralCopyButton :content="copyPayloadContent" size="xs" class="!px-1" />
         </div>
@@ -132,17 +132,17 @@ const formattedPayload = computed(() => {
 
 <style scoped lang="scss">
 .detail-card {
-  @apply flex flex-col w-full border-1 border-nc-border-gray-medium rounded-lg bg-nc-bg-gray-extralight h-full max-h-screen;
+  @apply flex flex-col w-full border-1 border-atm-border-gray-medium rounded-lg bg-atm-bg-gray-extralight h-full max-h-screen;
 
   & > .detail-title {
-    @apply border-b border-nc-border-gray-medium px-3 py-2;
+    @apply border-b border-atm-border-gray-medium px-3 py-2;
   }
 
   .content {
-    @apply flex-1 overflow-auto nc-scrollbar-thin flex flex-col;
+    @apply flex-1 overflow-auto atm-scrollbar-thin flex flex-col;
 
     & > div:not(:last-child) {
-      @apply border-b border-nc-border-gray-medium;
+      @apply border-b border-atm-border-gray-medium;
     }
 
     & > div {
@@ -154,11 +154,11 @@ const formattedPayload = computed(() => {
       .log-detail-item {
         @apply flex flex-row w-full;
         .label:not(.script) {
-          @apply min-w-40 font-weight-600 text-nc-content-gray-subtle text-small1 lowercase;
+          @apply min-w-40 font-weight-600 text-atm-content-gray-subtle text-small1 lowercase;
         }
 
         .value {
-          @apply min-w-0 text-nc-content-gray-subtle2 font-500 text-small1;
+          @apply min-w-0 text-atm-content-gray-subtle2 font-500 text-small1;
         }
       }
     }

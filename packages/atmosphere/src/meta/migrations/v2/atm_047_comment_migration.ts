@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
-const logger = new Logger('nc_046_comment_mentions');
+const logger = new Logger('atm_046_comment_mentions');
 
 const READ_BATCH_SIZE = 1000;
 const INSERT_BATCH_SIZE = 200;

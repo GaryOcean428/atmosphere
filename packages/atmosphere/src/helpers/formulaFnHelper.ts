@@ -1,6 +1,6 @@
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import { convertDateFormat } from './convertDateFormat';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import Column from '~/models/Column';
 
 export function getWeekdayByText(v: string) {
@@ -42,7 +42,7 @@ export function getWeekdayByIndex(idx: number): string {
 }
 
 export async function convertDateFormatForConcat(
-  context: NcContext,
+  context: AtContext,
   o,
   columnIdToUidt,
   query,

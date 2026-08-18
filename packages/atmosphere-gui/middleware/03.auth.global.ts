@@ -1,5 +1,5 @@
-import type { Api } from 'nocodb-sdk'
-import { NcErrorType } from 'nocodb-sdk'
+import type { Api } from 'atmosphere-sdk'
+import { AtErrorType } from 'atmosphere-sdk'
 import type { UseGlobalReturn } from '../composables/useGlobal/types'
 import type { Actions } from '~/composables/useGlobal/types'
 
@@ -245,10 +245,10 @@ async function tryShortTokenAuth(api: Api<any>, signIn: Actions['signIn'], state
 
       signIn(token)
     } catch (e: any) {
-      if (e?.response?.data?.error === NcErrorType.ERR_MAX_WORKSPACE_LIMIT_REACHED) {
+      if (e?.response?.data?.error === AtErrorType.ERR_MAX_WORKSPACE_LIMIT_REACHED) {
         // Store error information in global state
         setError({
-          type: NcErrorType.ERR_MAX_WORKSPACE_LIMIT_REACHED,
+          type: AtErrorType.ERR_MAX_WORKSPACE_LIMIT_REACHED,
           message: e?.response?.data?.message || 'Maximum workspace limit reached',
         })
         // navigate to sso page and display the error details

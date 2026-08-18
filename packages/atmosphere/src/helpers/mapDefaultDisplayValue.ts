@@ -2,8 +2,8 @@ import {
   isCreatedOrLastModifiedTimeCol,
   isSupportedDisplayValueColumn,
   isSystemColumn,
-} from 'nocodb-sdk';
-import type { ColumnType } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import type { ColumnType } from 'atmosphere-sdk';
 
 export default function mapDefaultDisplayValue<T extends ColumnType>(
   columnsArr: Array<T>,

@@ -16,12 +16,12 @@ import type { Response } from 'express';
 import { JobStatus } from '~/interface/Jobs';
 import { JobEvents } from '~/interface/Jobs';
 import { GlobalGuard } from '~/guards/global/global.guard';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheGetType, CacheScope } from '~/utils/globals';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 import { JobsRedis } from '~/modules/jobs/redis/jobs-redis';
-import { NcRequest } from '~/interface/config';
+import { AtRequest } from '~/interface/config';
 
 const nanoidv2 = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 14);
 const POLLING_INTERVAL = 30000;
@@ -54,7 +54,7 @@ export class JobsController implements OnModuleDestroy {
   @HttpCode(200)
   async listen(
     @Res() res: Response & { resId?: string },
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Body() body: { _mid: number; data: { id: string } },
   ) {
     const { _mid = 0, data } = body;
@@ -70,7 +70,7 @@ export class JobsController implements OnModuleDestroy {
       messages = this.localJobs[jobId].messages;
     } else {
       messages = (
-        await NocoCache.get(
+        await AtmosphereCache.get(
           'root',
           `${CacheScope.JOBS_POLLING}:${jobId}:messages`,
           CacheGetType.TYPE_OBJECT,
@@ -209,7 +209,7 @@ export class JobsController implements OnModuleDestroy {
           this.localJobs[jobId].messages.shift();
         }
 
-        await NocoCache.set(
+        await AtmosphereCache.set(
           'root',
           `${CacheScope.JOBS_POLLING}:${jobId}:messages`,
           {
@@ -228,7 +228,7 @@ export class JobsController implements OnModuleDestroy {
           _mid: 1,
         };
 
-        await NocoCache.set(
+        await AtmosphereCache.set(
           'root',
           `${CacheScope.JOBS_POLLING}:${jobId}:messages`,
           {
@@ -269,7 +269,7 @@ export class JobsController implements OnModuleDestroy {
       if (isRequeued) {
         delete this.jobRooms[jobId];
         delete this.localJobs[jobId];
-        await NocoCache.del(
+        await AtmosphereCache.del(
           'root',
           `${CacheScope.JOBS_POLLING}:${jobId}:messages`,
         ).catch(() => {});
@@ -282,7 +282,7 @@ export class JobsController implements OnModuleDestroy {
         setTimeout(() => {
           delete this.jobRooms[jobId];
           delete this.localJobs[jobId];
-          NocoCache.del(
+          AtmosphereCache.del(
             'root',
             `${CacheScope.JOBS_POLLING}:${jobId}:messages`,
           ).catch(() => {});
@@ -317,7 +317,7 @@ export class JobsController implements OnModuleDestroy {
           this.localJobs[jobId].messages.shift();
         }
 
-        await NocoCache.set(
+        await AtmosphereCache.set(
           'root',
           `${CacheScope.JOBS_POLLING}:${jobId}:messages`,
           {
@@ -336,7 +336,7 @@ export class JobsController implements OnModuleDestroy {
           _mid: 1,
         };
 
-        await NocoCache.set(
+        await AtmosphereCache.set(
           'root',
           `${CacheScope.JOBS_POLLING}:${jobId}:messages`,
           {

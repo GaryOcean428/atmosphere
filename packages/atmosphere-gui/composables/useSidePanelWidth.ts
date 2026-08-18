@@ -8,5 +8,5 @@ import { useStorage } from '@vueuse/core'
 // Comments/History/Fields is visible from the start instead of requiring a
 // manual drag.
 export const useSidePanelWidth = createSharedComposable(() => {
-  return useStorage('nc-side-panel-width', 600)
+  return useStorage('atm-side-panel-width', 600)
 })

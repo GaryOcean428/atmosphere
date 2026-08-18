@@ -1,5 +1,5 @@
-import { InterfaceVisualizationTypes, applyFieldOrder, orderVizFieldIds } from 'nocodb-sdk'
-import type { InterfaceGalleryVizConfig } from 'nocodb-sdk'
+import { InterfaceVisualizationTypes, applyFieldOrder, orderVizFieldIds } from 'atmosphere-sdk'
+import type { InterfaceGalleryVizConfig } from 'atmosphere-sdk'
 
 /**
  * `applyFieldOrder` is the single ordering primitive behind the builder's Fields

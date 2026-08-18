@@ -1,4 +1,4 @@
-import { precisionFormats, supportedBarcodeFormats } from 'nocodb-sdk'
+import { precisionFormats, supportedBarcodeFormats } from 'atmosphere-sdk'
 
 export { precisionFormats, supportedBarcodeFormats }
 

@@ -1,13 +1,13 @@
-{{- include "nocodb.validateRedis" . -}}
+{{- include "atmosphere.validateRedis" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "nocodb.fullname" . }}
+  name: {{ include "atmosphere.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "nocodb.labels" . | nindent 4 }}
+    {{- include "atmosphere.labels" . | nindent 4 }}
     app.kubernetes.io/component: app
-  {{- with include "nocodb.annotations" (dict "context" . "extraAnnotations" dict) }}
+  {{- with include "atmosphere.annotations" (dict "context" . "extraAnnotations" dict) }}
   annotations:
     {{- . | nindent 4 }}
   {{- end }}
@@ -19,24 +19,24 @@ spec:
     {{- toYaml .Values.updateStrategy | nindent 4 }}
   selector:
     matchLabels:
-      {{- include "nocodb.selectorLabels" . | nindent 6 }}
+      {{- include "atmosphere.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: app
   template:
     metadata:
       labels:
-        {{- include "nocodb.selectorLabels" . | nindent 8 }}
+        {{- include "atmosphere.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: app
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       annotations:
-        checksum/config: {{ toYaml (dict "nocodb" .Values.nocodb "smtp" .Values.smtp "sso" .Values.sso "ingress" .Values.ingress "externalDatabase" .Values.externalDatabase "externalRedis" .Values.externalRedis "auth" .Values.auth) | sha256sum }}
+        checksum/config: {{ toYaml (dict "atmosphere" .Values.atmosphere "smtp" .Values.smtp "sso" .Values.sso "ingress" .Values.ingress "externalDatabase" .Values.externalDatabase "externalRedis" .Values.externalRedis "auth" .Values.auth) | sha256sum }}
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- include "nocodb.imagePullSecrets" . | nindent 6 }}
-      serviceAccountName: {{ include "nocodb.serviceAccountName" . }}
+      {{- include "atmosphere.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ include "atmosphere.serviceAccountName" . }}
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       {{- with .Values.priorityClassName }}
       priorityClassName: {{ . }}
@@ -49,8 +49,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: nocodb
-          image: {{ include "nocodb.image" . }}
+        - name: atmosphere
+          image: {{ include "atmosphere.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             {{- toYaml .Values.containerSecurityContext | nindent 12 }}
@@ -66,7 +66,7 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ include "nocodb.fullname" . }}-env
+                name: {{ include "atmosphere.fullname" . }}-env
             {{- with .Values.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ . }}
@@ -76,8 +76,8 @@ spec:
                 name: {{ . }}
             {{- end }}
           env:
-            {{- include "nocodb.secretEnv" . | nindent 12 }}
-            {{- with .Values.nocodb.extraEnvVars }}
+            {{- include "atmosphere.secretEnv" . | nindent 12 }}
+            {{- with .Values.atmosphere.extraEnvVars }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
             {{- with .Values.extraEnvVars }}
@@ -143,7 +143,7 @@ spec:
         - name: data
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "nocodb.fullname" .)) }}
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "atmosphere.fullname" .)) }}
           {{- else }}
           emptyDir: {}
           {{- end }}
@@ -161,7 +161,7 @@ spec:
               podAffinityTerm:
                 labelSelector:
                   matchLabels:
-                    {{- include "nocodb.selectorLabels" . | nindent 20 }}
+                    {{- include "atmosphere.selectorLabels" . | nindent 20 }}
                     app.kubernetes.io/component: app
                 topologyKey: kubernetes.io/hostname
       {{- else if eq .Values.podAntiAffinityPreset "hard" }}
@@ -170,7 +170,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchLabels:
-                  {{- include "nocodb.selectorLabels" . | nindent 18 }}
+                  {{- include "atmosphere.selectorLabels" . | nindent 18 }}
                   app.kubernetes.io/component: app
               topologyKey: kubernetes.io/hostname
       {{- end }}

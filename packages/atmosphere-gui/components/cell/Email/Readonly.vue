@@ -16,13 +16,13 @@ const validEmail = computed(() => props.modelValue && validateEmail(props.modelV
   <nuxt-link
     v-if="validEmail"
     no-ref
-    class="py-1 underline inline-block nc-cell-field-link max-w-full relative z-3"
+    class="py-1 underline inline-block atm-cell-field-link max-w-full relative z-3"
     :href="`mailto:${modelValue}`"
     target="_blank"
     :tabindex="readOnly ? -1 : 0"
   >
-    <LazyCellClampedText :value="modelValue" :lines="rowHeight" class="nc-cell-field" />
+    <LazyCellClampedText :value="modelValue" :lines="rowHeight" class="atm-cell-field" />
   </nuxt-link>
 
-  <LazyCellClampedText v-else :value="modelValue" :lines="rowHeight" class="nc-cell-field" />
+  <LazyCellClampedText v-else :value="modelValue" :lines="rowHeight" class="atm-cell-field" />
 </template>

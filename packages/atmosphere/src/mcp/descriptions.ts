@@ -1,4 +1,4 @@
-export const whereDescription = `Filter records using NocoDB query syntax.
+export const whereDescription = `Filter records using Atmosphere query syntax.
 
 SYNTAX:
   Basic:           (field,operator,value)

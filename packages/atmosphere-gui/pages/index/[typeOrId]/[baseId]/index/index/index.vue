@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { UploadChangeParam, UploadFile } from 'ant-design-vue'
-import type { SourceType } from 'nocodb-sdk'
+import type { SourceType } from 'atmosphere-sdk'
 
 const router = useRouter()
 const route = router.currentRoute

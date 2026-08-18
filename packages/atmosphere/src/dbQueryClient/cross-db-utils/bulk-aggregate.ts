@@ -1,13 +1,13 @@
-import { extractFilterFromXwhere } from 'nocodb-sdk';
+import { extractFilterFromXwhere } from 'atmosphere-sdk';
 import type { Logger } from '@nestjs/common';
 import type { Knex } from 'knex';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { BulkAggregateCtx, DBQueryClient } from '~/dbQueryClient/types';
 import { applyAggregation } from '~/dbQueryClient/cross-db-utils/applyAggregation';
 import conditionV2 from '~/db/conditionV2';
 import { Filter, Model } from '~/models';
 import { parseFilterArrJson } from '~/helpers/filterArrJsonHelper';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { resolveAggregateColumns } from '~/dbQueryClient/cross-db-utils/aggregate';
 
 /**
@@ -25,7 +25,7 @@ import { resolveAggregateColumns } from '~/dbQueryClient/cross-db-utils/aggregat
 export const bulkAggregate =
   (client: DBQueryClient, logger?: Logger) =>
   async (
-    context: NcContext,
+    context: AtContext,
     ctx: BulkAggregateCtx,
   ): Promise<Record<string, Record<string, unknown>>> => {
     const { model, view, source, args, bulkFilterList } = ctx;
@@ -50,7 +50,7 @@ export const bulkAggregate =
         return {};
       }
 
-      const knex = await NcConnectionMgrv2.get(source);
+      const knex = await AtConnectionMgrv2.get(source);
       const baseModel = await Model.getBaseModelSQL(context, {
         id: model.id,
         viewId: view?.id,

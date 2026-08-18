@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents } from 'nocodb-sdk';
+import { AppEvents } from 'atmosphere-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import type { NcContext, NcRequest } from '~/interface/config';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { Base, CustomUrl } from '~/models';
 
 @Injectable()
@@ -12,13 +12,13 @@ export class SharedBasesService {
   constructor(private readonly appHooksService: AppHooksService) {}
 
   async createSharedBaseLink(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       roles: string;
       siteUrl: string;
 
-      req: NcRequest;
+      req: AtRequest;
     },
   ): Promise<any> {
     validatePayload('swagger.json#/components/schemas/SharedBaseReq', param);
@@ -31,15 +31,15 @@ export class SharedBasesService {
     }
 
     if (roles === 'editor') {
-      NcError.badRequest('Only viewer role is supported');
+      AtError.badRequest('Only viewer role is supported');
     }
 
     if (!base) {
-      NcError.baseNotFound(param.baseId);
+      AtError.baseNotFound(param.baseId);
     }
 
     if (base.is_sandbox) {
-      NcError.badRequest(
+      AtError.badRequest(
         'Shared links cannot be created on sandbox bases. Share the master base instead.',
       );
     }
@@ -77,12 +77,12 @@ export class SharedBasesService {
   }
 
   async updateSharedBaseLink(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       roles: string;
       siteUrl: string;
-      req: NcRequest;
+      req: AtRequest;
       custom_url_path?: string;
     },
   ): Promise<any> {
@@ -96,17 +96,17 @@ export class SharedBasesService {
     }
 
     if (!base) {
-      NcError.baseNotFound(param.baseId);
+      AtError.baseNotFound(param.baseId);
     }
 
     if (base.is_sandbox) {
-      NcError.badRequest(
+      AtError.badRequest(
         'Shared links cannot be updated on sandbox bases. Share the master base instead.',
       );
     }
 
     if (roles === 'editor') {
-      NcError.badRequest('Only viewer role is supported');
+      AtError.badRequest('Only viewer role is supported');
     }
 
     let customUrl: CustomUrl | undefined = base.fk_custom_url_id
@@ -182,7 +182,7 @@ export class SharedBasesService {
   private getUrl({ base, siteUrl: _siteUrl }: { base: Base; siteUrl: string }) {
     let siteUrl = _siteUrl;
 
-    const baseDomain = process.env.NC_BASE_HOST_NAME;
+    const baseDomain = process.env.ATMOSPHERE_BASE_HOST_NAME;
 
     if (baseDomain) {
       siteUrl = `https://${base['fk_workspace_id']}.${baseDomain}`;
@@ -192,16 +192,16 @@ export class SharedBasesService {
   }
 
   async disableSharedBaseLink(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
-      req: NcRequest;
+      req: AtRequest;
     },
   ): Promise<any> {
     const base = await Base.get(context, param.baseId);
 
     if (!base) {
-      NcError.baseNotFound(param.baseId);
+      AtError.baseNotFound(param.baseId);
     }
     const data: any = {
       uuid: null,
@@ -224,7 +224,7 @@ export class SharedBasesService {
   }
 
   async getSharedBaseLink(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       siteUrl: string;
@@ -233,7 +233,7 @@ export class SharedBasesService {
     const base = await Base.get(context, param.baseId);
 
     if (!base) {
-      NcError.baseNotFound(param.baseId);
+      AtError.baseNotFound(param.baseId);
     }
 
     const data: any = {

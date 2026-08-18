@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, UITypes } from 'nocodb-sdk'
+import { ColumnHelper, UITypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -45,16 +45,16 @@ const updateIsMulti = (isChecked: boolean) => {
   <div class="flex flex-col gap-4">
     <a-form-item>
       <div v-if="vModel.meta" class="flex items-center gap-1">
-        <NcSwitch :checked="vModel.meta.is_multi" data-testid="user-column-allow-multiple" @change="updateIsMulti">
-          <div class="text-sm text-nc-content-gray select-none">{{ $t('labels.allowAddingMultipleUsers') }}</div>
-        </NcSwitch>
+        <AtSwitch :checked="vModel.meta.is_multi" data-testid="user-column-allow-multiple" @change="updateIsMulti">
+          <div class="text-sm text-atm-content-gray select-none">{{ $t('labels.allowAddingMultipleUsers') }}</div>
+        </AtSwitch>
       </div>
     </a-form-item>
     <a-form-item v-if="future">
       <div v-if="vModel.meta" class="flex items-center gap-1">
-        <NcSwitch v-model:checked="vModel.meta.notify" data-testid="user-column-notify-user">
-          <div class="text-sm text-nc-content-gray select-none">{{ $t('labels.notifyUsersWithBaseAccessWhenAdded') }}</div>
-        </NcSwitch>
+        <AtSwitch v-model:checked="vModel.meta.notify" data-testid="user-column-notify-user">
+          <div class="text-sm text-atm-content-gray select-none">{{ $t('labels.notifyUsersWithBaseAccessWhenAdded') }}</div>
+        </AtSwitch>
       </div>
     </a-form-item>
     <a-alert v-if="initialIsMulti && isEdit && !vModel.meta.is_multi" type="warning" show-icon>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, UITypes, resolveColumnSeparator } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, resolveColumnSeparator } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -28,6 +28,6 @@ if (!vModel.value.meta.separator) {
     v-model:value="vModel.meta.separator"
     :disabled="isSystem"
     integer
-    dropdown-class-name="nc-dropdown-number-separator-format"
+    dropdown-class-name="atm-dropdown-number-separator-format"
   />
 </template>

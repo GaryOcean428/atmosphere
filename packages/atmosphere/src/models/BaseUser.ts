@@ -1,13 +1,13 @@
 import {
   IconType,
-  NOCO_SERVICE_USERS,
+  ATMOSPHERE_SERVICE_USERS,
   ProjectRoles,
   WorkspaceUserRoles,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { Logger } from '@nestjs/common';
-import type { BaseType } from 'nocodb-sdk';
+import type { BaseType } from 'atmosphere-sdk';
 import type User from '~/models/User';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import Base from '~/models/Base';
 import {
   CacheDelDirection,
@@ -15,11 +15,11 @@ import {
   CacheScope,
   MetaTable,
 } from '~/utils/globals';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { parseMetaProp } from '~/utils/modelUtils';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { cleanCommandPaletteCacheForUser } from '~/helpers/commandPaletteHelpers';
 import { MCPToken } from '~/models/index';
 
@@ -44,9 +44,9 @@ export default class BaseUser {
   }
 
   public static async bulkInsert(
-    context: NcContext,
+    context: AtContext,
     baseUsers: Partial<BaseUser>[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = baseUsers.map((baseUser) =>
       extractProps(baseUser, ['fk_user_id', 'base_id', 'roles', 'invited_by']),
@@ -69,7 +69,7 @@ export default class BaseUser {
     ] as string[];
 
     for (const fk of uniqueFks) {
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         context,
         `${CacheScope.BASE_USER}:${fk}:list`,
         CacheDelDirection.PARENT_TO_CHILD,
@@ -77,13 +77,13 @@ export default class BaseUser {
     }
 
     for (const d of bulkData) {
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.BASE_USER}:${d.base_id}:${d.fk_user_id}`,
         d,
       );
 
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.BASE_USER,
         [d.base_id],
@@ -97,9 +97,9 @@ export default class BaseUser {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     baseUser: Partial<BaseUser>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(baseUser, [
       'fk_user_id',
@@ -120,7 +120,7 @@ export default class BaseUser {
     );
 
     // delete list to fetch updated list next time
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.BASE_USER}:${base_id}:list`,
       CacheDelDirection.PARENT_TO_CHILD,
@@ -132,7 +132,7 @@ export default class BaseUser {
 
     return this.get(context, base_id, fk_user_id, ncMeta).then(
       async (baseUser) => {
-        await NocoCache.appendToList(
+        await AtmosphereCache.appendToList(
           context,
           CacheScope.BASE_USER,
           [base_id],
@@ -143,19 +143,19 @@ export default class BaseUser {
     );
   }
 
-  // public static async update(id, user: Partial<BaseUser>, ncMeta = Noco.ncMeta) {
+  // public static async update(id, user: Partial<BaseUser>, ncMeta = Atmosphere.ncMeta) {
   //   // return await ncMeta.metaUpdate(context.workspace_id, context.base_id, insertObj);
   // }
   static async get(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
     userId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<BaseUser & { is_mapped?: boolean; deleted?: boolean }> {
     let baseUser =
       baseId &&
       userId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.BASE_USER}:${baseId}:${userId}`,
         CacheGetType.TYPE_OBJECT,
@@ -209,7 +209,7 @@ export default class BaseUser {
       if (baseUser) {
         baseUser.meta = parseMetaProp(baseUser);
 
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.BASE_USER}:${baseId}:${userId}`,
           baseUser,
@@ -227,7 +227,7 @@ export default class BaseUser {
   }
 
   public static async getUsersList(
-    context: NcContext,
+    context: AtContext,
     {
       base_id,
       mode = 'full',
@@ -245,9 +245,9 @@ export default class BaseUser {
       user_ids?: string[];
       include_team_users?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<(Partial<User> & BaseUser & { deleted?: boolean })[]> {
-    const cachedList = await NocoCache.getList(context, CacheScope.BASE_USER, [
+    const cachedList = await AtmosphereCache.getList(context, CacheScope.BASE_USER, [
       base_id,
     ]);
     let { list: baseUsers } = cachedList;
@@ -313,7 +313,7 @@ export default class BaseUser {
       });
 
       if (!strict_in_record) {
-        await NocoCache.setList(
+        await AtmosphereCache.setList(
           context,
           CacheScope.BASE_USER,
           [base_id],
@@ -325,8 +325,8 @@ export default class BaseUser {
 
     // Mirror the EE override (src/ee/models/BaseUser.ts): append service users
     // (ANONYMOUS_USER, SYSTEM_USER, AUTOMATION_USER, …) when the caller opts
-    // in. These IDs are SDK-defined constants that never live in nc_users /
-    // nc_workspace_user, so without this any caller validating a value against
+    // in. These IDs are SDK-defined constants that never live in atm_users /
+    // atm_workspace_user, so without this any caller validating a value against
     // the returned list — e.g. the User/CreatedBy/LastModifiedBy field
     // validator in `BaseModelSqlv2` — would 422 on system-stamped actors like
     // `usranonymous` from public shared-form submissions.
@@ -335,11 +335,11 @@ export default class BaseUser {
     // lists that filter `!deleted`, but they DO satisfy reference lookups by id.
     if (include_internal_user) {
       baseUsers.push(
-        ...Object.values(NOCO_SERVICE_USERS).map((u: any) => ({
+        ...Object.values(ATMOSPHERE_SERVICE_USERS).map((u: any) => ({
           ...u,
           deleted: true,
-          // NocoDB brand mark as avatar (matches the filter dropdown options)
-          meta: { icon: 'nocodb1', iconType: IconType.ICON },
+          // Atmosphere brand mark as avatar (matches the filter dropdown options)
+          meta: { icon: 'atmosphere1', iconType: IconType.ICON },
         })),
       );
     }
@@ -363,7 +363,7 @@ export default class BaseUser {
   }
 
   public static async getUsersCount(
-    context: NcContext,
+    context: AtContext,
     {
       base_id,
       query,
@@ -371,7 +371,7 @@ export default class BaseUser {
       base_id: string;
       query?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<number> {
     const queryBuilder = ncMeta.knex(MetaTable.USERS);
 
@@ -395,11 +395,11 @@ export default class BaseUser {
   }
 
   static async updateRoles(
-    context: NcContext,
+    context: AtContext,
     baseId,
     userId,
     roles: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // set meta
     const res = await ncMeta.metaUpdate(
@@ -415,7 +415,7 @@ export default class BaseUser {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.BASE_USER}:${baseId}:${userId}`,
       {
@@ -431,11 +431,11 @@ export default class BaseUser {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     baseId,
     userId,
     baseUser: Partial<BaseUser>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(baseUser, ['starred', 'hidden', 'order']);
 
@@ -451,7 +451,7 @@ export default class BaseUser {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.BASE_USER}:${baseId}:${userId}`,
       updateObj,
@@ -461,10 +461,10 @@ export default class BaseUser {
   }
 
   static async delete(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
     userId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // delete meta
     const response = await ncMeta.metaDelete(
@@ -478,7 +478,7 @@ export default class BaseUser {
     );
 
     // delete individual cache and remove from parent list
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.BASE_USER}:${baseId}:${userId}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -494,9 +494,9 @@ export default class BaseUser {
 
   static async getProjectsIdList(
     userId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<BaseUser[]> {
-    if (!userId) NcError.badRequest('User Id is required');
+    if (!userId) AtError.badRequest('User Id is required');
 
     return await ncMeta.knex(MetaTable.PROJECT_USERS).where({
       fk_user_id: userId,
@@ -512,7 +512,7 @@ export default class BaseUser {
       recent?: boolean;
       type?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<BaseType[]> {
     const workspaceId = params.workspaceId;
 
@@ -658,11 +658,11 @@ export default class BaseUser {
   }
 
   static async updateOrInsert(
-    context: NcContext,
+    context: AtContext,
     baseId,
     userId,
     baseUser: Partial<BaseUser>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const existingProjectUser = await this.get(context, baseId, userId, ncMeta);
 

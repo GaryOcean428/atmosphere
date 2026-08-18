@@ -111,11 +111,11 @@ const isDismissable = computed(() => state.value !== 'in_progress')
     :mask-closable="isDismissable"
     :keyboard="isDismissable"
     class="!w-[30rem]"
-    wrap-class-name="nc-modal-upgrade-ws"
+    wrap-class-name="atm-modal-upgrade-ws"
   >
     <div class="flex flex-col gap-4">
       <div class="flex items-center gap-2">
-        <GeneralIcon icon="nocodb1" class="w-5 h-5" />
+        <GeneralIcon icon="atmosphere1" class="w-5 h-5" />
         <div class="text-lg font-bold self-center">{{ $t('title.upgradingWorkspace') }}</div>
       </div>
 
@@ -126,9 +126,9 @@ const isDismissable = computed(() => state.value !== 'in_progress')
         </div>
       </div>
 
-      <NcButton v-if="showDoneButton" type="primary" @click="close">
+      <AtButton v-if="showDoneButton" type="primary" @click="close">
         {{ $t('general.done') }}
-      </NcButton>
+      </AtButton>
     </div>
   </GeneralModal>
 </template>

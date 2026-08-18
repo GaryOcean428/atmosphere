@@ -1,4 +1,4 @@
-import type { ListViewLevelType } from 'nocodb-sdk';
+import type { ListViewLevelType } from 'atmosphere-sdk';
 
 export default class ListViewLevel implements ListViewLevelType {
   id: string;

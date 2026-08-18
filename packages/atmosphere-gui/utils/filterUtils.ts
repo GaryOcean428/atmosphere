@@ -14,7 +14,7 @@ import {
   isSystemColumn,
   isVirtualCol,
   parseProp,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type {
   ColumnType,
   ColumnTypeForFilter,
@@ -24,15 +24,15 @@ import type {
   LinkToAnotherRecordType,
   LookupType,
   TableType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 export const MAX_NESTED_LEVEL = 5
 export const excludedFilterColUidt = [UITypes.QrCode, UITypes.Barcode, UITypes.Button]
 
-// Re-export types from nocodb-sdk for backward compatibility
+// Re-export types from atmosphere-sdk for backward compatibility
 export type { ComparisonOpUiType, FilterGroupChangeEvent, FilterRowChangeEvent, ColumnTypeForFilter }
 
-// Re-export functions from nocodb-sdk for backward compatibility
+// Re-export functions from atmosphere-sdk for backward compatibility
 export {
   isDateType,
   comparisonOpList,

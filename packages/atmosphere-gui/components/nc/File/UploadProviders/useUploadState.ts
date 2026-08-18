@@ -1,5 +1,5 @@
 import type { InjectionKey, Ref } from 'vue'
-import type { AttachmentReqType, PublicAttachmentScope } from 'nocodb-sdk'
+import type { AttachmentReqType, PublicAttachmentScope } from 'atmosphere-sdk'
 
 export interface UploadState {
   isLoading: Ref<boolean>

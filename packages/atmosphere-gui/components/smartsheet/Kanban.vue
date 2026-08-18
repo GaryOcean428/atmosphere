@@ -2,7 +2,7 @@
 import type { VNodeRef } from '@vue/runtime-core'
 import Draggable from 'vuedraggable'
 import tinycolor from 'tinycolor2'
-import { type ColumnType, type InterfaceKanbanVizTheme, PermissionEntity, PermissionKey, isVirtualCol } from 'nocodb-sdk'
+import { type ColumnType, type InterfaceKanbanVizTheme, PermissionEntity, PermissionKey, isVirtualCol } from 'atmosphere-sdk'
 import type { Row as RowType } from '#imports'
 
 interface Attachment {
@@ -237,7 +237,7 @@ function getCardColorStyle(record: RowType): Record<string, string> {
   // handed to the host CSS (tint wash / accent bar) via a custom property.
   const rawColor = record.rowMeta?.rowLeftBorderColor
 
-  return rawColor ? { '--nc-record-color': rawColor } : {}
+  return rawColor ? { '--atm-record-color': rawColor } : {}
 }
 
 const kanbanContainerRef = ref()
@@ -665,7 +665,7 @@ const handleCardDragStart = (e: any) => {
   if (interfacePageDataApi && e.item) {
     const cardHeight = e.item.querySelector('.ant-card')?.offsetHeight ?? e.item.offsetHeight
     dragResidueEl = document.createElement('div')
-    dragResidueEl.className = 'nc-kanban-drag-residue'
+    dragResidueEl.className = 'atm-kanban-drag-residue'
     dragResidueEl.style.height = `${cardHeight}px`
     dragResidueList = e.from ?? e.item.parentElement
     dragResidueIndex = e.oldIndex ?? 0
@@ -673,7 +673,7 @@ const handleCardDragStart = (e: any) => {
 
     dragResidueKeeper = setInterval(() => {
       if (!dragResidueEl || dragResidueEl.isConnected || !dragResidueList?.isConnected) return
-      const anchor = dragResidueList.querySelectorAll(':scope > .nc-kanban-item')[dragResidueIndex] ?? null
+      const anchor = dragResidueList.querySelectorAll(':scope > .atm-kanban-item')[dragResidueIndex] ?? null
       dragResidueList.insertBefore(dragResidueEl, anchor)
     }, 120)
   }
@@ -693,7 +693,7 @@ const handleCardDragEnd = (e: any) => {
     const el = dragResidueEl
     dragResidueEl = null
     dragResidueList = null
-    el.classList.add('nc-collapsing')
+    el.classList.add('atm-collapsing')
     setTimeout(() => el.remove(), 220)
   }
 }
@@ -801,24 +801,24 @@ const cardFields = (record: RowType) => {
 
 <template>
   <div
-    class="flex flex-col w-full bg-nc-bg-gray-extralight h-full"
-    data-testid="nc-kanban-wrapper"
+    class="flex flex-col w-full bg-atm-bg-gray-extralight h-full"
+    data-testid="atm-kanban-wrapper"
     :style="{
       minHeight: 'calc(100% - var(--topbar-height))',
     }"
   >
     <div
       ref="kanbanContainerRef"
-      class="nc-kanban-container flex p-3 overflow-y-hidden w-full nc-view-scrollbar-x min-h-[calc(100%_-_0.4rem)] max-h-[calc(100%_-_0.4rem)]"
+      class="atm-kanban-container flex p-3 overflow-y-hidden w-full atm-view-scrollbar-x min-h-[calc(100%_-_0.4rem)] max-h-[calc(100%_-_0.4rem)]"
     >
       <div v-if="isViewDataLoading" class="flex flex-row min-h-full gap-x-2">
         <a-skeleton-input v-for="index of Array(20)" :key="index" class="!min-w-80 !min-h-full !rounded-xl overflow-hidden" />
       </div>
-      <NcDropdown
+      <AtDropdown
         v-else
         v-model:visible="contextMenu"
         :trigger="['contextmenu']"
-        overlay-class-name="nc-dropdown-kanban-context-menu"
+        overlay-class-name="atm-dropdown-kanban-context-menu"
       >
         <div class="flex gap-3" @contextmenu.capture="resetContextMenuTarget">
           <!-- Draggable Stack -->
@@ -828,8 +828,8 @@ const cardFields = (record: RowType) => {
             class="flex gap-3"
             item-key="id"
             group="kanban-stack"
-            draggable=".nc-kanban-stack"
-            handle=".nc-kanban-stack-drag-handler"
+            draggable=".atm-kanban-stack"
+            handle=".atm-kanban-stack-drag-handler"
             :filter="draggableStackFilter"
             :move="onMoveCallback"
             @start="(e) => e.target.classList.add('grabbing')"
@@ -843,22 +843,22 @@ const cardFields = (record: RowType) => {
                  one child" (dev builds only — prod strips comments). -->
             <template #item="{ element: stack, index: stackIdx }">
               <div
-                class="nc-kanban-stack"
+                class="atm-kanban-stack"
                 :class="{
                   'w-[52px]': isStackCollapsed(stack) && !!interfacePageDataApi,
                   'w-[44px]': isStackCollapsed(stack) && !interfacePageDataApi,
-                  'nc-kanban-stack-interface-collapsed': !!interfacePageDataApi && isStackCollapsed(stack),
+                  'atm-kanban-stack-interface-collapsed': !!interfacePageDataApi && isStackCollapsed(stack),
                   'hidden':
                     (hideEmptyStack && !formattedData.get(stack.title)?.length) ||
                     (isRequiredGroupingFieldColumn && stack.id === uncategorizedStackId),
                 }"
-                :data-testid="`nc-kanban-stack-${stack.title}`"
+                :data-testid="`atm-kanban-stack-${stack.title}`"
               >
                 <!-- Non Collapsed Stacks -->
                 <a-card
                   v-if="!isStackCollapsed(stack)"
                   :key="`${stack.id}-${stackIdx}`"
-                  class="flex flex-col w-68.5 h-full !rounded-xl overflow-y-hidden !shadow-none !hover:shadow-none !border-nc-border-gray-medium"
+                  class="flex flex-col w-68.5 h-full !rounded-xl overflow-y-hidden !shadow-none !hover:shadow-none !border-atm-border-gray-medium"
                   :class="{
                     'not-draggable': stack.title === null || isLocked || isPublic || !hasEditPermission,
                     '!cursor-default': isLocked || !hasEditPermission,
@@ -879,11 +879,11 @@ const cardFields = (record: RowType) => {
                   <!-- Stack -->
                   <a-layout v-else>
                     <a-layout-header
-                      class="border-b-1 border-nc-border-gray-light min-h-[49px]"
-                      :class="`nc-kanban-stack-header-${stack.id}`"
+                      class="border-b-1 border-atm-border-gray-light min-h-[49px]"
+                      :class="`atm-kanban-stack-header-${stack.id}`"
                     >
                       <div
-                        class="nc-kanban-stack-head w-full flex gap-1"
+                        class="atm-kanban-stack-head w-full flex gap-1"
                         :class="{
                           'items-start': compareStack(stack, isRenameOrNewStack),
                           'items-center': !compareStack(stack, isRenameOrNewStack),
@@ -896,18 +896,18 @@ const cardFields = (record: RowType) => {
                             'items-center': !compareStack(stack, isRenameOrNewStack),
                           }"
                         >
-                          <NcButton
+                          <AtButton
                             v-if="!(isLocked || isPublic || !hasEditPermission || interfacePageDataApi)"
                             :disabled="
                               !stack.title || compareStack(stack, isSavingStack) || compareStack(stack, isRenameOrNewStack)
                             "
                             type="text"
                             size="xs"
-                            class="nc-kanban-stack-drag-handler !px-1.5 !cursor-move !:disabled:cursor-not-allowed mt-0.5"
+                            class="atm-kanban-stack-drag-handler !px-1.5 !cursor-move !:disabled:cursor-not-allowed mt-0.5"
                           >
                             <GeneralLoader v-if="compareStack(stack, isSavingStack)" size="regular" class="stack-rename-loader" />
                             <GeneralIcon v-else icon="ncDrag" class="!font-weight-800 flex-none" />
-                          </NcButton>
+                          </AtButton>
 
                           <div
                             class="flex-1 flex max-w-[calc(100%_-_28px)]"
@@ -960,12 +960,12 @@ const cardFields = (record: RowType) => {
                                 }"
                                 class="text-sm font-semibold"
                               >
-                                <NcTooltip class="truncate max-w-full" placement="bottom" show-on-truncate-only>
+                                <AtTooltip class="truncate max-w-full" placement="bottom" show-on-truncate-only>
                                   <template #title>
                                     {{ stack.title ?? $t('labels.uncategorized') }}
                                   </template>
                                   <span
-                                    data-testid="nc-kanban-stack-title"
+                                    data-testid="atm-kanban-stack-title"
                                     class="text-ellipsis overflow-hidden"
                                     :style="{
                                       wordBreak: 'keep-all',
@@ -975,49 +975,49 @@ const cardFields = (record: RowType) => {
                                   >
                                     {{ stack.title ?? $t('labels.uncategorized') }}
                                   </span>
-                                </NcTooltip>
+                                </AtTooltip>
                               </span>
                             </a-tag>
                             <!-- Interface: the stack footer is removed, so the total count rides the header -->
                             <span
                               v-if="interfacePageDataApi && !compareStack(stack, isRenameOrNewStack)"
-                              class="nc-kanban-stack-header-count self-center flex-none ml-2 text-[12px] font-weight-500 text-nc-content-gray-muted"
-                              data-testid="nc-kanban-stack-header-count"
+                              class="atm-kanban-stack-header-count self-center flex-none ml-2 text-[12px] font-weight-500 text-atm-content-gray-muted"
+                              data-testid="atm-kanban-stack-header-count"
                             >
                               {{ countByStack.get(stack.title) ?? 0 }}
                             </span>
                           </div>
                         </div>
-                        <NcTooltip :title="$t('activity.kanban.collapseStack')" placement="top">
-                          <NcButton
+                        <AtTooltip :title="$t('activity.kanban.collapseStack')" placement="top">
+                          <AtButton
                             v-e="['c:kanban:collapse-stack']"
                             :disabled="compareStack(stack, isSavingStack)"
                             type="text"
                             size="xs"
                             class="!px-1.5 mt-0.5"
-                            data-testid="nc-kanban-stack-collapse-btn"
+                            data-testid="atm-kanban-stack-collapse-btn"
                             @click="handleCollapseStack(stackIdx)"
                           >
                             <GeneralIcon icon="minimize" class="h-3.5 w-3.5 opacity-75" />
-                          </NcButton>
-                        </NcTooltip>
-                        <NcDropdown
+                          </AtButton>
+                        </AtTooltip>
+                        <AtDropdown
                           placement="bottomRight"
-                          overlay-class-name="nc-dropdown-kanban-stack-context-menu"
-                          class="bg-nc-bg-default !rounded-lg"
+                          overlay-class-name="atm-dropdown-kanban-stack-context-menu"
+                          class="bg-atm-bg-default !rounded-lg"
                         >
-                          <NcButton
+                          <AtButton
                             :disabled="compareStack(stack, isSavingStack)"
                             type="text"
                             size="xs"
                             class="!px-1.5 mt-0.5"
-                            data-testid="nc-kanban-stack-context-menu"
+                            data-testid="atm-kanban-stack-context-menu"
                           >
                             <GeneralIcon icon="threeDotVertical" />
-                          </NcButton>
+                          </AtButton>
 
                           <template #overlay>
-                            <NcMenu :variant="interfacePageDataApi ? 'medium' : 'small'">
+                            <AtMenu :variant="interfacePageDataApi ? 'medium' : 'small'">
                               <PermissionsTooltip
                                 v-if="hasEditPermission && !isPublic && !isSyncedTable && canAddDeleteRows"
                                 :entity="PermissionEntity.TABLE"
@@ -1026,9 +1026,9 @@ const cardFields = (record: RowType) => {
                                 placement="right"
                               >
                                 <template #default="{ isAllowed }">
-                                  <NcMenuItem
+                                  <AtMenuItem
                                     v-e="['c:kanban:add-new-record']"
-                                    data-testid="nc-kanban-context-menu-add-new-record"
+                                    data-testid="atm-kanban-context-menu-add-new-record"
                                     :disabled="!isAllowed"
                                     @click="handleOpenNewRecordForm(stack.title)"
                                   >
@@ -1036,15 +1036,15 @@ const cardFields = (record: RowType) => {
                                       <component :is="iconMap.plus" class="flex-none w-4 h-4" />
                                       {{ $t('activity.newRecord') }}
                                     </div>
-                                  </NcMenuItem>
+                                  </AtMenuItem>
                                 </template>
                               </PermissionsTooltip>
-                              <NcMenuItem
+                              <AtMenuItem
                                 v-if="
                                   stack.title !== null && isUIAllowed('fieldAdd') && hasEditPermission && !isPublic && !isLocked
                                 "
                                 v-e="['c:kanban:rename-stack']"
-                                data-testid="nc-kanban-context-menu-rename-stack"
+                                data-testid="atm-kanban-context-menu-rename-stack"
                                 @click="
                                   () => {
                                     isRenameOrNewStack = stack
@@ -1055,48 +1055,48 @@ const cardFields = (record: RowType) => {
                                   <component :is="iconMap.ncEdit" class="flex-none w-4 h-4" />
                                   {{ $t('activity.kanban.renameStack') }}
                                 </div>
-                              </NcMenuItem>
-                              <NcMenuItem
+                              </AtMenuItem>
+                              <AtMenuItem
                                 v-e="['c:kanban:collapse-all-stack']"
-                                data-testid="nc-kanban-context-menu-collapse-all-stack"
+                                data-testid="atm-kanban-context-menu-collapse-all-stack"
                                 @click="handleCollapseAllStack"
                               >
                                 <div class="flex gap-2 items-center">
                                   <component :is="iconMap.minimizeAll" class="flex-none w-4 h-4" />
                                   {{ $t('activity.kanban.collapseAll') }}
                                 </div>
-                              </NcMenuItem>
-                              <NcMenuItem
+                              </AtMenuItem>
+                              <AtMenuItem
                                 v-e="['c:kanban:expand-all-stack']"
-                                data-testid="nc-kanban-context-menu-expand-all-stack"
+                                data-testid="atm-kanban-context-menu-expand-all-stack"
                                 @click="handleExpandAllStack"
                               >
                                 <div class="flex gap-2 items-center">
                                   <component :is="iconMap.maximizeAll" class="flex-none w-4 h-4" />
                                   {{ $t('activity.kanban.expandAll') }}
                                 </div>
-                              </NcMenuItem>
+                              </AtMenuItem>
                               <template
                                 v-if="
                                   stack.title !== null && isUIAllowed('fieldAdd') && !isPublic && hasEditPermission && !isLocked
                                 "
                               >
-                                <NcDivider />
-                                <NcMenuItem
+                                <AtDivider />
+                                <AtMenuItem
                                   v-e="['c:kanban:delete-stack']"
                                   danger
-                                  data-testid="nc-kanban-context-menu-delete-stack"
+                                  data-testid="atm-kanban-context-menu-delete-stack"
                                   @click="handleDeleteStackClick(stack.title, stackIdx)"
                                 >
                                   <div class="flex gap-2 items-center">
                                     <component :is="iconMap.delete" class="flex-none w-4 h-4" />
                                     {{ $t('activity.kanban.deleteStack') }}
                                   </div>
-                                </NcMenuItem>
+                                </AtMenuItem>
                               </template>
-                            </NcMenu>
+                            </AtMenu>
                           </template>
-                        </NcDropdown>
+                        </AtDropdown>
                       </div>
                     </a-layout-header>
 
@@ -1118,7 +1118,7 @@ const cardFields = (record: RowType) => {
                     >
                       <div
                         :ref="kanbanListRef"
-                        class="nc-kanban-list h-full px-2 nc-scrollbar-thin"
+                        class="atm-kanban-list h-full px-2 atm-scrollbar-thin"
                         :data-stack-title="stack.title"
                       >
                         <!-- Draggable Record Card -->
@@ -1126,7 +1126,7 @@ const cardFields = (record: RowType) => {
                           v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 150 })"
                           :list="formattedData.get(stack.title)"
                           item-key="row.Id"
-                          draggable=".nc-kanban-item"
+                          draggable=".atm-kanban-item"
                           group="kanban-card"
                           class="flex flex-col h-full"
                           :disabled="isMobileMode"
@@ -1137,22 +1137,22 @@ const cardFields = (record: RowType) => {
                           @change="onMoveAndPersistExpand($event, stack.title, stackIdx)"
                         >
                           <template #item="{ element: record, index }">
-                            <div class="nc-kanban-item py-1 first:pt-2 last:pb-2">
+                            <div class="atm-kanban-item py-1 first:pt-2 last:pb-2">
                               <LazySmartsheetRow :row="record">
                                 <a-card
                                   :key="`${getRowId(record)}-${index}`"
-                                  class="relative !rounded-lg h-full border-nc-border-gray-medium border-1 group overflow-hidden break-all max-w-[450px] cursor-pointer flex flex-col"
+                                  class="relative !rounded-lg h-full border-atm-border-gray-medium border-1 group overflow-hidden break-all max-w-[450px] cursor-pointer flex flex-col"
                                   :body-style="{
                                     padding: cardBodyPadding,
                                     flex: 1,
                                     display: 'flex',
                                   }"
                                   :data-stack="stack.title"
-                                  :data-testid="`nc-gallery-card-${record.row.id}`"
+                                  :data-testid="`atm-gallery-card-${record.row.id}`"
                                   :class="{
                                     'not-draggable': !hasEditPermission || isPublic,
                                     '!cursor-default': !hasEditPermission || isPublic || !interfaceShowRowExpand,
-                                    'nc-interface-card-selected': isCardSelected(record),
+                                    'atm-interface-card-selected': isCardSelected(record),
                                   }"
                                   :style="getCardColorStyle(record)"
                                   @click="expandFormClick($event, record)"
@@ -1167,7 +1167,7 @@ const cardFields = (record: RowType) => {
                                     <template v-if="isMounted && !reloadAttachments && attachments(record).length">
                                       <a-carousel
                                         :key="attachments(record).reduce((acc, curr) => acc + curr?.path, '')"
-                                        class="gallery-carousel !border-b-1 !border-nc-border-gray-medium !bg-nc-bg-default"
+                                        class="gallery-carousel !border-b-1 !border-atm-border-gray-medium !bg-atm-bg-default"
                                         arrows
                                       >
                                         <template #customPaging>
@@ -1180,25 +1180,25 @@ const cardFields = (record: RowType) => {
 
                                         <template #prevArrow>
                                           <div class="z-10 arrow">
-                                            <NcButton
+                                            <AtButton
                                               type="secondary"
                                               size="xsmall"
                                               class="!absolute !left-1.5 !bottom-[-90px] !opacity-0 !group-hover:opacity-100 !rounded-lg cursor-pointer"
                                             >
-                                              <GeneralIcon icon="arrowLeft" class="text-nc-content-inverted-secondary w-4 h-4" />
-                                            </NcButton>
+                                              <GeneralIcon icon="arrowLeft" class="text-atm-content-inverted-secondary w-4 h-4" />
+                                            </AtButton>
                                           </div>
                                         </template>
 
                                         <template #nextArrow>
                                           <div class="z-10 arrow">
-                                            <NcButton
+                                            <AtButton
                                               type="secondary"
                                               size="xsmall"
                                               class="!absolute !right-1.5 !bottom-[-90px] !opacity-0 !group-hover:opacity-100 !rounded-lg cursor-pointer"
                                             >
-                                              <GeneralIcon icon="arrowRight" class="text-nc-content-inverted-secondary w-4 h-4" />
-                                            </NcButton>
+                                              <GeneralIcon icon="arrowRight" class="text-atm-content-inverted-secondary w-4 h-4" />
+                                            </AtButton>
                                           </div>
                                         </template>
 
@@ -1216,7 +1216,7 @@ const cardFields = (record: RowType) => {
                                     </template>
                                     <div
                                       v-else
-                                      class="h-52 w-full !flex flex-row !border-b-1 !border-nc-border-gray-medium items-center justify-center bg-nc-bg-default"
+                                      class="h-52 w-full !flex flex-row !border-b-1 !border-atm-border-gray-medium items-center justify-center bg-atm-bg-default"
                                     >
                                       <img class="object-contain w-[48px] h-[48px]" src="~assets/icons/FileIconImageBox.png" />
                                     </div>
@@ -1224,7 +1224,7 @@ const cardFields = (record: RowType) => {
                                   <div class="flex-1 flex content-stretch gap-3 w-full">
                                     <div
                                       v-if="showRecordColorLeftBar"
-                                      class="nc-kanban-card-color-bar w-1 flex-none min-h-4 rounded-sm"
+                                      class="atm-kanban-card-color-bar w-1 flex-none min-h-4 rounded-sm"
                                       :style="extractRowBackgroundColorStyle(record).rowLeftBorderColor"
                                     ></div>
                                     <div
@@ -1243,7 +1243,7 @@ const cardFields = (record: RowType) => {
                                       >
                                         <span
                                           v-if="showRecordColorDot && record.rowMeta?.rowLeftBorderColor"
-                                          class="nc-kanban-card-color-dot mt-1.5 h-2 w-2 flex-none rounded-full"
+                                          class="atm-kanban-card-color-dot mt-1.5 h-2 w-2 flex-none rounded-full"
                                           :style="{ backgroundColor: record.rowMeta.rowLeftBorderColor }"
                                         ></span>
                                         <div
@@ -1251,34 +1251,34 @@ const cardFields = (record: RowType) => {
                                           class="w-1 flex-none min-h-4 rounded-sm"
                                           :style="getCellLeftBorderStyle(record, displayField.id)"
                                         ></div>
-                                        <h2 class="nc-card-display-value-wrapper flex-1 min-w-0 !children:pointer-events-auto">
+                                        <h2 class="atm-card-display-value-wrapper flex-1 min-w-0 !children:pointer-events-auto">
                                           <template
                                             v-if="!isRowEmpty(record, displayField) || isAllowToRenderRowEmptyField(displayField)"
                                           >
                                             <LazySmartsheetVirtualCell
                                               v-if="isVirtualCol(displayField)"
                                               v-model="record.row[displayField.title]"
-                                              class="!text-nc-content-brand"
+                                              class="!text-atm-content-brand"
                                               :column="displayField"
                                               :row="record"
                                             />
-                                            <NcTooltip
+                                            <AtTooltip
                                               v-else
                                               class="!w-full max-w-full"
                                               placement="top"
                                               show-on-truncate-only
-                                              truncate-selector=".nc-cell-field"
+                                              truncate-selector=".atm-cell-field"
                                               :disabled="!isDisplayFieldTextOrNumber"
                                               :title="`${record.row[displayField.title] ?? ''}`"
                                             >
                                               <LazySmartsheetCell
                                                 v-model="record.row[displayField.title]"
-                                                class="!text-nc-content-brand"
+                                                class="!text-atm-content-brand"
                                                 :column="displayField"
                                                 :edit-enabled="false"
                                                 :read-only="true"
                                               />
-                                            </NcTooltip>
+                                            </AtTooltip>
                                           </template>
                                           <template v-else> -</template>
                                         </h2>
@@ -1287,13 +1287,13 @@ const cardFields = (record: RowType) => {
                                       <div
                                         v-for="col in cardFields(record)"
                                         :key="`record-${record.row.id}-${col.id}`"
-                                        class="nc-card-col-wrapper"
+                                        class="atm-card-col-wrapper"
                                         :class="{
                                           '!children:pointer-events-auto': resetPointerEvent(record, col),
                                         }"
                                         @click="handleCellClick(col, $event)"
                                       >
-                                        <NcTooltip
+                                        <AtTooltip
                                           hide-on-click
                                           :disabled="isActiveViewFieldHeaderVisible"
                                           class="w-full z-10 flex"
@@ -1309,14 +1309,14 @@ const cardFields = (record: RowType) => {
                                               :column="col"
                                               :hide-menu="true"
                                               hide-icon-tooltip
-                                              class="!text-gray-100 nc-record-cell-tooltip"
+                                              class="!text-gray-100 atm-record-cell-tooltip"
                                             />
                                             <LazySmartsheetHeaderCell
                                               v-else
                                               :column="col"
                                               :hide-menu="true"
                                               hide-icon-tooltip
-                                              class="!text-gray-100 nc-record-cell-tooltip"
+                                              class="!text-gray-100 atm-record-cell-tooltip"
                                             />
                                           </template>
 
@@ -1339,8 +1339,8 @@ const cardFields = (record: RowType) => {
                                                 class="flex flex-row w-full justify-start"
                                               >
                                                 <div
-                                                  class="nc-card-col-header w-full !children:text-nc-content-gray-muted"
-                                                  :class="{ 'nc-card-col-header-no-icon': !!interfacePageDataApi }"
+                                                  class="atm-card-col-header w-full !children:text-atm-content-gray-muted"
+                                                  :class="{ 'atm-card-col-header-no-icon': !!interfacePageDataApi }"
                                                 >
                                                   <!-- Interface cards label with the field NAME only — no type icon -->
                                                   <LazySmartsheetHeaderVirtualCell
@@ -1363,14 +1363,14 @@ const cardFields = (record: RowType) => {
                                                 v-if="
                                                   !isRowEmpty(record, col) || isAllowToRenderRowEmptyField(col) || isPercent(col)
                                                 "
-                                                class="flex flex-row w-full text-nc-content-gray items-center justify-start min-h-7 py-1"
+                                                class="flex flex-row w-full text-atm-content-gray items-center justify-start min-h-7 py-1"
                                               >
                                                 <LazySmartsheetVirtualCell
                                                   v-if="isVirtualCol(col)"
                                                   v-model="record.row[col.title]"
                                                   :column="col"
                                                   :row="record"
-                                                  class="!text-nc-content-gray"
+                                                  class="!text-atm-content-gray"
                                                 />
 
                                                 <LazySmartsheetCell
@@ -1379,13 +1379,13 @@ const cardFields = (record: RowType) => {
                                                   :column="col"
                                                   :edit-enabled="false"
                                                   :read-only="true"
-                                                  class="!text-nc-content-gray"
+                                                  class="!text-atm-content-gray"
                                                 />
                                               </div>
                                               <div v-else class="flex flex-row w-full h-7 items-center justify-start">-</div>
                                             </div>
                                           </div>
-                                        </NcTooltip>
+                                        </AtTooltip>
                                       </div>
                                     </div>
                                   </div>
@@ -1395,7 +1395,7 @@ const cardFields = (record: RowType) => {
                           </template>
                           <template v-if="!formattedData.get(stack.title)?.length" #footer>
                             <div class="h-full w-full flex flex-col gap-4 items-center justify-center">
-                              <div class="flex flex-col items-center gap-2 text-nc-content-gray-subtle2 text-center">
+                              <div class="flex flex-col items-center gap-2 text-atm-content-gray-subtle2 text-center">
                                 <span class="text-sm font-semibold">
                                   {{ $t('general.empty') }} {{ $t('general.stack').toLowerCase() }}
                                 </span>
@@ -1411,7 +1411,7 @@ const cardFields = (record: RowType) => {
                                 placement="right"
                               >
                                 <template #default="{ isAllowed }">
-                                  <NcButton
+                                  <AtButton
                                     size="xs"
                                     type="secondary"
                                     :disabled="!isAllowed"
@@ -1422,7 +1422,7 @@ const cardFields = (record: RowType) => {
 
                                       {{ $t('activity.newRecord') }}
                                     </div>
-                                  </NcButton>
+                                  </AtButton>
                                 </template>
                               </PermissionsTooltip>
                             </div>
@@ -1435,7 +1435,7 @@ const cardFields = (record: RowType) => {
                         formattedData.get(stack.title) &&
                         (!interfacePageDataApi || (isUIAllowed('dataInsert') && !isSyncedTable && canAddDeleteRows))
                       "
-                      class="border-t-1 border-nc-border-gray-light"
+                      class="border-t-1 border-atm-border-gray-light"
                     >
                       <div class="flex items-center justify-between">
                         <PermissionsTooltip
@@ -1445,7 +1445,7 @@ const cardFields = (record: RowType) => {
                           :permission="PermissionKey.TABLE_RECORD_ADD"
                         >
                           <template #default="{ isAllowed }">
-                            <NcButton
+                            <AtButton
                               size="xs"
                               type="secondary"
                               :disabled="!isAllowed"
@@ -1456,7 +1456,7 @@ const cardFields = (record: RowType) => {
 
                                 {{ $t('activity.newRecord') }}
                               </div>
-                            </NcButton>
+                            </AtButton>
                           </template>
                         </PermissionsTooltip>
                         <div v-else>&nbsp;</div>
@@ -1464,7 +1464,7 @@ const cardFields = (record: RowType) => {
                         <!-- Record Count — on interface pages the total rides the stack header instead. -->
                         <div
                           v-if="!interfacePageDataApi"
-                          class="nc-kanban-data-count text-nc-content-gray-muted font-weight-500 px-1"
+                          class="atm-kanban-data-count text-atm-content-gray-muted font-weight-500 px-1"
                         >
                           {{ formattedData.get(stack.title)!.length }}/{{ countByStack.get(stack.title) ?? 0 }}
                           {{ countByStack.get(stack.title) !== 1 ? $t('objects.records') : $t('objects.record') }}
@@ -1478,10 +1478,10 @@ const cardFields = (record: RowType) => {
                 <a-card
                   v-else
                   :key="`${stack.id}-collapsed`"
-                  class="nc-kanban-collapsed-stack flex items-center w-68.5 !rounded-xl cursor-pointer h-full !p-2 overflow-hidden !shadow-none !hover:shadow-none !border-nc-border-gray-medium"
+                  class="atm-kanban-collapsed-stack flex items-center w-68.5 !rounded-xl cursor-pointer h-full !p-2 overflow-hidden !shadow-none !hover:shadow-none !border-atm-border-gray-medium"
                   :class="{
                     'not-draggable': stack.title === null || isLocked || isPublic || !hasEditPermission,
-                    'nc-kanban-collapsed-stack-reading-down': !!interfacePageDataApi,
+                    'atm-kanban-collapsed-stack-reading-down': !!interfacePageDataApi,
                     'h-[52px]': !!interfacePageDataApi,
                     'h-[44px]': !interfacePageDataApi,
                   }"
@@ -1502,18 +1502,18 @@ const cardFields = (record: RowType) => {
                     >
                       <a-skeleton-input :active="true" class="!w-full !h-4 !rounded-lg overflow-hidden" />
                     </div>
-                    <div v-else class="nc-kanban-stack-head w-full flex items-center justify-between gap-2">
+                    <div v-else class="atm-kanban-stack-head w-full flex items-center justify-between gap-2">
                       <div class="flex items-center gap-1">
-                        <NcButton
+                        <AtButton
                           v-if="!(isLocked || isPublic || !hasEditPermission || interfacePageDataApi)"
                           :disabled="!stack.title"
                           type="text"
                           size="xs"
-                          class="nc-kanban-stack-drag-handler !px-1.5 !cursor-move"
+                          class="atm-kanban-stack-drag-handler !px-1.5 !cursor-move"
                           @click.stop
                         >
                           <GeneralIcon icon="ncDrag" class="font-weight-800 flex-none" />
-                        </NcButton>
+                        </AtButton>
 
                         <!-- Interfaces show a bare count, freeing most of the bar for the title. -->
                         <div class="flex-1 flex" :class="interfacePageDataApi ? 'max-w-[170px]' : 'max-w-[115px]'">
@@ -1539,12 +1539,12 @@ const cardFields = (record: RowType) => {
                               }"
                               class="text-sm font-semibold"
                             >
-                              <NcTooltip class="truncate max-w-full" placement="left" show-on-truncate-only>
+                              <AtTooltip class="truncate max-w-full" placement="left" show-on-truncate-only>
                                 <template #title>
                                   {{ stack.title ?? $t('labels.uncategorized') }}
                                 </template>
                                 <span
-                                  data-testid="nc-kanban-stack-title"
+                                  data-testid="atm-kanban-stack-title"
                                   class="text-ellipsis overflow-hidden"
                                   :style="{
                                     wordBreak: 'keep-all',
@@ -1554,7 +1554,7 @@ const cardFields = (record: RowType) => {
                                 >
                                   {{ stack.title ?? $t('labels.uncategorized') }}
                                 </span>
-                              </NcTooltip>
+                              </AtTooltip>
                             </span>
                           </a-tag>
                         </div>
@@ -1562,7 +1562,7 @@ const cardFields = (record: RowType) => {
 
                       <div class="flex items-center gap-2 truncate">
                         <div
-                          class="nc-kanban-data-count px-1 rounded bg-nc-bg-gray-medium text-nc-content-gray text-sm font-weight-500 truncate"
+                          class="atm-kanban-data-count px-1 rounded bg-atm-bg-gray-medium text-atm-content-gray text-sm font-weight-500 truncate"
                           :style="{ 'word-break': 'keep-all', 'white-space': 'nowrap' }"
                         >
                           <!-- Record Count (interfaces: bare number) -->
@@ -1572,9 +1572,9 @@ const cardFields = (record: RowType) => {
                           </template>
                         </div>
 
-                        <NcButton type="text" size="xs" class="!px-1.5">
+                        <AtButton type="text" size="xs" class="!px-1.5">
                           <component :is="iconMap.arrowDown" class="h-4 w-4 flex-none opacity-75" />
-                        </NcButton>
+                        </AtButton>
                       </div>
                     </div>
                   </div>
@@ -1587,11 +1587,11 @@ const cardFields = (record: RowType) => {
                (columnUpdate — creator+ server-side), not a record -->
           <div
             v-if="isUIAllowed('fieldAdd') && hasEditPermission && !isPublic && !isLocked && groupingFieldColumn?.id"
-            class="nc-kanban-add-new-stack"
+            class="atm-kanban-add-new-stack"
           >
             <!-- Add New Stack -->
             <a-card
-              class="flex flex-col !rounded-xl overflow-y-hidden !shadow-none !hover:shadow-none border-nc-border-gray-medium nc-kanban-stack-header-new-stack"
+              class="flex flex-col !rounded-xl overflow-y-hidden !shadow-none !hover:shadow-none border-atm-border-gray-medium atm-kanban-stack-header-new-stack"
               :class="[
                 compareStack(addNewStackObj, isRenameOrNewStack) ? 'w-68.5' : 'w-fit',
                 {
@@ -1633,19 +1633,19 @@ const cardFields = (record: RowType) => {
                       }
                     "
                   >
-                    <NcTooltip
+                    <AtTooltip
                       v-if="!compareStack(addNewStackObj, isRenameOrNewStack)"
                       :title="`${$t('general.new')} ${$t('general.stack').toLowerCase()}`"
                       placement="top"
                     >
-                      <NcButton
+                      <AtButton
                         type="secondary"
                         class="add-new-stack-btn !rounded-xl !w-11 !h-11 !min-h-11 !px-0"
-                        data-testid="nc-kanban-add-new-stack-btn"
+                        data-testid="atm-kanban-add-new-stack-btn"
                       >
                         <component :is="iconMap.plus" class="w-4 h-4" />
-                      </NcButton>
-                    </NcTooltip>
+                      </AtButton>
+                    </AtTooltip>
 
                     <div
                       v-else
@@ -1673,52 +1673,52 @@ const cardFields = (record: RowType) => {
         </div>
         <!-- Drop down Menu -->
         <template v-if="!isLocked && !isPublic && (hasEditPermission || interfacePageDataApi)" #overlay>
-          <NcMenu
-            :class="interfacePageDataApi ? '!rounded-lg nc-interface-card-context-menu' : ''"
+          <AtMenu
+            :class="interfacePageDataApi ? '!rounded-lg atm-interface-card-context-menu' : ''"
             :variant="interfacePageDataApi ? 'medium' : 'small'"
             @click="contextMenu = false"
           >
-            <NcMenuItem
+            <AtMenuItem
               v-if="contextMenuTarget && canDuplicateRow"
-              data-testid="nc-interface-kanban-menu-duplicate"
+              data-testid="atm-interface-kanban-menu-duplicate"
               @click="interfaceDuplicateRow"
             >
-              <div v-e="['c:interface:kanban:record:duplicate']" class="flex items-center gap-2 nc-kanban-context-menu-item">
+              <div v-e="['c:interface:kanban:record:duplicate']" class="flex items-center gap-2 atm-kanban-context-menu-item">
                 <GeneralIcon icon="duplicate" class="flex" />
                 {{ $t('labels.duplicateRecord') }}
               </div>
-            </NcMenuItem>
-            <NcMenuItem
+            </AtMenuItem>
+            <AtMenuItem
               v-if="contextMenuTarget && interfaceClickIntoDetails"
               v-e="['a:kanban:expand-record']"
               @click="expandForm(contextMenuTarget)"
             >
-              <div class="flex items-center gap-2 nc-kanban-context-menu-item">
+              <div class="flex items-center gap-2 atm-kanban-context-menu-item">
                 <component :is="iconMap.maximize" class="flex" />
                 <!-- Expand Record -->
                 {{ $t('activity.expandRecord') }}
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
             <!-- Send record is collaborator/data-app vocabulary — hidden on interface pages -->
-            <NcMenuItem
+            <AtMenuItem
               v-if="contextMenuTarget && contextMenuRowId && !isPublic && appInfo.ee && !interfacePageDataApi"
               @click="showSendRecordModal = true"
             >
-              <div class="flex items-center gap-2 nc-kanban-context-menu-item">
+              <div class="flex items-center gap-2 atm-kanban-context-menu-item">
                 <GeneralIcon icon="mail" class="flex" />
                 {{ $t('activity.sendRecord') }}
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
             <template v-if="interfacePageDataApi && contextMenuRowId">
-              <NcDivider v-if="contextMenuTarget && (canDuplicateRow || interfaceClickIntoDetails)" />
-              <NcMenuItem data-testid="nc-interface-kanban-menu-copy-url" @click="interfaceCopyRecordUrl">
-                <div v-e="['c:interface:kanban:record:copy-url']" class="flex items-center gap-2 nc-kanban-context-menu-item">
+              <AtDivider v-if="contextMenuTarget && (canDuplicateRow || interfaceClickIntoDetails)" />
+              <AtMenuItem data-testid="atm-interface-kanban-menu-copy-url" @click="interfaceCopyRecordUrl">
+                <div v-e="['c:interface:kanban:record:copy-url']" class="flex items-center gap-2 atm-kanban-context-menu-item">
                   <GeneralIcon icon="ncLink" class="flex" />
                   {{ $t('labels.copyRecordURL') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
             </template>
-            <NcDivider v-if="canAddDeleteRows" />
+            <AtDivider v-if="canAddDeleteRows" />
             <PermissionsTooltip
               v-if="contextMenuTarget && canAddDeleteRows"
               :entity="PermissionEntity.TABLE"
@@ -1727,14 +1727,14 @@ const cardFields = (record: RowType) => {
               placement="right"
             >
               <template #default="{ isAllowed }">
-                <NcMenuItem
+                <AtMenuItem
                   v-e="['a:kanban:delete-record']"
                   danger
-                  data-testid="nc-kanban-context-menu-delete"
+                  data-testid="atm-kanban-context-menu-delete"
                   :disabled="!isAllowed"
                   @click="deleteRow(contextMenuTarget)"
                 >
-                  <div class="flex items-center gap-2 nc-kanban-context-menu-item">
+                  <div class="flex items-center gap-2 atm-kanban-context-menu-item">
                     <GeneralIcon icon="delete" class="flex" />
                     <!-- Delete Record -->
                     {{
@@ -1743,12 +1743,12 @@ const cardFields = (record: RowType) => {
                       })
                     }}
                   </div>
-                </NcMenuItem>
+                </AtMenuItem>
               </template>
             </PermissionsTooltip>
-          </NcMenu>
+          </AtMenu>
         </template>
-      </NcDropdown>
+      </AtDropdown>
     </div>
   </div>
 
@@ -1787,7 +1787,7 @@ const cardFields = (record: RowType) => {
     :on-delete="handleDeleteStackConfirmClick"
   >
     <template #entity-preview>
-      <div v-if="stackToBeDeleted" class="text-nc-content-gray flex flex-col gap-3">
+      <div v-if="stackToBeDeleted" class="text-atm-content-gray flex flex-col gap-3">
         <i18n-t keypath="msg.info.deleteStackRemovesOption" tag="div">
           <template #stackToBeDeleted>
             <b>"{{ stackToBeDeleted }}"</b>
@@ -1805,10 +1805,10 @@ const cardFields = (record: RowType) => {
 </template>
 
 <style lang="scss" scoped>
-.nc-interface-card-context-menu {
+.atm-interface-card-context-menu {
   // Target the inner wrapper — it carries its own `text-sm`, so a size set on
   // the item element would lose to it via inheritance.
-  :deep(.nc-menu-item-inner) {
+  :deep(.atm-menu-item-inner) {
     @apply text-[13px];
 
     svg {
@@ -1821,7 +1821,7 @@ const cardFields = (record: RowType) => {
 .a-layout,
 .ant-layout-header,
 .ant-layout-footer {
-  @apply !bg-nc-bg-default;
+  @apply !bg-atm-bg-default;
 }
 
 .ant-layout-content {
@@ -1834,7 +1834,7 @@ const cardFields = (record: RowType) => {
   height: unset !important;
 }
 
-.nc-kanban-collapsed-stack {
+.atm-kanban-collapsed-stack {
   transform: rotate(-90deg) translateX(-100%);
   transform-origin: left top 0px;
   transition: left 0.2s ease-in-out 0s;
@@ -1844,9 +1844,9 @@ const cardFields = (record: RowType) => {
 // +90deg/translateY pair occupies the exact same 52px strip as the base.
 // The strip itself is a flat gray column: tinted fill, no border, square
 // corners (the base keeps its white bordered card look).
-.nc-kanban-collapsed-stack-reading-down {
+.atm-kanban-collapsed-stack-reading-down {
   transform: rotate(90deg) translateY(-100%);
-  @apply !bg-nc-bg-gray-light !border-none !rounded-none;
+  @apply !bg-atm-bg-gray-light !border-none !rounded-none;
 }
 
 // Adjacent interface collapsed strips sit 2px apart with a gray divider
@@ -1857,14 +1857,14 @@ const cardFields = (record: RowType) => {
 // Every interface collapsed strip draws the 1.5px divider on its RIGHT edge —
 // the card is rotated 90°, so a shadow above the bar's TOP renders there.
 // Between strips it fills the seam; on the last strip it closes the cluster.
-.nc-kanban-stack-interface-collapsed .nc-kanban-collapsed-stack-reading-down {
-  box-shadow: 0 -1.5px 0 0 var(--nc-border-gray-medium) !important;
+.atm-kanban-stack-interface-collapsed .atm-kanban-collapsed-stack-reading-down {
+  box-shadow: 0 -1.5px 0 0 var(--atm-border-gray-medium) !important;
 }
 
 // NOTE: the interface kanban themes zero the stacks container's flex gap
-// (.nc-kanban-theme-* { gap: 0 }), so this margin IS the seam — it does not
+// (.atm-kanban-theme-* { gap: 0 }), so this margin IS the seam — it does not
 // net against gap-3 like the classic board would.
-.nc-kanban-stack-interface-collapsed + .nc-kanban-stack-interface-collapsed {
+.atm-kanban-stack-interface-collapsed + .atm-kanban-stack-interface-collapsed {
   margin-left: 1.5px;
 }
 
@@ -1873,16 +1873,16 @@ const cardFields = (record: RowType) => {
 }
 
 .ant-carousel.gallery-carousel :deep(.slick-dots) {
-  @apply !w-full max-w-[calc(100%_-_36%)] absolute left-0 right-0 bottom-[-18px] h-6 overflow-x-auto nc-scrollbar-thin !mx-auto;
+  @apply !w-full max-w-[calc(100%_-_36%)] absolute left-0 right-0 bottom-[-18px] h-6 overflow-x-auto atm-scrollbar-thin !mx-auto;
 }
 
 .ant-carousel.gallery-carousel :deep(.slick-dots li div > div) {
-  @apply rounded-full border-0 cursor-pointer block opacity-100 p-0 outline-none transition-all duration-500 text-transparent h-2 w-2 bg-nc-bg-gray-medium;
+  @apply rounded-full border-0 cursor-pointer block opacity-100 p-0 outline-none transition-all duration-500 text-transparent h-2 w-2 bg-atm-bg-gray-medium;
   font-size: 0;
 }
 
 .ant-carousel.gallery-carousel :deep(.slick-dots li.slick-active div > div) {
-  @apply bg-nc-content-brand opacity-100;
+  @apply bg-atm-content-brand opacity-100;
 }
 
 .ant-carousel.gallery-carousel :deep(.slick-dots li) {
@@ -1909,43 +1909,43 @@ const cardFields = (record: RowType) => {
   &:hover {
     box-shadow: 0px 12px 16px -4px rgba(0, 0, 0, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.06);
 
-    .nc-action-icon {
+    .atm-action-icon {
       @apply invisible;
     }
   }
 }
 
-.nc-card-display-value-wrapper {
-  @apply my-0 text-subHeading2 text-nc-content-gray-subtle2;
+.atm-card-display-value-wrapper {
+  @apply my-0 text-subHeading2 text-atm-content-gray-subtle2;
 
-  :deep(.nc-cell),
-  :deep(.nc-virtual-cell) {
+  :deep(.atm-cell),
+  :deep(.atm-virtual-cell) {
     @apply text-subHeading2;
 
-    .nc-cell-field,
+    .atm-cell-field,
     input,
     textarea,
-    .nc-cell-field-link {
-      @apply !text-subHeading2 text-nc-content-gray-subtle2;
+    .atm-cell-field-link {
+      @apply !text-subHeading2 text-atm-content-gray-subtle2;
 
       &:not(.ant-select-selection-search-input) {
-        @apply !text-subHeading2 text-nc-content-gray-subtle2;
+        @apply !text-subHeading2 text-atm-content-gray-subtle2;
       }
     }
   }
 }
 
-.nc-card-col-wrapper {
+.atm-card-col-wrapper {
   @apply !text-small !leading-[18px];
 
-  .nc-cell,
-  .nc-virtual-cell {
+  .atm-cell,
+  .atm-virtual-cell {
     @apply !text-small !leading-[18px];
 
-    :deep(.nc-cell-field),
+    :deep(.atm-cell-field),
     :deep(input),
     :deep(textarea),
-    :deep(.nc-cell-field-link) {
+    :deep(.atm-cell-field-link) {
       @apply !text-small leading-[18px];
 
       &:not(.ant-select-selection-search-input) {
@@ -1955,31 +1955,31 @@ const cardFields = (record: RowType) => {
   }
 }
 
-.nc-card-col-header {
-  :deep(.nc-cell-icon),
-  :deep(.nc-virtual-cell-icon) {
+.atm-card-col-header {
+  :deep(.atm-cell-icon),
+  :deep(.atm-virtual-cell-icon) {
     @apply ml-0 !w-3.5 !h-3.5;
   }
 }
 
 // Icon hidden (interface) — drop the name's icon-gap padding (left in LTR,
 // right in RTL) so the label aligns with the value rendered below it.
-.nc-card-col-header-no-icon {
+.atm-card-col-header-no-icon {
   :deep(.name) {
     padding-left: 0;
     padding-right: 0;
   }
 }
 
-:deep(.nc-cell) {
-  &.nc-cell-longtext {
+:deep(.atm-cell) {
+  &.atm-cell-longtext {
     .long-text-wrapper {
       @apply min-h-1;
-      .nc-readonly-rich-text-wrapper {
+      .atm-readonly-rich-text-wrapper {
         @apply !min-h-1;
       }
 
-      .nc-rich-text {
+      .atm-rich-text {
         @apply pl-0;
         .tiptap.ProseMirror {
           @apply -ml-1 min-h-1;
@@ -1988,31 +1988,31 @@ const cardFields = (record: RowType) => {
     }
   }
 
-  &.nc-cell-checkbox {
+  &.atm-cell-checkbox {
     @apply children:pl-0;
   }
 
-  &.nc-cell-singleselect .nc-cell-field > div {
+  &.atm-cell-singleselect .atm-cell-field > div {
     @apply flex items-center;
   }
 
-  &.nc-cell-multiselect .nc-cell-field > div {
+  &.atm-cell-multiselect .atm-cell-field > div {
     @apply h-5;
   }
 
-  &.nc-cell-email,
-  &.nc-cell-phonenumber {
+  &.atm-cell-email,
+  &.atm-cell-phonenumber {
     @apply flex items-center;
   }
 
-  &.nc-cell-email,
-  &.nc-cell-phonenumber,
-  &.nc-cell-url {
-    .nc-cell-field-link {
+  &.atm-cell-email,
+  &.atm-cell-phonenumber,
+  &.atm-cell-url {
+    .atm-cell-field-link {
       @apply py-0;
     }
   }
-  &.nc-cell-datetime {
+  &.atm-cell-datetime {
     @apply !w-auto;
     & > div {
       @apply !w-auto;
@@ -2022,7 +2022,7 @@ const cardFields = (record: RowType) => {
     }
   }
 
-  .nc-date-picker > div > div {
+  .atm-date-picker > div > div {
     &:first-child {
       @apply pl-0;
     }
@@ -2033,12 +2033,12 @@ const cardFields = (record: RowType) => {
   }
 }
 
-:deep(.nc-virtual-cell) {
-  .nc-links-wrapper {
+:deep(.atm-virtual-cell) {
+  .atm-links-wrapper {
     @apply py-0 children:min-h-4;
   }
 
-  &.nc-virtual-cell-linktoanotherrecord {
+  &.atm-virtual-cell-linktoanotherrecord {
     .chips-wrapper {
       @apply min-h-4 !children:min-h-4;
       .chip.group {
@@ -2047,42 +2047,42 @@ const cardFields = (record: RowType) => {
     }
   }
 
-  &.nc-virtual-cell-lookup {
-    .nc-lookup-cell {
-      &:has(.nc-attachment-wrapper) {
+  &.atm-virtual-cell-lookup {
+    .atm-lookup-cell {
+      &:has(.atm-attachment-wrapper) {
         @apply !h-auto;
 
-        .nc-attachment-cell {
+        .atm-attachment-cell {
           @apply !h-auto;
 
-          .nc-attachment-wrapper {
+          .atm-attachment-wrapper {
             @apply py-0;
           }
         }
       }
 
-      &:not(:has(.nc-attachment-wrapper)) {
+      &:not(:has(.atm-attachment-wrapper)) {
         @apply !h-5.5;
       }
 
-      .nc-cell-lookup-scroll {
+      .atm-cell-lookup-scroll {
         @apply py-0 h-auto;
       }
     }
   }
 
-  &.nc-virtual-cell-formula {
-    .nc-cell-field {
+  &.atm-virtual-cell-formula {
+    .atm-cell-field {
       @apply py-0;
     }
   }
 
-  &.nc-virtual-cell-qrcode,
-  &.nc-virtual-cell-barcode {
+  &.atm-virtual-cell-qrcode,
+  &.atm-virtual-cell-barcode {
     @apply children:justify-start;
   }
 
-  .nc-date-picker > div > div {
+  .atm-date-picker > div > div {
     &:first-child {
       @apply pl-0;
     }
@@ -2092,16 +2092,16 @@ const cardFields = (record: RowType) => {
     }
   }
 }
-.nc-record-cell-tooltip {
+.atm-record-cell-tooltip {
   @apply !bg-transparent !hover:bg-transparent;
-  :deep(.nc-cell-icon) {
+  :deep(.atm-cell-icon) {
     @apply !ml-0 h-3.5 w-3.5;
   }
   :deep(.name) {
     @apply text-captionSm;
   }
-  :deep(.nc-cell-name-wrapper),
-  :deep(.nc-virtual-cell-name-wrapper) {
+  :deep(.atm-cell-name-wrapper),
+  :deep(.atm-virtual-cell-name-wrapper) {
     @apply !max-w-full;
   }
 }
@@ -2114,8 +2114,8 @@ const cardFields = (record: RowType) => {
   }
 }
 // Compound + :hover so the selection outlives the card's own hover styling.
-.ant-card.nc-interface-card-selected,
-.ant-card.nc-interface-card-selected:hover {
-  border-color: var(--nc-border-brand) !important;
+.ant-card.atm-interface-card-selected,
+.ant-card.atm-interface-card-selected:hover {
+  border-color: var(--atm-border-brand) !important;
 }
 </style>

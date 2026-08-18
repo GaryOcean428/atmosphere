@@ -111,9 +111,9 @@ export default {
 </script>
 
 <template>
-  <div class="h-full flex flex-row nc-discussion-mode-container">
+  <div class="h-full flex flex-row atm-discussion-mode-container">
     <div
-      class="relative h-full overflow-y-auto nc-scrollbar-thin flex flex-col items-center justify-start overflow-x-hidden"
+      class="relative h-full overflow-y-auto atm-scrollbar-thin flex flex-col items-center justify-start overflow-x-hidden"
       :class="{
         'w-full': !showRightSections,
         'flex-1': showRightSections,
@@ -121,19 +121,19 @@ export default {
     >
       <div class="w-[680px] max-w-full flex-grow flex flex-col pl-3 pr-6 2xl:px-0">
         <div
-          class="w-full h-0 flex-grow ml-15.8 rtl:(mr-15.8 ml-0 border-l-0 border-r-1) border-l-1 border-nc-border-gray-dark"
+          class="w-full h-0 flex-grow ml-15.8 rtl:(mr-15.8 ml-0 border-l-0 border-r-1) border-l-1 border-atm-border-gray-dark"
         />
       </div>
       <div v-if="hasMoreAudits" class="w-[680px] max-w-full fflex-grow-0 flex-shrink-0 flex flex-col pl-3 pr-6 2xl:px-0">
-        <div class="w-full h-15 flex-grow-0 flex-shrink-0 ml-15.8 border-l-1 border-nc-border-gray-dark relative">
-          <NcButton
+        <div class="w-full h-15 flex-grow-0 flex-shrink-0 ml-15.8 border-l-1 border-atm-border-gray-dark relative">
+          <AtButton
             size="small"
             type="secondary"
             class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
             @click="initLoadMoreAudits()"
           >
             {{ $t('general.loadMore') }}
-          </NcButton>
+          </AtButton>
         </div>
       </div>
       <div class="w-[680px] max-w-full pb-4">
@@ -147,7 +147,7 @@ export default {
         </div>
         <div
           v-if="isUIAllowed('commentEdit')"
-          class="w-full border-t border-nc-border-gray-medium pl-3 pr-6 2xl:px-0 sticky bottom-0 pb-4 -mb-4 bg-nc-bg-default z-10"
+          class="w-full border-t border-atm-border-gray-medium pl-3 pr-6 2xl:px-0 sticky bottom-0 pb-4 -mb-4 bg-atm-bg-default z-10"
         >
           <div class="font-bold my-3">{{ $t('activity.addComment') }}</div>
           <div
@@ -161,7 +161,7 @@ export default {
               :hide-options="false"
               :extra-save-enabled="pendingAttachments.length > 0"
               :placeholder="$t('placeholder.comment')"
-              class="expanded-form-comment-input !py-2 !px-2 cursor-text border-1 rounded-lg !text-nc-content-gray !text-small !leading-18px !max-h-[240px] bg-nc-bg-default !w-auto"
+              class="expanded-form-comment-input !py-2 !px-2 cursor-text border-1 rounded-lg !text-atm-content-gray !text-small !leading-18px !max-h-[240px] bg-atm-bg-default !w-auto"
               data-testid="expanded-form-comment-input"
               :autofocus="isExpandedFormCommentMode"
               @focus="isExpandedFormCommentMode = false"
@@ -179,26 +179,26 @@ export default {
                 />
               </template>
               <template v-if="isCommentAttachmentsEnabled" #bottom-bar-start>
-                <NcTooltip :title="$t('activity.attachFile')" placement="top">
-                  <NcButton
+                <AtTooltip :title="$t('activity.attachFile')" placement="top">
+                  <AtButton
                     v-e="['c:comment:attach-file']"
                     type="text"
                     size="xsmall"
-                    class="nc-comment-attach-btn !h-7 !w-7"
+                    class="atm-comment-attach-btn !h-7 !w-7"
                     :loading="isAttachmentUploading"
                     :disabled="isAttachmentUploading"
-                    data-testid="nc-comment-attach-btn"
+                    data-testid="atm-comment-attach-btn"
                     @click="openFilePicker"
                   >
                     <GeneralIcon v-if="!isAttachmentUploading" icon="lucidePaperclip" class="text-md" />
-                  </NcButton>
-                </NcTooltip>
+                  </AtButton>
+                </AtTooltip>
               </template>
             </SmartsheetExpandedFormRichComment>
           </div>
         </div>
         <div v-else class="w-full pl-3 pr-6 2xl:px-0">
-          <div class="w-full h-4 flex-grow ml-15.8 -mb-4 border-l-1 border-nc-border-gray-dark" />
+          <div class="w-full h-4 flex-grow ml-15.8 -mb-4 border-l-1 border-atm-border-gray-dark" />
         </div>
 
         <div ref="refAuditsEnd" />
@@ -206,13 +206,13 @@ export default {
     </div>
     <div
       v-if="showRightSections && !isUnsavedDuplicatedRecordExist"
-      class="nc-comments-drawer border-l-1 rtl:(border-l-0 border-r-1) relative border-nc-border-gray-medium bg-nc-bg-default h-full xs:hidden rounded-br-2xl flex-shrink-0"
+      class="atm-comments-drawer border-l-1 rtl:(border-l-0 border-r-1) relative border-atm-border-gray-medium bg-atm-bg-default h-full xs:hidden rounded-br-2xl flex-shrink-0"
       :style="{ width: `${sidebarWidth}px` }"
       :class="{
         active: commentsDrawer && isUIAllowed('commentList'),
       }"
     >
-      <div class="nc-sidebar-resize-handle" @mousedown.prevent="onResizeStart" />
+      <div class="atm-sidebar-resize-handle" @mousedown.prevent="onResizeStart" />
       <SmartsheetExpandedFormPresentorsFieldsMiniColumnsWrapper :compact-mode="compactMode" />
     </div>
   </div>
@@ -224,18 +224,18 @@ export default {
   box-shadow: none;
   &:focus,
   &:focus-within {
-    @apply min-h-16 !bg-nc-bg-default border-nc-border-brand;
-    box-shadow: 0px 0px 0px 2px rgba(var(--nc-brand-accent-rgb), 0.24);
+    @apply min-h-16 !bg-atm-bg-default border-atm-border-brand;
+    box-shadow: 0px 0px 0px 2px rgba(var(--atm-brand-accent-rgb), 0.24);
   }
   &::placeholder {
     @apply !text-gray-400;
   }
 }
 
-.nc-sidebar-resize-handle {
+.atm-sidebar-resize-handle {
   @apply absolute left-0 top-0 h-full w-1 cursor-col-resize z-50 transition-colors;
 }
-.nc-sidebar-resize-handle:hover {
-  @apply bg-nc-border-gray-medium;
+.atm-sidebar-resize-handle:hover {
+  @apply bg-atm-border-gray-medium;
 }
 </style>

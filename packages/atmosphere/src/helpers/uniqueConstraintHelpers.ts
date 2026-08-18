@@ -3,17 +3,17 @@ import {
   SqlUiFactory,
   UITypes,
   UNIQUE_CONSTRAINT_SUPPORTED_TYPES,
-} from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import type { Source } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 
 // Re-export from SDK
 export { isUniqueConstraintSupportedType, UNIQUE_CONSTRAINT_SUPPORTED_TYPES };
 
 /**
  * Validates unique constraint request and throws error if invalid
- * @param context - NocoDB context
+ * @param context - Atmosphere context
  * @param uidt - UI data type
  * @param meta - Column metadata
  * @param unique - Unique constraint value
@@ -21,7 +21,7 @@ export { isUniqueConstraintSupportedType, UNIQUE_CONSTRAINT_SUPPORTED_TYPES };
  * @param cdf - Column default value (to check mutual exclusivity)
  */
 export function validateUniqueConstraint(
-  context: NcContext,
+  context: AtContext,
   uidt: UITypes,
   meta?: any,
   unique?: boolean,
@@ -32,7 +32,7 @@ export function validateUniqueConstraint(
 
   // Check if source is NC-DB (meta or local)
   if (source && !source.is_meta && !source.is_local) {
-    NcError.get(context).badRequest(
+    AtError.get(context).badRequest(
       'Unique constraint is only supported for NC-DB (not external databases)',
     );
   }
@@ -41,7 +41,7 @@ export function validateUniqueConstraint(
     const sqlUi = SqlUiFactory.create({ client: source.type });
     if (sqlUi.isUniqueSupportedField?.(uidt) === false) {
       const fieldTypeName = UITypes[uidt] || uidt;
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         `Unique constraint is not supported for field type '${fieldTypeName}' on this database`,
       );
     }
@@ -50,7 +50,7 @@ export function validateUniqueConstraint(
   // Check if field type supports unique constraint
   if (!isUniqueConstraintSupportedType(uidt, meta)) {
     const fieldTypeName = UITypes[uidt] || uidt;
-    NcError.get(context).badRequest(
+    AtError.get(context).badRequest(
       `Unique constraint is not supported for field type '${fieldTypeName}'`,
     );
   }
@@ -63,7 +63,7 @@ export function validateUniqueConstraint(
     cdf !== '' &&
     uidt !== UITypes.UUID
   ) {
-    NcError.get(context).badRequest(
+    AtError.get(context).badRequest(
       'Cannot enable unique constraint because a default value is set. Please remove the default value first.',
     );
   }

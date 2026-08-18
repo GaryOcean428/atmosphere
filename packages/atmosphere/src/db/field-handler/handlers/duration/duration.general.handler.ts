@@ -1,7 +1,7 @@
-import { convertDurationToSeconds, parseProp } from 'nocodb-sdk';
-import { NcError } from 'src/helpers/catchError';
+import { convertDurationToSeconds, parseProp } from 'atmosphere-sdk';
+import { AtError } from 'src/helpers/catchError';
 import { NumberGeneralHandler } from '../number/number.general.handler';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
 import type { MetaService } from 'src/meta/meta.service';
 import type { Column } from 'src/models';
@@ -13,7 +13,7 @@ export class DurationGeneralHandler extends NumberGeneralHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
@@ -47,7 +47,7 @@ export class DurationGeneralHandler extends NumberGeneralHandler {
         // If not a valid duration string, try to parse as number
         const numberValue = Number(trimmedValue);
         if (isNaN(numberValue)) {
-          NcError.invalidValueForField({
+          AtError.invalidValueForField({
             value: params.value,
             column: params.column.title,
             type: params.column.uidt,
@@ -61,7 +61,7 @@ export class DurationGeneralHandler extends NumberGeneralHandler {
       // Try to convert to number
       const numberValue = Number(params.value);
       if (isNaN(numberValue)) {
-        NcError.invalidValueForField({
+        AtError.invalidValueForField({
           value: params.value,
           column: params.column.title,
           type: params.column.uidt,
@@ -72,7 +72,7 @@ export class DurationGeneralHandler extends NumberGeneralHandler {
 
     // Validate that duration is non-negative
     if (finalValue < 0) {
-      NcError.invalidValueForField({
+      AtError.invalidValueForField({
         value: params.value,
         column: params.column.title,
         type: params.column.uidt,

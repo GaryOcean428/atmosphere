@@ -1,5 +1,5 @@
-import { type NcContext, ncIsUndefined, parseCheckboxValue } from 'nocodb-sdk';
-import { NcError } from 'src/helpers/catchError';
+import { type AtContext, ncIsUndefined, parseCheckboxValue } from 'atmosphere-sdk';
+import { AtError } from 'src/helpers/catchError';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Knex } from '~/db/CustomKnex';
 import type {
@@ -101,7 +101,7 @@ export class CheckboxGeneralHandler extends GenericFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
@@ -114,7 +114,7 @@ export class CheckboxGeneralHandler extends GenericFieldHandler {
     if (parsedCheckboxValue === true || parsedCheckboxValue === false) {
       return { value: parsedCheckboxValue };
     } else {
-      NcError.invalidValueForField({
+      AtError.invalidValueForField({
         value: params.value,
         column: params.column.title,
         type: params.column.uidt,

@@ -6,8 +6,8 @@
       "src/*": ["src/*"],
       "~/*": ["src/*"],
       "@/*": ["src/*"],
-      "@noco-local-integrations/*": ["../noco-integrations/packages/*"],
-      "@noco-local-integrations/core": ["../noco-integrations/core"]
+      "@atmosphere-local-integrations/*": ["../atmosphere-integrations/packages/*"],
+      "@atmosphere-local-integrations/core": ["../atmosphere-integrations/core"]
     }
   },
   "include": ["src/**/*"],

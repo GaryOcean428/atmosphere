@@ -1,8 +1,8 @@
-import type { BoolType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { BoolType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import View from '~/models/View';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import { extractProps } from '~/helpers/extractProps';
 
@@ -22,13 +22,13 @@ export default class MapViewColumn {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     mapViewColumnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let viewColumn =
       mapViewColumnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.MAP_VIEW_COLUMN}:${mapViewColumnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -41,7 +41,7 @@ export default class MapViewColumn {
         mapViewColumnId,
       );
       if (viewColumn) {
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.MAP_VIEW_COLUMN}:${mapViewColumnId}`,
           viewColumn,
@@ -51,9 +51,9 @@ export default class MapViewColumn {
     return viewColumn && new MapViewColumn(viewColumn);
   }
   static async insert(
-    context: NcContext,
+    context: AtContext,
     column: Partial<MapViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = {
       fk_view_id: column.fk_view_id,
@@ -84,7 +84,7 @@ export default class MapViewColumn {
     );
 
     return this.get(context, id, ncMeta).then(async (viewCol) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.MAP_VIEW_COLUMN,
         [column.fk_view_id],
@@ -95,11 +95,11 @@ export default class MapViewColumn {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<MapViewColumn[]> {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.MAP_VIEW_COLUMN,
       [viewId],
@@ -120,7 +120,7 @@ export default class MapViewColumn {
           },
         },
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.MAP_VIEW_COLUMN,
         [viewId],
@@ -137,10 +137,10 @@ export default class MapViewColumn {
 
   // todo: update prop names
   static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     body: Partial<MapViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, [
       'order',
@@ -162,7 +162,7 @@ export default class MapViewColumn {
 
     // get existing cache
     const key = `${CacheScope.MAP_VIEW_COLUMN}:${columnId}`;
-    await NocoCache.update(context, key, updateObj);
+    await AtmosphereCache.update(context, key, updateObj);
 
     // on view column update, delete any optimised single query cache
     {

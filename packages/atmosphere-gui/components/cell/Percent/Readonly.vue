@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, UITypes, ncIsNaN } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, ncIsNaN } from 'atmosphere-sdk'
 interface Props {
   modelValue?: number | string | null
   localEditEnabled?: boolean
@@ -86,7 +86,7 @@ const showInput = computed(() => !readOnly.value && (!isGrid.value || isExpanded
 <template>
   <div
     v-if="showAsProgres"
-    class="nc-cell-field percent-progress w-full py-1 flex"
+    class="atm-cell-field percent-progress w-full py-1 flex"
     :style="{
       ...(isExpandedFormOpen && !isLinkRecordDropdown && { height: '100%' }),
       ...(isLinkRecordDropdown && { height: '16px' }),
@@ -120,7 +120,7 @@ const showInput = computed(() => !readOnly.value && (!isGrid.value || isExpanded
   <div
     v-else
     :tabindex="readOnly ? -1 : 0"
-    class="nc-filter-value-select w-full focus:outline-transparent relative z-3"
+    class="atm-filter-value-select w-full focus:outline-transparent relative z-3"
     :class="readOnly ? 'cursor-not-allowed pointer-events-none' : ''"
     @mouseover="onMouseover"
     @mouseleave="onMouseleave"
@@ -135,8 +135,8 @@ const showInput = computed(() => !readOnly.value && (!isGrid.value || isExpanded
         :width="18"
         :stroke-width="12"
         status="normal"
-        stroke-color="var(--nc-content-brand)"
-        trail-color="var(--nc-bg-brand-inverted)"
+        stroke-color="var(--atm-content-brand)"
+        trail-color="var(--atm-bg-brand-inverted)"
         :show-info="false"
       />
       <a-progress
@@ -144,18 +144,18 @@ const showInput = computed(() => !readOnly.value && (!isGrid.value || isExpanded
         :percent="progressPercent"
         size="small"
         status="normal"
-        stroke-color="var(--nc-content-brand)"
-        trail-color="var(--nc-bg-brand-inverted)"
+        stroke-color="var(--atm-content-brand)"
+        trail-color="var(--atm-bg-brand-inverted)"
         :show-info="false"
       />
     </div>
     <!-- nbsp to keep height even if percentValue is zero length -->
-    <span v-else class="nc-cell-field">{{ percentValue ? percentValue : '&nbsp;' }} </span>
+    <span v-else class="atm-cell-field">{{ percentValue ? percentValue : '&nbsp;' }} </span>
   </div>
 </template>
 
 <style lang="scss">
-.nc-cell:has(.progress-container) {
+.atm-cell:has(.progress-container) {
   height: 100% !important;
 }
 </style>

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import type { DocumentType } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+import type { DocumentType } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 
 @Injectable()
@@ -8,60 +8,60 @@ export class DocumentsService {
   constructor(protected readonly appHooksService: AppHooksService) {}
 
   async list(
-    _context: NcContext,
+    _context: AtContext,
     _baseId: string,
     _parentId: string | null,
-    _req?: NcRequest,
+    _req?: AtRequest,
   ): Promise<DocumentType[]> {
     return [];
   }
 
   async listAll(
-    _context: NcContext,
+    _context: AtContext,
     _baseId: string,
-    _req?: NcRequest,
+    _req?: AtRequest,
   ): Promise<DocumentType[]> {
     return [];
   }
 
   async get(
-    _context: NcContext,
+    _context: AtContext,
     _docId: string,
-    _req?: NcRequest,
+    _req?: AtRequest,
   ): Promise<DocumentType> {
     return null;
   }
 
   async create(
-    _context: NcContext,
+    _context: AtContext,
     _payload: Partial<DocumentType>,
-    _req: NcRequest,
+    _req: AtRequest,
   ): Promise<DocumentType> {
     return null;
   }
 
   async update(
-    _context: NcContext,
+    _context: AtContext,
     _docId: string,
     _payload: Partial<DocumentType>,
-    _req: NcRequest,
+    _req: AtRequest,
   ): Promise<DocumentType> {
     return null;
   }
 
   async delete(
-    _context: NcContext,
+    _context: AtContext,
     _docId: string,
-    _req: NcRequest,
+    _req: AtRequest,
   ): Promise<boolean> {
     return true;
   }
 
   async reorder(
-    _context: NcContext,
+    _context: AtContext,
     _docId: string,
     _payload: { order: number; parent_id?: string | null },
-    _req: NcRequest,
+    _req: AtRequest,
   ): Promise<DocumentType> {
     return null;
   }

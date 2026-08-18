@@ -108,37 +108,37 @@ onMounted(() => {
       <span class="text-green-500 ml-2">Loading...</span>
     </div>
 
-    <NcButton
+    <AtButton
       v-if="progressEnd"
       class="!absolute z-1 right-2 bottom-2 opacity-75 hover:opacity-100 !rounded-md !w-8 !h-8"
       size="small"
       type="secondary"
       @click="downloadLogs('logs.txt')"
     >
-      <nc-tooltip>
+      <atm-tooltip>
         <template #title>Download Logs</template>
         <component :is="iconMap.download" />
-      </nc-tooltip>
-    </NcButton>
+      </atm-tooltip>
+    </AtButton>
   </a-card>
 </template>
 
 <style lang="scss" scoped>
-.nc-progress-panel {
+.atm-progress-panel {
   @apply p-6 flex-1 flex justify-center;
 }
 </style>
 
 <style lang="scss">
-.nc-modal-create-source {
-  .nc-modal {
+.atm-modal-create-source {
+  .atm-modal {
     @apply !p-0;
     height: min(calc(100vh - 100px), 1024px);
     max-height: min(calc(100vh - 100px), 1024px) !important;
   }
 }
 
-.nc-dropdown-ext-db-type {
+.atm-dropdown-ext-db-type {
   @apply !z-1000;
 }
 </style>

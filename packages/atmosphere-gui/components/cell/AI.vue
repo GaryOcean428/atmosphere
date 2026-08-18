@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AIRecordType, ButtonType, ColumnType } from 'nocodb-sdk'
+import type { AIRecordType, ButtonType, ColumnType } from 'atmosphere-sdk'
 
 interface Props {
   modelValue?: AIRecordType | null
@@ -9,7 +9,7 @@ const props = defineProps<Props>()
 
 const emits = defineEmits(['update:modelValue', 'save'])
 
-const { generateRows, generatingRows, generatingColumnRows, aiIntegrations } = useNocoAi()
+const { generateRows, generatingRows, generatingColumnRows, aiIntegrations } = useAtmosphereAi()
 
 const { row } = useSmartsheetRowStoreOrThrow()
 
@@ -146,12 +146,12 @@ const buttonColors = computed(() => {
       'justify-center': isGrid && !isExpandedForm,
     }"
   >
-    <NcTooltip :disabled="isFieldAiIntegrationAvailable || isPublic || isUIAllowed('dataEdit') || readOnly" class="flex">
+    <AtTooltip :disabled="isFieldAiIntegrationAvailable || isPublic || isUIAllowed('dataEdit') || readOnly" class="flex">
       <template #title>
         {{ aiIntegrations.length ? $t('tooltip.aiIntegrationReConfigure') : $t('tooltip.aiIntegrationAddAndReConfigure') }}
       </template>
       <button
-        class="nc-cell-ai-button nc-cell-button"
+        class="atm-cell-ai-button atm-cell-button"
         :class="{
           'is-expanded-form': isExpandedForm,
         }"
@@ -168,7 +168,7 @@ const buttonColors = computed(() => {
           </span>
         </div>
       </button>
-    </NcTooltip>
+    </AtTooltip>
   </div>
 
   <LazyCellTextArea
@@ -185,7 +185,7 @@ const buttonColors = computed(() => {
 </template>
 
 <style scoped lang="scss">
-.nc-cell-button {
+.atm-cell-button {
   @apply px-2 flex items-center gap-2 transition-all justify-center;
 
   color: var(--btn-cell-text);
@@ -208,7 +208,7 @@ const buttonColors = computed(() => {
     box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.06), 0px 5px 3px -2px rgba(0, 0, 0, 0.02);
   }
 
-  .nc-loader {
+  .atm-loader {
     @apply !text-current;
   }
 
@@ -227,17 +227,17 @@ const buttonColors = computed(() => {
 </style>
 
 <style lang="scss">
-.nc-data-cell {
-  &:has(.nc-cell-ai-button) {
+.atm-data-cell {
+  &:has(.atm-cell-ai-button) {
     @apply !border-none;
     box-shadow: none !important;
 
-    &:focus-within:not(.nc-readonly-div-data-cell):not(.nc-system-field) {
+    &:focus-within:not(.atm-readonly-div-data-cell):not(.atm-system-field) {
       box-shadow: none !important;
     }
   }
 
-  &:has(.nc-cell-ai-button.is-expanded-form) {
+  &:has(.atm-cell-ai-button.is-expanded-form) {
     @apply -mt-1 -ml-1;
   }
 }

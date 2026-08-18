@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { isDateMonthFormat } from 'nocodb-sdk'
+import { isDateMonthFormat } from 'atmosphere-sdk'
 import { parseFlexibleDate } from '~/utils/datetimeUtils'
 
 interface Props {
@@ -35,7 +35,7 @@ const localState = computed(() => {
 </script>
 
 <template>
-  <div :title="localState?.format(dateFormat)" class="nc-date-picker nc-cell-field tracking-tight truncate">
+  <div :title="localState?.format(dateFormat)" class="atm-date-picker atm-cell-field tracking-tight truncate">
     {{ localState?.format(dateFormat) ?? '' }}
   </div>
 </template>

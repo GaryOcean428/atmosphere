@@ -1,7 +1,7 @@
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
-import type { NcContext } from '~/interface/config';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
+import type { AtContext } from '~/interface/config';
 import { MetaTable } from '~/utils/globals';
 import Column from '~/models/Column';
 import Filter from '~/models/Filter';
@@ -25,7 +25,7 @@ import Filter from '~/models/Filter';
 //   - migrate `null` or `empty` filters to `blank`
 
 function removeLikeAndNlikeFilters(
-  context: NcContext,
+  context: AtContext,
   filter: Filter,
   ncMeta: MetaService,
 ) {
@@ -38,7 +38,7 @@ function removeLikeAndNlikeFilters(
 }
 
 function migrateEqAndNeqFilters(
-  context: NcContext,
+  context: AtContext,
   filter: Filter,
   ncMeta: MetaService,
 ) {
@@ -60,7 +60,7 @@ function migrateEqAndNeqFilters(
 }
 
 function migrateEmptyAndNullFilters(
-  context: NcContext,
+  context: AtContext,
   filter: Filter,
   ncMeta: MetaService,
 ) {
@@ -94,7 +94,7 @@ function migrateEmptyAndNullFilters(
   return actions;
 }
 
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   const filters = await ncMeta.knexConnection(MetaTable.FILTER_EXP);
   for (const filter of filters) {
     if (!filter.fk_column_id || filter.is_group) {

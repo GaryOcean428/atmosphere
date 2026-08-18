@@ -83,8 +83,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 })
 
 function clickListener(e) {
-  if (e.nc_handled) return
-  e.nc_handled = true
+  if (e.atm_handled) return
+  e.atm_handled = true
   let target = e.target
 
   const { $e } = useNuxtApp()
@@ -112,8 +112,8 @@ function clickListener(e) {
 }
 
 function keydownListener(e) {
-  if (e.nc_handled || e.which !== 13) return
-  e.nc_handled = true
+  if (e.atm_handled || e.which !== 13) return
+  e.atm_handled = true
   const { $e } = useNuxtApp()
 
   let target = e.target

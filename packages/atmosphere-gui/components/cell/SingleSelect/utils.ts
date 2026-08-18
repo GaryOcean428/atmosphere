@@ -1,4 +1,4 @@
-import type { ColumnType, SelectOptionType } from 'nocodb-sdk'
+import type { ColumnType, SelectOptionType } from 'atmosphere-sdk'
 
 export type LocalSelectOptionType = SelectOptionType & { value?: string; bgColor?: string; textColor?: string }
 

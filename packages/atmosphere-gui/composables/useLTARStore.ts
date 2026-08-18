@@ -1,4 +1,4 @@
-import type { ColumnType, LinkToAnotherRecordType, LookupType, PaginatedType, RequestParams, TableType } from 'nocodb-sdk'
+import type { ColumnType, LinkToAnotherRecordType, LookupType, PaginatedType, RequestParams, TableType } from 'atmosphere-sdk'
 import {
   RelationTypes,
   UITypes,
@@ -13,7 +13,7 @@ import {
   isSystemColumn,
   parseStringDateTime,
   timeFormats,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type { ComputedRef, Ref } from 'vue'
 import { reconcilePendingLtarOp, resolveDeferredLtarCount, resolveDeferredSingleTargetValue } from '~/utils/ltarDeferredOps'
 
@@ -684,7 +684,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
           } catch {}
 
           result = await $api.dbTableRow.nestedChildrenExcludedList(
-            NOCO,
+            ATMOSPHERE,
             meta.value?.base_id ?? baseId,
             meta.value.id,
             encodeURIComponent(rowId.value),
@@ -754,7 +754,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
         // temporary fix to handle when offset is beyond limit
         const error = await extractSdkResponseErrorMsgv2(e)
 
-        if (error.error === NcErrorType.ERR_INVALID_OFFSET_VALUE) {
+        if (error.error === AtErrorType.ERR_INVALID_OFFSET_VALUE) {
           childrenExcludedListPagination.page = 0
           return loadChildrenExcludedList(activeState, true)
         }
@@ -843,7 +843,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
             })
           } else {
             result = await $api.dbTableRow.nestedList(
-              NOCO,
+              ATMOSPHERE,
               meta.value?.base_id ?? ((base?.value?.id || (sharedView.value?.view as any)?.base_id) as string),
               meta.value.id,
               encodeURIComponent(rowId.value),
@@ -942,7 +942,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
           const id = getRelatedTableRowId(row)
           try {
             const res: { message?: string[] } | number = await $api.dbTableRow.delete(
-              NOCO,
+              ATMOSPHERE,
               relatedTableMeta.value?.base_id ?? baseId,
               relatedTableMeta.value.id as string,
               encodeURIComponent(id as string),
@@ -1162,7 +1162,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
           })
         } else {
           await $api.dbTableRow.nestedRemove(
-            NOCO,
+            ATMOSPHERE,
             metaValue?.base_id ?? (base.value.id as string),
             metaValue.id!,
             encodeURIComponent(rowId.value),
@@ -1267,7 +1267,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
           })
         } else {
           await $api.dbTableRow.nestedAdd(
-            NOCO,
+            ATMOSPHERE,
             metaValue?.base_id ?? (base.value.id as string),
             metaValue.id as string,
             encodeURIComponent(rowId.value),
@@ -1375,7 +1375,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
           }
         } catch {}
         return await $api.dbTableRow.nestedChildrenExcludedList(
-          NOCO,
+          ATMOSPHERE,
           meta.value?.base_id ?? baseId,
           meta.value.id,
           encodeURIComponent(rowId.value),
@@ -1503,7 +1503,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
         })
       } else {
         return await $api.dbTableRow.nestedList(
-          NOCO,
+          ATMOSPHERE,
           meta.value?.base_id ?? ((base?.value?.id || (sharedView.value?.view as any)?.base_id) as string),
           meta.value.id,
           encodeURIComponent(rowId.value),
@@ -1627,7 +1627,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
       childrenListOffsetCount.value = 0
     }
 
-    // Per-link ordering (v2 mm on Postgres): the NocoDB-managed junction carries
+    // Per-link ordering (v2 mm on Postgres): the Atmosphere-managed junction carries
     // a per-direction Order column, so linked records can be manually arranged.
     // Only surfaced when the junction actually has the order column
     // (`fk_mm_child_order_column_id`) AND the source is Postgres — the ordered
@@ -1635,7 +1635,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
     // Reorder applies to any multi-value junction side (mm, and the "many" side
     // of a v2 one-to-many) — i.e. not the single-target sides (bt/mo/oo/bt-like).
     // The junction Order column must exist (only present for v2 mm-like links on
-    // NocoDB-managed sources) and the source must be Postgres (ordered read is
+    // Atmosphere-managed sources) and the source must be Postgres (ordered read is
     // PG-only). v1 hm has no junction/Order column, so it's excluded here anyway.
     const canReorder = computed(
       () =>
@@ -1678,7 +1678,7 @@ const [useProvideLTARStore, useLTARStore] = useInjectionState(
       $e('a:links:reorder')
       await loadChildrenList()
       // Refresh the originating client's grid row (CE path). On EE this is a
-      // no-op and the NocoSocket broadcast from the backend refreshes the canvas
+      // no-op and the AtmosphereSocket broadcast from the backend refreshes the canvas
       // instead — same split as link()/unlink().
       _reloadData?.({ shouldShowLoading: false, path: path.value })
     }

@@ -1,7 +1,7 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Inject, Logger } from '@nestjs/common';
 import { Job } from 'bull';
-import { Timer } from 'nocodb-sdk';
+import { Timer } from 'atmosphere-sdk';
 import type { JobData } from '~/interface/Jobs';
 import {
   JOB_REQUEUE_LIMIT,
@@ -17,8 +17,8 @@ import { JobsEventService } from '~/modules/jobs/jobs-event.service';
 import { JobStatus } from '~/interface/Jobs';
 import { TelemetryService } from '~/services/telemetry.service';
 
-const NC_WORKER_CONCURRENCY = parseWorkerConcurrency(
-  process.env.NC_WORKER_CONCURRENCY,
+const ATMOSPHERE_WORKER_CONCURRENCY = parseWorkerConcurrency(
+  process.env.ATMOSPHERE_WORKER_CONCURRENCY,
 );
 
 const LOCAL_CONCURRENCY_LIMIT = {
@@ -41,7 +41,7 @@ export class JobsProcessor {
   ) {}
 
   @Process({
-    concurrency: NC_WORKER_CONCURRENCY,
+    concurrency: ATMOSPHERE_WORKER_CONCURRENCY,
   })
   async process(job: Job<JobData>) {
     const { jobName } = job.data;
@@ -125,7 +125,7 @@ export class JobsProcessor {
       });
       this.logger.error(message);
 
-      // Surface as FAILED so listeners + nc_jobs row reach a terminal state
+      // Surface as FAILED so listeners + atm_jobs row reach a terminal state
       // (otherwise the row sits in WAITING and clients hang on REQUEUED).
       this.jobsEventService.onFailed(job, error as Error & { data: any });
 

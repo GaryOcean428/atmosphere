@@ -1,15 +1,15 @@
 /* eslint-disable no-async-promise-executor */
 import { Readable } from 'stream';
-import { isLinksOrLTAR, RelationTypes } from 'nocodb-sdk';
+import { isLinksOrLTAR, RelationTypes } from 'atmosphere-sdk';
 import sizeof from 'object-sizeof';
 import { Logger } from '@nestjs/common';
 import PQueue from 'p-queue';
 import type { BulkDataAliasService } from '~/services/bulk-data-alias.service';
 import type { TablesService } from '~/services/tables.service';
 import type { AirtableBase } from 'airtable/lib/airtable_base';
-import type { NcRequest, TableType } from 'nocodb-sdk';
+import type { AtRequest, TableType } from 'atmosphere-sdk';
 import type { Source } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 
 const logger = new Logger('at-import:readAndProcessData');
 
@@ -108,12 +108,12 @@ async function readAllData({
 }
 
 export async function importData(
-  context: NcContext,
+  context: AtContext,
   {
     baseName,
     table,
     atBase,
-    nocoBaseDataProcessing_v2,
+    atmosphereBaseDataProcessing_v2,
     syncDB,
     source,
     logBasic = (_str) => {},
@@ -136,7 +136,7 @@ export async function importData(
     logBasic: (string) => void;
     logDetailed: (string) => void;
     logWarning: (string) => void;
-    nocoBaseDataProcessing_v2;
+    atmosphereBaseDataProcessing_v2;
     // link related props start
     insertedAssocRef: { [assocTableId: string]: boolean };
     atNcAliasRef: {
@@ -227,7 +227,7 @@ export async function importData(
                 if (!idMap.has(rid)) {
                   idMap.set(rid, idCounter[table.id]++);
                 }
-                const r = await nocoBaseDataProcessing_v2(syncDB, table, {
+                const r = await atmosphereBaseDataProcessing_v2(syncDB, table, {
                   id: rid,
                   fields,
                 });
@@ -336,7 +336,7 @@ export async function importData(
 }
 
 export async function importLTARData(
-  context: NcContext,
+  context: AtContext,
   {
     table,
     baseName,
@@ -373,7 +373,7 @@ export async function importLTARData(
     logBasic: (string) => void;
     logDetailed: (string) => void;
     logWarning: (string) => void;
-    req: NcRequest;
+    req: AtRequest;
   },
 ): Promise<number> {
   const assocTableMetas: Array<{
@@ -401,8 +401,8 @@ export async function importLTARData(
     // skip if already inserted
     if (colMeta.colOptions.fk_mm_model_id in insertedAssocRef) continue;
 
-    // self links: skip if the column under consideration is the add-on column NocoDB creates
-    if (ncLinkMappingTable.every((a) => a.nc.title !== colMeta.title)) continue;
+    // self links: skip if the column under consideration is the add-on column Atmosphere creates
+    if (ncLinkMappingTable.every((a) => a.atm.title !== colMeta.title)) continue;
 
     // mark as inserted
     insertedAssocRef[colMeta.colOptions.fk_mm_model_id] = true;

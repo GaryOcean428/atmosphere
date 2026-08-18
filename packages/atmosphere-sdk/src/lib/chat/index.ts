@@ -146,7 +146,7 @@ export interface ChatMessageType {
   uiContextRecord?: { tableId: string; recordId: string; recordTitle?: string };
 }
 
-export const NC_NEW_SESSION = 'NC_SESSION';
+export const ATMOSPHERE_NEW_SESSION = 'ATMOSPHERE_SESSION';
 
 /** UI navigation context sent with each chat message. */
 export interface ChatUIContext {

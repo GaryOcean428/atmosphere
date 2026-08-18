@@ -9,9 +9,9 @@ interface Props {
 const props = defineProps<Props>()
 
 const background = computed(() => {
-  return `repeating-linear-gradient(0deg,var(--nc-bg-default), var(--nc-bg-default) ${
+  return `repeating-linear-gradient(0deg,var(--atm-bg-default), var(--atm-bg-default) ${
     props.rowHeight - 1
-  }px, var(--nc-bg-gray-medium) ${props.rowHeight}px)`
+  }px, var(--atm-bg-gray-medium) ${props.rowHeight}px)`
 })
 
 const height = computed(() => `${props.totalRowHeight}px`)
@@ -19,14 +19,14 @@ const height = computed(() => `${props.totalRowHeight}px`)
 
 <template>
   <tr
-    class="nc-grid-row"
+    class="atm-grid-row"
     :style="{
       height,
     }"
   >
     <td
       :colspan="colCount"
-      class="nc-grid-cell"
+      class="atm-grid-cell"
       :style="{
         background,
       }"

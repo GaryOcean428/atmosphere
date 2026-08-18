@@ -29,7 +29,7 @@ const typesenseClient = new Client({
   ],
 })
 
-const { search, query } = useTypesenseSearch(typesenseClient, 'noco-docs-v2')
+const { search, query } = useTypesenseSearch(typesenseClient, 'atmosphere-docs-v2')
 
 const hide = () => {
   vOpen.value = false
@@ -38,7 +38,7 @@ const hide = () => {
 }
 
 const navigateToResult = (result: SortedResult) => {
-  window.open(`https://nocodb.com${result.url}`, '_blank')
+  window.open(`https://atmosphere.dev${result.url}`, '_blank')
   hide()
 }
 
@@ -108,8 +108,8 @@ watch(vOpen, () => {
 <template>
   <div v-if="vOpen" class="cmdk-modal cmdj-modal" :class="{ 'cmdk-modal-active cmdj-modal-active': vOpen }">
     <div ref="modalEl" class="cmdk-modal-content cmdj-modal-content relative h-[25.25rem]">
-      <div class="cmdk-input-wrapper border-b-1 border-nc-border-gray-medium">
-        <GeneralIcon class="h-4 w-4 text-nc-content-gray-muted" icon="search" />
+      <div class="cmdk-input-wrapper border-b-1 border-atm-border-gray-medium">
+        <GeneralIcon class="h-4 w-4 text-atm-content-gray-muted" icon="search" />
         <input ref="cmdInputEl" v-model="search" class="cmdk-input cmdj-input" placeholder="Search through docs" type="text" />
       </div>
 
@@ -120,7 +120,7 @@ watch(vOpen, () => {
             class="!w-[240px] flex-none"
             alt="Search through our documentation"
           />
-          <div class="text-nc-content-gray-muted">Search through our documentation</div>
+          <div class="text-atm-content-gray-muted">Search through our documentation</div>
         </div>
         <div
           v-else-if="(query.data.value === 'empty' || query.data.value?.length === 0) && !query.isLoading.value"
@@ -131,7 +131,7 @@ watch(vOpen, () => {
             class="!w-[240px] flex-none"
             alt="Your search did not match any results"
           />
-          <div class="text-nc-content-gray-muted">Your search did not match any results</div>
+          <div class="text-atm-content-gray-muted">Your search did not match any results</div>
         </div>
 
         <div v-else-if="!query.isLoading.value" class="cmdk-results">
@@ -179,11 +179,11 @@ watch(vOpen, () => {
   --cmdk-icon-color: var(--cmdk-secondary-text-color);
   --cmdk-icon-size: 1.2em;
 
-  --cmdk-modal-background: var(--nc-bg-default);
+  --cmdk-modal-background: var(--atm-bg-default);
 }
 
 .dark .cmdk-modal {
-  color: var(--nc-content-gray-subtle);
+  color: var(--atm-content-gray-subtle);
 }
 
 .cmdk-modal {

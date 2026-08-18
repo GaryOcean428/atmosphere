@@ -64,30 +64,30 @@ defineExpose({
     v-model="input"
     :disabled="disabled"
     :placeholder="placeholder"
-    class="nc-auto-size-textarea w-full resize-none"
+    class="atm-auto-size-textarea w-full resize-none"
     :class="{
-      'nc-no-border': !bordered,
-      'nc-hide-scrollbar': hideScrollbar,
+      'atm-no-border': !bordered,
+      'atm-hide-scrollbar': hideScrollbar,
     }"
   />
 </template>
 
 <style scoped lang="scss">
-.nc-auto-size-textarea {
+.atm-auto-size-textarea {
   vertical-align: middle;
   transition-property: border, box-shadow;
 
   @apply !outline-none !ring-0 focus:(!outline-none !ring-0) duration-300;
 
-  &.nc-no-border {
+  &.atm-no-border {
     @apply !border-0 !border-none focus:(!border-0);
   }
 
-  &:not(.nc-no-border) {
-    @apply border-1 border-nc-border-gray-medium focus:(border-nc-border-brand shadow-selected);
+  &:not(.atm-no-border) {
+    @apply border-1 border-atm-border-gray-medium focus:(border-atm-border-brand shadow-selected);
   }
 
-  &.nc-hide-scrollbar {
+  &.atm-hide-scrollbar {
     @apply overflow-hidden;
 
     -ms-overflow-style: none;

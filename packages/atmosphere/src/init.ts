@@ -1,12 +1,12 @@
 import { MetaService } from '~/meta/meta.service';
-import { NcConfig } from '~/utils/nc-config';
-import Noco from '~/Noco';
+import { AtConfig } from '~/utils/atm-config';
+import Atmosphere from '~/Atmosphere';
 
 // run upgrader
-import NcUpgrader from '~/version-upgrader/NcUpgrader';
+import AtUpgrader from '~/version-upgrader/AtUpgrader';
 
 export default async () => {
-  const config = await NcConfig.createByEnv();
-  Noco._ncMeta = new MetaService(config);
-  await NcUpgrader.upgrade({ ncMeta: Noco._ncMeta });
+  const config = await AtConfig.createByEnv();
+  Atmosphere._ncMeta = new MetaService(config);
+  await AtUpgrader.upgrade({ ncMeta: Atmosphere._ncMeta });
 };

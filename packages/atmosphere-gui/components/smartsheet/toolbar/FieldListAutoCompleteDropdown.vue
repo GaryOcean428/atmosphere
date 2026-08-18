@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SelectProps } from 'ant-design-vue'
-import type { ColumnType, LinkToAnotherRecordType, TableType } from 'nocodb-sdk'
-import { RelationTypes, UITypes, isHiddenCol, isLinksOrLTAR, isSystemColumn } from 'nocodb-sdk'
+import type { ColumnType, LinkToAnotherRecordType, TableType } from 'atmosphere-sdk'
+import { RelationTypes, UITypes, isHiddenCol, isLinksOrLTAR, isSystemColumn } from 'atmosphere-sdk'
 
 const { modelValue, isSort, allowEmpty, disableSmartsheet, ...restProps } = defineProps<{
   modelValue?: string
@@ -142,13 +142,13 @@ if (!localValue.value && allowEmpty !== true) {
 </script>
 
 <template>
-  <NcSelect
+  <AtSelect
     v-model:value="localValue"
     :dropdown-match-select-width="false"
     show-search
     :placeholder="$t('placeholder.selectField')"
     :filter-option="filterOption"
-    :dropdown-class-name="`nc-dropdown-toolbar-field-list${isCompact ? ' nc-dropdown-toolbar-field-list-compact' : ''}`"
+    :dropdown-class-name="`atm-dropdown-toolbar-field-list${isCompact ? ' atm-dropdown-toolbar-field-list-compact' : ''}`"
   >
     <a-select-option
       v-for="option in options"
@@ -157,7 +157,7 @@ if (!localValue.value && allowEmpty !== true) {
       :value="option.value"
       :disabled="option.ncItemDisabled"
     >
-      <NcTooltip :disabled="!option.ncItemDisabled" placement="right" class="w-full h-full max-w-50">
+      <AtTooltip :disabled="!option.ncItemDisabled" placement="right" class="w-full h-full max-w-50">
         <template #title>
           {{ option.ncItemTooltip }}
         </template>
@@ -167,28 +167,28 @@ if (!localValue.value && allowEmpty !== true) {
             <component
               :is="option.icon"
               class="!mx-0"
-              :class="isCompact ? 'nc-field-list-icon-compact' : '!w-3.5 !h-3.5'"
-              color="text-nc-content-gray-muted"
+              :class="isCompact ? 'atm-field-list-icon-compact' : '!w-3.5 !h-3.5'"
+              color="text-atm-content-gray-muted"
             />
-            <NcTooltip
+            <AtTooltip
               :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap', display: 'inline' }"
               class="field-selection-tooltip-wrapper truncate select-none"
               show-on-truncate-only
             >
               <template #title> {{ option.label }}</template>
               {{ option.label }}
-            </NcTooltip>
+            </AtTooltip>
           </div>
           <component
             :is="iconMap.check"
             v-if="localValue === option.value"
-            id="nc-selected-item-icon"
+            id="atm-selected-item-icon"
             class="text-primary w-4 h-4"
           />
         </div>
-      </NcTooltip>
+      </AtTooltip>
     </a-select-option>
-  </NcSelect>
+  </AtSelect>
 </template>
 
 <style lang="scss">
@@ -199,8 +199,8 @@ if (!localValue.value && allowEmpty !== true) {
 // Compact hosts (side-panel filter/sort editors): field-type icons shrink to
 // match the panel's toggle-list icons. SmartsheetHeaderIcon renders the svg as
 // its root, so the class sits on the svg itself.
-.nc-dropdown-toolbar-field-list-compact .nc-field-list-icon-compact,
-.nc-field-list-icon-compact {
+.atm-dropdown-toolbar-field-list-compact .atm-field-list-icon-compact,
+.atm-field-list-icon-compact {
   width: 12px !important;
   height: 12px !important;
   opacity: 0.75;

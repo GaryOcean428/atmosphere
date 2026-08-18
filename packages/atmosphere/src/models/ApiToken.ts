@@ -1,5 +1,5 @@
 import { customAlphabet } from 'nanoid';
-import type { ApiTokenType } from 'nocodb-sdk';
+import type { ApiTokenType } from 'atmosphere-sdk';
 import {
   CacheDelDirection,
   CacheGetType,
@@ -7,9 +7,9 @@ import {
   MetaTable,
   RootScopes,
 } from '~/utils/globals';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
-import { NcError } from '~/helpers/catchError';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import { AtError } from '~/helpers/catchError';
 
 const generateToken = customAlphabet(
   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
@@ -37,7 +37,7 @@ export default class ApiToken implements ApiTokenType {
   // longer stored in plaintext, so this is intentional — not an oversight.
   public static async insert(
     apiToken: Partial<ApiToken>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const token = generateToken();
     await ncMeta.metaInsert2(
@@ -53,7 +53,7 @@ export default class ApiToken implements ApiTokenType {
       true,
     );
     return this.getByToken(token).then(async (apiToken) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         'root',
         CacheScope.API_TOKEN,
         [],
@@ -79,7 +79,7 @@ export default class ApiToken implements ApiTokenType {
     'updated_at',
   ];
 
-  static async list(userId: string, ncMeta = Noco.ncMeta) {
+  static async list(userId: string, ncMeta = Atmosphere.ncMeta) {
     const tokens = await ncMeta.metaList2(
       RootScopes.ROOT,
       RootScopes.ROOT,
@@ -92,7 +92,7 @@ export default class ApiToken implements ApiTokenType {
     return tokens?.map((t) => this.castType(t));
   }
 
-  static async listForNonSsoUser(userId: string, ncMeta = Noco.ncMeta) {
+  static async listForNonSsoUser(userId: string, ncMeta = Atmosphere.ncMeta) {
     const tokens = await ncMeta.metaList2(
       RootScopes.ROOT,
       RootScopes.ROOT,
@@ -108,14 +108,14 @@ export default class ApiToken implements ApiTokenType {
     return tokens?.map((t) => this.castType(t));
   }
 
-  static async delete(tokenId: string, ncMeta = Noco.ncMeta) {
+  static async delete(tokenId: string, ncMeta = Atmosphere.ncMeta) {
     const tokenData = await this.get(tokenId, ncMeta);
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       'root',
       `${CacheScope.API_TOKEN}:${tokenData.id}`,
       CacheDelDirection.CHILD_TO_PARENT,
     );
-    await NocoCache.del('root', `${CacheScope.API_TOKEN}:${tokenData.token}`);
+    await AtmosphereCache.del('root', `${CacheScope.API_TOKEN}:${tokenData.token}`);
     return await ncMeta.metaDelete(
       RootScopes.ROOT,
       RootScopes.ROOT,
@@ -124,17 +124,17 @@ export default class ApiToken implements ApiTokenType {
     );
   }
 
-  static async deleteByUser(userId: string, ncMeta = Noco.ncMeta) {
+  static async deleteByUser(userId: string, ncMeta = Atmosphere.ncMeta) {
     const tokens = await this.list(userId, ncMeta);
     for (const token of tokens) {
       await this.delete(token.id, ncMeta);
     }
   }
 
-  static async getByToken(token, ncMeta = Noco.ncMeta) {
+  static async getByToken(token, ncMeta = Atmosphere.ncMeta) {
     let data =
       token &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         'root',
         `${CacheScope.API_TOKEN}:${token}`,
         CacheGetType.TYPE_OBJECT,
@@ -146,7 +146,7 @@ export default class ApiToken implements ApiTokenType {
         MetaTable.API_TOKENS,
         { token },
       );
-      await NocoCache.set('root', `${CacheScope.API_TOKEN}:${token}`, data);
+      await AtmosphereCache.set('root', `${CacheScope.API_TOKEN}:${token}`, data);
     }
     return data && this.castType(data);
   }
@@ -161,7 +161,7 @@ export default class ApiToken implements ApiTokenType {
       includeUnmappedToken?: boolean;
       ssoClientId?: string;
     } = {},
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<number> {
     const qb = ncMeta.knex(MetaTable.API_TOKENS);
 
@@ -196,7 +196,7 @@ export default class ApiToken implements ApiTokenType {
       includeUnmappedToken: boolean;
       ssoClientId?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const queryBuilder = ncMeta
       .knex(MetaTable.API_TOKENS)
@@ -244,7 +244,7 @@ export default class ApiToken implements ApiTokenType {
     return queryBuilder;
   }
 
-  static async get(tokenId: string, ncMeta = Noco.ncMeta) {
+  static async get(tokenId: string, ncMeta = Atmosphere.ncMeta) {
     return await ncMeta.metaGet(
       RootScopes.ROOT,
       RootScopes.ROOT,
@@ -255,10 +255,10 @@ export default class ApiToken implements ApiTokenType {
 
   public static async clearSsoAssociation(
     ssoClientId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (!ssoClientId) {
-      NcError.badRequest('SSO client ID is required');
+      AtError.badRequest('SSO client ID is required');
     }
 
     const tokens = await ncMeta.metaList2(
@@ -281,19 +281,19 @@ export default class ApiToken implements ApiTokenType {
       );
 
       // Clear cache
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         'root',
         `${CacheScope.API_TOKEN}:${token.id}`,
         CacheDelDirection.CHILD_TO_PARENT,
       );
-      await NocoCache.del('root', `${CacheScope.API_TOKEN}:${token.token}`);
+      await AtmosphereCache.del('root', `${CacheScope.API_TOKEN}:${token.token}`);
     }
 
     return tokens?.length || 0;
   }
 
   async getExtraForUserPayload(
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<void | Record<string, any>> {
     return; // Placeholder for future implementation
   }

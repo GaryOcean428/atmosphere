@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { isDeletedCol } from 'nocodb-sdk';
+import { isDeletedCol } from 'atmosphere-sdk';
 import type CustomKnex from '~/db/CustomKnex';
 import type { MetaService } from '~/meta/meta.service';
 import { Column, Model, Source } from '~/models';
 import { MetaTable } from '~/utils/globals';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import SimpleLRUCache from '~/utils/cache';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import Upgrader from '~/Upgrader';
 import ProjectMgrv2 from '~/db/sql-mgr/v2/ProjectMgrv2';
 import { Altered } from '~/services/columns.service';
 
 const PARALLEL_LIMIT =
-  +process.env.NC_NORMALIZE_SOFT_DELETE_MIGRATION_PARALLEL_LIMIT || 10;
+  +process.env.ATMOSPHERE_NORMALIZE_SOFT_DELETE_MIGRATION_PARALLEL_LIMIT || 10;
 
-const TEMP_TABLE = 'nc_temp_processed_normalize_soft_delete';
+const TEMP_TABLE = 'atm_temp_processed_normalize_soft_delete';
 
 /**
  * Migration 011 — backfill fix for the soft-delete column added in job 010.
@@ -35,7 +35,7 @@ const TEMP_TABLE = 'nc_temp_processed_normalize_soft_delete';
  *     DDL rewrite: SqliteClient's change-column dance copies the old column
  *     into the new one (`UPDATE new = old`), so any normalization done
  *     beforehand would be overwritten by the copy.
- *   - update the `nc_columns_v2.cdf` so the NocoDB column definition records
+ *   - update the `atm_columns_v2.cdf` so the Atmosphere column definition records
  *     the numeric default going forward.
  *
  * Progress is tracked per-model in {@link TEMP_TABLE} so interrupted runs can
@@ -53,7 +53,7 @@ export class NormalizeSoftDeleteSqliteMigration {
   constructor() {}
 
   log = (...msgs: string[]) => {
-    console.log('[nc_job_011_normalize_soft_delete_sqlite]: ', ...msgs);
+    console.log('[atm_job_011_normalize_soft_delete_sqlite]: ', ...msgs);
   };
 
   getModelsToBeProcessedQueryBuilder(ncMeta: Upgrader) {
@@ -81,8 +81,8 @@ export class NormalizeSoftDeleteSqliteMigration {
 
   async job() {
     // Create progress tracking table if it doesn't exist.
-    if (!(await Noco.ncMeta.knexConnection.schema.hasTable(TEMP_TABLE))) {
-      await Noco.ncMeta.knexConnection.schema.createTable(
+    if (!(await Atmosphere.ncMeta.knexConnection.schema.hasTable(TEMP_TABLE))) {
+      await Atmosphere.ncMeta.knexConnection.schema.createTable(
         TEMP_TABLE,
         (table) => {
           table.increments('id').primary();
@@ -95,7 +95,7 @@ export class NormalizeSoftDeleteSqliteMigration {
     }
 
     // Remove incomplete models from previous run so they get retried.
-    await Noco.ncMeta
+    await Atmosphere.ncMeta
       .knexConnection(TEMP_TABLE)
       .delete()
       .where('completed', false);
@@ -158,11 +158,11 @@ export class NormalizeSoftDeleteSqliteMigration {
           });
           try {
             await this.processModel(model, ncMeta);
-            await this.updateModelStatus(Noco.ncMeta, model.id, true);
+            await this.updateModelStatus(Atmosphere.ncMeta, model.id, true);
           } catch (ex) {
             this.log(`Error processing model ${model.id}:`, ex.message);
             await this.updateModelStatus(
-              Noco.ncMeta,
+              Atmosphere.ncMeta,
               model.id,
               false,
               ex.message,
@@ -213,7 +213,7 @@ export class NormalizeSoftDeleteSqliteMigration {
     });
     source.upgraderMode = true;
 
-    const dbDriver: CustomKnex = await NcConnectionMgrv2.get(source);
+    const dbDriver: CustomKnex = await AtConnectionMgrv2.get(source);
 
     const model: any = {
       id: modelId,
@@ -278,16 +278,16 @@ export class NormalizeSoftDeleteSqliteMigration {
       return base;
     });
 
-    // Job 010 creates `nc_deleted_idx_${model.id}` on `__nc_deleted` (see
-    // nc_job_010_soft_delete_column.ts:438-447). SqliteClient's rename/add/
+    // Job 010 creates `atm_deleted_idx_${model.id}` on `__nc_deleted` (see
+    // atm_job_010_soft_delete_column.ts:438-447). SqliteClient's rename/add/
     // copy/drop alter dance renames the original column to a backup name;
     // the index follows the rename, and SQLite refuses to DROP COLUMN on a
     // column still referenced by an index. Drop the index first, recreate
     // it on the new column after the alter.
-    const realDbDriver = await NcConnectionMgrv2.get(
+    const realDbDriver = await AtConnectionMgrv2.get(
       new Source({ ...originalSource, upgraderMode: false } as any),
     );
-    const indexName = `nc_deleted_idx_${model.id}`;
+    const indexName = `atm_deleted_idx_${model.id}`;
 
     await realDbDriver.raw('DROP INDEX IF EXISTS ??', [indexName]);
 
@@ -313,7 +313,7 @@ export class NormalizeSoftDeleteSqliteMigration {
       .update({ [deletedCol.column_name]: 1 })
       .where(deletedCol.column_name, 'true');
 
-    // Sync the meta column's cdf so the NocoDB column definition records
+    // Sync the meta column's cdf so the Atmosphere column definition records
     // '0' going forward.
     await ncMeta.metaUpdate(
       context.workspace_id,

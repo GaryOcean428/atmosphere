@@ -41,7 +41,7 @@ const normalizeSidebarWidth = computed(() => {
 
 <template>
   <Splitpanes
-    class="nc-form-right-sidebar-content-resizable-wrapper w-full h-full"
+    class="atm-form-right-sidebar-content-resizable-wrapper w-full h-full"
     :rtl="isRtl"
     @resize="(event: any) => onResize(event[1].size)"
   >
@@ -52,7 +52,7 @@ const normalizeSidebarWidth = computed(() => {
       <Pane
         v-show="isSidebarVisible"
         min-size="15%"
-        class="nc-sidebar-splitpane relative"
+        class="atm-sidebar-splitpane relative"
         :size="formRightSidebarWidthPercent"
         :style="{
           minWidth: `${formRightSidebarState.minWidth}px !important`,
@@ -68,24 +68,24 @@ const normalizeSidebarWidth = computed(() => {
 <style lang="scss">
 /** Split pane CSS */
 
-.nc-form-right-sidebar-content-resizable-wrapper {
+.atm-form-right-sidebar-content-resizable-wrapper {
   > .splitpanes__splitter {
     @apply !w-0 relative overflow-visible;
   }
 
   > .splitpanes__splitter:before {
-    @apply bg-nc-bg-gray-medium w-0.25 absolute left-0 top-0 h-full z-40;
+    @apply bg-atm-bg-gray-medium w-0.25 absolute left-0 top-0 h-full z-40;
     content: '';
   }
 
   > .splitpanes__splitter:hover:before {
-    @apply bg-nc-border-gray-medium;
+    @apply bg-atm-border-gray-medium;
     width: 3px !important;
     left: 0px;
   }
 
   &.splitpanes--dragging > .splitpanes__splitter:before {
-    @apply bg-nc-border-gray-medium;
+    @apply bg-atm-border-gray-medium;
     width: 3px !important;
     left: 0px;
   }
@@ -103,7 +103,7 @@ const normalizeSidebarWidth = computed(() => {
   }
 }
 
-.rtl .nc-form-right-sidebar-content-resizable-wrapper {
+.rtl .atm-form-right-sidebar-content-resizable-wrapper {
   > .splitpanes__splitter:before {
     @apply left-auto right-0;
   }

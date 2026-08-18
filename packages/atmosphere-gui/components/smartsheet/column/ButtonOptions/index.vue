@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ButtonType, ColumnType, FilterType, HookType, ScriptType, UnifiedMetaType } from 'nocodb-sdk'
+import type { ButtonType, ColumnType, FilterType, HookType, ScriptType, UnifiedMetaType } from 'atmosphere-sdk'
 import {
   ButtonActionsType,
   FormulaError,
@@ -10,7 +10,7 @@ import {
   substituteColumnIdWithAliasInFormula,
   substituteColumnIdWithAliasInPrompt,
   validateFormulaAndExtractTreeWithType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { searchIcons } from '~/utils/iconUtils'
 
 const props = defineProps<{
@@ -34,7 +34,7 @@ const { getMeta } = useMetas()
 
 const { getColor } = useTheme()
 
-const { isAiBetaFeaturesEnabled } = useNocoAi()
+const { isAiBetaFeaturesEnabled } = useAtmosphereAi()
 
 const { getPlanTitle, showEEFeatures } = useEeConfig()
 
@@ -389,9 +389,9 @@ if (isEdit.value) {
         <a-form-item v-bind="validateInfos.label" class="mt-4" :label="$t('general.label')">
           <a-input
             v-model:value="vModel.label"
-            class="nc-column-label-input nc-input-shadow !rounded-lg"
+            class="atm-column-label-input atm-input-shadow !rounded-lg"
             :class="{
-              'nc-ai-input': isAiMode,
+              'atm-ai-input': isAiMode,
             }"
             :placeholder="$t('datatype.Button')"
           />
@@ -399,14 +399,14 @@ if (isEdit.value) {
       </a-col>
       <a-col :span="6">
         <a-form-item :label="$t('general.style')" v-bind="validateInfos.theme">
-          <NcDropdown v-model:visible="isDropdownOpen" class="nc-color-picker-dropdown-trigger">
+          <AtDropdown v-model:visible="isDropdownOpen" class="atm-color-picker-dropdown-trigger">
             <div
               :class="{
-                'nc-button-style-dropdown': isDropdownOpen,
-                '!border-nc-border-purple !shadow-selected-ai': isDropdownOpen && isAiMode,
-                '!border-nc-border-brand !shadow-selected': isDropdownOpen && !isAiMode,
+                'atm-button-style-dropdown': isDropdownOpen,
+                '!border-atm-border-purple !shadow-selected-ai': isDropdownOpen && isAiMode,
+                '!border-atm-border-brand !shadow-selected': isDropdownOpen && !isAiMode,
               }"
-              class="flex items-center justify-between border-1 h-8 px-[11px] border-nc-border-gray-dark !w-full transition-all cursor-pointer !rounded-lg"
+              class="flex items-center justify-between border-1 h-8 px-[11px] border-atm-border-gray-dark !w-full transition-all cursor-pointer !rounded-lg"
             >
               <div
                 :style="{
@@ -415,14 +415,14 @@ if (isEdit.value) {
                   color: getButtonColors(vModel.theme ?? 'solid', vModel.color ?? 'brand', false, false, getColor).text,
                 }"
                 :class="`${vModel.color ?? 'brand'} ${vModel.theme ?? 'solid'}`"
-                class="flex items-center justify-center nc-cell-button rounded-md h-6 w-6 gap-2"
+                class="flex items-center justify-center atm-cell-button rounded-md h-6 w-6 gap-2"
               >
                 <component :is="iconMap.cellText" class="w-4 h-4" />
               </div>
-              <GeneralIcon icon="arrowDown" class="text-nc-content-gray-muted !w-4 !h-4" />
+              <GeneralIcon icon="arrowDown" class="text-atm-content-gray-muted !w-4 !h-4" />
             </div>
             <template #overlay>
-              <div class="bg-nc-bg-default space-y-2 p-2 rounded-lg">
+              <div class="bg-atm-bg-default space-y-2 p-2 rounded-lg">
                 <div v-for="[type, colors] in Object.entries(buttonColorMap)" :key="type" class="flex gap-2">
                   <div v-for="[name, color] in Object.entries(colors)" :key="name">
                     <button
@@ -433,7 +433,7 @@ if (isEdit.value) {
                       :class="{
                         '!border-transparent': type !== 'text',
                       }"
-                      class="border-1 border-nc-border-gray-medium flex items-center justify-center rounded h-6 w-6"
+                      class="border-1 border-atm-border-gray-medium flex items-center justify-center rounded h-6 w-6"
                       @click="updateButtonTheme(type, name)"
                     >
                       <component :is="iconMap.cellText" class="w-3.5 h-3.5" />
@@ -442,62 +442,62 @@ if (isEdit.value) {
                 </div>
               </div>
             </template>
-          </NcDropdown>
+          </AtDropdown>
         </a-form-item>
       </a-col>
       <a-col :span="6">
         <a-form-item :label="$t('labels.icon')" v-bind="validateInfos.icon">
-          <NcDropdown v-model:visible="isButtonIconDropdownOpen" class="nc-color-picker-dropdown-trigger">
+          <AtDropdown v-model:visible="isButtonIconDropdownOpen" class="atm-color-picker-dropdown-trigger">
             <div
               :class="{
-                'nc-button-style-dropdown ': isButtonIconDropdownOpen,
-                '!border-nc-border-purple !shadow-selected-ai': isButtonIconDropdownOpen && isAiMode,
-                '!border-nc-border-brand !shadow-selected': isButtonIconDropdownOpen && !isAiMode,
+                'atm-button-style-dropdown ': isButtonIconDropdownOpen,
+                '!border-atm-border-purple !shadow-selected-ai': isButtonIconDropdownOpen && isAiMode,
+                '!border-atm-border-brand !shadow-selected': isButtonIconDropdownOpen && !isAiMode,
               }"
-              class="flex items-center justify-center border-1 h-8 px-[11px] border-nc-border-gray-dark !w-full transition-all cursor-pointer !rounded-lg"
+              class="flex items-center justify-center border-1 h-8 px-[11px] border-atm-border-gray-dark !w-full transition-all cursor-pointer !rounded-lg"
             >
               <div class="flex w-full items-center leading-5 justify-between gap-1">
-                <GeneralIcon v-if="vModel.icon" :icon="vModel.icon as any" class="w-4 h-4 text-nc-content-gray" />
-                <div v-else class="text-sm flex items-center leading-5 text-nc-content-gray-muted">
+                <GeneralIcon v-if="vModel.icon" :icon="vModel.icon as any" class="w-4 h-4 text-atm-content-gray" />
+                <div v-else class="text-sm flex items-center leading-5 text-atm-content-gray-muted">
                   {{ $t('labels.selectIcon') }}
                 </div>
-                <GeneralIcon icon="arrowDown" class="text-nc-content-gray-muted !w-4 !h-4" />
+                <GeneralIcon icon="arrowDown" class="text-atm-content-gray-muted !w-4 !h-4" />
               </div>
             </div>
             <template #overlay>
-              <div class="bg-nc-bg-default w-80 space-y-3 h-70 overflow-y-auto rounded-lg">
-                <div class="!sticky top-0 flex gap-2 bg-nc-bg-default px-2 py-2">
+              <div class="bg-atm-bg-default w-80 space-y-3 h-70 overflow-y-auto rounded-lg">
+                <div class="!sticky top-0 flex gap-2 bg-atm-bg-default px-2 py-2">
                   <a-input
                     ref="inputRef"
                     v-model:value="iconSearchQuery"
                     :placeholder="$t('placeholder.searchIcons')"
-                    class="nc-dropdown-search-unified-input z-10 nc-input-shadow"
+                    class="atm-dropdown-search-unified-input z-10 atm-input-shadow"
                     :class="{
-                      'nc-ai-input': isAiMode,
+                      'atm-ai-input': isAiMode,
                     }"
                   >
-                    <template #prefix> <GeneralIcon icon="search" class="nc-search-icon h-3.5 w-3.5 mr-1" /> </template
+                    <template #prefix> <GeneralIcon icon="search" class="atm-search-icon h-3.5 w-3.5 mr-1" /> </template
                   ></a-input>
-                  <NcButton size="small" class="!px-4" type="text" @click="removeIcon">
+                  <AtButton size="small" class="!px-4" type="text" @click="removeIcon">
                     <span class="text-[13px]">
                       {{ $t('general.remove') }}
                     </span>
-                  </NcButton>
+                  </AtButton>
                 </div>
 
-                <div class="grid px-3 auto-rows-max pb-2 nc-scrollbar-md gap-3 grid-cols-10">
+                <div class="grid px-3 auto-rows-max pb-2 atm-scrollbar-md gap-3 grid-cols-10">
                   <component
                     :is="icon"
                     v-for="({ icon, name }, i) in icons"
                     :key="i"
                     :icon="icon"
-                    class="w-6 hover:bg-nc-bg-gray-light cursor-pointer rounded p-1 text-nc-content-gray-subtle h-6"
+                    class="w-6 hover:bg-atm-bg-gray-light cursor-pointer rounded p-1 text-atm-content-gray-subtle h-6"
                     @click="selectIcon(name)"
                   />
                 </div>
               </div>
             </template>
-          </NcDropdown>
+          </AtDropdown>
         </a-form-item>
       </a-col>
     </a-row>
@@ -506,18 +506,18 @@ if (isEdit.value) {
         <a-form-item :label="$t('labels.onClick')" v-bind="validateInfos.type">
           <a-select
             v-model:value="vModel.type"
-            class="w-52 nc-button-type-select nc-select-shadow"
+            class="w-52 atm-button-type-select atm-select-shadow"
             :class="{
-              'nc-ai-input': isAiMode,
+              'atm-ai-input': isAiMode,
             }"
-            dropdown-class-name="nc-dropdown-button-cell-type"
+            dropdown-class-name="atm-dropdown-button-cell-type"
             @change="handleUpdateActionType"
           >
-            <template #suffixIcon> <GeneralIcon icon="arrowDown" class="text-nc-content-gray-muted" /> </template>
+            <template #suffixIcon> <GeneralIcon icon="arrowDown" class="text-atm-content-gray-muted" /> </template>
 
             <a-select-option v-for="(type, i) of buttonTypes" :key="i" :value="type.value">
-              <NcTooltip :disabled="!type.tooltip" placement="right" class="w-full" :title="type.tooltip">
-                <div class="flex gap-2 w-full capitalize text-nc-content-gray truncate items-center">
+              <AtTooltip :disabled="!type.tooltip" placement="right" class="w-full" :title="type.tooltip">
+                <div class="flex gap-2 w-full capitalize text-atm-content-gray truncate items-center">
                   <GeneralIcon :icon="type.icon" />
                   <div class="flex-1">
                     {{ type.label }}
@@ -525,11 +525,11 @@ if (isEdit.value) {
                   <component
                     :is="iconMap.check"
                     v-if="vModel.type === type.value"
-                    id="nc-selected-item-icon"
-                    class="text-nc-content-brand w-4 h-4"
+                    id="atm-selected-item-icon"
+                    class="text-atm-content-brand w-4 h-4"
                   />
                 </div>
-              </NcTooltip>
+              </AtTooltip>
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -560,9 +560,9 @@ if (isEdit.value) {
 
     <PaymentUpgradeBadgeProvider v-if="showEEFeatures" :feature="PlanFeatureTypes.FEATURE_BUTTON_VISIBILITY">
       <template #default="{ click }">
-        <div class="nc-button-filter-section mt-2">
+        <div class="atm-button-filter-section mt-2">
           <div
-            class="flex items-center gap-2 cursor-pointer py-1 text-nc-content-gray-subtle2 hover:text-nc-content-gray"
+            class="flex items-center gap-2 cursor-pointer py-1 text-atm-content-gray-subtle2 hover:text-atm-content-gray"
             @click="click(PlanFeatureTypes.FEATURE_BUTTON_VISIBILITY, () => (isFilterSectionOpen = !isFilterSectionOpen))"
           >
             <GeneralIcon
@@ -582,7 +582,7 @@ if (isEdit.value) {
               "
             />
           </div>
-          <div v-if="isFilterSectionOpen" class="mt-2 overflow-x-auto nc-scrollbar-thin">
+          <div v-if="isFilterSectionOpen" class="mt-2 overflow-x-auto atm-scrollbar-thin">
             <SmartsheetToolbarColumnFilter
               ref="filterRef"
               v-model="vModel.filters"
@@ -604,20 +604,20 @@ if (isEdit.value) {
 
 <style scoped lang="scss">
 :deep(.ant-form-item-label > label) {
-  @apply !text-small !leading-[18px] mb-2 !text-nc-content-gray flex;
+  @apply !text-small !leading-[18px] mb-2 !text-atm-content-gray flex;
 }
 
 .mono-font {
   font-family: 'JetBrainsMono', monospace;
 }
 
-.nc-button-style-dropdown {
+.atm-button-style-dropdown {
   @apply border-[#d9d9d9];
 }
 
-.nc-cell-button {
+.atm-cell-button {
   &.text {
-    @apply border-1 border-nc-border-gray-medium rounded;
+    @apply border-1 border-atm-border-gray-medium rounded;
   }
 }
 </style>

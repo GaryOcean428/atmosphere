@@ -2,7 +2,7 @@ import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
 const up = async (knex: Knex) => {
-  // Create nc_rls_policies table
+  // Create atm_rls_policies table
   await knex.schema.createTable(MetaTable.RLS_POLICIES, (table) => {
     table.string('id', 20).notNullable();
     table.string('fk_workspace_id', 20);
@@ -19,20 +19,20 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
 
     // Primary key
-    table.primary(['base_id', 'id'], 'nc_rls_policies_pk');
+    table.primary(['base_id', 'id'], 'atm_rls_policies_pk');
 
     // Indexes
     table.index(
       ['fk_model_id', 'enabled'],
-      'nc_rls_policies_model_enabled_idx',
+      'atm_rls_policies_model_enabled_idx',
     );
     table.index(
       ['fk_model_id', 'is_default'],
-      'nc_rls_policies_model_default_idx',
+      'atm_rls_policies_model_default_idx',
     );
   });
 
-  // Create nc_rls_policy_subjects table (mirrors nc_permission_subjects pattern)
+  // Create atm_rls_policy_subjects table (mirrors atm_permission_subjects pattern)
   await knex.schema.createTable(MetaTable.RLS_POLICY_SUBJECTS, (table) => {
     table.string('fk_rls_policy_id', 20).notNullable();
     table.string('subject_type', 255).notNullable(); // 'user', 'team', 'role'
@@ -44,27 +44,27 @@ const up = async (knex: Knex) => {
     // Primary key (composite — prevents duplicate assignments)
     table.primary(
       ['fk_rls_policy_id', 'subject_type', 'subject_id'],
-      'nc_rls_policy_subjects_pk',
+      'atm_rls_policy_subjects_pk',
     );
 
     // Index for context-based lookups
     table.index(
       ['fk_workspace_id', 'base_id'],
-      'nc_rls_policy_subjects_context_idx',
+      'atm_rls_policy_subjects_context_idx',
     );
   });
 
   // Extend existing filter table with fk_rls_policy_id
   await knex.schema.alterTable(MetaTable.FILTER_EXP, (table) => {
     table.string('fk_rls_policy_id', 20);
-    table.index(['fk_rls_policy_id'], 'nc_filter_exp_rls_policy_idx');
+    table.index(['fk_rls_policy_id'], 'atm_filter_exp_rls_policy_idx');
   });
 };
 
 const down = async (knex: Knex) => {
   // Remove fk_rls_policy_id from filter table
   await knex.schema.alterTable(MetaTable.FILTER_EXP, (table) => {
-    table.dropIndex(['fk_rls_policy_id'], 'nc_filter_exp_rls_policy_idx');
+    table.dropIndex(['fk_rls_policy_id'], 'atm_filter_exp_rls_policy_idx');
     table.dropColumn('fk_rls_policy_id');
   });
 

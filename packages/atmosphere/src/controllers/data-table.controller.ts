@@ -19,7 +19,7 @@ import { parseHrtimeToMilliSeconds } from '~/helpers';
 import { DataApiLimiterGuard } from '~/guards/data-api-limiter.guard';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(DataApiLimiterGuard, GlobalGuard)
@@ -30,8 +30,8 @@ export class DataTableController {
   @Get('/api/v2/tables/:modelId/records')
   @Acl('dataList')
   async dataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
@@ -55,8 +55,8 @@ export class DataTableController {
   @Get(['/api/v2/tables/:modelId/records/count'])
   @Acl('dataCount')
   async dataCount(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
@@ -76,8 +76,8 @@ export class DataTableController {
   @HttpCode(200)
   @Acl('dataInsert')
   async dataInsert(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
     @Body() body: any,
@@ -96,8 +96,8 @@ export class DataTableController {
   @Patch(['/api/v2/tables/:modelId/records'])
   @Acl('dataUpdate')
   async dataUpdate(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
     @Param('rowId') _rowId: string,
@@ -114,8 +114,8 @@ export class DataTableController {
   @Delete(['/api/v2/tables/:modelId/records'])
   @Acl('dataDelete')
   async dataDelete(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
     @Param('rowId') _rowId: string,
@@ -132,8 +132,8 @@ export class DataTableController {
   @Get(['/api/v2/tables/:modelId/aggregate'])
   @Acl('dataAggregate')
   async dataAggregate(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
   ) {
@@ -149,8 +149,8 @@ export class DataTableController {
   @Post(['/api/v2/tables/:modelId/bulk/datalist'])
   @Acl('dataList')
   async bulkDataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
   ) {
@@ -166,8 +166,8 @@ export class DataTableController {
   @Get(['/api/v2/tables/:modelId/records/:rowId'])
   @Acl('dataRead')
   async dataRead(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
     @Param('rowId') rowId: string,
@@ -185,8 +185,8 @@ export class DataTableController {
   @Post(['/api/v2/tables/:modelId/records/:rowId/move'])
   @Acl('dataUpdate')
   async rowMove(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Param('rowId') rowId: string,
     @Query('before') before: string,
@@ -203,8 +203,8 @@ export class DataTableController {
   @Get(['/api/v2/tables/:modelId/links/:columnId/records/:rowId'])
   @Acl('nestedDataList')
   async nestedDataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
     @Param('columnId') columnId: string,
@@ -224,8 +224,8 @@ export class DataTableController {
   @Post(['/api/v2/tables/:modelId/links/:columnId/records/:rowId'])
   @Acl('nestedDataLink')
   async nestedLink(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
     @Param('columnId') columnId: string,
@@ -261,8 +261,8 @@ export class DataTableController {
   @Delete(['/api/v2/tables/:modelId/links/:columnId/records/:rowId'])
   @Acl('nestedDataUnlink')
   async nestedUnlink(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
     @Param('columnId') columnId: string,
@@ -286,8 +286,8 @@ export class DataTableController {
   @Post(['/api/v2/tables/:modelId/links/:columnId/records'])
   @Acl('nestedDataListCopyPasteOrDeleteAll')
   async nestedListCopyPasteOrDeleteAll(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
     @Param('columnId') columnId: string,
@@ -313,8 +313,8 @@ export class DataTableController {
   @Post(['/api/v2/tables/:modelId/bulk/aggregate'])
   @Acl('dataAggregate')
   async bulkAggregate(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
   ) {

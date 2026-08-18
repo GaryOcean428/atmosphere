@@ -3,9 +3,9 @@
   "connection": {
     "host": "your-private-db-host.internal",
     "port": "5432",
-    "user": "nocodb",
+    "user": "atmosphere",
     "password": "CHANGE_ME_db_password",
-    "database": "nocodb",
+    "database": "atmosphere",
     "ssl": {
       "rejectUnauthorized": true,
       "ca": "-----BEGIN CERTIFICATE-----\nPASTE_YOUR_CA_PEM_HERE_AS_ONE_LINE\n-----END CERTIFICATE-----"

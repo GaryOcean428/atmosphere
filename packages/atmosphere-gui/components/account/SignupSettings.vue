@@ -40,7 +40,7 @@ loadSettings()
 
 <template>
   <div class="flex flex-col">
-    <NcPageHeader>
+    <AtPageHeader>
       <template #icon>
         <GeneralIcon icon="settings" class="flex-none text-[20px] h-5 w-5" />
       </template>
@@ -49,26 +49,26 @@ loadSettings()
           {{ $t('activity.settings') }}
         </span>
       </template>
-    </NcPageHeader>
+    </AtPageHeader>
     <div
-      class="nc-content-max-w flex-1 max-h-[calc(100vh_-_100px)] overflow-y-auto nc-scrollbar-thin flex flex-col items-center p-6"
+      class="atm-content-max-w flex-1 max-h-[calc(100vh_-_100px)] overflow-y-auto atm-scrollbar-thin flex flex-col items-center p-6"
     >
       <div class="flex flex-col gap-6 w-150">
         <span class="font-bold text-xl" data-rec="true">{{ $t('general.general') }}</span>
-        <div class="flex flex-col border-1 rounded-2xl border-nc-border-gray-medium p-6 gap-y-4">
+        <div class="flex flex-col border-1 rounded-2xl border-atm-border-gray-medium p-6 gap-y-4">
           <label class="flex items-center gap-3 cursor-pointer">
-            <NcCheckbox
+            <AtCheckbox
               v-model:checked="settings.invite_only_signup"
               v-e="['c:account:enable-signup']"
               :disabled="settings.restrict_workspace_creation"
               @change="saveSettings"
             />
-            <span data-rec="true" :class="{ 'text-nc-content-gray-muted': settings.restrict_workspace_creation }">
+            <span data-rec="true" :class="{ 'text-atm-content-gray-muted': settings.restrict_workspace_creation }">
               {{ $t('labels.inviteOnlySignup') }}
             </span>
           </label>
           <label class="flex items-center gap-3 cursor-pointer">
-            <NcCheckbox
+            <AtCheckbox
               v-model:checked="settings.restrict_workspace_creation"
               v-e="['c:account:restrict-workspace-creation']"
               @change="onRestrictWorkspaceCreationChange"

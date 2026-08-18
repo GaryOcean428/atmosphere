@@ -9,13 +9,13 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ViewCreateReqType } from 'nocodb-sdk';
+import { ViewCreateReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { FormsService } from '~/services/forms.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -25,7 +25,7 @@ export class FormsController {
   @Get(['/api/v1/db/meta/forms/:formViewId', '/api/v2/meta/forms/:formViewId'])
   @Acl('formViewGet')
   async formViewGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('formViewId') formViewId: string,
   ) {
     const formViewData = await this.formsService.formViewGet(context, {
@@ -41,10 +41,10 @@ export class FormsController {
   @HttpCode(200)
   @Acl('formViewCreate')
   async formViewCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Body() body: ViewCreateReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const view = await this.formsService.formViewCreate(context, {
       body,
@@ -60,10 +60,10 @@ export class FormsController {
   ])
   @Acl('formViewUpdate')
   async formViewUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('formViewId') formViewId: string,
     @Body() body,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.formsService.formViewUpdate(context, {
       formViewId,

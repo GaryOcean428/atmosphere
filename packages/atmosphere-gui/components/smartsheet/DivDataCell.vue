@@ -19,7 +19,7 @@ const onTabPress = () => {
 
   if (focusedElement) {
     // Check if the focused element is a descendant of the wrapper
-    const closestWrapper = focusedElement.closest('.nc-data-cell')
+    const closestWrapper = focusedElement.closest('.atm-data-cell')
 
     // Scroll it into view
     if (closestWrapper === el.value) {
@@ -30,25 +30,25 @@ const onTabPress = () => {
 </script>
 
 <template>
-  <div ref="el" class="select-none nc-data-cell" @keydown.tab="onTabPress" @click="cellClickHook.trigger($event)">
+  <div ref="el" class="select-none atm-data-cell" @keydown.tab="onTabPress" @click="cellClickHook.trigger($event)">
     <slot />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-data-cell:focus-within {
-  @apply !border-1 !border-nc-border-brand !rounded-lg !shadow-none !ring-0;
+.atm-data-cell:focus-within {
+  @apply !border-1 !border-atm-border-brand !rounded-lg !shadow-none !ring-0;
 }
-.nc-data-cell {
-  @apply border-1 border-nc-border-gray-medium overflow-hidden rounded-lg;
+.atm-data-cell {
+  @apply border-1 border-atm-border-gray-medium overflow-hidden rounded-lg;
 }
 /* Compact view — strip the visible wrapper at all states. Cells stay editable;
    the inner widget shows its own feedback (text cursor, picker overlay,
    dropdown, etc.). Lives here (not in a parent's scoped style) so it competes
    in the same scope as the rules above and reliably wins. */
-.nc-data-cell.nc-data-cell-compact,
-.nc-data-cell.nc-data-cell-compact:focus-within,
-.nc-data-cell.nc-data-cell-compact:hover {
+.atm-data-cell.atm-data-cell-compact,
+.atm-data-cell.atm-data-cell-compact:focus-within,
+.atm-data-cell.atm-data-cell-compact:hover {
   @apply !border-0 !rounded-none !shadow-none !ring-0;
   background: transparent !important;
 }

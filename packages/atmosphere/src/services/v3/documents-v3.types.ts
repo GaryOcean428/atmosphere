@@ -1,4 +1,4 @@
-import type { DocumentType } from 'nocodb-sdk';
+import type { DocumentType } from 'atmosphere-sdk';
 
 // --- Request types ---
 

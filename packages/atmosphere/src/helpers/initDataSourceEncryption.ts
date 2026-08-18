@@ -1,17 +1,17 @@
 import { Logger } from '@nestjs/common';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable, RootScopes } from '~/utils/globals';
 import { encryptPropIfRequired } from '~/utils';
 
 const logger = new Logger('initDataSourceEncryption');
 
-export default async function initDataSourceEncryption(_ncMeta = Noco.ncMeta) {
+export default async function initDataSourceEncryption(_ncMeta = Atmosphere.ncMeta) {
   // return if env is not set
-  if (!process.env.NC_CONNECTION_ENCRYPT_KEY) {
+  if (!process.env.ATMOSPHERE_CONNECTION_ENCRYPT_KEY) {
     return;
   }
 
-  const secret = process.env.NC_CONNECTION_ENCRYPT_KEY;
+  const secret = process.env.ATMOSPHERE_CONNECTION_ENCRYPT_KEY;
 
   const ncMeta = await _ncMeta.startTransaction();
 

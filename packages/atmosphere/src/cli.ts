@@ -5,5 +5,5 @@ export {
   getToolDir,
   metaUrlToDbConfig,
   prepareEnv,
-} from '~/utils/nc-config/helpers';
-export { DriverClient } from '~/utils/nc-config/constants';
+} from '~/utils/atm-config/helpers';
+export { DriverClient } from '~/utils/atm-config/constants';

@@ -1,8 +1,8 @@
-import 'nocodb-sdk';
+import 'atmosphere-sdk';
 import type { Permission } from '~/models';
 
-declare module 'nocodb-sdk' {
-  interface NcContext {
+declare module 'atmosphere-sdk' {
+  interface AtContext {
     /**
      * Enable per-request in-memory caching when set to true
      */

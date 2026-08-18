@@ -8,5 +8,5 @@ defineEmits(['update:visible', 'saved'])
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

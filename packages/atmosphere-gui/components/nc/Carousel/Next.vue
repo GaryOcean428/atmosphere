@@ -8,7 +8,7 @@ const { orientation, canScrollNext, scrollNext } = useCarousel()
 </script>
 
 <template>
-  <NcButton
+  <AtButton
     :disabled="!canScrollNext"
     type="secondary"
     size="xsmall"
@@ -22,5 +22,5 @@ const { orientation, canScrollNext, scrollNext } = useCarousel()
     <slot>
       <GeneralIcon icon="arrowRight" class="h-4 w-4 text-current" />
     </slot>
-  </NcButton>
+  </AtButton>
 </template>

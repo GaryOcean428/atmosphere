@@ -1,6 +1,6 @@
 import DOMPurify from 'isomorphic-dompurify';
 
-export { extractProps } from 'nocodb-sdk';
+export { extractProps } from 'atmosphere-sdk';
 
 export function extractPropsAndSanitize<T extends Record<string, any>>(
   body: T,

@@ -5,7 +5,7 @@ const { isMobileMode } = useGlobal()
 </script>
 
 <template>
-  <span v-if="!isMobileMode" class="opacity-0" data-testid="nc-active-calendar-view">
+  <span v-if="!isMobileMode" class="opacity-0" data-testid="atm-active-calendar-view">
     {{ activeCalendarView }}
   </span>
 </template>

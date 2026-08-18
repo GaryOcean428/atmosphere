@@ -1,6 +1,6 @@
 import { DateTimeGeneralHandler } from './date-time.general.handler';
 import type dayjs from 'dayjs';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
 import type { MetaService } from 'src/meta/meta.service';
 import type { FilterOptions } from '~/db/field-handler/field-handler.interface';
@@ -15,7 +15,7 @@ export class DateTimeMySQLHandler extends DateTimeGeneralHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {

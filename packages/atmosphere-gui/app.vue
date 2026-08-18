@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ErrorBoundary from './components/nc/ErrorBoundary.vue'
+import ErrorBoundary from './components/atm/ErrorBoundary.vue'
 
 const router = useRouter()
 
@@ -12,7 +12,7 @@ const { showOnboardingFlow } = useOnboardingFlow()
 const { hideSharedBaseBtn } = storeToRefs(useConfigStore())
 
 const disableBaseLayout = computed(
-  () => route.value.path.startsWith('/nc/view') || route.value.path.startsWith('/nc/form') || showOnboardingFlow.value,
+  () => route.value.path.startsWith('/atm/view') || route.value.path.startsWith('/atm/form') || showOnboardingFlow.value,
 )
 
 const { isExperimentalFeatureModalOpen, initializeFeatures } = useBetaFeatureToggle()
@@ -144,7 +144,7 @@ const _ = (window as any).ResizeObserver
   <ErrorBoundary>
     <div>
       <!-- Page Loading Indicator -->
-      <NcNuxtLoadingIndicator />
+      <AtNuxtLoadingIndicator />
 
       <!-- Command Menu -->
       <CmdK
@@ -159,7 +159,7 @@ const _ = (window as any).ResizeObserver
       />
       <!-- Recent Views. Cycles through recently visited Views -->
       <CmdL v-model:open="cmdL" :set-active-cmd-view="setActiveCmdView" />
-      <!-- Documentation. Integrated NocoDB Docs directly inside the Product -->
+      <!-- Documentation. Integrated Atmosphere Docs directly inside the Product -->
       <CmdJ v-model:open="cmdJ" :set-active-cmd-view="setActiveCmdView" />
       <DashboardFeatureExperimentation v-model:value="isExperimentalFeatureModalOpen" />
     </div>

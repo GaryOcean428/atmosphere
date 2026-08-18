@@ -30,10 +30,10 @@ global:
 
 ## @section Image
 image:
-  ## @param image.registry NocoDB image registry
+  ## @param image.registry Atmosphere image registry
   registry: docker.io
-  ## @param image.repository NocoDB image repository
-  repository: nocodb/nocodb
+  ## @param image.repository Atmosphere image repository
+  repository: atmosphere/atmosphere
   ## @skip image.tag Image tag (defaults to chart appVersion; immutable tags recommended)
   tag: ""
   ## @param image.digest Image digest (takes precedence over tag), e.g. sha256:...
@@ -113,18 +113,18 @@ lifecycle:
 terminationGracePeriodSeconds: 60
 
 ## @section App config (non-secret)
-nocodb:
-  ## @param nocodb.publicUrl NC_SITE_URL. If empty, derived from the first ingress host when TLS is set
+atmosphere:
+  ## @param atmosphere.publicUrl ATMOSPHERE_SITE_URL. If empty, derived from the first ingress host when TLS is set
   publicUrl: ""
-  ## @param nocodb.dashboardUrl NC_DASHBOARD_URL
+  ## @param atmosphere.dashboardUrl ATMOSPHERE_DASHBOARD_URL
   dashboardUrl: ""
-  ## @param nocodb.disableMux Set NC_DISABLE_MUX=true (recommended for self-hosted)
+  ## @param atmosphere.disableMux Set ATMOSPHERE_DISABLE_MUX=true (recommended for self-hosted)
   disableMux: true
-  ## @param nocodb.disableTelemetry Set NC_DISABLE_TELE=true
+  ## @param atmosphere.disableTelemetry Set ATMOSPHERE_DISABLE_TELE=true
   disableTelemetry: false
-  ## @param nocodb.licenseKey NC_LICENSE_KEY (enterprise)
+  ## @param atmosphere.licenseKey ATMOSPHERE_LICENSE_KEY (enterprise)
   licenseKey: ""
-  ## @param nocodb.extraEnvVars Extra raw env vars for the app (list of name/value or valueFrom)
+  ## @param atmosphere.extraEnvVars Extra raw env vars for the app (list of name/value or valueFrom)
   extraEnvVars: []
 
 ## @section Worker workload
@@ -133,7 +133,7 @@ worker:
   enabled: true
   ## @param worker.replicaCount Worker replicas
   replicaCount: 2
-  ## @param worker.concurrency NC_WORKER_CONCURRENCY (empty = NocoDB default)
+  ## @param worker.concurrency ATMOSPHERE_WORKER_CONCURRENCY (empty = Atmosphere default)
   concurrency: ""
   ## @param worker.terminationGracePeriodSeconds Grace period for the worker to drain in-flight Bull jobs on shutdown (raise above your longest job)
   terminationGracePeriodSeconds: 120
@@ -171,14 +171,14 @@ externalDatabase:
   ## @param externalDatabase.port Postgres port
   port: 5432
   ## @param externalDatabase.database Database name
-  database: nocodb
+  database: atmosphere
   ## @param externalDatabase.username Database user
-  username: nocodb
+  username: atmosphere
   ## @param externalDatabase.password Database password (eval only; use existingSecret in prod)
   password: ""
   ## @param externalDatabase.sslMode sslmode appended to the assembled URL
   sslMode: prefer
-  ## @param externalDatabase.urlEnvVar Env var name for the connection URL (DATABASE_URL or NC_DB)
+  ## @param externalDatabase.urlEnvVar Env var name for the connection URL (DATABASE_URL or ATMOSPHERE_DB)
   urlEnvVar: DATABASE_URL
   ## @param externalDatabase.existingSecret Secret holding the full connection URL
   existingSecret: ""
@@ -195,10 +195,10 @@ externalRedis:
   password: ""
   ## @param externalRedis.tls Use rediss:// scheme
   tls: false
-  ## @param externalRedis.existingSecret Secret holding the full NC_REDIS_URL
+  ## @param externalRedis.existingSecret Secret holding the full ATMOSPHERE_REDIS_URL
   existingSecret: ""
-  ## @param externalRedis.existingSecretUrlKey Key in existingSecret holding NC_REDIS_URL
-  existingSecretUrlKey: NC_REDIS_URL
+  ## @param externalRedis.existingSecretUrlKey Key in existingSecret holding ATMOSPHERE_REDIS_URL
+  existingSecretUrlKey: ATMOSPHERE_REDIS_URL
 
 ## @section SMTP (optional)
 smtp:
@@ -214,21 +214,21 @@ smtp:
   username: ""
   ## @param smtp.password SMTP password (eval only)
   password: ""
-  ## @param smtp.secure NC_SMTP_SECURE
+  ## @param smtp.secure ATMOSPHERE_SMTP_SECURE
   secure: false
   ## @param smtp.existingSecret Secret holding the SMTP password
   existingSecret: ""
   ## @param smtp.passwordKey Key in existingSecret for the SMTP password
-  passwordKey: NC_SMTP_PASSWORD
+  passwordKey: ATMOSPHERE_SMTP_PASSWORD
 
 ## @section SSO (optional)
 sso:
-  ## @param sso.oidc.enabled Enable OIDC (sets NC_SSO=oidc)
+  ## @param sso.oidc.enabled Enable OIDC (sets ATMOSPHERE_SSO=oidc)
   ## @param sso.oidc.providerName Display name for the OIDC provider
   oidc:
     enabled: false
     providerName: OpenID Connect
-  ## @param sso.saml.enabled Enable SAML (sets NC_SSO=saml)
+  ## @param sso.saml.enabled Enable SAML (sets ATMOSPHERE_SSO=saml)
   ## @param sso.saml.providerName Display name for the SAML provider
   saml:
     enabled: false
@@ -236,16 +236,16 @@ sso:
 
 ## @section Auth keys
 auth:
-  ## @param auth.jwtSecret NC_AUTH_JWT_SECRET (auto-generated+persisted if empty)
+  ## @param auth.jwtSecret ATMOSPHERE_AUTH_JWT_SECRET (auto-generated+persisted if empty)
   jwtSecret: ""
-  ## @param auth.encryptionKey NC_CONNECTION_ENCRYPT_KEY (auto-generated+persisted if empty; never rotated)
+  ## @param auth.encryptionKey ATMOSPHERE_CONNECTION_ENCRYPT_KEY (auto-generated+persisted if empty; never rotated)
   encryptionKey: ""
   ## @param auth.existingSecret Secret holding both keys
   existingSecret: ""
   ## @param auth.jwtSecretKey Key in existingSecret for the JWT secret
-  jwtSecretKey: NC_AUTH_JWT_SECRET
+  jwtSecretKey: ATMOSPHERE_AUTH_JWT_SECRET
   ## @param auth.encryptionKeyKey Key in existingSecret for the encryption key
-  encryptionKeyKey: NC_CONNECTION_ENCRYPT_KEY
+  encryptionKeyKey: ATMOSPHERE_CONNECTION_ENCRYPT_KEY
 
 ## @section Scaling & scheduling
 autoscaling:
@@ -296,7 +296,7 @@ ingress:
   annotations: {}
   ## @param ingress.hosts Ingress hosts
   hosts:
-    - host: nocodb.example.com
+    - host: atmosphere.example.com
       paths:
         - path: /
           pathType: Prefix
@@ -327,7 +327,7 @@ persistence:
 
 ## @section Observability
 monitoring:
-  ## @param monitoring.sentry.enabled Set NC_SENTRY_DSN
+  ## @param monitoring.sentry.enabled Set ATMOSPHERE_SENTRY_DSN
   ## @param monitoring.sentry.dsn Sentry DSN (eval; use existingSecret in prod)
   ## @param monitoring.sentry.existingSecret Secret holding the Sentry DSN
   ## @param monitoring.sentry.dsnKey Key in existingSecret for the DSN
@@ -335,7 +335,7 @@ monitoring:
     enabled: false
     dsn: ""
     existingSecret: ""
-    dsnKey: NC_SENTRY_DSN
+    dsnKey: ATMOSPHERE_SENTRY_DSN
 
 ## @section Escape hatches
 ## @param extraEnvVars Extra env vars applied to app and worker

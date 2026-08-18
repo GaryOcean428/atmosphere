@@ -3,7 +3,7 @@ import { MetaTable } from '~/utils/globals';
 
 // Add `fk_lookup_col_id` to the Sort table so a sort can be scoped to a
 // lookup column (the relation sub-query order) instead of a view — mirrors
-// `fk_link_col_id` on the Filter table (nc_048_view_links), which already scopes
+// `fk_link_col_id` on the Filter table (atm_048_view_links), which already scopes
 // the "limit records by conditions" filters to a lookup column.
 const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.SORT, (table) => {

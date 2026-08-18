@@ -25,8 +25,8 @@ const up = async (knex: Knex) => {
 
     table.timestamps(true, true);
 
-    table.index(['base_id', 'fk_workspace_id'], 'nc_permissions_context');
-    table.index(['entity', 'entity_id', 'permission'], 'nc_permissions_entity');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_permissions_context');
+    table.index(['entity', 'entity_id', 'permission'], 'atm_permissions_entity');
   });
 
   await knex.schema.createTable(MetaTable.PERMISSION_SUBJECTS, (table) => {
@@ -42,7 +42,7 @@ const up = async (knex: Knex) => {
     table.primary(['fk_permission_id', 'subject_type', 'subject_id']);
     table.index(
       ['fk_workspace_id', 'base_id'],
-      'nc_permission_subjects_context',
+      'atm_permission_subjects_context',
     );
   });
 };

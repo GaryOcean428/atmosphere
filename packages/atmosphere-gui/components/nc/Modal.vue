@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { CSSProperties } from 'vue'
 
-export interface NcModalProps {
+export interface AtModalProps {
   visible: boolean
   width?: string | number
   height?: string | number
@@ -18,7 +18,7 @@ export interface NcModalProps {
   maskStyle?: CSSProperties
 }
 
-const props = withDefaults(defineProps<NcModalProps>(), {
+const props = withDefaults(defineProps<AtModalProps>(), {
   size: 'medium',
   destroyOnClose: true,
   maskClosable: true,
@@ -109,7 +109,7 @@ const height = computed(() => {
 })
 
 const newWrapClassName = computed(() => {
-  let className = 'nc-modal-wrapper'
+  let className = 'atm-modal-wrapper'
   if (_wrapClassName) {
     className += ` ${_wrapClassName}`
   }
@@ -127,7 +127,7 @@ const stopPropagation = (event: MouseEvent) => {
 if (stopEventPropogation.value) {
   watch(ncModalRef, () => {
     // stop event propogation in edit column
-    const modal = document.querySelector('.nc-modal-wrapper') as HTMLElement
+    const modal = document.querySelector('.atm-modal-wrapper') as HTMLElement
 
     if (visible.value && modal?.parentElement) {
       // modal.parentElement.addEventListener('click', stopPropagation)
@@ -159,8 +159,8 @@ if (stopEventPropogation.value) {
   >
     <div
       ref="ncModalRef"
-      class="flex flex-col nc-modal p-4 md:p-6 h-full"
-      :class="[`nc-modal-size-${size} ${ncModalClassName}`]"
+      class="flex flex-col atm-modal p-4 md:p-6 h-full"
+      :class="[`atm-modal-size-${size} ${ncModalClassName}`]"
       :style="{
         maxHeight: height,
         ...(resolvedModalSize ? { height } : {}),
@@ -169,9 +169,9 @@ if (stopEventPropogation.value) {
       <div
         v-if="slots.header"
         :class="{
-          'border-b-1 border-nc-border-gray-medium': showSeparator,
+          'border-b-1 border-atm-border-gray-medium': showSeparator,
         }"
-        class="flex pb-2 mb-2 nc-modal-header text-base md:text-lg font-medium"
+        class="flex pb-2 mb-2 atm-modal-header text-base md:text-lg font-medium"
       >
         <slot name="header" />
       </div>
@@ -182,7 +182,7 @@ if (stopEventPropogation.value) {
 </template>
 
 <style lang="scss">
-.nc-modal-wrapper {
+.atm-modal-wrapper {
   .ant-modal-content {
     @apply !p-0 overflow-hidden;
   }

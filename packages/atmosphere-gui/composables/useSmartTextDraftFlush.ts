@@ -1,4 +1,4 @@
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 
 /**
  * CE stub. SmartText is an EE-only feature, so in CE there are never any drafts

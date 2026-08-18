@@ -9,7 +9,7 @@ import { SqlUi } from './SqlUI.types';
 //
 // Creation defaults stay 19c-compatible: Checkbox → number(1), JSON/LongText →
 // clob, strings → varchar2 (4000-byte cap). The 21c+/23ai native types (json,
-// boolean, vector) are listed so introspected columns round-trip, but NocoDB
+// boolean, vector) are listed so introspected columns round-trip, but Atmosphere
 // doesn't emit them yet.
 const dbTypes = [
   // character
@@ -146,7 +146,7 @@ export class OracleUi implements SqlUi {
       },
       {
         column_name: 'created_by',
-        title: 'nc_created_by',
+        title: 'atm_created_by',
         dt: 'varchar2',
         dtx: 'specificType',
         ct: 'varchar2(45)',
@@ -169,7 +169,7 @@ export class OracleUi implements SqlUi {
       },
       {
         column_name: 'updated_by',
-        title: 'nc_updated_by',
+        title: 'atm_updated_by',
         dt: 'varchar2',
         dtx: 'specificType',
         ct: 'varchar2(45)',
@@ -191,8 +191,8 @@ export class OracleUi implements SqlUi {
         system: true,
       },
       {
-        column_name: 'nc_order',
-        title: 'nc_order',
+        column_name: 'atm_order',
+        title: 'atm_order',
         dt: 'number',
         dtx: 'specificType',
         ct: 'number(38,20)',
@@ -356,7 +356,7 @@ export class OracleUi implements SqlUi {
   }
 
   static columnEditable(colObj) {
-    return colObj.tn !== '_evolutions' || colObj.tn !== 'nc_evolutions';
+    return colObj.tn !== '_evolutions' || colObj.tn !== 'atm_evolutions';
   }
 
   static colPropAuDisabled(col) {
@@ -382,7 +382,7 @@ export class OracleUi implements SqlUi {
     // `time` dt; here the authoritative signal is the persisted uidt. Honor it
     // so a Time column reports the 'time' abstract type (drives the frontend
     // Time picker / Time filter widget). Raw introspection passes no uidt, so
-    // this guard only fires for already-typed NocoDB columns — a bare DATE with
+    // this guard only fires for already-typed Atmosphere columns — a bare DATE with
     // no uidt still falls through to 'datetime'.
     if (col.uidt === UITypes.Time) {
       return 'time';
@@ -547,7 +547,7 @@ export class OracleUi implements SqlUi {
             colProp.dtxp = '11';
             colProp.dtxs = '0';
           }
-          colProp.meta = isAutoGenId ? { ag: 'nc' } : undefined;
+          colProp.meta = isAutoGenId ? { ag: 'atm' } : undefined;
         }
         break;
       case 'ForeignKey':

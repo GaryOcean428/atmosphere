@@ -10,13 +10,13 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ProjectRoles, validateAndExtractSSLProp } from 'nocodb-sdk';
+import { ProjectRoles, validateAndExtractSSLProp } from 'atmosphere-sdk';
 import {
   ErrorReportReqType,
   getTestDatabaseName,
   IntegrationsType,
   OrgUserRoles,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import {
   hasSslFilePath,
   validateDbConnectionHost,
@@ -31,12 +31,12 @@ import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { PublicApiLimiterGuard } from '~/guards/public-api-limiter.guard';
 import { TelemetryService } from '~/services/telemetry.service';
-import { NcRequest } from '~/interface/config';
+import { AtRequest } from '~/interface/config';
 import { Integration } from '~/models';
 import { MetaTable, RootScopes } from '~/utils/globals';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { deepMerge, isEE } from '~/utils';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { DataApiLimiterGuard } from '~/guards/data-api-limiter.guard';
 
 @Controller()
@@ -51,13 +51,13 @@ export class UtilsController {
   @UseGuards(PublicApiLimiterGuard)
   @Get('/api/v1/version')
   async getVersion() {
-    if (process.env.NC_CLOUD !== 'true') {
+    if (process.env.ATMOSPHERE_CLOUD !== 'true') {
       return this.utilsService.versionInfo();
     }
 
     if (!this.version) {
       try {
-        this.version = await promisify(fs.readFile)('./public/nc.txt', 'utf-8');
+        this.version = await promisify(fs.readFile)('./public/atm.txt', 'utf-8');
       } catch {
         this.version = 'Not available';
       }
@@ -71,7 +71,7 @@ export class UtilsController {
     scope: 'org',
   })
   @HttpCode(200)
-  async testConnection(@Body() body: any, @Req() req: NcRequest) {
+  async testConnection(@Body() body: any, @Req() req: AtRequest) {
     body.pool = {
       min: 0,
       max: 1,
@@ -88,7 +88,7 @@ export class UtilsController {
       );
 
       if (!integration || integration.type !== IntegrationsType.Database) {
-        NcError.integrationNotFound(body.fk_integration_id);
+        AtError.integrationNotFound(body.fk_integration_id);
       }
 
       // Integration must belong to the caller's current workspace.
@@ -98,17 +98,17 @@ export class UtilsController {
         callerWorkspaceId &&
         integration.fk_workspace_id !== callerWorkspaceId
       ) {
-        NcError.forbidden('Integration belongs to a different workspace');
+        AtError.forbidden('Integration belongs to a different workspace');
       }
 
       if (integration.is_private && integration.created_by !== req.user.id) {
-        NcError.forbidden('You do not have access to this integration');
+        AtError.forbidden('You do not have access to this integration');
       }
 
       if (!req.user.roles[OrgUserRoles.CREATOR]) {
         // Caller must hold owner/creator on a base inside the integration's
         // workspace, not just any workspace they belong to.
-        const baseWithPermission = await Noco.ncMeta
+        const baseWithPermission = await Atmosphere.ncMeta
           .knex(MetaTable.PROJECT_USERS)
           .innerJoin(
             MetaTable.PROJECT,
@@ -129,7 +129,7 @@ export class UtilsController {
           .first();
 
         if (!baseWithPermission)
-          NcError.forbidden('You do not have access to this integration');
+          AtError.forbidden('You do not have access to this integration');
       }
 
       config = await integration.getConfig();
@@ -164,11 +164,11 @@ export class UtilsController {
 
   @UseGuards(PublicApiLimiterGuard)
   @Get([
-    '/api/v1/db/meta/nocodb/info',
-    '/api/v2/meta/nocodb/info',
-    '/api/v1/meta/nocodb/info',
+    '/api/v1/db/meta/atmosphere/info',
+    '/api/v2/meta/atmosphere/info',
+    '/api/v1/meta/atmosphere/info',
   ])
-  async appInfo(@Req() req: NcRequest) {
+  async appInfo(@Req() req: AtRequest) {
     return await this.utilsService.appInfo({
       req: {
         ncSiteUrl: (req as any).ncSiteUrl,
@@ -207,23 +207,23 @@ export class UtilsController {
 
   @UseGuards(PublicApiLimiterGuard)
   @Get('/api/v2/feed')
-  async feed(@Request() req: NcRequest) {
+  async feed(@Request() req: AtRequest) {
     return await this.utilsService.feed(req);
   }
 
   @UseGuards(PublicApiLimiterGuard)
   @Get('/api/v2/cloud-features')
-  async cloudFeatures(@Request() req: NcRequest) {
+  async cloudFeatures(@Request() req: AtRequest) {
     return await this.utilsService.cloudFeatures(req);
   }
 
   @UseGuards(PublicApiLimiterGuard)
   @Post('/api/v1/error-reporting')
-  async reportErrors(@Req() req: NcRequest, @Body() body: ErrorReportReqType) {
+  async reportErrors(@Req() req: AtRequest, @Body() body: ErrorReportReqType) {
     if (
-      `${process.env.NC_DISABLE_ERR_REPORTS}` === 'true' ||
+      `${process.env.ATMOSPHERE_DISABLE_ERR_REPORTS}` === 'true' ||
       isEE ||
-      process.env.NC_SENTRY_DSN
+      process.env.ATMOSPHERE_SENTRY_DSN
     ) {
       return {};
     }

@@ -1,4 +1,4 @@
-import { type LinkToAnotherRecordType, RelationTypes, UITypes } from 'nocodb-sdk'
+import { type LinkToAnotherRecordType, RelationTypes, UITypes } from 'atmosphere-sdk'
 import dagre from 'dagre'
 import type { Edge, EdgeMarker, Elements, Node } from '@vue-flow/core'
 import { MarkerType, Position, isEdge, isNode } from '@vue-flow/core'

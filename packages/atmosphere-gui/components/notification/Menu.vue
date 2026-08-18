@@ -10,7 +10,7 @@ const isDropdownOpen = ref(false)
 
 <template>
   <div class="cursor-pointer flex items-center">
-    <NcDropdown
+    <AtDropdown
       v-model:visible="isDropdownOpen"
       overlay-class-name="!shadow-none"
       :placement="isMiniSidebar ? 'rightBottom' : 'bottomRight'"
@@ -19,23 +19,23 @@ const isDropdownOpen = ref(false)
     >
       <div
         :class="{
-          'nc-mini-sidebar-btn-full-width': isMiniSidebar,
+          'atm-mini-sidebar-btn-full-width': isMiniSidebar,
           'flex': !isMiniSidebar,
         }"
       >
-        <NcButton
+        <AtButton
           :size="isMiniSidebar ? 'xs' : 'small'"
-          class="!border-none nc-mini-sidebar-btn"
+          class="!border-none atm-mini-sidebar-btn"
           :class="{
             hovered: isDropdownOpen,
           }"
           type="text"
-          data-testid="nc-sidebar-notification-btn"
+          data-testid="atm-sidebar-notification-btn"
         >
           <span
             v-if="unreadCount"
             :key="unreadCount"
-            class="bg-nc-red-500 w-2 h-2 border-1 border-nc-bg-gray-minisidebar rounded-[6px] absolute top-[5px] left-[15px]"
+            class="bg-atm-red-500 w-2 h-2 border-1 border-atm-bg-gray-minisidebar rounded-[6px] absolute top-[5px] left-[15px]"
           ></span>
           <GeneralIcon
             icon="notification"
@@ -43,12 +43,12 @@ const isDropdownOpen = ref(false)
               'h-4 w-4': isMiniSidebar,
             }"
           />
-        </NcButton>
+        </AtButton>
       </div>
 
       <template #overlay>
         <NotificationCard @close="isDropdownOpen = false" />
       </template>
-    </NcDropdown>
+    </AtDropdown>
   </div>
 </template>

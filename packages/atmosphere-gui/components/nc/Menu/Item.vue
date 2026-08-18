@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
  * ## Known Issue and Fix
- * - **Issue**: When conditionally rendering `NcMenuItem` using `v-if` without a corresponding `v-else` fallback,
+ * - **Issue**: When conditionally rendering `AtMenuItem` using `v-if` without a corresponding `v-else` fallback,
  *   Vue may throw a
  * `NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node.`.
  *
- * - This issue occurs specifically when the `NcMenu` is open, and the condition changes dynamically (e.g., during runtime state changes)
+ * - This issue occurs specifically when the `AtMenu` is open, and the condition changes dynamically (e.g., during runtime state changes)
  *
  * - **Fix**: Use `v-show` instead of `v-if` when no replacement (fallback) node is provided. This keeps the element
  *   in the DOM but toggles its visibility, preventing the DOM manipulation issue.
@@ -32,13 +32,13 @@ defineOptions({
       :key="mKey"
       v-bind="$attrs"
       :disabled="Boolean(disabled)"
-      class="nc-menu-item"
+      class="atm-menu-item"
       :class="{
-        'nc-menu-item-danger': danger,
-        'nc-menu-item-ai': theme === 'ai',
+        'atm-menu-item-danger': danger,
+        'atm-menu-item-ai': theme === 'ai',
       }"
     >
-      <div class="nc-menu-item-inner" :class="innerClass">
+      <div class="atm-menu-item-inner" :class="innerClass">
         <slot />
       </div>
     </a-menu-item>
@@ -46,36 +46,36 @@ defineOptions({
 </template>
 
 <style lang="scss">
-.ant-dropdown-menu-item.nc-menu-item {
+.ant-dropdown-menu-item.atm-menu-item {
   @apply p-2 mx-1.5 font-normal text-sm xs:(text-base py-3 px-3.5 mx-0) rounded-md overflow-hidden;
 }
 
-.nc-menu-item-inner {
+.atm-menu-item-inner {
   @apply flex flex-row items-center gap-x-2 text-sm;
 }
 
-.nc-menu-item.nc-menu-item-danger {
+.atm-menu-item.atm-menu-item-danger {
   &:not(.ant-dropdown-menu-item-disabled) {
-    @apply !text-nc-content-red-medium !hover:bg-nc-bg-red-light dark:!hover:bg-nc-bg-red-light/20;
+    @apply !text-atm-content-red-medium !hover:bg-atm-bg-red-light dark:!hover:bg-atm-bg-red-light/20;
   }
 }
 
-.nc-menu-item.nc-menu-item-ai {
+.atm-menu-item.atm-menu-item-ai {
   &:not(.ant-dropdown-menu-item-disabled) {
-    @apply !text-nc-content-purple-medium !hover:bg-nc-bg-purple-light;
+    @apply !text-atm-content-purple-medium !hover:bg-atm-bg-purple-light;
   }
 }
 
-.nc-menu-item > .ant-dropdown-menu-title-content {
+.atm-menu-item > .ant-dropdown-menu-title-content {
   // Not Icon
-  :not(.nc-icon):not(.material-symbols) {
+  :not(.atm-icon):not(.material-symbols) {
     line-height: 20px;
   }
 
   @apply flex flex-row items-center;
 }
 
-.nc-menu-item::after {
+.atm-menu-item::after {
   background: none;
 }
 </style>

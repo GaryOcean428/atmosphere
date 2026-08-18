@@ -4,7 +4,7 @@ import type { CSSProperties } from '@vue/runtime-dom'
 import type { TooltipPlacement } from 'ant-design-vue/lib/tooltip'
 
 /**
- * NcTooltip Component
+ * AtTooltip Component
  *
  * A customizable tooltip component with optional modifiers, styles, and placement.
  *
@@ -12,28 +12,28 @@ import type { TooltipPlacement } from 'ant-design-vue/lib/tooltip'
  * ### Single line `truncate`
  *
  * ```vue
- *  <NcTooltip
+ *  <AtTooltip
  *    :title="text"
  *    show-on-truncate-only
  *    class="truncate"
  *  >
  *    {{ text }}
- *  </NcTooltip>
+ *  </AtTooltip>
  * ```
  *
  * ## Multi-line `line-clamp`
  * ```vue
- *  <NcTooltip
+ *  <AtTooltip
  *    :title="text"
  *    show-on-truncate-only
  *    :line-clamp="2"
  *    class="line-clamp-2"
  *  >
  *    {{ text }}
- *  </NcTooltip>
+ *  </AtTooltip>
  * ```
  */
-interface NcTooltipProps {
+interface AtTooltipProps {
   /**
    * Key to be pressed on hover to trigger the tooltip
    */
@@ -56,7 +56,7 @@ interface NcTooltipProps {
    * Used with `showOnTruncateOnly`. A CSS selector for a descendant (queried within the tooltip's
    * own wrapper) to measure for truncation instead of the wrapper itself. Use when the text clips
    * inside a nested element rather than directly in the wrapper — e.g. a smartsheet cell's
-   * `.nc-cell-field`.
+   * `.atm-cell-field`.
    */
   truncateSelector?: string
   hideOnClick?: boolean
@@ -78,7 +78,7 @@ interface NcTooltipProps {
   lineClamp?: number
 }
 
-const props = withDefaults(defineProps<NcTooltipProps>(), {
+const props = withDefaults(defineProps<AtTooltipProps>(), {
   arrow: true,
   placement: 'top',
   wrapChild: 'div',
@@ -157,7 +157,7 @@ watchDebounced(
   ([overlayHovering, hovering, key, isDisabled]) => {
     if (showOnTruncateOnly?.value) {
       // When `truncateSelector` is set, measure that descendant instead of the wrapper itself —
-      // for cases where the text clips inside a nested element (e.g. a cell's `.nc-cell-field`).
+      // for cases where the text clips inside a nested element (e.g. a cell's `.atm-cell-field`).
       const targetElement = (props.truncateSelector ? el?.value?.querySelector(props.truncateSelector) : el?.value) as
         | HTMLElement
         | null
@@ -229,8 +229,8 @@ const onClick = () => {
 <template>
   <a-tooltip
     v-model:visible="showTooltip"
-    :overlay-class-name="`nc-tooltip-${color} ${showTooltip ? 'visible' : 'hidden'} ${overlayClassName ?? ''} ${
-      !arrow ? 'nc-tooltip-arrow-hidden' : ''
+    :overlay-class-name="`atm-tooltip-${color} ${showTooltip ? 'visible' : 'hidden'} ${overlayClassName ?? ''} ${
+      !arrow ? 'atm-tooltip-arrow-hidden' : ''
     }`"
     :overlay-style="tooltipStyle"
     :overlay-inner-style="overlayInnerStyle"
@@ -265,10 +265,10 @@ const onClick = () => {
 </template>
 
 <style lang="scss">
-.nc-tooltip.hidden {
+.atm-tooltip.hidden {
   @apply invisible;
 }
-.nc-tooltip-dark {
+.atm-tooltip-dark {
   .ant-tooltip-inner {
     @apply !px-2 !py-1 !rounded-lg !bg-gray-800 dark:!bg-[#3a3f4b];
   }
@@ -278,16 +278,16 @@ const onClick = () => {
   }
 }
 
-.nc-tooltip-light {
+.atm-tooltip-light {
   .ant-tooltip-inner {
-    @apply !px-2 !py-1 !text-nc-content-gray !rounded-lg !bg-nc-bg-gray-medium;
+    @apply !px-2 !py-1 !text-atm-content-gray !rounded-lg !bg-atm-bg-gray-medium;
   }
   .ant-tooltip-arrow-content {
-    @apply !bg-nc-bg-gray-medium;
+    @apply !bg-atm-bg-gray-medium;
   }
 }
 
-.nc-tooltip-scrollable {
+.atm-tooltip-scrollable {
   .ant-tooltip-inner {
     max-height: 60vh;
     overflow-y: auto;
@@ -295,7 +295,7 @@ const onClick = () => {
   }
 }
 
-.nc-tooltip-arrow-hidden {
+.atm-tooltip-arrow-hidden {
   .ant-tooltip-arrow {
     @apply hidden;
   }

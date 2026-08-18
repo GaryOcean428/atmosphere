@@ -1,19 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   AppEvents,
-  type NcContext,
-  type NcRequest,
+  type AtContext,
+  type AtRequest,
   ProjectStatus,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { Base, Source } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/cli';
 import { generateUniqueName } from '~/helpers/exportImportHelpers';
 import { JobTypes } from '~/interface/Jobs';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { BasesService } from '~/services/bases.service';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 @Injectable()
 export class DuplicateService {
@@ -30,8 +30,8 @@ export class DuplicateService {
     sourceId,
     body,
   }: {
-    context: NcContext;
-    req: NcRequest;
+    context: AtContext;
+    req: AtRequest;
     baseId: string;
     sourceId?: string;
     body?: {
@@ -52,11 +52,11 @@ export class DuplicateService {
     const base = await Base.get(context, baseId);
 
     if (!base) {
-      NcError.get(context).baseNotFound(baseId);
+      AtError.get(context).baseNotFound(baseId);
     }
 
     if (base.is_sandbox) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Sandbox bases cannot be duplicated. Duplicate the master base instead.',
       );
     }
@@ -67,9 +67,9 @@ export class DuplicateService {
 
     if (!source) {
       if (sourceId) {
-        NcError.get(context).sourceNotFound(sourceId);
+        AtError.get(context).sourceNotFound(sourceId);
       }
-      NcError.get(context).noSourcesFound();
+      AtError.get(context).noSourcesFound();
     }
 
     if (
@@ -95,7 +95,7 @@ export class DuplicateService {
       bases.map((p) => p.title),
     );
 
-    const parentAuditId = await Noco.ncAudit.genNanoid(MetaTable.AUDIT);
+    const parentAuditId = await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT);
 
     req.ncParentAuditId = parentAuditId;
 
@@ -144,9 +144,9 @@ export class DuplicateService {
   protected async handleDifferentWs(params: {
     sourceBase: Base;
     targetBase: Base;
-    context: NcContext;
-    req: NcRequest;
+    context: AtContext;
+    req: AtRequest;
   }) {
-    NcError.notImplemented();
+    AtError.notImplemented();
   }
 }

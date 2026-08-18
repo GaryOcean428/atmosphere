@@ -1,4 +1,4 @@
-import { type ColumnType, SeparatorType, UITypes } from 'nocodb-sdk'
+import { type ColumnType, SeparatorType, UITypes } from 'atmosphere-sdk'
 
 const defaultColumnModelId = 'mtWA9ZXvsuh'
 const table2ColumnModelId = 'mehpRLA42Cz'

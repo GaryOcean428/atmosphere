@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents } from 'nocodb-sdk';
-import type { PluginTestReqType, PluginType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+import { AppEvents } from 'atmosphere-sdk';
+import type { PluginTestReqType, PluginType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import { Plugin } from '~/models';
 import { isPlayWrightNode } from '~/helpers/utils';
 
@@ -16,7 +16,7 @@ export class PluginsService {
     return await Plugin.list();
   }
 
-  async pluginTest(param: { body: PluginTestReqType; req: NcRequest }) {
+  async pluginTest(param: { body: PluginTestReqType; req: AtRequest }) {
     validatePayload(
       'swagger.json#/components/schemas/PluginTestReq',
       param.body,
@@ -26,7 +26,7 @@ export class PluginsService {
       testBody: param.body,
       req: param.req,
     });
-    return await NcPluginMgrv2.test(param.body);
+    return await AtPluginMgrv2.test(param.body);
   }
 
   async pluginRead(param: { pluginId: string }) {
@@ -35,7 +35,7 @@ export class PluginsService {
   async pluginUpdate(param: {
     pluginId: string;
     plugin: PluginType;
-    req: NcRequest;
+    req: AtRequest;
   }) {
     validatePayload('swagger.json#/components/schemas/PluginReq', param.plugin);
 
@@ -53,7 +53,7 @@ export class PluginsService {
       pluginInfo.category &&
       !isPlayWrightNode()
     ) {
-      await NcPluginMgrv2.test({
+      await AtPluginMgrv2.test({
         title: pluginInfo.title,
         category: pluginInfo.category,
         input: param.plugin.input,

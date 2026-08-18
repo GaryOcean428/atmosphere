@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { hideExtraFieldsMetaKey, isLinksOrLTAR } from 'nocodb-sdk'
+import { hideExtraFieldsMetaKey, isLinksOrLTAR } from 'atmosphere-sdk'
 const { activeField, updateColMeta } = useFormViewStoreOrThrow()
 
 const vShowExtraFields = computed({
@@ -24,10 +24,10 @@ const vShowExtraFields = computed({
   <div v-if="activeField && isLinksOrLTAR(activeField)" class="flex flex-col">
     <div class="flex items-start justify-between gap-3">
       <div>
-        <div class="nc-form-input-required text-nc-content-gray font-medium">
+        <div class="atm-form-input-required text-atm-content-gray font-medium">
           {{ $t('labels.showExtraFields') }}
         </div>
-        <div class="text-nc-content-gray-muted mt-1">
+        <div class="text-atm-content-gray-muted mt-1">
           {{ $t('labels.showExtraFieldsDescription') }}
         </div>
       </div>
@@ -36,7 +36,7 @@ const vShowExtraFields = computed({
         v-model:checked="vShowExtraFields"
         v-e="['a:form-view:field:show-extra-fields']"
         size="small"
-        data-testid="nc-form-input-show-extra-fields"
+        data-testid="atm-form-input-show-extra-fields"
       />
     </div>
   </div>

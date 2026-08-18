@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Modal, message } from 'ant-design-vue'
-import type { BaseType } from 'nocodb-sdk'
+import type { BaseType } from 'atmosphere-sdk'
 import { useI18n } from 'vue-i18n'
 import MaterialSymbolsFormatListBulletedRounded from '~icons/material-symbols/format-list-bulleted-rounded'
 import MaterialSymbolsGridView from '~icons/material-symbols/grid-view'
@@ -10,7 +10,7 @@ const { t } = useI18n()
 
 const navDrawerOptions = [
   {
-    title: 'My NocoDB',
+    title: 'My Atmosphere',
     icon: MdiFolderOutline,
   },
   /* todo: implement the api and bring back the options below
@@ -64,7 +64,7 @@ const deleteProject = (base: BaseType) => {
             <v-menu class="select-none">
               <template #activator="{ props }">
                 <div
-                  class="color-transition hover:(bg-nc-bg-gray-light) mr-auto select-none flex items-center gap-2 leading-8 cursor-pointer rounded-full border-1 border-nc-border-gray-dark px-5 py-2 shadow prose-lg font-semibold"
+                  class="color-transition hover:(bg-atm-bg-gray-light) mr-auto select-none flex items-center gap-2 leading-8 cursor-pointer rounded-full border-1 border-atm-border-gray-dark px-5 py-2 shadow prose-lg font-semibold"
                   @click="props.onClick"
                 >
                   <component :is="iconMap.plus" class="text-primary text-2xl" />
@@ -73,20 +73,20 @@ const deleteProject = (base: BaseType) => {
               </template>
 
               <v-list
-                class="!py-0 flex flex-col bg-nc-bg-default rounded-lg shadow-md border-1 border-nc-border-gray-dark mt-2 ml-2"
+                class="!py-0 flex flex-col bg-atm-bg-default rounded-lg shadow-md border-1 border-atm-border-gray-dark mt-2 ml-2"
               >
                 <div
-                  class="grid grid-cols-12 cursor-pointer hover:bg-nc-bg-gray-medium flex items-center p-2"
+                  class="grid grid-cols-12 cursor-pointer hover:bg-atm-bg-gray-medium flex items-center p-2"
                   @click="navigateTo('/base/create')"
                 >
                   <component :is="iconMap.plus" class="col-span-2 mr-1 mt-[1px] text-primary text-lg" />
                   <div class="col-span-10 text-sm xl:text-md">{{ $t('activity.createProject') }}</div>
                 </div>
                 <div
-                  class="grid grid-cols-12 cursor-pointer hover:bg-nc-bg-gray-medium flex items-center p-2"
+                  class="grid grid-cols-12 cursor-pointer hover:bg-atm-bg-gray-medium flex items-center p-2"
                   @click="navigateTo('/base/create-external')"
                 >
-                  <component :is="iconMap.database" class="col-span-2 mr-1 mt-[1px] text-nc-content-green-medium text-lg" />
+                  <component :is="iconMap.database" class="col-span-2 mr-1 mt-[1px] text-atm-content-green-medium text-lg" />
                   <div class="col-span-10 text-sm xl:text-md" v-html="$t('activity.createProjectExtended.extDB')" />
                 </div>
               </v-list>
@@ -118,19 +118,19 @@ const deleteProject = (base: BaseType) => {
 
       <div class="flex-1 mb-12">
         <div class="flex">
-          <div class="flex-1 text-2xl md:text-4xl font-bold text-nc-content-gray-muted p-4">
+          <div class="flex-1 text-2xl md:text-4xl font-bold text-atm-content-gray-muted p-4">
             {{ activePage }}
           </div>
 
           <div class="self-end flex text-4xl mb-1">
             <MaterialSymbolsGridView
               :class="route.name === 'index-index' ? '!text-primary' : ''"
-              class="cursor-pointer p-2 hover:bg-nc-bg-gray-dark/50 rounded-full"
+              class="cursor-pointer p-2 hover:bg-atm-bg-gray-dark/50 rounded-full"
               @click="navigateTo('/')"
             />
             <MaterialSymbolsFormatListBulletedRounded
               :class="route.name === 'index-index-list' ? '!text-primary' : ''"
-              class="cursor-pointer p-2 hover:bg-nc-bg-gray-dark/50 rounded-full"
+              class="cursor-pointer p-2 hover:bg-atm-bg-gray-dark/50 rounded-full"
               @click="navigateTo('/list')"
             />
           </div>

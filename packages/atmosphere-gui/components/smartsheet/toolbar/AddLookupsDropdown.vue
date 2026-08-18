@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type ColumnType, type TableType, UITypes } from 'nocodb-sdk'
+import { type ColumnType, type TableType, UITypes } from 'atmosphere-sdk'
 import { generateUniqueColumnName } from '~/helpers/parsers/parserHelpers'
 
 interface Props {
@@ -168,7 +168,7 @@ watch(isOpened, async (val) => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="isOpened"
     :disabled="props.disabled"
     placement="right"
@@ -192,7 +192,7 @@ watch(isOpened, async (val) => {
                   :placeholder="$t('placeholder.searchFieldToAddAsLookup')"
                 >
                   <template #prefix>
-                    <GeneralIcon icon="search" class="w-3.5 text-nc-content-gray-muted h-3.5 mr-1 ml-1" />
+                    <GeneralIcon icon="search" class="w-3.5 text-atm-content-gray-muted h-3.5 mr-1 ml-1" />
                   </template>
                 </a-input>
               </template>
@@ -204,31 +204,31 @@ watch(isOpened, async (val) => {
                   <div class="font-weight-600">
                     {{ $t('general.add') }} {{ $t('datatype.Lookup') }} {{ $t('objects.fields') }}
                   </div>
-                  <NcButton type="text" size="small" @click="switchToSearchMode()">
+                  <AtButton type="text" size="small" @click="switchToSearchMode()">
                     <GeneralIcon icon="search" class="w-4 h-4" />
-                  </NcButton>
+                  </AtButton>
                 </div>
               </template>
             </transition>
           </div>
-          <div class="border-y-1 h-[310px] border-nc-border-gray-medium py-1 nc-scrollbar-thin" style="scrollbar-gutter: stable">
+          <div class="border-y-1 h-[310px] border-atm-border-gray-medium py-1 atm-scrollbar-thin" style="scrollbar-gutter: stable">
             <div v-for="field of filteredColumns" :key="field.id">
               <div
                 :key="field.id"
-                :data-testid="`nc-lookup-add-menu-${field.title}`"
-                class="px-1 py-0.75 mx-1 flex flex-row items-center rounded-md hover:bg-nc-bg-gray-light"
+                :data-testid="`atm-lookup-add-menu-${field.title}`"
+                class="px-1 py-0.75 mx-1 flex flex-row items-center rounded-md hover:bg-atm-bg-gray-light"
                 @click.stop="selectedFields[field.id] = !selectedFields[field.id]"
               >
                 <div class="flex flex-row items-center w-full cursor-pointer truncate ml-1 py-[2px] pr-2">
-                  <SmartsheetHeaderIcon :column="field" class="!w-3.5 !h-3.5" color="text-nc-content-gray-muted" />
-                  <NcTooltip class="flex-1 pl-1 pr-2 truncate" show-on-truncate-only>
+                  <SmartsheetHeaderIcon :column="field" class="!w-3.5 !h-3.5" color="text-atm-content-gray-muted" />
+                  <AtTooltip class="flex-1 pl-1 pr-2 truncate" show-on-truncate-only>
                     <template #title>
                       {{ field.title }}
                     </template>
                     <template #default>{{ field.title }}</template>
-                  </NcTooltip>
+                  </AtTooltip>
 
-                  <NcCheckbox v-model:checked="selectedFields[field.id]" size="default" />
+                  <AtCheckbox v-model:checked="selectedFields[field.id]" size="default" />
                 </div>
 
                 <div class="flex-1" />
@@ -236,11 +236,11 @@ watch(isOpened, async (val) => {
             </div>
           </div>
           <div class="flex w-full p-1">
-            <NcButton
+            <AtButton
               :loading="isLoading"
               size="small"
               type="text"
-              class="nc-add-lookup-button"
+              class="atm-add-lookup-button"
               :disabled="!hasSelectedFields"
               @click="createLookups"
             >
@@ -253,12 +253,12 @@ watch(isOpened, async (val) => {
                       count: selectedFieldsCount || '',
                     })
               }}
-            </NcButton>
+            </AtButton>
           </div>
         </div>
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style scoped lang="scss">
@@ -281,7 +281,7 @@ watch(isOpened, async (val) => {
   transform: translateX(-90px);
 }
 
-.nc-add-lookup-button {
+.atm-add-lookup-button {
   @apply w-full;
 
   &:not(:disabled) {

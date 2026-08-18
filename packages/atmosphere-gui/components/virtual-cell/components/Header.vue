@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { RelationTypes } from 'nocodb-sdk'
+import { RelationTypes } from 'atmosphere-sdk'
 
 const {
   relation,
@@ -55,14 +55,14 @@ const relationMeta = computed(() => {
   <div
     class="flex-none flex rounded-md gap-1 items-center p-1 max-h-7"
     :class="{
-      'bg-nc-bg-gray-medium text-nc-content-gray-subtle2': !linkedRecords,
-      'bg-nc-bg-orange-dark text-nc-content-orange-dark': (relation === 'hm' || relation === 'om') && linkedRecords,
-      'bg-nc-bg-pink-dark text-nc-content-pink-dark': relation === 'mm' && linkedRecords,
-      'bg-nc-bg-blue-dark text-nc-content-blue-dark': (relation === 'bt' || relation === 'mo') && linkedRecords,
-      'bg-nc-bg-purple-dark text-nc-content-purple-dark': relation === 'oo' && linkedRecords,
+      'bg-atm-bg-gray-medium text-atm-content-gray-subtle2': !linkedRecords,
+      'bg-atm-bg-orange-dark text-atm-content-orange-dark': (relation === 'hm' || relation === 'om') && linkedRecords,
+      'bg-atm-bg-pink-dark text-atm-content-pink-dark': relation === 'mm' && linkedRecords,
+      'bg-atm-bg-blue-dark text-atm-content-blue-dark': (relation === 'bt' || relation === 'mo') && linkedRecords,
+      'bg-atm-bg-purple-dark text-atm-content-purple-dark': relation === 'oo' && linkedRecords,
     }"
   >
-    <NcTooltip class="z-10 flex" placement="bottom">
+    <AtTooltip class="z-10 flex" placement="bottom">
       <template #title>
         <div class="p-1">
           <h1 class="text-white font-bold">{{ relationMeta.title }}</h1>
@@ -80,15 +80,15 @@ const relationMeta = computed(() => {
       </template>
       <component
         :is="relationMeta.icon"
-        class="nc-relation-icon flex-none w-5 h-5 p-1 rounded-md"
+        class="atm-relation-icon flex-none w-5 h-5 p-1 rounded-md"
         :class="{
-          '!bg-nc-orange-500': relation === 'hm' || relation === 'om',
-          '!bg-nc-pink-500': relation === 'mm',
-          '!bg-nc-purple-500 one-to-one': relation === 'oo',
-          '!bg-nc-blue-500': relation === 'bt' || relation === 'mo',
+          '!bg-atm-orange-500': relation === 'hm' || relation === 'om',
+          '!bg-atm-pink-500': relation === 'mm',
+          '!bg-atm-purple-500 one-to-one': relation === 'oo',
+          '!bg-atm-blue-500': relation === 'bt' || relation === 'mo',
         }"
       />
-    </NcTooltip>
+    </AtTooltip>
 
     <div class="leading-[20px]">
       {{ linkedRecords || 0 }} {{ $t('general.linked') }}
@@ -98,7 +98,7 @@ const relationMeta = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-relation-icon.one-to-one path) {
-  @apply stroke-nc-purple-50;
+:deep(.atm-relation-icon.one-to-one path) {
+  @apply stroke-atm-purple-50;
 }
 </style>

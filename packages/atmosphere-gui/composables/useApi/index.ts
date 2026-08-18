@@ -1,5 +1,5 @@
 import type { AxiosError, AxiosResponse } from 'axios'
-import { Api, type Api as BaseAPI } from 'nocodb-sdk'
+import { Api, type Api as BaseAPI } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import type { CreateApiOptions, UseApiProps, UseApiReturn } from './types'
 import { addAxiosInterceptors } from './interceptors'

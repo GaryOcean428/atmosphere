@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 
 import { ConfigService } from '@nestjs/config';
-import { NcRequest } from 'nocodb-sdk';
+import { AtRequest } from 'atmosphere-sdk';
 import type { AppConfig } from '~/interface/config';
 import { GlobalGuard } from '~/guards/global/global.guard';
 
@@ -28,7 +28,7 @@ export class UsersController {
   @Patch(['/api/v1/user/profile', '/api/v2/meta/user/profile'])
   @UseGuards(MetaApiLimiterGuard, GlobalGuard)
   @HttpCode(200)
-  async update(@Body() body, @Request() req: NcRequest, @Response() res) {
+  async update(@Body() body, @Request() req: AtRequest, @Response() res) {
     res.json(
       await this.usersService.profileUpdate({
         id: req.user.id,

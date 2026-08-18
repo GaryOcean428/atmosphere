@@ -78,7 +78,7 @@ function onNavClick(item: NavItem) {
     loadCollaborators({}, activeWorkspaceId.value)
   }
 
-  const typeOrId = route.value.params.typeOrId || activeWorkspaceId.value || 'nc'
+  const typeOrId = route.value.params.typeOrId || activeWorkspaceId.value || 'atm'
 
   router.push({ name: wsTabToRouteName[item.key] || 'index-typeOrId', params: { typeOrId } })
 
@@ -89,14 +89,14 @@ function onNavClick(item: NavItem) {
 </script>
 
 <template>
-  <div class="nc-home-sidebar flex flex-col h-full bg-nc-bg-default select-none" style="--topbar-height: 3.5rem">
+  <div class="atm-home-sidebar flex flex-col h-full bg-atm-bg-default select-none" style="--topbar-height: 3.5rem">
     <!-- Brand header -->
     <div
-      class="w-full px-2 py-1.5 flex items-center justify-between gap-2 h-[var(--topbar-height)] flex-none border-b-1 border-nc-border-gray-light"
+      class="w-full px-2 py-1.5 flex items-center justify-between gap-2 h-[var(--topbar-height)] flex-none border-b-1 border-atm-border-gray-light"
     >
       <div class="pl-1">
-        <img v-if="isDark" alt="NocoDB" src="~/assets/img/brand/full-logo.png" class="h-9" />
-        <img v-else alt="NocoDB" src="~/assets/img/brand/nocodb-full-color.png" class="h-9" />
+        <img v-if="isDark" alt="Atmosphere" src="~/assets/img/brand/full-logo.png" class="h-9" />
+        <img v-else alt="Atmosphere" src="~/assets/img/brand/atmosphere-full-color.png" class="h-9" />
       </div>
 
       <!-- Only in the collapsed (peek) state, where it re-docks the sidebar. -->
@@ -105,69 +105,69 @@ function onNavClick(item: NavItem) {
 
     <!-- Navigation section -->
     <div class="flex-1 flex flex-col overflow-hidden pt-2">
-      <div class="nc-ws-section-header flex items-center justify-between">
+      <div class="atm-ws-section-header flex items-center justify-between">
         <span>{{ $t('objects.workspace') }}</span>
       </div>
 
-      <div class="flex-1 overflow-y-auto nc-scrollbar-thin px-2">
-        <NcSidebarMenuItem
+      <div class="flex-1 overflow-y-auto atm-scrollbar-thin px-2">
+        <AtSidebarMenuItem
           v-for="item in navItems"
           :key="item.key"
           :icon="item.icon"
           :active="activeNavKey === item.key"
           class="!h-8 !my-0.5"
-          :data-testid="`nc-ws-sidebar-${item.key}`"
+          :data-testid="`atm-ws-sidebar-${item.key}`"
           @click="onNavClick(item)"
         >
           {{ item.label }}
           <template #extraRight>
-            <span v-if="item.count !== undefined" class="text-bodySm text-nc-content-gray-muted mr-1.5">
+            <span v-if="item.count !== undefined" class="text-bodySm text-atm-content-gray-muted mr-1.5">
               {{ item.count }}
             </span>
           </template>
-        </NcSidebarMenuItem>
+        </AtSidebarMenuItem>
       </div>
     </div>
 
     <!-- Bottom section: User info + notification bell -->
-    <div class="flex-none border-t-1 border-nc-border-gray-light p-1.5">
+    <div class="flex-none border-t-1 border-atm-border-gray-light p-1.5">
       <div class="flex items-center gap-0.5">
-        <NcDropdown v-model:visible="isUserMenuOpen" placement="topLeft" overlay-class-name="!min-w-56">
+        <AtDropdown v-model:visible="isUserMenuOpen" placement="topLeft" overlay-class-name="!min-w-56">
           <div
             class="flex items-center gap-2 pl-1.5 pr-2 py-1 rounded-md cursor-pointer flex-1 min-w-0 transition-colors"
             :class="{
-              'bg-nc-bg-gray-medium': isUserMenuOpen,
-              'hover:bg-nc-bg-gray-medium': !isUserMenuOpen,
+              'bg-atm-bg-gray-medium': isUserMenuOpen,
+              'hover:bg-atm-bg-gray-medium': !isUserMenuOpen,
             }"
-            data-testid="nc-sidebar-userinfo"
+            data-testid="atm-sidebar-userinfo"
             :data-email="user?.email"
           >
             <GeneralUserIcon :user="user" size="medium" :initials-length="1" class="flex-none" />
             <div class="flex-1 min-w-0">
-              <NcTooltip show-on-truncate-only class="truncate text-bodyDefaultSm text-nc-content-gray block">
+              <AtTooltip show-on-truncate-only class="truncate text-bodyDefaultSm text-atm-content-gray block">
                 <template #title>{{ name || user?.email }}</template>
                 {{ name || user?.email }}
-              </NcTooltip>
-              <NcTooltip v-if="name" show-on-truncate-only class="truncate text-captionSm text-nc-content-gray-muted block">
+              </AtTooltip>
+              <AtTooltip v-if="name" show-on-truncate-only class="truncate text-captionSm text-atm-content-gray-muted block">
                 <template #title>{{ user?.email }}</template>
                 {{ user?.email }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
           </div>
           <template #overlay>
             <DashboardSidebarUserInfoMenu @close-menu="isUserMenuOpen = false" />
           </template>
-        </NcDropdown>
+        </AtDropdown>
 
         <!-- Notification bell -->
-        <NcDropdown v-model:visible="isNotificationOpen" :trigger="['click']" placement="topRight" overlay-class-name="!min-w-80">
-          <NcTooltip placement="top" :arrow="false" :disabled="isNotificationOpen">
+        <AtDropdown v-model:visible="isNotificationOpen" :trigger="['click']" placement="topRight" overlay-class-name="!min-w-80">
+          <AtTooltip placement="top" :arrow="false" :disabled="isNotificationOpen">
             <template #title>{{ $t('general.notification') }}</template>
-            <NcButton
+            <AtButton
               type="text"
               size="xxsmall"
               class="!rounded-md !w-8 !h-8 !min-w-8 relative flex-none"
-              data-testid="nc-home-sidebar-notification"
+              data-testid="atm-home-sidebar-notification"
             >
               <span
                 v-if="unreadCount"
@@ -175,12 +175,12 @@ function onNavClick(item: NavItem) {
                 style="background: #e75a8d"
               />
               <GeneralIcon icon="ncBell" class="h-4 w-4" />
-            </NcButton>
-          </NcTooltip>
+            </AtButton>
+          </AtTooltip>
           <template #overlay>
             <NotificationCard @close="isNotificationOpen = false" />
           </template>
-        </NcDropdown>
+        </AtDropdown>
       </div>
     </div>
   </div>
@@ -188,19 +188,19 @@ function onNavClick(item: NavItem) {
 
 <style lang="scss">
 // Match the pane splitter to the topbar's bottom border on the ws-home
-.nc-sidebar-content-resizable-wrapper:has(.nc-home-sidebar) > .splitpanes__splitter:before {
-  @apply !bg-nc-border-gray-light;
+.atm-sidebar-content-resizable-wrapper:has(.atm-home-sidebar) > .splitpanes__splitter:before {
+  @apply !bg-atm-border-gray-light;
 }
 </style>
 
 <style lang="scss" scoped>
-.nc-home-sidebar {
+.atm-home-sidebar {
   @apply !pb-0;
   width: 100%;
 }
 
-.nc-ws-section-header {
-  @apply pl-5 pr-2 pt-1.5 pb-1.5 font-semibold text-nc-content-gray-muted uppercase;
+.atm-ws-section-header {
+  @apply pl-5 pr-2 pt-1.5 pb-1.5 font-semibold text-atm-content-gray-muted uppercase;
   font-size: 11px;
   letter-spacing: 0.05em;
 }

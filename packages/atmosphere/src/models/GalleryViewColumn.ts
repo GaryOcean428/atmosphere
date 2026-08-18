@@ -1,8 +1,8 @@
-import type { BoolType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { BoolType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import View from '~/models/View';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 
@@ -23,13 +23,13 @@ export default class GalleryViewColumn {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     galleryViewColumnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let viewColumn =
       galleryViewColumnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.GALLERY_VIEW_COLUMN}:${galleryViewColumnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -42,7 +42,7 @@ export default class GalleryViewColumn {
         galleryViewColumnId,
       );
       if (viewColumn) {
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.GALLERY_VIEW_COLUMN}:${galleryViewColumnId}`,
           viewColumn,
@@ -52,9 +52,9 @@ export default class GalleryViewColumn {
     return viewColumn && new GalleryViewColumn(viewColumn);
   }
   static async insert(
-    context: NcContext,
+    context: AtContext,
     column: Partial<GalleryViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(column, [
       'fk_view_id',
@@ -102,7 +102,7 @@ export default class GalleryViewColumn {
     }
 
     return this.get(context, id, ncMeta).then(async (viewColumn) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.GALLERY_VIEW_COLUMN,
         [column.fk_view_id],
@@ -113,11 +113,11 @@ export default class GalleryViewColumn {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<GalleryViewColumn[]> {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.GALLERY_VIEW_COLUMN,
       [viewId],
@@ -138,7 +138,7 @@ export default class GalleryViewColumn {
           },
         },
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.GALLERY_VIEW_COLUMN,
         [viewId],
@@ -154,10 +154,10 @@ export default class GalleryViewColumn {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     body: Partial<GalleryViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, ['order', 'show']);
 
@@ -172,7 +172,7 @@ export default class GalleryViewColumn {
 
     // get existing cache
     const key = `${CacheScope.GALLERY_VIEW_COLUMN}:${columnId}`;
-    await NocoCache.update(context, key, updateObj);
+    await AtmosphereCache.update(context, key, updateObj);
 
     // on view column update, delete any optimised single query cache
     {

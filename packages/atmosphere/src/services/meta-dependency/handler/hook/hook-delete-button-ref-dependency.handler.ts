@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EventType, MetaEventType } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import { EventType, MetaEventType } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type {
   AffectedDependencyResult,
   MetaDependencyEventRequest,
@@ -8,8 +8,8 @@ import type {
 } from '~/services/meta-dependency/types';
 import { ButtonColumn, Hook, Model, View } from '~/models';
 import { MetaTable } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
-import Noco from '~/Noco';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
+import Atmosphere from '~/Atmosphere';
 
 /**
  * When a webhook is deleted (trashed or hard-deleted), button columns that
@@ -29,9 +29,9 @@ export class HookDeleteButtonRefDependencyHandler implements MetaEventHandler {
   triggerMetaEvents: MetaEventType[] = [MetaEventType.HOOK_DELETED];
 
   async getAffectedDependency(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<AffectedDependencyResult | undefined> {
     const id = param.oldEntity?.id;
     if (!id) return undefined;
@@ -46,11 +46,11 @@ export class HookDeleteButtonRefDependencyHandler implements MetaEventHandler {
   }
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest & {
       affectedDependencyResult: AffectedDependencyResult;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     const oldHook = param.oldEntity;
     if (!oldHook?.id) return;
@@ -81,7 +81,7 @@ export class HookDeleteButtonRefDependencyHandler implements MetaEventHandler {
 
     // Realtime: notify clients showing the table that button columns changed.
     // Fire-and-forget — runs after handle() returns and the trx commits, so
-    // we use Noco.ncMeta (not the trx-scoped ncMeta).
+    // we use Atmosphere.ncMeta (not the trx-scoped ncMeta).
     this.broadcastColumnUpdate(
       context,
       oldHook.fk_model_id,
@@ -95,7 +95,7 @@ export class HookDeleteButtonRefDependencyHandler implements MetaEventHandler {
   }
 
   private async broadcastColumnUpdate(
-    context: NcContext,
+    context: AtContext,
     fkModelId: string | undefined,
     columnIds: string[],
   ): Promise<void> {
@@ -104,20 +104,20 @@ export class HookDeleteButtonRefDependencyHandler implements MetaEventHandler {
     const model = await Model.getWithInfo(
       context,
       { id: fkModelId },
-      Noco.ncMeta,
+      Atmosphere.ncMeta,
     );
     if (!model?.columns) return;
 
     const columnIdSet = new Set(columnIds);
     for (const column of model.columns) {
       if (!columnIdSet.has(column.id!)) continue;
-      NocoSocket.broadcastEvent(context, {
+      AtmosphereSocket.broadcastEvent(context, {
         event: EventType.META_EVENT,
         payload: {
           action: 'column_update',
           payload: { table: model, column, skipDataReload: true },
         },
-      } as Parameters<typeof NocoSocket.broadcastEvent>[1]);
+      } as Parameters<typeof AtmosphereSocket.broadcastEvent>[1]);
     }
   }
 }

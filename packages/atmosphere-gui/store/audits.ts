@@ -1,4 +1,4 @@
-import { type AuditType, type UserType, type WorkspaceUserType } from 'nocodb-sdk'
+import { type AuditType, type UserType, type WorkspaceUserType } from 'atmosphere-sdk'
 
 const defaultAuditLogsQuery = {
   type: [],
@@ -32,11 +32,11 @@ export const useAuditsStore = defineStore('auditsStore', () => {
 
   const hasMoreAudits = ref(false)
 
-  const basesList = computed<NcProject[]>(() => {
+  const basesList = computed<AtProject[]>(() => {
     return []
   })
 
-  const bases = computed<Map<string, NcProject>>(() => {
+  const bases = computed<Map<string, AtProject>>(() => {
     return new Map()
   })
 

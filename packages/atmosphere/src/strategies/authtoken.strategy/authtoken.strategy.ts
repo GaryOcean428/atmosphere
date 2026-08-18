@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { extractRolesObj, ProjectRoles } from 'nocodb-sdk';
+import { extractRolesObj, ProjectRoles } from 'atmosphere-sdk';
 import { Strategy } from 'passport-custom';
-import type { NcRequest } from '~/interface/config';
+import type { AtRequest } from '~/interface/config';
 import { ApiToken, User } from '~/models';
 import { sanitiseUserObj } from '~/utils';
 import { getApiTokenFromHeader } from '~/helpers';
@@ -10,7 +10,7 @@ import { getApiTokenFromHeader } from '~/helpers';
 @Injectable()
 export class AuthTokenStrategy extends PassportStrategy(Strategy, 'authtoken') {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  async validate(req: NcRequest, callback: Function) {
+  async validate(req: AtRequest, callback: Function) {
     try {
       let user;
 

@@ -2,7 +2,7 @@
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import 'vue-advanced-cropper/dist/theme.classic.css'
-import type { AttachmentReqType } from 'nocodb-sdk'
+import type { AttachmentReqType } from 'atmosphere-sdk'
 import type { ImageCropperProps } from '#imports'
 
 const { imageConfig, uploadConfig, ...props } = defineProps<ImageCropperProps>()
@@ -124,11 +124,11 @@ watch(
 </script>
 
 <template>
-  <NcModal v-model:visible="showCropper" :mask-closable="false" wrap-class-name="!z-1050">
-    <div class="nc-image-cropper-wrapper relative">
+  <AtModal v-model:visible="showCropper" :mask-closable="false" wrap-class-name="!z-1050">
+    <div class="atm-image-cropper-wrapper relative">
       <Cropper
         ref="cropperRef"
-        class="nc-cropper relative"
+        class="atm-cropper relative"
         :src="imageConfig.src"
         :auto-zoom="true"
         :stencil-props="cropperConfig?.stencilProps || {}"
@@ -151,34 +151,34 @@ watch(
     </div>
     <div class="flex justify-between items-center space-x-4 mt-4">
       <div class="flex items-center space-x-4">
-        <NcButton type="secondary" size="small" :disabled="isLoading" @click="showCropper = false">
+        <AtButton type="secondary" size="small" :disabled="isLoading" @click="showCropper = false">
           {{ $t('general.cancel') }}
-        </NcButton>
+        </AtButton>
       </div>
       <div class="flex items-center space-x-4">
-        <NcButton type="secondary" size="small" :disabled="isLoading" @click="handleCropImage">
+        <AtButton type="secondary" size="small" :disabled="isLoading" @click="handleCropImage">
           <GeneralIcon icon="crop"></GeneralIcon>
           <span class="ml-2">Crop</span>
-        </NcButton>
+        </AtButton>
 
-        <NcTooltip :disabled="isValidFileSize">
+        <AtTooltip :disabled="isValidFileSize">
           <template #title> Cropped file size is greater than max file size </template>
 
-          <NcButton size="small" :loading="isLoading" :disabled="!previewImage.src || !isValidFileSize" @click="handleSaveImage">
+          <AtButton size="small" :loading="isLoading" :disabled="!previewImage.src || !isValidFileSize" @click="handleSaveImage">
             {{ $t('general.save') }}
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss" scoped>
-.nc-cropper {
+.atm-cropper {
   min-height: 400px;
   max-height: 400px;
 }
-.nc-image-cropper-wrapper {
+.atm-image-cropper-wrapper {
   .result_preview {
     @apply absolute right-4 bottom-4 border-1 border-dashed border-white/50 w-28 h-28 opacity-90 pointer-events-none;
     img {

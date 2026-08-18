@@ -1,8 +1,8 @@
-import jsep from 'nc-jsep';
-import template from 'nc-jsep-plugin-template';
-import object from 'nc-jsep-plugin-object';
-import ternary from 'nc-jsep-plugin-ternary';
-import arrow from 'nc-jsep-plugin-arrow';
+import jsep from 'atm-jsep';
+import template from 'atm-jsep-plugin-template';
+import object from 'atm-jsep-plugin-object';
+import ternary from 'atm-jsep-plugin-ternary';
+import arrow from 'atm-jsep-plugin-arrow';
 import { jsepCurlyHook, jsepIndexHook } from './hooks';
 
 // Formula jsep instance - with curly hook only

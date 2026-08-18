@@ -1,10 +1,10 @@
 import { DBErrorExtractor } from './db-error/extractor';
-import type { NcContext } from 'nocodb-sdk';
-import type { ClientType } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
+import type { ClientType } from 'atmosphere-sdk';
 export {
-  NcBaseError,
-  NcBaseErrorv2,
-  NcErrorArgs,
+  AtBaseError,
+  AtBaseErrorv2,
+  AtErrorArgs,
   OptionsNotExistsError,
   BadRequestV2 as BadRequest,
   MetaError,
@@ -16,16 +16,16 @@ export {
   Forbidden,
   ExternalError,
   ExternalTimeout,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 // Import UniqueConstraintViolationError directly from error module
 // as it may not be exported from the main SDK index
-export { UniqueConstraintViolationError } from 'nocodb-sdk';
-export { AjvError, NcError } from '~/helpers/ncError';
+export { UniqueConstraintViolationError } from 'atmosphere-sdk';
+export { AjvError, AtError } from '~/helpers/ncError';
 
 // extract db errors using database error code
 export function extractDBError(
   error,
-  context?: NcContext & {
+  context?: AtContext & {
     clientType?: ClientType;
   },
 ):

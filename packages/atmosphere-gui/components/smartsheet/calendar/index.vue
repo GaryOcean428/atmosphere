@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type ColumnType, PermissionEntity, PermissionKey, UITypes } from 'nocodb-sdk'
+import { type ColumnType, PermissionEntity, PermissionKey, UITypes } from 'atmosphere-sdk'
 import type { Row as RowType } from '#imports'
 
 const { $e } = useNuxtApp()
@@ -329,21 +329,21 @@ watch(
 </script>
 
 <template>
-  <div class="nc-calendar-container flex flex-col h-full">
-    <div class="flex h-full relative flex-row" data-testid="nc-calendar-wrapper">
+  <div class="atm-calendar-container flex flex-col h-full">
+    <div class="flex h-full relative flex-row" data-testid="atm-calendar-wrapper">
       <div
         ref="calendarBody"
         class="flex flex-col w-full min-h-0 min-w-0"
         :class="{
-          'overflow-y-auto nc-scrollbar-md': isHeightExpanded && !isMobileSidebarOpen,
-          'nc-scrollbar-x-md': isGridScroll && !isMobileSidebarOpen,
+          'overflow-y-auto atm-scrollbar-md': isHeightExpanded && !isMobileSidebarOpen,
+          'atm-scrollbar-x-md': isGridScroll && !isMobileSidebarOpen,
           '!overflow-hidden': isMobileSidebarOpen,
         }"
       >
-        <NcDropdown
+        <AtDropdown
           v-model:visible="contextMenuVisible"
           :trigger="interfacePageDataApi ? ['contextmenu'] : []"
-          overlay-class-name="nc-dropdown-calendar-context-menu"
+          overlay-class-name="atm-dropdown-calendar-context-menu"
         >
           <div
             class="flex flex-col h-full w-full"
@@ -406,30 +406,30 @@ watch(
             </template>
           </div>
           <template #overlay>
-            <NcMenu class="!rounded-lg nc-interface-card-context-menu" variant="default" @click="contextMenuVisible = false">
-              <NcMenuItem v-if="canDuplicateRow" data-testid="nc-interface-calendar-menu-duplicate" @click="duplicateRecord">
+            <AtMenu class="!rounded-lg atm-interface-card-context-menu" variant="default" @click="contextMenuVisible = false">
+              <AtMenuItem v-if="canDuplicateRow" data-testid="atm-interface-calendar-menu-duplicate" @click="duplicateRecord">
                 <div v-e="['c:interface:calendar:record:duplicate']" class="flex items-center gap-2">
                   <GeneralIcon icon="duplicate" class="flex" />
                   {{ $t('labels.duplicateRecord') }}
                 </div>
-              </NcMenuItem>
-              <NcMenuItem v-if="contextMenuTarget && interfaceClickIntoDetails" @click="expandRecord(contextMenuTarget)">
+              </AtMenuItem>
+              <AtMenuItem v-if="contextMenuTarget && interfaceClickIntoDetails" @click="expandRecord(contextMenuTarget)">
                 <div v-e="['a:row:expand-record']" class="flex items-center gap-2">
                   <component :is="iconMap.maximize" class="flex" />
                   {{ $t('activity.expandRecord') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
               <template v-if="contextMenuRowId">
-                <NcDivider v-if="canDuplicateRow || (contextMenuTarget && interfaceClickIntoDetails)" />
-                <NcMenuItem data-testid="nc-interface-calendar-menu-copy-url" @click="copyRecordUrl">
+                <AtDivider v-if="canDuplicateRow || (contextMenuTarget && interfaceClickIntoDetails)" />
+                <AtMenuItem data-testid="atm-interface-calendar-menu-copy-url" @click="copyRecordUrl">
                   <div v-e="['c:interface:calendar:record:copy-url']" class="flex items-center gap-2">
                     <GeneralIcon icon="ncLink" class="flex" />
                     {{ $t('labels.copyRecordURL') }}
                   </div>
-                </NcMenuItem>
+                </AtMenuItem>
               </template>
               <template v-if="canAddDeleteRows">
-                <NcDivider />
+                <AtDivider />
                 <PermissionsTooltip
                   :entity="PermissionEntity.TABLE"
                   :entity-id="meta?.id"
@@ -437,18 +437,18 @@ watch(
                   placement="right"
                 >
                   <template #default="{ isAllowed: isDeleteAllowed }">
-                    <NcMenuItem danger :disabled="!isDeleteAllowed" @click="deleteRecord">
+                    <AtMenuItem danger :disabled="!isDeleteAllowed" @click="deleteRecord">
                       <div v-e="['a:row:delete']" class="flex items-center gap-2">
                         <GeneralIcon icon="delete" />
                         {{ $t('activity.deleteRow') }}
                       </div>
-                    </NcMenuItem>
+                    </AtMenuItem>
                   </template>
                 </PermissionsTooltip>
               </template>
-            </NcMenu>
+            </AtMenu>
           </template>
-        </NcDropdown>
+        </AtDropdown>
       </div>
       <Transition>
         <LazySmartsheetCalendarSideMenu

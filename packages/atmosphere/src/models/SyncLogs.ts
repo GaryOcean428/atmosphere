@@ -1,5 +1,5 @@
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
 import { MetaTable } from '~/utils/globals';
 
@@ -16,11 +16,11 @@ export default class SyncLogs {
     Object.assign(this, syncLog);
   }
 
-  static async list(context: NcContext, baseId: string, ncMeta = Noco.ncMeta) {
+  static async list(context: AtContext, baseId: string, ncMeta = Atmosphere.ncMeta) {
     const syncLogs = await ncMeta.metaList2(
       context.workspace_id,
       context.base_id,
-      MetaTable.SYNC_LOGS,
+      MetaTable.SYATMOSPHERE_LOGS,
       {
         condition: {
           base_id: baseId,
@@ -34,9 +34,9 @@ export default class SyncLogs {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     syncLog: Partial<SyncLogs>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(syncLog, [
       'base_id',
@@ -49,21 +49,21 @@ export default class SyncLogs {
     const { id } = await ncMeta.metaInsert2(
       context.workspace_id,
       context.base_id,
-      MetaTable.SYNC_LOGS,
+      MetaTable.SYATMOSPHERE_LOGS,
       insertObj,
     );
     return new SyncLogs({ ...insertObj, id });
   }
 
   static async deleteByBaseId(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaDelete(
       context.workspace_id,
       context.base_id,
-      MetaTable.SYNC_LOGS,
+      MetaTable.SYATMOSPHERE_LOGS,
       {
         base_id: baseId,
       },

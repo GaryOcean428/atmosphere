@@ -6,7 +6,7 @@ const up = async (knex: Knex) => {
   await knex.schema.dropTableIfExists(MetaTable.TEAM_USERS_OLD);
   await knex.schema.dropTableIfExists(MetaTable.TEAMS_OLD);
   await knex.schema.dropTableIfExists(MetaTable.ORGS_OLD);
-  await knex.schema.dropTableIfExists('nc_shared_bases');
+  await knex.schema.dropTableIfExists('atm_shared_bases');
 };
 
 const down = async (knex: Knex) => {

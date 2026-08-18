@@ -2,13 +2,13 @@
  * Helpers for identifying the counterpart column of a Link-to-another-record
  * (LTAR) relation while upgrading V1 links to V2.
  *
- * Background (nocodb/nocodb#13781):
+ * Background (atmosphere/atmosphere#13781):
  * When a link is converted to V2 we have to locate the column on the related
  * table that forms the other half of the relation (the BT for an HM, or the HM
  * for a BT). Historically this match keyed only on
  * `(fk_parent_column_id, fk_child_column_id, type)` and returned the first hit.
  * Those keys are NOT unique when an external source has multiple foreign-key
- * constraints over the same column pair: NocoDB then creates two links that
+ * constraints over the same column pair: Atmosphere then creates two links that
  * share both column ids and differ only by `fk_index_name`, so the first match
  * could pick the wrong counterpart and the two links' identities ended up
  * swapped after the (irreversible) upgrade.

@@ -11,16 +11,16 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { HookReqType, HookTestReqType } from 'nocodb-sdk';
-import type { HookType } from 'nocodb-sdk';
-import { NcError } from '~/helpers/ncError';
+import { HookReqType, HookTestReqType } from 'atmosphere-sdk';
+import type { HookType } from 'atmosphere-sdk';
+import { AtError } from '~/helpers/ncError';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { HooksService } from '~/services/hooks.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -33,7 +33,7 @@ export class HooksController {
   ])
   @Acl('hookList')
   async hookList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
   ) {
     return new PagedResponseImpl(
@@ -48,10 +48,10 @@ export class HooksController {
   @HttpCode(200)
   @Acl('hookCreate')
   async hookCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Body() body: HookReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const hook = await this.hooksService.hookCreate(context, {
       hook: body,
@@ -64,9 +64,9 @@ export class HooksController {
   @Delete(['/api/v1/db/meta/hooks/:hookId', '/api/v2/meta/hooks/:hookId'])
   @Acl('hookDelete')
   async hookDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('hookId') hookId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.hooksService.hookDelete(context, { hookId, req });
   }
@@ -74,10 +74,10 @@ export class HooksController {
   @Patch(['/api/v1/db/meta/hooks/:hookId', '/api/v2/meta/hooks/:hookId'])
   @Acl('hookUpdate')
   async hookUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('hookId') hookId: string,
     @Body() body: HookReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.hooksService.hookUpdate(context, {
       hookId,
@@ -93,9 +93,9 @@ export class HooksController {
   @HttpCode(200)
   @Acl('hookTest')
   async hookTest(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Body() body: HookTestReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     try {
       await this.hooksService.hookTest(context, {
@@ -112,7 +112,7 @@ export class HooksController {
       return { msg: 'The hook has been tested successfully' };
     } catch (e) {
       console.error(e);
-      NcError.get(context).webhookError(e.message);
+      AtError.get(context).webhookError(e.message);
     }
   }
 
@@ -122,7 +122,7 @@ export class HooksController {
   ])
   @Acl('tableSampleData')
   async tableSampleData(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Param('event') event: HookType['event'][number],
     @Param('operation') operation: HookType['operation'][number],
@@ -144,9 +144,9 @@ export class HooksController {
   ])
   @Acl('hookLogList')
   async hookLogList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('hookId') hookId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return new PagedResponseImpl(
       await this.hooksService.hookLogList(context, {
@@ -165,10 +165,10 @@ export class HooksController {
   @Post(['/api/v2/meta/hooks/:hookId/trigger/:rowId'])
   @Acl('hookTrigger')
   async hookTrigger(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('hookId') hookId: string,
     @Param('rowId') rowId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.hooksService.hookTrigger(context, {
       hookId,

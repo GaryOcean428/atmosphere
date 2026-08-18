@@ -54,11 +54,11 @@ const copySharedBase = async () => {
       visibility !== 'hidden' &&
       (activeTable || base)
     "
-    class="nc-share-base-button flex flex-col justify-center"
+    class="atm-share-base-button flex flex-col justify-center"
     data-testid="share-base-button"
     :data-sharetype="visibility"
   >
-    <NcButton
+    <AtButton
       v-e="['c:share:open']"
       :size="isMobileMode ? 'medium' : 'small'"
       class="z-10 !rounded-lg"
@@ -76,14 +76,14 @@ const copySharedBase = async () => {
         <div class="flex">{{ $t('activity.share') }}</div>
       </div>
       <GeneralIcon v-else icon="mobileShare" />
-    </NcButton>
+    </AtButton>
   </div>
 
   <template v-else-if="isSharedBase && !hideSharedBaseBtn">
     <div class="flex-1"></div>
     <div class="flex flex-col justify-center h-full">
       <div class="flex flex-row items-center w-full">
-        <NcButton
+        <AtButton
           class="z-10 !rounded-lg !px-2 !bg-[#ff133e]"
           size="small"
           type="primary"
@@ -92,7 +92,7 @@ const copySharedBase = async () => {
         >
           <GeneralIcon class="mr-1" icon="duplicate" />
           Copy Base
-        </NcButton>
+        </AtButton>
       </div>
     </div>
   </template>

@@ -1,17 +1,17 @@
 import { customAlphabet, nanoid } from 'nanoid';
 import { ncSiteUrl } from '~/utils/envs';
 
-const NC_DATA_REFLECTION_SETTINGS = {
+const ATMOSPHERE_DATA_REFLECTION_SETTINGS = {
   host:
-    process.env.NC_DATA_REFLECTION_HOST ||
+    process.env.ATMOSPHERE_DATA_REFLECTION_HOST ||
     ncSiteUrl?.replace(/(^\w+:|^)\/\//, '').replace(/\/$/, ''),
-  port: +process.env.NC_DATA_REFLECTION_PORT || 5433,
+  port: +process.env.ATMOSPHERE_DATA_REFLECTION_PORT || 5433,
 };
 
 const genSuffix = customAlphabet('1234567890abcdef', 6);
 const genPassword = () => nanoid(128);
 
-// Identifier validator — usernames are `nc_<sanitized_title>_readonly_<hex>` and
+// Identifier validator — usernames are `atm_<sanitized_title>_readonly_<hex>` and
 // schemas are nanoid base ids, so both fit `[A-Za-z0-9_]`. Anything outside that
 // alphabet would be unsafe to inline as an identifier and is treated as a bug.
 const SAFE_PG_IDENT = /^[A-Za-z0-9_]+$/;
@@ -189,7 +189,7 @@ function generateWhereClause(
 }
 
 export {
-  NC_DATA_REFLECTION_SETTINGS,
+  ATMOSPHERE_DATA_REFLECTION_SETTINGS,
   grantAccessToSchema,
   revokeAccessToSchema,
   createDatabaseUser,

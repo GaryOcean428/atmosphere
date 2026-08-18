@@ -1,3 +1,3 @@
 <template>
-  <span class="nc-cell-field nc-null uppercase">{{ $t('general.null') }}</span>
+  <span class="atm-cell-field atm-null uppercase">{{ $t('general.null') }}</span>
 </template>

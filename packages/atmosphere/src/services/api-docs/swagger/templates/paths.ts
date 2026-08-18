@@ -1,4 +1,4 @@
-import { isLinksOrLTAR, ModelTypes } from 'nocodb-sdk';
+import { isLinksOrLTAR, ModelTypes } from 'atmosphere-sdk';
 import {
   columnNameParam,
   columnNameQueryParam,
@@ -14,10 +14,10 @@ import {
   whereParam,
 } from './params';
 import type { SwaggerColumn } from '../getSwaggerColumnMetas';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 
 export const getModelPaths = async (
-  context: NcContext,
+  context: AtContext,
   ctx: {
     tableName: string;
     tableId: string;
@@ -451,7 +451,7 @@ export const getModelPaths = async (
 });
 
 export const getViewPaths = async (
-  context: NcContext,
+  context: AtContext,
   ctx: {
     tableName: string;
     tableId: string;

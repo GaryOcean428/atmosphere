@@ -1,5 +1,5 @@
-import { DependencyTableType } from 'nocodb-sdk';
-import { NcError } from '~/helpers/catchError';
+import { DependencyTableType } from 'atmosphere-sdk';
+import { AtError } from '~/helpers/catchError';
 
 export enum DependencySlotTypes {
   STRING = 'string',
@@ -136,7 +136,7 @@ export class DependencySlotMapper {
 
       // Check required fields
       if (fieldDef.required && value === undefined) {
-        NcError.badRequest(`Missing required field: ${logicalField}`);
+        AtError.badRequest(`Missing required field: ${logicalField}`);
       }
 
       // Skip undefined optional fields
@@ -245,7 +245,7 @@ export class DependencySlotMapper {
     switch (type) {
       case DependencySlotTypes.NUMBER:
         if (isNaN(Number(value))) {
-          NcError.badRequest(`Invalid type for field: ${fieldName}`);
+          AtError.badRequest(`Invalid type for field: ${fieldName}`);
         }
         return Number(value);
 
@@ -257,11 +257,11 @@ export class DependencySlotMapper {
           try {
             value = JSON.parse(value);
           } catch (e) {
-            NcError.badRequest(`Invalid type for field: ${fieldName}`);
+            AtError.badRequest(`Invalid type for field: ${fieldName}`);
           }
         }
         if (!Array.isArray(value)) {
-          NcError.badRequest(`Invalid type for field: ${fieldName}`);
+          AtError.badRequest(`Invalid type for field: ${fieldName}`);
         }
         // Keep as array for meta JSON (will be stringified with entire meta object)
         return value;
@@ -271,18 +271,18 @@ export class DependencySlotMapper {
           try {
             value = JSON.parse(value);
           } catch (e) {
-            NcError.badRequest(`Invalid type for field: ${fieldName}`);
+            AtError.badRequest(`Invalid type for field: ${fieldName}`);
           }
         }
         if (typeof value !== 'object' || value === null) {
-          NcError.badRequest(`Invalid type for field: ${fieldName}`);
+          AtError.badRequest(`Invalid type for field: ${fieldName}`);
         }
         // Keep as object for meta JSON (will be stringified with entire meta object)
         return value;
 
       case DependencySlotTypes.STRING:
         if (typeof value !== 'string') {
-          NcError.badRequest(`Invalid type for field: ${fieldName}`);
+          AtError.badRequest(`Invalid type for field: ${fieldName}`);
         }
         return value;
 
@@ -294,11 +294,11 @@ export class DependencySlotMapper {
         if (typeof value === 'string') {
           const date = new Date(value);
           if (isNaN(date.getTime())) {
-            NcError.badRequest(`Invalid timestamp for field: ${fieldName}`);
+            AtError.badRequest(`Invalid timestamp for field: ${fieldName}`);
           }
           return date;
         }
-        NcError.badRequest(`Invalid type for field: ${fieldName}`);
+        AtError.badRequest(`Invalid type for field: ${fieldName}`);
         return value;
 
       default:

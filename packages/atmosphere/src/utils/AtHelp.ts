@@ -2,18 +2,18 @@ import debug from 'debug';
 import PQueue from 'p-queue';
 import { Logger } from '@nestjs/common';
 
-const NC_EXECUTE_OPERATIONS_CONCURRENCY =
-  parseInt(process.env.NC_EXECUTE_OPERATIONS_CONCURRENCY) || 5;
+const ATMOSPHERE_EXECUTE_OPERATIONS_CONCURRENCY =
+  parseInt(process.env.ATMOSPHERE_EXECUTE_OPERATIONS_CONCURRENCY) || 5;
 
-export default class NcHelp {
-  public static logger = new Logger('NcHelp');
+export default class AtHelp {
+  public static logger = new Logger('AtHelp');
 
   public static async executeOperations(
     fns: Array<() => Promise<any>>,
     _dbType: string,
   ): Promise<any> {
     const queue = new PQueue({
-      concurrency: NC_EXECUTE_OPERATIONS_CONCURRENCY,
+      concurrency: ATMOSPHERE_EXECUTE_OPERATIONS_CONCURRENCY,
     });
 
     const errors = [];

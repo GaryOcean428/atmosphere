@@ -1,23 +1,23 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import {
-  NcApiVersion,
-  NcBaseError,
-  type NcContext,
-  type NcRequest,
-} from 'nocodb-sdk';
+  AtApiVersion,
+  AtBaseError,
+  type AtContext,
+  type AtRequest,
+} from 'atmosphere-sdk';
 import { generateUpdateAuditV1Payload } from 'src/utils';
 import type {
   AuditV1,
   ColumnReqType,
   DataUpdatePayload,
   UserType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
 import type { FormulaColumn } from '~/models';
 import type { ReusableParams } from '~/services/columns.service.type';
 import type { FormulaDataMigrationDriver } from '~/services/formula-column-type-changer';
 import type { IFormulaColumnTypeChanger } from './formula-column-type-changer.types';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import {
   getBaseModelSqlFromModelId,
   isDataAuditEnabled,
@@ -60,9 +60,9 @@ export class FormulaColumnTypeChanger implements IFormulaColumnTypeChanger {
   } = {};
 
   async startChangeFormulaColumnType(
-    context: NcContext,
+    context: AtContext,
     params: {
-      req: NcRequest;
+      req: AtRequest;
       formulaColumn: Column;
       user: UserType;
       reuse?: ReusableParams;
@@ -77,7 +77,7 @@ export class FormulaColumnTypeChanger implements IFormulaColumnTypeChanger {
       this.logger.error(
         `${baseModel.dbDriver.clientType()} database is not supported in this operation`,
       );
-      NcError.get(context).notImplemented(
+      AtError.get(context).notImplemented(
         `${baseModel.dbDriver.clientType()} database is not supported in this operation`,
       );
     }
@@ -97,7 +97,7 @@ export class FormulaColumnTypeChanger implements IFormulaColumnTypeChanger {
         column: params.newColumnRequest,
         req: params.req,
         user: params.user,
-        apiVersion: NcApiVersion.V3,
+        apiVersion: AtApiVersion.V3,
         reuse: params.reuse,
         suppressFormulaError: true,
       });
@@ -116,9 +116,9 @@ export class FormulaColumnTypeChanger implements IFormulaColumnTypeChanger {
           reuse: params.reuse,
           forceDeleteSystem: false,
         });
-        if (ex instanceof NcError || ex instanceof NcBaseError) throw ex;
+        if (ex instanceof AtError || ex instanceof AtBaseError) throw ex;
         this.logger.error(ex?.message || 'Failed to convert column', ex);
-        NcError.get(context).internalServerError('Failed to convert column');
+        AtError.get(context).internalServerError('Failed to convert column');
       }
     } catch (ex) {
       // when failed during create new column for whatever reason
@@ -128,9 +128,9 @@ export class FormulaColumnTypeChanger implements IFormulaColumnTypeChanger {
           title: oldTitle,
         });
       }
-      if (ex instanceof NcError || ex instanceof NcBaseError) throw ex;
+      if (ex instanceof AtError || ex instanceof AtBaseError) throw ex;
       this.logger.error(ex?.message || 'Failed to convert column', ex);
-      NcError.get(context).internalServerError('Failed to convert column');
+      AtError.get(context).internalServerError('Failed to convert column');
     }
     return await Column.updateFormulaColumnToNewType(context, {
       formulaColumn: params.formulaColumn,
@@ -139,7 +139,7 @@ export class FormulaColumnTypeChanger implements IFormulaColumnTypeChanger {
   }
 
   async startMigrateData(
-    context: NcContext,
+    context: AtContext,
     {
       formulaColumn,
       destinationColumn,
@@ -149,7 +149,7 @@ export class FormulaColumnTypeChanger implements IFormulaColumnTypeChanger {
       formulaColumn: Column;
       destinationColumn: Column;
       baseModel?: BaseModelSqlv2;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     baseModel =
@@ -191,14 +191,14 @@ export class FormulaColumnTypeChanger implements IFormulaColumnTypeChanger {
     formulaColumn: Column<any>;
     destinationColumn: Column<any>;
     formulaColumnOption: FormulaColumn;
-    req: NcRequest;
+    req: AtRequest;
     offset?: number;
     limit?: number;
   }) {
     const qb = baseModelSqlV2.dbDriver;
     const dataMigrationDriver = this.dataMigrationDriver[qb.clientType()];
     if (!dataMigrationDriver) {
-      NcError.get(baseModelSqlV2.context).notImplemented(
+      AtError.get(baseModelSqlV2.context).notImplemented(
         `${qb.clientType()} database is not supported in this operation`,
       );
     }

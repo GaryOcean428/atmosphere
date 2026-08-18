@@ -24,8 +24,8 @@ const tabId = `tab-${Math.random().toString(36).slice(2, 9)}`
 export function useSharedExecutionFn<T>(key: string, fn: () => Promise<T> | T, options: SharedExecutionOptions = {}) {
   const { timeout = 5000, storageDelay = 50, debug = false } = options
 
-  const storageResultKey = `nc-shared-execution-${key}-result`
-  const storageLockKey = `nc-shared-execution-${key}-lock`
+  const storageResultKey = `atm-shared-execution-${key}-result`
+  const storageLockKey = `atm-shared-execution-${key}-lock`
   const storageResultState = useStorage<{
     status?: 'success' | 'error'
     result?: T

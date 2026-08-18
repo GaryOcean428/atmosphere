@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { isSystemColumn } from 'nocodb-sdk'
+import { isSystemColumn } from 'atmosphere-sdk'
 
 interface Props {
   modelValue?: number | string | null
@@ -121,7 +121,7 @@ const handleUpdateValue = (e: Event, save = false, valueToSave?: dayjs.Dayjs) =>
 const randomClass = `picker_${Math.floor(Math.random() * 99999)}`
 
 onClickOutside(datePickerRef, (e) => {
-  if ((e.target as HTMLElement)?.closest(`.${randomClass}, .nc-${randomClass}`)) return
+  if ((e.target as HTMLElement)?.closest(`.${randomClass}, .atm-${randomClass}`)) return
   datePickerRef.value?.blur?.()
   open.value = false
 })
@@ -134,8 +134,8 @@ const onBlur = (e) => {
   }
 
   if (
-    (e?.relatedTarget as HTMLElement)?.closest(`.${randomClass}, .nc-${randomClass}`) ||
-    (e?.target as HTMLElement)?.closest(`.${randomClass}, .nc-${randomClass}`)
+    (e?.relatedTarget as HTMLElement)?.closest(`.${randomClass}, .atm-${randomClass}`) ||
+    (e?.target as HTMLElement)?.closest(`.${randomClass}, .atm-${randomClass}`)
   ) {
     return
   }
@@ -151,7 +151,7 @@ watch(
       datePickerRef.value?.focus?.()
 
       onClickOutside(document.querySelector(`.${randomClass}`)! as HTMLDivElement, (e) => {
-        if ((e?.target as HTMLElement)?.closest(`.nc-${randomClass}`)) {
+        if ((e?.target as HTMLElement)?.closest(`.atm-${randomClass}`)) {
           return
         }
         open.value = false
@@ -280,19 +280,19 @@ function handleSelectDate(value?: dayjs.Dayjs) {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     :visible="isOpen"
     :auto-close="false"
     :trigger="['click']"
     :disabled="readOnly"
-    class="nc-cell-field"
-    :class="[`nc-${randomClass}`, { 'nc-null': modelValue === null && showNull }]"
-    :overlay-class-name="`${randomClass} nc-picker-year ${open ? 'active' : ''} !min-w-[260px]`"
+    class="atm-cell-field"
+    :class="[`atm-${randomClass}`, { 'atm-null': modelValue === null && showNull }]"
+    :overlay-class-name="`${randomClass} atm-picker-year ${open ? 'active' : ''} !min-w-[260px]`"
   >
     <div
       v-bind="$attrs"
       :title="localState?.format('YYYY')"
-      class="nc-year-picker flex items-center justify-between ant-picker-input relative"
+      class="atm-year-picker flex items-center justify-between ant-picker-input relative"
     >
       <input
         v-if="!rawReadOnly"
@@ -300,7 +300,7 @@ function handleSelectDate(value?: dayjs.Dayjs) {
         type="text"
         :value="localState?.format('YYYY') ?? ''"
         :placeholder="placeholder"
-        class="nc-year-input border-none outline-none !text-current bg-transparent !focus:(border-none outline-none ring-transparent)"
+        class="atm-year-input border-none outline-none !text-current bg-transparent !focus:(border-none outline-none ring-transparent)"
         :readonly="readOnly"
         @blur="onBlur"
         @keydown="handleKeydown($event, open)"
@@ -316,14 +316,14 @@ function handleSelectDate(value?: dayjs.Dayjs) {
       <GeneralIcon
         v-if="localState && !readOnly"
         icon="closeCircle"
-        class="nc-clear-year-icon nc-action-icon absolute right-0 top-[50%] transform -translate-y-1/2 invisible cursor-pointer"
+        class="atm-clear-year-icon atm-action-icon absolute right-0 top-[50%] transform -translate-y-1/2 invisible cursor-pointer"
         @click.stop="handleSelectDate()"
       />
     </div>
 
     <template #overlay>
       <div class="w-[256px]">
-        <NcMonthYearSelector
+        <AtMonthYearSelector
           v-model:page-date="tempDate"
           v-model:selected-date="localState"
           :is-open="isOpen"
@@ -333,13 +333,13 @@ function handleSelectDate(value?: dayjs.Dayjs) {
         />
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
   <div v-if="!active && isGrid" class="absolute inset-0 z-90 cursor-pointer"></div>
 </template>
 
 <style scoped lang="scss">
-.nc-cell-field {
-  &:hover .nc-clear-year-icon {
+.atm-cell-field {
+  &:hover .atm-clear-year-icon {
     @apply visible;
   }
 }

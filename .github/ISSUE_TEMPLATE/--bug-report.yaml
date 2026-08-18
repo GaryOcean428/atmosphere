@@ -1,5 +1,5 @@
 name: 🐛 Bug Report
-description: Report a bug in NocoDB
+description: Report a bug in Atmosphere
 title: "🐛 Bug: "
 labels: [Type : Bug]
 body:
@@ -11,7 +11,7 @@ body:
 - type: checkboxes
   attributes:
     label: Please confirm that the bug report does ***not*** already exist
-    description: We kindly ask you [to search the open issues](https://github.com/nocodb/nocodb/issues?q=is%3Aissue+sort%3Acreated-desc+) and ensure the bug has not already been reported before.
+    description: We kindly ask you [to search the open issues](https://github.com/GaryOcean428/atmosphere/issues?q=is%3Aissue+sort%3Acreated-desc+) and ensure the bug has not already been reported before.
     options:
     - label: I confirm there is no existing issue for this bug.
       required: true
@@ -33,17 +33,17 @@ body:
 - type: textarea
   attributes:
     label: Project Details
-    description: Click on <kbd>…</kbd> button next to a base in the NocoDB sidebar on the left and select <kbd>Copy Base Info</kbd> (see the [docs](https://docs.nocodb.com/FAQs#how-to-check-my-project-info-) for details) and paste the result below.
+    description: Click on <kbd>…</kbd> button next to a base in the Atmosphere sidebar on the left and select <kbd>Copy Base Info</kbd> (see the [docs](https://docs.atmosphere.dev/FAQs#how-to-check-my-project-info-) for details) and paste the result below.
     placeholder: |
       Or manually fill in following info:
 
       ```
-      NocoDB used as docker : true / false
-      NocoDB version : 
-      Database used in NC_DB URL  : mysql | pg | sqlite3 / (defaults to sqlite3 if empty)
+      Atmosphere used as docker : true / false
+      Atmosphere version : 
+      Database used in ATMOSPHERE_DB URL  : mysql | pg | sqlite3 / (defaults to sqlite3 if empty)
       Project was created  by clicking : New Project | New Project by connecting to external database
       Database on which spreadsheet is created : mysql | pg | sqlite3 / (defaults to sqlite3 if empty)
-      OS on which NocoDB is running : 
+      OS on which Atmosphere is running : 
       Node.js version if running as node : 
       Database version : 
       ```

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ViewLockType } from 'nocodb-sdk'
+import { ViewLockType } from 'atmosphere-sdk'
 
 const { t } = useI18n()
 
@@ -59,7 +59,7 @@ const viewModeInfo = computed(() => {
 
 <template>
   <div
-    class="flex flex-row items-center border-nc-border-gray-extralight transition-all duration-100 select-none"
+    class="flex flex-row items-center border-atm-border-gray-extralight transition-all duration-100 select-none"
     :class="{
       'text-base w-[calc(100%_-_52px)]': isMobileMode,
       'w-[calc(100%_-_44px)]': !isMobileMode && !isLeftSidebarOpen,
@@ -70,13 +70,13 @@ const viewModeInfo = computed(() => {
       <SmartsheetTopbarProjectListDropdown v-if="activeTable">
         <template #default="{ isOpen }">
           <div
-            class="rounded-lg h-8 px-2 text-nc-content-inverted-secondary font-weight-500 hover:(bg-nc-bg-gray-light text-nc-content-gray-emphasis) flex items-center gap-1 cursor-pointer max-w-1/3"
+            class="rounded-lg h-8 px-2 text-atm-content-inverted-secondary font-weight-500 hover:(bg-atm-bg-gray-light text-atm-content-gray-emphasis) flex items-center gap-1 cursor-pointer max-w-1/3"
             :class="{
               '!max-w-none': isSharedBase && !isMobileMode,
               '': !isMobileMode && isLeftSidebarOpen,
             }"
           >
-            <NcTooltip :disabled="isSharedBase || isOpen">
+            <AtTooltip :disabled="isSharedBase || isOpen">
               <template #title>
                 <span class="capitalize">
                   {{ base?.title }}
@@ -93,10 +93,10 @@ const viewModeInfo = computed(() => {
                 }"
                 class="!grayscale min-w-4"
               />
-            </NcTooltip>
+            </AtTooltip>
             <template v-if="isSharedBase">
-              <NcTooltip
-                class="ml-1 truncate nc-active-base-title max-w-full !leading-5 !hidden lg:!block"
+              <AtTooltip
+                class="ml-1 truncate atm-active-base-title max-w-full !leading-5 !hidden lg:!block"
                 show-on-truncate-only
                 :disabled="isOpen"
               >
@@ -116,7 +116,7 @@ const viewModeInfo = computed(() => {
                 >
                   {{ base?.title }}
                 </span>
-              </NcTooltip>
+              </AtTooltip>
               <GeneralIcon
                 icon="chevronDown"
                 class="!text-current opacity-70 flex-none transform transition-transform duration-25 w-3.5 h-3.5 !hidden lg:!block"
@@ -127,12 +127,12 @@ const viewModeInfo = computed(() => {
         </template>
       </SmartsheetTopbarProjectListDropdown>
 
-      <GeneralIcon icon="ncSlash1" class="nc-breadcrumb-divider" />
+      <GeneralIcon icon="ncSlash1" class="atm-breadcrumb-divider" />
 
       <SmartsheetTopbarTableListDropdown v-if="activeTable">
         <template #default="{ isOpen }">
           <div
-            class="rounded-lg h-8 px-2 text-nc-content-inverted-secondary font-weight-500 hover:(bg-nc-bg-gray-light text-nc-content-gray-emphasis) flex items-center gap-1 cursor-pointer"
+            class="rounded-lg h-8 px-2 text-atm-content-inverted-secondary font-weight-500 hover:(bg-atm-bg-gray-light text-atm-content-gray-emphasis) flex items-center gap-1 cursor-pointer"
             :class="{
               'max-w-full': isMobileMode,
               'max-w-none': isSharedBase && !isMobileMode,
@@ -144,14 +144,14 @@ const viewModeInfo = computed(() => {
                   icon="table"
                   class="min-w-5"
                   :class="{
-                    '!text-nc-content-gray-muted': !isMobileMode,
-                    '!text-nc-content-inverted-secondary': isMobileMode,
+                    '!text-atm-content-gray-muted': !isMobileMode,
+                    '!text-atm-content-inverted-secondary': isMobileMode,
                   }"
                 />
               </template>
             </LazyGeneralEmojiPicker>
 
-            <NcTooltip class="truncate nc-active-table-title max-w-full !leading-5" show-on-truncate-only :disabled="isOpen">
+            <AtTooltip class="truncate atm-active-table-title max-w-full !leading-5" show-on-truncate-only :disabled="isOpen">
               <template #title>
                 {{ activeTable?.title }}
               </template>
@@ -165,7 +165,7 @@ const viewModeInfo = computed(() => {
               >
                 {{ activeTable?.title }}
               </span>
-            </NcTooltip>
+            </AtTooltip>
             <GeneralIcon
               icon="chevronDown"
               class="!text-current opacity-70 flex-none transform transition-transform duration-25 w-3.5 h-3.5"
@@ -175,14 +175,14 @@ const viewModeInfo = computed(() => {
         </template>
       </SmartsheetTopbarTableListDropdown>
 
-      <GeneralIcon icon="ncSlash1" class="nc-breadcrumb-divider" />
+      <GeneralIcon icon="ncSlash1" class="atm-breadcrumb-divider" />
     </template>
 
     <!-- <SmartsheetToolbarOpenedViewAction /> -->
 
     <SmartsheetTopbarViewListDropdown>
       <template #default="{ isOpen }">
-        <NcTooltip
+        <AtTooltip
           :tooltip-style="{ width: '240px', zIndex: '1049' }"
           :overlay-inner-style="{ width: '240px' }"
           trigger="hover"
@@ -200,7 +200,7 @@ const viewModeInfo = computed(() => {
             <div class="flex flex-col gap-3">
               <div>
                 <div
-                  class="text-[10px] leading-[14px] text-nc-content-brand-hover dark:text-nc-content-gray-muted uppercase mb-1"
+                  class="text-[10px] leading-[14px] text-atm-content-brand-hover dark:text-atm-content-gray-muted uppercase mb-1"
                 >
                   {{ $t('labels.viewName') }}
                 </div>
@@ -211,7 +211,7 @@ const viewModeInfo = computed(() => {
 
               <div v-if="activeView?.created_by && idUserMap[activeView?.created_by]">
                 <div
-                  class="text-[10px] leading-[14px] text-nc-content-brand-hover dark:text-nc-content-gray-muted uppercase mb-1"
+                  class="text-[10px] leading-[14px] text-atm-content-brand-hover dark:text-atm-content-gray-muted uppercase mb-1"
                 >
                   {{ $t('labels.createdBy') }}
                 </div>
@@ -225,7 +225,7 @@ const viewModeInfo = computed(() => {
               </div>
               <div>
                 <div
-                  class="text-[10px] leading-[14px] text-nc-content-brand-hover dark:text-nc-content-gray-muted uppercase mb-1"
+                  class="text-[10px] leading-[14px] text-atm-content-brand-hover dark:text-atm-content-gray-muted uppercase mb-1"
                 >
                   {{ $t('labels.viewMode') }}
                 </div>
@@ -236,7 +236,7 @@ const viewModeInfo = computed(() => {
             </div>
           </template>
           <div
-            class="rounded-lg h-8 px-2 text-nc-content-gray font-semibold hover:(bg-nc-bg-gray-light text-nc-content-gray-emphasis) flex items-center gap-1 cursor-pointer"
+            class="rounded-lg h-8 px-2 text-atm-content-gray font-semibold hover:(bg-atm-bg-gray-light text-atm-content-gray-emphasis) flex items-center gap-1 cursor-pointer"
             :class="{
               'max-w-full': !isSharedBase || isMobileMode,
               'max-w-none': isSharedBase && !isMobileMode,
@@ -248,7 +248,7 @@ const viewModeInfo = computed(() => {
               </template>
             </LazyGeneralEmojiPicker>
 
-            <NcTooltip class="truncate nc-active-view-title max-w-full !leading-5" show-on-truncate-only disabled>
+            <AtTooltip class="truncate atm-active-view-title max-w-full !leading-5" show-on-truncate-only disabled>
               <template #title>
                 {{ activeView?.title }}
               </template>
@@ -262,7 +262,7 @@ const viewModeInfo = computed(() => {
               >
                 {{ activeView?.title }}
               </span>
-            </NcTooltip>
+            </AtTooltip>
 
             <template v-if="[ViewLockType.Locked, ViewLockType.Personal].includes(activeView?.lock_type)">
               <div
@@ -286,8 +286,8 @@ const viewModeInfo = computed(() => {
                 v-else
                 class="flex-none w-3.5 h-3.5 mx-0.5"
                 :class="{
-                  'text-nc-brand-400': activeView?.lock_type === ViewLockType.Personal && isViewOwner,
-                  'text-nc-content-gray-disabled': !(activeView?.lock_type === ViewLockType.Personal && isViewOwner),
+                  'text-atm-brand-400': activeView?.lock_type === ViewLockType.Personal && isViewOwner,
+                  'text-atm-content-gray-disabled': !(activeView?.lock_type === ViewLockType.Personal && isViewOwner),
                 }"
               />
             </template>
@@ -298,7 +298,7 @@ const viewModeInfo = computed(() => {
               :class="{ '!rotate-180': isOpen }"
             />
           </div>
-        </NcTooltip>
+        </AtTooltip>
       </template>
     </SmartsheetTopbarViewListDropdown>
 

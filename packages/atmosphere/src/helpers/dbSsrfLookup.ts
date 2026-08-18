@@ -15,8 +15,8 @@ import ipaddr from 'ipaddr.js';
  * driver's TLS servername / certificate verification is unaffected.
  *
  * NOTE: keep this file free of app-internal imports — it is copied verbatim into
- * packages/nc-sql-executor (a separate deployable that cannot import from
- * nocodb). Any change here must be mirrored there.
+ * packages/atm-sql-executor (a separate deployable that cannot import from
+ * atmosphere). Any change here must be mirrored there.
  */
 
 // ipaddr.js range() values treated as non-routable / internal.

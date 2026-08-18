@@ -41,9 +41,9 @@ const langs = [
     icon: iconMap.langNode,
   },
   {
-    name: 'NocoDB-SDK',
+    name: 'Atmosphere-SDK',
     clients: ['javascript', 'node'],
-    icon: iconMap.langNocodbSdk,
+    icon: iconMap.langAtmosphereSdk,
   },
   {
     name: 'php',
@@ -121,8 +121,8 @@ const snippet = computed(
 const activeLang = computed(() => langs.find((lang) => lang.name === selectedLangName.value))
 
 const code = computed(() => {
-  if (activeLang.value?.name === 'NocoDB-SDK') {
-    return `${selectedClient.value === 'node' ? 'const { Api } = require("nocodb-sdk");' : 'import { Api } from "nocodb-sdk";'}
+  if (activeLang.value?.name === 'Atmosphere-SDK') {
+    return `${selectedClient.value === 'node' ? 'const { Api } = require("atmosphere-sdk");' : 'import { Api } from "atmosphere-sdk";'}
 
 const api = new Api({
     baseURL: "${(appInfo.value && appInfo.value.ncSiteUrl) || '/'}",
@@ -181,19 +181,19 @@ watch(activeLang, (newLang) => {
 const supportedDocs = [
   {
     title: t('labels.dataApis'),
-    href: 'https://nocodb.com/apis/v3/data',
+    href: 'https://atmosphere.dev/apis/v3/data',
   },
   {
     title: t('labels.metaApis'),
-    href: 'https://nocodb.com/apis/v3/meta',
+    href: 'https://atmosphere.dev/apis/v3/meta',
   },
   {
     title: t('labels.createApiToken'),
-    href: 'https://nocodb.com/docs/product-docs/account-settings/api-tokens#create-api-token',
+    href: 'https://atmosphere.dev/docs/product-docs/account-settings/api-tokens#create-api-token',
   },
   {
     title: t('labels.swagger'),
-    href: 'https://nocodb.com/docs/product-docs/bases/actions-on-base#rest-apis',
+    href: 'https://atmosphere.dev/docs/product-docs/bases/actions-on-base#rest-apis',
   },
 ] as {
   title: string
@@ -210,9 +210,9 @@ const supportedDocs = [
     }"
   >
     <div class="flex gap-4 max-w-[1000px] mx-auto h-full">
-      <NcMenu class="nc-api-snippets-menu !h-full w-[252px] min-w-[252px] nc-scrollbar-thin !pr-3 rtl:(!pl-3 !pr-0)">
+      <AtMenu class="atm-api-snippets-menu !h-full w-[252px] min-w-[252px] atm-scrollbar-thin !pr-3 rtl:(!pl-3 !pr-0)">
         <div
-          class="p-2 text-xs text-nc-content-gray-muted uppercase font-semibold"
+          class="p-2 text-xs text-atm-content-gray-muted uppercase font-semibold"
           :style="{
             letterSpacing: '0.3px',
           }"
@@ -220,7 +220,7 @@ const supportedDocs = [
           {{ $t('general.languages') }}
         </div>
 
-        <NcMenuItem
+        <AtMenuItem
           v-for="item in langs"
           :key="item.name"
           class="rounded-md capitalize select-none"
@@ -233,13 +233,13 @@ const supportedDocs = [
             <component :is="item.icon" class="!stroke-transparent h-5 w-5" />
             {{ item.name }}
           </div>
-        </NcMenuItem>
+        </AtMenuItem>
 
-        <NcDivider class="!my-3" />
+        <AtDivider class="!my-3" />
 
         <div class="flex flex-col gap-1">
           <div
-            class="p-2 text-xs text-nc-content-gray-muted uppercase font-semibold"
+            class="p-2 text-xs text-atm-content-gray-muted uppercase font-semibold"
             :style="{
               letterSpacing: '0.3px',
             }"
@@ -248,31 +248,31 @@ const supportedDocs = [
           </div>
 
           <div v-for="(doc, idx) of supportedDocs" :key="idx" class="flex items-center gap-2 px-2 h-7">
-            <GeneralIcon icon="bookOpen" class="flex-none w-4 h-4 text-nc-content-gray-subtle2" />
+            <GeneralIcon icon="bookOpen" class="flex-none w-4 h-4 text-atm-content-gray-subtle2" />
 
             <a
               :href="doc.href"
               target="_blank"
               rel="noopener noreferrer"
-              class="!text-nc-content-gray-subtle text-small leading-[18px] !no-underline !hover:underline"
+              class="!text-atm-content-gray-subtle text-small leading-[18px] !no-underline !hover:underline"
             >
               {{ doc.title }}
             </a>
           </div>
         </div>
-      </NcMenu>
+      </AtMenu>
       <div dir="ltr" class="w-[calc(100%_-_264px)] flex flex-col gap-6 h-full max-h-full">
-        <div class="nc-api-clents-tab-wrapper h-[calc(100%_-_56px)] flex flex-col mt-2">
-          <NcTabs v-model:active-key="selectedClient" class="nc-api-clents-tab">
+        <div class="atm-api-clents-tab-wrapper h-[calc(100%_-_56px)] flex flex-col mt-2">
+          <AtTabs v-model:active-key="selectedClient" class="atm-api-clents-tab">
             <template #rightExtra>
-              <NcButton
+              <AtButton
                 v-e="[
                   'c:snippet:copy',
                   { client: activeLang?.clients && (selectedClient || activeLang?.clients[0]), lang: activeLang?.name },
                 ]"
                 type="text"
                 size="small"
-                class="!hover:bg-nc-bg-gray-medium"
+                class="!hover:bg-atm-bg-gray-medium"
                 @click="onCopyToClipboard"
               >
                 <div class="flex items-center gap-2 text-small leading-[18px] min-w-80px justify-center">
@@ -280,13 +280,13 @@ const supportedDocs = [
                     :icon="isCopied ? 'circleCheckSolid' : 'copy'"
                     class="h-4 w-4"
                     :class="{
-                      'text-nc-content-gray-subtle': !isCopied,
+                      'text-atm-content-gray-subtle': !isCopied,
                       'text-green-700': isCopied,
                     }"
                   />
                   {{ isCopied ? $t('general.copied') : $t('general.copy') }}
                 </div>
-              </NcButton>
+              </AtButton>
             </template>
 
             <a-tab-pane v-for="client in activeLang?.clients || ['default']" :key="client" class="!h-full">
@@ -297,11 +297,11 @@ const supportedDocs = [
               </template>
               <div></div>
             </a-tab-pane>
-          </NcTabs>
+          </AtTabs>
           <Suspense>
             <template #default>
               <MonacoEditor
-                class="h-[calc(100%_-_36px)] !bg-nc-bg-gray-extralight pl-2"
+                class="h-[calc(100%_-_36px)] !bg-atm-bg-gray-extralight pl-2"
                 :model-value="code"
                 :read-only="true"
                 lang="typescript"
@@ -355,29 +355,29 @@ const supportedDocs = [
 </template>
 
 <style lang="scss" scoped>
-.nc-api-snippets-menu {
+.atm-api-snippets-menu {
   @apply border-r-0 !py-0;
 
   :deep(.ant-menu-item) {
-    @apply h-7 leading-5 my-1.5 px-2 text-nc-content-gray-subtle flex items-center;
+    @apply h-7 leading-5 my-1.5 px-2 text-atm-content-gray-subtle flex items-center;
 
-    .nc-menu-item-inner {
+    .atm-menu-item-inner {
       @apply text-small leading-[18px] text-current font-weight-500;
     }
     &:hover:not(.active-menu) {
-      @apply !bg-nc-bg-gray-light;
+      @apply !bg-atm-bg-gray-light;
     }
 
     &.active-menu {
-      @apply bg-nc-bg-brand-inverted;
-      .nc-menu-item-inner {
-        @apply text-nc-content-brand-disabled font-semibold;
+      @apply bg-atm-bg-brand-inverted;
+      .atm-menu-item-inner {
+        @apply text-atm-content-brand-disabled font-semibold;
       }
     }
   }
 }
 
-:deep(.nc-api-clents-tab.ant-tabs) {
+:deep(.atm-api-clents-tab.ant-tabs) {
   .ant-tabs-nav {
     @apply px-3;
 
@@ -399,13 +399,13 @@ const supportedDocs = [
 </style>
 
 <style lang="scss">
-.rtl .nc-api-snippets-menu {
+.rtl .atm-api-snippets-menu {
   border-right: 0;
   border-left: 0;
 }
 
-.nc-api-clents-tab-wrapper {
-  @apply bg-nc-bg-gray-extralight border-1 border-nc-border-gray-medium rounded-lg flex-1 overflow-hidden;
+.atm-api-clents-tab-wrapper {
+  @apply bg-atm-bg-gray-extralight border-1 border-atm-border-gray-medium rounded-lg flex-1 overflow-hidden;
 
   .monaco-editor {
     @apply !border-0 !rounded-none pr-3;
@@ -416,11 +416,11 @@ const supportedDocs = [
   .monaco-editor,
   .monaco-diff-editor,
   .monaco-component {
-    --vscode-editor-background: var(--nc-bg-gray-extralight);
-    --vscode-editorGutter-background: var(--nc-bg-gray-extralight);
-    --vscode-editorStickyScroll-background: var(--nc-bg-gray-extralight);
+    --vscode-editor-background: var(--atm-bg-gray-extralight);
+    --vscode-editorGutter-background: var(--atm-bg-gray-extralight);
+    --vscode-editorStickyScroll-background: var(--atm-bg-gray-extralight);
     --vscode-focusBorder: transparent;
-    --vscode-editorStickyScroll-shadow: var(--nc-border-gray-light);
+    --vscode-editorStickyScroll-shadow: var(--atm-border-gray-light);
   }
 }
 </style>

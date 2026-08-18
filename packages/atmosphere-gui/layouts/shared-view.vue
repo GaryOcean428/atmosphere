@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PlanTitles } from 'nocodb-sdk'
+import { PlanTitles } from 'atmosphere-sdk'
 
 const { isLoading, appInfo } = useGlobal()
 
@@ -34,7 +34,7 @@ onMounted(() => {
   // if we are, communicate to the parent page whenever we navigate to a new url,
   // so that the parent page can respond to it properly.
   // E.g. by making the browser navigate to that url, and not just the iframe.
-  // This is useful for integrating NocoDB into other products,
+  // This is useful for integrating Atmosphere into other products,
   // such as Outline (https://github.com/outline/outline/pull/4184).
   if (window.parent !== window) {
     const notifyLocationChange = (value: string) =>
@@ -69,18 +69,18 @@ export default {
 </script>
 
 <template>
-  <a-layout id="nc-app">
-    <a-layout class="!flex-col bg-nc-bg-default">
+  <a-layout id="atm-app">
+    <a-layout class="!flex-col bg-atm-bg-default">
       <GeneralPageDoesNotExist v-if="ncNotFound" />
       <template v-else>
         <a-layout-header
           v-if="!disableTopbar"
-          class="nc-table-topbar flex items-center justify-between !bg-transparent !px-3 !py-2 border-b-1 border-nc-border-gray-medium !h-[46px]"
+          class="atm-table-topbar flex items-center justify-between !bg-transparent !px-3 !py-2 border-b-1 border-atm-border-gray-medium !h-[46px]"
         >
           <div class="flex items-center gap-6 h-7 max-w-[calc(100%_-_280px)] xs:max-w-[calc(100%_-_90px)]">
             <a
               class="transition-all duration-200 cursor-pointer transform hover:scale-105"
-              :href="isWhiteLabelled ? config?.email?.footerUrl || undefined : 'https://github.com/nocodb/nocodb'"
+              :href="isWhiteLabelled ? config?.email?.footerUrl || undefined : 'https://github.com/GaryOcean428/atmosphere'"
               :target="isWhiteLabelled && !config?.email?.footerUrl ? undefined : '_blank'"
               rel="noopener noreferrer"
             >
@@ -88,34 +88,34 @@ export default {
                 <img :src="(isDark ? logoDarkUrl : logoUrl) ?? ''" :alt="productName" class="h-7 max-w-[120px] object-contain" />
               </template>
               <template v-else-if="!isWhiteLabelled">
-                <img v-if="isDark" width="96" alt="NocoDB" src="~/assets/img/brand/text.png" class="flex-none min-w-[96px]" />
-                <img v-else width="96" alt="NocoDB" src="~/assets/img/brand/nocodb.png" class="flex-none min-w-[96px]" />
+                <img v-if="isDark" width="96" alt="Atmosphere" src="~/assets/img/brand/text.png" class="flex-none min-w-[96px]" />
+                <img v-else width="96" alt="Atmosphere" src="~/assets/img/brand/atmosphere.png" class="flex-none min-w-[96px]" />
               </template>
             </a>
 
-            <div class="flex items-center gap-2 text-nc-content-gray-emphasis text-sm truncate">
+            <div class="flex items-center gap-2 text-atm-content-gray-emphasis text-sm truncate">
               <template v-if="isLoading">
-                <span data-testid="nc-loading">{{ $t('general.loading') }}</span>
+                <span data-testid="atm-loading">{{ $t('general.loading') }}</span>
 
                 <component :is="iconMap.reload" :class="{ 'animate-infinite animate-spin ': isLoading }" />
               </template>
 
-              <div v-else class="text-sm font-semibold truncate nc-shared-view-title flex gap-2 items-center">
+              <div v-else class="text-sm font-semibold truncate atm-shared-view-title flex gap-2 items-center">
                 <GeneralViewIcon v-if="sharedView" class="h-4 w-4 ml-0.5" :meta="sharedView" />
 
                 <span class="truncate">
                   {{ sharedView?.title }}
                 </span>
 
-                <NcTooltip v-if="sharedView?.description?.length" placement="bottom">
+                <AtTooltip v-if="sharedView?.description?.length" placement="bottom">
                   <template #title>
                     {{ sharedView?.description }}
                   </template>
 
-                  <NcButton type="text" class="!hover:bg-transparent" size="xsmall">
-                    <GeneralIcon icon="info" class="!w-3.5 !h-3.5 nc-info-icon text-nc-content-gray-subtle2" />
-                  </NcButton>
-                </NcTooltip>
+                  <AtButton type="text" class="!hover:bg-transparent" size="xsmall">
+                    <GeneralIcon icon="info" class="!w-3.5 !h-3.5 atm-info-icon text-atm-content-gray-subtle2" />
+                  </AtButton>
+                </AtTooltip>
               </div>
             </div>
           </div>
@@ -127,44 +127,44 @@ export default {
 
             <a
               v-if="showSignUpButton"
-              href="https://app.nocodb.com/signin"
+              href="https://app.atmosphere.dev/signin"
               target="_blank"
               class="!no-underline xs:hidden"
               rel="noopener"
             >
-              <NcButton size="xs"> {{ $t('labels.signUpForFree') }} </NcButton>
+              <AtButton size="xs"> {{ $t('labels.signUpForFree') }} </AtButton>
             </a>
           </div>
         </a-layout-header>
-        <NcFullScreen v-model="isFullScreen" class="h-full" :page-only="true">
+        <AtFullScreen v-model="isFullScreen" class="h-full" :page-only="true">
           <div
-            class="nc-shared-view-container w-full overflow-hidden"
+            class="atm-shared-view-container w-full overflow-hidden"
             :class="{
-              'nc-shared-mobile-view': isMobileMode,
+              'atm-shared-mobile-view': isMobileMode,
               'disable-topbar': disableTopbar,
             }"
           >
             <slot />
           </div>
-        </NcFullScreen>
+        </AtFullScreen>
       </template>
     </a-layout>
   </a-layout>
 </template>
 
 <style lang="scss" scoped>
-#nc-app {
+#atm-app {
   .ant-layout-header {
     @apply !h-[46px];
 
     line-height: unset;
   }
 
-  :deep(.nc-table-toolbar) {
+  :deep(.atm-table-toolbar) {
     @apply px-2;
   }
 
-  .nc-shared-view-container {
+  .atm-shared-view-container {
     &:not(.disable-topbar) {
       --topbar-height: 2.875rem; // 46px
 

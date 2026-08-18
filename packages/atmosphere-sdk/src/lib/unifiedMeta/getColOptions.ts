@@ -1,8 +1,8 @@
-import { NcContext } from '../ncTypes';
+import { AtContext } from '../ncTypes';
 import { UnifiedMetaType } from '../types';
 
 export const getColOptions = async <T extends UnifiedMetaType.IColumnOptions>(
-  context: NcContext,
+  context: AtContext,
   { column }: { column: UnifiedMetaType.IColumn }
 ) => {
   if ('colOptions' in column) {

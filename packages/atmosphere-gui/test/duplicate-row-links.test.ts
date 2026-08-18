@@ -1,5 +1,5 @@
-import type { ColumnType } from 'nocodb-sdk'
-import { RelationTypes, UITypes } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
+import { RelationTypes, UITypes } from 'atmosphere-sdk'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 // `~/utils/dataUtils` transitively imports `columnUtils`, which references the

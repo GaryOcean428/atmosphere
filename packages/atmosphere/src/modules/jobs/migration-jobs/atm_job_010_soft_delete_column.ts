@@ -6,14 +6,14 @@ import {
   UITypes,
   VIEW_GRID_DEFAULT_WIDTH,
   ViewTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
 import type CustomKnex from '~/db/CustomKnex';
 import { Column, Model, Source } from '~/models';
 import { MetaTable } from '~/utils/globals';
 import SimpleLRUCache from '~/utils/cache';
 import { isEE } from '~/utils';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import ProjectMgrv2 from '~/db/sql-mgr/v2/ProjectMgrv2';
 import {
   getUniqueColumnAliasName,
@@ -22,7 +22,7 @@ import {
 import getColumnPropsFromUIDT from '~/helpers/getColumnPropsFromUIDT';
 import { Altered } from '~/services/columns.service';
 import Upgrader from '~/Upgrader';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { META_COL_NAME } from '~/constants';
 
 // View-type → view-column table mapping for direct queued inserts, bypassing
@@ -42,9 +42,9 @@ const VIEW_TYPE_TO_COLUMN_TABLE: Partial<Record<ViewTypes, MetaTable>> = {
 };
 
 const PARALLEL_LIMIT =
-  +process.env.NC_SOFT_DELETE_MIGRATION_PARALLEL_LIMIT || 10;
-// TODO: Drop nc_temp_processed_soft_delete after migration is confirmed complete across all deployments
-const TEMP_TABLE = 'nc_temp_processed_soft_delete';
+  +process.env.ATMOSPHERE_SOFT_DELETE_MIGRATION_PARALLEL_LIMIT || 10;
+// TODO: Drop atm_temp_processed_soft_delete after migration is confirmed complete across all deployments
+const TEMP_TABLE = 'atm_temp_processed_soft_delete';
 
 const propsByClientType = {};
 
@@ -71,7 +71,7 @@ const memoizedGetColumnPropsFromUIDT = async (
 
 @Injectable()
 export class SoftDeleteColumnMigration {
-  private readonly debugLog = debug('nc:migration-jobs:soft-delete-column');
+  private readonly debugLog = debug('atm:migration-jobs:soft-delete-column');
   private readonly logger = new Logger(SoftDeleteColumnMigration.name);
   private readonly log = (...msgs: string[]) =>
     this.logger.log(`${msgs.join(' ')}`);
@@ -83,8 +83,8 @@ export class SoftDeleteColumnMigration {
   private cache = new SimpleLRUCache(1000);
 
   async job() {
-    if (!(await Noco.ncMeta.knexConnection.schema.hasTable(TEMP_TABLE))) {
-      await Noco.ncMeta.knexConnection.schema.createTable(
+    if (!(await Atmosphere.ncMeta.knexConnection.schema.hasTable(TEMP_TABLE))) {
+      await Atmosphere.ncMeta.knexConnection.schema.createTable(
         TEMP_TABLE,
         (table) => {
           table.increments('id').primary();
@@ -97,7 +97,7 @@ export class SoftDeleteColumnMigration {
     }
 
     // Remove incomplete models from previous run
-    await Noco.ncMeta
+    await Atmosphere.ncMeta
       .knexConnection(TEMP_TABLE)
       .delete()
       .where('completed', false);
@@ -166,7 +166,7 @@ export class SoftDeleteColumnMigration {
             `Error processing model ${model.id}: ${e.message}`,
             e.stack,
           );
-          await this.updateModelStatus(Noco.ncMeta, model.id, false, e.message);
+          await this.updateModelStatus(Atmosphere.ncMeta, model.id, false, e.message);
         } finally {
           const item = this.processingModels.find(
             (m) => m.fk_model_id === model.id,
@@ -253,7 +253,7 @@ export class SoftDeleteColumnMigration {
     );
 
     if (!originalSource || !originalSource.isMeta()) {
-      await this.updateModelStatus(Noco.ncMeta, modelId, true);
+      await this.updateModelStatus(Atmosphere.ncMeta, modelId, true);
       return;
     }
 
@@ -265,7 +265,7 @@ export class SoftDeleteColumnMigration {
 
     source.upgraderMode = true;
 
-    const dbDriver: CustomKnex = await NcConnectionMgrv2.get(source);
+    const dbDriver: CustomKnex = await AtConnectionMgrv2.get(source);
 
     // Skip Model.get — getModelsQuery already pre-fetched id, source_id,
     // base_id, fk_workspace_id, and table_name.
@@ -359,7 +359,7 @@ export class SoftDeleteColumnMigration {
       !needsOoUniqueDrop &&
       !needsUniqueConversion
     ) {
-      await this.updateModelStatus(Noco.ncMeta, modelId, true);
+      await this.updateModelStatus(Atmosphere.ncMeta, modelId, true);
       return;
     }
 
@@ -449,7 +449,7 @@ export class SoftDeleteColumnMigration {
     });
 
     if (needsDeletedCol && newDeletedColumn) {
-      const idxName = `nc_deleted_idx_${model.id}`;
+      const idxName = `atm_deleted_idx_${model.id}`;
       source.upgraderQueries.push(
         dbDriver
           .raw(`CREATE INDEX ?? ON ?? (??)`, [
@@ -461,13 +461,13 @@ export class SoftDeleteColumnMigration {
       );
     }
 
-    const realDbDriver = await NcConnectionMgrv2.get(
+    const realDbDriver = await AtConnectionMgrv2.get(
       new Source({ ...originalSource, upgraderMode: false } as any),
     );
 
     await Upgrader.flushSourceQueries(source, realDbDriver);
 
-    // Fast path: insert nc_columns_v2 row + all view-column rows as direct
+    // Fast path: insert atm_columns_v2 row + all view-column rows as direct
     // queued metaInsert2 calls. Bypasses Column.insert / {Grid,Form,…}ViewColumn.insert
     // which each do 3-4 live meta-DB reads per call (metaGetNextOrder, View.get
     // for source_id / cache clear, return this.get). Since these are system
@@ -499,15 +499,15 @@ export class SoftDeleteColumnMigration {
 
     let columnOrderBase = (model.columns?.length ?? 0) + 1;
 
-    // Queue both inserts: nc_columns_v2 row + one view-column row per view.
+    // Queue both inserts: atm_columns_v2 row + one view-column row per view.
     // System columns default to show=false (hidden in UI regardless), order
     // appended to the end, grid width = default.
     const queuedWrites: Promise<any>[] = [];
 
-    // Allowlist of real nc_columns_v2 columns (mirrors Column.insert's
+    // Allowlist of real atm_columns_v2 columns (mirrors Column.insert's
     // extractProps). newCol carries migration-internal fields like `altered`
     // that must NOT be forwarded to the SQL INSERT.
-    const NC_COLUMNS_V2_FIELDS = [
+    const ATMOSPHERE_COLUMNS_V2_FIELDS = [
       'id',
       'fk_model_id',
       'column_name',
@@ -544,7 +544,7 @@ export class SoftDeleteColumnMigration {
     ] as const;
 
     const queueSystemColumn = (newCol: any, order: number) => {
-      // nc_columns_v2 row. metaInsert2 generates the id via genNanoid and
+      // atm_columns_v2 row. metaInsert2 generates the id via genNanoid and
       // returns it; the view-column rows chain off that id.
       const metaVal =
         newCol.meta && typeof newCol.meta === 'object'
@@ -556,7 +556,7 @@ export class SoftDeleteColumnMigration {
         system: true,
         order,
       };
-      for (const k of NC_COLUMNS_V2_FIELDS) {
+      for (const k of ATMOSPHERE_COLUMNS_V2_FIELDS) {
         if (
           k === 'fk_model_id' ||
           k === 'source_id' ||
@@ -634,7 +634,7 @@ export class SoftDeleteColumnMigration {
 
     await ncMeta.runUpgraderQueries();
 
-    await this.updateModelStatus(Noco.ncMeta, modelId, true);
+    await this.updateModelStatus(Atmosphere.ncMeta, modelId, true);
   }
 
   private getModelsQuery(ncMeta: MetaService, concurrency: number) {

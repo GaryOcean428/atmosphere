@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const props = defineProps<{
-  base: NcProject
+  base: AtProject
   isMarked?: boolean
   // Indicator icons - shown when base has attribute but displayed in another section
   showStarIndicator?: boolean
@@ -106,10 +106,10 @@ const onMenuClick = (e: Event) => {
 <template>
   <div
     :tabindex="0"
-    class="nc-base-node group relative flex items-center gap-3 p-4 rounded-xl cursor-pointer border-1 transition-all border-nc-border-gray-medium dark:(border-nc-border-gray-light hover:border-nc-border-gray-medium) hover:shadow-sm"
+    class="atm-base-node group relative flex items-center gap-3 p-4 rounded-xl cursor-pointer border-1 transition-all border-atm-border-gray-medium dark:(border-atm-border-gray-light hover:border-atm-border-gray-medium) hover:shadow-sm"
     :class="{ 'is-marked': isMarked, 'is-editing': editMode }"
     :data-id="base.id"
-    :data-testid="`nc-base-list-modal-base-title-${base.title}`"
+    :data-testid="`atm-base-list-modal-base-title-${base.title}`"
     @click="handleSelect"
     @keydown.enter.stop="handleSelect"
   >
@@ -145,15 +145,15 @@ const onMenuClick = (e: Event) => {
       />
       <template v-else>
         <!-- Title Display -->
-        <NcTooltip show-on-truncate-only class="min-w-0 truncate text-sm font-medium">
+        <AtTooltip show-on-truncate-only class="min-w-0 truncate text-sm font-medium">
           {{ base.title }}
 
           <template #title>{{ base.title }}</template>
-        </NcTooltip>
+        </AtTooltip>
         <!-- Last opened badge -->
         <div
           v-if="lastVisitedBase?.id === base.id"
-          class="flex items-center gap-1 px-1.5 py-1 rounded-full bg-nc-bg-gray-medium/80 text-nc-content-gray-muted text-bodySm font-medium leading-none flex-none"
+          class="flex items-center gap-1 px-1.5 py-1 rounded-full bg-atm-bg-gray-medium/80 text-atm-content-gray-muted text-bodySm font-medium leading-none flex-none"
         >
           {{ $t('labels.lastOpened') }}
         </div>
@@ -163,112 +163,112 @@ const onMenuClick = (e: Event) => {
     <div class="flex items-center space-x-2">
       <!-- Indicator icons when base has attribute but shown in another section -->
       <div v-if="showStarIndicator || showPrivateIndicator" class="flex items-center gap-1">
-        <NcTooltip v-if="showStarIndicator" class="flex">
-          <GeneralIcon icon="star" class="flex-none w-3.5 h-3.5 text-nc-content-gray-muted" />
+        <AtTooltip v-if="showStarIndicator" class="flex">
+          <GeneralIcon icon="star" class="flex-none w-3.5 h-3.5 text-atm-content-gray-muted" />
           <template #title>{{ $t('general.starred') }}</template>
-        </NcTooltip>
-        <NcTooltip v-if="showPrivateIndicator" class="flex">
-          <GeneralIcon icon="ncLock" class="flex-none w-3.5 h-3.5 text-nc-content-gray-muted" />
+        </AtTooltip>
+        <AtTooltip v-if="showPrivateIndicator" class="flex">
+          <GeneralIcon icon="ncLock" class="flex-none w-3.5 h-3.5 text-atm-content-gray-muted" />
           <template #title>{{ $t('general.private') }}</template>
-        </NcTooltip>
+        </AtTooltip>
       </div>
 
       <!-- More Options Button -->
       <div
         v-if="!editMode"
-        class="nc-base-node-menu-wrapper"
+        class="atm-base-node-menu-wrapper"
         :class="{ 'is-open': isMenuOpen, 'is-active': activeProjectId === base.id }"
       >
-        <NcDropdown
+        <AtDropdown
           v-model:visible="isMenuOpen"
           :trigger="['click']"
           placement="bottomRight"
-          overlay-class-name="nc-base-node-menu"
+          overlay-class-name="atm-base-node-menu"
         >
-          <NcButton :tabindex="-1" type="text" size="xsmall" class="nc-base-node-menu-btn" @click.stop="onMenuClick">
+          <AtButton :tabindex="-1" type="text" size="xsmall" class="atm-base-node-menu-btn" @click.stop="onMenuClick">
             <GeneralIcon
               v-if="activeProjectId === base.id"
               v-show="!isMenuOpen"
               icon="ncCheck"
-              class="nc-base-active-check text-nc-content-brand flex-none"
+              class="atm-base-active-check text-atm-content-brand flex-none"
             />
-            <GeneralIcon icon="threeDotVertical" class="nc-base-three-dot text-nc-content-gray-muted flex-none" />
-          </NcButton>
+            <GeneralIcon icon="threeDotVertical" class="atm-base-three-dot text-atm-content-gray-muted flex-none" />
+          </AtButton>
 
           <template #overlay>
-            <NcMenu class="!min-w-50" variant="small">
+            <AtMenu class="!min-w-50" variant="small">
               <!-- Copy Base ID -->
-              <NcMenuItemCopyId
+              <AtMenuItemCopyId
                 :id="base.id"
                 :tooltip="$t('labels.clickToCopyBaseID')"
                 :label="$t('labels.baseIdColon', { baseId: base.id })"
               />
-              <NcDivider />
+              <AtDivider />
 
               <!-- Rename -->
-              <NcMenuItem v-if="isOptionVisible.baseRename" data-testid="nc-base-node-rename" @click="enableEditMode">
+              <AtMenuItem v-if="isOptionVisible.baseRename" data-testid="atm-base-node-rename" @click="enableEditMode">
                 <GeneralIcon icon="rename" />
                 {{ $t('general.rename') }} {{ $t('objects.project').toLowerCase() }}
-              </NcMenuItem>
+              </AtMenuItem>
 
               <!-- Duplicate -->
-              <NcMenuItem v-if="isOptionVisible.baseDuplicate" data-testid="nc-base-node-duplicate" @click="handleDuplicate">
+              <AtMenuItem v-if="isOptionVisible.baseDuplicate" data-testid="atm-base-node-duplicate" @click="handleDuplicate">
                 <GeneralIcon icon="duplicate" />
                 {{ $t('general.duplicate') }} {{ $t('objects.project').toLowerCase() }}
-              </NcMenuItem>
+              </AtMenuItem>
 
-              <NcDivider />
+              <AtDivider />
 
               <!-- ERD View -->
-              <NcMenuItem v-if="base?.sources?.[0]?.enabled" data-testid="nc-base-node-erd" @click="handleOpenErd">
+              <AtMenuItem v-if="base?.sources?.[0]?.enabled" data-testid="atm-base-node-erd" @click="handleOpenErd">
                 <GeneralIcon icon="ncErd" />
                 {{ $t('title.relations') }}
-              </NcMenuItem>
+              </AtMenuItem>
 
               <!-- Settings -->
-              <NcMenuItem v-if="isOptionVisible.baseMiscSettings" data-testid="nc-base-node-settings" @click="handleOpenSettings">
+              <AtMenuItem v-if="isOptionVisible.baseMiscSettings" data-testid="atm-base-node-settings" @click="handleOpenSettings">
                 <GeneralIcon icon="settings" />
                 {{ $t('activity.settings') }}
-              </NcMenuItem>
+              </AtMenuItem>
 
               <template v-if="isOptionVisible.baseDelete">
-                <NcDivider />
+                <AtDivider />
 
                 <!-- Delete -->
-                <NcMenuItem danger data-testid="nc-base-node-delete" @click="handleDelete">
+                <AtMenuItem danger data-testid="atm-base-node-delete" @click="handleDelete">
                   <GeneralIcon icon="delete" />
                   {{ $t('general.delete') }} {{ $t('objects.project').toLowerCase() }}
-                </NcMenuItem>
+                </AtMenuItem>
               </template>
-            </NcMenu>
+            </AtMenu>
           </template>
-        </NcDropdown>
+        </AtDropdown>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.nc-base-node {
-  @apply bg-nc-bg-gray-extralight;
+.atm-base-node {
+  @apply bg-atm-bg-gray-extralight;
 
-  .nc-base-node-menu-btn {
-    @apply !hover:bg-nc-bg-gray-medium;
+  .atm-base-node-menu-btn {
+    @apply !hover:bg-atm-bg-gray-medium;
   }
 
   &:hover,
   &:focus-within,
   &:focus-visible {
-    @apply bg-nc-bg-gray-light;
+    @apply bg-atm-bg-gray-light;
 
-    .nc-base-node-menu-wrapper {
+    .atm-base-node-menu-wrapper {
       @apply w-6 !flex;
 
-      .nc-base-active-check {
+      .atm-base-active-check {
         @apply !hidden;
       }
 
-      .nc-base-three-dot {
+      .atm-base-three-dot {
         @apply !block;
       }
     }
@@ -279,7 +279,7 @@ const onMenuClick = (e: Event) => {
   }
 
   &.is-marked {
-    @apply bg-nc-bg-gray-light border-nc-border-brand;
+    @apply bg-atm-bg-gray-light border-atm-border-brand;
   }
 
   &.is-editing {
@@ -287,14 +287,14 @@ const onMenuClick = (e: Event) => {
   }
 }
 
-.nc-base-node-menu-wrapper {
+.atm-base-node-menu-wrapper {
   @apply w-0 hidden overflow-hidden items-center justify-center;
   @apply transition-all duration-200 ease-in-out;
 
   &.is-active {
     @apply w-6 flex;
 
-    .nc-base-three-dot {
+    .atm-base-three-dot {
       @apply hidden;
     }
   }
@@ -302,7 +302,7 @@ const onMenuClick = (e: Event) => {
   &.is-open {
     @apply w-6 !flex;
 
-    .nc-base-three-dot {
+    .atm-base-three-dot {
       @apply !block;
     }
   }

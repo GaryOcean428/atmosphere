@@ -1,4 +1,4 @@
-import type { ColumnType, RecordTemplateType } from 'nocodb-sdk'
+import type { ColumnType, RecordTemplateType } from 'atmosphere-sdk'
 
 export const useRecordTemplate = createSharedComposable(() => {
   const showRecordTemplateManager = ref(false)

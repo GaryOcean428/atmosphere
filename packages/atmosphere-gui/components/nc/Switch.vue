@@ -53,7 +53,7 @@ const onChange = (e: boolean, updateValue = false) => {
   <a-switch
     :checked="checked"
     :disabled="disabled"
-    class="nc-switch"
+    class="atm-switch"
     :class="{
       'size-xsmall': size === 'xsmall',
       'size-xxsmall': size === 'xxsmall',

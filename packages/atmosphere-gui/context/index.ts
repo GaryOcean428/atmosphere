@@ -6,7 +6,7 @@ import type {
   SourceType,
   TableType,
   ViewType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type { ComputedRef, Reactive, Ref } from 'vue'
 import type { EventHook } from '@vueuse/core'
 import type { InterfacePageDataApi, InterfacePublicPageState, InterfaceRecordSidebarApi } from '../lib/interfaceData'
@@ -109,7 +109,7 @@ export const IsUnderLTARInj: InjectionKey<Ref<boolean>> = Symbol('is-under-looku
 export const DocsLocalPageInj: InjectionKey<Ref<PageSidebarNode | undefined>> = Symbol('docs-local-page-injection')
 export const ProjectRoleInj: InjectionKey<Ref<string | string[]>> = Symbol('base-roles-injection')
 export const ProjectStarredModeInj: InjectionKey<Ref<boolean>> = Symbol('base-starred-injection')
-export const ProjectInj: InjectionKey<Ref<NcProject>> = Symbol('base-injection')
+export const ProjectInj: InjectionKey<Ref<AtProject>> = Symbol('base-injection')
 export const ProjectIdInj: InjectionKey<Ref<string>> = Symbol('base-id-injection')
 export const EditColumnInj: InjectionKey<Ref<boolean>> = Symbol('edit-column-injection')
 export const SidebarTableInj: InjectionKey<Ref<TableType>> = Symbol('sidebar-table-injection')

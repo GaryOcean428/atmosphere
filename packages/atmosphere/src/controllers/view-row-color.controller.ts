@@ -8,9 +8,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { NcContext, NcRequest } from 'nocodb-sdk';
+import { AtContext, AtRequest } from 'atmosphere-sdk';
 import { Req } from '@nestjs/common';
-import type { FilterType } from 'nocodb-sdk';
+import type { FilterType } from 'atmosphere-sdk';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { ViewRowColorService } from '~/services/view-row-color.service';
@@ -26,9 +26,9 @@ export class ViewRowColorController {
   @HttpCode(200)
   @Acl('viewRowColorSelectAdd')
   async setViewRowColorSelect(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Body()
     body: {
       fk_column_id: string;
@@ -46,15 +46,15 @@ export class ViewRowColorController {
   @HttpCode(200)
   @Acl('viewRowColorConditionAdd')
   async addViewRowColorCondition(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Body()
     body: {
       color: string;
       is_set_as_background: boolean;
       type?: string;
-      nc_order: number;
+      atm_order: number;
       fk_target_column_id?: string;
       filter: FilterType;
     },
@@ -64,7 +64,7 @@ export class ViewRowColorController {
       condition: {
         color: body.color,
         is_set_as_background: body.is_set_as_background,
-        nc_order: body.nc_order,
+        atm_order: body.atm_order,
         type: body.type,
         fk_target_column_id: body.fk_target_column_id,
       },
@@ -76,16 +76,16 @@ export class ViewRowColorController {
   @Patch('/row-color-conditions/:id')
   @Acl('viewRowColorConditionUpdate')
   async updateViewRowColorCondition(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Param('id') id: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Body()
     body: {
       color: string;
       is_set_as_background: boolean;
       type?: string;
-      nc_order: number;
+      atm_order: number;
       fk_target_column_id?: string;
     },
   ) {
@@ -95,7 +95,7 @@ export class ViewRowColorController {
       condition: {
         color: body.color,
         is_set_as_background: body.is_set_as_background,
-        nc_order: body.nc_order,
+        atm_order: body.atm_order,
         type: body.type,
         fk_target_column_id: body.fk_target_column_id,
       },
@@ -106,10 +106,10 @@ export class ViewRowColorController {
   @Delete('/row-color-conditions/:id')
   @Acl('viewRowColorConditionDelete')
   async deleteViewRowColorCondition(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Param('id') id: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.viewRowColorService.deleteRowColoringCondition(context, {
       fk_view_id: viewId,

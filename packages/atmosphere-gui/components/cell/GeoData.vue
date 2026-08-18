@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import { type GeoLocationType, convertGeoNumberToString, latLongToJoinedString } from 'nocodb-sdk'
+import { type GeoLocationType, convertGeoNumberToString, latLongToJoinedString } from 'atmosphere-sdk'
 import { useDebounceFn } from '@vueuse/core'
 
 interface Props {
@@ -281,8 +281,8 @@ const syncMapFromInputs = useDebounceFn(() => {
 }, 500)
 
 const identifier = {
-  latitude: `nc-geo-lat-${Math.random().toString(36).substring(2, 10)}`,
-  longitude: `nc-geo-lng-${Math.random().toString(36).substring(2, 10)}`,
+  latitude: `atm-geo-lat-${Math.random().toString(36).substring(2, 10)}`,
+  longitude: `atm-geo-lng-${Math.random().toString(36).substring(2, 10)}`,
 }
 
 const isLocationSet = computed(() => {
@@ -367,7 +367,7 @@ const openInOSM = () => {
 }
 
 const handleClose = (e: MouseEvent) => {
-  if (e.target instanceof HTMLElement && !e.target.closest('.nc-geodata-picker-overlay')) {
+  if (e.target instanceof HTMLElement && !e.target.closest('.atm-geodata-picker-overlay')) {
     isExpanded.value = false
   }
 }
@@ -382,7 +382,7 @@ useEventListener(document, 'click', handleClose, true)
 function parseGeoString(raw: string): string | null {
   const trimmed = raw.trim()
 
-  // Try convertCellData first (handles NocoDB internal formats) — but only when column metadata is available
+  // Try convertCellData first (handles Atmosphere internal formats) — but only when column metadata is available
   if (column?.value?.uidt) {
     try {
       const converted = convertCellData({ value: trimmed, to: column.value.uidt, column: column.value }, false)
@@ -547,7 +547,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div tabindex="0" class="focus:outline-none focus-visible:outline-none" @paste="handlePaste" @keydown="handleKeyDown">
-    <NcDropdown v-model:visible="isExpanded" :disabled="readonly" overlay-class-name="nc-geodata-overlay-dropdown">
+    <AtDropdown v-model:visible="isExpanded" :disabled="readonly" overlay-class-name="atm-geodata-overlay-dropdown">
       <div
         v-if="!isLocationSet"
         :class="{
@@ -557,40 +557,40 @@ onBeforeUnmount(() => {
         }"
         class="w-full flex justify-center max-w-64 mx-auto"
       >
-        <NcButton
+        <AtButton
           v-if="(activeCell && !readonly) || isForm || isEditColumn"
           size="xsmall"
           type="secondary"
-          data-testid="nc-geo-data-set-location-button"
+          data-testid="atm-geo-data-set-location-button"
         >
           <div class="flex items-center px-2 gap-2">
-            <GeneralIcon class="text-nc-content-gray-muted h-3.5 w-3.5" icon="ncMapPin" />
+            <GeneralIcon class="text-atm-content-gray-muted h-3.5 w-3.5" icon="ncMapPin" />
             <span class="text-tiny">
               {{ latLongStr }}
             </span>
           </div>
-        </NcButton>
+        </AtButton>
       </div>
 
       <div
         v-else
-        data-testid="nc-geo-data-lat-long-set"
+        data-testid="atm-geo-data-lat-long-set"
         tabindex="1"
         :class="{
           '!py-1': !isForm,
           'pt-1': isForm && !isPublic,
         }"
-        class="nc-cell-field h-full w-full flex items-center focus-visible:!outline-none focus:!outline-none whitespace-nowrap truncate"
+        class="atm-cell-field h-full w-full flex items-center focus-visible:!outline-none focus:!outline-none whitespace-nowrap truncate"
       >
         <!-- Expanded form: selectable text with copy + edit buttons -->
         <template v-if="isExpandedForm">
-          <span class="nc-geodata-selectable-text" @click.stop>{{ latLongStr }}</span>
-          <div v-if="!isLinkRecordDropdown" class="nc-geodata-action-icons" @click.stop>
-            <NcTooltip>
+          <span class="atm-geodata-selectable-text" @click.stop>{{ latLongStr }}</span>
+          <div v-if="!isLinkRecordDropdown" class="atm-geodata-action-icons" @click.stop>
+            <AtTooltip>
               <template #title>{{ isCopied ? $t('general.copied') : $t('general.copy') }}</template>
               <GeneralIcon
                 :icon="isCopied ? 'check' : 'copy'"
-                class="nc-geodata-action-icon"
+                class="atm-geodata-action-icon"
                 :class="{ '!text-green-600': isCopied }"
                 :aria-label="isCopied ? $t('general.copied') : $t('general.copy')"
                 role="button"
@@ -598,19 +598,19 @@ onBeforeUnmount(() => {
                 @click="copyCoordinates"
                 @keydown.enter="copyCoordinates"
               />
-            </NcTooltip>
-            <NcTooltip v-if="!readonly">
+            </AtTooltip>
+            <AtTooltip v-if="!readonly">
               <template #title>{{ $t('general.edit') }}</template>
               <GeneralIcon
                 icon="ncEdit"
-                class="nc-geodata-action-icon"
+                class="atm-geodata-action-icon"
                 :aria-label="$t('general.edit')"
                 role="button"
                 tabindex="0"
                 @click="openEditor"
                 @keydown.enter="openEditor"
               />
-            </NcTooltip>
+            </AtTooltip>
           </div>
         </template>
         <!-- Grid view: click anywhere to open editor (existing behavior) -->
@@ -619,22 +619,22 @@ onBeforeUnmount(() => {
         </template>
       </div>
       <template #overlay>
-        <div class="nc-geodata-picker-overlay" @click.stop @paste="handlePaste">
-          <a-form :model="formState" class="nc-geodata-form" @finish="handleFinish">
+        <div class="atm-geodata-picker-overlay" @click.stop @paste="handlePaste">
+          <a-form :model="formState" class="atm-geodata-form" @finish="handleFinish">
             <!-- Modal content area -->
-            <div class="nc-geodata-content">
+            <div class="atm-geodata-content">
               <!-- Coordinates section -->
-              <div class="nc-geodata-section-label">{{ $t('labels.coordinates') }}</div>
-              <div class="nc-geodata-coordinates-grid">
-                <div class="nc-geodata-input-group">
-                  <label :for="identifier.latitude" class="nc-geodata-input-label">{{ $t('labels.latitude') }}</label>
+              <div class="atm-geodata-section-label">{{ $t('labels.coordinates') }}</div>
+              <div class="atm-geodata-coordinates-grid">
+                <div class="atm-geodata-input-group">
+                  <label :for="identifier.latitude" class="atm-geodata-input-label">{{ $t('labels.latitude') }}</label>
                   <a-input
                     :id="identifier.latitude"
                     v-model:value="formState.latitude"
-                    data-testid="nc-geo-data-latitude"
+                    data-testid="atm-geo-data-latitude"
                     type="number"
                     step="0.0000000001"
-                    class="nc-geodata-input-field"
+                    class="atm-geodata-input-field"
                     :placeholder="t('labels.enterLatitude')"
                     :min="-90"
                     :disabled="readonly"
@@ -646,18 +646,18 @@ onBeforeUnmount(() => {
                     @selectstart.capture.stop
                     @mousedown.stop
                   />
-                  <span v-if="isLatitudeInvalid" class="nc-geodata-error-text">{{ t('msg.error.latitudeRange') }}</span>
+                  <span v-if="isLatitudeInvalid" class="atm-geodata-error-text">{{ t('msg.error.latitudeRange') }}</span>
                 </div>
 
-                <div class="nc-geodata-input-group">
-                  <label :for="identifier.longitude" class="nc-geodata-input-label">{{ $t('labels.longitude') }}</label>
+                <div class="atm-geodata-input-group">
+                  <label :for="identifier.longitude" class="atm-geodata-input-label">{{ $t('labels.longitude') }}</label>
                   <a-input
                     :id="identifier.longitude"
                     v-model:value="formState.longitude"
-                    data-testid="nc-geo-data-longitude"
+                    data-testid="atm-geo-data-longitude"
                     type="number"
                     step="0.0000000001"
-                    class="nc-geodata-input-field"
+                    class="atm-geodata-input-field"
                     :placeholder="t('labels.enterLongitude')"
                     required
                     :min="-180"
@@ -669,63 +669,63 @@ onBeforeUnmount(() => {
                     @selectstart.capture.stop
                     @mousedown.stop
                   />
-                  <span v-if="isLongitudeInvalid" class="nc-geodata-error-text">{{ t('msg.error.longitudeRange') }}</span>
+                  <span v-if="isLongitudeInvalid" class="atm-geodata-error-text">{{ t('msg.error.longitudeRange') }}</span>
                 </div>
               </div>
 
               <!-- Map with integrated search & controls -->
-              <div class="nc-geodata-map-wrapper">
+              <div class="atm-geodata-map-wrapper">
                 <div
                   ref="mapContainerRef"
-                  data-testid="nc-geo-data-map-picker"
-                  class="nc-geodata-map-picker"
+                  data-testid="atm-geo-data-map-picker"
+                  class="atm-geodata-map-picker"
                   role="application"
                   :aria-label="$t('labels.mapPicker')"
                 />
 
                 <!-- Search overlay on map -->
-                <div v-if="!readonly" class="nc-geodata-map-search">
-                  <div class="nc-geodata-search-input-row">
-                    <GeneralIcon icon="search" class="nc-geodata-search-icon" />
+                <div v-if="!readonly" class="atm-geodata-map-search">
+                  <div class="atm-geodata-search-input-row">
+                    <GeneralIcon icon="search" class="atm-geodata-search-icon" />
                     <input
                       ref="searchInputRef"
                       v-model="searchQuery"
-                      data-testid="nc-geo-data-search"
+                      data-testid="atm-geo-data-search"
                       type="text"
-                      class="nc-geodata-search-input"
+                      class="atm-geodata-search-input"
                       :placeholder="$t('labels.searchForPlace')"
                       role="combobox"
                       :aria-expanded="showSearchResults"
                       aria-autocomplete="list"
-                      aria-controls="nc-geo-search-results"
+                      aria-controls="atm-geo-search-results"
                       @keydown="onSearchKeydown"
                       @blur="onSearchBlur"
                       @keydown.stop
                       @mousedown.stop
                     />
-                    <GeneralIcon v-if="isSearching" icon="loading" class="nc-geodata-search-spinner animate-spin" />
+                    <GeneralIcon v-if="isSearching" icon="loading" class="atm-geodata-search-spinner animate-spin" />
                   </div>
-                  <div v-if="showSearchResults" id="nc-geo-search-results" role="listbox" class="nc-geodata-search-results">
+                  <div v-if="showSearchResults" id="atm-geo-search-results" role="listbox" class="atm-geodata-search-results">
                     <div
                       v-for="result in searchResults"
                       :key="result.place_id"
                       role="option"
-                      class="nc-geodata-search-result-item"
+                      class="atm-geodata-search-result-item"
                       @mousedown.prevent="selectSearchResult(result)"
                     >
-                      <GeneralIcon icon="ncMapPin" class="nc-geodata-result-icon" />
-                      <span class="nc-geodata-result-text">{{ result.display_name }}</span>
+                      <GeneralIcon icon="ncMapPin" class="atm-geodata-result-icon" />
+                      <span class="atm-geodata-result-text">{{ result.display_name }}</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- Current location button -->
-                <div v-if="!readonly" class="nc-geodata-locate-wrapper">
-                  <NcTooltip placement="bottom">
+                <div v-if="!readonly" class="atm-geodata-locate-wrapper">
+                  <AtTooltip placement="bottom">
                     <template #title>{{ $t('labels.currentLocation') }}</template>
                     <button
-                      class="nc-geodata-locate-btn"
-                      :class="{ 'nc-geodata-locate-btn--loading': isLoading }"
+                      class="atm-geodata-locate-btn"
+                      :class="{ 'atm-geodata-locate-btn--loading': isLoading }"
                       :disabled="isLoading"
                       :aria-label="$t('labels.currentLocation')"
                       type="button"
@@ -734,77 +734,77 @@ onBeforeUnmount(() => {
                       <GeneralIcon v-if="!isLoading" icon="currentLocation" class="h-4 w-4" />
                       <GeneralIcon v-else icon="loading" class="h-4 w-4 animate-spin" />
                     </button>
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
               </div>
 
               <!-- Info hint -->
-              <div v-if="!readonly" class="nc-geodata-info-hint">
+              <div v-if="!readonly" class="atm-geodata-info-hint">
                 <GeneralIcon icon="info" class="h-3.5 w-3.5 flex-shrink-0" />
                 <span>{{ $t('labels.clickMapToSetLocation') }}</span>
               </div>
             </div>
 
             <!-- Footer -->
-            <div class="nc-geodata-footer">
-              <div class="nc-geodata-footer-left">
+            <div class="atm-geodata-footer">
+              <div class="atm-geodata-footer-left">
                 <template v-if="vModel">
-                  <NcTooltip>
+                  <AtTooltip>
                     <template #title>
                       <div class="flex items-center gap-1">
                         {{ $t('activity.map.googleMaps') }}
                         <GeneralIcon icon="ncExternalLink" class="h-3 w-3" />
                       </div>
                     </template>
-                    <NcButton type="secondary" size="small" class="!px-2" @click="openInGoogleMaps">
+                    <AtButton type="secondary" size="small" class="!px-2" @click="openInGoogleMaps">
                       <GeneralIcon icon="ncLogoGoogleMapColored" class="h-4 w-4" />
-                    </NcButton>
-                  </NcTooltip>
+                    </AtButton>
+                  </AtTooltip>
 
-                  <NcTooltip>
+                  <AtTooltip>
                     <template #title>
                       <div class="flex items-center gap-1">
                         {{ $t('activity.map.osm') }}
                         <GeneralIcon icon="ncExternalLink" class="h-3 w-3" />
                       </div>
                     </template>
-                    <NcButton type="secondary" size="small" class="!px-2" @click="openInOSM">
+                    <AtButton type="secondary" size="small" class="!px-2" @click="openInOSM">
                       <GeneralIcon icon="ncLogoOpenStreetMapColored" class="h-4 w-4" />
-                    </NcButton>
-                  </NcTooltip>
+                    </AtButton>
+                  </AtTooltip>
                 </template>
               </div>
 
-              <div class="nc-geodata-footer-right">
-                <NcButton
+              <div class="atm-geodata-footer-right">
+                <AtButton
                   v-if="isLocationSet"
                   type="secondary"
                   size="small"
                   class="!text-red-500 !hover:bg-red-50"
-                  data-testid="nc-geo-data-clear"
+                  data-testid="atm-geo-data-clear"
                   @click="clearValue"
                 >
                   {{ $t('general.clear') }}
-                </NcButton>
-                <NcButton type="secondary" size="small" @click="clear">
+                </AtButton>
+                <AtButton type="secondary" size="small" @click="clear">
                   {{ $t('general.cancel') }}
-                </NcButton>
+                </AtButton>
 
-                <NcButton html-type="submit" size="small" data-testid="nc-geo-data-save">
+                <AtButton html-type="submit" size="small" data-testid="atm-geo-data-save">
                   {{ $t('general.save') }}
-                </NcButton>
+                </AtButton>
               </div>
             </div>
           </a-form>
         </div>
       </template>
-    </NcDropdown>
+    </AtDropdown>
   </div>
 </template>
 
 <style scoped lang="scss">
 /* Selectable coordinate text in expanded form */
-.nc-geodata-selectable-text {
+.atm-geodata-selectable-text {
   user-select: text;
   cursor: text;
   flex: 1;
@@ -814,67 +814,67 @@ onBeforeUnmount(() => {
   white-space: nowrap;
 }
 
-.nc-geodata-action-icons {
+.atm-geodata-action-icons {
   @apply flex items-center gap-2 ml-2 flex-shrink-0;
 }
 
-.nc-geodata-action-icon {
-  @apply w-4 h-4 text-nc-content-gray-muted cursor-pointer;
+.atm-geodata-action-icon {
+  @apply w-4 h-4 text-atm-content-gray-muted cursor-pointer;
   transition: color 0.15s;
 
   &:hover {
-    @apply text-nc-content-gray;
+    @apply text-atm-content-gray;
   }
 }
 
 /* Overlay modal structure */
-.nc-geodata-picker-overlay {
-  @apply bg-nc-bg-default rounded-xl overflow-hidden flex flex-col;
+.atm-geodata-picker-overlay {
+  @apply bg-atm-bg-default rounded-xl overflow-hidden flex flex-col;
   width: 540px;
   max-width: 95vw;
   max-height: 85vh;
 }
 
-.nc-geodata-form {
+.atm-geodata-form {
   @apply flex flex-col h-full;
 }
 
-.nc-geodata-content {
+.atm-geodata-content {
   @apply flex flex-col gap-4 px-5 py-4 overflow-y-auto;
   flex: 1;
 }
 
-.nc-geodata-section-label {
-  @apply text-nc-content-gray-subtle text-xs font-semibold uppercase tracking-wide mb-1;
+.atm-geodata-section-label {
+  @apply text-atm-content-gray-subtle text-xs font-semibold uppercase tracking-wide mb-1;
 }
 
 /* Two-column coordinates grid */
-.nc-geodata-coordinates-grid {
+.atm-geodata-coordinates-grid {
   @apply grid grid-cols-2 gap-4;
 }
 
-.nc-geodata-input-group {
+.atm-geodata-input-group {
   @apply flex flex-col gap-1.5;
 }
 
-.nc-geodata-input-label {
-  @apply text-nc-content-gray text-small font-medium;
+.atm-geodata-input-label {
+  @apply text-atm-content-gray text-small font-medium;
 }
 
-.nc-geodata-input-field {
+.atm-geodata-input-field {
   @apply !rounded-lg;
 }
 
-:deep(.nc-geodata-input-field input) {
+:deep(.atm-geodata-input-field input) {
   @apply !text-sm;
 }
 
-.nc-geodata-error-text {
-  @apply text-nc-content-red-dark text-xs;
+.atm-geodata-error-text {
+  @apply text-atm-content-red-dark text-xs;
 }
 
 /* Search overlay on map */
-.nc-geodata-map-search {
+.atm-geodata-map-search {
   @apply absolute;
   top: 12px;
   left: 12px;
@@ -882,8 +882,8 @@ onBeforeUnmount(() => {
   z-index: 1000;
 }
 
-.nc-geodata-search-input-row {
-  @apply flex items-center rounded-lg bg-nc-bg-default;
+.atm-geodata-search-input-row {
+  @apply flex items-center rounded-lg bg-atm-bg-default;
   padding: 0 12px;
   height: 36px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
@@ -894,38 +894,38 @@ onBeforeUnmount(() => {
   }
 }
 
-.nc-geodata-search-icon {
-  @apply text-nc-content-gray-muted w-4 h-4 flex-shrink-0;
+.atm-geodata-search-icon {
+  @apply text-atm-content-gray-muted w-4 h-4 flex-shrink-0;
 }
 
-.nc-geodata-search-spinner {
-  @apply text-nc-content-gray-muted w-3.5 h-3.5 flex-shrink-0;
+.atm-geodata-search-spinner {
+  @apply text-atm-content-gray-muted w-3.5 h-3.5 flex-shrink-0;
 }
 
-.nc-geodata-search-input {
-  @apply flex-1 border-none outline-none text-nc-content-gray bg-transparent min-w-0;
+.atm-geodata-search-input {
+  @apply flex-1 border-none outline-none text-atm-content-gray bg-transparent min-w-0;
   font-size: 13px;
   padding: 0 8px;
 
   &::placeholder {
-    @apply text-nc-content-gray-muted;
+    @apply text-atm-content-gray-muted;
   }
 }
 
-.nc-geodata-search-results {
-  @apply bg-nc-bg-default rounded-lg;
+.atm-geodata-search-results {
+  @apply bg-atm-bg-default rounded-lg;
   margin-top: 4px;
   max-height: 180px;
   overflow-y: auto;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.nc-geodata-search-result-item {
+.atm-geodata-search-result-item {
   @apply flex items-start gap-2 px-3 py-2 cursor-pointer;
   transition: background 0.15s;
 
   &:hover {
-    @apply bg-nc-bg-gray-light;
+    @apply bg-atm-bg-gray-light;
   }
 
   &:first-child {
@@ -941,12 +941,12 @@ onBeforeUnmount(() => {
   }
 }
 
-.nc-geodata-result-icon {
-  @apply text-nc-content-gray-muted w-3.5 h-3.5 flex-shrink-0 mt-0.5;
+.atm-geodata-result-icon {
+  @apply text-atm-content-gray-muted w-3.5 h-3.5 flex-shrink-0 mt-0.5;
 }
 
-.nc-geodata-result-text {
-  @apply text-nc-content-gray text-xs leading-[1.4];
+.atm-geodata-result-text {
+  @apply text-atm-content-gray text-xs leading-[1.4];
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -955,26 +955,26 @@ onBeforeUnmount(() => {
 }
 
 /* Map wrapper (relative container for overlay controls) */
-.nc-geodata-map-wrapper {
+.atm-geodata-map-wrapper {
   @apply relative;
 }
 
 /* Interactive map picker */
-.nc-geodata-map-picker {
-  @apply border-1 border-nc-border-gray-medium rounded-xl overflow-hidden;
+.atm-geodata-map-picker {
+  @apply border-1 border-atm-border-gray-medium rounded-xl overflow-hidden;
   height: 300px;
   z-index: 0;
 }
 
 /* Dark mode: invert OSM tiles via CSS filter to preserve detail */
-:deep(.nc-geodata-map-picker .leaflet-tile-pane) {
+:deep(.atm-geodata-map-picker .leaflet-tile-pane) {
   html.dark & {
     filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
   }
 }
 
 /* Wrapper positions the locate button absolutely on the map */
-.nc-geodata-locate-wrapper {
+.atm-geodata-locate-wrapper {
   @apply absolute;
   top: 12px;
   right: 12px;
@@ -982,17 +982,17 @@ onBeforeUnmount(() => {
 }
 
 /* Current-location icon button on map — aligned with search bar */
-.nc-geodata-locate-btn {
-  @apply flex items-center justify-center bg-nc-bg-default rounded-lg cursor-pointer border-none;
+.atm-geodata-locate-btn {
+  @apply flex items-center justify-center bg-atm-bg-default rounded-lg cursor-pointer border-none;
   width: 36px;
   height: 36px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   transition: background 0.15s;
-  color: var(--nc-content-gray-subtle);
+  color: var(--atm-content-gray-subtle);
 
   &:hover:not(:disabled) {
-    @apply bg-nc-bg-gray-light border-nc-border-gray-dark;
-    color: var(--nc-content-gray);
+    @apply bg-atm-bg-gray-light border-atm-border-gray-dark;
+    color: var(--atm-content-gray);
   }
 
   &:disabled {
@@ -1000,56 +1000,56 @@ onBeforeUnmount(() => {
   }
 
   &--loading {
-    color: var(--nc-content-brand);
+    color: var(--atm-content-brand);
   }
 }
 
-:deep(.nc-geodata-map-picker .leaflet-control-zoom) {
+:deep(.atm-geodata-map-picker .leaflet-control-zoom) {
   border: none;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 
   a {
-    @apply bg-nc-bg-default text-nc-content-gray;
+    @apply bg-atm-bg-default text-atm-content-gray;
     text-decoration: none !important;
-    border-bottom-color: var(--nc-border-gray-medium, #e5e7eb) !important;
+    border-bottom-color: var(--atm-border-gray-medium, #e5e7eb) !important;
 
     &:hover {
-      @apply bg-nc-bg-gray-light;
+      @apply bg-atm-bg-gray-light;
     }
   }
 }
 
-:deep(.nc-geodata-map-picker .leaflet-control-attribution) {
-  @apply text-[10px] bg-nc-bg-default/80 text-nc-content-gray-muted;
+:deep(.atm-geodata-map-picker .leaflet-control-attribution) {
+  @apply text-[10px] bg-atm-bg-default/80 text-atm-content-gray-muted;
 
   a {
-    @apply text-nc-content-gray-muted;
+    @apply text-atm-content-gray-muted;
   }
 }
 
 /* Info hint below map */
-.nc-geodata-info-hint {
-  @apply flex items-center gap-1.5 text-nc-content-gray-muted text-xs -mt-2;
+.atm-geodata-info-hint {
+  @apply flex items-center gap-1.5 text-atm-content-gray-muted text-xs -mt-2;
 }
 
 /* Footer */
-.nc-geodata-footer {
-  @apply flex items-center justify-between gap-3 px-5 py-3 border-t-1 border-nc-border-gray-medium bg-nc-bg-gray-extralight;
+.atm-geodata-footer {
+  @apply flex items-center justify-between gap-3 px-5 py-3 border-t-1 border-atm-border-gray-medium bg-atm-bg-gray-extralight;
 }
 
-.nc-geodata-footer-left {
+.atm-geodata-footer-left {
   @apply flex gap-2;
 }
 
-.nc-geodata-footer-right {
+.atm-geodata-footer-right {
   @apply flex gap-2;
 }
 </style>
 
 <style lang="scss">
-.nc-geodata-overlay-dropdown {
+.atm-geodata-overlay-dropdown {
   min-width: 540px !important;
   max-width: 95vw !important;
 

@@ -4,7 +4,7 @@
 
 Portions of this software are licensed as follows:
 
-* All third party components incorporated into the NocoDB Software are licensed under the original license provided by the owner of the applicable component.
+* All third party components incorporated into the Atmosphere Software are licensed under the original license provided by the owner of the applicable component.
 * Content of branches other than the main branch (i.e. “master”) are not licensed.
 * Content in the master branch is available under the “Sustainable Use License” as defined below.
 

@@ -2,12 +2,12 @@ import type {
   AggregationCategory,
   ClientType,
   FormulaDataTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Knex, XKnex } from '~/db/CustomKnex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { Column, Filter, Model, Source, View } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 
 /** Payload passed from the prelude to each dialect's `generateAggregateQuery`. */
 export interface AggregationGeneratorParams {
@@ -103,13 +103,13 @@ export interface DBQueryClient {
 
   /** Single-filter-set view-footer aggregation. */
   aggregate(
-    context: NcContext,
+    context: AtContext,
     ctx: AggregateCtx,
   ): Promise<Record<string, unknown>>;
 
   /** N-filter-set bulk aggregation (per-set filtered expression generation). */
   bulkAggregate(
-    context: NcContext,
+    context: AtContext,
     ctx: BulkAggregateCtx,
   ): Promise<Record<string, Record<string, unknown>>>;
 

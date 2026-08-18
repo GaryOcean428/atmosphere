@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ViewSettingOverrideOptions, ViewType } from 'nocodb-sdk'
+import type { ViewSettingOverrideOptions, ViewType } from 'atmosphere-sdk'
 
 interface Props {
   modelValue?: boolean
@@ -10,5 +10,5 @@ defineProps<Props>()
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

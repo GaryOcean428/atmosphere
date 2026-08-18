@@ -38,12 +38,12 @@ const optionsByKey = computed(() => new Map(props.options.map((op) => [op.title 
          unselected chips stay plain outlines — Airtable stepper parity. -->
     <template #chip="{ option, selected, inMenu }">
       <a-tag
-        class="nc-stepper-select-chip rounded-tag max-w-full !m-0"
-        :class="{ 'nc-stepper-select-chip-plain': !(selected || inMenu) }"
+        class="atm-stepper-select-chip rounded-tag max-w-full !m-0"
+        :class="{ 'atm-stepper-select-chip-plain': !(selected || inMenu) }"
         :color="selected || inMenu ? optionsByKey.get(option.key)?.bgColor : undefined"
       >
         <span class="text-small" :style="{ color: selected || inMenu ? optionsByKey.get(option.key)?.textColor : undefined }">
-          <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+          <AtTooltip class="truncate max-w-full" show-on-truncate-only>
             <template #title>
               {{ option.title }}
             </template>
@@ -57,7 +57,7 @@ const optionsByKey = computed(() => new Map(props.options.map((op) => [op.title 
             >
               {{ option.title }}
             </span>
-          </NcTooltip>
+          </AtTooltip>
         </span>
       </a-tag>
     </template>
@@ -69,9 +69,9 @@ const optionsByKey = computed(() => new Map(props.options.map((op) => [op.title 
   @apply py-[0.5px] px-2 rounded-[12px];
 }
 
-.nc-stepper-select-chip-plain {
-  border: 1px solid var(--nc-border-gray-medium) !important;
-  background: var(--nc-bg-default) !important;
-  color: var(--nc-content-gray) !important;
+.atm-stepper-select-chip-plain {
+  border: 1px solid var(--atm-border-gray-medium) !important;
+  background: var(--atm-bg-default) !important;
+  color: var(--atm-content-gray) !important;
 }
 </style>

@@ -39,7 +39,7 @@ const selectedOpt = computed(() => {
 
 <template>
   <div
-    class="nc-cell-field h-full w-full flex items-center nc-single-select focus:outline-transparent read-only"
+    class="atm-cell-field h-full w-full flex items-center atm-single-select focus:outline-transparent read-only"
     :class="{ 'max-w-full': isForm }"
   >
     <div v-if="isForm && parseProp(column.meta)?.isStepper" class="w-full max-w-full">
@@ -63,7 +63,7 @@ const selectedOpt = computed(() => {
           }"
           :class="{ 'text-sm': isKanban, 'text-small': !isKanban }"
         >
-          <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+          <AtTooltip class="truncate max-w-full" show-on-truncate-only>
             <template #title>
               {{ selectedOpt.title }}
             </template>
@@ -77,7 +77,7 @@ const selectedOpt = computed(() => {
             >
               {{ selectedOpt.title }}
             </span>
-          </NcTooltip>
+          </AtTooltip>
         </span>
       </a-tag>
     </div>

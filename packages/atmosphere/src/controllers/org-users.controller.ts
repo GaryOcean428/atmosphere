@@ -11,7 +11,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { OrgUserRoles } from 'nocodb-sdk';
+import { OrgUserRoles } from 'atmosphere-sdk';
 // This service is overwritten entirely in the cloud and does not extend there.
 // As a result, it refers to services from OSS to avoid type mismatches.
 import { OrgUsersService } from 'src/services/org-users.service';
@@ -20,7 +20,7 @@ import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { User } from '~/models';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
-import { NcRequest } from '~/interface/config';
+import { AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -34,7 +34,7 @@ export class OrgUsersController {
     blockApiTokenAccess: true,
     blockOAuthTokenAccess: true,
   })
-  async userList(@Req() req: NcRequest) {
+  async userList(@Req() req: AtRequest) {
     return new PagedResponseImpl(
       await this.orgUsersService.userList({
         query: req.query,
@@ -57,7 +57,7 @@ export class OrgUsersController {
   async userUpdate(
     @Body() body,
     @Param('userId') userId: string,
-    @Request() req: NcRequest,
+    @Request() req: AtRequest,
   ) {
     return await this.orgUsersService.userUpdate({
       user: body,
@@ -73,7 +73,7 @@ export class OrgUsersController {
     blockApiTokenAccess: true,
     blockOAuthTokenAccess: true,
   })
-  async userDelete(@Param('userId') userId: string, @Req() req: NcRequest) {
+  async userDelete(@Param('userId') userId: string, @Req() req: AtRequest) {
     await this.orgUsersService.userDelete({
       userId,
       req,
@@ -89,7 +89,7 @@ export class OrgUsersController {
     blockApiTokenAccess: true,
     blockOAuthTokenAccess: true,
   })
-  async userAdd(@Body() body, @Req() req: NcRequest) {
+  async userAdd(@Body() body, @Req() req: AtRequest) {
     const result = await this.orgUsersService.userAdd({
       user: req.body,
       req,
@@ -120,7 +120,7 @@ export class OrgUsersController {
     blockOAuthTokenAccess: true,
   })
   async userInviteResend(
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('userId') userId: string,
   ): Promise<any> {
     await this.orgUsersService.userInviteResend({
@@ -140,7 +140,7 @@ export class OrgUsersController {
     blockOAuthTokenAccess: true,
   })
   async generateResetUrl(
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('userId') userId: string,
   ) {
     const result = await this.orgUsersService.generateResetUrl({

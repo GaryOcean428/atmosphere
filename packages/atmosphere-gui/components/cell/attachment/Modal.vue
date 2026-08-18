@@ -87,10 +87,10 @@ const isNewAttachmentModalOpen = ref(false)
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="modalVisible"
-    wrap-class-name="nc-modal-attachment-expand-cell"
-    class="nc-attachment-modal"
+    wrap-class-name="atm-modal-attachment-expand-cell"
+    class="atm-attachment-modal"
     :class="{ active: modalVisible }"
     width="80%"
   >
@@ -98,7 +98,7 @@ const isNewAttachmentModalOpen = ref(false)
       <div class="font-semibold text-xl">{{ column?.title }}</div>
 
       <div class="flex items-center gap-2">
-        <NcButton
+        <AtButton
           :disabled="!selectedVisibleItems.some((v) => !!v)"
           type="secondary"
           size="small"
@@ -108,11 +108,11 @@ const isNewAttachmentModalOpen = ref(false)
             <GeneralIcon icon="download" />
             {{ $t('activity.bulkDownload') }}
           </div>
-        </NcButton>
+        </AtButton>
 
-        <NcButton
+        <AtButton
           v-if="isSharedForm || (!readOnly && isUIAllowed('dataEdit') && !isPublic)"
-          class="nc-attach-file group"
+          class="atm-attach-file group"
           size="small"
           data-testid="attachment-expand-file-picker-button"
           @click="isNewAttachmentModalOpen = true"
@@ -121,32 +121,32 @@ const isNewAttachmentModalOpen = ref(false)
             <component :is="iconMap.cellAttachment" class="w-4 h-4" />
             {{ $t('activity.attachFile') }}
           </div>
-        </NcButton>
+        </AtButton>
 
-        <NcButton type="secondary" size="small" @click="modalVisible = false">
+        <AtButton type="secondary" size="small" @click="modalVisible = false">
           <GeneralIcon icon="close" />
-        </NcButton>
+        </AtButton>
       </div>
     </div>
 
     <div ref="dropZoneRef" tabindex="0" class="relative min-h-[96px]">
       <div
         v-if="isSharedForm || (!readOnly && !dragging && isOverDropZone)"
-        class="text-white absolute inset-0 flex flex-col items-center justify-center border-dashed border-2 border-nc-border-gray-medium rounded-lg pt-2"
+        class="text-white absolute inset-0 flex flex-col items-center justify-center border-dashed border-2 border-atm-border-gray-medium rounded-lg pt-2"
         :class="{
-          'border-nc-border-brand': !visibleItems.length,
+          'border-atm-border-brand': !visibleItems.length,
         }"
       >
-        <component :is="iconMap.upload" class="w-8 h-8 text-nc-content-brand" />
+        <component :is="iconMap.upload" class="w-8 h-8 text-atm-content-brand" />
         <div class="p-4">
-          <h1 class="text-nc-content-brand font-bold">{{ $t('labels.dropHere') }}</h1>
+          <h1 class="text-atm-content-brand font-bold">{{ $t('labels.dropHere') }}</h1>
         </div>
       </div>
 
       <template v-if="visibleItems.length > 0">
         <div
           ref="sortableRef"
-          class="grid max-h-140 overflow-auto nc-scrollbar-md md:grid-cols-3 xl:grid-cols-5 gap-y-8 gap-x-4 relative"
+          class="grid max-h-140 overflow-auto atm-scrollbar-md md:grid-cols-3 xl:grid-cols-5 gap-y-8 gap-x-4 relative"
         >
           <CellAttachmentCard
             v-for="(item, i) in visibleItems"
@@ -163,8 +163,8 @@ const isNewAttachmentModalOpen = ref(false)
             @clicked="onClick(item)"
           />
           <div v-if="isLoading" class="flex flex-col gap-1">
-            <a-card class="nc-attachment-item group">
-              <div class="nc-attachment h-full w-full flex items-center justify-center">
+            <a-card class="atm-attachment-item group">
+              <div class="atm-attachment h-full w-full flex items-center justify-center">
                 <a-skeleton-image class />
               </div>
             </a-card>
@@ -173,15 +173,15 @@ const isNewAttachmentModalOpen = ref(false)
       </template>
       <template v-else>
         <div
-          class="h-[30vh] min-h-[96px] border-dashed border-2 border-nc-border-medium rounded-lg justify-center cursor-pointer flex items-center flex-col"
+          class="h-[30vh] min-h-[96px] border-dashed border-2 border-atm-border-medium rounded-lg justify-center cursor-pointer flex items-center flex-col"
           @click="onFileDialogOpen"
         >
           <template v-if="!(isSharedForm || (!readOnly && !dragging && isOverDropZone))">
-            <component :is="iconMap.upload" class="w-8 h-8 text-nc-content-gray-muted" />
+            <component :is="iconMap.upload" class="w-8 h-8 text-atm-content-gray-muted" />
             <span class="p-4">
               {{ $t('labels.clickTo') }}
 
-              <span class="font-semibold text-nc-content-brand"> {{ $t('labels.browseFiles') }} </span>
+              <span class="font-semibold text-atm-content-brand"> {{ $t('labels.browseFiles') }} </span>
               {{ $t('general.or') }}
               <span class="font-semibold"> {{ $t('labels.dragFilesHere') }} </span>
 
@@ -192,7 +192,7 @@ const isNewAttachmentModalOpen = ref(false)
       </template>
       <CellAttachmentAttachFile v-if="isNewAttachmentModalOpen" v-model:value="isNewAttachmentModalOpen" />
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss">
@@ -203,18 +203,18 @@ const isNewAttachmentModalOpen = ref(false)
     @apply h-auto w-auto overflow-visible whitespace-normal;
   }
 }
-.nc-attachment-modal {
-  .nc-attachment-item {
+.atm-attachment-modal {
+  .atm-attachment-item {
     @apply h-[200px] max-h-[200px] flex relative overflow-hidden;
   }
 
   .dragging {
-    .nc-attachment-item {
+    .atm-attachment-item {
       @apply !pointer-events-none;
     }
   }
 
-  .nc-checkbox > .ant-checkbox {
+  .atm-checkbox > .ant-checkbox {
     box-shadow: none !important;
   }
 }

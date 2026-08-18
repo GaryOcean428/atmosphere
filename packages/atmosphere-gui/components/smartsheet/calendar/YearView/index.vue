@@ -154,7 +154,7 @@ watch([width, isMobileMode], handleResize)
 </script>
 
 <template>
-  <div ref="calendarContainer" class="overflow-auto flex my-2 transition-all justify-center nc-scrollbar-md">
+  <div ref="calendarContainer" class="overflow-auto flex my-2 transition-all justify-center atm-scrollbar-md">
     <div
       :class="{
         'grid-cols-1': cols === 1,
@@ -164,7 +164,7 @@ watch([width, isMobileMode], handleResize)
         '!gap-5': cols < 3 && size === 'small',
       }"
       class="grid justify-items-center gap-8"
-      data-testid="nc-calendar-year-view"
+      data-testid="atm-calendar-year-view"
     >
       <LazySmartsheetCalendarYearViewMonth
         v-for="(_, index) in months"
@@ -173,8 +173,8 @@ watch([width, isMobileMode], handleResize)
         v-model:page-date="months[index]"
         :selected-date="selectedDate"
         :size="size"
-        class="nc-year-view-calendar"
-        data-testid="nc-calendar-year-view-month-selector"
+        class="atm-year-view-calendar"
+        data-testid="atm-calendar-year-view-month-selector"
         @update:selected-date="onDateSelect"
         @dbl-click="changeView"
       />
@@ -183,9 +183,9 @@ watch([width, isMobileMode], handleResize)
 </template>
 
 <style lang="scss" scoped>
-.nc-year-view-calendar {
-  :deep(.nc-date-week-header) {
-    @apply border-nc-border-gray-medium h-8 py-2;
+.atm-year-view-calendar {
+  :deep(.atm-date-week-header) {
+    @apply border-atm-border-gray-medium h-8 py-2;
   }
 }
 </style>

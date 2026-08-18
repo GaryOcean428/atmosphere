@@ -28,7 +28,7 @@ onMounted(() => {
     :style="{
       height: 'calc(100dvh - var(--toolbar-height) - 3.1rem)',
     }"
-    class="overflow-y-auto nc-scrollbar-md w-full"
+    class="overflow-y-auto atm-scrollbar-md w-full"
   >
     <div v-if="isErrorOccurred?.social && !socialFeed.length" class="h-full flex justify-center items-center">
       <FeedError page="all" />

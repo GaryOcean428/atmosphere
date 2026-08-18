@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { OrgUserRoles } from 'nocodb-sdk'
+import { OrgUserRoles } from 'atmosphere-sdk'
 
 definePageMeta({
   hideHeader: true,
@@ -88,32 +88,32 @@ watch(
     <div v-if="isSuperAdmin" class="mx-auto h-full">
       <div class="h-full flex">
         <!-- Side tabs -->
-        <div class="h-full bg-nc-bg-gray-sidebar nc-user-sidebar overflow-y-auto nc-scrollbar-thin min-w-[312px]">
-          <NcMenu :selected-keys="[activeTab]" :inline-indent="16" class="tabs-menu h-full" mode="inline">
+        <div class="h-full bg-atm-bg-gray-sidebar atm-user-sidebar overflow-y-auto atm-scrollbar-thin min-w-[312px]">
+          <AtMenu :selected-keys="[activeTab]" :inline-indent="16" class="tabs-menu h-full" mode="inline">
             <div class="h-[var(--topbar-height)] flex items-center children:flex-none">
-              <NcButton
+              <AtButton
                 v-e="['c:navbar:home']"
                 type="text"
                 size="small"
-                class="transition-all duration-200 mx-2 cursor-pointer transform nc-noco-brand-icon"
-                data-testid="nc-noco-brand-icon"
+                class="transition-all duration-200 mx-2 cursor-pointer transform atm-atmosphere-brand-icon"
+                data-testid="atm-atmosphere-brand-icon"
                 @click="navigateTo(backRoute)"
               >
                 <div class="flex flex-row gap-x-2 items-center">
                   <GeneralIcon icon="ncArrowLeft" />
                   <div class="flex text-small leading-[18px] font-semibold">{{ $t('labels.back') }}</div>
                 </div>
-              </NcButton>
+              </AtButton>
             </div>
-            <NcDivider class="!mt-0" />
+            <AtDivider class="!mt-0" />
 
             <div class="text-sm ml-2 p-2 mt-2 flex items-center justify-between gap-2">
-              <div class="text-base font-bold text-nc-content-gray-emphasis">NocoDB</div>
-              <span class="text-nc-content-gray-muted">{{ $t('labels.adminPanel') }}</span>
+              <div class="text-base font-bold text-atm-content-gray-emphasis">Atmosphere</div>
+              <span class="text-atm-content-gray-muted">{{ $t('labels.adminPanel') }}</span>
             </div>
 
             <!-- Overview -->
-            <NcMenuItem
+            <AtMenuItem
               key="dashboard"
               :class="{ active: activeTab === 'dashboard' }"
               class="item"
@@ -123,10 +123,10 @@ watch(
                 <GeneralIcon class="!h-4 !w-4" icon="home1" />
                 <div class="select-none">{{ $t('labels.dashboard') }}</div>
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
             <!-- Data -->
-            <NcMenuItem
+            <AtMenuItem
               v-if="!isEEFeatureBlocked"
               key="workspaces"
               :class="{ active: activeTab === 'workspaces' }"
@@ -144,17 +144,17 @@ watch(
                 />
                 <div class="select-none">{{ $t('labels.workspaces') }}</div>
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
-            <NcMenuItem key="bases" :class="{ active: activeTab === 'bases' }" class="item" @click="activeTab = 'bases'">
+            <AtMenuItem key="bases" :class="{ active: activeTab === 'bases' }" class="item" @click="activeTab = 'bases'">
               <div class="flex items-center space-x-2">
                 <GeneralProjectIcon :color="activeTab === 'bases' ? undefined : 'gray'" />
                 <div class="select-none">{{ $t('objects.projects') }}</div>
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
             <!-- Users & Access -->
-            <NcMenuItem
+            <AtMenuItem
               v-if="isUIAllowed('superAdminUserManagement')"
               key="users-list"
               :class="{ active: activeTab === 'users-list' }"
@@ -165,9 +165,9 @@ watch(
                 <GeneralIcon icon="ncUsers" class="!h-4 !w-4" />
                 <div class="select-none">{{ $t('title.userManagement') }}</div>
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
-            <NcMenuItem
+            <AtMenuItem
               v-if="isUIAllowed('ssoSettings') && !isEEFeatureBlocked"
               key="authentication"
               :class="{ active: activeTab === 'authentication' }"
@@ -178,10 +178,10 @@ watch(
                 <component :is="iconMap.ncLock" />
                 <div class="select-none text-sm">{{ $t('title.sso') }}</div>
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
             <!-- Configuration -->
-            <NcMenuItem
+            <AtMenuItem
               v-if="isSetupPageAllowed"
               key="setup"
               :class="{ active: activeTab === 'setup' }"
@@ -192,16 +192,16 @@ watch(
                 <GeneralIcon icon="ncSliders" class="!h-4 !w-4" />
                 <div class="select-none">{{ $t('labels.setup') }}</div>
                 <span class="flex-grow" />
-                <NcTooltip v-if="isPending">
+                <AtTooltip v-if="isPending">
                   <template #title>
                     <span>{{ $t('activity.pending') }}</span>
                   </template>
-                  <GeneralIcon icon="ncAlertCircle" class="text-nc-content-orange-medium w-4 h-4 nc-pending" />
-                </NcTooltip>
+                  <GeneralIcon icon="ncAlertCircle" class="text-atm-content-orange-medium w-4 h-4 atm-pending" />
+                </AtTooltip>
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
-            <NcMenuItem
+            <AtMenuItem
               v-if="!isEEFeatureBlocked"
               key="external-integrations"
               :class="{ active: activeTab === 'external-integrations' }"
@@ -212,9 +212,9 @@ watch(
                 <GeneralIcon icon="ncSliders" class="!h-4 !w-4" />
                 <div class="select-none">{{ $t('title.externalIntegrations') }}</div>
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
-            <NcMenuItem
+            <AtMenuItem
               v-if="isUIAllowed('superAdminAppSettings')"
               key="settings"
               :class="{ active: activeTab === 'settings' }"
@@ -225,10 +225,10 @@ watch(
                 <GeneralIcon icon="settings" class="!h-4 !w-4" />
                 <div class="select-none">{{ $t('activity.settings') }}</div>
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
             <!-- System -->
-            <NcMenuItem
+            <AtMenuItem
               v-if="showLicenseTab"
               key="license"
               :class="{ active: activeTab === 'license' }"
@@ -239,12 +239,12 @@ watch(
                 <GeneralIcon icon="ncKey2" class="h-4 w-4 flex-none" />
                 <div class="select-none">{{ $t('title.license') }}</div>
               </div>
-            </NcMenuItem>
-          </NcMenu>
+            </AtMenuItem>
+          </AtMenu>
         </div>
 
         <!-- Content -->
-        <div class="h-full flex-1 flex flex-col pt-2 overflow-y-auto nc-scrollbar-thin">
+        <div class="h-full flex-1 flex flex-col pt-2 overflow-y-auto atm-scrollbar-thin">
           <div class="h-full flex flex-col w-full">
             <div class="h-full">
               <AdminInstanceDashboard v-if="activeTab === 'dashboard'" />
@@ -265,11 +265,11 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-user-sidebar .ant-menu-sub.ant-menu-inline) {
+:deep(.atm-user-sidebar .ant-menu-sub.ant-menu-inline) {
   @apply bg-transparent;
 }
 
-:deep(.nc-user-sidebar .ant-menu-item-only-child),
+:deep(.atm-user-sidebar .ant-menu-item-only-child),
 :deep(.ant-menu-submenu-title) {
   @apply !h-[30px] !leading-[30px];
 }
@@ -283,24 +283,24 @@ watch(
 }
 
 .tabs-menu {
-  @apply bg-nc-bg-gray-sidebar;
+  @apply bg-atm-bg-gray-sidebar;
 
   :deep(.item) {
-    @apply select-none mx-2 !px-3 !text-sm !rounded-md !mb-1 text-nc-content-gray-subtle !hover:(bg-nc-bg-gray-medium text-nc-content-gray-subtle) font-medium;
+    @apply select-none mx-2 !px-3 !text-sm !rounded-md !mb-1 text-atm-content-gray-subtle !hover:(bg-atm-bg-gray-medium text-atm-content-gray-subtle) font-medium;
     width: calc(100% - 1rem);
   }
 
   :deep(.active) {
-    @apply !bg-nc-bg-brand !text-nc-content-brand !hover:(bg-nc-bg-brand text-nc-content-brand) font-semibold;
+    @apply !bg-atm-bg-brand !text-atm-content-brand !hover:(bg-atm-bg-brand text-atm-content-brand) font-semibold;
   }
 }
 
 :deep(.ant-menu-submenu-title) {
-  @apply select-none mx-2 !px-3 !text-sm !rounded-md !mb-1 !hover:(bg-nc-bg-brand text-nc-content-brand);
+  @apply select-none mx-2 !px-3 !text-sm !rounded-md !mb-1 !hover:(bg-atm-bg-brand text-atm-content-brand);
   width: calc(100% - 1rem);
 }
 
 :deep(.ant-menu) {
-  @apply !pt-0 !rounded-none !border-nc-border-gray-medium;
+  @apply !pt-0 !rounded-none !border-atm-border-gray-medium;
 }
 </style>

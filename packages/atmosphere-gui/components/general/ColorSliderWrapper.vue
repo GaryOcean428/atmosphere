@@ -28,15 +28,15 @@ const picked = computed({
 <template>
   <Slider
     v-model="picked"
-    class="nc-color-slider-wrapper min-w-[200px]"
+    class="atm-color-slider-wrapper min-w-[200px]"
     :style="{
-      '--nc-color-slider-pointer': tinycolor(`hsv(${picked.h ?? 199}, 100%, 100%)`).toHexString(),
+      '--atm-color-slider-pointer': tinycolor(`hsv(${picked.h ?? 199}, 100%, 100%)`).toHexString(),
     }"
   />
 </template>
 
 <style lang="scss" scoped>
-.nc-color-slider-wrapper {
+.atm-color-slider-wrapper {
   &.vc-slider {
     @apply !w-full;
   }
@@ -54,7 +54,7 @@ const picked = computed({
     }
     .vc-hue-picker {
       background-color: white;
-      box-shadow: 0 0 0 3px var(--nc-color-slider-pointer) !important;
+      box-shadow: 0 0 0 3px var(--atm-color-slider-pointer) !important;
     }
   }
 }

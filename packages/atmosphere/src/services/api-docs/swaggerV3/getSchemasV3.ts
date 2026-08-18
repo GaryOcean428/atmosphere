@@ -3,7 +3,7 @@ import type { Base, Model, Source } from '~/models';
 
 import type { SwaggerColumn } from './getSwaggerColumnMetasV3';
 import type { SwaggerView } from '~/services/api-docs/shared/swaggerUtils';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export default async function getSchemasV3(
   context,
@@ -19,7 +19,7 @@ export default async function getSchemasV3(
     sourcesMap: Map<string, Source>;
     tableName: string;
   },
-  _ncMeta = Noco.ncMeta,
+  _ncMeta = Atmosphere.ncMeta,
 ) {
   const swaggerSchemas = getModelSchemas({
     tableName,

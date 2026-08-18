@@ -2,11 +2,11 @@ import fs from 'fs';
 import { Readable } from 'stream';
 import { Client as MinioClient } from 'minio';
 import axios from 'axios';
-import { OperationSource } from 'nocodb-sdk';
-import type { IStorageAdapterV2, XcFile } from '~/types/nc-plugin';
+import { OperationSource } from 'atmosphere-sdk';
+import type { IStorageAdapterV2, XcFile } from '~/types/atm-plugin';
 import { getFilteredAgents } from '~/utils/ssrf';
-import { NcError } from '~/helpers/ncError';
-import { NC_ATTACHMENT_FIELD_SIZE } from '~/constants';
+import { AtError } from '~/helpers/ncError';
+import { ATMOSPHERE_ATTACHMENT_FIELD_SIZE } from '~/constants';
 
 interface MinioObjectStorageInput {
   bucket: string;
@@ -71,14 +71,14 @@ export default class Minio implements IStorageAdapterV2 {
     try {
       const stream = new Readable({
         read() {
-          this.push('Hello from Minio, NocoDB');
+          this.push('Hello from Minio, Atmosphere');
           this.push(null);
         },
       });
-      await this.fileCreateByStream('nc-test-file.txt', stream);
+      await this.fileCreateByStream('atm-test-file.txt', stream);
       return true;
     } catch (e) {
-      NcError._.pluginTestError(e?.message);
+      AtError._.pluginTestError(e?.message);
     }
   }
 
@@ -102,7 +102,7 @@ export default class Minio implements IStorageAdapterV2 {
         });
       });
     } catch (error) {
-      NcError._.storageFileReadError(error?.message);
+      AtError._.storageFileReadError(error?.message);
     }
   }
 
@@ -114,7 +114,7 @@ export default class Minio implements IStorageAdapterV2 {
         mimetype: file?.mimetype,
       });
     } catch (error) {
-      NcError._.storageFileCreateError(error?.message);
+      AtError._.storageFileCreateError(error?.message);
     }
   }
 
@@ -168,7 +168,7 @@ export default class Minio implements IStorageAdapterV2 {
 
       return await Promise.race([upload, streamError]);
     } catch (error) {
-      NcError._.storageFileStreamError(error?.message);
+      AtError._.storageFileStreamError(error?.message);
     }
   }
 
@@ -181,7 +181,7 @@ export default class Minio implements IStorageAdapterV2 {
       const response = await axios.get(url, {
         ...getFilteredAgents({ url, source: OperationSource.PLUGINS }),
         responseType: buffer ? 'arraybuffer' : 'stream',
-        maxContentLength: NC_ATTACHMENT_FIELD_SIZE,
+        maxContentLength: ATMOSPHERE_ATTACHMENT_FIELD_SIZE,
       });
 
       const uploadParams = {
@@ -200,7 +200,7 @@ export default class Minio implements IStorageAdapterV2 {
         data: response.data,
       };
     } catch (error) {
-      NcError._.storageFileCreateError(
+      AtError._.storageFileCreateError(
         `Failed to create file from URL: ${error?.message}`,
       );
     }
@@ -229,7 +229,7 @@ export default class Minio implements IStorageAdapterV2 {
         }/${uploadParams.Key}`;
       }
     } catch (error) {
-      NcError._.storageFileCreateError(error?.message);
+      AtError._.storageFileCreateError(error?.message);
     }
   }
 
@@ -240,8 +240,8 @@ export default class Minio implements IStorageAdapterV2 {
   ) {
     try {
       if (
-        key.startsWith(`${this.input.bucket}/nc/uploads`) ||
-        key.startsWith(`${this.input.bucket}/nc/thumbnails`)
+        key.startsWith(`${this.input.bucket}/atm/uploads`) ||
+        key.startsWith(`${this.input.bucket}/atm/thumbnails`)
       ) {
         key = key.replace(`${this.input.bucket}/`, '');
       }
@@ -253,7 +253,7 @@ export default class Minio implements IStorageAdapterV2 {
         pathParameters,
       );
     } catch (error) {
-      NcError._.storageFileReadError(
+      AtError._.storageFileReadError(
         `Failed to generate signed URL: ${error?.message}`,
       );
     }
@@ -274,7 +274,7 @@ export default class Minio implements IStorageAdapterV2 {
       await this.minioClient.removeObject(this.input.bucket, path);
       return true;
     } catch (error) {
-      NcError._.storageFileDeleteError(error?.message);
+      AtError._.storageFileDeleteError(error?.message);
     }
   }
 
@@ -285,9 +285,9 @@ export default class Minio implements IStorageAdapterV2 {
     // Remove the leading slash
     globPattern = globPattern.replace(/^\//, '');
 
-    // Make sure pattern starts with nc/uploads/
-    if (!globPattern.startsWith('nc/uploads/')) {
-      globPattern = `nc/uploads/${globPattern}`;
+    // Make sure pattern starts with atm/uploads/
+    if (!globPattern.startsWith('atm/uploads/')) {
+      globPattern = `atm/uploads/${globPattern}`;
     }
 
     // Minio does not support glob so remove *

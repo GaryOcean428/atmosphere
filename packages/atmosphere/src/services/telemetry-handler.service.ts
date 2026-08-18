@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { IEventEmitter } from '~/modules/event-emitter/event-emitter.interface';
 import { TelemetryService } from '~/services/telemetry.service';
 
@@ -13,7 +13,7 @@ export class TelemetryHandlerService implements OnModuleInit, OnModuleDestroy {
   protected unsubscribe: () => void;
 
   static sendPriorityError(
-    context: NcContext,
+    context: AtContext,
     param: {
       trigger: string;
       error_type?: string;
@@ -22,7 +22,7 @@ export class TelemetryHandlerService implements OnModuleInit, OnModuleDestroy {
       affected_resources?: (string | undefined | null)[];
     },
   ) {
-    Noco.eventEmitter.emit(HANDLE_PRIORITY_ERROR, { context, ...param });
+    Atmosphere.eventEmitter.emit(HANDLE_PRIORITY_ERROR, { context, ...param });
   }
 
   constructor(
@@ -31,7 +31,7 @@ export class TelemetryHandlerService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   public async handlePriorityError(
-    context: NcContext,
+    context: AtContext,
     param: {
       trigger: string;
       error_type?: string;

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 
-import { NocoModule } from '~/modules/noco.module';
+import { AtmosphereModule } from '~/modules/atmosphere.module';
 
 import { BasicStrategy } from '~/strategies/basic.strategy/basic.strategy';
 import { LocalStrategy } from '~/strategies/local.strategy';
@@ -13,9 +13,9 @@ import { AuthService } from '~/modules/auth/auth.service';
 import { AuthController } from '~/modules/auth/auth.controller';
 
 export const authModuleMetadata = {
-  imports: [PassportModule, NocoModule],
+  imports: [PassportModule, AtmosphereModule],
   controllers: [
-    ...(process.env.NC_WORKER_CONTAINER !== 'true' ? [AuthController] : []),
+    ...(process.env.ATMOSPHERE_WORKER_CONTAINER !== 'true' ? [AuthController] : []),
   ],
   providers: [
     AuthService,

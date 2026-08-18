@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue'
-import { PlanFeatureTypes } from 'nocodb-sdk'
+import { PlanFeatureTypes } from 'atmosphere-sdk'
 
 /**
  * Single source of truth for workspace tab visibility.

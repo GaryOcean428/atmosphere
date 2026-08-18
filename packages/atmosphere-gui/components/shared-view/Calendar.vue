@@ -29,7 +29,7 @@ useViewRowColorProvider({ shared: true })
 </script>
 
 <template>
-  <div class="nc-container h-full">
+  <div class="atm-container h-full">
     <div class="flex flex-col h-full flex-1 min-w-0">
       <LazySmartsheetToolbar show-full-screen-toggle />
       <div class="h-full flex-1 min-w-0 min-h-0">

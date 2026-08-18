@@ -60,7 +60,7 @@ export const Link = TiptapLink.extend<LinkOptions>({
 
     // The class is used to identify the text that needs to show the tooltip
     // The data-tooltip is the content of the tooltip
-    attr.class = 'nc-rich-link-tooltip'
+    attr.class = 'atm-rich-link-tooltip'
     attr['data-tooltip'] = attr.href?.split('~~~###~~~')[1]?.replace(/_/g, ' ')
     return ['span', attr]
   },
@@ -78,7 +78,7 @@ export const Link = TiptapLink.extend<LinkOptions>({
           .run()
 
         setTimeout(() => {
-          const linkInput = document.querySelector('.nc-text-area-rich-link-option-input')
+          const linkInput = document.querySelector('.atm-text-area-rich-link-option-input')
           if (linkInput) {
             ;(linkInput as any).focus()
           }
@@ -218,7 +218,7 @@ export const Link = TiptapLink.extend<LinkOptions>({
         // markdown and strips `<url>` as an unknown HTML tag, wiping the link (and the
         // whole comment when it's the only content). Overriding `open` to '[' leaves
         // `inAutolink` unset, so the default `close` falls through to its bracketed
-        // `](url)` branch. See nocodb#14083.
+        // `](url)` branch. See atmosphere#14083.
         serialize: {
           ...defaultMarkdownSerializer.marks.link,
           open: '[',

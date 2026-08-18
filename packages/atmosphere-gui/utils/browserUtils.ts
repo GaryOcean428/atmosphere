@@ -1,10 +1,10 @@
 import type { Editor } from '@tiptap/vue-3'
-import { ncIsArray } from 'nocodb-sdk'
+import { ncIsArray } from 'atmosphere-sdk'
 
 // refer - https://stackoverflow.com/a/11752084
 export const isMac = () => /Mac/i.test(navigator.platform)
 export const isDrawerExist = () => document.querySelector('.ant-drawer-open')
-export const isLinkDropdownExist = () => document.querySelector('.nc-links-dropdown.active')
+export const isLinkDropdownExist = () => document.querySelector('.atm-links-dropdown.active')
 
 // EE side-panel is inline (sibling of the grid) — both surfaces can be active
 // simultaneously. The panel "blocks" grid-level keyboard handling only when the
@@ -27,7 +27,7 @@ if (typeof document !== 'undefined') {
       // Ignore clicks on dropdowns/popovers that overlay the page — they
       // can land outside the panel DOM but were triggered from within it.
       if (t.closest('.ant-select-dropdown, .ant-picker-dropdown, .ant-popover, .ant-dropdown')) return
-      const inPanel = !!t.closest('.nc-expanded-form-panel')
+      const inPanel = !!t.closest('.atm-expanded-form-panel')
       _lastClickInExpandedFormPanel = inPanel
 
       // If the user clicked OUT of the panel (e.g. on a grid cell), but a
@@ -37,7 +37,7 @@ if (typeof document !== 'undefined') {
       // focused input would open its dropdown on Enter even though the user
       // visually clicked away.
       if (!inPanel) {
-        const panel = document.querySelector('.nc-expanded-form-panel')
+        const panel = document.querySelector('.atm-expanded-form-panel')
         const active = document.activeElement as HTMLElement | null
         if (panel && active && panel.contains(active) && typeof active.blur === 'function') {
           active.blur()
@@ -56,7 +56,7 @@ export const markExpandedFormPanelFocus = () => {
 }
 
 const isFocusInsideExpandedFormPanel = () => {
-  const panel = document.querySelector('.nc-expanded-form-panel')
+  const panel = document.querySelector('.atm-expanded-form-panel')
   if (!panel) return false
   const el = document.activeElement
   return !!el && panel.contains(el)
@@ -66,18 +66,18 @@ const isFocusInsideExpandedFormPanel = () => {
 // inside it, or their most recent click landed inside it. Grid keyboard
 // handlers check this and bail.
 export const isExpandedFormPanelOpen = () =>
-  !!document.querySelector('.nc-expanded-form-panel') && (isFocusInsideExpandedFormPanel() || _lastClickInExpandedFormPanel)
+  !!document.querySelector('.atm-expanded-form-panel') && (isFocusInsideExpandedFormPanel() || _lastClickInExpandedFormPanel)
 
 export const isDrawerOrModalExist = () =>
   !!document.querySelector('.ant-modal.active, .ant-drawer-open') || isExpandedFormPanelOpen()
 
 export const isExpandedFormOpenExist = () =>
-  !!document.querySelector('.nc-drawer-expanded-form.active') || isExpandedFormPanelOpen()
-export const isNestedExpandedFormOpenExist = () => document.querySelectorAll('.nc-drawer-expanded-form.active')?.length > 1
+  !!document.querySelector('.atm-drawer-expanded-form.active') || isExpandedFormPanelOpen()
+export const isNestedExpandedFormOpenExist = () => document.querySelectorAll('.atm-drawer-expanded-form.active')?.length > 1
 export const isExpandedCellInputExist = () => document.querySelector('.expanded-cell-input')
-export const isNcListSearchInputActive = () => document.activeElement?.closest('.nc-list-search-input')
-export const isExtensionPaneActive = () => document.querySelector('.nc-extension-pane')
-export const isGeneralOverlayActive = () => document.querySelector('.nc-general-overlay')
+export const isNcListSearchInputActive = () => document.activeElement?.closest('.atm-list-search-input')
+export const isExtensionPaneActive = () => document.querySelector('.atm-extension-pane')
+export const isGeneralOverlayActive = () => document.querySelector('.atm-general-overlay')
 export const isSelectActive = () => {
   const els = document.querySelectorAll<HTMLElement>('.ant-select-dropdown')
   return Array.from(els).some((el) => {
@@ -86,23 +86,23 @@ export const isSelectActive = () => {
   })
 }
 
-export const isViewSearchActive = () => document.querySelector('.nc-view-search-data') === document.activeElement
-export const isCreateViewActive = () => document.querySelector('.nc-view-create-modal')
+export const isViewSearchActive = () => document.querySelector('.atm-view-search-data') === document.activeElement
+export const isCreateViewActive = () => document.querySelector('.atm-view-create-modal')
 export const isActiveElementInsideExtension = () =>
-  ['.extension-modal', '.nc-extension-pane', '.nc-modal-extension-market', '.nc-modal-share-collaborate'].some((selector) =>
+  ['.extension-modal', '.atm-extension-pane', '.atm-modal-extension-market', '.atm-modal-share-collaborate'].some((selector) =>
     document.querySelector(selector)?.contains(document.activeElement),
   )
-export const isActiveElementInsideScriptPane = () => document.querySelector('.nc-action-pane')?.contains(document.activeElement)
+export const isActiveElementInsideScriptPane = () => document.querySelector('.atm-action-pane')?.contains(document.activeElement)
 export const isActiveElementInsideSmartTextPanel = () =>
-  document.querySelector('.nc-smart-text-panel')?.contains(document.activeElement)
+  document.querySelector('.atm-smart-text-panel')?.contains(document.activeElement)
 export const isActiveElementInsideInterfacePanel = () =>
-  ['.nc-interface-properties-panel', '.nc-interface-page-description'].some((selector) =>
+  ['.atm-interface-properties-panel', '.atm-interface-page-description'].some((selector) =>
     document.querySelector(selector)?.contains(document.activeElement),
   )
 /** Interface record-detail sheet overlays the viz — while it is open the grid
  *  behind it must not react to keyboard at all (presence, not focus: the sheet
  *  only exists inside interface contexts, so classic grids are unaffected). */
-export const isInterfaceRecordSheetOpen = () => !!document.querySelector('.nc-interface-record-form-sheet')
+export const isInterfaceRecordSheetOpen = () => !!document.querySelector('.atm-interface-record-form-sheet')
 /** Interface builder chrome: the right-side config panel, the topbars, a page
  *  toolbar (the user-filter tab strip lives inside it) and the page sidebar.
  *  Clicking any of it is a context switch, so the mounted grid/list drops its
@@ -112,11 +112,11 @@ export const isInterfaceRecordSheetOpen = () => !!document.querySelector('.nc-in
  *  cell editors portal their dropdowns and modals to `<body>`, so an outside-click
  *  test counts those as "outside" and would deselect mid-edit. */
 export const INTERFACE_CONFIG_CHROME_SELECTOR = [
-  '.nc-interface-properties-panel',
-  '.nc-interface-editor-topbar',
-  '.nc-interface-table-topbar',
-  '.nc-interface-table-toolbar',
-  '.nc-interface-app-sidebar',
+  '.atm-interface-properties-panel',
+  '.atm-interface-editor-topbar',
+  '.atm-interface-table-topbar',
+  '.atm-interface-table-toolbar',
+  '.atm-interface-app-sidebar',
 ].join(',')
 export const isInterfaceConfigChromeTarget = (target: EventTarget | null) =>
   !!(target as HTMLElement | null)?.closest?.(INTERFACE_CONFIG_CHROME_SELECTOR)
@@ -161,10 +161,10 @@ export const isActiveButtonOrLinkElementExist = (e?: Event) => {
   )
 }
 
-export const isNcDropdownOpen = () => document.querySelector('.nc-dropdown.active')
-export const isDropdownActive = () => document.querySelector('.nc-dropdown')
+export const isNcDropdownOpen = () => document.querySelector('.atm-dropdown.active')
+export const isDropdownActive = () => document.querySelector('.atm-dropdown')
 
-export const isFieldEditOrAddDropdownOpen = () => document.querySelector('.nc-dropdown-edit-column.active')
+export const isFieldEditOrAddDropdownOpen = () => document.querySelector('.atm-dropdown-edit-column.active')
 export const getScrollbarWidth = () => {
   const outer = document.createElement('div')
   outer.style.visibility = 'hidden'
@@ -312,7 +312,7 @@ export const removeQueryParamsFromURL = (keysToRemove: string[]) => {
 // Feature detection.
 export const supportsKeyboardLock = 'keyboard' in navigator && navigator.keyboard && 'lock' in (navigator.keyboard as any)
 
-export const openContactSalesEmail = (email: string = 'support@nocodb.com') => {
+export const openContactSalesEmail = (email: string = 'support@atmosphere.dev') => {
   const a = document.createElement('a')
   a.href = `mailto:${email}`
   a.target = '_blank'

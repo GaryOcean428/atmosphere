@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useEventListener, useResizeObserver } from '@vueuse/core'
-import type { CommentAnnotationRegion } from 'nocodb-sdk'
-import { CommentAnnotationRegionType } from 'nocodb-sdk'
+import type { CommentAnnotationRegion } from 'atmosphere-sdk'
+import { CommentAnnotationRegionType } from 'atmosphere-sdk'
 import type { AnnotationDraft, AnnotationMarker } from '~/composables/useImageAnnotations'
 
 interface Props {
@@ -399,7 +399,7 @@ onMounted(() => {
           { '!object-contain': props.objectFit === 'contain' },
           annotatable ? 'w-full h-full object-contain' : 'm-auto h-full max-h-full w-auto object-cover',
         ]"
-        class="nc-attachment-image origin-center"
+        class="atm-attachment-image origin-center"
         loading="lazy"
         @load="onImageLoad"
         @error="onError"
@@ -407,11 +407,11 @@ onMounted(() => {
       <GeneralIcon v-else icon="ncFileTypeImage" class="flex-none w-6" />
 
       <!-- Annotation overlay -->
-      <div v-if="annotatable" class="nc-annotation-overlay pointer-events-none absolute inset-0 z-10">
+      <div v-if="annotatable" class="atm-annotation-overlay pointer-events-none absolute inset-0 z-10">
         <!-- live draw preview -->
         <div
           v-if="drawingStyle"
-          class="nc-annotation-draw-preview absolute border-2 border-nc-border-brand bg-nc-bg-brand/10 rounded"
+          class="atm-annotation-draw-preview absolute border-2 border-atm-border-brand bg-atm-bg-brand/10 rounded"
           :style="drawingStyle"
         />
 
@@ -420,21 +420,21 @@ onMounted(() => {
           <!-- rectangle region -->
           <div
             v-if="m.isRect"
-            class="nc-annotation-marker pointer-events-auto absolute cursor-pointer rounded transition-shadow"
+            class="atm-annotation-marker pointer-events-auto absolute cursor-pointer rounded transition-shadow"
             :class="
               activeId === m.commentId || hoveredId === m.commentId
-                ? 'border-2 border-nc-fill-primary shadow-[0_0_0_2px_rgba(51,102,255,0.25)]'
+                ? 'border-2 border-atm-fill-primary shadow-[0_0_0_2px_rgba(51,102,255,0.25)]'
                 : 'border-2 border-white/80'
             "
             :style="m.style"
-            :data-testid="`nc-annotation-marker-${m.label}`"
+            :data-testid="`atm-annotation-marker-${m.label}`"
             @mouseenter="emit('hoverAnnotation', m.commentId)"
             @mouseleave="emit('hoverAnnotation', null)"
             @mousedown.stop
             @touchstart.stop
             @click.stop="emit('selectAnnotation', m.commentId)"
           >
-            <div class="nc-annotation-badge" :class="{ 'nc-annotation-badge-active': activeId === m.commentId }">
+            <div class="atm-annotation-badge" :class="{ 'atm-annotation-badge-active': activeId === m.commentId }">
               {{ m.label }}
             </div>
           </div>
@@ -442,16 +442,16 @@ onMounted(() => {
           <!-- point pin -->
           <div
             v-else
-            class="nc-annotation-marker nc-annotation-point pointer-events-auto absolute cursor-pointer"
+            class="atm-annotation-marker atm-annotation-point pointer-events-auto absolute cursor-pointer"
             :style="m.style"
-            :data-testid="`nc-annotation-marker-${m.label}`"
+            :data-testid="`atm-annotation-marker-${m.label}`"
             @mouseenter="emit('hoverAnnotation', m.commentId)"
             @mouseleave="emit('hoverAnnotation', null)"
             @mousedown.stop
             @touchstart.stop
             @click.stop="emit('selectAnnotation', m.commentId)"
           >
-            <div class="nc-annotation-badge" :class="{ 'nc-annotation-badge-active': activeId === m.commentId }">
+            <div class="atm-annotation-badge" :class="{ 'atm-annotation-badge-active': activeId === m.commentId }">
               {{ m.label }}
             </div>
           </div>
@@ -461,21 +461,21 @@ onMounted(() => {
         <template v-if="draft && draftRegionStyle">
           <div
             v-if="draftIsRect"
-            class="nc-annotation-draft-region absolute rounded border-2 border-nc-fill-primary bg-nc-bg-brand/10"
+            class="atm-annotation-draft-region absolute rounded border-2 border-atm-fill-primary bg-atm-bg-brand/10"
             :style="draftRegionStyle"
           />
-          <div v-else class="nc-annotation-draft-region nc-annotation-point absolute" :style="draftRegionStyle">
-            <div class="nc-annotation-badge nc-annotation-badge-active" />
+          <div v-else class="atm-annotation-draft-region atm-annotation-point absolute" :style="draftRegionStyle">
+            <div class="atm-annotation-badge atm-annotation-badge-active" />
           </div>
         </template>
 
         <!-- draft popup (positioned here, content injected by parent) -->
-        <div v-if="draft && draftStyle" class="nc-annotation-popup pointer-events-auto absolute z-20" :style="draftStyle">
+        <div v-if="draft && draftStyle" class="atm-annotation-popup pointer-events-auto absolute z-20" :style="draftStyle">
           <slot name="popup" />
         </div>
 
         <!-- conversation popup for the active marker -->
-        <div v-if="!draft && activeStyle" class="nc-annotation-view-popup pointer-events-auto absolute z-20" :style="activeStyle">
+        <div v-if="!draft && activeStyle" class="atm-annotation-view-popup pointer-events-auto absolute z-20" :style="activeStyle">
           <slot name="viewPopup" />
         </div>
       </div>
@@ -483,7 +483,7 @@ onMounted(() => {
 
     <div v-if="controls" class="absolute mx-auto w-full bottom-4 flex items-center justify-center gap-2">
       <button
-        class="rounded-full bg-nc-gray-800/70 p-2 text-nc-content-inverted-primary hover:bg-nc-gray-700/70 disabled:opacity-50"
+        class="rounded-full bg-atm-gray-800/70 p-2 text-atm-content-inverted-primary hover:bg-atm-gray-700/70 disabled:opacity-50"
         :disabled="scale >= MAX_SCALE"
         title="Zoom in"
         @click="zoom('in')"
@@ -491,7 +491,7 @@ onMounted(() => {
         <GeneralIcon icon="ncZoomIn" class="h-5 w-5" />
       </button>
       <button
-        class="rounded-full bg-nc-gray-800/70 p-2 text-nc-content-inverted-primary hover:bg-nc-gray-700/70 disabled:opacity-50"
+        class="rounded-full bg-atm-gray-800/70 p-2 text-atm-content-inverted-primary hover:bg-atm-gray-700/70 disabled:opacity-50"
         :disabled="scale <= MIN_SCALE"
         title="Zoom out"
         @click="zoom('out')"
@@ -503,16 +503,16 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.nc-annotation-badge {
-  @apply absolute -left-2.5 -top-2.5 flex h-5.5 w-5.5 items-center justify-center rounded-full bg-nc-fill-primary text-white text-[11px] font-semibold border-2 border-white;
+.atm-annotation-badge {
+  @apply absolute -left-2.5 -top-2.5 flex h-5.5 w-5.5 items-center justify-center rounded-full bg-atm-fill-primary text-white text-[11px] font-semibold border-2 border-white;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
-.nc-annotation-point .nc-annotation-badge {
+.atm-annotation-point .atm-annotation-badge {
   @apply left-0 top-0 -translate-x-1/2 -translate-y-1/2;
 }
 
-.nc-annotation-badge-active {
-  @apply ring-2 ring-nc-fill-primary;
+.atm-annotation-badge-active {
+  @apply ring-2 ring-atm-fill-primary;
 }
 </style>

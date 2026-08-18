@@ -122,14 +122,14 @@ defineExpose({
 
 <template>
   <div class="flex flex-col items-center justify-center h-full relative overflow-hidden" :class="[bgColorClass]">
-    <div class="nc-view-image-box" :style="{ backgroundImage: `url(${viewImage})` }"></div>
+    <div class="atm-view-image-box" :style="{ backgroundImage: `url(${viewImage})` }"></div>
 
-    <div class="nc-view-image-box nc-moscot-image-box">
+    <div class="atm-view-image-box atm-moscot-image-box">
       <div class="h-full w-full relative">
         <img
           alt="moscot image"
           :src="moscotImage"
-          class="nc-moscot-image transition-width duration-350 ease-linear"
+          class="atm-moscot-image transition-width duration-350 ease-linear"
           :class="{
             '!-left-[234px]': rightSectionInfo.moscot === 'moscotCollaboration',
           }"
@@ -147,15 +147,15 @@ defineExpose({
 </template>
 
 <style lang="scss" scoped>
-.nc-view-image-box {
-  @apply border border-nc-border-gray-medium bg-cover bg-no-repeat overflow-hidden rounded-lg absolute left-[240px] top-[50%] transform -translate-y-1/2 h-[min(760px,80%)] w-[1351px];
+.atm-view-image-box {
+  @apply border border-atm-border-gray-medium bg-cover bg-no-repeat overflow-hidden rounded-lg absolute left-[240px] top-[50%] transform -translate-y-1/2 h-[min(760px,80%)] w-[1351px];
   box-shadow: 0 0 12px 4px rgba(var(--rgb-base), 0.08);
 
-  &.nc-moscot-image-box {
+  &.atm-moscot-image-box {
     @apply overflow-visible;
     box-shadow: none;
 
-    .nc-moscot-image {
+    .atm-moscot-image {
       @apply absolute -left-[184px] -bottom-[50px] object-contain;
     }
   }

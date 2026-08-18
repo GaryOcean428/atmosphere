@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { UITypes, isSelectTypeCol } from 'nocodb-sdk'
+import { UITypes, isSelectTypeCol } from 'atmosphere-sdk'
 
 const { formState, activeField, updateColMeta, isRequired } = useFormViewStoreOrThrow()
 
@@ -20,14 +20,14 @@ const columnSupportsScanning = (elementType: UITypes) =>
 <template>
   <!-- Field Settings -->
   <template v-if="activeField">
-    <div class="nc-form-field-settings p-4 flex flex-col gap-4 border-b border-nc-border-gray-medium">
-      <div class="text-sm font-bold text-nc-content-gray">
+    <div class="atm-form-field-settings p-4 flex flex-col gap-4 border-b border-atm-border-gray-medium">
+      <div class="text-sm font-bold text-atm-content-gray">
         {{ $t('objects.field') }} {{ $t('activity.validations').toLowerCase() }}
       </div>
       <div class="flex flex-col gap-6">
         <div class="flex items-center justify-between gap-3">
           <div
-            class="nc-form-input-required text-nc-content-gray font-medium"
+            class="atm-form-input-required text-atm-content-gray font-medium"
             @click="
               () => {
                 activeField.required = !activeField.required
@@ -42,20 +42,20 @@ const columnSupportsScanning = (elementType: UITypes) =>
             v-model:checked="activeField.required"
             v-e="['a:form-view:field:mark-required']"
             size="small"
-            data-testid="nc-form-input-required"
+            data-testid="atm-form-input-required"
             @change="updateColMeta(activeField)"
           />
         </div>
 
-        <div v-if="columnSupportsScanning(activeField.uidt)" class="!my-0 nc-form-input-enable-scanner-form-item">
+        <div v-if="columnSupportsScanning(activeField.uidt)" class="!my-0 atm-form-input-enable-scanner-form-item">
           <div class="flex items-center justify-between gap-3">
-            <div class="nc-form-input-enable-scanner text-nc-content-gray font-medium">
+            <div class="atm-form-input-enable-scanner text-atm-content-gray font-medium">
               {{ $t('general.enableScanner') }}
             </div>
             <a-switch
               v-model:checked="activeField.enable_scanner"
               v-e="['a:form-view:field:mark-enable-scanner']"
-              data-testid="nc-form-input-enable-scanner"
+              data-testid="atm-form-input-enable-scanner"
               size="small"
               @change="updateColMeta(activeField)"
             />
@@ -67,8 +67,8 @@ const columnSupportsScanning = (elementType: UITypes) =>
         <!-- Limit options -->
         <div v-if="isSelectTypeCol(activeField.uidt)" class="w-full flex items-start justify-between gap-3">
           <div class="flex-1 max-w-[calc(100%_-_40px)]">
-            <div class="font-medium text-nc-content-gray">{{ $t('labels.limitOptions') }}</div>
-            <div class="text-nc-content-gray-muted mt-1">{{ $t('labels.limitOptionsSubtext') }}.</div>
+            <div class="font-medium text-atm-content-gray">{{ $t('labels.limitOptions') }}</div>
+            <div class="text-atm-content-gray-muted mt-1">{{ $t('labels.limitOptionsSubtext') }}.</div>
             <div v-if="activeField.meta.isLimitOption" class="mt-3">
               <SmartsheetFormLimitOptions
                 v-model:model-value="activeField.meta.limitOptions"
@@ -87,7 +87,7 @@ const columnSupportsScanning = (elementType: UITypes) =>
             v-model:checked="activeField.meta.isLimitOption"
             v-e="['a:form-view:field:limit-options']"
             size="small"
-            class="flex-none nc-form-switch-focus"
+            class="flex-none atm-form-switch-focus"
             @change="updateColMeta(activeField)"
           />
         </div>
@@ -102,17 +102,17 @@ const columnSupportsScanning = (elementType: UITypes) =>
     <!-- Field Appearance Settings -->
     <div
       v-if="isSelectTypeCol(activeField.uidt)"
-      class="nc-form-field-appearance-settings p-4 flex flex-col gap-4 border-b border-nc-border-gray-medium"
+      class="atm-form-field-appearance-settings p-4 flex flex-col gap-4 border-b border-atm-border-gray-medium"
     >
-      <div class="text-sm font-bold text-nc-content-gray">{{ $t('general.appearance') }}</div>
+      <div class="text-sm font-bold text-atm-content-gray">{{ $t('general.appearance') }}</div>
       <div class="flex flex-col gap-6">
         <!-- Select type field Options Layout  -->
         <div>
-          <div class="text-nc-content-gray font-medium">{{ $t('labels.optionsLayout') }}</div>
+          <div class="text-atm-content-gray font-medium">{{ $t('labels.optionsLayout') }}</div>
 
           <a-radio-group
             :value="!!activeField.meta.isList"
-            class="nc-form-field-layout !mt-3 max-w-[calc(100%_-_40px)]"
+            class="atm-form-field-layout !mt-3 max-w-[calc(100%_-_40px)]"
             @update:value="updateSelectFieldLayout"
           >
             <a-radio :value="false">{{ $t('general.dropdown') }}</a-radio>

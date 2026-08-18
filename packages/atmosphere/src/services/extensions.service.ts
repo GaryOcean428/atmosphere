@@ -1,23 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, EventType, type ExtensionReqType } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+import { AppEvents, EventType, type ExtensionReqType } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { MetaService } from '~/meta/meta.service';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
 import { Extension } from '~/models';
-import NocoSocket from '~/socket/NocoSocket';
-import { NcError } from '~/helpers/ncError';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
+import { AtError } from '~/helpers/ncError';
 
 @Injectable()
 export class ExtensionsService {
   constructor(protected readonly appHooksService: AppHooksService) {}
 
-  async extensionList(context: NcContext, param: { baseId: string }) {
+  async extensionList(context: AtContext, param: { baseId: string }) {
     return await Extension.list(context, param.baseId);
   }
 
   async extensionRead(
-    context: NcContext,
+    context: AtContext,
     param: { extensionId: string },
     ncMeta?: MetaService,
   ) {
@@ -29,17 +29,17 @@ export class ExtensionsService {
     );
 
     if (!extension) {
-      NcError.get(context).extensionNotFound(param.extensionId);
+      AtError.get(context).extensionNotFound(param.extensionId);
     }
 
     return extension;
   }
 
   async extensionCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       extension: ExtensionReqType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload(
@@ -58,7 +58,7 @@ export class ExtensionsService {
       req: param.req,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -74,11 +74,11 @@ export class ExtensionsService {
   }
 
   async extensionUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       extensionId: string;
       extension: ExtensionReqType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload(
@@ -100,7 +100,7 @@ export class ExtensionsService {
       req: param.req,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -116,11 +116,11 @@ export class ExtensionsService {
   }
 
   async extensionDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       extensionId: string;
       skipTrash?: boolean;
-      req: NcRequest;
+      req: AtRequest;
     },
     ncMeta?: MetaService,
   ): Promise<boolean | void> {
@@ -133,7 +133,7 @@ export class ExtensionsService {
       req: param.req,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,

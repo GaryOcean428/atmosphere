@@ -40,14 +40,14 @@ const activeIntegrationType = computed(() => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="isEditOrAddIntegrationModalOpen"
     size="large"
-    wrap-class-name="nc-modal-edit-or-add-integration"
+    wrap-class-name="atm-modal-edit-or-add-integration"
     @keydown.esc="isEditOrAddIntegrationModalOpen = false"
   >
     <div
-      v-if="activeIntegrationType === IntegrationCategoryType.DATABASE && activeIntegration?.sub_type !== SyncDataType.NOCODB"
+      v-if="activeIntegrationType === IntegrationCategoryType.DATABASE && activeIntegration?.sub_type !== SyncDataType.ATMOSPHERE"
       class="h-full"
     >
       <WorkspaceIntegrationsFormsEditOrAddDatabase
@@ -66,23 +66,23 @@ const activeIntegrationType = computed(() => {
         :base-id="baseId"
       />
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss" scoped></style>
 
 <style lang="scss">
-.nc-modal-edit-or-add-integration {
-  .nc-modal {
+.atm-modal-edit-or-add-integration {
+  .atm-modal {
     @apply !p-0;
     height: min(calc(100vh - 100px), 1024px);
     max-height: min(calc(100vh - 100px), 1024px) !important;
 
-    .nc-edit-or-add-integration-left-panel {
+    .atm-edit-or-add-integration-left-panel {
       @apply w-full p-6 flex-1 flex justify-center;
     }
-    .nc-edit-or-add-integration-right-panel {
-      @apply p-5 w-[320px] border-l-1 border-nc-border-gray-medium flex flex-col gap-4 bg-nc-bg-gray-extralight rounded-br-2xl;
+    .atm-edit-or-add-integration-right-panel {
+      @apply p-5 w-[320px] border-l-1 border-atm-border-gray-medium flex flex-col gap-4 bg-atm-bg-gray-extralight rounded-br-2xl;
     }
   }
 }

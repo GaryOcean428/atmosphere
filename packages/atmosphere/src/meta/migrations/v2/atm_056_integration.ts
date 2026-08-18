@@ -1,10 +1,10 @@
-import { IntegrationsType, ProjectRoles } from 'nocodb-sdk';
+import { IntegrationsType, ProjectRoles } from 'atmosphere-sdk';
 import { customAlphabet } from 'nanoid';
 import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
 const log = (message: string) => {
-  console.log(`nc_055_integration: ${message}`);
+  console.log(`atm_055_integration: ${message}`);
 };
 
 let hrTime = process.hrtime();

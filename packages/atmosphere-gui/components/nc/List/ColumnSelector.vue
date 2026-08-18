@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type ColumnType, isSystemColumn } from 'nocodb-sdk'
+import { type ColumnType, isSystemColumn } from 'atmosphere-sdk'
 
 interface Props {
   tableId?: string
@@ -128,8 +128,8 @@ defineExpose({
 <template>
   <a-form-item
     name="columnId"
-    class="!mb-0 nc-column-selector"
-    :class="`nc-force-layout-${forceLayout}`"
+    class="!mb-0 atm-column-selector"
+    :class="`atm-force-layout-${forceLayout}`"
     :validate-status="selectedColumn?.ncItemDisabled ? 'error' : ''"
     :help="selectedColumn?.ncItemDisabled ? [selectedColumn.ncItemTooltip] : []"
     @click.stop
@@ -140,29 +140,29 @@ defineExpose({
         <slot name="label">{{ t('objects.column') }}</slot>
       </div>
     </template>
-    <NcListDropdown
+    <AtListDropdown
       v-model:is-open="isOpenColumnSelectDropdown"
       :disabled="disabled"
       :has-error="!!selectedColumn?.ncItemDisabled"
     >
       <div class="flex-1 flex group items-center gap-2 min-w-0">
         <div v-if="selectedColumn" class="min-w-5 flex items-center justify-center">
-          <SmartsheetHeaderIcon :column="selectedColumn" color="text-nc-content-gray-muted" />
+          <SmartsheetHeaderIcon :column="selectedColumn" color="text-atm-content-gray-muted" />
         </div>
-        <NcTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
-          <span v-if="selectedColumn" class="text-sm flex-1 truncate text-nc-content-gray-default">
+        <AtTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
+          <span v-if="selectedColumn" class="text-sm flex-1 truncate text-atm-content-gray-default">
             {{ selectedColumn?.label }}
           </span>
-          <span v-else class="text-sm flex-1 truncate text-nc-content-gray-muted">-- Select field --</span>
+          <span v-else class="text-sm flex-1 truncate text-atm-content-gray-muted">-- Select field --</span>
 
           <template #title>
             {{ selectedColumn?.label || 'Select field' }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
 
         <GeneralIcon
           v-if="selectedColumn && allowClear"
-          class="hidden text-nc-content-gray-muted transition group-hover:!block h-4 w-4 cursor-pointer"
+          class="hidden text-atm-content-gray-muted transition group-hover:!block h-4 w-4 cursor-pointer"
           icon="ncXCircle"
           @click.stop="handleValueUpdate(null)"
         />
@@ -174,7 +174,7 @@ defineExpose({
         />
       </div>
       <template #overlay="{ onEsc }">
-        <NcList
+        <AtList
           v-model:open="isOpenColumnSelectDropdown"
           :value="modelValue || selectedColumn?.value || ''"
           :list="columnList"
@@ -186,11 +186,11 @@ defineExpose({
         >
           <template #listItemExtraLeft="{ option }">
             <div class="min-w-5 flex items-center justify-center">
-              <SmartsheetHeaderIcon :column="option as ColumnType" color="text-nc-content-gray-muted" />
+              <SmartsheetHeaderIcon :column="option as ColumnType" color="text-atm-content-gray-muted" />
             </div>
           </template>
-        </NcList>
+        </AtList>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </a-form-item>
 </template>

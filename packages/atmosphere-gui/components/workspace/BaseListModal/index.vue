@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ProjectRoles } from 'nocodb-sdk'
+import { ProjectRoles } from 'atmosphere-sdk'
 
 const props = defineProps<{
   visible: boolean
@@ -76,14 +76,14 @@ const baseCount = computed(() => workspaceBases.value.length)
 
 // Base attribute checkers
 const baseCheckers = {
-  starred: (base: NcProject) => !!base.starred,
-  private: (base: NcProject) => base.default_role === ProjectRoles.NO_ACCESS,
-  managed: (base: NcProject) => !!base.managed_app_id,
-  owned: (base: NcProject) => base.project_role === ProjectRoles.OWNER,
+  starred: (base: AtProject) => !!base.starred,
+  private: (base: AtProject) => base.default_role === ProjectRoles.NO_ACCESS,
+  managed: (base: AtProject) => !!base.managed_app_id,
+  owned: (base: AtProject) => base.project_role === ProjectRoles.OWNER,
 }
 
 // Helper to filter bases with search
-const filterWithSearch = (bases: NcProject[]) => {
+const filterWithSearch = (bases: AtProject[]) => {
   return bases.filter((base) => searchCompare(base.title, modalState.searchQuery))
 }
 
@@ -142,31 +142,31 @@ const hasNoSearchResults = computed(() => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="visible"
     :keyboard="true"
-    wrap-class-name="nc-modal-wrapper nc-workspace-base-list-modal-wrapper"
-    nc-modal-class-name="!p-0"
+    wrap-class-name="atm-modal-wrapper atm-workspace-base-list-modal-wrapper"
+    atm-modal-class-name="!p-0"
     :footer="null"
     size="xl"
     @keydown.esc="visible = false"
   >
-    <div class="nc-workspace-base-list-modal flex flex-col h-full w-full">
+    <div class="atm-workspace-base-list-modal flex flex-col h-full w-full">
       <!-- Header with Search (Desktop only) -->
       <div
         v-if="!isCompactView"
-        class="flex items-center px-4 py-3 border-b border-nc-border-gray-medium dark:bg-nc-bg-gray-extralight"
+        class="flex items-center px-4 py-3 border-b border-atm-border-gray-medium dark:bg-atm-bg-gray-extralight"
       >
         <a-input
           ref="searchInputRef"
           v-model:value="modalState.searchQuery"
-          class="nc-workspace-base-search"
+          class="atm-workspace-base-search"
           :placeholder="isEeUI ? $t('placeholder.searchWorkspacesAndBases') : `${$t('labels.searchProjects')}...`"
           allow-clear
           size="large"
         >
           <template #prefix>
-            <GeneralIcon icon="search" class="text-nc-content-gray-muted mr-1" />
+            <GeneralIcon icon="search" class="text-atm-content-gray-muted mr-1" />
           </template>
         </a-input>
       </div>
@@ -174,7 +174,7 @@ const hasNoSearchResults = computed(() => {
       <!-- Main Content -->
       <div class="flex flex-1 min-h-0">
         <!-- Right Panel - Bases -->
-        <div class="nc-bases-panel flex-1 flex flex-col min-w-0 bg-nc-bg-gray-extralight dark:bg-transparent">
+        <div class="atm-bases-panel flex-1 flex flex-col min-w-0 bg-atm-bg-gray-extralight dark:bg-transparent">
           <!-- Bases Header (with search on compact view) -->
           <WorkspaceBaseListModalBasesHeader
             v-model:search-query="modalState.searchQuery"
@@ -184,14 +184,14 @@ const hasNoSearchResults = computed(() => {
             @update:active-filter="modalState.activeFilter = $event"
           >
             <template #baseListHeader>
-              <span class="text-nc-content-gray-muted">
+              <span class="text-atm-content-gray-muted">
                 {{ $t('objects.projects') }}
               </span>
             </template>
           </WorkspaceBaseListModalBasesHeader>
 
           <!-- Bases Content - Loop-based rendering -->
-          <div class="flex-1 overflow-y-auto nc-scrollbar-thin p-4 flex flex-col relative">
+          <div class="flex-1 overflow-y-auto atm-scrollbar-thin p-4 flex flex-col relative">
             <WorkspaceBaseListModalBasesSection
               v-for="section in displayedSections"
               :key="section.type"
@@ -208,7 +208,7 @@ const hasNoSearchResults = computed(() => {
               inline
               transition
               class="!bg-opacity-15"
-              data-testid="nc-base-list-loading"
+              data-testid="atm-base-list-loading"
             >
               <div class="flex flex-col items-center justify-center h-full w-full">
                 <a-spin size="large" />
@@ -218,7 +218,7 @@ const hasNoSearchResults = computed(() => {
             <!-- Empty State -->
             <div
               v-else-if="emptyFilterResult"
-              class="flex flex-col items-center justify-center h-full text-nc-content-gray-muted"
+              class="flex flex-col items-center justify-center h-full text-atm-content-gray-muted"
             >
               <a-empty :image="Empty.PRESENTED_IMAGE_SIMPLE" :description="$t('activity.noBases')" />
             </div>
@@ -226,7 +226,7 @@ const hasNoSearchResults = computed(() => {
             <!-- No Search Results -->
             <div
               v-else-if="hasNoSearchResults"
-              class="h-full px-2 py-6 text-nc-content-gray-muted flex flex-col items-center justify-center gap-6 text-center"
+              class="h-full px-2 py-6 text-atm-content-gray-muted flex flex-col items-center justify-center gap-6 text-center"
             >
               <img
                 src="~assets/img/placeholder/no-search-result-found.png"
@@ -243,7 +243,7 @@ const hasNoSearchResults = computed(() => {
       <!-- Footer with keyboard shortcuts (Desktop only) -->
       <WorkspaceBaseListModalFooter v-if="!isCompactView" />
     </div>
-  </NcModal>
+  </AtModal>
 
   <!-- Duplicate Base Dialog -->
   <DlgBaseDuplicate v-if="dialogState.duplicate.base" v-model="dialogState.duplicate.isOpen" :base="dialogState.duplicate.base" />
@@ -257,24 +257,24 @@ const hasNoSearchResults = computed(() => {
 </template>
 
 <style scoped lang="scss">
-.nc-workspace-base-list-modal {
+.atm-workspace-base-list-modal {
   @apply rounded-xl overflow-hidden;
 }
 
-.nc-workspace-base-search {
-  @apply !rounded-lg dark:!bg-nc-bg-gray-dark;
+.atm-workspace-base-search {
+  @apply !rounded-lg dark:!bg-atm-bg-gray-dark;
 
   :deep(.ant-input) {
-    @apply !border-none !shadow-none !text-body dark:!bg-nc-bg-gray-dark;
+    @apply !border-none !shadow-none !text-body dark:!bg-atm-bg-gray-dark;
   }
 
   :deep(.ant-input-affix-wrapper) {
-    @apply !border-none !shadow-none rounded-lg px-3 py-2 dark:!bg-nc-bg-gray-dark;
+    @apply !border-none !shadow-none rounded-lg px-3 py-2 dark:!bg-atm-bg-gray-dark;
   }
 }
 
-.nc-workspace-panel {
-  @apply dark:bg-nc-bg-gray-extralight;
+.atm-workspace-panel {
+  @apply dark:bg-atm-bg-gray-extralight;
 }
 
 kbd {
@@ -283,7 +283,7 @@ kbd {
 </style>
 
 <style lang="scss">
-.nc-workspace-base-list-modal-wrapper {
+.atm-workspace-base-list-modal-wrapper {
   @apply !transition-none;
 
   backdrop-filter: blur(4px);

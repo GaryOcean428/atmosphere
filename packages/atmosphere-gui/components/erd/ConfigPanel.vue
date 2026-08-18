@@ -15,13 +15,13 @@ const showAdvancedOptions = ref(false)
 
 <template>
   <Panel
-    class="flex flex-col gap-y-1 bg-nc-bg-default border-1 rounded-lg border-nc-border-gray-medium z-50 px-3 py-2 nc-erd-context-menu shadow-md"
+    class="flex flex-col gap-y-1 bg-atm-bg-default border-1 rounded-lg border-atm-border-gray-medium z-50 px-3 py-2 atm-erd-context-menu shadow-md"
     :position="PanelPosition.TopRight"
   >
     <div class="flex items-center gap-2">
-      <a-checkbox v-model:checked="config.showAllColumns" v-e="['c:erd:showAllColumns']" class="nc-erd-showColumns-checkbox" />
+      <a-checkbox v-model:checked="config.showAllColumns" v-e="['c:erd:showAllColumns']" class="atm-erd-showColumns-checkbox" />
       <span
-        class="select-none nc-erd-config-option-label nc-erd-showColumns-label text-xs"
+        class="select-none atm-erd-config-option-label atm-erd-showColumns-label text-xs"
         @dblclick="showAdvancedOptions = true"
       >
         {{ $t('activity.erd.showColumns') }}
@@ -32,39 +32,39 @@ const showAdvancedOptions = ref(false)
       <a-checkbox
         v-model:checked="config.showPkAndFk"
         v-e="['c:erd:showPkAndFk']"
-        class="nc-erd-showPkAndFk-checkbox"
+        class="atm-erd-showPkAndFk-checkbox"
         :class="[
-          `nc-erd-showPkAndFk-checkbox-${config.showAllColumns ? 'enabled' : 'disabled'}`,
-          `nc-erd-showPkAndFk-checkbox-${config.showPkAndFk ? 'checked' : 'unchecked'}`,
+          `atm-erd-showPkAndFk-checkbox-${config.showAllColumns ? 'enabled' : 'disabled'}`,
+          `atm-erd-showPkAndFk-checkbox-${config.showPkAndFk ? 'checked' : 'unchecked'}`,
         ]"
         :disabled="!config.showAllColumns"
       />
-      <span class="select-none nc-erd-config-option-label">{{ $t('activity.erd.showPkAndFk') }}</span>
+      <span class="select-none atm-erd-config-option-label">{{ $t('activity.erd.showPkAndFk') }}</span>
     </div>
 
     <div v-if="!config.singleTableMode" class="flex items-center gap-2">
-      <a-checkbox v-model:checked="config.showViews" v-e="['c:erd:showViews']" class="nc-erd-showViews-checkbox" />
-      <span class="select-none nc-erd-config-option-label">{{ $t('activity.erd.showSqlViews') }}</span>
+      <a-checkbox v-model:checked="config.showViews" v-e="['c:erd:showViews']" class="atm-erd-showViews-checkbox" />
+      <span class="select-none atm-erd-config-option-label">{{ $t('activity.erd.showSqlViews') }}</span>
     </div>
 
     <div v-if="!config.singleTableMode && showAdvancedOptions && includeM2M" class="flex flex-row items-center">
-      <a-checkbox v-model:checked="config.showMMTables" v-e="['c:erd:showMMTables']" class="nc-erd-showMMTables-checkbox" />
-      <span class="ml-2 select-none nc-erd-config-option-label">{{ $t('activity.erd.showMMTables') }}</span>
+      <a-checkbox v-model:checked="config.showMMTables" v-e="['c:erd:showMMTables']" class="atm-erd-showMMTables-checkbox" />
+      <span class="ml-2 select-none atm-erd-config-option-label">{{ $t('activity.erd.showMMTables') }}</span>
     </div>
 
     <div v-if="showAdvancedOptions && includeM2M" class="flex items-center gap-2">
       <a-checkbox
         v-model:checked="config.showJunctionTableNames"
         v-e="['c:erd:showJunctionTableNames']"
-        class="nc-erd-showJunctionTableNames-checkbox"
+        class="atm-erd-showJunctionTableNames-checkbox"
       />
-      <span class="select-none nc-erd-config-option-label">{{ $t('activity.erd.showJunctionTableNames') }}</span>
+      <span class="select-none atm-erd-config-option-label">{{ $t('activity.erd.showJunctionTableNames') }}</span>
     </div>
   </Panel>
 </template>
 
 <style lang="scss" scoped>
-.nc-erd-config-option-label {
+.atm-erd-config-option-label {
   @apply text-xs;
 }
 </style>

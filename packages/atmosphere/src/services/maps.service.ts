@@ -1,37 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, ViewTypes } from 'nocodb-sdk';
-import type { MapUpdateReqType, UserType, ViewCreateReqType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
-import { NcContext } from '~/interface/config';
-import NocoCache from '~/cache/NocoCache';
+import { AppEvents, ViewTypes } from 'atmosphere-sdk';
+import type { MapUpdateReqType, UserType, ViewCreateReqType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
+import { AtContext } from '~/interface/config';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { validatePayload } from '~/helpers';
 import { assertPersonalViewAllowed } from '~/helpers/checkPersonalViewFeature';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { MapView, Model, User, View } from '~/models';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { CacheScope } from '~/utils/globals';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 @Injectable()
 export class MapsService {
   constructor(private readonly appHooksService: AppHooksService) {}
 
-  async mapViewGet(context: NcContext, param: { mapViewId: string }) {
+  async mapViewGet(context: AtContext, param: { mapViewId: string }) {
     return await MapView.get(context, param.mapViewId);
   }
 
   @TraceCommand(OperationName.mapViewCreate)
   async mapViewCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       map: ViewCreateReqType;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload(
       'swagger.json#/components/schemas/ViewCreateReq',
@@ -39,7 +39,7 @@ export class MapsService {
     );
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     await assertPersonalViewAllowed(context, param.map.lock_type);
@@ -67,7 +67,7 @@ export class MapsService {
 
     // populate  cache and add to list since the list cache already exist
     const view = await View.get(context, id, false, ncMeta);
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       context,
       CacheScope.VIEW,
       [view.fk_model_id],
@@ -88,20 +88,20 @@ export class MapsService {
 
   @TraceCommand(OperationName.mapViewUpdate)
   async mapViewUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       mapViewId: string;
       map: MapUpdateReqType;
-      req: NcRequest;
+      req: AtRequest;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload('swagger.json#/components/schemas/MapUpdateReq', param.map);
 
     const view = await View.get(context, param.mapViewId, false, ncMeta);
 
     if (!view) {
-      NcError.get(context).viewNotFound(param.mapViewId);
+      AtError.get(context).viewNotFound(param.mapViewId);
     }
 
     const oldMapView = await MapView.get(context, param.mapViewId, ncMeta);

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EventType, isLinksOrLTAR, MetaEventType } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import { EventType, isLinksOrLTAR, MetaEventType } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type {
   AffectedDependencyResult,
   MetaDependencyEventRequest,
@@ -16,9 +16,9 @@ import {
 } from '~/models';
 import Column from '~/models/Column';
 import { CacheScope, MetaTable } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
-import NocoSocket from '~/socket/NocoSocket';
-import Noco from '~/Noco';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
+import Atmosphere from '~/Atmosphere';
 import { ColumnDeleteFilterDependencyHandler } from '~/services/meta-dependency/handler/column/column-delete-filter-dependency.handler';
 import { ColumnDeleteCoverImageDependencyHandler } from '~/services/meta-dependency/handler/column/column-delete-cover-image-dependency.handler';
 import { ColumnDeleteKanbanGroupByDependencyHandler } from '~/services/meta-dependency/handler/column/column-delete-kanban-groupby-dependency.handler';
@@ -30,13 +30,13 @@ type AffectedColumnType = 'lookup' | 'rollup' | 'qrcode' | 'barcode';
 interface AffectedColumn {
   fk_column_id: string;
   type: AffectedColumnType;
-  context: NcContext;
+  context: AtContext;
 }
 
 const COL_OPTION_UPDATERS: Record<
   AffectedColumnType,
   (
-    ctx: NcContext,
+    ctx: AtContext,
     colId: string,
     data: { error: string },
     ncMeta: any,
@@ -98,9 +98,9 @@ export class ColumnDeleteTransitiveDependentsDependencyHandler
   ) {}
 
   async getAffectedDependency(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<AffectedDependencyResult | undefined> {
     const deletedColumn = param.oldEntity;
     if (!deletedColumn?.id) return undefined;
@@ -161,11 +161,11 @@ export class ColumnDeleteTransitiveDependentsDependencyHandler
   }
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest & {
       affectedDependencyResult: AffectedDependencyResult;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     const deletedColumn = param.oldEntity;
     if (!deletedColumn?.id) return;
@@ -181,7 +181,7 @@ export class ColumnDeleteTransitiveDependentsDependencyHandler
     const enqueue = (
       fk_column_id: string,
       type: AffectedColumnType,
-      ctx: NcContext,
+      ctx: AtContext,
     ) => {
       const key = `${ctx.base_id}:${fk_column_id}`;
       if (visited.has(key)) return;
@@ -196,7 +196,7 @@ export class ColumnDeleteTransitiveDependentsDependencyHandler
       if (type === 'lookup' || type === 'rollup') {
         const scope =
           type === 'lookup' ? CacheScope.COL_LOOKUP : CacheScope.COL_ROLLUP;
-        const cachedList = await NocoCache.getList(context, scope, [id]);
+        const cachedList = await AtmosphereCache.getList(context, scope, [id]);
         const { isNoneList } = cachedList;
         rows = cachedList.list;
         if (!isNoneList && !rows.length) {
@@ -278,7 +278,7 @@ export class ColumnDeleteTransitiveDependentsDependencyHandler
 
     // BFS: error-mark each dependent, clean their refs, discover transitive
     // dependents and continue.
-    const affectedModelCtxMap = new Map<string, NcContext>();
+    const affectedModelCtxMap = new Map<string, AtContext>();
 
     while (queue.length > 0) {
       const affected = queue.shift();
@@ -372,7 +372,7 @@ export class ColumnDeleteTransitiveDependentsDependencyHandler
 
     // Realtime: fire-and-forget `column_update` per affected model so other
     // clients refresh field metadata for tables whose virtual columns got
-    // error-marked. Outside the trx (uses Noco.ncMeta) — broadcast failures
+    // error-marked. Outside the trx (uses Atmosphere.ncMeta) — broadcast failures
     // are logged but don't fail the request.
     this.broadcastColumnUpdates(affectedModelCtxMap).catch((e) =>
       this.logger.error(
@@ -383,23 +383,23 @@ export class ColumnDeleteTransitiveDependentsDependencyHandler
   }
 
   private async broadcastColumnUpdates(
-    affectedModelCtxMap: Map<string, NcContext>,
+    affectedModelCtxMap: Map<string, AtContext>,
   ): Promise<void> {
     for (const [modelId, modelCtx] of affectedModelCtxMap) {
       const model = await Model.getWithInfo(
         modelCtx,
         { id: modelId },
-        Noco.ncMeta,
+        Atmosphere.ncMeta,
       );
       if (!model) continue;
 
-      NocoSocket.broadcastEvent(modelCtx, {
+      AtmosphereSocket.broadcastEvent(modelCtx, {
         event: EventType.META_EVENT,
         payload: {
           action: 'column_update',
           payload: { table: model, column: {}, skipDataReload: true },
         },
-      } as Parameters<typeof NocoSocket.broadcastEvent>[1]);
+      } as Parameters<typeof AtmosphereSocket.broadcastEvent>[1]);
     }
   }
 }

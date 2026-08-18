@@ -52,9 +52,9 @@ onMounted(async () => {
         {{ appInfo.version }}
       </template>
       <img v-if="brandIcon" width="50" :alt="productName" :src="brandIcon" class="object-contain" />
-      <img v-else width="50" alt="NocoDB" src="~/assets/img/icons/256x256.png" />
+      <img v-else width="50" alt="Atmosphere" src="~/assets/img/icons/256x256.png" />
     </a-tooltip>
-    <div class="ml-2 font-bold text-nc-content-gray-muted uppercase">{{ base.title }}</div>
+    <div class="ml-2 font-bold text-atm-content-gray-muted uppercase">{{ base.title }}</div>
   </div>
   <div class="w-full h-full !p-0">
     <ErdView :source-id="baseData.id" />
@@ -62,7 +62,7 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-erd-histogram.top) {
+:deep(.atm-erd-histogram.top) {
   display: none;
 }
 </style>

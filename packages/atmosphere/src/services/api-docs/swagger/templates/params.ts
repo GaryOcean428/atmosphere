@@ -1,7 +1,7 @@
-import { isLinksOrLTAR, isLTARType, RelationTypes } from 'nocodb-sdk';
+import { isLinksOrLTAR, isLTARType, RelationTypes } from 'atmosphere-sdk';
 import type { LinkToAnotherRecordColumn } from '~/models';
 import type { SwaggerColumn } from '../getSwaggerColumnMetas';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 
 export const rowIdParam = {
   schema: {
@@ -50,7 +50,7 @@ export const whereParam = {
   in: 'query',
   name: 'where',
   description:
-    'This can be used for filtering rows, which accepts complicated where conditions. For more info visit [here](https://docs.nocodb.com/developer-resources/rest-apis#comparison-operators). Example : `where=(field1,eq,value)`',
+    'This can be used for filtering rows, which accepts complicated where conditions. For more info visit [here](https://docs.atmosphere.dev/developer-resources/rest-apis#comparison-operators). Example : `where=(field1,eq,value)`',
 };
 export const limitParam = {
   schema: {
@@ -60,7 +60,7 @@ export const limitParam = {
   in: 'query',
   name: 'limit',
   description:
-    'The `limit` parameter used for pagination, the response collection size depends on limit value with default value `25` and maximum value `1000`, which can be overridden by environment variables `NC_DB_QUERY_LIMIT_DEFAULT` and `NC_DB_QUERY_LIMIT_MAX` respectively.',
+    'The `limit` parameter used for pagination, the response collection size depends on limit value with default value `25` and maximum value `1000`, which can be overridden by environment variables `ATMOSPHERE_DB_QUERY_LIMIT_DEFAULT` and `ATMOSPHERE_DB_QUERY_LIMIT_MAX` respectively.',
   example: 25,
 };
 export const offsetParam = {
@@ -143,7 +143,7 @@ export const csvExportOffsetParam = {
   in: 'query',
   name: 'offset',
   description:
-    'Helps to start export from a certain index. You can get the next set of data offset from previous response header named `nc-export-offset`.',
+    'Helps to start export from a certain index. You can get the next set of data offset from previous response header named `atm-export-offset`.',
   example: 0,
 };
 
@@ -153,7 +153,7 @@ export const nestedWhereParam = (colName) => ({
   },
   in: 'query',
   name: `nested[${colName}][where]`,
-  description: `This can be used for filtering rows in nested column \`${colName}\`, which accepts complicated where conditions. For more info visit [here](https://docs.nocodb.com/developer-resources/rest-apis#comparison-operators). Example : \`nested[${colName}][where]=(field1,eq,value)\``,
+  description: `This can be used for filtering rows in nested column \`${colName}\`, which accepts complicated where conditions. For more info visit [here](https://docs.atmosphere.dev/developer-resources/rest-apis#comparison-operators). Example : \`nested[${colName}][where]=(field1,eq,value)\``,
 });
 
 export const nestedFieldParam = (colName) => ({
@@ -194,7 +194,7 @@ export const nestedOffsetParam = (colName) => ({
 });
 
 export const getNestedParams = async (
-  context: NcContext,
+  context: AtContext,
   columns: SwaggerColumn[],
 ): Promise<any[]> => {
   return await columns.reduce(async (paramsArr, { column }) => {

@@ -3,27 +3,27 @@ import debug from 'debug';
 import { Injectable } from '@nestjs/common';
 import PQueue from 'p-queue';
 import mime from 'mime/lite';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
-import Noco from '~/Noco';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
+import Atmosphere from '~/Atmosphere';
 import { RootScopes } from '~/utils/globals';
 import { ThumbnailGeneratorProcessor } from '~/modules/jobs/jobs/thumbnail-generator/thumbnail-generator.processor';
 import { getPathFromUrl } from '~/helpers/attachmentHelpers';
 
 @Injectable()
 export class ThumbnailMigration {
-  private readonly debugLog = debug('nc:migration-jobs:attachment');
+  private readonly debugLog = debug('atm:migration-jobs:attachment');
 
   constructor(
     private readonly thumbnailGeneratorProcessor: ThumbnailGeneratorProcessor,
   ) {}
 
   log = (...msgs: string[]) => {
-    console.log('[nc_job_002_thumbnail]: ', ...msgs);
+    console.log('[atm_job_002_thumbnail]: ', ...msgs);
   };
 
   async job() {
     try {
-      const sharp = Noco.sharp;
+      const sharp = Atmosphere.sharp;
 
       if (!sharp) {
         this.log(
@@ -32,11 +32,11 @@ export class ThumbnailMigration {
         return true;
       }
 
-      const ncMeta = Noco.ncMeta;
+      const ncMeta = Atmosphere.ncMeta;
 
-      const storageAdapter = await NcPluginMgrv2.storageAdapter(ncMeta);
+      const storageAdapter = await AtPluginMgrv2.storageAdapter(ncMeta);
 
-      const temp_file_references_table = 'nc_temp_file_references';
+      const temp_file_references_table = 'atm_temp_file_references';
 
       const fileReferencesTableExists =
         await ncMeta.knexConnection.schema.hasTable(temp_file_references_table);
@@ -57,7 +57,7 @@ export class ThumbnailMigration {
           },
         );
 
-        const fileScanStream = await storageAdapter.scanFiles('nc/uploads/**');
+        const fileScanStream = await storageAdapter.scanFiles('atm/uploads/**');
 
         const fileReferenceBuffer = [];
 
@@ -196,7 +196,7 @@ export class ThumbnailMigration {
           } else {
             attachment.path = path.join(
               'download',
-              fileReference.file_path.replace(/^nc\/uploads\//, ''),
+              fileReference.file_path.replace(/^atm\/uploads\//, ''),
             );
             attachment.mimetype = fileReference.mimetype;
           }
@@ -288,8 +288,8 @@ export class ThumbnailMigration {
             }
 
             const thumbnailRoot = relativePath.replace(
-              /nc\/uploads/,
-              'nc/thumbnails',
+              /atm\/uploads/,
+              'atm/thumbnails',
             );
 
             try {

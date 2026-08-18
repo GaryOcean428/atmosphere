@@ -24,9 +24,9 @@ module.exports = {
     'build',
     'coverage',
     'dist',
-    'nc',
+    'atm',
     '.eslintrc.js',
-    'src/nocodb/cli.js',
+    'src/atmosphere/cli.js',
   ],
   rules: {
     '@typescript-eslint/explicit-module-boundary-types': 'off',

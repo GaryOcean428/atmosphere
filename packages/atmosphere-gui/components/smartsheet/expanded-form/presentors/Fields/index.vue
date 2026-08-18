@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type ColumnType } from 'nocodb-sdk'
+import { type ColumnType } from 'atmosphere-sdk'
 
 /* interface */
 
@@ -79,24 +79,24 @@ export default {
     </div>
     <div
       v-if="showRightSections && !isUnsavedDuplicatedRecordExist"
-      class="nc-comments-drawer border-l-1 rtl:(border-l-0 border-r-1) relative border-nc-border-gray-medium bg-nc-bg-gray-extralight h-full xs:hidden rounded-br-2xl flex-shrink-0"
+      class="atm-comments-drawer border-l-1 rtl:(border-l-0 border-r-1) relative border-atm-border-gray-medium bg-atm-bg-gray-extralight h-full xs:hidden rounded-br-2xl flex-shrink-0"
       :style="{ width: `${sidebarWidth}px` }"
       :class="{
         active: commentsDrawer && isUIAllowed('commentList'),
       }"
     >
       <!-- Resize handle on the left edge — drag to widen/narrow the sidebar -->
-      <div class="nc-sidebar-resize-handle" @mousedown.prevent="onResizeStart" />
+      <div class="atm-sidebar-resize-handle" @mousedown.prevent="onResizeStart" />
       <SmartsheetExpandedFormSidebar />
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-sidebar-resize-handle {
+.atm-sidebar-resize-handle {
   @apply absolute left-0 top-0 h-full w-1 cursor-col-resize z-50 transition-colors;
 }
-.nc-sidebar-resize-handle:hover {
-  @apply bg-nc-border-gray-medium;
+.atm-sidebar-resize-handle:hover {
+  @apply bg-atm-border-gray-medium;
 }
 </style>

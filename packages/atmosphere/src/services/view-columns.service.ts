@@ -3,9 +3,9 @@ import {
   APIContext,
   AppEvents,
   EventType,
-  NcBaseError,
+  AtBaseError,
   ViewTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { Logger } from '@nestjs/common';
 import GridViewColumn from '../models/GridViewColumn';
 import GalleryViewColumn from '../models/GalleryViewColumn';
@@ -20,8 +20,8 @@ import type {
   KanbanColumnReqType,
   ViewColumnReqType,
   ViewColumnUpdateReqType,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { MetaService } from '~/meta/meta.service';
 import type { ViewWebhookManager } from '~/utils/view-webhook-manager';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
@@ -33,9 +33,9 @@ import {
   TimelineViewColumn,
   View,
 } from '~/models';
-import { NcError } from '~/helpers/catchError';
-import Noco from '~/Noco';
-import NocoSocket from '~/socket/NocoSocket';
+import { AtError } from '~/helpers/catchError';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 import { ViewWebhookManagerBuilder } from '~/utils/view-webhook-manager';
 
 @Injectable()
@@ -44,7 +44,7 @@ export class ViewColumnsService {
   constructor(protected appHooksService: AppHooksService) {}
 
   async columnList(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string },
     ncMeta?: MetaService,
   ) {
@@ -52,11 +52,11 @@ export class ViewColumnsService {
   }
 
   async columnAdd(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       column: ViewColumnReqType;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -117,19 +117,19 @@ export class ViewColumnsService {
   }
 
   async columnUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       columnId: string;
       column: ViewColumnUpdateReqType;
-      req: NcRequest;
+      req: AtRequest;
       internal?: boolean;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     validatePayload(
@@ -140,7 +140,7 @@ export class ViewColumnsService {
     const view = await View.get(context, param.viewId, false, ncMeta);
 
     if (!view) {
-      NcError.get(context).viewNotFound(param.viewId);
+      AtError.get(context).viewNotFound(param.viewId);
     }
 
     const oldViewColumn = await View.getColumn(
@@ -151,7 +151,7 @@ export class ViewColumnsService {
     );
 
     if (!oldViewColumn) {
-      NcError.get(context).fieldNotFound(param.columnId);
+      AtError.get(context).fieldNotFound(param.columnId);
     }
 
     const column = await Column.get(
@@ -200,7 +200,7 @@ export class ViewColumnsService {
       context,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -225,7 +225,7 @@ export class ViewColumnsService {
   }
 
   async columnsUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       columns:
@@ -256,13 +256,13 @@ export class ViewColumnsService {
       : param.columns?.[APIContext.VIEW_COLUMNS];
 
     if (!columns) {
-      NcError.get(context).badRequest('Invalid request - fields not found');
+      AtError.get(context).badRequest('Invalid request - fields not found');
     }
 
     const view = await View.get(context, viewId);
 
     if (!view) {
-      NcError.get(context).viewNotFound('View not found');
+      AtError.get(context).viewNotFound('View not found');
     }
 
     // Build the webhook manager before opening the transaction — its async
@@ -284,7 +284,7 @@ export class ViewColumnsService {
     const updateOrInsertOptions: Promise<any>[] = [];
 
     let result: any;
-    const ncMeta = await Noco.ncMeta.startTransaction();
+    const ncMeta = await Atmosphere.ncMeta.startTransaction();
 
     try {
       const table = View.extractViewColumnsTableName(view);
@@ -526,14 +526,14 @@ export class ViewColumnsService {
       return result;
     } catch (e) {
       await ncMeta.rollback();
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error('Error updating view columns', e);
-      NcError.get(context).badRequest('Bad Request');
+      AtError.get(context).badRequest('Bad Request');
     }
   }
 
   async viewColumnList(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string; req: any },
   ) {
     const columnList = await View.getColumns(context, param.viewId, undefined);

@@ -1,4 +1,4 @@
-import { MapProvider } from 'nocodb-sdk'
+import { MapProvider } from 'atmosphere-sdk'
 
 export function useMapConfig() {
   const { appInfo } = useGlobal()

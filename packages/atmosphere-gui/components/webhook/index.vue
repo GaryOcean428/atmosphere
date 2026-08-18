@@ -9,10 +9,10 @@ import {
   PlanLimitTypes,
   hasInputCalls,
   removeUndefinedFromObj,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import { onKeyDown } from '@vueuse/core'
-import { UITypes, isLinksOrLTAR, isSystemColumn, isVirtualCol, pickFields } from 'nocodb-sdk'
+import { UITypes, isLinksOrLTAR, isSystemColumn, isVirtualCol, pickFields } from 'atmosphere-sdk'
 import { extractNextDefaultName } from '~/helpers/parsers/parserHelpers'
 import { jsonThemeDark, jsonThemeLight } from '~/components/monaco/json'
 
@@ -935,19 +935,19 @@ async function testWebhook() {
 const supportedDocs: SupportedDocsType[] = [
   {
     title: 'Getting started',
-    href: 'https://nocodb.com/docs/product-docs/automation/webhook/create-webhook',
+    href: 'https://atmosphere.dev/docs/product-docs/automation/webhook/create-webhook',
   },
   {
     title: t('activity.createWebhook'),
-    href: 'https://nocodb.com/docs/product-docs/automation/webhook',
+    href: 'https://atmosphere.dev/docs/product-docs/automation/webhook',
   },
   {
     title: 'Custom payload',
-    href: 'https://nocodb.com/docs/product-docs/automation/webhook/create-webhook#webhook-with-custom-payload-',
+    href: 'https://atmosphere.dev/docs/product-docs/automation/webhook/create-webhook#webhook-with-custom-payload-',
   },
   {
     title: 'Trigger on condition',
-    href: 'https://nocodb.com/docs/product-docs/automation/webhook/create-webhook#webhook-with-conditions',
+    href: 'https://atmosphere.dev/docs/product-docs/automation/webhook/create-webhook#webhook-with-conditions',
   },
 ]
 
@@ -1155,12 +1155,12 @@ const webhookV2AndV3Diff = computed(() => {
 </script>
 
 <template>
-  <NcModal v-model:visible="modalVisible" :show-separator="true" size="large" wrap-class-name="nc-modal-webhook-create-edit">
+  <AtModal v-model:visible="modalVisible" :show-separator="true" size="large" wrap-class-name="atm-modal-webhook-create-edit">
     <template #header>
       <div class="flex w-full items-center pl-4 pr-3 py-3 justify-between">
         <div class="flex items-center gap-3 flex-1">
-          <GeneralIcon class="text-nc-content-gray-emphasis h-5 w-5" icon="ncWebhook" />
-          <span class="text-nc-content-gray-emphasis font-semibold text-xl">
+          <GeneralIcon class="text-atm-content-gray-emphasis h-5 w-5" icon="ncWebhook" />
+          <span class="text-atm-content-gray-emphasis font-semibold text-xl">
             <template v-if="activeTab === HookTab.Configuration">
               {{ showUpgradeModal ? hookRef.title : !hook ? $t('activity.newWebhook') : 'Webhook Settings' }}
             </template>
@@ -1173,7 +1173,7 @@ const webhookV2AndV3Diff = computed(() => {
 
         <div
           v-if="hook && appInfo.ee && !showUpgradeModal"
-          class="flex flex-row p-1 bg-nc-bg-gray-medium rounded-lg gap-x-0.5 nc-view-sidebar-tab"
+          class="flex flex-row p-1 bg-atm-bg-gray-medium rounded-lg gap-x-0.5 atm-view-sidebar-tab"
         >
           <div
             v-e="['c:webhook:edit']"
@@ -1183,7 +1183,7 @@ const webhookV2AndV3Diff = computed(() => {
             }"
             @click="handleChangeTab(HookTab.Configuration)"
           >
-            <div class="tab-title nc-tab">{{ $t('general.details') }}</div>
+            <div class="tab-title atm-tab">{{ $t('general.details') }}</div>
           </div>
           <div
             v-e="['c:webhook:log']"
@@ -1193,7 +1193,7 @@ const webhookV2AndV3Diff = computed(() => {
             }"
             @click="handleChangeTab(HookTab.Log)"
           >
-            <div class="tab-title nc-tab">{{ $t('general.logs') }}</div>
+            <div class="tab-title atm-tab">{{ $t('general.logs') }}</div>
           </div>
           <div
             v-e="['c:webhook:settings']"
@@ -1203,18 +1203,18 @@ const webhookV2AndV3Diff = computed(() => {
             }"
             @click="handleChangeTab(HookTab.Settings)"
           >
-            <div class="tab-title nc-tab">{{ $t('labels.settings') }}</div>
+            <div class="tab-title atm-tab">{{ $t('labels.settings') }}</div>
           </div>
         </div>
 
         <div class="flex justify-end items-center gap-3 flex-1">
           <template v-if="activeTab === HookTab.Configuration">
-            <NcTooltip v-if="!showUpgradeModal" :disabled="!testConnectionError && hookRef.notification.type !== 'Script'">
+            <AtTooltip v-if="!showUpgradeModal" :disabled="!testConnectionError && hookRef.notification.type !== 'Script'">
               <template v-if="hookRef.notification.type === 'Script'" #title> Test webhook is disabled for scripts </template>
               <template v-else #title>
                 {{ testConnectionError }}
               </template>
-              <NcButton
+              <AtButton
                 :loading="isTestLoading"
                 type="secondary"
                 size="small"
@@ -1233,18 +1233,18 @@ const webhookV2AndV3Diff = computed(() => {
                 <span>
                   {{ testSuccess ? 'Test Successful' : $t('activity.testWebhook') }}
                 </span>
-              </NcButton>
-            </NcTooltip>
-            <NcButton v-else type="secondary" size="small" @click.stop="emits('cancel')">
+              </AtButton>
+            </AtTooltip>
+            <AtButton v-else type="secondary" size="small" @click.stop="emits('cancel')">
               {{ $t('general.cancel') }}
-            </NcButton>
+            </AtButton>
 
-            <NcButton
+            <AtButton
               :loading="loading"
               type="primary"
               size="small"
               :disabled="!hasUnsavedChanges || externallyDeleted"
-              data-testid="nc-save-webhook"
+              data-testid="atm-save-webhook"
               @click.stop="saveHooks"
             >
               {{
@@ -1254,35 +1254,35 @@ const webhookV2AndV3Diff = computed(() => {
                   ? $t('labels.multiField.saveChanges')
                   : $t('activity.createWebhook')
               }}
-            </NcButton>
+            </AtButton>
           </template>
-          <NcButton type="text" size="small" data-testid="nc-close-webhook-modal" @click.stop="closeModal">
+          <AtButton type="text" size="small" data-testid="atm-close-webhook-modal" @click.stop="closeModal">
             <GeneralIcon icon="close" />
-          </NcButton>
+          </AtButton>
         </div>
       </div>
     </template>
-    <div v-if="activeTab === HookTab.Configuration" class="flex bg-nc-bg-default rounded-b-2xl h-[calc(100%_-_56px)]">
-      <div v-if="showUpgradeModal" class="h-full w-full overflow-auto nc-scrollbar-thin">
+    <div v-if="activeTab === HookTab.Configuration" class="flex bg-atm-bg-default rounded-b-2xl h-[calc(100%_-_56px)]">
+      <div v-if="showUpgradeModal" class="h-full w-full overflow-auto atm-scrollbar-thin">
         <div class="h-full w-full max-w-[1040] min-w-[640px] px-6 md:px-12 py-6 flex flex-col">
           <div class="flex flex-col gap-2 mb-8">
-            <div class="text-base font-bold text-nc-content-gray-emphasis">Change in webhook response</div>
-            <div class="text-sm font-normal text-nc-content-gray-subtle2">
+            <div class="text-base font-bold text-atm-content-gray-emphasis">Change in webhook response</div>
+            <div class="text-sm font-normal text-atm-content-gray-subtle2">
               For more information on webhooks v3 visit
               <a
-                href="https://nocodb.com/docs/product-docs/automation/webhook/webhook-v2-vs-v3#upgrade-to-webhook-v3"
-                class="nc-link"
+                href="https://atmosphere.dev/docs/product-docs/automation/webhook/webhook-v2-vs-v3#upgrade-to-webhook-v3"
+                class="atm-link"
                 target="_blank"
               >
-                NocoDB Docs.
+                Atmosphere Docs.
               </a>
             </div>
           </div>
 
-          <div class="nc-webhook-version-diff">
-            <div v-for="(item, idx) of webhookV2AndV3Diff" :key="idx" class="nc-item">
-              <div class="nc-item-title">{{ item.title }}</div>
-              <div class="nc-item-response">
+          <div class="atm-webhook-version-diff">
+            <div v-for="(item, idx) of webhookV2AndV3Diff" :key="idx" class="atm-item">
+              <div class="atm-item-title">{{ item.title }}</div>
+              <div class="atm-item-response">
                 <Suspense>
                   <template #default>
                     <MonacoEditor
@@ -1331,17 +1331,17 @@ const webhookV2AndV3Diff = computed(() => {
       <template v-else>
         <div
           ref="containerElem"
-          class="h-full flex-1 flex flex-col overflow-y-auto scroll-smooth nc-scrollbar-thin px-6 md:px-12 py-6 mx-auto"
+          class="h-full flex-1 flex flex-col overflow-y-auto scroll-smooth atm-scrollbar-thin px-6 md:px-12 py-6 mx-auto"
         >
           <div class="max-w-[640px] min-w-[564px] w-full mx-auto gap-8 flex flex-col">
-            <NcAlert
+            <AtAlert
               v-if="externallyDeleted"
               type="error"
               :show-icon="true"
               :message="$t('msg.webhook.externallyDeletedTitle')"
               :description="$t('msg.webhook.externallyDeletedDescription')"
             />
-            <NcAlert
+            <AtAlert
               v-else-if="externallyModified"
               type="warning"
               :show-icon="true"
@@ -1349,20 +1349,20 @@ const webhookV2AndV3Diff = computed(() => {
               :description="$t('msg.webhook.externallyModifiedDescription')"
             >
               <template #action>
-                <NcButton size="small" type="secondary" @click="reloadFromRemote">
+                <AtButton size="small" type="secondary" @click="reloadFromRemote">
                   {{ $t('general.reload') }}
-                </NcButton>
+                </AtButton>
               </template>
-            </NcAlert>
+            </AtAlert>
             <a-form-item v-bind="validateInfos.title">
               <div
-                class="flex flex-grow px-2 py-1 title-input items-center border-b-1 rounded-t-md border-nc-border-gray-medium bg-nc-bg-gray-light"
+                class="flex flex-grow px-2 py-1 title-input items-center border-b-1 rounded-t-md border-atm-border-gray-medium bg-atm-bg-gray-light"
                 @click.prevent="titleDomRef?.focus()"
               >
                 <input
                   ref="titleDomRef"
                   v-model="hookRef.title"
-                  class="flex flex-grow text-lg px-2 font-medium capitalize outline-none bg-inherit nc-text-field-hook-title"
+                  class="flex flex-grow text-lg px-2 font-medium capitalize outline-none bg-inherit atm-text-field-hook-title"
                   :placeholder="$t('placeholder.webhookTitle')"
                   :contenteditable="true"
                   @keydown.enter="titleDomRef?.blur()"
@@ -1373,11 +1373,11 @@ const webhookV2AndV3Diff = computed(() => {
 
             <a-form class="flex flex-col gap-8" :model="hookRef" name="create-or-edit-webhook">
               <div class="flex flex-col">
-                <div class="text-nc-content-gray text-base font-bold leading-6">
+                <div class="text-atm-content-gray text-base font-bold leading-6">
                   {{ $t('general.trigger') }}
                 </div>
                 <div
-                  class="mt-3 p-4 border-1 border-nc-border-gray-medium"
+                  class="mt-3 p-4 border-1 border-atm-border-gray-medium"
                   :class="{
                     'border-b-0 rounded-t-2xl': isConditionSupport,
                     'rounded-2xl': !isConditionSupport,
@@ -1385,29 +1385,29 @@ const webhookV2AndV3Diff = computed(() => {
                 >
                   <div class="w-full flex gap-3">
                     <a-form-item class="w-full !my-0">
-                      <NcSelect
+                      <AtSelect
                         v-model:value="hookRef.event"
-                        class="w-full webhook-event-select nc-select-shadow"
-                        data-testid="nc-dropdown-hook-event"
-                        dropdown-class-name="nc-modal-hook-event"
+                        class="w-full webhook-event-select atm-select-shadow"
+                        data-testid="atm-dropdown-hook-event"
+                        dropdown-class-name="atm-modal-hook-event"
                         @change="handleEventChange"
                       >
                         <a-select-option v-for="event of eventsEnum" :key="event.value"> {{ event.text }}</a-select-option>
-                      </NcSelect>
+                      </AtSelect>
                     </a-form-item>
-                    <NcDropdown
+                    <AtDropdown
                       v-if="['field', 'view', 'after', 'comment'].includes(hookRef.event)"
                       v-model:visible="isDropdownOpen"
                     >
                       <div
-                        class="rounded-lg border-1 w-full transition-all cursor-pointer flex items-center border-nc-border-gray-medium h-8 py-1 gap-2 px-4 py-2 h-[36px] shadow-default"
-                        data-testid="nc-dropdown-hook-operation"
+                        class="rounded-lg border-1 w-full transition-all cursor-pointer flex items-center border-atm-border-gray-medium h-8 py-1 gap-2 px-4 py-2 h-[36px] shadow-default"
+                        data-testid="atm-dropdown-hook-operation"
                         :class="{
-                          '!border-nc-border-brand !shadow-selected': isDropdownOpen,
+                          '!border-atm-border-brand !shadow-selected': isDropdownOpen,
                           '!hover:shadow-hover': !isDropdownOpen,
                         }"
                       >
-                        <div class="text-nc-content-gray flex-1">
+                        <div class="text-atm-content-gray flex-1">
                           {{ triggerSubType }}
                         </div>
 
@@ -1422,31 +1422,31 @@ const webhookV2AndV3Diff = computed(() => {
                       </div>
 
                       <template #overlay>
-                        <NcMenu
+                        <AtMenu
                           class="webhook-trigger-selection"
                           variant="medium"
-                          data-testid="nc-dropdown-hook-operation-modal"
+                          data-testid="atm-dropdown-hook-operation-modal"
                           data-testvalue="send_everything"
                         >
                           <template v-if="['field', 'view', 'after', 'comment'].includes(hookRef.event)">
-                            <NcMenuItem
-                              data-testid="nc-dropdown-hook-operation-option"
+                            <AtMenuItem
+                              data-testid="atm-dropdown-hook-operation-option"
                               data-testvalue="sendMeEverything"
                               @click.stop="toggleSendMeEverythingChecked"
                             >
                               <div class="flex-1 w-full text-sm">
                                 {{ $t('labels.sendAllEvents') }}
                               </div>
-                              <NcCheckbox :checked="sendMeEverythingChecked" />
-                            </NcMenuItem>
+                              <AtCheckbox :checked="sendMeEverythingChecked" />
+                            </AtMenuItem>
 
-                            <NcDivider />
+                            <AtDivider />
                           </template>
 
-                          <NcMenuItem
+                          <AtMenuItem
                             v-for="operation of operationsEnum"
                             :key="operation.value"
-                            data-testid="nc-dropdown-hook-operation-option"
+                            data-testid="atm-dropdown-hook-operation-option"
                             :data-testvalue="operation.value"
                             @click.prevent="toggleOperation(operation.value)"
                           >
@@ -1456,26 +1456,26 @@ const webhookV2AndV3Diff = computed(() => {
                               </template>
                               {{ operation.text }}
                             </div>
-                            <NcCheckbox :checked="hookRef.operation!.includes(operation.value as any)" />
-                          </NcMenuItem>
-                        </NcMenu>
+                            <AtCheckbox :checked="hookRef.operation!.includes(operation.value as any)" />
+                          </AtMenuItem>
+                        </AtMenu>
                       </template>
-                    </NcDropdown>
+                    </AtDropdown>
                   </div>
                 </div>
-                <div v-if="isConditionSupport" class="border-1 border-nc-border-gray-medium rounded-b-2xl px-4 pt-4">
+                <div v-if="isConditionSupport" class="border-1 border-atm-border-gray-medium rounded-b-2xl px-4 pt-4">
                   <div class="w-full flex items-center justify-between h-[28px]">
                     <label class="cursor-pointer flex items-center" @click.prevent="hookRef.condition = !hookRef.condition">
-                      <NcSwitch :checked="Boolean(hookRef.condition)" class="nc-check-box-hook-condition">
-                        <span class="!text-nc-content-gray-subtle font-semibold"> Trigger only when conditions match </span>
-                      </NcSwitch>
+                      <AtSwitch :checked="Boolean(hookRef.condition)" class="atm-check-box-hook-condition">
+                        <span class="!text-atm-content-gray-subtle font-semibold"> Trigger only when conditions match </span>
+                      </AtSwitch>
                     </label>
 
                     <div v-if="hookRef.condition" class="flex gap-2">
-                      <NcButton
+                      <AtButton
                         size="xs"
                         type="secondary"
-                        class="nc-btn-focus"
+                        class="atm-btn-focus"
                         data-testid="add-filter"
                         @click.stop="filterRef.addFilter()"
                       >
@@ -1484,10 +1484,10 @@ const webhookV2AndV3Diff = computed(() => {
                           <!-- Add Filter -->
                           {{ $t('activity.addFilter') }}
                         </div>
-                      </NcButton>
+                      </AtButton>
 
-                      <NcButton
-                        class="nc-btn-focus"
+                      <AtButton
+                        class="atm-btn-focus"
                         type="secondary"
                         size="xs"
                         data-testid="add-filter-group"
@@ -1498,14 +1498,14 @@ const webhookV2AndV3Diff = computed(() => {
                           <component :is="iconMap.plus" />
                           {{ $t('activity.addFilterGroup') }}
                         </div>
-                      </NcButton>
+                      </AtButton>
                     </div>
                   </div>
 
                   <div
                     class="mb-4"
                     :class="{
-                      'nc-filter-ref-wrapper': hookRef.condition,
+                      'atm-filter-ref-wrapper': hookRef.condition,
                     }"
                   >
                     <LazySmartsheetToolbarColumnFilter
@@ -1548,12 +1548,12 @@ const webhookV2AndV3Diff = computed(() => {
                   />
                 </div>
 
-                <div class="text-nc-content-gray text-base mt-6 font-bold leading-6">
+                <div class="text-atm-content-gray text-base mt-6 font-bold leading-6">
                   {{ $t('general.action') }}
                 </div>
 
                 <div
-                  class="mt-3 border-1 custom-select border-nc-border-gray-medium p-4"
+                  class="mt-3 border-1 custom-select border-atm-border-gray-medium p-4"
                   :class="{
                     'rounded-t-2xl border-b-0': hookRef.notification.type !== 'Script',
                     'rounded-2xl': hookRef.notification.type === 'Script',
@@ -1561,28 +1561,28 @@ const webhookV2AndV3Diff = computed(() => {
                 >
                   <div v-if="appInfo.ee" class="flex w-full my-3">
                     <a-form-item v-bind="validateInfos['notification.type']" class="w-full">
-                      <NcSelect
+                      <AtSelect
                         v-model:value="hookRef.notification.type"
-                        class="w-full nc-select-shadow nc-select-hook-notification-type"
-                        data-testid="nc-dropdown-hook-notification-type"
+                        class="w-full atm-select-shadow atm-select-hook-notification-type"
+                        data-testid="atm-dropdown-hook-notification-type"
                         @change="onNotificationTypeChange(true)"
                       >
                         <a-select-option v-for="type in notificationTypes" :key="type.type" :value="type.type">
                           <div class="flex items-center">
-                            <component :is="iconMap[type.type]" class="text-nc-content-gray-subtle mr-2" />
+                            <component :is="iconMap[type.type]" class="text-atm-content-gray-subtle mr-2" />
                             {{ type.label }}
                           </div>
                         </a-select-option>
-                      </NcSelect>
+                      </AtSelect>
                     </a-form-item>
                   </div>
 
                   <template v-if="appInfo.ee && hookRef.notification.type === 'Script'">
                     <a-form-item class="flex w-full my-3" v-bind="validateInfos['notification.payload.scriptId']">
-                      <NcListScriptSelector
+                      <AtListScriptSelector
                         v-model:value="hookRef.notification.payload.scriptId"
-                        data-testid="nc-dropdown-hook-notification-type"
-                        class="nc-select-hook-scrip-type"
+                        data-testid="atm-dropdown-hook-notification-type"
+                        class="atm-select-hook-scrip-type"
                         :base-id="activeTable?.base_id"
                         :disable-label="true"
                         :map-script="filterScripts"
@@ -1597,13 +1597,13 @@ const webhookV2AndV3Diff = computed(() => {
                         <a-select
                           v-model:value="hookRef.notification.payload.method"
                           size="medium"
-                          class="nc-select-hook-url-method"
-                          dropdown-class-name="nc-dropdown-hook-notification-url-method"
+                          class="atm-select-hook-url-method"
+                          dropdown-class-name="atm-dropdown-hook-notification-url-method"
                           show-search
                           :filter-option="(input, option) => antSelectFilterOption(input, option, ['value'])"
                         >
                           <template #suffixIcon>
-                            <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+                            <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
                           </template>
 
                           <a-select-option v-for="(method, i) in methodList" :key="i" :value="method.title">
@@ -1612,7 +1612,7 @@ const webhookV2AndV3Diff = computed(() => {
                               <component
                                 :is="iconMap.check"
                                 v-if="hookRef.notification.payload.method === method.title"
-                                id="nc-selected-item-icon"
+                                id="atm-selected-item-icon"
                                 class="text-primary w-4 h-4 flex-none"
                               />
                             </div>
@@ -1625,7 +1625,7 @@ const webhookV2AndV3Diff = computed(() => {
                             v-model:value="hookRef.notification.payload.path"
                             size="medium"
                             placeholder="http://example.com"
-                            class="nc-text-field-hook-url-path nc-input-shadow h-9 !rounded-lg"
+                            class="atm-text-field-hook-url-path atm-input-shadow h-9 !rounded-lg"
                           />
                           <div v-if="showCyclicCallsWarning" class="text-xs text-warning pl-2">
                             {{ $t('msg.cyclicCallsWarning') }}
@@ -1638,14 +1638,14 @@ const webhookV2AndV3Diff = computed(() => {
 
                 <div
                   v-if="hookRef.notification.type === 'URL'"
-                  class="border-1 border-nc-border-gray-medium rounded-b-2xl pt-4 px-4 pb-2"
+                  class="border-1 border-atm-border-gray-medium rounded-b-2xl pt-4 px-4 pb-2"
                 >
-                  <NcTabs v-model:active-key="urlTabKey">
+                  <AtTabs v-model:active-key="urlTabKey">
                     <a-tab-pane key="params" :tab="$t('title.parameter')" force-render>
                       <LazyApiClientParams v-model="hookRef.notification.payload.parameters" />
                     </a-tab-pane>
 
-                    <a-tab-pane key="headers" :tab="$t('title.headers')" class="nc-tab-headers">
+                    <a-tab-pane key="headers" :tab="$t('title.headers')" class="atm-tab-headers">
                       <LazyApiClientHeaders v-model="hookRef.notification.payload.headers" />
                     </a-tab-pane>
 
@@ -1707,7 +1707,7 @@ const webhookV2AndV3Diff = computed(() => {
                         </Suspense>
                       </div>
                     </a-tab-pane>
-                  </NcTabs>
+                  </AtTabs>
                 </div>
               </div>
 
@@ -1763,15 +1763,15 @@ const webhookV2AndV3Diff = computed(() => {
               <div v-if="appInfo.ee && hookRef.notification.type !== 'Script'">
                 <div>
                   <div class="w-full cursor-pointer flex items-center" @click.prevent="toggleIncludeUser">
-                    <NcSwitch :checked="Boolean(hookRef.notification.include_user)" class="nc-check-box-include-user">
-                      <span class="!text-nc-content-gray-subtle font-semibold">{{ $t('labels.includeUser') }}</span>
-                    </NcSwitch>
-                    <NcTooltip class="flex">
+                    <AtSwitch :checked="Boolean(hookRef.notification.include_user)" class="atm-check-box-include-user">
+                      <span class="!text-atm-content-gray-subtle font-semibold">{{ $t('labels.includeUser') }}</span>
+                    </AtSwitch>
+                    <AtTooltip class="flex">
                       <template #title>
                         {{ $t('tooltip.includeUserHint') }}
                       </template>
-                      <GeneralIcon icon="info" class="text-nc-content-gray-disabled ml-1" />
-                    </NcTooltip>
+                      <GeneralIcon icon="info" class="text-atm-content-gray-disabled ml-1" />
+                    </AtTooltip>
                   </div>
                 </div>
               </div>
@@ -1782,7 +1782,7 @@ const webhookV2AndV3Diff = computed(() => {
                     <a-form-item v-if="input.type === 'LongText'" v-bind="validateInfos[`notification.payload.${input.key}`]">
                       <a-textarea
                         v-model:value="hookRef.notification.payload[input.key]"
-                        class="!rounded-lg !min-h-[120px] nc-scrollbar-thin nc-input-shadow"
+                        class="!rounded-lg !min-h-[120px] atm-scrollbar-thin atm-input-shadow"
                         :placeholder="input.label"
                       />
                     </a-form-item>
@@ -1790,7 +1790,7 @@ const webhookV2AndV3Diff = computed(() => {
                     <a-form-item v-else v-bind="validateInfos[`notification.payload.${input.key}`]">
                       <a-input
                         v-model:value="hookRef.notification.payload[input.key]"
-                        class="!rounded-lg nc-input-shadow !h-9"
+                        class="!rounded-lg atm-input-shadow !h-9"
                         :placeholder="input.label"
                       />
                     </a-form-item>
@@ -1799,9 +1799,9 @@ const webhookV2AndV3Diff = computed(() => {
               </a-form-item>
 
               <div v-if="hookRef.notification.type !== 'Script'">
-                <NcDivider />
+                <AtDivider />
                 <div class="flex items-center justify-between -ml-1.5 !mt-[32px]">
-                  <NcButton type="text" class="mb-3" size="small" @click="toggleSamplePayload()">
+                  <AtButton type="text" class="mb-3" size="small" @click="toggleSamplePayload()">
                     <div class="flex items-center gap-3">
                       Sample Payload
 
@@ -1813,7 +1813,7 @@ const webhookV2AndV3Diff = computed(() => {
                         icon="arrowDown"
                       />
                     </div>
-                  </NcButton>
+                  </AtButton>
                 </div>
                 <div v-show="isVisible">
                   <Suspense>
@@ -1867,9 +1867,9 @@ const webhookV2AndV3Diff = computed(() => {
           </div>
         </div>
 
-        <NcModalSupportedDocsSidebar>
-          <NcModalSupportedDocs :docs="supportedDocs"> </NcModalSupportedDocs>
-        </NcModalSupportedDocsSidebar>
+        <AtModalSupportedDocsSidebar>
+          <AtModalSupportedDocs :docs="supportedDocs"> </AtModalSupportedDocs>
+        </AtModalSupportedDocsSidebar>
       </template>
     </div>
     <div v-else-if="activeTab === HookTab.Log" class="h-[calc(100%_-_57px)]">
@@ -1878,33 +1878,33 @@ const webhookV2AndV3Diff = computed(() => {
     <div v-else-if="appInfo.ee && activeTab === HookTab.Settings" class="h-[calc(100%_-_57px)]">
       <WebhookErrorNotifications v-if="hook?.id" :hook-id="hook.id" />
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss">
-.nc-modal-webhook-create-edit {
+.atm-modal-webhook-create-edit {
   z-index: 1050;
-  a:not(.nc-link) {
-    @apply !no-underline !text-nc-content-gray-subtle !hover:text-primary;
+  a:not(.atm-link) {
+    @apply !no-underline !text-atm-content-gray-subtle !hover:text-primary;
   }
-  .nc-modal {
+  .atm-modal {
     @apply !p-0;
     height: min(calc(100vh - 100px), 1024px);
     max-height: min(calc(100vh - 100px), 1024px) !important;
   }
 
-  .nc-modal-header {
+  .atm-modal-header {
     @apply !mb-0 !pb-0;
   }
 
   .webhook-event-select div.ant-select-selector {
     height: 36px !important;
     .ant-select-selection-item {
-      @apply font-500 text-nc-content-gray;
+      @apply font-500 text-atm-content-gray;
     }
   }
 
-  .nc-webhook-version-diff {
+  .atm-webhook-version-diff {
     .monaco-editor {
       @apply !border-t-0 !rounded-none pr-3;
     }
@@ -1923,19 +1923,19 @@ const webhookV2AndV3Diff = computed(() => {
 
 <style scoped lang="scss">
 .webhook-trigger-selection {
-  :deep(.nc-menu-item-inner) {
+  :deep(.atm-menu-item-inner) {
     @apply !w-full;
   }
 }
 
-.nc-button :not(.nc-icon):not(.material-symbols) {
+.atm-button :not(.atm-icon):not(.material-symbols) {
   @apply !w-full;
 }
 
 .title-input {
   &:focus-within {
-    @apply transition-all duration-0.3s border-b-nc-border-brand;
-    box-shadow: 0px 2px 0px 0px rgba(var(--nc-brand-accent-rgb), 0.24);
+    @apply transition-all duration-0.3s border-b-atm-border-brand;
+    box-shadow: 0px 2px 0px 0px rgba(var(--atm-brand-accent-rgb), 0.24);
   }
 }
 
@@ -1984,7 +1984,7 @@ const webhookV2AndV3Diff = computed(() => {
     }
 
     &:hover:not(.ant-select-focused):not(.ant-select-disabled) .ant-select-selector {
-      @apply border-nc-border-gray-dark;
+      @apply border-atm-border-gray-dark;
       box-shadow: 0px 0px 4px 0px rgba(var(--rgb-base), 0.24);
     }
 
@@ -1995,7 +1995,7 @@ const webhookV2AndV3Diff = computed(() => {
 }
 
 :deep(.ant-form-item-label > label) {
-  @apply !text-small !leading-[18px] mb-2 text-nc-content-gray-subtle flex;
+  @apply !text-small !leading-[18px] mb-2 text-atm-content-gray-subtle flex;
 
   &.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
     @apply content-[''] m-0;
@@ -2003,7 +2003,7 @@ const webhookV2AndV3Diff = computed(() => {
 }
 
 :deep(.ant-form-item-label) {
-  @apply !pb-0 text-small leading-[18px] text-nc-content-gray-subtle;
+  @apply !pb-0 text-small leading-[18px] text-atm-content-gray-subtle;
 }
 
 :deep(.ant-form-item-control-input) {
@@ -2034,11 +2034,11 @@ const webhookV2AndV3Diff = computed(() => {
   @apply !rounded-lg !bg-transparent !border-none !p-0;
 
   .ant-alert-message {
-    @apply text-sm text-nc-content-gray font-weight-600;
+    @apply text-sm text-atm-content-gray font-weight-600;
   }
 
   .ant-alert-description {
-    @apply text-small text-nc-content-gray-muted font-weight-500;
+    @apply text-small text-atm-content-gray-muted font-weight-500;
   }
 }
 
@@ -2050,9 +2050,9 @@ const webhookV2AndV3Diff = computed(() => {
 
 :deep(input::placeholder),
 :deep(textarea::placeholder) {
-  @apply text-nc-content-gray-muted;
+  @apply text-atm-content-gray-muted;
 }
-:deep(.nc-tabs .ant-tabs-nav) {
+:deep(.atm-tabs .ant-tabs-nav) {
   @apply pl-0;
   .ant-tabs-tab {
     @apply pt-1 pb-1.5;
@@ -2063,7 +2063,7 @@ const webhookV2AndV3Diff = computed(() => {
 }
 
 .tab {
-  @apply flex flex-row items-center h-6 justify-center px-2 py-1 rounded-md gap-x-2 text-nc-content-gray-subtle2 hover:text-nc-content-gray-extreme cursor-pointer transition-all duration-300 select-none;
+  @apply flex flex-row items-center h-6 justify-center px-2 py-1 rounded-md gap-x-2 text-atm-content-gray-subtle2 hover:text-atm-content-gray-extreme cursor-pointer transition-all duration-300 select-none;
 }
 
 .tab-icon {
@@ -2079,36 +2079,36 @@ const webhookV2AndV3Diff = computed(() => {
 }
 
 .active {
-  @apply bg-nc-bg-default text-nc-content-brand-disabled hover:text-nc-content-brand-disabled;
+  @apply bg-atm-bg-default text-atm-content-brand-disabled hover:text-atm-content-brand-disabled;
 
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.06), 0px 5px 3px -2px rgba(0, 0, 0, 0.02);
 }
 
-.nc-filter-ref-wrapper {
+.atm-filter-ref-wrapper {
   @apply mb-4;
 
-  &:has(.nc-filter-top-wrapper) {
+  &:has(.atm-filter-top-wrapper) {
     @apply mb-1;
   }
 }
 
-.nc-webhook-version-diff {
+.atm-webhook-version-diff {
   @apply flex-1 !w-full flex items-stretch space-x-6 children:w-[calc(50%_-_12px)];
 
-  .nc-item {
-    @apply bg-nc-bg-gray-extralight rounded-lg border-1 border-nc-border-gray-medium flex flex-col;
+  .atm-item {
+    @apply bg-atm-bg-gray-extralight rounded-lg border-1 border-atm-border-gray-medium flex flex-col;
 
-    .nc-item-title {
-      @apply px-3 py-1.5 border-b-1 border-nc-border-gray-medium font-bold text-nc-content-gray-subtle2 text-small1;
+    .atm-item-title {
+      @apply px-3 py-1.5 border-b-1 border-atm-border-gray-medium font-bold text-atm-content-gray-subtle2 text-small1;
     }
 
-    .nc-item-response {
+    .atm-item-response {
       @apply flex-1 flex overflow-hidden;
     }
   }
 }
 
-:deep(.nc-filter-field-select .ant-select-selector .field-selection-tooltip-wrapper) {
+:deep(.atm-filter-field-select .ant-select-selector .field-selection-tooltip-wrapper) {
   @apply !max-w-none;
 }
 </style>

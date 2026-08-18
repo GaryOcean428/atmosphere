@@ -1,10 +1,10 @@
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import { Column } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 
 export default class QrCodeColumn {
   base_id?: string;
@@ -18,9 +18,9 @@ export default class QrCodeColumn {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     qrCode: Partial<QrCodeColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(qrCode, [
       'fk_column_id',
@@ -37,7 +37,7 @@ export default class QrCodeColumn {
     );
 
     if (!column) {
-      NcError.fieldNotFound(insertObj.fk_column_id);
+      AtError.fieldNotFound(insertObj.fk_column_id);
     }
 
     await ncMeta.metaInsert2(
@@ -50,13 +50,13 @@ export default class QrCodeColumn {
     return this.read(context, qrCode.fk_column_id, ncMeta);
   }
   public static async read(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let column =
       columnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.COL_QRCODE}:${columnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -68,7 +68,7 @@ export default class QrCodeColumn {
         MetaTable.COL_QRCODE,
         { fk_column_id: columnId },
       );
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.COL_QRCODE}:${columnId}`,
         column,
@@ -80,17 +80,17 @@ export default class QrCodeColumn {
 
   id: string;
 
-  async getValueColumn(context: NcContext) {
+  async getValueColumn(context: AtContext) {
     return Column.get(context, {
       colId: this.fk_qr_value_column_id,
     });
   }
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     data: Partial<QrCodeColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(data, [
       'fk_column_id',
@@ -108,7 +108,7 @@ export default class QrCodeColumn {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.COL_QRCODE}:${columnId}`,
       updateObj,

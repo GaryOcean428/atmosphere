@@ -99,7 +99,7 @@ onMounted(() => {
     <input
       :ref="focus"
       v-model="localState"
-      class="nc-cell-field w-full !border-none !outline-none py-1"
+      class="atm-cell-field w-full !border-none !outline-none py-1"
       :placeholder="durationPlaceholder"
       :disabled="readOnly"
       @blur="submitDuration"
@@ -115,7 +115,7 @@ onMounted(() => {
       @mousedown.stop
     />
 
-    <div v-if="showWarningMessage && props.showValidationError" class="nc-cell-field duration-warning">
+    <div v-if="showWarningMessage && props.showValidationError" class="atm-cell-field duration-warning">
       {{ $t('msg.plsEnterANumber') }}
     </div>
   </div>

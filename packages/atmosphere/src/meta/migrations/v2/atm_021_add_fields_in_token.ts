@@ -7,7 +7,7 @@ const up = async (knex: Knex) => {
     table.foreign('fk_user_id').references(`${MetaTable.USERS}.id`);
   });
 
-  await knex.schema.alterTable(MetaTable.SYNC_SOURCE, (table) => {
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_SOURCE, (table) => {
     table.dropForeign(['fk_user_id']);
   });
 };
@@ -18,7 +18,7 @@ const down = async (knex) => {
     table.dropColumn('fk_user_id');
   });
 
-  await knex.schema.alterTable(MetaTable.SYNC_SOURCE, (table) => {
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_SOURCE, (table) => {
     table.foreign('fk_user_id').references(`${MetaTable.USERS}.id`);
   });
 };

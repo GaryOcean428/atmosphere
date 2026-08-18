@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type CalendarRangeType, FormulaDataTypes, PlanFeatureTypes, PlanTitles, UITypes, ViewTypes } from 'nocodb-sdk'
+import { type CalendarRangeType, FormulaDataTypes, PlanFeatureTypes, PlanTitles, UITypes, ViewTypes } from 'atmosphere-sdk'
 import type { SelectProps } from 'ant-design-vue'
 
 const meta = inject(MetaInj, ref())
@@ -169,7 +169,7 @@ const onValueChange = async () => {
 </script>
 
 <template>
-  <NcDropDrawer
+  <AtDropDrawer
     v-if="!IsPublic"
     v-model:visible="calendarRangeDropdown"
     :trigger="['click']"
@@ -177,17 +177,17 @@ const onValueChange = async () => {
     overlay-class-name="overflow-hidden"
   >
     <template #default="{ onClick }">
-      <NcTooltip :disabled="!isToolbarIconMode" class="nc-calendar-btn">
+      <AtTooltip :disabled="!isToolbarIconMode" class="atm-calendar-btn">
         <template #title>
           {{ $t('activity.settings') }}
         </template>
 
-        <NcButton
+        <AtButton
           v-e="['c:calendar:change-calendar-range']"
-          class="nc-toolbar-btn !border-0 group !h-7"
+          class="atm-toolbar-btn !border-0 group !h-7"
           size="small"
           type="secondary"
-          data-testid="nc-calendar-range-btn"
+          data-testid="atm-calendar-range-btn"
           :show-as-disabled="isLocked"
           @click="onClick"
         >
@@ -197,33 +197,33 @@ const onValueChange = async () => {
               {{ $t('activity.settings') }}
             </span>
           </div>
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
     </template>
 
     <template #overlay>
       <div
         v-if="calendarRangeDropdown"
         class="w-full sm:w-108 space-y-4 sm:space-y-6 sm:rounded-2xl px-0 py-1 sm:p-6"
-        data-testid="nc-calendar-range-menu"
+        data-testid="atm-calendar-range-menu"
         @click.stop
       >
         <div
           v-for="(range, id) in _calendar_ranges"
           :key="id"
           class="flex flex-col w-full gap-2 mb-2"
-          data-testid="nc-calendar-range-option"
+          data-testid="atm-calendar-range-option"
         >
-          <span class="text-nc-content-gray">
+          <span class="text-atm-content-gray">
             {{ $t('labels.organiseBy') }}
           </span>
 
           <a-select
             v-model:value="range.fk_from_column_id"
-            class="nc-select-shadow w-full !rounded-lg"
+            class="atm-select-shadow w-full !rounded-lg"
             dropdown-class-name="!rounded-lg"
             :placeholder="$t('placeholder.notSelected')"
-            data-testid="nc-calendar-range-from-field-select"
+            data-testid="atm-calendar-range-from-field-select"
             :disabled="isLocked"
             @change="
               () => {
@@ -233,7 +233,7 @@ const onValueChange = async () => {
             "
             @click.stop
           >
-            <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" /></template>
+            <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" /></template>
             <a-select-option
               v-for="(option, opId) in [...(dateFieldOptions ?? [])].filter((r) => {
                 if (id === 0) return true
@@ -247,16 +247,16 @@ const onValueChange = async () => {
                 <div class="flex items-center gap-1 max-w-[calc(100%_-_20px)]">
                   <SmartsheetHeaderIcon :column="option.col" />
 
-                  <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                  <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                     <template #title>
                       {{ option.label }}
                     </template>
                     <template #default>{{ option.label }}</template>
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
                 <GeneralIcon
                   v-if="option.value === range.fk_from_column_id"
-                  id="nc-selected-item-icon"
+                  id="atm-selected-item-icon"
                   icon="check"
                   class="flex-none text-primary w-4 h-4"
                 />
@@ -266,10 +266,10 @@ const onValueChange = async () => {
           <div v-if="showEEFeatures" class="w-full space-y-2">
             <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_CALENDAR_RANGE">
               <template #default="{ click }">
-                <NcButton
+                <AtButton
                   v-if="range.fk_to_column_id === null"
                   size="small"
-                  data-testid="nc-calendar-range-add-end-date"
+                  data-testid="atm-calendar-range-add-end-date"
                   type="text"
                   :shadow="false"
                   :disabled="isLocked"
@@ -292,7 +292,7 @@ const onValueChange = async () => {
                       :feature="PlanFeatureTypes.FEATURE_CALENDAR_RANGE"
                     />
                   </div>
-                </NcButton>
+                </AtButton>
 
                 <template v-else>
                   <div class="flex gap-2 items-center">
@@ -310,16 +310,16 @@ const onValueChange = async () => {
                   <div class="flex">
                     <a-select
                       v-model:value="range.fk_to_column_id"
-                      class="!rounded-r-none nc-select-shadow w-full flex-1"
+                      class="!rounded-r-none atm-select-shadow w-full flex-1"
                       allow-clear
                       :disabled="!range.fk_from_column_id || isLocked || blockCalendarRange"
                       :placeholder="$t('placeholder.notSelected')"
-                      data-testid="nc-calendar-range-to-field-select"
+                      data-testid="atm-calendar-range-to-field-select"
                       dropdown-class-name="!rounded-lg"
                       @change="saveCalendarRanges"
                       @click.stop
                     >
-                      <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" /></template>
+                      <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" /></template>
 
                       <a-select-option
                         v-for="(option, opId) in filterEndDateOptions(dateFieldOptions, range.fk_from_column_id)"
@@ -330,16 +330,16 @@ const onValueChange = async () => {
                           <div class="flex items-center gap-1 max-w-[calc(100%_-_20px)]">
                             <SmartsheetHeaderIcon :column="option.col" />
 
-                            <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                            <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                               <template #title>
                                 {{ option.label }}
                               </template>
                               <template #default>{{ option.label }}</template>
-                            </NcTooltip>
+                            </AtTooltip>
                           </div>
                           <GeneralIcon
                             v-if="option.value === range.fk_from_column_id"
-                            id="nc-selected-item-icon"
+                            id="atm-selected-item-icon"
                             icon="check"
                             class="flex-none text-primary w-4 h-4"
                           />
@@ -354,18 +354,18 @@ const onValueChange = async () => {
         </div>
 
         <div v-if="!isSetup" class="flex items-center gap-2 !mt-2">
-          <GeneralIcon icon="warning" class="text-sm mt-0.5 text-nc-content-orange-medium" />
-          <span class="text-sm text-nc-content-gray-muted"> {{ $t('msg.dateFieldRequired') }} </span>
+          <GeneralIcon icon="warning" class="text-sm mt-0.5 text-atm-content-orange-medium" />
+          <span class="text-sm text-atm-content-gray-muted"> {{ $t('msg.dateFieldRequired') }} </span>
         </div>
 
         <GeneralLockedViewFooter v-if="isLocked" class="!-mb-4 -mx-4" @on-open="calendarRangeDropdown = false" />
       </div>
     </template>
-  </NcDropDrawer>
+  </AtDropDrawer>
 </template>
 
 <style lang="scss">
-.nc-to-select .ant-select-selector {
+.atm-to-select .ant-select-selector {
   @apply !rounded-r-none;
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 
 const props = defineProps<{
   modelValue: boolean
@@ -110,31 +110,31 @@ defineExpose({
     :mask-style="{
       'background-color': 'rgba(0, 0, 0, 0.08)',
     }"
-    wrap-class-name="nc-modal-column-duplicate"
+    wrap-class-name="atm-modal-column-duplicate"
     :footer="null"
     class="!w-[30rem]"
     @keydown.esc="dialogShow = false"
   >
     <div>
-      <div class="text-base text-nc-content-gray-emphasis leading-6 font-bold self-center">
+      <div class="text-base text-atm-content-gray-emphasis leading-6 font-bold self-center">
         {{ $t('general.duplicate') }} {{ $t('objects.column') }} "{{ column.title }}"
       </div>
 
       <div class="mt-5 flex gap-3 flex-col">
         <div
-          class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+          class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
           @click="options.includeData = !options.includeData"
         >
-          <NcSwitch :checked="options.includeData" />
+          <AtSwitch :checked="options.includeData" />
           {{ $t('labels.includeData') }}
         </div>
       </div>
     </div>
     <div class="flex flex-row gap-x-2 mt-5 justify-end">
-      <NcButton v-if="!isLoading" key="back" type="secondary" size="small" @click="dialogShow = false">
+      <AtButton v-if="!isLoading" key="back" type="secondary" size="small" @click="dialogShow = false">
         {{ $t('general.cancel') }}
-      </NcButton>
-      <NcButton key="submit" type="primary" size="small" :loading="isLoading" @click="_duplicate"> Duplicate Field </NcButton>
+      </AtButton>
+      <AtButton key="submit" type="primary" size="small" :loading="isLoading" @click="_duplicate"> Duplicate Field </AtButton>
     </div>
   </GeneralModal>
 </template>

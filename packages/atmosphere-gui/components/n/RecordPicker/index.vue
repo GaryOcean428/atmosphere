@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { TableType, ViewType } from 'nocodb-sdk'
-import { ViewTypes, getFirstNonPersonalView } from 'nocodb-sdk'
+import type { TableType, ViewType } from 'atmosphere-sdk'
+import { ViewTypes, getFirstNonPersonalView } from 'atmosphere-sdk'
 
 const props = withDefaults(
   defineProps<{
@@ -45,9 +45,9 @@ const addOrRemoveClass = (add = false) => {
   const dropdownRoot = ncRecordPickerDropdownRef.value?.parentElement?.parentElement?.parentElement?.parentElement as HTMLElement
   if (dropdownRoot) {
     if (add) {
-      dropdownRoot.classList.add('inset-0', 'nc-record-picker-dropdown-root', `nc-root-${randomClass}`)
+      dropdownRoot.classList.add('inset-0', 'atm-record-picker-dropdown-root', `atm-root-${randomClass}`)
     } else {
-      dropdownRoot.classList.remove('inset-0', 'nc-record-picker-dropdown-root', `nc-root-${randomClass}`)
+      dropdownRoot.classList.remove('inset-0', 'atm-record-picker-dropdown-root', `atm-root-${randomClass}`)
     }
   }
 }
@@ -59,7 +59,7 @@ watch(
       onClickOutside(document.querySelector(`.${randomClass}`)! as HTMLDivElement, (e) => {
         const targetEl = e?.target as HTMLElement
 
-        if (!targetEl?.classList.contains(`nc-root-${randomClass}`) || targetEl?.closest(`.nc-${randomClass}`)) {
+        if (!targetEl?.classList.contains(`atm-root-${randomClass}`) || targetEl?.closest(`.atm-${randomClass}`)) {
           return
         }
         isOpen.value = false
@@ -181,21 +181,21 @@ whenever(isOpen, () => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="isOpen"
     :disabled="props.disabled"
     :trigger="['click']"
-    :class="`.nc-${randomClass}`"
-    :overlay-class-name="`nc-record-picker-dropdown overflow-hidden !min-w-[540px] xs:(!min-w-[90vw]) ${isOpen ? 'active' : ''}`"
+    :class="`.atm-${randomClass}`"
+    :overlay-class-name="`atm-record-picker-dropdown overflow-hidden !min-w-[540px] xs:(!min-w-[90vw]) ${isOpen ? 'active' : ''}`"
   >
-    <NcButton
+    <AtButton
       type="secondary"
       size="small"
       :disabled="disabled"
       icon-position="right"
       full-width
-      :class="{ 'record-picker-active': isOpen, '!bg-nc-bg-gray-light': disabled }"
-      class="!border-nc-border-gray-medium"
+      :class="{ 'record-picker-active': isOpen, '!bg-atm-bg-gray-light': disabled }"
+      class="!border-atm-border-gray-medium"
     >
       <span v-if="displayField && localState?.row" class="truncate text-left !leading-[1.5]">
         <SmartsheetPlainCell :model-value="localState?.row[displayField.title]" :column="displayField" />
@@ -211,15 +211,15 @@ whenever(isOpen, () => {
       </span>
 
       <template #icon>
-        <GeneralIcon :icon="isOpen ? 'arrowUp' : 'arrowDown'" class="self-center text-nc-content-gray-subtle" />
+        <GeneralIcon :icon="isOpen ? 'arrowUp' : 'arrowDown'" class="self-center text-atm-content-gray-subtle" />
       </template>
-    </NcButton>
+    </AtButton>
 
     <template #overlay>
-      <div ref="ncRecordPickerDropdownRef" :class="`${randomClass}`" class="nc-record-picker-dropdown-wrapper">
+      <div ref="ncRecordPickerDropdownRef" :class="`${randomClass}`" class="atm-record-picker-dropdown-wrapper">
         <div class="flex flex-col h-full w-full" :class="{ active: isOpen }" @keydown.enter.stop>
-          <div class="bg-nc-bg-gray-light py-2 rounded-t-xl flex justify-between pl-3 pr-2 gap-2">
-            <div class="flex-1 nc-record-picker-dropdown-record-search-wrapper flex items-center py-0.5 rounded-md">
+          <div class="bg-atm-bg-gray-light py-2 rounded-t-xl flex justify-between pl-3 pr-2 gap-2">
+            <div class="flex-1 atm-record-picker-dropdown-record-search-wrapper flex items-center py-0.5 rounded-md">
               <a-input
                 ref="filterQueryRef"
                 v-model:value="searchQuery"
@@ -229,12 +229,12 @@ whenever(isOpen, () => {
                 size="small"
               >
                 <template #prefix>
-                  <GeneralIcon icon="search" class="nc-search-icon mr-2 h-4 w-4 text-nc-content-gray-muted" />
+                  <GeneralIcon icon="search" class="atm-search-icon mr-2 h-4 w-4 text-atm-content-gray-muted" />
                 </template>
                 <template v-if="!isValidSearchQuery" #suffix>
-                  <NcTooltip :title="$t('msg.error.invalidSearchQueryForVisibleFields')" class="flex">
-                    <GeneralIcon icon="ncInfo" class="flex-noneh-4 w-4 text-nc-content-red-medium" />
-                  </NcTooltip>
+                  <AtTooltip :title="$t('msg.error.invalidSearchQueryForVisibleFields')" class="flex">
+                    <GeneralIcon icon="ncInfo" class="flex-noneh-4 w-4 text-atm-content-red-medium" />
+                  </AtTooltip>
                 </template>
               </a-input>
             </div>
@@ -252,15 +252,15 @@ whenever(isOpen, () => {
         </div>
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style lang="scss">
-.nc-record-picker-dropdown {
-  @apply rounded-xl !border-nc-border-gray-medium;
+.atm-record-picker-dropdown {
+  @apply rounded-xl !border-atm-border-gray-medium;
   z-index: 1000 !important;
 }
-.nc-record-picker-dropdown-wrapper {
+.atm-record-picker-dropdown-wrapper {
   @apply h-[412px] w-[540px] xs:(w-[90vw] min-h-[312px] h-[312px]);
   overflow-y: auto;
   overflow-x: hidden;
@@ -270,29 +270,29 @@ whenever(isOpen, () => {
   max-width: 540px;
 }
 
-.nc-record-picker-dropdown-root {
+.atm-record-picker-dropdown-root {
   z-index: 1000;
 }
 
-.nc-record-picker-dropdown-record-search-wrapper {
-  .nc-search-icon {
-    @apply flex-none text-nc-content-gray-muted;
+.atm-record-picker-dropdown-record-search-wrapper {
+  .atm-search-icon {
+    @apply flex-none text-atm-content-gray-muted;
   }
 
   &:focus-within {
-    .nc-search-icon {
-      @apply text-nc-content-gray-subtle2;
+    .atm-search-icon {
+      @apply text-atm-content-gray-subtle2;
     }
   }
   input {
-    @apply !caret-nc-fill-primary;
+    @apply !caret-atm-fill-primary;
     &::placeholder {
-      @apply text-nc-content-gray-muted;
+      @apply text-atm-content-gray-muted;
     }
   }
 }
 .record-picker-active {
-  @apply !border-nc-fill-primary;
-  box-shadow: 0px 0px 0px 2px rgba(var(--nc-brand-accent-rgb), 0.24) !important;
+  @apply !border-atm-fill-primary;
+  box-shadow: 0px 0px 0px 2px rgba(var(--atm-brand-accent-rgb), 0.24) !important;
 }
 </style>

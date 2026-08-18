@@ -1,4 +1,4 @@
-import type { IntegrationType } from 'nocodb-sdk'
+import type { IntegrationType } from 'atmosphere-sdk'
 
 export function useBaseIntegrations() {
   const { $api } = useNuxtApp()

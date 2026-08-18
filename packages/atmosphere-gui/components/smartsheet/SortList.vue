@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ColumnType, SortType, TableType } from 'nocodb-sdk'
+import type { ColumnType, SortType, TableType } from 'atmosphere-sdk'
 import Draggable from 'vuedraggable'
 import { getColumnUidtByID as resolveColumnUidt } from '~/utils/sortUtils'
 
@@ -54,13 +54,13 @@ const getColumnUidtByID = (key?: string) => resolveColumnUidt(key, props.columns
 </script>
 
 <template>
-  <div class="nc-sort-list-rows">
+  <div class="atm-sort-list-rows">
     <!-- Editable rows -->
     <template v-if="!readOnly">
       <Draggable
         :model-value="sorts"
         :item-key="(sort) => sort.id || sort.fk_column_id"
-        ghost-class="bg-nc-bg-gray-extralight"
+        ghost-class="bg-atm-bg-gray-extralight"
         :disabled="disabled || !draggable"
         @change="emit('move', $event)"
       >
@@ -68,21 +68,21 @@ const getColumnUidtByID = (key?: string) => resolveColumnUidt(key, props.columns
           <div
             :key="sort.id || sort.fk_column_id"
             class="flex first:mb-0 !mb-1.5 !last:mb-0 items-center gap-2"
-            :class="{ 'nc-sort-disabled-row': sort.enabled === false }"
+            :class="{ 'atm-sort-disabled-row': sort.enabled === false }"
           >
-            <NcCheckbox
+            <AtCheckbox
               v-if="showEnableToggle"
               :checked="sort.enabled !== false"
               size="default"
               :disabled="disabled"
-              class="nc-sort-enabled-checkbox xs:(flex min-h-8)"
+              class="atm-sort-enabled-checkbox xs:(flex min-h-8)"
               @change="emit('toggleEnabled', sort)"
             />
             <!-- joined control group (no internal gap so the field/dir/reorder/remove stay connected) -->
             <div class="flex items-center flex-1 min-w-0">
               <SmartsheetToolbarFieldListAutoCompleteDropdown
                 v-model="sort.fk_column_id"
-                class="flex caption nc-sort-field-select !w-44 flex-grow"
+                class="flex caption atm-sort-field-select !w-44 flex-grow"
                 :columns="columns"
                 is-sort
                 :meta="meta"
@@ -92,11 +92,11 @@ const getColumnUidtByID = (key?: string) => resolveColumnUidt(key, props.columns
                 @update:model-value="emit('saveOrUpdate', sort)"
               />
 
-              <NcSelect
+              <AtSelect
                 v-model:value="sort.direction"
-                class="flex flex-grow-1 w-full nc-sort-dir-select"
+                class="flex flex-grow-1 w-full atm-sort-dir-select"
                 :label="$t('labels.operation')"
-                dropdown-class-name="sort-dir-dropdown nc-dropdown-sort-dir !rounded-lg"
+                dropdown-class-name="sort-dir-dropdown atm-dropdown-sort-dir !rounded-lg"
                 :disabled="disabled"
                 @click.stop
                 @select="emit('saveOrUpdate', sort)"
@@ -112,37 +112,37 @@ const getColumnUidtByID = (key?: string) => resolveColumnUidt(key, props.columns
                     <component
                       :is="iconMap.check"
                       v-if="sort.direction === option.value"
-                      id="nc-selected-item-icon"
+                      id="atm-selected-item-icon"
                       class="text-primary w-4 h-4"
                     />
                   </div>
                 </a-select-option>
-              </NcSelect>
+              </AtSelect>
 
-              <NcButton
+              <AtButton
                 v-if="draggable"
                 type="secondary"
                 size="small"
-                class="nc-sort-item-reorder-btn !border-l-transparent !rounded-none"
+                class="atm-sort-item-reorder-btn !border-l-transparent !rounded-none"
                 :shadow="false"
                 :disabled="disabled"
               >
                 <component :is="iconMap.drag" />
-              </NcButton>
+              </AtButton>
 
-              <NcTooltip placement="top" :title="$t('general.remove')" class="flex-none">
-                <NcButton
+              <AtTooltip placement="top" :title="$t('general.remove')" class="flex-none">
+                <AtButton
                   v-e="['c:sort:delete']"
                   size="small"
                   type="secondary"
                   :shadow="false"
                   :disabled="disabled"
-                  class="nc-sort-item-remove-btn !max-w-8 !border-l-transparent !rounded-l-none"
+                  class="atm-sort-item-remove-btn !max-w-8 !border-l-transparent !rounded-l-none"
                   @click.stop="emit('delete', sort)"
                 >
                   <component :is="iconMap.deleteListItem" />
-                </NcButton>
-              </NcTooltip>
+                </AtButton>
+              </AtTooltip>
             </div>
           </div>
         </template>
@@ -158,7 +158,7 @@ const getColumnUidtByID = (key?: string) => resolveColumnUidt(key, props.columns
       >
         <SmartsheetToolbarFieldListAutoCompleteDropdown
           :model-value="sort.fk_column_id"
-          class="flex caption nc-sort-field-select !w-44 flex-grow"
+          class="flex caption atm-sort-field-select !w-44 flex-grow"
           :columns="columns"
           is-sort
           :meta="meta"
@@ -167,11 +167,11 @@ const getColumnUidtByID = (key?: string) => resolveColumnUidt(key, props.columns
           show-all-columns
         />
 
-        <NcSelect
+        <AtSelect
           :value="sort.direction"
-          class="flex flex-grow-1 w-full nc-sort-dir-select"
+          class="flex flex-grow-1 w-full atm-sort-dir-select"
           :label="$t('labels.operation')"
-          dropdown-class-name="sort-dir-dropdown nc-dropdown-sort-dir !rounded-lg"
+          dropdown-class-name="sort-dir-dropdown atm-dropdown-sort-dir !rounded-lg"
           :disabled="true"
         >
           <a-select-option
@@ -184,35 +184,35 @@ const getColumnUidtByID = (key?: string) => resolveColumnUidt(key, props.columns
               <component
                 :is="iconMap.check"
                 v-if="sort.direction === option.value"
-                id="nc-selected-item-icon"
+                id="atm-selected-item-icon"
                 class="text-primary w-4 h-4"
               />
             </div>
           </a-select-option>
-        </NcSelect>
+        </AtSelect>
 
-        <NcTooltip placement="top" :title="$t('general.remove')" class="flex-none">
-          <NcButton
+        <AtTooltip placement="top" :title="$t('general.remove')" class="flex-none">
+          <AtButton
             v-e="['c:sort:delete']"
             size="small"
             type="secondary"
             :shadow="false"
             :disabled="true"
-            class="nc-sort-item-remove-btn !max-w-8 !border-l-transparent !rounded-l-none"
+            class="atm-sort-item-remove-btn !max-w-8 !border-l-transparent !rounded-l-none"
           >
             <component :is="iconMap.deleteListItem" />
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
       </div>
     </template>
   </div>
 </template>
 
 <style scoped lang="scss">
-:deep(.nc-sort-field-select) {
+:deep(.atm-sort-field-select) {
   @apply !w-44;
   .ant-select-selector {
-    @apply !rounded-none !rounded-l-lg !border-r-0 !border-nc-border-gray-medium !shadow-none !w-44;
+    @apply !rounded-none !rounded-l-lg !border-r-0 !border-atm-border-gray-medium !shadow-none !w-44;
 
     &.ant-select-focused:not(.ant-select-disabled) {
       @apply !border-r-transparent;
@@ -224,22 +224,22 @@ const getColumnUidtByID = (key?: string) => resolveColumnUidt(key, props.columns
   }
 }
 
-:deep(.nc-select:not(.ant-select-disabled):hover) {
+:deep(.atm-select:not(.ant-select-disabled):hover) {
   &,
   .ant-select-selector {
-    @apply bg-nc-bg-gray-extralight;
+    @apply bg-atm-bg-gray-extralight;
   }
 }
 
-:deep(.nc-sort-dir-select) {
+:deep(.atm-sort-dir-select) {
   .ant-select-selector {
-    @apply !rounded-none !border-nc-border-gray-medium !shadow-none;
+    @apply !rounded-none !border-atm-border-gray-medium !shadow-none;
   }
 }
 
-.nc-sort-disabled-row {
-  .nc-sort-field-select,
-  .nc-sort-dir-select {
+.atm-sort-disabled-row {
+  .atm-sort-field-select,
+  .atm-sort-dir-select {
     @apply opacity-40 pointer-events-none;
   }
 }

@@ -1,5 +1,5 @@
 import { ColumnType, FilterType } from '~/lib/Api';
-import { BadRequest, NcSDKError } from '~/lib/errorUtils';
+import { BadRequest, AtSDKError } from '~/lib/errorUtils';
 import {
   COMPARISON_OPS,
   COMPARISON_SUB_OPS,
@@ -355,7 +355,7 @@ export function extractCondition(
             ? `Column alias '${alias}' not found.`
             : 'Invalid filter format.',
         };
-        if (throwErrorIfInvalid) throw new NcSDKError(error.message);
+        if (throwErrorIfInvalid) throw new AtSDKError(error.message);
         errors.push(error);
         return null;
       }

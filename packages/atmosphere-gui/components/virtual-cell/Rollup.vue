@@ -6,8 +6,8 @@ import {
   getRollupColumnMeta,
   integerPreservingRollupFunctions,
   integerRollupFunctions,
-} from 'nocodb-sdk'
-import type { ColumnType, LinkToAnotherRecordType, RollupType } from 'nocodb-sdk'
+} from 'atmosphere-sdk'
+import type { ColumnType, LinkToAnotherRecordType, RollupType } from 'atmosphere-sdk'
 
 const { metas, getMeta, getMetaByKey } = useMetas()
 
@@ -106,13 +106,13 @@ const isIntegerResult = computed(() => {
 </script>
 
 <template>
-  <div v-if="column && column.colOptions && column.colOptions.error" class="nc-cell-field">
-    <NcTooltip placement="bottom" class="text-nc-content-orange-dark">
+  <div v-if="column && column.colOptions && column.colOptions.error" class="atm-cell-field">
+    <AtTooltip placement="bottom" class="text-atm-content-orange-dark">
       <template #title>
         <span class="font-bold">{{ column.colOptions.error }}</span>
       </template>
       <span>ERR!</span>
-    </NcTooltip>
+    </AtTooltip>
   </div>
   <div v-else @dblclick="activateShowEditNonEditableFieldWarning">
     <CellInteger

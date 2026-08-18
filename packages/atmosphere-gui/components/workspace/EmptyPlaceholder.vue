@@ -13,12 +13,12 @@ const openCreateProjectDlg = () => {
 <template>
   <div class="flex items-center justify-center mt-8">
     <div class="flex flex-col gap-4 items-center text-gray-500">
-      <NcIconsInbox />
+      <AtIconsInbox />
       <div class="font-weight-medium">No Projects</div>
       <template v-if="props.buttons">
         <div class="text-xs">{{ $t('title.createBase') }}</div>
         <div class="flex gap-2 justify mt-1">
-          <a-button class="flex-1 nc-btn" @click="openCreateProjectDlg()">
+          <a-button class="flex-1 atm-btn" @click="openCreateProjectDlg()">
             <div class="flex gap-2 items-center justify-center text-xs">
               <GeneralProjectIcon class="text-[#2824FB] text-lg" />
               New Database Base

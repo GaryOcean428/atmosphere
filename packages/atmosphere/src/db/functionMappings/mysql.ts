@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { ClientType, JSEPNode } from 'nocodb-sdk';
+import { ClientType, JSEPNode } from 'atmosphere-sdk';
 import commonFns, {
   ALLOWED_DATEADD_UNITS,
   extractDatetimeFormat,
@@ -278,7 +278,7 @@ END)`,
     // adjacent in the resulting SQL, and the `$'` pair is interpreted by
     // JS's String.prototype.replace as "rest of string after match" when
     // knex inlines this raw under named-binding wrappers like VALUE().
-    // See nocodb/nocodb#12695.
+    // See atmosphere/atmosphere#12695.
     const pathArg = pt.arguments[1];
     if (
       pathArg?.type === JSEPNode.LITERAL &&

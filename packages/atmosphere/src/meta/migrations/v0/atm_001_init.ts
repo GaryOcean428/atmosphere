@@ -1,11 +1,11 @@
-import { BaseVersion, OnDeleteAction } from 'nocodb-sdk';
+import { BaseVersion, OnDeleteAction } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import { MetaTable, MetaTableOldV2 } from '~/utils/globals';
-import { up as createAuditTable } from '~/meta/migrations/audit/nc_001_init';
+import { up as createAuditTable } from '~/meta/migrations/audit/atm_001_init';
 
 const up = async (knex: Knex) => {
   // We avoid init for existing instances
-  // They will be unified via packages/nocodb/src/meta/migrations/v2/nc_079_unify_schema.ts
+  // They will be unified via packages/atmosphere/src/meta/migrations/v2/atm_079_unify_schema.ts
   if (await knex.schema.hasTable('xc_knex_migrations')) {
     // see if there are records in the v1 migration table
     const records = await knex('xc_knex_migrations').select('*').limit(1);
@@ -31,11 +31,11 @@ const up = async (knex: Knex) => {
   });
 
   // AUDIT table — reuse the audit migration (single source of truth so
-  // the same schema runs against NC_AUDIT_DB when configured).
+  // the same schema runs against ATMOSPHERE_AUDIT_DB when configured).
   await createAuditTable(knex);
 
   // Add old_id column to track migrated records from legacy audit format
-  // (dropped later by migration job nc_job_009_audit_migration).
+  // (dropped later by migration job atm_job_009_audit_migration).
   await knex.schema.alterTable(MetaTable.AUDIT, (table) => {
     table.string('old_id', 20);
     table.index('old_id');
@@ -85,7 +85,7 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
 
     if (['pg', 'postgres'].includes(knex.client.config.client)) {
-      table.primary(['id'], { constraintName: 'nc_projects_v2_pkey' });
+      table.primary(['id'], { constraintName: 'atm_projects_v2_pkey' });
     } else {
       table.primary(['id']);
     }
@@ -196,7 +196,7 @@ const up = async (knex: Knex) => {
     table.primary(['base_id', 'id']);
   });
 
-  // 14) nc_col_lookup_v2
+  // 14) atm_col_lookup_v2
   await knex.schema.createTable(MetaTable.COL_LOOKUP, (table) => {
     table.string('id', 20).notNullable();
     table.string('fk_column_id', 20);
@@ -831,7 +831,7 @@ const up = async (knex: Knex) => {
     table.text('description');
     table.boolean('synced').defaultTo(false);
     table.string('fk_workspace_id', 20);
-    // nc_dashboards_v2
+    // atm_dashboards_v2
     table.string('created_by', 20);
     table.string('owned_by', 20);
     table.string('uuid', 255);
@@ -1076,7 +1076,7 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
 
     if (['pg', 'postgres'].includes(knex.client.config.client)) {
-      table.primary(['base_id', 'id'], { constraintName: 'nc_bases_v2_pkey' });
+      table.primary(['base_id', 'id'], { constraintName: 'atm_bases_v2_pkey' });
     } else {
       table.primary(['base_id', 'id']);
     }
@@ -1127,7 +1127,7 @@ const up = async (knex: Knex) => {
     table.timestamps();
   });
 
-  await knex.schema.createTable(MetaTable.SYNC_CONFIGS, (table) => {
+  await knex.schema.createTable(MetaTable.SYATMOSPHERE_CONFIGS, (table) => {
     table.string('id', 20).notNullable();
     table.string('fk_workspace_id', 20);
     table.string('base_id', 20);
@@ -1150,7 +1150,7 @@ const up = async (knex: Knex) => {
     table.primary(['base_id', 'id']);
   });
 
-  await knex.schema.createTable(MetaTable.SYNC_LOGS, (table) => {
+  await knex.schema.createTable(MetaTable.SYATMOSPHERE_LOGS, (table) => {
     table.string('id', 20).notNullable();
     table.string('base_id', 20);
     table.string('fk_sync_source_id', 20);
@@ -1162,7 +1162,7 @@ const up = async (knex: Knex) => {
     table.primary(['base_id', 'id']);
   });
 
-  await knex.schema.createTable(MetaTable.SYNC_MAPPINGS, (table) => {
+  await knex.schema.createTable(MetaTable.SYATMOSPHERE_MAPPINGS, (table) => {
     table.string('id', 20).notNullable();
 
     table.string('fk_workspace_id', 20);
@@ -1177,7 +1177,7 @@ const up = async (knex: Knex) => {
     table.primary(['base_id', 'id']);
   });
 
-  await knex.schema.createTable(MetaTable.SYNC_SOURCE, (table) => {
+  await knex.schema.createTable(MetaTable.SYATMOSPHERE_SOURCE, (table) => {
     table.string('id', 20).notNullable();
     table.string('title', 255);
     table.string('type', 255);
@@ -1347,7 +1347,7 @@ const up = async (knex: Knex) => {
 
     table.string('base_id', 20);
     table.string('color', 20);
-    table.integer('nc_order');
+    table.integer('atm_order');
     table.boolean('is_set_as_background');
 
     table.timestamps(true, true);
@@ -1409,644 +1409,644 @@ const up = async (knex: Knex) => {
 
   // ----- CREATE INDEX statements -----
   await knex.schema.alterTable(MetaTable.DASHBOARDS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_dashboards_context');
-    table.index(['id'], 'nc_dashboards_v2_oldpk_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_dashboards_context');
+    table.index(['id'], 'atm_dashboards_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.WIDGETS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_widgets_context');
-    table.index('fk_dashboard_id', 'nc_widgets_dashboard_idx');
-    table.index(['id'], 'nc_widgets_v2_oldpk_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_widgets_context');
+    table.index('fk_dashboard_id', 'atm_widgets_dashboard_idx');
+    table.index(['id'], 'atm_widgets_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.PERMISSIONS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_permissions_context');
-    table.index(['entity', 'entity_id', 'permission'], 'nc_permissions_entity');
-    table.index(['id'], 'nc_permissions_oldpk_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_permissions_context');
+    table.index(['entity', 'entity_id', 'permission'], 'atm_permissions_entity');
+    table.index(['id'], 'atm_permissions_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.PERMISSION_SUBJECTS, (table) => {
     table.index(
       ['fk_workspace_id', 'base_id'],
-      'nc_permission_subjects_context',
+      'atm_permission_subjects_context',
     );
     table.index(
       ['fk_permission_id', 'subject_type', 'subject_id'],
-      'nc_permission_subjects_oldpk_idx',
+      'atm_permission_subjects_oldpk_idx',
     );
   });
 
   // OAuth Clients Table
   await knex.schema.alterTable(MetaTable.OAUTH_CLIENTS, (table) => {
-    table.index('fk_user_id', 'nc_oauth_clients_fk_user_id_index');
+    table.index('fk_user_id', 'atm_oauth_clients_fk_user_id_index');
   });
 
   // OAuth Authorization Codes Table
   await knex.schema.alterTable(MetaTable.OAUTH_AUTHORIZATION_CODES, (table) => {
     table.index(
       'fk_client_id',
-      'nc_oauth_authorization_codes_fk_client_id_index',
+      'atm_oauth_authorization_codes_fk_client_id_index',
     );
-    table.index('fk_user_id', 'nc_oauth_authorization_codes_fk_user_id_index');
-    table.index('code', 'nc_oauth_authorization_codes_code_index');
-    table.index('expires_at', 'nc_oauth_authorization_codes_expires_at_index');
-    table.index('is_used', 'nc_oauth_authorization_codes_is_used_index');
+    table.index('fk_user_id', 'atm_oauth_authorization_codes_fk_user_id_index');
+    table.index('code', 'atm_oauth_authorization_codes_code_index');
+    table.index('expires_at', 'atm_oauth_authorization_codes_expires_at_index');
+    table.index('is_used', 'atm_oauth_authorization_codes_is_used_index');
     table.index(
       ['fk_client_id', 'fk_user_id'],
-      'nc_oauth_authorization_codes_fk_client_id_fk_user_id_index',
+      'atm_oauth_authorization_codes_fk_client_id_fk_user_id_index',
     );
   });
 
   // OAuth Tokens Table
   await knex.schema.alterTable(MetaTable.OAUTH_TOKENS, (table) => {
     // Indexes for performance
-    table.index('fk_client_id', 'nc_oauth_tokens_fk_client_id_index');
-    table.index('fk_user_id', 'nc_oauth_tokens_fk_user_id_index');
+    table.index('fk_client_id', 'atm_oauth_tokens_fk_client_id_index');
+    table.index('fk_user_id', 'atm_oauth_tokens_fk_user_id_index');
     if (!['mysql', 'mysql2'].includes(knex.client.config.client)) {
-      table.index('access_token', 'nc_oauth_tokens_access_token_index');
-      table.index('refresh_token', 'nc_oauth_tokens_refresh_token_index');
+      table.index('access_token', 'atm_oauth_tokens_access_token_index');
+      table.index('refresh_token', 'atm_oauth_tokens_refresh_token_index');
     }
     table.index(
       'access_token_expires_at',
-      'nc_oauth_tokens_access_token_expires_at_index',
+      'atm_oauth_tokens_access_token_expires_at_index',
     );
     table.index(
       'refresh_token_expires_at',
-      'nc_oauth_tokens_refresh_token_expires_at_index',
+      'atm_oauth_tokens_refresh_token_expires_at_index',
     );
-    table.index('is_revoked', 'nc_oauth_tokens_is_revoked_index');
-    table.index('last_used_at', 'nc_oauth_tokens_last_used_at_index');
+    table.index('is_revoked', 'atm_oauth_tokens_is_revoked_index');
+    table.index('last_used_at', 'atm_oauth_tokens_last_used_at_index');
     table.index(['fk_client_id', 'fk_user_id']);
     table.index(['is_revoked', 'access_token_expires_at']);
   });
 
   await knex.schema.alterTable(MetaTable.PLANS, (table) => {
-    table.index('stripe_product_id', 'nc_plans_stripe_product_idx');
+    table.index('stripe_product_id', 'atm_plans_stripe_product_idx');
   });
 
   await knex.schema.alterTable(MetaTable.ROW_COLOR_CONDITIONS, (table) => {
     table.index(
       ['fk_workspace_id', 'base_id'],
-      'nc_row_color_conditions_fk_workspace_id_base_id_index',
+      'atm_row_color_conditions_fk_workspace_id_base_id_index',
     );
-    table.index('fk_view_id', 'nc_row_color_conditions_fk_view_id_index');
-    table.index('id', 'nc_row_color_conditions_oldpk_idx');
+    table.index('fk_view_id', 'atm_row_color_conditions_fk_view_id_index');
+    table.index('id', 'atm_row_color_conditions_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.SUBSCRIPTIONS, (table) => {
-    table.index('fk_workspace_id', 'nc_subscriptions_ws_idx');
-    table.index('fk_org_id', 'nc_subscriptions_org_idx');
+    table.index('fk_workspace_id', 'atm_subscriptions_ws_idx');
+    table.index('fk_org_id', 'atm_subscriptions_org_idx');
     table.index(
       'stripe_subscription_id',
-      'nc_subscriptions_stripe_subscription_idx',
+      'atm_subscriptions_stripe_subscription_idx',
     );
   });
 
   await knex.schema.alterTable(MetaTable.USAGE_STATS, (table) => {
     table.index(
       ['fk_workspace_id', 'period_start'],
-      'nc_usage_stats_ws_period_idx',
+      'atm_usage_stats_ws_period_idx',
     );
   });
 
   await knex.schema.alterTable(MetaTable.API_TOKENS, (table) => {
-    table.index(['fk_user_id'], 'nc_api_tokens_fk_user_id_index');
-    table.index('fk_sso_client_id', 'nc_api_tokens_fk_sso_client_id_index');
+    table.index(['fk_user_id'], 'atm_api_tokens_fk_user_id_index');
+    table.index('fk_sso_client_id', 'atm_api_tokens_fk_sso_client_id_index');
   });
 
   await knex.schema.alterTable(MetaTable.PROJECT_USERS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_base_users_v2_base_id_fk_workspace_id_index',
+      'atm_base_users_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['invited_by'], 'nc_base_users_v2_invited_by_index');
-    table.index(['fk_user_id'], 'nc_project_users_v2_fk_user_id_index');
+    table.index(['invited_by'], 'atm_base_users_v2_invited_by_index');
+    table.index(['fk_user_id'], 'atm_project_users_v2_fk_user_id_index');
   });
 
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
-    table.index(['fk_custom_url_id'], 'nc_bases_v2_fk_custom_url_id_index');
-    table.index(['fk_workspace_id'], 'nc_bases_v2_fk_workspace_id_index');
+    table.index(['fk_custom_url_id'], 'atm_bases_v2_fk_custom_url_id_index');
+    table.index(['fk_workspace_id'], 'atm_bases_v2_fk_workspace_id_index');
   });
 
   await knex.schema.alterTable(MetaTable.CALENDAR_VIEW_COLUMNS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_calendar_view_columns_v2_base_id_fk_workspace_id_index',
+      'atm_calendar_view_columns_v2_base_id_fk_workspace_id_index',
     );
     table.index(
       ['fk_view_id', 'fk_column_id'],
-      'nc_calendar_view_columns_v2_fk_view_id_fk_column_id_index',
+      'atm_calendar_view_columns_v2_fk_view_id_fk_column_id_index',
     );
-    table.index(['id'], 'nc_calendar_view_columns_v2_oldpk_idx');
+    table.index(['id'], 'atm_calendar_view_columns_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.CALENDAR_VIEW_RANGE, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_calendar_view_range_v2_base_id_fk_workspace_id_index',
+      'atm_calendar_view_range_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['id'], 'nc_calendar_view_range_v2_oldpk_idx');
+    table.index(['id'], 'atm_calendar_view_range_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.CALENDAR_VIEW, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_calendar_view_v2_base_id_fk_workspace_id_index',
+      'atm_calendar_view_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_view_id'], 'nc_calendar_view_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_calendar_view_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COL_BARCODE, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_col_barcode_v2_base_id_fk_workspace_id_index',
+      'atm_col_barcode_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_column_id'], 'nc_col_barcode_v2_fk_column_id_index');
-    table.index(['id'], 'nc_col_barcode_v2_oldpk_idx');
+    table.index(['fk_column_id'], 'atm_col_barcode_v2_fk_column_id_index');
+    table.index(['id'], 'atm_col_barcode_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COL_BUTTON, (table) => {
-    // The question's list calls it "nc_col_button_context" for (base_id, fk_workspace_id)
-    table.index(['base_id', 'fk_workspace_id'], 'nc_col_button_context');
-    table.index(['fk_column_id'], 'nc_col_button_v2_fk_column_id_index');
-    table.index(['id'], 'nc_col_button_v2_oldpk_idx');
+    // The question's list calls it "atm_col_button_context" for (base_id, fk_workspace_id)
+    table.index(['base_id', 'fk_workspace_id'], 'atm_col_button_context');
+    table.index(['fk_column_id'], 'atm_col_button_v2_fk_column_id_index');
+    table.index(['id'], 'atm_col_button_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COL_FORMULA, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_col_formula_v2_base_id_fk_workspace_id_index',
+      'atm_col_formula_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_column_id'], 'nc_col_formula_v2_fk_column_id_index');
-    table.index(['id'], 'nc_col_formula_v2_oldpk_idx');
+    table.index(['fk_column_id'], 'atm_col_formula_v2_fk_column_id_index');
+    table.index(['id'], 'atm_col_formula_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COL_LONG_TEXT, (table) => {
-    // The question's list calls it "nc_col_long_text_context"
-    table.index(['base_id', 'fk_workspace_id'], 'nc_col_long_text_context');
-    table.index(['fk_column_id'], 'nc_col_long_text_v2_fk_column_id_index');
-    table.index(['id'], 'nc_col_long_text_v2_oldpk_idx');
+    // The question's list calls it "atm_col_long_text_context"
+    table.index(['base_id', 'fk_workspace_id'], 'atm_col_long_text_context');
+    table.index(['fk_column_id'], 'atm_col_long_text_v2_fk_column_id_index');
+    table.index(['id'], 'atm_col_long_text_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COL_LOOKUP, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_col_lookup_v2_base_id_fk_workspace_id_index',
+      'atm_col_lookup_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_column_id'], 'nc_col_lookup_v2_fk_column_id_index');
+    table.index(['fk_column_id'], 'atm_col_lookup_v2_fk_column_id_index');
     table.index(
       ['fk_lookup_column_id'],
-      'nc_col_lookup_v2_fk_lookup_column_id_index',
+      'atm_col_lookup_v2_fk_lookup_column_id_index',
     );
     table.index(
       ['fk_relation_column_id'],
-      'nc_col_lookup_v2_fk_relation_column_id_index',
+      'atm_col_lookup_v2_fk_relation_column_id_index',
     );
-    table.index(['id'], 'nc_col_lookup_v2_oldpk_idx');
+    table.index(['id'], 'atm_col_lookup_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COL_QRCODE, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_col_qrcode_v2_base_id_fk_workspace_id_index',
+      'atm_col_qrcode_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_column_id'], 'nc_col_qrcode_v2_fk_column_id_index');
-    table.index(['id'], 'nc_col_qrcode_v2_oldpk_idx');
+    table.index(['fk_column_id'], 'atm_col_qrcode_v2_fk_column_id_index');
+    table.index(['id'], 'atm_col_qrcode_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COL_RELATIONS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_col_relations_v2_base_id_fk_workspace_id_index',
+      'atm_col_relations_v2_base_id_fk_workspace_id_index',
     );
     table.index(
       ['fk_child_column_id'],
-      'nc_col_relations_v2_fk_child_column_id_index',
+      'atm_col_relations_v2_fk_child_column_id_index',
     );
-    table.index(['fk_column_id'], 'nc_col_relations_v2_fk_column_id_index');
+    table.index(['fk_column_id'], 'atm_col_relations_v2_fk_column_id_index');
     table.index(
       ['fk_mm_child_column_id'],
-      'nc_col_relations_v2_fk_mm_child_column_id_index',
+      'atm_col_relations_v2_fk_mm_child_column_id_index',
     );
-    table.index(['fk_mm_model_id'], 'nc_col_relations_v2_fk_mm_model_id_index');
+    table.index(['fk_mm_model_id'], 'atm_col_relations_v2_fk_mm_model_id_index');
     table.index(
       ['fk_mm_parent_column_id'],
-      'nc_col_relations_v2_fk_mm_parent_column_id_index',
+      'atm_col_relations_v2_fk_mm_parent_column_id_index',
     );
     table.index(
       ['fk_parent_column_id'],
-      'nc_col_relations_v2_fk_parent_column_id_index',
+      'atm_col_relations_v2_fk_parent_column_id_index',
     );
     table.index(
       ['fk_related_model_id'],
-      'nc_col_relations_v2_fk_related_model_id_index',
+      'atm_col_relations_v2_fk_related_model_id_index',
     );
     table.index(
       ['fk_target_view_id'],
-      'nc_col_relations_v2_fk_target_view_id_index',
+      'atm_col_relations_v2_fk_target_view_id_index',
     );
-    table.index(['id'], 'nc_col_relations_v2_oldpk_idx');
+    table.index(['id'], 'atm_col_relations_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COL_ROLLUP, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_col_rollup_v2_base_id_fk_workspace_id_index',
+      'atm_col_rollup_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_column_id'], 'nc_col_rollup_v2_fk_column_id_index');
+    table.index(['fk_column_id'], 'atm_col_rollup_v2_fk_column_id_index');
     table.index(
       ['fk_relation_column_id'],
-      'nc_col_rollup_v2_fk_relation_column_id_index',
+      'atm_col_rollup_v2_fk_relation_column_id_index',
     );
     table.index(
       ['fk_rollup_column_id'],
-      'nc_col_rollup_v2_fk_rollup_column_id_index',
+      'atm_col_rollup_v2_fk_rollup_column_id_index',
     );
-    table.index(['id'], 'nc_col_rollup_v2_oldpk_idx');
+    table.index(['id'], 'atm_col_rollup_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COL_SELECT_OPTIONS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_col_select_options_v2_base_id_fk_workspace_id_index',
+      'atm_col_select_options_v2_base_id_fk_workspace_id_index',
     );
     table.index(
       ['fk_column_id'],
-      'nc_col_select_options_v2_fk_column_id_index',
+      'atm_col_select_options_v2_fk_column_id_index',
     );
-    table.index(['id'], 'nc_col_select_options_v2_oldpk_idx');
+    table.index(['id'], 'atm_col_select_options_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COLUMNS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_columns_v2_base_id_fk_workspace_id_index',
+      'atm_columns_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_model_id'], 'nc_columns_v2_fk_model_id_index');
-    table.index(['id'], 'nc_columns_v2_oldpk_idx');
+    table.index(['fk_model_id'], 'atm_columns_v2_fk_model_id_index');
+    table.index(['id'], 'atm_columns_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COMMENTS_REACTIONS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_comment_reactions_base_id_fk_workspace_id_index',
+      'atm_comment_reactions_base_id_fk_workspace_id_index',
     );
-    table.index(['comment_id'], 'nc_comment_reactions_comment_id_index');
-    table.index(['row_id'], 'nc_comment_reactions_row_id_index');
-    table.index(['id'], 'nc_comment_reactions_oldpk_idx');
+    table.index(['comment_id'], 'atm_comment_reactions_comment_id_index');
+    table.index(['row_id'], 'atm_comment_reactions_row_id_index');
+    table.index(['id'], 'atm_comment_reactions_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.COMMENTS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_comments_base_id_fk_workspace_id_index',
+      'atm_comments_base_id_fk_workspace_id_index',
     );
     table.index(
       ['row_id', 'fk_model_id'],
-      'nc_comments_row_id_fk_model_id_index',
+      'atm_comments_row_id_fk_model_id_index',
     );
-    table.index(['id'], 'nc_comments_oldpk_idx');
+    table.index(['id'], 'atm_comments_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.CUSTOM_URLS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_custom_urls_context');
-    table.index(['custom_path'], 'nc_custom_urls_v2_custom_path_index');
-    table.index(['fk_dashboard_id'], 'nc_custom_urls_v2_fk_dashboard_id_index');
-    table.index(['id'], 'nc_custom_urls_v2_oldpk_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_custom_urls_context');
+    table.index(['custom_path'], 'atm_custom_urls_v2_custom_path_index');
+    table.index(['fk_dashboard_id'], 'atm_custom_urls_v2_fk_dashboard_id_index');
+    table.index(['id'], 'atm_custom_urls_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.DATA_REFLECTION, (table) => {
     table.index(
       ['fk_workspace_id'],
-      'nc_data_reflection_fk_workspace_id_index',
+      'atm_data_reflection_fk_workspace_id_index',
     );
   });
 
   await knex.schema.alterTable(MetaTable.MODEL_ROLE_VISIBILITY, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_disabled_models_for_role_v2_base_id_fk_workspace_id_index',
+      'atm_disabled_models_for_role_v2_base_id_fk_workspace_id_index',
     );
     table.index(
       ['fk_view_id'],
-      'nc_disabled_models_for_role_v2_fk_view_id_index',
+      'atm_disabled_models_for_role_v2_fk_view_id_index',
     );
-    table.index(['id'], 'nc_disabled_models_for_role_v2_oldpk_idx');
+    table.index(['id'], 'atm_disabled_models_for_role_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.EXTENSIONS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_extensions_base_id_fk_workspace_id_index',
+      'atm_extensions_base_id_fk_workspace_id_index',
     );
-    table.index(['id'], 'nc_extensions_oldpk_idx');
+    table.index(['id'], 'atm_extensions_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.FILTER_EXP, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_filter_exp_v2_base_id_fk_workspace_id_index',
+      'atm_filter_exp_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_column_id'], 'nc_filter_exp_v2_fk_column_id_index');
-    table.index(['fk_hook_id'], 'nc_filter_exp_v2_fk_hook_id_index');
-    table.index(['fk_link_col_id'], 'nc_filter_exp_v2_fk_link_col_id_index');
+    table.index(['fk_column_id'], 'atm_filter_exp_v2_fk_column_id_index');
+    table.index(['fk_hook_id'], 'atm_filter_exp_v2_fk_hook_id_index');
+    table.index(['fk_link_col_id'], 'atm_filter_exp_v2_fk_link_col_id_index');
     table.index(
       ['fk_parent_column_id'],
-      'nc_filter_exp_v2_fk_parent_column_id_index',
+      'atm_filter_exp_v2_fk_parent_column_id_index',
     );
-    table.index(['fk_parent_id'], 'nc_filter_exp_v2_fk_parent_id_index');
-    table.index(['fk_value_col_id'], 'nc_filter_exp_v2_fk_value_col_id_index');
-    table.index(['fk_view_id'], 'nc_filter_exp_v2_fk_view_id_index');
-    table.index(['fk_widget_id'], 'nc_filter_exp_v2_fk_widget_id_index');
-    table.index(['id'], 'nc_filter_exp_v2_oldpk_idx');
+    table.index(['fk_parent_id'], 'atm_filter_exp_v2_fk_parent_id_index');
+    table.index(['fk_value_col_id'], 'atm_filter_exp_v2_fk_value_col_id_index');
+    table.index(['fk_view_id'], 'atm_filter_exp_v2_fk_view_id_index');
+    table.index(['fk_widget_id'], 'atm_filter_exp_v2_fk_widget_id_index');
+    table.index(['id'], 'atm_filter_exp_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.FOLLOWER, (table) => {
-    table.index(['fk_follower_id'], 'nc_follower_fk_follower_id_index');
-    table.index(['fk_user_id'], 'nc_follower_fk_user_id_index');
+    table.index(['fk_follower_id'], 'atm_follower_fk_follower_id_index');
+    table.index(['fk_user_id'], 'atm_follower_fk_user_id_index');
   });
 
   await knex.schema.alterTable(MetaTable.FORM_VIEW_COLUMNS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_form_view_columns_v2_base_id_fk_workspace_id_index',
+      'atm_form_view_columns_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_column_id'], 'nc_form_view_columns_v2_fk_column_id_index');
+    table.index(['fk_column_id'], 'atm_form_view_columns_v2_fk_column_id_index');
     table.index(
       ['fk_view_id', 'fk_column_id'],
-      'nc_form_view_columns_v2_fk_view_id_fk_column_id_index',
+      'atm_form_view_columns_v2_fk_view_id_fk_column_id_index',
     );
-    table.index(['fk_view_id'], 'nc_form_view_columns_v2_fk_view_id_index');
-    table.index(['id'], 'nc_form_view_columns_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_form_view_columns_v2_fk_view_id_index');
+    table.index(['id'], 'atm_form_view_columns_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.FORM_VIEW, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_form_view_v2_base_id_fk_workspace_id_index',
+      'atm_form_view_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_view_id'], 'nc_form_view_v2_fk_view_id_index');
-    table.index(['fk_view_id'], 'nc_form_view_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_form_view_v2_fk_view_id_index');
+    table.index(['fk_view_id'], 'atm_form_view_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.FILE_REFERENCES, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_fr_context');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_fr_context');
   });
 
   await knex.schema.alterTable(MetaTable.GALLERY_VIEW_COLUMNS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_gallery_view_columns_v2_base_id_fk_workspace_id_index',
+      'atm_gallery_view_columns_v2_base_id_fk_workspace_id_index',
     );
     table.index(
       ['fk_column_id'],
-      'nc_gallery_view_columns_v2_fk_column_id_index',
+      'atm_gallery_view_columns_v2_fk_column_id_index',
     );
     table.index(
       ['fk_view_id', 'fk_column_id'],
-      'nc_gallery_view_columns_v2_fk_view_id_fk_column_id_index',
+      'atm_gallery_view_columns_v2_fk_view_id_fk_column_id_index',
     );
-    table.index(['fk_view_id'], 'nc_gallery_view_columns_v2_fk_view_id_index');
-    table.index(['id'], 'nc_gallery_view_columns_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_gallery_view_columns_v2_fk_view_id_index');
+    table.index(['id'], 'atm_gallery_view_columns_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.GALLERY_VIEW, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_gallery_view_v2_base_id_fk_workspace_id_index',
+      'atm_gallery_view_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_view_id'], 'nc_gallery_view_v2_fk_view_id_index');
-    table.index(['fk_view_id'], 'nc_gallery_view_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_gallery_view_v2_fk_view_id_index');
+    table.index(['fk_view_id'], 'atm_gallery_view_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.GRID_VIEW_COLUMNS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_grid_view_columns_v2_base_id_fk_workspace_id_index',
+      'atm_grid_view_columns_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_column_id'], 'nc_grid_view_columns_v2_fk_column_id_index');
+    table.index(['fk_column_id'], 'atm_grid_view_columns_v2_fk_column_id_index');
     table.index(
       ['fk_view_id', 'fk_column_id'],
-      'nc_grid_view_columns_v2_fk_view_id_fk_column_id_index',
+      'atm_grid_view_columns_v2_fk_view_id_fk_column_id_index',
     );
-    table.index(['fk_view_id'], 'nc_grid_view_columns_v2_fk_view_id_index');
-    table.index(['id'], 'nc_grid_view_columns_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_grid_view_columns_v2_fk_view_id_index');
+    table.index(['id'], 'atm_grid_view_columns_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.GRID_VIEW, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_grid_view_v2_base_id_fk_workspace_id_index',
+      'atm_grid_view_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_view_id'], 'nc_grid_view_v2_fk_view_id_index');
-    table.index(['fk_view_id'], 'nc_grid_view_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_grid_view_v2_fk_view_id_index');
+    table.index(['fk_view_id'], 'atm_grid_view_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.HOOK_LOGS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_hook_logs_v2_base_id_fk_workspace_id_index',
+      'atm_hook_logs_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['id'], 'nc_hook_logs_v2_oldpk_idx');
+    table.index(['id'], 'atm_hook_logs_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.HOOKS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_hooks_v2_base_id_fk_workspace_id_index',
+      'atm_hooks_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_model_id'], 'nc_hooks_v2_fk_model_id_index');
-    table.index(['id'], 'nc_hooks_v2_oldpk_idx');
+    table.index(['fk_model_id'], 'atm_hooks_v2_fk_model_id_index');
+    table.index(['id'], 'atm_hooks_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.INTEGRATIONS_STORE, (table) => {
     table.index(
       ['fk_integration_id'],
-      'nc_integrations_store_v2_fk_integration_id_index',
+      'atm_integrations_store_v2_fk_integration_id_index',
     );
   });
 
   await knex.schema.alterTable(MetaTable.INTEGRATIONS, (table) => {
-    table.index(['created_by'], 'nc_integrations_v2_created_by_index');
+    table.index(['created_by'], 'atm_integrations_v2_created_by_index');
     table.index(
       ['fk_workspace_id'],
-      'nc_integrations_v2_fk_workspace_id_index',
+      'atm_integrations_v2_fk_workspace_id_index',
     );
-    table.index(['type'], 'nc_integrations_v2_type_index');
+    table.index(['type'], 'atm_integrations_v2_type_index');
   });
 
   await knex.schema.alterTable(MetaTable.JOBS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_jobs_context');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_jobs_context');
   });
 
   await knex.schema.alterTable(MetaTable.KANBAN_VIEW_COLUMNS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_kanban_view_columns_v2_base_id_fk_workspace_id_index',
+      'atm_kanban_view_columns_v2_base_id_fk_workspace_id_index',
     );
     table.index(
       ['fk_column_id'],
-      'nc_kanban_view_columns_v2_fk_column_id_index',
+      'atm_kanban_view_columns_v2_fk_column_id_index',
     );
     table.index(
       ['fk_view_id', 'fk_column_id'],
-      'nc_kanban_view_columns_v2_fk_view_id_fk_column_id_index',
+      'atm_kanban_view_columns_v2_fk_view_id_fk_column_id_index',
     );
-    table.index(['fk_view_id'], 'nc_kanban_view_columns_v2_fk_view_id_index');
-    table.index(['id'], 'nc_kanban_view_columns_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_kanban_view_columns_v2_fk_view_id_index');
+    table.index(['id'], 'atm_kanban_view_columns_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.KANBAN_VIEW, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_kanban_view_v2_base_id_fk_workspace_id_index',
+      'atm_kanban_view_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_grp_col_id'], 'nc_kanban_view_v2_fk_grp_col_id_index');
-    table.index(['fk_view_id'], 'nc_kanban_view_v2_fk_view_id_index');
-    table.index(['fk_view_id'], 'nc_kanban_view_v2_oldpk_idx');
+    table.index(['fk_grp_col_id'], 'atm_kanban_view_v2_fk_grp_col_id_index');
+    table.index(['fk_view_id'], 'atm_kanban_view_v2_fk_view_id_index');
+    table.index(['fk_view_id'], 'atm_kanban_view_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.MAP_VIEW_COLUMNS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_map_view_columns_v2_base_id_fk_workspace_id_index',
+      'atm_map_view_columns_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_column_id'], 'nc_map_view_columns_v2_fk_column_id_index');
+    table.index(['fk_column_id'], 'atm_map_view_columns_v2_fk_column_id_index');
     table.index(
       ['fk_view_id', 'fk_column_id'],
-      'nc_map_view_columns_v2_fk_view_id_fk_column_id_index',
+      'atm_map_view_columns_v2_fk_view_id_fk_column_id_index',
     );
-    table.index(['fk_view_id'], 'nc_map_view_columns_v2_fk_view_id_index');
-    table.index(['id'], 'nc_map_view_columns_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_map_view_columns_v2_fk_view_id_index');
+    table.index(['id'], 'atm_map_view_columns_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.MAP_VIEW, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_map_view_v2_base_id_fk_workspace_id_index',
+      'atm_map_view_v2_base_id_fk_workspace_id_index',
     );
     table.index(
       ['fk_geo_data_col_id'],
-      'nc_map_view_v2_fk_geo_data_col_id_index',
+      'atm_map_view_v2_fk_geo_data_col_id_index',
     );
-    table.index(['fk_view_id'], 'nc_map_view_v2_fk_view_id_index');
-    table.index(['fk_view_id'], 'nc_map_view_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_map_view_v2_fk_view_id_index');
+    table.index(['fk_view_id'], 'atm_map_view_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.MCP_TOKENS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_mc_tokens_context');
-    table.index(['id'], 'nc_mcp_tokens_oldpk_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_mc_tokens_context');
+    table.index(['id'], 'atm_mcp_tokens_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.MODEL_STAT, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_model_stats_v2_base_id_fk_workspace_id_index',
+      'atm_model_stats_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_workspace_id'], 'nc_model_stats_v2_fk_workspace_id_index');
+    table.index(['fk_workspace_id'], 'atm_model_stats_v2_fk_workspace_id_index');
     table.index(
       ['fk_workspace_id', 'fk_model_id'],
-      'nc_model_stats_v2_oldpk_idx',
+      'atm_model_stats_v2_oldpk_idx',
     );
   });
 
   await knex.schema.alterTable(MetaTable.MODELS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_models_v2_base_id_fk_workspace_id_index',
+      'atm_models_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['source_id'], 'nc_models_v2_source_id_index');
-    table.index(['id'], 'nc_models_v2_oldpk_idx');
-    table.index(['uuid'], 'nc_models_v2_uuid_index');
-    table.index(['type'], 'nc_models_v2_type_index');
+    table.index(['source_id'], 'atm_models_v2_source_id_index');
+    table.index(['id'], 'atm_models_v2_oldpk_idx');
+    table.index(['uuid'], 'atm_models_v2_uuid_index');
+    table.index(['type'], 'atm_models_v2_type_index');
   });
 
   await knex.schema.alterTable(MetaTable.ORG_DOMAIN, (table) => {
-    table.index(['domain'], 'nc_org_domain_domain_index');
-    table.index(['fk_org_id'], 'nc_org_domain_fk_org_id_index');
-    table.index(['fk_user_id'], 'nc_org_domain_fk_user_id_index');
+    table.index(['domain'], 'atm_org_domain_domain_index');
+    table.index(['fk_org_id'], 'atm_org_domain_fk_org_id_index');
+    table.index(['fk_user_id'], 'atm_org_domain_fk_user_id_index');
     table.index(['fk_workspace_id'], 'org_domain_fk_workspace_id_idx');
   });
 
   await knex.schema.alterTable(MetaTable.ORG, (table) => {
-    table.index(['fk_user_id'], 'nc_org_fk_user_id_index');
-    table.index(['slug'], 'nc_org_slug_index');
+    table.index(['fk_user_id'], 'atm_org_fk_user_id_index');
+    table.index(['slug'], 'atm_org_slug_index');
   });
 
   await knex.schema.alterTable(MetaTableOldV2.SCRIPTS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_scripts_context');
-    table.index(['id'], 'nc_scripts_oldpk_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_scripts_context');
+    table.index(['id'], 'atm_scripts_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.SNAPSHOT, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_snapshot_context');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_snapshot_context');
   });
 
   await knex.schema.alterTable(MetaTable.SORT, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_sort_v2_base_id_fk_workspace_id_index',
+      'atm_sort_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_column_id'], 'nc_sort_v2_fk_column_id_index');
-    table.index(['fk_view_id'], 'nc_sort_v2_fk_view_id_index');
-    table.index(['id'], 'nc_sort_v2_oldpk_idx');
+    table.index(['fk_column_id'], 'atm_sort_v2_fk_column_id_index');
+    table.index(['fk_view_id'], 'atm_sort_v2_fk_view_id_index');
+    table.index(['id'], 'atm_sort_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.SOURCES, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_source_v2_base_id_fk_workspace_id_index',
+      'atm_source_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_integration_id'], 'nc_source_v2_fk_integration_id_index');
+    table.index(['fk_integration_id'], 'atm_source_v2_fk_integration_id_index');
     table.index(
       ['fk_sql_executor_id'],
-      'nc_source_v2_fk_sql_executor_id_index',
+      'atm_source_v2_fk_sql_executor_id_index',
     );
-    table.index(['id'], 'nc_sources_v2_oldpk_idx');
+    table.index(['id'], 'atm_sources_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.SSO_CLIENT, (table) => {
-    table.index(['domain_name'], 'nc_sso_client_domain_name_index');
-    table.index(['fk_user_id'], 'nc_sso_client_fk_user_id_index');
-    table.index(['fk_org_id'], 'nc_sso_client_fk_workspace_id_index');
+    table.index(['domain_name'], 'atm_sso_client_domain_name_index');
+    table.index(['fk_user_id'], 'atm_sso_client_fk_user_id_index');
+    table.index(['fk_org_id'], 'atm_sso_client_fk_workspace_id_index');
     table.index(['fk_workspace_id'], 'sso_client_fk_workspace_id_idx');
   });
 
   await knex.schema.alterTable(MetaTable.STORE, (table) => {
-    table.index(['key'], 'nc_store_key_index');
+    table.index(['key'], 'atm_store_key_index');
   });
 
-  await knex.schema.alterTable(MetaTable.SYNC_CONFIGS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_sync_configs_context');
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_CONFIGS, (table) => {
+    table.index(['base_id', 'fk_workspace_id'], 'atm_sync_configs_context');
     table.index(
       ['fk_model_id', 'fk_integration_id'],
       'sync_configs_integration_model',
     );
-    table.index('fk_parent_sync_config_id', 'nc_sync_configs_parent_idx');
-    table.index(['id'], 'nc_sync_configs_oldpk_idx');
+    table.index('fk_parent_sync_config_id', 'atm_sync_configs_parent_idx');
+    table.index(['id'], 'atm_sync_configs_oldpk_idx');
   });
 
-  await knex.schema.alterTable(MetaTable.SYNC_LOGS, (table) => {
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_LOGS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_sync_logs_v2_base_id_fk_workspace_id_index',
+      'atm_sync_logs_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['id'], 'nc_sync_logs_v2_oldpk_idx');
+    table.index(['id'], 'atm_sync_logs_v2_oldpk_idx');
   });
 
-  await knex.schema.alterTable(MetaTable.SYNC_MAPPINGS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_sync_mappings_context');
-    table.index('fk_sync_config_id', 'nc_sync_mappings_sync_config_idx');
-    table.index(['id'], 'nc_sync_mappings_oldpk_idx');
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_MAPPINGS, (table) => {
+    table.index(['base_id', 'fk_workspace_id'], 'atm_sync_mappings_context');
+    table.index('fk_sync_config_id', 'atm_sync_mappings_sync_config_idx');
+    table.index(['id'], 'atm_sync_mappings_oldpk_idx');
   });
 
-  await knex.schema.alterTable(MetaTable.SYNC_SOURCE, (table) => {
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_SOURCE, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_sync_source_v2_base_id_fk_workspace_id_index',
+      'atm_sync_source_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['source_id'], 'nc_sync_source_v2_source_id_index');
-    table.index(['id'], 'nc_sync_source_v2_oldpk_idx');
+    table.index(['source_id'], 'atm_sync_source_v2_source_id_index');
+    table.index(['id'], 'atm_sync_source_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(
@@ -2054,7 +2054,7 @@ const up = async (knex: Knex) => {
     (table) => {
       table.index(
         ['base_id', 'fk_workspace_id'],
-        'nc_user_comment_notifications_preference_base_id_fk_workspace_i',
+        'atm_user_comment_notifications_preference_base_id_fk_workspace_i',
       );
       table.index(
         ['user_id', 'row_id', 'fk_model_id'],
@@ -2064,25 +2064,25 @@ const up = async (knex: Knex) => {
   );
 
   await knex.schema.alterTable(MetaTable.USER_REFRESH_TOKENS, (table) => {
-    table.index(['expires_at'], 'nc_user_refresh_tokens_expires_at_index');
-    table.index(['fk_user_id'], 'nc_user_refresh_tokens_fk_user_id_index');
-    table.index(['token'], 'nc_user_refresh_tokens_token_index');
+    table.index(['expires_at'], 'atm_user_refresh_tokens_expires_at_index');
+    table.index(['fk_user_id'], 'atm_user_refresh_tokens_fk_user_id_index');
+    table.index(['token'], 'atm_user_refresh_tokens_token_index');
   });
 
   await knex.schema.alterTable(MetaTable.USERS, (table) => {
-    table.index(['email'], 'nc_users_v2_email_index');
+    table.index(['email'], 'atm_users_v2_email_index');
   });
 
   await knex.schema.alterTable(MetaTable.VIEWS, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_views_v2_base_id_fk_workspace_id_index',
+      'atm_views_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['created_by'], 'nc_views_v2_created_by_index');
-    table.index(['fk_custom_url_id'], 'nc_views_v2_fk_custom_url_id_index');
-    table.index(['fk_model_id'], 'nc_views_v2_fk_model_id_index');
-    table.index(['owned_by'], 'nc_views_v2_owned_by_index');
-    table.index(['id'], 'nc_views_v2_oldpk_idx');
+    table.index(['created_by'], 'atm_views_v2_created_by_index');
+    table.index(['fk_custom_url_id'], 'atm_views_v2_fk_custom_url_id_index');
+    table.index(['fk_model_id'], 'atm_views_v2_fk_model_id_index');
+    table.index(['owned_by'], 'atm_views_v2_owned_by_index');
+    table.index(['id'], 'atm_views_v2_oldpk_idx');
   });
 
   await knex.schema.alterTable(MetaTable.NOTIFICATION, (table) => {
@@ -2109,10 +2109,10 @@ const down = async (knex: Knex) => {
   await knex.schema.dropTableIfExists(
     MetaTable.USER_COMMENTS_NOTIFICATIONS_PREFERENCE,
   );
-  await knex.schema.dropTableIfExists(MetaTable.SYNC_SOURCE);
-  await knex.schema.dropTableIfExists(MetaTable.SYNC_LOGS);
-  await knex.schema.dropTableIfExists(MetaTable.SYNC_MAPPINGS);
-  await knex.schema.dropTableIfExists(MetaTable.SYNC_CONFIGS);
+  await knex.schema.dropTableIfExists(MetaTable.SYATMOSPHERE_SOURCE);
+  await knex.schema.dropTableIfExists(MetaTable.SYATMOSPHERE_LOGS);
+  await knex.schema.dropTableIfExists(MetaTable.SYATMOSPHERE_MAPPINGS);
+  await knex.schema.dropTableIfExists(MetaTable.SYATMOSPHERE_CONFIGS);
   await knex.schema.dropTableIfExists(MetaTable.STORE);
   await knex.schema.dropTableIfExists(MetaTable.SSO_CLIENT_DOMAIN);
   await knex.schema.dropTableIfExists(MetaTable.SSO_CLIENT);

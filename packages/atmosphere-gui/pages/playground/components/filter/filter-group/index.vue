@@ -104,62 +104,62 @@ onMounted(async () => {
 
 <template>
   <MockInjection>
-    <div class="bg-nc-bg-gray-light pb-8 overflow-y-auto">
+    <div class="bg-atm-bg-gray-light pb-8 overflow-y-auto">
       <a-card>
         <h4>Simple</h4>
 
         <div class="flex gap-4">
           <div class="flex flex-col gap-2">
-            <div><NcSwitch v-model:checked="options1.disabled">disabled</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.isLogicalOpChangeAllowed">isLogicalOpChangeAllowed</NcSwitch><br /></div>
-            <div><NcSwitch v-model:checked="options1.isLockedView">isLockedView</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.showNullAndEmptyInFilter">showNullAndEmptyInFilter</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.isFullWidth">isFullWidth</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.webHook">webHook</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.link">link</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.isForm">isForm</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.isPublic">isPublic</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.queryFilter">queryFilter</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.disableAddNewFilter">disableAddNewFilter</NcSwitch></div>
+            <div><AtSwitch v-model:checked="options1.disabled">disabled</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.isLogicalOpChangeAllowed">isLogicalOpChangeAllowed</AtSwitch><br /></div>
+            <div><AtSwitch v-model:checked="options1.isLockedView">isLockedView</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.showNullAndEmptyInFilter">showNullAndEmptyInFilter</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.isFullWidth">isFullWidth</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.webHook">webHook</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.link">link</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.isForm">isForm</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.isPublic">isPublic</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.queryFilter">queryFilter</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.disableAddNewFilter">disableAddNewFilter</AtSwitch></div>
           </div>
           <div class="flex-col gap-2">
             <div class="flex-col space-y-2">
-              <div>dbClientType: <NcSelect v-model:value="options1.dbClientType"></NcSelect></div>
+              <div>dbClientType: <AtSelect v-model:value="options1.dbClientType"></AtSelect></div>
               <div>
                 actionBtnType:
-                <NcSelect v-model:value="options1.actionBtnType">
+                <AtSelect v-model:value="options1.actionBtnType">
                   <a-select-option value="text"> Text </a-select-option>
                   <a-select-option value="secondary"> Secondary </a-select-option>
-                </NcSelect>
+                </AtSelect>
               </div>
 
               <div>
-                Index: <input v-model="options1.index" type="number" class="text-xs p-1 border-nc-border-gray-medium" /><br />
+                Index: <input v-model="options1.index" type="number" class="text-xs p-1 border-atm-border-gray-medium" /><br />
               </div>
               <div>
                 NestedLevel:
-                <input v-model="options1.nestedLevel" type="number" class="text-xs p-1 border-nc-border-gray-medium" /><br />
+                <input v-model="options1.nestedLevel" type="number" class="text-xs p-1 border-atm-border-gray-medium" /><br />
               </div>
               <div>
                 filterPerViewLimit:
                 <input
                   v-model="options1.filterPerViewLimit"
                   type="number"
-                  class="text-xs p-1 border-nc-border-gray-medium"
+                  class="text-xs p-1 border-atm-border-gray-medium"
                 /><br />
               </div>
               <div>
                 filtersCount:
-                <input v-model="options1.filtersCount" type="number" class="text-xs p-1 border-nc-border-gray-medium" /><br />
+                <input v-model="options1.filtersCount" type="number" class="text-xs p-1 border-atm-border-gray-medium" /><br />
               </div>
             </div>
           </div>
           <div class="flex-col flex-grow space-y-2">
             Last event:
-            <div class="min-w-[300px] max-h-[200px] overflow-wrap bg-nc-bg-gray-dark overflow-y-scroll">
+            <div class="min-w-[300px] max-h-[200px] overflow-wrap bg-atm-bg-gray-dark overflow-y-scroll">
               <pre>{{ JSON.stringify(lastRowChangeEvent1, null, 2) }}</pre>
             </div>
-            <div class="min-w-[300px] max-h-[200px] overflow-wrap bg-nc-bg-gray-dark overflow-y-scroll">
+            <div class="min-w-[300px] max-h-[200px] overflow-wrap bg-atm-bg-gray-dark overflow-y-scroll">
               <pre>{{ JSON.stringify(lastChangeEvent1, null, 2) }}</pre>
             </div>
           </div>

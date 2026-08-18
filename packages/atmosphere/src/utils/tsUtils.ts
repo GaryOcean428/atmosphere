@@ -3,7 +3,7 @@ import {
   ncIsNullOrUndefined,
   ncIsObject,
   ncIsString,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 
 /**
  * Split array into chunks
@@ -109,4 +109,4 @@ export function parseJson<T = Record<string, unknown>>(
   }
 }
 
-export { pickFields, pickFieldsIfPresent } from 'nocodb-sdk';
+export { pickFields, pickFieldsIfPresent } from 'atmosphere-sdk';

@@ -54,7 +54,7 @@ module.exports = {
   },
   externals: [
     nodeExternals({
-      allowlist: ['nocodb-sdk'],
+      allowlist: ['atmosphere-sdk'],
     }),
   ],
   resolve: {
@@ -63,7 +63,7 @@ module.exports = {
       configFile: resolve('tsconfig.json'),
     },
     alias: {
-      '@noco-local-integrations': resolve(__dirname, '../noco-integrations/packages'),
+      '@atmosphere-local-integrations': resolve(__dirname, '../atmosphere-integrations/packages'),
     },
   },
   mode: 'production',

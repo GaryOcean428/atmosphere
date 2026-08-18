@@ -1,11 +1,11 @@
-import { ModelTypes } from 'nocodb-sdk';
+import { ModelTypes } from 'atmosphere-sdk';
 import { CacheGetType, CacheScope, MetaTable } from './globals';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 
-export default async function (force = false, ncMeta = Noco.ncMeta) {
+export default async function (force = false, ncMeta = Atmosphere.ncMeta) {
   try {
-    let res = await NocoCache.get(
+    let res = await AtmosphereCache.get(
       'root',
       CacheScope.INSTANCE_META,
       CacheGetType.TYPE_OBJECT,
@@ -36,7 +36,7 @@ export default async function (force = false, ncMeta = Noco.ncMeta) {
       const created = await ncMeta
         .knex(MetaTable.STORE)
         .select('created_at')
-        .where('key', 'nc_server_id')
+        .where('key', 'atm_server_id')
         .first()
         .then((c) => c.created_at);
       const files = await ncMeta
@@ -58,19 +58,19 @@ export default async function (force = false, ncMeta = Noco.ncMeta) {
         .first()
         .then((c) => c.count);
 
-      const nc_db_type = Noco.getConfig()?.meta?.db?.client;
+      const atm_db_type = Atmosphere.getConfig()?.meta?.db?.client;
 
       res = {
         projectsMeta,
         projectsExt,
         impacted,
-        nc_db_type,
+        atm_db_type,
         created,
         files,
         tables,
         views,
       };
-      await NocoCache.set('root', CacheScope.INSTANCE_META, res);
+      await AtmosphereCache.set('root', CacheScope.INSTANCE_META, res);
     }
     return res;
   } catch {

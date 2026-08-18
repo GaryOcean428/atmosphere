@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ViewLockType, type ViewType, ViewTypes } from 'nocodb-sdk'
+import { ViewLockType, type ViewType, ViewTypes } from 'atmosphere-sdk'
 import { useViewsStore } from '~/store/views'
 
 const { isViewToolbar } = defineProps<{
@@ -66,7 +66,7 @@ watch(showShareModal, (val) => {
     v-model:visible="showShareModal"
     class="!top-[1%]"
     :class="{ active: showShareModal }"
-    wrap-class-name="nc-modal-share-collaborate"
+    wrap-class-name="atm-modal-share-collaborate"
     :closable="false"
     :mask-closable="formStatus !== 'base-collaborateSaving'"
     :ok-button-props="{ hidden: true } as any"
@@ -82,12 +82,12 @@ watch(showShareModal, (val) => {
         <div class="flex flex-row items-center gap-x-2 px-4 pt-3 pb-3 select-none">
           <component
             :is="viewIcons[view?.type]?.icon"
-            class="nc-view-icon group-hover"
+            class="atm-view-icon group-hover"
             :style="{ color: viewIcons[view?.type]?.color }"
           />
           <div>{{ $t('activity.shareView') }}</div>
           <div
-            class="max-w-79/100 ml-2 px-2 py-0.5 rounded-md bg-nc-bg-gray-light capitalize text-ellipsis overflow-hidden"
+            class="max-w-79/100 ml-2 px-2 py-0.5 rounded-md bg-atm-bg-gray-light capitalize text-ellipsis overflow-hidden"
             :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap' }"
           >
             <span>
@@ -97,7 +97,7 @@ watch(showShareModal, (val) => {
         </div>
         <div
           v-if="isLocked || isViewSharingRestricted"
-          class="inline-flex items-center gap-x-2 mx-3 px-1 text-nc-content-gray-muted bg-nc-bg-gray-light rounded-md"
+          class="inline-flex items-center gap-x-2 mx-3 px-1 text-atm-content-gray-muted bg-atm-bg-gray-light rounded-md"
         >
           <div v-if="isViewSharingRestricted" class="flex items-center justify-center h-4 w-4">
             <GeneralIcon icon="ncBasePrivate" class="flex-none w-3.5 h-3.5" />
@@ -128,10 +128,10 @@ watch(showShareModal, (val) => {
 
       <div v-if="activeDocument" class="share-doc">
         <div class="flex flex-row items-center gap-x-2 px-4 pt-3 pb-3 select-none">
-          <GeneralIcon icon="ncFileText" class="w-4 text-nc-content-gray-subtle !text-[16px]" />
+          <GeneralIcon icon="ncFileText" class="w-4 text-atm-content-gray-subtle !text-[16px]" />
           <div>{{ $t('activity.shareDoc') }}</div>
           <div
-            class="max-w-79/100 ml-2 px-2 py-0.5 rounded-md bg-nc-bg-gray-light capitalize text-ellipsis overflow-hidden"
+            class="max-w-79/100 ml-2 px-2 py-0.5 rounded-md bg-atm-bg-gray-light capitalize text-ellipsis overflow-hidden"
             :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap' }"
           >
             <span>{{ activeDocument.title || $t('general.untitled') }}</span>
@@ -142,14 +142,14 @@ watch(showShareModal, (val) => {
 
       <div v-if="activeDashboard" class="share-dashboard">
         <div class="flex flex-row items-center gap-x-2 px-4 pt-3 pb-3 select-none">
-          <LazyGeneralEmojiPicker class="nc-dashboard-icon" size="small" :emoji="activeDashboard?.meta?.icon" readonly>
+          <LazyGeneralEmojiPicker class="atm-dashboard-icon" size="small" :emoji="activeDashboard?.meta?.icon" readonly>
             <template #default>
-              <GeneralIcon icon="dashboards" class="w-4 text-nc-content-gray-subtle !text-[16px]" />
+              <GeneralIcon icon="dashboards" class="w-4 text-atm-content-gray-subtle !text-[16px]" />
             </template>
           </LazyGeneralEmojiPicker>
           <div>{{ $t('activity.shareDashboard') }}</div>
           <div
-            class="max-w-79/100 ml-2 px-2 py-0.5 rounded-md bg-nc-bg-gray-light capitalize text-ellipsis overflow-hidden"
+            class="max-w-79/100 ml-2 px-2 py-0.5 rounded-md bg-atm-bg-gray-light capitalize text-ellipsis overflow-hidden"
             :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap' }"
           >
             <span>
@@ -171,12 +171,12 @@ watch(showShareModal, (val) => {
               managed_app_master: base.managed_app_master,
               managed_app_id: base.managed_app_id,
             }"
-            class="nc-view-icon group-hover"
+            class="atm-view-icon group-hover"
           />
 
           <div>{{ $t('activity.shareBase.label') }}</div>
           <div
-            class="max-w-79/100 ml-2 px-2 py-0.5 rounded-md bg-nc-bg-gray-light capitalize text-ellipsis overflow-hidden"
+            class="max-w-79/100 ml-2 px-2 py-0.5 rounded-md bg-atm-bg-gray-light capitalize text-ellipsis overflow-hidden"
             :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap' }"
           >
             {{ base.title }}
@@ -184,7 +184,7 @@ watch(showShareModal, (val) => {
         </div>
         <div
           v-if="isPrivateBase"
-          class="inline-flex items-center gap-x-2 mx-3 px-1 text-nc-content-gray-subtle2 bg-nc-bg-gray-light rounded-md"
+          class="inline-flex items-center gap-x-2 mx-3 px-1 text-atm-content-gray-subtle2 bg-atm-bg-gray-light rounded-md"
         >
           <div class="flex items-center justify-center h-4 w-5">
             <GeneralIcon icon="ncBasePrivate" class="flex-none w-3.5 h-3.5" />
@@ -194,18 +194,18 @@ watch(showShareModal, (val) => {
         <LazyDlgShareAndCollaborateShareBase />
       </div>
       <div class="flex flex-row justify-end mx-3 mt-1 mb-2 pt-4 gap-x-2">
-        <NcButton type="secondary" data-testid="docs-cancel-btn" @click="showShareModal = false">
+        <AtButton type="secondary" data-testid="docs-cancel-btn" @click="showShareModal = false">
           {{ $t('general.close') }}
-        </NcButton>
+        </AtButton>
         <DlgShareAndCollaborateShareInterfaceActions v-if="isEeUI" />
-        <NcButton
+        <AtButton
           v-if="isUIAllowed('baseShare') && !route.params.interfaceId"
           data-testid="docs-share-manage-access"
           type="secondary"
           :loading="isOpeningManageAccess"
           @click="openManageAccess"
           >{{ $t('activity.manageProjectAccess') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
   </a-modal>
@@ -217,12 +217,12 @@ watch(showShareModal, (val) => {
 }
 
 .ant-collapse {
-  @apply !bg-nc-bg-default !border-0;
+  @apply !bg-atm-bg-default !border-0;
 }
 </style>
 
 <style lang="scss">
-.nc-modal-share-collaborate {
+.atm-modal-share-collaborate {
   .ant-modal {
     top: 10vh !important;
   }
@@ -232,11 +232,11 @@ watch(showShareModal, (val) => {
   .share-doc,
   .share-interface,
   .share-base {
-    @apply !border-1 border-nc-border-gray-medium mx-3 rounded-lg mt-3 px-1 py-1;
+    @apply !border-1 border-atm-border-gray-medium mx-3 rounded-lg mt-3 px-1 py-1;
   }
 
   .ant-collapse-item {
-    @apply !border-1 border-nc-border-gray-light;
+    @apply !border-1 border-atm-border-gray-light;
   }
 
   .ant-collapse-content {
@@ -252,7 +252,7 @@ watch(showShareModal, (val) => {
   }
 
   .ant-select-selector {
-    @apply !rounded-md !border-nc-border-gray-medium !border-1;
+    @apply !rounded-md !border-atm-border-gray-medium !border-1;
   }
 
   .ant-form-item {
@@ -268,7 +268,7 @@ watch(showShareModal, (val) => {
   }
 
   .ant-select-selector {
-    @apply !bg-nc-bg-default;
+    @apply !bg-atm-bg-default;
   }
 }
 </style>

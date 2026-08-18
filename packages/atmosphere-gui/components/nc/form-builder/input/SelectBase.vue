@@ -4,7 +4,7 @@ const props = withDefaults(
     value: string
     disabled?: boolean
     dropdownMatchSelectWidth?: boolean
-    filterOption?: (base: NcProject) => boolean
+    filterOption?: (base: AtProject) => boolean
   }>(),
   {
     dropdownMatchSelectWidth: true,
@@ -31,7 +31,7 @@ const baseOptions = computed(() => {
 </script>
 
 <template>
-  <NcSelect
+  <AtSelect
     v-model:value="vModel"
     :disabled="disabled"
     :show-search="baseOptions.length > 4"
@@ -53,19 +53,19 @@ const baseOptions = computed(() => {
             size="small"
           />
         </div>
-        <NcTooltip class="flex-1 truncate min-w-0" show-on-truncate-only>
+        <AtTooltip class="flex-1 truncate min-w-0" show-on-truncate-only>
           <template #title>
             {{ option.label }}
           </template>
           {{ option.label }}
-        </NcTooltip>
+        </AtTooltip>
         <GeneralIcon
           v-if="vModel === option.value"
-          id="nc-selected-item-icon"
+          id="atm-selected-item-icon"
           icon="check"
-          class="text-nc-content-brand w-4 h-4"
+          class="text-atm-content-brand w-4 h-4"
         />
       </div>
     </a-select-option>
-  </NcSelect>
+  </AtSelect>
 </template>

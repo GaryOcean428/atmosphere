@@ -1,4 +1,4 @@
-import type { Api } from 'nocodb-sdk'
+import type { Api } from 'atmosphere-sdk'
 
 const apiPlugin = (nuxtApp) => {
   const { api } = useApi()

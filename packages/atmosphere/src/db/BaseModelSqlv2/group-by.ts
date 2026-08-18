@@ -1,5 +1,5 @@
-import { extractFilterFromXwhere, FormulaDataTypes, UITypes } from 'nocodb-sdk';
-import type { ClientType } from 'nocodb-sdk';
+import { extractFilterFromXwhere, FormulaDataTypes, UITypes } from 'atmosphere-sdk';
+import type { ClientType } from 'atmosphere-sdk';
 import type { Logger } from '@nestjs/common';
 import type { Knex } from 'knex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
@@ -14,7 +14,7 @@ import { sanitize } from '~/helpers/sqlSanitize';
 import conditionV2 from '~/db/conditionV2';
 import generateLookupSelectQuery from '~/db/generateLookupSelectQuery';
 import genRollupSelectv2 from '~/db/genRollupSelectv2';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import {
   applyPaginate,
   extractSortsObject,
@@ -23,7 +23,7 @@ import {
 } from '~/helpers/dbHelpers';
 import { BaseUser, Column, Filter, Sort } from '~/models';
 import { getAliasGenerator } from '~/utils';
-import { NC_DISABLE_GROUP_BY_LIMIT } from '~/utils/nc-config';
+import { ATMOSPHERE_DISABLE_GROUP_BY_LIMIT } from '~/utils/atm-config';
 
 // PR review fix #2: Shared helper for UUID group-by to avoid 4x code duplication.
 // Casts UUID to text on PostgreSQL (avoids type mismatch), passes through on other DBs.
@@ -146,11 +146,11 @@ export const groupBy = (baseModel: IBaseModelSqlV2, logger: Logger) => {
         (c) => c.column_name === col || c.title === col,
       );
       if (!column) {
-        NcError.get(baseModel.context).fieldNotFound(col);
+        AtError.get(baseModel.context).fieldNotFound(col);
       }
 
       if (column.colOptions?.error) {
-        NcError.get(baseModel.context).badRequest(
+        AtError.get(baseModel.context).badRequest(
           `Cannot group by column '${column.title}': ${column.colOptions.error}`,
         );
       }
@@ -174,12 +174,12 @@ export const groupBy = (baseModel: IBaseModelSqlV2, logger: Logger) => {
       let columnQuery;
       switch (column.uidt) {
         case UITypes.Attachment:
-          NcError.get(baseModel.context).badRequest(
+          AtError.get(baseModel.context).badRequest(
             'Group by using attachment column is not supported',
           );
           break;
         case UITypes.Button:
-          NcError.get(baseModel.context).badRequest(
+          AtError.get(baseModel.context).badRequest(
             'Group by using Button column is not supported',
           );
           break;
@@ -582,7 +582,7 @@ export const groupBy = (baseModel: IBaseModelSqlV2, logger: Logger) => {
         .from({ g: 'grouped' });
     }
 
-    if (!NC_DISABLE_GROUP_BY_LIMIT) {
+    if (!ATMOSPHERE_DISABLE_GROUP_BY_LIMIT) {
       applyPaginate(outerQb, rest);
     }
 
@@ -698,7 +698,7 @@ export const groupBy = (baseModel: IBaseModelSqlV2, logger: Logger) => {
       // trailing `(SELECT NULL)` no-op key: it's constant for every row so it
       // never reorders results, it just satisfies the syntax rule. Mirrors
       // ensurePaginationOrderBy in the EE single-query client.
-      if (!NC_DISABLE_GROUP_BY_LIMIT) {
+      if (!ATMOSPHERE_DISABLE_GROUP_BY_LIMIT) {
         outerQb.orderByRaw('(SELECT NULL)');
       }
       // T-SQL forbids wrapping a CTE in a derived table — skip the outer
@@ -756,7 +756,7 @@ export const groupBy = (baseModel: IBaseModelSqlV2, logger: Logger) => {
           (c) => c.column_name === col || c.title === col,
         );
         if (!column) {
-          NcError.get(baseModel.context).fieldNotFound(col);
+          AtError.get(baseModel.context).fieldNotFound(col);
         }
 
         // if qrCode or Barcode replace it with value column nd keep the alias
@@ -770,12 +770,12 @@ export const groupBy = (baseModel: IBaseModelSqlV2, logger: Logger) => {
 
         switch (column.uidt) {
           case UITypes.Attachment:
-            NcError.get(baseModel.context).badRequest(
+            AtError.get(baseModel.context).badRequest(
               'Group by using attachment column is not supported',
             );
             break;
           case UITypes.Button: {
-            NcError.get(baseModel.context).badRequest(
+            AtError.get(baseModel.context).badRequest(
               'Group by using Button column is not supported',
             );
             break;

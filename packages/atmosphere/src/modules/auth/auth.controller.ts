@@ -12,7 +12,7 @@ import {
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
-import { extractRolesObj } from 'nocodb-sdk';
+import { extractRolesObj } from 'atmosphere-sdk';
 import * as ejs from 'ejs';
 import { PresignedUrl } from 'src/models';
 import type { AppConfig } from '~/interface/config';
@@ -22,12 +22,12 @@ import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { clearAuthCookie, setAuthCookie } from '~/services/users/helpers';
 
 import { GlobalGuard } from '~/guards/global/global.guard';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { ncSiteUrl } from '~/utils/envs';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { PublicApiLimiterGuard } from '~/guards/public-api-limiter.guard';
-import { NcRequest } from '~/interface/config';
+import { AtRequest } from '~/interface/config';
 
 @Controller()
 export class AuthController {
@@ -45,9 +45,9 @@ export class AuthController {
   ])
   @UseGuards(PublicApiLimiterGuard)
   @HttpCode(200)
-  async signup(@Req() req: NcRequest, @Res() res: Response): Promise<any> {
+  async signup(@Req() req: AtRequest, @Res() res: Response): Promise<any> {
     if (this.config.get('auth', { infer: true }).disableEmailAuth) {
-      NcError.forbidden('Email authentication is disabled');
+      AtError.forbidden('Email authentication is disabled');
     }
     const result = await this.usersService.signup({
       body: req.body,
@@ -67,7 +67,7 @@ export class AuthController {
   @UseGuards(PublicApiLimiterGuard)
   @HttpCode(200)
   async refreshToken(
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Res() res: Response,
   ): Promise<any> {
     const result = await this.usersService.refreshToken({
@@ -87,9 +87,9 @@ export class AuthController {
   ])
   @UseGuards(PublicApiLimiterGuard, AuthGuard('local'))
   @HttpCode(200)
-  async signin(@Req() req: NcRequest, @Res() res: Response) {
+  async signin(@Req() req: AtRequest, @Res() res: Response) {
     if (this.config.get('auth', { infer: true }).disableEmailAuth) {
-      NcError.forbidden('Email authentication is disabled');
+      AtError.forbidden('Email authentication is disabled');
     }
     await this.setRefreshToken({ req, res });
     const result = await this.usersService.login(req.user, req);
@@ -100,9 +100,9 @@ export class AuthController {
   @UseGuards(GlobalGuard)
   @Post(['/api/v1/auth/user/signout', '/api/v2/auth/user/signout'])
   @HttpCode(200)
-  async signOut(@Req() req: NcRequest, @Res() res: Response): Promise<any> {
+  async signOut(@Req() req: AtRequest, @Res() res: Response): Promise<any> {
     if (!(req as any).isAuthenticated?.()) {
-      NcError.forbidden('Not allowed');
+      AtError.forbidden('Not allowed');
     }
     clearAuthCookie(res);
     res.json(
@@ -116,7 +116,7 @@ export class AuthController {
   @Post(`/auth/google/genTokenByCode`)
   @HttpCode(200)
   @UseGuards(PublicApiLimiterGuard, AuthGuard('google'))
-  async googleSignin(@Req() req: NcRequest, @Res() res: Response) {
+  async googleSignin(@Req() req: AtRequest, @Res() res: Response) {
     await this.setRefreshToken({ req, res });
     const result = await this.usersService.login(req.user, req);
     setAuthCookie(res, result.token);
@@ -136,17 +136,17 @@ export class AuthController {
     '/api/v2/auth/user/me',
   ])
   @UseGuards(MetaApiLimiterGuard, GlobalGuard)
-  async me(@Req() req: NcRequest) {
+  async me(@Req() req: AtRequest) {
     // GlobalGuard silently falls back to a guest user when JWT validation
-    // fails. If the caller supplied a JWT (xc-auth header or nc_token cookie)
+    // fails. If the caller supplied a JWT (xc-auth header or atm_token cookie)
     // and we ended up as guest, the token is invalid/expired — surface 401
     // so the client can refresh or sign out instead of consuming a guest
     // identity that flips the UI's session state mid-flight.
     if (
-      (req.headers?.['xc-auth'] || req.cookies?.nc_token) &&
+      (req.headers?.['xc-auth'] || req.cookies?.atm_token) &&
       (req.user as any)?.roles?.guest
     ) {
-      NcError.unauthorized('Token Expired. Please login again.');
+      AtError.unauthorized('Token Expired. Please login again.');
     }
 
     const user = {
@@ -172,9 +172,9 @@ export class AuthController {
     scope: 'org',
   })
   @HttpCode(200)
-  async passwordChange(@Req() req: NcRequest, @Res() res): Promise<any> {
+  async passwordChange(@Req() req: AtRequest, @Res() res): Promise<any> {
     if (!(req as any).isAuthenticated?.()) {
-      NcError.forbidden('Not allowed');
+      AtError.forbidden('Not allowed');
     }
 
     await this.usersService.passwordChange({
@@ -200,7 +200,7 @@ export class AuthController {
   ])
   @UseGuards(PublicApiLimiterGuard)
   @HttpCode(200)
-  async passwordForgot(@Req() req: NcRequest): Promise<any> {
+  async passwordForgot(@Req() req: AtRequest): Promise<any> {
     await this.usersService.passwordForgot({
       siteUrl: (req as any).ncSiteUrl,
       body: req.body,
@@ -234,7 +234,7 @@ export class AuthController {
   @UseGuards(PublicApiLimiterGuard)
   @HttpCode(200)
   async passwordReset(
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('tokenId') tokenId: string,
     @Body() body: any,
   ): Promise<any> {
@@ -255,7 +255,7 @@ export class AuthController {
   @UseGuards(PublicApiLimiterGuard)
   @HttpCode(200)
   async emailVerification(
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('tokenId') tokenId: string,
   ): Promise<any> {
     await this.usersService.emailVerification({
@@ -273,7 +273,7 @@ export class AuthController {
   ])
   @UseGuards(PublicApiLimiterGuard)
   async renderPasswordReset(
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('tokenId') tokenId: string,
   ): Promise<any> {
@@ -285,8 +285,8 @@ export class AuthController {
             ncPublicUrl: ncSiteUrl || '',
             token: tokenId,
             // Honor the configured site URL so the in-page API calls resolve
-            // correctly when NocoDB is served from a sub-path / behind a
-            // reverse proxy (e.g. https://example.com/noco). Falling back to
+            // correctly when Atmosphere is served from a sub-path / behind a
+            // reverse proxy (e.g. https://example.com/atmosphere). Falling back to
             // `/` keeps root deployments working. Used as `<%= baseUrl %>api/..`
             // so it must carry a single trailing slash.
             baseUrl: ncSiteUrl ? `${ncSiteUrl.replace(/\/+$/, '')}/` : `/`,

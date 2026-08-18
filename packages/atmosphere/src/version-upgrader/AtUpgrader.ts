@@ -14,21 +14,21 @@ import ncXcdbCreatedAndUpdatedSystemFieldsUpgrader from './upgraders/0111005_ncX
 import ncDatasourceDecrypt from './upgraders/0225002_ncDatasourceDecrypt';
 import ncDuplicatePluginMerge from './upgraders/0258003_ncDuplicatePluginMerge';
 import type { MetaService } from '~/meta/meta.service';
-import type { NcConfig } from '~/interface/config';
+import type { AtConfig } from '~/interface/config';
 import { T } from '~/utils';
 import { MetaTable, RootScopes } from '~/utils/globals';
 
-const log = debug('nc:version-upgrader');
+const log = debug('atm:version-upgrader');
 
-export interface NcUpgraderCtx {
+export interface AtUpgraderCtx {
   ncMeta: MetaService;
 }
 
-export default class NcUpgrader {
-  protected static STORE_KEY = 'NC_CONFIG_MAIN';
+export default class AtUpgrader {
+  protected static STORE_KEY = 'ATMOSPHERE_CONFIG_MAIN';
 
   // Todo: transaction
-  public static async upgrade(ctx: NcUpgraderCtx): Promise<any> {
+  public static async upgrade(ctx: AtUpgraderCtx): Promise<any> {
     this.log(`upgrade :`);
     let oldVersion;
 
@@ -51,13 +51,13 @@ export default class NcUpgrader {
         },
       );
 
-      const NC_VERSIONS: any[] = this.getUpgraderList();
+      const ATMOSPHERE_VERSIONS: any[] = this.getUpgraderList();
 
       if (config) {
-        const configObj: NcConfig = JSON.parse(config.value);
-        if (configObj.version !== process.env.NC_VERSION) {
+        const configObj: AtConfig = JSON.parse(config.value);
+        if (configObj.version !== process.env.ATMOSPHERE_VERSION) {
           oldVersion = configObj.version;
-          for (const version of NC_VERSIONS) {
+          for (const version of ATMOSPHERE_VERSIONS) {
             // compare current version and old version
             if (version.name > configObj.version) {
               this.log(
@@ -77,28 +77,28 @@ export default class NcUpgrader {
                   value: JSON.stringify({ version: config.version }),
                 },
                 {
-                  key: NcUpgrader.STORE_KEY,
+                  key: AtUpgrader.STORE_KEY,
                 },
               );
 
               // todo: backup data
             }
-            if (version.name === process.env.NC_VERSION) {
+            if (version.name === process.env.ATMOSPHERE_VERSION) {
               break;
             }
           }
-          config.version = process.env.NC_VERSION;
+          config.version = process.env.ATMOSPHERE_VERSION;
         }
       } else {
         this.log(`upgrade : Inserting config to meta database`);
         const configObj: any = {};
-        configObj.version = process.env.NC_VERSION;
+        configObj.version = process.env.ATMOSPHERE_VERSION;
         await ctx.ncMeta.metaInsert2(
           RootScopes.ROOT,
           RootScopes.ROOT,
           MetaTable.STORE,
           {
-            key: NcUpgrader.STORE_KEY,
+            key: AtUpgrader.STORE_KEY,
             value: JSON.stringify(configObj),
           },
           true,
@@ -108,18 +108,18 @@ export default class NcUpgrader {
       T.emit('evt', {
         evt_type: 'appMigration:upgraded',
         from: oldVersion,
-        to: process.env.NC_VERSION,
+        to: process.env.ATMOSPHERE_VERSION,
       });
     } catch (e) {
       await ctx.ncMeta.rollback(e);
       T.emit('evt', {
         evt_type: 'appMigration:failed',
         from: oldVersion,
-        to: process.env.NC_VERSION,
+        to: process.env.ATMOSPHERE_VERSION,
         msg: e.message,
         err: e?.stack?.split?.('\n').slice(0, 2).join('\n'),
       });
-      console.log(getUpgradeErrorLog(e, oldVersion, process.env.NC_VERSION));
+      console.log(getUpgradeErrorLog(e, oldVersion, process.env.ATMOSPHERE_VERSION));
       throw e;
     }
   }
@@ -130,7 +130,7 @@ export default class NcUpgrader {
 
   protected static getUpgraderList(): {
     name: string;
-    handler: (ctx?: NcUpgraderCtx) => Promise<void> | void;
+    handler: (ctx?: AtUpgraderCtx) => Promise<void> | void;
   }[] {
     return [
       { name: '0100002', handler: ncFilterUpgrader },
@@ -160,7 +160,7 @@ ${e.stack}
 
 
 Please raise an issue in our github by using following link : 
-https://github.com/nocodb/nocodb/issues/new?labels=Type%3A%20Bug&template=bug_report.md
+https://github.com/GaryOcean428/atmosphere/issues/new?labels=Type%3A%20Bug&template=bug_report.md
 
 Or contact us in our Discord community by following link :
 https://discord.gg/c7GEYrvFtT ( message @o1lab, @pranavxc or @wingkwong )`,

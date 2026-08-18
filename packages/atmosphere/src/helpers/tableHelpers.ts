@@ -2,15 +2,15 @@ import {
   type ColumnType,
   extractRolesObj,
   getProjectRole,
-  type NcContext,
+  type AtContext,
   type OperationSource,
   PermissionEntity,
   PermissionGrantedType,
   PermissionKey,
   PermissionRole,
   ProjectRoles,
-} from 'nocodb-sdk';
-import type { UITypes, UserType } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import type { UITypes, UserType } from 'atmosphere-sdk';
 import type { User } from '~/models';
 import { Permission } from '~/models';
 import {
@@ -21,11 +21,11 @@ import {
   getUniqueColumnAliasName,
   getUniqueColumnName,
 } from '~/helpers/getUniqueName';
-import { DriverClient } from '~/utils/nc-config';
+import { DriverClient } from '~/utils/atm-config';
 import { isEE } from '~/utils';
 
 export const repopulateCreateTableSystemColumns = (
-  _context: NcContext,
+  _context: AtContext,
   {
     columns,
     clientType,
@@ -149,7 +149,7 @@ export function hasViewersAndUpTableVisibility(
  * Base owners always have access
  */
 export async function hasTableVisibilityAccess(
-  context: NcContext,
+  context: AtContext,
   tableId: string,
   user: User | UserType,
   permissions?: Permission[],
@@ -193,7 +193,7 @@ export async function hasTableVisibilityAccess(
   }
 
   // Get the user's project role (base role)
-  // Use getProjectRole from nocodb-sdk which extracts the role from user object
+  // Use getProjectRole from atmosphere-sdk which extracts the role from user object
   // It looks at user.base_roles and returns the most powerful role
   const userRole = getProjectRole(user) as ProjectRoles;
 

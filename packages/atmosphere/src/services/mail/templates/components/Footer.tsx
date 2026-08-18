@@ -8,8 +8,8 @@ import {
   Text,
 } from '@react-email/components';
 import * as React from 'react';
-import type { WhiteLabelConfig } from 'nocodb-sdk';
-import { NC_EMAIL_ASSETS_BASE_URL } from '~/constants';
+import type { WhiteLabelConfig } from 'atmosphere-sdk';
+import { ATMOSPHERE_EMAIL_ASSETS_BASE_URL } from '~/constants';
 
 export interface FooterProps {
   branding?: WhiteLabelConfig | null;
@@ -17,7 +17,7 @@ export interface FooterProps {
 
 export const Footer = ({ branding }: FooterProps = {}) => {
   // Whitelabelled emails get a stripped-down footer — no social/legal links
-  // pointing at nocodb.com, just the customer's own brand line.
+  // pointing at atmosphere.dev, just the customer's own brand line.
   if (branding?.enabled) {
     const productName = branding.productName || '';
     const footerText = branding.email?.footerText || null;
@@ -53,46 +53,46 @@ export const Footer = ({ branding }: FooterProps = {}) => {
   return (
     <Container className="px-3">
       <Text className="text-gray-500 m-auto text-sm max-w-[400px] text-center">
-        NocoDB is your solution for all your no-code needs. Now on cloud, we
+        Atmosphere is your solution for all your no-code needs. Now on cloud, we
         help organisations maintain critical data with our solutions.
       </Text>
       <Section className="mt-12">
         <Row className="max-w-[100px] m-auto">
           <Column>
-            <Link href="https://github.com/nocodb" target="_blank">
+            <Link href="https://github.com/GaryOcean428" target="_blank">
               <Img
                 alt="Github"
-                src={`${NC_EMAIL_ASSETS_BASE_URL}/social/github.png`}
+                src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/social/github.png`}
                 height={32}
                 width={32}
               />
             </Link>
           </Column>
           <Column>
-            <Link href="https://twitter.com/nocodb" target="_blank">
+            <Link href="https://twitter.com/atmosphere" target="_blank">
               <Img
                 alt="X"
-                src={`${NC_EMAIL_ASSETS_BASE_URL}/social/x.png`}
+                src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/social/x.png`}
                 height={32}
                 width={32}
               />
             </Link>
           </Column>
           <Column>
-            <Link href="https://www.youtube.com/@nocodb" target="_blank">
+            <Link href="https://www.youtube.com/@atmosphere" target="_blank">
               <Img
                 alt="Youtube"
                 height={32}
                 width={32}
-                src={`${NC_EMAIL_ASSETS_BASE_URL}/social/youtube.png`}
+                src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/social/youtube.png`}
               />
             </Link>
           </Column>
           <Column>
-            <Link href="http://discord.nocodb.com/" target="_blank">
+            <Link href="http://discord.atmosphere.dev/" target="_blank">
               <Img
                 alt="Discord"
-                src={`${NC_EMAIL_ASSETS_BASE_URL}/social/discord.png`}
+                src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/social/discord.png`}
                 height={32}
                 width={32}
               />
@@ -100,12 +100,12 @@ export const Footer = ({ branding }: FooterProps = {}) => {
           </Column>
           <Column>
             <Link
-              href="https://www.linkedin.com/company/nocodb"
+              href="https://www.linkedin.com/company/atmosphere"
               target="_blank"
             >
               <Img
                 alt="Linkedin"
-                src={`${NC_EMAIL_ASSETS_BASE_URL}/social/linkedin.png`}
+                src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/social/linkedin.png`}
                 height={32}
                 width={32}
               />
@@ -116,28 +116,28 @@ export const Footer = ({ branding }: FooterProps = {}) => {
       <Section className="mt-6">
         <Row className="max-w-[380px] m-auto">
           <Column className="border pr-1 border-y-0 border-l-0 border-r-1 border-solid border-gray-200">
-            <Link href="https://app.nocodb.com/" target="_blank">
+            <Link href="https://app.atmosphere.dev/" target="_blank">
               <Text className="text-center underline py-0 !my-0 text-gray-500 text-[13px]">
                 Getting Started
               </Text>
             </Link>
           </Column>
           <Column className="border border-y-0 px-1 border-l-0 border-r-1 border-solid border-gray-200">
-            <Link href="https://nocodb.com/blog" target="_blank">
+            <Link href="https://atmosphere.dev/blog" target="_blank">
               <Text className="text-center underline py-0 !my-0 text-gray-500 text-[13px]">
                 Blog
               </Text>
             </Link>
           </Column>
           <Column className="border px-1 border-y-0 border-l-0 border-r-1 border-solid border-gray-200">
-            <Link href="https://nocodb.com/docs/" target="_blank">
+            <Link href="https://atmosphere.dev/docs/" target="_blank">
               <Text className="text-center underline py-0 !my-0 text-gray-500 text-[13px]">
                 Docs
               </Text>
             </Link>
           </Column>
           <Column className="pl-1">
-            <Link href="https://nocodb.com/terms-of-service" target="_blank">
+            <Link href="https://atmosphere.dev/terms-of-service" target="_blank">
               <Text className="text-center underline py-0 !my-0 text-gray-500 text-[13px]">
                 Terms of Service
               </Text>
@@ -148,7 +148,7 @@ export const Footer = ({ branding }: FooterProps = {}) => {
         <Row className="mt-6">
           <Column>
             <Text className="text-center !my-0 text-gray-500 text-[13px]">
-              {new Date().getFullYear()} — © NocoDB Inc.
+              {new Date().getFullYear()} — © Atmosphere Inc.
             </Text>
           </Column>
         </Row>

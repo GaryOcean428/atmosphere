@@ -9,21 +9,21 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { APIContext, ViewColumnReqType } from 'nocodb-sdk';
+import { APIContext, ViewColumnReqType } from 'atmosphere-sdk';
 import type {
   CalendarColumnReqType,
   FormColumnReqType,
   GalleryColumnReqType,
   GridColumnReqType,
   KanbanColumnReqType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { ViewColumnsService } from '~/services/view-columns.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -36,7 +36,7 @@ export class ViewColumnsController {
   ])
   @Acl('columnList')
   async columnList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
   ) {
     return new PagedResponseImpl(
@@ -53,10 +53,10 @@ export class ViewColumnsController {
   @HttpCode(200)
   @Acl('columnAdd')
   async columnAdd(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Body() body: ViewColumnReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const viewColumn = await this.viewColumnsService.columnAdd(context, {
       viewId,
@@ -72,11 +72,11 @@ export class ViewColumnsController {
   ])
   @Acl('viewColumnUpdate')
   async viewColumnUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Param('columnId') columnId: string,
     @Body() body: ViewColumnReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const result = await this.viewColumnsService.columnUpdate(context, {
       viewId,
@@ -90,7 +90,7 @@ export class ViewColumnsController {
   @Patch('/api/v3/meta/views/:viewId/columns')
   @Acl('columnUpdate')
   async viewColumnUpdateV3(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Req() req,
     @Param('viewId') viewId: string,
     @Body()
@@ -124,7 +124,7 @@ export class ViewColumnsController {
   @Get('/api/v3/meta/views/:viewId/columns')
   @Acl('columnList')
   async viewColumnListV3(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Req() req,
     @Param('viewId') viewId: string,
   ) {

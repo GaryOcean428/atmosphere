@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, UITypes } from 'nocodb-sdk'
+import { ColumnHelper, UITypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -25,7 +25,7 @@ const { isSystem } = useColumnCreateStoreOrThrow()
         <a-radio-group
           v-if="vModel.meta"
           v-model:value="vModel.meta.is12hrFormat"
-          class="nc-time-form-layout"
+          class="atm-time-form-layout"
           :disabled="isSystem"
         >
           <a-radio :value="true">{{ $t('labels.hours12') }}</a-radio>
@@ -37,16 +37,16 @@ const { isSystem } = useColumnCreateStoreOrThrow()
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-time-form-layout) {
-  @apply flex justify-between gap-2 children:(flex-1 m-0 px-2 py-1 border-1 border-nc-border-gray-dark rounded-lg);
+:deep(.atm-time-form-layout) {
+  @apply flex justify-between gap-2 children:(flex-1 m-0 px-2 py-1 border-1 border-atm-border-gray-dark rounded-lg);
 
   .ant-radio-wrapper {
     @apply transition-all;
     span {
-      @apply text-nc-content-gray;
+      @apply text-atm-content-gray;
     }
     &:not(.ant-radio-wrapper-disabled).ant-radio-wrapper-checked {
-      @apply border-nc-border-brand;
+      @apply border-atm-border-brand;
     }
   }
 }

@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { UITypes, TARGET_TABLES } from 'nocodb-sdk';
+import { UITypes, TARGET_TABLES } from 'atmosphere-sdk';
 import { IntegrationWrapper } from '../integration';
 import { AuthIntegration } from '../auth';
 
@@ -428,7 +428,7 @@ export interface CustomSystemFieldsPayload {
 
 /**
  * Abstract data types supported by sync columns.
- * Used for type mapping between external systems and NocoDB.
+ * Used for type mapping between external systems and Atmosphere.
  */
 export type SyncAbstractType =
   | 'string'    // Text values
@@ -442,13 +442,13 @@ export type SyncAbstractType =
 
 /**
  * Defines a single column in a sync table.
- * Specifies how data from the external source maps to a NocoDB column.
+ * Specifies how data from the external source maps to a Atmosphere column.
  */
 export interface SyncColumnDefinition {
   /** Display name for the column */
   title: string;
 
-  /** NocoDB UI type for the column (e.g., SingleLineText, Number, DateTime) */
+  /** Atmosphere UI type for the column (e.g., SingleLineText, Number, DateTime) */
   uidt: UITypes;
 
   /**
@@ -595,7 +595,7 @@ export interface SyncRecord {
    */
   RemoteRaw: SyncValue<string>;
 
-  /** Timestamp when this record was last synced to NocoDB */
+  /** Timestamp when this record was last synced to Atmosphere */
   RemoteSyncedAt?: SyncValue<string>;
 
   /** Namespace identifier for multi-tenant scenarios */

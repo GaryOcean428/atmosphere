@@ -1,4 +1,4 @@
-import { NcContext } from '~/lib/ncTypes';
+import { AtContext } from '~/lib/ncTypes';
 
 export const getContextFromObject = (obj: {
   base_id: string;
@@ -7,7 +7,7 @@ export const getContextFromObject = (obj: {
   if (!obj) {
     return undefined;
   }
-  return <NcContext>{
+  return <AtContext>{
     base_id: obj.base_id,
     workspace_id: obj.fk_workspace_id,
   };

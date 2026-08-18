@@ -19,23 +19,23 @@ const isEditMode = computed(() => pageMode.value === IntegrationsPageMode.EDIT)
 
 <template>
   <div v-if="activeIntegration" class="h-full">
-    <div class="p-4 w-full flex items-center justify-between gap-3 border-b-1 border-nc-border-gray-medium">
+    <div class="p-4 w-full flex items-center justify-between gap-3 border-b-1 border-atm-border-gray-medium">
       <div class="flex-1 flex items-center gap-3">
-        <NcButton
+        <AtButton
           v-if="!isEditMode && !isFromIntegrationPage && showBackButton"
           type="text"
           size="small"
           @click="pageMode = IntegrationsPageMode.LIST"
         >
           <GeneralIcon icon="arrowLeft" />
-        </NcButton>
+        </AtButton>
         <div
           v-if="activeIntegrationItem?.sub_type"
-          class="bg-nc-bg-gray-light rounded-md h-8 w-8 flex-none flex items-center justify-center children:flex-none"
+          class="bg-atm-bg-gray-light rounded-md h-8 w-8 flex-none flex items-center justify-center children:flex-none"
         >
           <GeneralIntegrationIcon
             :type="activeIntegrationItem.sub_type"
-            :size="activeIntegrationItem.sub_type === SyncDataType.NOCODB ? 'lg' : 'sm'"
+            :size="activeIntegrationItem.sub_type === SyncDataType.ATMOSPHERE ? 'lg' : 'sm'"
           />
         </div>
         <div class="flex-1 text-base font-weight-700">{{ activeIntegration?.title }}</div>
@@ -43,23 +43,23 @@ const isEditMode = computed(() => pageMode.value === IntegrationsPageMode.EDIT)
       <div class="flex items-center gap-3">
         <slot name="headerRightExtra"> </slot>
         <slot name="headerRight"> </slot>
-        <NcButton size="small" type="text" @click="vOpen = false">
-          <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-        </NcButton>
+        <AtButton size="small" type="text" @click="vOpen = false">
+          <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+        </AtButton>
       </div>
     </div>
 
     <div class="h-[calc(100%_-_66px)] flex">
-      <div class="nc-edit-or-add-integration-left-panel nc-scrollbar-thin relative">
+      <div class="atm-edit-or-add-integration-left-panel atm-scrollbar-thin relative">
         <div class="w-full gap-4 max-w-[784px]">
-          <slot name="leftPanel" class="nc-edit-or-add-integration relative flex flex-col justify-center gap-2 w-full"> </slot>
+          <slot name="leftPanel" class="atm-edit-or-add-integration relative flex flex-col justify-center gap-2 w-full"> </slot>
         </div>
       </div>
 
-      <slot name="rightPanel" class="nc-edit-or-add-integration-right-panel">
-        <div v-if="!$slots.rightPanel" class="nc-edit-or-add-integration-right-panel">
+      <slot name="rightPanel" class="atm-edit-or-add-integration-right-panel">
+        <div v-if="!$slots.rightPanel" class="atm-edit-or-add-integration-right-panel">
           <WorkspaceIntegrationsSupportedDocs />
-          <NcDivider />
+          <AtDivider />
         </div>
       </slot>
     </div>
@@ -67,7 +67,7 @@ const isEditMode = computed(() => pageMode.value === IntegrationsPageMode.EDIT)
 </template>
 
 <style lang="scss" scoped>
-.nc-form-item {
+.atm-form-item {
   padding-right: 24px;
   margin-bottom: 12px;
 }

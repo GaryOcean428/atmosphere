@@ -1,9 +1,9 @@
-import { ncIsNull, ncIsNumber, ncIsUndefined } from 'nocodb-sdk';
-import { NcError } from 'src/helpers/catchError';
+import { ncIsNull, ncIsNumber, ncIsUndefined } from 'atmosphere-sdk';
+import { AtError } from 'src/helpers/catchError';
 import { ncIsStringHasValue } from '../../utils/handlerUtils';
 import type { Knex } from 'knex';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type {
   FilterOptions,
   FilterVerificationResult,
@@ -84,14 +84,14 @@ export class DecimalGeneralHandler extends GenericFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
     if (!ncIsUndefined(params.value) && !ncIsNull(params.value)) {
       const numberValue = Number(params.value);
       if (!ncIsNumber(numberValue)) {
-        NcError.invalidValueForField({
+        AtError.invalidValueForField({
           value: params.value,
           column: params.column.title,
           type: params.column.uidt,

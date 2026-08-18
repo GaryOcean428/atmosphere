@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import * as Sentry from '@sentry/nestjs';
-import { INTERNAL_BATCH_MAX_SIZE, NcContext, NcRequest } from 'nocodb-sdk';
+import { INTERNAL_BATCH_MAX_SIZE, AtContext, AtRequest } from 'atmosphere-sdk';
 import { markPersonalViewIfNeeded } from 'src/middlewares/extract-ids/extract-ids.helpers';
 import type { InternalApiModule } from '~/utils/internal-type';
 import { OPERATION_SCOPES } from '~/controllers/internal/operationScopes';
@@ -20,7 +20,7 @@ import { INTERNAL_API_MODULE_PROVIDER_KEY } from '~/utils/internal-type';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { mapExceptionToResponse } from '~/filters/global-exception/exception-mapper';
 import { AclMiddleware } from '~/middlewares/extract-ids/extract-ids.middleware';
 import {
@@ -95,7 +95,7 @@ export class InternalController {
 
   protected async checkAcl(
     operation: keyof typeof OPERATION_SCOPES,
-    req: NcRequest,
+    req: AtRequest,
     scope?: string,
   ) {
     // For filter/sort/view operations, extract view to check personal view ownership
@@ -215,11 +215,11 @@ export class InternalController {
 
   @Get(['/api/v2/internal/:workspaceId/:baseId'])
   protected async internalAPI(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('workspaceId') workspaceId: string,
     @Param('baseId') baseId: string,
     @Query('operation') operation: keyof typeof OPERATION_SCOPES,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ): InternalGETResponseType {
     await this.checkAcl(operation, req, OPERATION_SCOPES[operation]);
     const module = this.internalApiModuleMap['GET'][operation];
@@ -232,22 +232,22 @@ export class InternalController {
         req,
       });
     }
-    return NcError.notFound('Operation');
+    return AtError.notFound('Operation');
   }
 
   @Post(['/api/v2/internal/:workspaceId/:baseId'])
   // return 200 instead 201 for more generic operations
   @HttpCode(200)
   protected async internalAPIPost(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('workspaceId') workspaceId: string,
     @Param('baseId') baseId: string,
     @Query('operation') operation: keyof typeof OPERATION_SCOPES,
     @Body() payload: any,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ): InternalPOSTResponseType {
     // batch carries sub-ops with their own scopes — base, workspace,
-    // org — including workspace-scope routes with the `baseId='nc'`
+    // org — including workspace-scope routes with the `baseId='atm'`
     // sentinel. Enforcing a single fixed scope on the envelope itself
     // rejects valid mixed-scope batches, so short-circuit before
     // checkAcl. The per-sub-op `checkAcl` call inside handleBatch is the
@@ -276,7 +276,7 @@ export class InternalController {
         payload,
       });
     }
-    return NcError.notFound('Operation');
+    return AtError.notFound('Operation');
   }
 
   /**
@@ -294,34 +294,34 @@ export class InternalController {
    * tracks pending promises.
    */
   protected async handleBatch(
-    context: NcContext,
+    context: AtContext,
     workspaceId: string,
     baseId: string,
     payload: { operations?: BatchSubOp[] } | null | undefined,
-    req: NcRequest,
+    req: AtRequest,
   ): Promise<{ results: BatchSubOpResult[] }> {
     const ops = payload?.operations;
     if (!Array.isArray(ops) || ops.length === 0) {
-      NcError.badRequest('`operations` array is required');
+      AtError.badRequest('`operations` array is required');
     }
     if (ops.length > INTERNAL_BATCH_MAX_SIZE) {
-      NcError.badRequest(
+      AtError.badRequest(
         `Batch too large (max ${INTERNAL_BATCH_MAX_SIZE} operations)`,
       );
     }
 
     for (const op of ops) {
       if (!op || typeof op !== 'object') {
-        NcError.badRequest('Each batched operation must be an object');
+        AtError.badRequest('Each batched operation must be an object');
       }
       if (!op.operation || typeof op.operation !== 'string') {
-        NcError.badRequest(
+        AtError.badRequest(
           'Each batched operation must have a string `operation`',
         );
       }
       // No recursive batching — keeps the failure model and timing simple.
       if (op.operation === 'batch') {
-        NcError.badRequest('Nested batch is not allowed');
+        AtError.badRequest('Nested batch is not allowed');
       }
     }
 
@@ -378,7 +378,7 @@ export class InternalController {
    * the non-batched route. Override in EE to add workspace/user context
    * and paid-workspace telemetry, matching the EE filter.
    */
-  protected reportSubOpException(exception: any, _req: NcRequest) {
+  protected reportSubOpException(exception: any, _req: AtRequest) {
     Sentry.captureException(exception);
     this.logger.error(exception?.message, exception?.stack);
   }
@@ -404,29 +404,29 @@ export class InternalController {
    *       leaks across siblings.
    *
    *   The batchable allowlist is read-only by contract (see
-   *   `BATCHABLE_INTERNAL_OPERATIONS` in nocodb-sdk). Handlers that need
+   *   `BATCHABLE_INTERNAL_OPERATIONS` in atmosphere-sdk). Handlers that need
    *   to write to `context` / `req` MUST NOT be added to that list.
    */
   protected async runBatchedOp(
-    context: NcContext,
+    context: AtContext,
     workspaceId: string,
     baseId: string,
     subOp: BatchSubOp,
-    req: NcRequest,
+    req: AtRequest,
   ): Promise<any> {
     const operation = subOp.operation as keyof typeof OPERATION_SCOPES;
     const scope = OPERATION_SCOPES[operation];
     if (!scope) {
-      NcError.notFound(`Unknown internal operation "${operation}"`);
+      AtError.notFound(`Unknown internal operation "${operation}"`);
     }
 
     // Per-sub-op defensive copies. Shallow is enough for the current
     // read-only allowlist — see the concurrency contract above.
-    const subContext: NcContext = { ...context };
+    const subContext: AtContext = { ...context };
     // Object.create keeps the Express request prototype + own props intact;
     // we shadow `query` / `body` for the sub-op and rely on the prototype
     // chain for everything else (user, headers, route, etc.).
-    const subReq: NcRequest = Object.create(req);
+    const subReq: AtRequest = Object.create(req);
     subReq.query = { ...(req.query ?? {}), ...(subOp.query ?? {}), operation };
     subReq.body = subOp.payload ?? {};
 
@@ -439,7 +439,7 @@ export class InternalController {
       this.internalApiModuleMap['GET']?.[operation];
 
     if (!module) {
-      NcError.notFound(`Operation "${operation}" not registered`);
+      AtError.notFound(`Operation "${operation}" not registered`);
     }
 
     return module.handle(subContext, {

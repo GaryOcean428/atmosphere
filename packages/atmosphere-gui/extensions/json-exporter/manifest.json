@@ -1,5 +1,5 @@
 {
-  "id": "nc-json-exporter",
+  "id": "atm-json-exporter",
   "title": "JSON Exporter",
   "subTitle": "JSON Exporter",
   "description": "json-exporter/description.md",
@@ -7,9 +7,9 @@
   "version": "0.1",
   "iconUrl": "json-exporter/assets/icon.png",
   "publisher": {
-    "name": "NocoDB",
-    "email": "contact@nocodb.com",
-    "url": "https://www.nocodb.com",
+    "name": "Atmosphere",
+    "email": "contact@atmosphere.dev",
+    "url": "https://www.atmosphere.dev",
     "icon": {
       "src": "json-exporter/assets/publisher-icon.svg",
       "width": 24,

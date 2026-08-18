@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { OperationSource } from 'nocodb-sdk';
-import type { IWebhookNotificationAdapter } from '~/types/nc-plugin';
+import { OperationSource } from 'atmosphere-sdk';
+import type { IWebhookNotificationAdapter } from '~/types/atm-plugin';
 import { getFilteredAgents } from '~/utils/ssrf';
 
 export default class Slack implements IWebhookNotificationAdapter {

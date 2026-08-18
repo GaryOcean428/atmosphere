@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
-import type { HookLogType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { HookLogType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import Hook from '~/models/Hook';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
 import { MetaTable } from '~/utils/globals';
 import { isOnPrem } from '~/utils';
@@ -32,7 +32,7 @@ export default class HookLog implements HookLogType {
   }
 
   static async list(
-    context: NcContext,
+    context: AtContext,
     param: {
       fk_hook_id: string;
       event?: HookLogType['event'];
@@ -45,15 +45,15 @@ export default class HookLog implements HookLogType {
       limit?: number;
       offset?: number;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const xcCondition: Record<string, any> = {};
 
-    if (process.env.NC_AUTOMATION_LOG_LEVEL === 'ERROR') {
+    if (process.env.ATMOSPHERE_AUTOMATION_LOG_LEVEL === 'ERROR') {
       xcCondition.error_message = { neq: null };
     }
 
-    if (!Noco.isEE()) {
+    if (!Atmosphere.isEE()) {
       xcCondition.created_at = {
         ge: dayjs().subtract(7, 'days').toISOString(),
       };
@@ -79,11 +79,11 @@ export default class HookLog implements HookLogType {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     hookLog: Partial<HookLog>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    if (process.env.NC_AUTOMATION_LOG_LEVEL === 'OFF') {
+    if (process.env.ATMOSPHERE_AUTOMATION_LOG_LEVEL === 'OFF') {
       return;
     }
     const insertObj: any = extractProps(hookLog, [
@@ -126,9 +126,9 @@ export default class HookLog implements HookLogType {
   }
 
   public static async count(
-    context: NcContext,
+    context: AtContext,
     { hookId }: { hookId?: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const qb = ncMeta.knex(MetaTable.HOOK_LOGS);
 
@@ -145,13 +145,13 @@ export default class HookLog implements HookLogType {
     }
 
     if (
-      process.env.NC_AUTOMATION_LOG_LEVEL === 'ERROR' ||
-      (isOnPrem && process.env.NC_AUTOMATION_LOG_LEVEL !== 'OFF')
+      process.env.ATMOSPHERE_AUTOMATION_LOG_LEVEL === 'ERROR' ||
+      (isOnPrem && process.env.ATMOSPHERE_AUTOMATION_LOG_LEVEL !== 'OFF')
     ) {
       qb.whereNotNull(`${MetaTable.HOOK_LOGS}.error_message`);
     }
 
-    if (!Noco.isEE()) {
+    if (!Atmosphere.isEE()) {
       qb.where(
         `${MetaTable.HOOK_LOGS}.created_at`,
         '>=',
@@ -163,9 +163,9 @@ export default class HookLog implements HookLogType {
   }
 
   static async deleteByBaseId(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaDelete(
       context.workspace_id,

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EventType, MetaEventType } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import { EventType, MetaEventType } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type {
   AffectedDependencyResult,
   MetaDependencyEventRequest,
@@ -8,8 +8,8 @@ import type {
 } from '~/services/meta-dependency/types';
 import { CalendarRange, View } from '~/models';
 import { MetaTable } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
-import Noco from '~/Noco';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
+import Atmosphere from '~/Atmosphere';
 
 /**
  * Drop every CalendarRange row that referenced the deleted column as either
@@ -27,9 +27,9 @@ export class ColumnDeleteCalendarRangeDependencyHandler
   triggerMetaEvents: MetaEventType[] = [MetaEventType.COLUMN_DELETED];
 
   async getAffectedDependency(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<AffectedDependencyResult | undefined> {
     const id = param.oldEntity?.id;
     if (!id) return undefined;
@@ -47,11 +47,11 @@ export class ColumnDeleteCalendarRangeDependencyHandler
   }
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest & {
       affectedDependencyResult: AffectedDependencyResult;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     const id = param.oldEntity?.id;
     if (!id) return;
@@ -84,14 +84,14 @@ export class ColumnDeleteCalendarRangeDependencyHandler
   }
 
   private async broadcastViewUpdates(
-    context: NcContext,
+    context: AtContext,
     viewIds: Set<string>,
   ): Promise<void> {
     for (const viewId of viewIds) {
-      const view = await View.get(context, viewId, false, Noco.ncMeta);
+      const view = await View.get(context, viewId, false, Atmosphere.ncMeta);
       if (!view) continue;
-      await view.getView(context, Noco.ncMeta);
-      NocoSocket.broadcastEvent(context, {
+      await view.getView(context, Atmosphere.ncMeta);
+      AtmosphereSocket.broadcastEvent(context, {
         event: EventType.META_EVENT,
         payload: { action: 'view_update', payload: view },
       });

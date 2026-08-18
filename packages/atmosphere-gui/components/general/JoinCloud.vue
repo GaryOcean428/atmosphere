@@ -70,48 +70,48 @@ const onMouseover = async () => {
 
 <template>
   <div
-    class="flex flex-row items-center w-full bg-bg-nc-bg-default rounded-lg border-1 border-nc-border-brand shadow-sm mb-0.5 overflow-hidden"
+    class="flex flex-row items-center w-full bg-bg-atm-bg-default rounded-lg border-1 border-atm-border-brand shadow-sm mb-0.5 overflow-hidden"
   >
     <a
       v-e="['c:navbar:join-cloud']"
-      class="flex flex-grow !no-underline items-center justify-center border-r-1 h-full hover:bg-nc-bg-gray-light"
-      href="https://app.nocodb.com/signin?utm_source=OSS&utm_medium=OSS&utm_campaign=OSS&utm_content=OSS"
+      class="flex flex-grow !no-underline items-center justify-center border-r-1 h-full hover:bg-atm-bg-gray-light"
+      href="https://app.atmosphere.dev/signin?utm_source=OSS&utm_medium=OSS&utm_campaign=OSS&utm_content=OSS"
     >
-      <div class="px-1 text-nc-content-gray-muted prose-sm" style="line-height: 1.3125rem">Try NocoDB Cloud</div>
+      <div class="px-1 text-atm-content-gray-muted prose-sm" style="line-height: 1.3125rem">Try Atmosphere Cloud</div>
     </a>
 
-    <a-tooltip arrow-point-at-center overlay-class-name="nc-join-cloud-tooltip">
-      <NcButton type="text" size="small" class="!rounded-l-none !rounded-r-lg" @mouseover="onMouseover">
-        <GeneralIcon icon="help" class="!text-lg -mt-0.5 text-nc-content-gray-subtle" />
-      </NcButton>
+    <a-tooltip arrow-point-at-center overlay-class-name="atm-join-cloud-tooltip">
+      <AtButton type="text" size="small" class="!rounded-l-none !rounded-r-lg" @mouseover="onMouseover">
+        <GeneralIcon icon="help" class="!text-lg -mt-0.5 text-atm-content-gray-subtle" />
+      </AtButton>
       <template #title>
-        <div class="w-70.5 bg-transparent overflow-hidden rounded-2xl shadow border-1 border-nc-border-gray-medium">
-          <div class="p-4 bg-nc-bg-default gap-4 inline-flex flex-col w-full">
+        <div class="w-70.5 bg-transparent overflow-hidden rounded-2xl shadow border-1 border-atm-border-gray-medium">
+          <div class="p-4 bg-atm-bg-default gap-4 inline-flex flex-col w-full">
             <div class="flex items-center gap-3">
-              <div class="text-base text-nc-content-gray-emphasis font-bold flex-1">NocoDB Cloud</div>
-              <div class="text-caption px-1 rounded-md bg-nc-bg-brand text-nc-content-brand">Usage based</div>
+              <div class="text-base text-atm-content-gray-emphasis font-bold flex-1">Atmosphere Cloud</div>
+              <div class="text-caption px-1 rounded-md bg-atm-bg-brand text-atm-content-brand">Usage based</div>
             </div>
 
-            <div class="text-sm font-bold text-nc-content-gray-emphasis">Includes</div>
+            <div class="text-sm font-bold text-atm-content-gray-emphasis">Includes</div>
 
             <div v-if="!isLoading" class="flex flex-col gap-2">
               <div
                 v-for="(feature, idx) of cloudFeatures"
                 :key="idx"
-                class="flex items-start text-nc-content-gray text-sm font-weight-500"
+                class="flex items-start text-atm-content-gray text-sm font-weight-500"
               >
                 <span class="mr-2 h-5 inline-flex items-center">
-                  <span class="rounded text-nc-content-brand bg-nc-bg-brand inline-flex items-center justify-center h-4 w-4">
+                  <span class="rounded text-atm-content-brand bg-atm-bg-brand inline-flex items-center justify-center h-4 w-4">
                     <GeneralIcon icon="ncCheck" class="h-3 w-3" />
                   </span>
                 </span>
                 <span class="relative">
                   {{ feature.Title }}
 
-                  <div v-if="feature.Highlight" class="nc-plan-description-gradient" :class="{ 'nc-dark': isDark }"></div>
+                  <div v-if="feature.Highlight" class="atm-plan-description-gradient" :class="{ 'atm-dark': isDark }"></div>
                 </span>
                 <span v-if="feature['Coming Soon']" class="flex-1 inline-flex justify-end">
-                  <span class="inline-block px-1 rounded-md bg-nc-bg-gray-medium text-sm text-nc-content-gray-subtle2">
+                  <span class="inline-block px-1 rounded-md bg-atm-bg-gray-medium text-sm text-atm-content-gray-subtle2">
                     Soon
                   </span>
                 </span>
@@ -122,11 +122,11 @@ const onMouseover = async () => {
             </div>
 
             <div class="flex flex-col gap-2">
-              <div class="text-xs leading-[18px] font-normal text-nc-content-gray-muted text-center">
+              <div class="text-xs leading-[18px] font-normal text-atm-content-gray-muted text-center">
                 (no credit card required)
               </div>
-              <a href="https://app.nocodb.com/signin" target="_blank" class="!no-underline" rel="noopener">
-                <NcButton type="secondary" class="w-full">Start for Free</NcButton>
+              <a href="https://app.atmosphere.dev/signin" target="_blank" class="!no-underline" rel="noopener">
+                <AtButton type="secondary" class="w-full">Start for Free</AtButton>
               </a>
             </div>
           </div>
@@ -137,13 +137,13 @@ const onMouseover = async () => {
 </template>
 
 <style lang="scss" scoped>
-.nc-plan-description-gradient {
+.atm-plan-description-gradient {
   @apply absolute rounded-[30px] inset-0 z-0 pointer-events-none;
 
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0%, rgba(252, 58, 198, 0.2) 47.08%, rgba(255, 255, 255, 0.2) 100%);
   filter: blur(2px);
 
-  &.nc-dark {
+  &.atm-dark {
     background: linear-gradient(
       90deg,
       rgba(255, 255, 255, 0.06) 0%,
@@ -155,14 +155,14 @@ const onMouseover = async () => {
 </style>
 
 <style lang="scss">
-.nc-join-cloud-tooltip {
+.atm-join-cloud-tooltip {
   @apply max-w-none;
 
   .ant-tooltip-inner {
     @apply !bg-transparent !p-0 rounded-2xl;
   }
   .ant-tooltip-arrow-content {
-    @apply !bg-nc-bg-default;
+    @apply !bg-atm-bg-default;
   }
 }
 </style>

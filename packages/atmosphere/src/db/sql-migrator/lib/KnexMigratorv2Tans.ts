@@ -7,20 +7,20 @@
 import KnexMigratorv2 from './KnexMigratorv2';
 import type Source from '~/models/Source';
 import type { XKnex } from '~/db/CustomKnex';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 
 export default class KnexMigratorv2Tans extends KnexMigratorv2 {
   protected sqlClient: any;
   // todo: tobe changed
-  protected ncMeta: any; // NcMetaIO;
+  protected ncMeta: any; // AtMetaIO;
 
   constructor(
-    context: NcContext,
+    context: AtContext,
     base: { id: string },
     sqlClient = null,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     super(context, base);
     this.sqlClient = sqlClient;
@@ -28,9 +28,9 @@ export default class KnexMigratorv2Tans extends KnexMigratorv2 {
   }
 
   protected get metaDb(): XKnex {
-    return this.ncMeta.knex || Noco.ncMeta.knex;
+    return this.ncMeta.knex || Atmosphere.ncMeta.knex;
   }
   protected async getSqlClient(source: Source) {
-    return this.sqlClient || NcConnectionMgrv2.getSqlClient(source);
+    return this.sqlClient || AtConnectionMgrv2.getSqlClient(source);
   }
 }

@@ -9,11 +9,11 @@ worker:
       cpu: 100m
       memory: 256Mi
 externalDatabase:
-  existingSecret: nocodb-ci
+  existingSecret: atmosphere-ci
 externalRedis:
-  existingSecret: nocodb-ci
+  existingSecret: atmosphere-ci
 auth:
-  existingSecret: nocodb-ci
+  existingSecret: atmosphere-ci
 resources:
   requests:
     cpu: 100m

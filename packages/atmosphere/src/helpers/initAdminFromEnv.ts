@@ -1,7 +1,7 @@
 import { promisify } from 'util';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
-import { validatePassword } from 'nocodb-sdk';
+import { validatePassword } from 'atmosphere-sdk';
 import boxen from 'boxen';
 import isEmail from 'validator/lib/isEmail';
 import {
@@ -9,8 +9,8 @@ import {
   verifyDefaultWsOwner,
 } from '~/helpers/verifyDefaultWorkspace';
 import { T } from '~/utils';
-import NocoCache from '~/cache/NocoCache';
-import Noco from '~/Noco';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import Atmosphere from '~/Atmosphere';
 import { BaseUser, User } from '~/models';
 import { CacheScope, MetaTable, RootScopes } from '~/utils/globals';
 import { randomTokenString } from '~/services/users/helpers';
@@ -18,13 +18,13 @@ import { sanitizeEmail } from '~/utils/emailUtils';
 
 const rolesLevel = { owner: 0, creator: 1, editor: 2, commenter: 3, viewer: 4 };
 
-export default async function initAdminFromEnv(_ncMeta = Noco.ncMeta) {
-  if (process.env.NC_ADMIN_EMAIL && process.env.NC_ADMIN_PASSWORD) {
-    if (!isEmail(sanitizeEmail(process.env.NC_ADMIN_EMAIL))) {
+export default async function initAdminFromEnv(_ncMeta = Atmosphere.ncMeta) {
+  if (process.env.ATMOSPHERE_ADMIN_EMAIL && process.env.ATMOSPHERE_ADMIN_PASSWORD) {
+    if (!isEmail(sanitizeEmail(process.env.ATMOSPHERE_ADMIN_EMAIL))) {
       console.log(
         '\n',
         boxen(
-          `Provided admin email '${process.env.NC_ADMIN_EMAIL}'  is not valid`,
+          `Provided admin email '${process.env.ATMOSPHERE_ADMIN_EMAIL}'  is not valid`,
           {
             title: 'Invalid admin email',
             padding: 1,
@@ -39,7 +39,7 @@ export default async function initAdminFromEnv(_ncMeta = Noco.ncMeta) {
     }
 
     const { valid, error, hint } = validatePassword(
-      process.env.NC_ADMIN_PASSWORD,
+      process.env.ATMOSPHERE_ADMIN_PASSWORD,
     );
     if (!valid) {
       console.log(
@@ -59,11 +59,11 @@ export default async function initAdminFromEnv(_ncMeta = Noco.ncMeta) {
     let ncMeta;
     try {
       ncMeta = await _ncMeta.startTransaction();
-      const email = sanitizeEmail(process.env.NC_ADMIN_EMAIL).toLowerCase();
+      const email = sanitizeEmail(process.env.ATMOSPHERE_ADMIN_EMAIL).toLowerCase();
 
       const salt = await promisify(bcrypt.genSalt)(10);
       const password = await promisify(bcrypt.hash)(
-        process.env.NC_ADMIN_PASSWORD,
+        process.env.ATMOSPHERE_ADMIN_PASSWORD,
         salt,
       );
       const email_verification_token = uuidv4();
@@ -93,7 +93,7 @@ export default async function initAdminFromEnv(_ncMeta = Noco.ncMeta) {
       } else {
         const salt = await promisify(bcrypt.genSalt)(10);
         const password = await promisify(bcrypt.hash)(
-          process.env.NC_ADMIN_PASSWORD,
+          process.env.ATMOSPHERE_ADMIN_PASSWORD,
           salt,
         );
         const email_verification_token = uuidv4();
@@ -178,11 +178,11 @@ export default async function initAdminFromEnv(_ncMeta = Noco.ncMeta) {
                 existingUserWithNewEmail.id,
               );
 
-              await NocoCache.del(
+              await AtmosphereCache.del(
                 'root',
                 `${CacheScope.USER}:${existingUserWithNewEmail.id}`,
               );
-              await NocoCache.del(
+              await AtmosphereCache.del(
                 'root',
                 `${CacheScope.USER}:${existingUserWithNewEmail.email}`,
               );
@@ -215,7 +215,7 @@ export default async function initAdminFromEnv(_ncMeta = Noco.ncMeta) {
             }
           } else {
             const newPasswordHash = await promisify(bcrypt.hash)(
-              process.env.NC_ADMIN_PASSWORD,
+              process.env.ATMOSPHERE_ADMIN_PASSWORD,
               user.salt,
             );
 
@@ -240,11 +240,11 @@ export default async function initAdminFromEnv(_ncMeta = Noco.ncMeta) {
           // check user account already present with the new admin email
           const existingUserWithNewEmail = await User.getByEmail(email, ncMeta);
           if (existingUserWithNewEmail?.id) {
-            await NocoCache.del(
+            await AtmosphereCache.del(
               'root',
               `${CacheScope.USER}:${existingUserWithNewEmail.id}`,
             );
-            await NocoCache.del(
+            await AtmosphereCache.del(
               'root',
               `${CacheScope.USER}:${existingUserWithNewEmail.email}`,
             );

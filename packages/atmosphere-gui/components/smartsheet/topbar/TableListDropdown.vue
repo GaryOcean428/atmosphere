@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 
 const { isMobileMode } = useGlobal()
 
@@ -57,7 +57,7 @@ function openTableCreateDialog() {
 </script>
 
 <template>
-  <NcDropdown v-model:visible="isOpen" overlay-class-name="max-w-64">
+  <AtDropdown v-model:visible="isOpen" overlay-class-name="max-w-64">
     <slot name="default" :is-open="isOpen"></slot>
     <template #overlay>
       <LazyNcList
@@ -83,15 +83,15 @@ function openTableCreateDialog() {
               </template>
             </LazyGeneralEmojiPicker>
           </div>
-          <NcTooltip class="truncate flex-1" show-on-truncate-only>
+          <AtTooltip class="truncate flex-1" show-on-truncate-only>
             <template #title>
               {{ option?.title }}
             </template>
             {{ option?.title }}
-          </NcTooltip>
+          </AtTooltip>
           <GeneralIcon
             v-if="option.id === activeTable.id"
-            id="nc-selected-item-icon"
+            id="atm-selected-item-icon"
             icon="check"
             class="flex-none text-primary w-4 h-4"
           />
@@ -108,8 +108,8 @@ function openTableCreateDialog() {
           "
           #listFooter
         >
-          <NcDivider class="!mt-0 !mb-2" />
-          <NcTooltip :title="tableCreateReason ? $t(tableCreateReason) : ''" :disabled="!tableCreateReason">
+          <AtDivider class="!mt-0 !mb-2" />
+          <AtTooltip :title="tableCreateReason ? $t(tableCreateReason) : ''" :disabled="!tableCreateReason">
             <div
               class="px-2 mb-2"
               :class="tableCreateReason ? 'cursor-not-allowed' : ''"
@@ -119,8 +119,8 @@ function openTableCreateDialog() {
                 class="px-2 py-1.5 flex items-center justify-between gap-2 text-sm font-weight-500 rounded-md"
                 :class="
                   tableCreateReason
-                    ? '!text-nc-content-gray-disabled cursor-not-allowed'
-                    : '!text-nc-content-brand hover:bg-nc-bg-gray-light cursor-pointer'
+                    ? '!text-atm-content-gray-disabled cursor-not-allowed'
+                    : '!text-atm-content-brand hover:bg-atm-bg-gray-light cursor-pointer'
                 "
               >
                 <div class="flex items-center gap-2">
@@ -135,9 +135,9 @@ function openTableCreateDialog() {
                 </div>
               </div>
             </div>
-          </NcTooltip>
+          </AtTooltip>
         </template>
       </LazyNcList>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

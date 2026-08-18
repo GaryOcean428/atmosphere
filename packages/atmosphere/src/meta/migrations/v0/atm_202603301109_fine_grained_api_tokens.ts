@@ -2,13 +2,13 @@ import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
 const up = async (knex: Knex) => {
-  // Add new columns to nc_api_tokens (dormant columns base_id, fk_workspace_id,
-  // permissions, expiry, enabled already exist from nc_001_init)
+  // Add new columns to atm_api_tokens (dormant columns base_id, fk_workspace_id,
+  // permissions, expiry, enabled already exist from atm_001_init)
   await knex.schema.alterTable(MetaTable.API_TOKENS, (table) => {
     // SHA-256 hex digest of the token (new tokens only)
     table.string('token_hash', 64).nullable();
 
-    // Display prefix, e.g. "nc_pat_a1b2c3" (first 12 chars)
+    // Display prefix, e.g. "atm_pat_a1b2c3" (first 12 chars)
     table.string('token_prefix', 20).nullable();
 
     // Last used timestamp
@@ -21,10 +21,10 @@ const up = async (knex: Knex) => {
   });
 
   // Create the scopes join table for multi-resource token scoping
-  await knex.schema.createTable('nc_api_token_scopes', (table) => {
+  await knex.schema.createTable('atm_api_token_scopes', (table) => {
     table.string('id', 20).primary();
 
-    // FK to nc_api_tokens
+    // FK to atm_api_tokens
     table.string('fk_api_token_id', 20).notNullable();
 
     // 'base' | 'workspace'
@@ -51,7 +51,7 @@ const up = async (knex: Knex) => {
 };
 
 const down = async (knex: Knex) => {
-  await knex.schema.dropTableIfExists('nc_api_token_scopes');
+  await knex.schema.dropTableIfExists('atm_api_token_scopes');
 
   await knex.schema.alterTable(MetaTable.API_TOKENS, (table) => {
     table.dropUnique(['token_hash'], 'idx_api_tokens_hash');

@@ -1,10 +1,10 @@
-import { OrgUserRoles, WorkspaceUserRoles } from 'nocodb-sdk';
+import { OrgUserRoles, WorkspaceUserRoles } from 'atmosphere-sdk';
 import { customAlphabet } from 'nanoid';
 import type { Knex } from 'knex';
 import {
   MetaTable,
   MetaTableOldV2,
-  NC_STORE_DEFAULT_WORKSPACE_ID_KEY,
+  ATMOSPHERE_STORE_DEFAULT_WORKSPACE_ID_KEY,
 } from '~/utils/globals';
 
 const nanoidWorkspace = customAlphabet(
@@ -114,8 +114,8 @@ const up = async (knex: Knex) => {
     MetaTable.MODELS,
     MetaTable.SORT,
     MetaTable.SOURCES,
-    MetaTable.SYNC_LOGS,
-    MetaTable.SYNC_SOURCE,
+    MetaTable.SYATMOSPHERE_LOGS,
+    MetaTable.SYATMOSPHERE_SOURCE,
     MetaTable.VIEWS,
     MetaTable.MODEL_ROLE_VISIBILITY,
     MetaTable.COMMENTS,
@@ -140,7 +140,7 @@ const up = async (knex: Knex) => {
     MetaTable.COL_LONG_TEXT,
     MetaTable.DATA_REFLECTION,
     MetaTable.COL_BUTTON,
-    MetaTable.SYNC_CONFIGS,
+    MetaTable.SYATMOSPHERE_CONFIGS,
     MetaTable.DASHBOARDS,
     MetaTable.MCP_TOKENS,
     MetaTable.WIDGETS,
@@ -169,7 +169,7 @@ const up = async (knex: Knex) => {
   }
 
   await knex(MetaTable.STORE).insert({
-    key: NC_STORE_DEFAULT_WORKSPACE_ID_KEY,
+    key: ATMOSPHERE_STORE_DEFAULT_WORKSPACE_ID_KEY,
     value: defaultWorkspaceId,
   });
 };

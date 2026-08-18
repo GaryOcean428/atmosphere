@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import type {
   ColumnBackupRef,
   ColumnDataBackupDriver,

@@ -3,13 +3,13 @@ import { Reflector } from '@nestjs/core';
 import {
   CloudOrgUserRoles,
   extractRolesObj,
-  NcApiVersion,
+  AtApiVersion,
   OrgUserRoles,
   ProjectRoles,
   SourceRestriction,
   ViewLockType,
   WorkspaceUserRoles,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { map } from 'rxjs';
 import RowColorCondition from 'src/models/RowColorCondition';
 import {
@@ -53,12 +53,12 @@ import rolePermissions, {
   generateReadablePermissionErr,
   sourceRestrictions,
 } from '~/utils/acl';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { JwtStrategy } from '~/strategies/jwt.strategy';
 import { RootScopes } from '~/utils/globals';
 import MCPToken from '~/models/MCPToken';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 // Re-export VIEW_KEY for external consumers (previously defined here)
 export { VIEW_KEY };
 
@@ -92,9 +92,9 @@ export function getRolesLabels(
 }
 
 const getApiVersionFromUrl = (url: string) => {
-  if (url.startsWith('/api/v3')) return NcApiVersion.V3;
-  else if (url.startsWith('/api/v2')) return NcApiVersion.V2;
-  else if (url.startsWith('/api/v1')) return NcApiVersion.V1;
+  if (url.startsWith('/api/v3')) return AtApiVersion.V3;
+  else if (url.startsWith('/api/v2')) return AtApiVersion.V2;
+  else if (url.startsWith('/api/v1')) return AtApiVersion.V1;
   return undefined;
 };
 
@@ -116,16 +116,16 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       socket_id: req.ncSocketId,
     };
 
-    // this is a special route for ws operations we pass 'nc' as base id
+    // this is a special route for ws operations we pass 'atm' as base id
     const isInternalApi = !!req.path?.startsWith('/api/v2/internal');
-    const isInternalWorkspaceScope = isInternalApi && params.baseId === 'nc';
+    const isInternalWorkspaceScope = isInternalApi && params.baseId === 'atm';
 
     const baseId = params.baseId || params.baseName;
 
     if (!isInternalWorkspaceScope && baseId) {
       const base = await Base.get(bypassContext, baseId);
       if (!base) {
-        NcError.get(bypassContext).baseNotFound(baseId);
+        AtError.get(bypassContext).baseNotFound(baseId);
       }
 
       const context = {
@@ -144,7 +144,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         api_version: req.ncApiVersion,
         socket_id: req.ncSocketId,
         tab_id: req.ncTabId,
-        nc_site_url: req.ncSiteUrl,
+        atm_site_url: req.ncSiteUrl,
         permissions: [],
       };
 
@@ -192,20 +192,20 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
           mcpTokenId,
         );
         if (!mcpToken) {
-          NcError.get(context).genericNotFound('MCPToken', mcpTokenId);
+          AtError.get(context).genericNotFound('MCPToken', mcpTokenId);
         }
         req.ncBaseId = mcpToken.base_id;
         req.ncWorkspaceId = mcpToken.fk_workspace_id;
       } else if (integrationId) {
         const integration = await Integration.get(context, integrationId);
         if (!integration) {
-          NcError.get(context).integrationNotFound(integrationId);
+          AtError.get(context).integrationNotFound(integrationId);
         }
       } else if (tableId) {
         const model = await Model.get(context, tableId);
 
         if (!model) {
-          NcError.get(context).tableNotFound(tableId);
+          AtError.get(context).tableNotFound(tableId);
         }
 
         req.ncSourceId = model.source_id;
@@ -215,7 +215,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
           (await Model.get(context, viewId));
 
         if (!view) {
-          NcError.get(context).viewNotFound(viewId);
+          AtError.get(context).viewNotFound(viewId);
         }
 
         req.ncSourceId = view.source_id;
@@ -238,7 +238,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         );
 
         if (!view) {
-          NcError.get(context).viewNotFound(
+          AtError.get(context).viewNotFound(
             formViewId ||
               gridViewId ||
               kanbanViewId ||
@@ -254,7 +254,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const view = await View.getByUUID(context, publicDataUuid);
 
         if (!view) {
-          NcError.get(context).viewNotFound(publicDataUuid);
+          AtError.get(context).viewNotFound(publicDataUuid);
         }
 
         req.ncSourceId = view?.source_id;
@@ -262,7 +262,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const view = await View.getByUUID(context, sharedViewUuid);
 
         if (!view) {
-          NcError.get(context).viewNotFound(sharedViewUuid);
+          AtError.get(context).viewNotFound(sharedViewUuid);
         }
 
         req.ncSourceId = view.source_id;
@@ -270,13 +270,13 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const base = await Base.getByUuid(context, sharedBaseUuid);
 
         if (!base) {
-          NcError.get(context).baseNotFound(sharedBaseUuid);
+          AtError.get(context).baseNotFound(sharedBaseUuid);
         }
       } else if (hookId) {
         const hook = await Hook.get(context, hookId);
 
         if (!hook) {
-          NcError.get(context).genericNotFound('Webhook', hookId);
+          AtError.get(context).genericNotFound('Webhook', hookId);
         }
 
         req.ncSourceId = hook.source_id;
@@ -284,7 +284,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const column = await Column.get(context, { colId: buttonColId });
 
         if (!column) {
-          NcError.get(context).fieldNotFound(buttonColId);
+          AtError.get(context).fieldNotFound(buttonColId);
         }
 
         req.ncSourceId = column.source_id;
@@ -295,7 +295,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         );
 
         if (!rowColorCondition) {
-          NcError.get(context).genericNotFound(
+          AtError.get(context).genericNotFound(
             'Row color condition',
             rowColorConditionId,
           );
@@ -310,7 +310,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         );
 
         if (!gridViewColumn) {
-          NcError.get(context).fieldNotFound(gridViewColumnId);
+          AtError.get(context).fieldNotFound(gridViewColumnId);
         }
 
         req.ncSourceId = gridViewColumn?.source_id;
@@ -325,7 +325,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         );
 
         if (!formViewColumn) {
-          NcError.get(context).fieldNotFound(formViewColumnId);
+          AtError.get(context).fieldNotFound(formViewColumnId);
         }
 
         req.ncSourceId = formViewColumn.source_id;
@@ -340,7 +340,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         );
 
         if (!galleryViewColumn) {
-          NcError.get(context).fieldNotFound(galleryViewColumnId);
+          AtError.get(context).fieldNotFound(galleryViewColumnId);
         }
 
         req.ncSourceId = galleryViewColumn.source_id;
@@ -352,7 +352,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const column = await Column.get(context, { colId: columnId });
 
         if (!column) {
-          NcError.get(context).fieldNotFound(columnId);
+          AtError.get(context).fieldNotFound(columnId);
         }
 
         req.ncSourceId = column.source_id;
@@ -360,7 +360,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const filter = await Filter.get(context, filterId);
 
         if (!filter) {
-          NcError.genericNotFound('Filter', filterId);
+          AtError.genericNotFound('Filter', filterId);
         }
 
         if (filter.fk_view_id) {
@@ -372,7 +372,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const filter = await Filter.get(context, filterParentId);
 
         if (!filter) {
-          NcError.genericNotFound('Filter', filterParentId);
+          AtError.genericNotFound('Filter', filterParentId);
         }
 
         if (filter.fk_view_id) {
@@ -384,13 +384,13 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const widget = await Widget.get(context, widgetId);
 
         if (!widget) {
-          NcError.genericNotFound('Widget', widgetId);
+          AtError.genericNotFound('Widget', widgetId);
         }
       } else if (sectionId) {
         const section = await ViewSection.get(context, sectionId);
 
         if (!section) {
-          NcError.viewSectionNotFound(sectionId);
+          AtError.viewSectionNotFound(sectionId);
         }
 
         req.ncSourceId = section.source_id;
@@ -400,13 +400,13 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const baseSection = await BaseSection.get(context, baseSectionId);
 
         if (!baseSection) {
-          NcError.baseSectionNotFound(baseSectionId);
+          AtError.baseSectionNotFound(baseSectionId);
         }
       } else if (sortId) {
         const sort = await Sort.get(context, sortId);
 
         if (!sort) {
-          NcError.genericNotFound('Sort', sortId);
+          AtError.genericNotFound('Sort', sortId);
         }
 
         if (sort.fk_view_id) {
@@ -418,7 +418,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const syncSource = await SyncSource.get(context, syncId);
 
         if (!syncSource) {
-          NcError.genericNotFound('Sync Source', syncId);
+          AtError.genericNotFound('Sync Source', syncId);
         }
 
         req.ncSourceId = syncSource.source_id;
@@ -426,7 +426,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         const extension = await Extension.get(context, extensionId);
 
         if (!extension) {
-          NcError.genericNotFound('Extension', extensionId);
+          AtError.genericNotFound('Extension', extensionId);
         }
       }
 
@@ -476,10 +476,10 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
     req.ncApiVersion = context.api_version;
     req.ncSocketId = context.socket_id;
 
-    // this is a special route for ws operations we pass 'nc' as base id
+    // this is a special route for ws operations we pass 'atm' as base id
     const isInternalApi = !!req.path?.startsWith('/api/v2/internal');
-    const isInternalWorkspaceScope = isInternalApi && params.baseId === 'nc';
-    const isInternalOrgScope = isInternalApi && params.workspaceId === 'nc';
+    const isInternalWorkspaceScope = isInternalApi && params.baseId === 'atm';
+    const isInternalOrgScope = isInternalApi && params.workspaceId === 'atm';
 
     // We don't extract ncBaseId here intentionally to keep single source of truth
     if (
@@ -490,7 +490,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const base = await Base.get(context, params.baseId ?? params.baseName);
 
       if (!base) {
-        NcError.get(context).baseNotFound(params.baseId ?? params.baseName);
+        AtError.get(context).baseNotFound(params.baseId ?? params.baseName);
       }
 
       if (params.tableId || params.modelId) {
@@ -505,7 +505,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
           },
         );
         if (!model) {
-          NcError.get(context).tableNotFound(params.tableId || params.modelId);
+          AtError.get(context).tableNotFound(params.tableId || params.modelId);
         }
       }
     }
@@ -513,7 +513,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
     if (params.mcpTokenId) {
       const mcpToken = await MCPToken.get(context, params.mcpTokenId);
       if (!mcpToken) {
-        NcError.get(context).genericNotFound('MCPToken', params.mcpTokenId);
+        AtError.get(context).genericNotFound('MCPToken', params.mcpTokenId);
       }
 
       req.ncBaseId = mcpToken.base_id;
@@ -526,7 +526,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
     } else if (params.integrationId) {
       const integration = await Integration.get(context, params.integrationId);
       if (!integration) {
-        NcError.get(context).integrationNotFound(params.integrationId);
+        AtError.get(context).integrationNotFound(params.integrationId);
       }
       req.ncWorkspaceId = integration.fk_workspace_id;
     } else if (params.tableId || params.modelId) {
@@ -535,7 +535,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       });
 
       if (!model) {
-        NcError.get(context).tableNotFound(params.tableId || params.modelId);
+        AtError.get(context).tableNotFound(params.tableId || params.modelId);
       }
 
       req.ncBaseId = model.base_id;
@@ -549,7 +549,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
         (await Model.get(context, params.viewId));
 
       if (!view) {
-        NcError.get(context).viewNotFound(params.viewId);
+        AtError.get(context).viewNotFound(params.viewId);
       }
 
       req.ncBaseId = view.base_id;
@@ -574,7 +574,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       );
 
       if (!view) {
-        NcError.get(context).viewNotFound(
+        AtError.get(context).viewNotFound(
           params.formViewId ||
             params.gridViewId ||
             params.kanbanViewId ||
@@ -589,7 +589,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const view = await View.getByUUID(context, req.params.publicDataUuid);
 
       if (!view) {
-        NcError.get(context).viewNotFound(req.params.publicDataUuid);
+        AtError.get(context).viewNotFound(req.params.publicDataUuid);
       }
 
       req.ncBaseId = view?.base_id;
@@ -598,7 +598,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const view = await View.getByUUID(context, req.params.sharedViewUuid);
 
       if (!view) {
-        NcError.get(context).viewNotFound(req.params.sharedViewUuid);
+        AtError.get(context).viewNotFound(req.params.sharedViewUuid);
       }
 
       req.ncBaseId = view.base_id;
@@ -607,14 +607,14 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const base = await Base.getByUuid(context, req.params.sharedBaseUuid);
 
       if (!base) {
-        NcError.get(context).baseNotFound(req.params.sharedBaseUuid);
+        AtError.get(context).baseNotFound(req.params.sharedBaseUuid);
       }
       req.ncBaseId = base?.id;
     } else if (params.hookId) {
       const hook = await Hook.get(context, params.hookId);
 
       if (!hook) {
-        NcError.get(context).genericNotFound('Webhook', params.hookId);
+        AtError.get(context).genericNotFound('Webhook', params.hookId);
       }
 
       req.ncBaseId = hook.base_id;
@@ -629,7 +629,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       );
 
       if (!rowColorCondition) {
-        NcError.get(context).genericNotFound(
+        AtError.get(context).genericNotFound(
           'Row color condition',
           params.rowColorConditionId,
         );
@@ -648,7 +648,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       );
 
       if (!gridViewColumn) {
-        NcError.get(context).fieldNotFound(params.gridViewColumnId);
+        AtError.get(context).fieldNotFound(params.gridViewColumnId);
       }
 
       if (gridViewColumn.fk_view_id) {
@@ -669,7 +669,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       );
 
       if (!formViewColumn) {
-        NcError.get(context).fieldNotFound(params.formViewColumnId);
+        AtError.get(context).fieldNotFound(params.formViewColumnId);
       }
 
       if (formViewColumn.fk_view_id) {
@@ -690,7 +690,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       );
 
       if (!galleryViewColumn) {
-        NcError.get(context).fieldNotFound(params.galleryViewColumnId);
+        AtError.get(context).fieldNotFound(params.galleryViewColumnId);
       }
 
       if (galleryViewColumn.fk_view_id) {
@@ -708,7 +708,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const column = await Column.get(context, { colId: params.columnId });
 
       if (!column) {
-        NcError.get(context).fieldNotFound(params.columnId);
+        AtError.get(context).fieldNotFound(params.columnId);
       }
 
       req.ncBaseId = column.base_id;
@@ -720,7 +720,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const filter = await Filter.get(context, params.filterId);
 
       if (!filter) {
-        NcError.genericNotFound('Filter', params.filterId);
+        AtError.genericNotFound('Filter', params.filterId);
       }
 
       if (filter.fk_view_id) {
@@ -738,7 +738,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const filter = await Filter.get(context, params.filterParentId);
 
       if (!filter) {
-        NcError.genericNotFound('Filter', params.filterParentId);
+        AtError.genericNotFound('Filter', params.filterParentId);
       }
 
       if (filter.fk_view_id) {
@@ -756,7 +756,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const widget = await Widget.get(context, params.widgetId);
 
       if (!widget) {
-        NcError.genericNotFound('Widget', params.widgetId);
+        AtError.genericNotFound('Widget', params.widgetId);
       }
 
       req.ncBaseId = widget.base_id;
@@ -764,7 +764,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const section = await ViewSection.get(context, params.sectionId);
 
       if (!section) {
-        NcError.viewSectionNotFound(params.sectionId);
+        AtError.viewSectionNotFound(params.sectionId);
       }
 
       req.ncBaseId = section.base_id;
@@ -777,7 +777,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const sort = await Sort.get(context, params.sortId);
 
       if (!sort) {
-        NcError.genericNotFound('Sort', params.sortId);
+        AtError.genericNotFound('Sort', params.sortId);
       }
 
       if (sort.fk_view_id) {
@@ -795,7 +795,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const syncSource = await SyncSource.get(context, req.params.syncId);
 
       if (!syncSource) {
-        NcError.genericNotFound('Sync Source', req.params.syncId);
+        AtError.genericNotFound('Sync Source', req.params.syncId);
       }
 
       req.ncBaseId = syncSource.base_id;
@@ -804,7 +804,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const extension = await Extension.get(context, req.params.extensionId);
 
       if (!extension) {
-        NcError.genericNotFound('Extension', req.params.extensionId);
+        AtError.genericNotFound('Extension', req.params.extensionId);
       }
 
       req.ncBaseId = extension.base_id;
@@ -822,7 +822,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       });
 
       if (!model) {
-        NcError.get(context).tableNotFound(req.body.fk_model_id);
+        AtError.get(context).tableNotFound(req.body.fk_model_id);
       }
 
       req.ncBaseId = model.base_id;
@@ -842,7 +842,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       });
 
       if (!model) {
-        NcError.get(context).tableNotFound(req.query?.fk_model_id);
+        AtError.get(context).tableNotFound(req.query?.fk_model_id);
       }
 
       req.ncBaseId = model.base_id;
@@ -865,7 +865,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       const audit = await Comment.get(context, params.commentId);
 
       if (!audit) {
-        NcError.genericNotFound('Comment', params.commentId);
+        AtError.genericNotFound('Comment', params.commentId);
       }
 
       req.ncBaseId = audit.base_id;
@@ -911,13 +911,13 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
           });
 
           if (!model) {
-            NcError.get(context).tableNotFound(req.params.tableName);
+            AtError.get(context).tableNotFound(req.params.tableName);
           }
 
           req.ncSourceId = model?.source_id;
         }
       } else {
-        NcError.baseNotFound(params.baseId ?? params.baseName);
+        AtError.baseNotFound(params.baseId ?? params.baseName);
       }
     } else if (
       req.ncBaseId &&
@@ -927,7 +927,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       if (base) {
         req.ncWorkspaceId = (base as Base).fk_workspace_id;
       } else {
-        NcError.baseNotFound(req.ncBaseId);
+        AtError.baseNotFound(req.ncBaseId);
       }
     } else if (req.params.workspaceId && !isInternalOrgScope) {
       req.ncWorkspaceId = req.params.workspaceId;
@@ -961,7 +961,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       // check if baseId is valid and under the workspace
       const base = await Base.get(context, req.query.baseId);
       if (!base || base.fk_workspace_id !== req.ncWorkspaceId) {
-        NcError.baseNotFound(req.query.baseId);
+        AtError.baseNotFound(req.query.baseId);
       }
       req.ncBaseId = base.id;
     }
@@ -1003,7 +1003,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       !req.ncWorkspaceId &&
       (req.ncAclScope === 'workspace' || req.ncAclScope === 'base')
     ) {
-      req.ncWorkspaceId = Noco.ncDefaultWorkspaceId;
+      req.ncWorkspaceId = Atmosphere.ncDefaultWorkspaceId;
     }
 
     req.context = {
@@ -1013,7 +1013,7 @@ export class ExtractIdsMiddleware implements NestMiddleware, CanActivate {
       api_version: context.api_version,
       socket_id: req.headers['xc-socket-id'],
       tab_id: req.ncTabId,
-      nc_site_url: req.ncSiteUrl,
+      atm_site_url: req.ncSiteUrl,
       timezone: context.timezone,
       is_api_token: req.user?.is_api_token,
       permissions: [],
@@ -1081,7 +1081,7 @@ export class AclMiddleware implements NestInterceptor {
     }
 
     if (!req.user?.isAuthorized) {
-      NcError.unauthorized('Invalid token');
+      AtError.unauthorized('Invalid token');
     }
 
     if (req.user?.isPublicBase && req.context) {
@@ -1094,7 +1094,7 @@ export class AclMiddleware implements NestInterceptor {
       req[VIEW_KEY].owned_by !== req.user?.id &&
       personalViewOwnerOnlyOps.includes(permissionName)
     ) {
-      NcError.forbidden('Unauthorized access');
+      AtError.forbidden('Unauthorized access');
     }
 
     const isPersonalViewOwner = checkIsPersonalViewOwner(req);
@@ -1120,7 +1120,7 @@ export class AclMiddleware implements NestInterceptor {
         !isPersonalViewOwner) ||
         req[VIEW_KEY]?.lock_type === ViewLockType.Locked)
     ) {
-      NcError.forbidden('Unauthorized access');
+      AtError.forbidden('Unauthorized access');
     }
 
     const userScopeRole = getUserRoleForScope(req.user, scope);
@@ -1128,21 +1128,21 @@ export class AclMiddleware implements NestInterceptor {
     const extendedScopeRoles =
       extendedScope && getUserRoleForScope(req.user, extendedScope);
     if (!userScopeRole && !extendedScopeRoles) {
-      NcError.forbidden('Unauthorized access');
+      AtError.forbidden('Unauthorized access');
     }
 
     const roles: Record<string, boolean> = extractRolesObj(userScopeRole);
 
     if (req?.user?.is_api_token && blockApiTokenAccess) {
-      NcError.apiTokenNotAllowed();
+      AtError.apiTokenNotAllowed();
     }
 
     if (req?.user?.is_oauth_token && blockOAuthTokenAccess) {
-      NcError.forbidden('Not allowed for OAuth token');
+      AtError.forbidden('Not allowed for OAuth token');
     }
 
     if (req?.user?.isPublicBase && blockPublicBaseAccess) {
-      NcError.forbidden('Not allowed for shared base');
+      AtError.forbidden('Not allowed for shared base');
     }
 
     if (
@@ -1170,7 +1170,7 @@ export class AclMiddleware implements NestInterceptor {
             roles?.[CloudOrgUserRoles.OWNER]),
       )
     ) {
-      NcError.unauthorized('Unauthorized access');
+      AtError.unauthorized('Unauthorized access');
     }
     // todo : verify user have access to base or not
 
@@ -1216,7 +1216,7 @@ export class AclMiddleware implements NestInterceptor {
         })) ||
       isUserWithNoAccessLeavingWorkspace;
     if (!isAllowed) {
-      NcError.forbidden(
+      AtError.forbidden(
         generateReadablePermissionErr(
           permissionName,
           roles ?? extendedScopeRoles,
@@ -1224,7 +1224,7 @@ export class AclMiddleware implements NestInterceptor {
         ),
       );
 
-      // NcError.forbidden(
+      // AtError.forbidden(
       //   `${permissionName} - ${getRolesLabels(
       //     Object.keys(roles).filter((k) => roles[k]),
       //   )} : Not allowed`,
@@ -1256,21 +1256,21 @@ export class AclMiddleware implements NestInterceptor {
 
       // todo: replace with better error and this is not an expected error
       if (!source) {
-        NcError.notFound('Source not found or source id not extracted');
+        AtError.notFound('Source not found or source id not extracted');
       }
 
       if (
         source.is_schema_readonly &&
         sourceRestrictions[SourceRestriction.SCHEMA_READONLY][permissionName]
       ) {
-        NcError.sourceMetaReadOnly(source.alias);
+        AtError.sourceMetaReadOnly(source.alias);
       }
 
       if (
         source.is_data_readonly &&
         sourceRestrictions[SourceRestriction.DATA_READONLY][permissionName]
       ) {
-        NcError.sourceDataReadOnly(source.alias);
+        AtError.sourceDataReadOnly(source.alias);
       }
     }
 

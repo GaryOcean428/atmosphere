@@ -1,10 +1,10 @@
-import { unifiedMeta } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import { unifiedMeta } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { Column } from '~/models';
 import { Model } from '~/models';
 
 export const getLinkInfo = async (
-  context: NcContext,
+  context: AtContext,
   {
     model,
     column,
@@ -16,7 +16,7 @@ export const getLinkInfo = async (
   return unifiedMeta.getLinkInfo(context, {
     sourceModel: model,
     linkColumn: column,
-    getMeta: async (context: NcContext, { id }: { id: string }) =>
+    getMeta: async (context: AtContext, { id }: { id: string }) =>
       Model.get(context, id),
   });
 };

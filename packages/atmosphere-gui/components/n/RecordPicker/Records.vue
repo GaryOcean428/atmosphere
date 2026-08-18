@@ -6,7 +6,7 @@ import {
   isCreatedOrLastModifiedTimeCol,
   isLinksOrLTAR,
   isSystemColumn,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { searchLike } from '~/utils/searchUtils'
 
 const props = defineProps<{
@@ -305,13 +305,13 @@ defineExpose({
 <template>
   <div
     v-if="where && !visibleRows.length"
-    class="px-2 py-6 pt-24 text-nc-content-gray-muted flex flex-col items-center gap-6 text-center"
+    class="px-2 py-6 pt-24 text-atm-content-gray-muted flex flex-col items-center gap-6 text-center"
   >
     <img src="~assets/img/placeholder/no-search-result-found.png" class="!w-[164px] flex-none" alt="No search results found" />
 
     {{ $t('title.noResultsMatchedYourSearch') }}
   </div>
-  <div ref="scrollWrapper" :style="`height: ${wrapperHeight}px`" class="overflow-auto nc-scrollbar-thin">
+  <div ref="scrollWrapper" :style="`height: ${wrapperHeight}px`" class="overflow-auto atm-scrollbar-thin">
     <div
       v-for="row in visibleRows"
       :key="row.rowMeta?.rowIndex"

@@ -3,7 +3,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 const scope = new AsyncLocalStorage<true>();
 
 /**
- * Run `fn` in a scope where NocoCache read/write ops are bypassed.
+ * Run `fn` in a scope where AtmosphereCache read/write ops are bypassed.
  *
  * Inside the scope, `get`/`getList`/`getHash`/`getHashField` return empty
  * values and `set`/`setList`/`setExpiring`/`setHash`/`setHashField`/

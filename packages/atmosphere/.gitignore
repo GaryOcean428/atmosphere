@@ -1,7 +1,7 @@
 # compiled output
 /dist
 /node_modules
-nc
+atm
 tsconfig.tsbuildinfo
 
 # Logs
@@ -35,7 +35,7 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-/noco.db
+/atmosphere.db
 
 # export
 export/**
@@ -50,10 +50,10 @@ mssql-data-db.json
 oracle-data-db.json
 
 # ignoring to avoid commiting those files
-# nc-gui dir is copied for building local docker.
+# atmosphere-gui dir is copied for building local docker.
 /docker/main.js
 /docker/*.main.js
-/docker/nc-gui/
+/docker/atmosphere-gui/
 /docker/public/
 
 /tests/unit/.env
@@ -61,5 +61,5 @@ oracle-data-db.json
 # ignore root .env
 /.env
 
-# AI SDK DevTools local capture (NC_AI_DEVTOOLS=true) — never commit
+# AI SDK DevTools local capture (ATMOSPHERE_AI_DEVTOOLS=true) — never commit
 .devtools/

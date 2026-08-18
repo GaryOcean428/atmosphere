@@ -53,7 +53,7 @@ export default defineNuxtConfig({
     layoutTransition: false,
 
     /** In production build we need to load assets using absolute path for history-mode routing */
-    cdnURL: process.env.NODE_ENV === 'production' ? process.env.NC_CDN_URL || '/' : undefined,
+    cdnURL: process.env.NODE_ENV === 'production' ? process.env.ATMOSPHERE_CDN_URL || '/' : undefined,
     head: {
       link: [
         {
@@ -67,16 +67,16 @@ export default defineNuxtConfig({
           sizes: '180x180',
         },
 
-        ...(process.env.NC_CDN_URL
+        ...(process.env.ATMOSPHERE_CDN_URL
           ? [
               {
                 rel: 'preload',
                 as: 'font',
-                href: new URL('/shared/style/material.woff2', process.env.NC_CDN_URL).href,
+                href: new URL('/shared/style/material.woff2', process.env.ATMOSPHERE_CDN_URL).href,
                 type: 'font/woff2',
                 crossorigin: 'anonymous',
               } as any,
-              { rel: 'stylesheet', href: new URL('/shared/style/fonts-new.css', process.env.NC_CDN_URL).href },
+              { rel: 'stylesheet', href: new URL('/shared/style/fonts-new.css', process.env.ATMOSPHERE_CDN_URL).href },
             ]
           : []),
       ],
@@ -96,24 +96,24 @@ export default defineNuxtConfig({
           content: process.env.npm_package_description || '',
         },
         // Open Graph
-        { hid: 'og:site_name', property: 'og:site_name', content: 'NocoDB' },
+        { hid: 'og:site_name', property: 'og:site_name', content: 'Atmosphere' },
         { hid: 'og:type', property: 'og:type', content: 'website' },
-        { hid: 'og:title', property: 'og:title', content: 'NocoDB' },
+        { hid: 'og:title', property: 'og:title', content: 'Atmosphere' },
         {
           hid: 'og:description',
           property: 'og:description',
           content:
-            'NocoDB provides an intuitive spreadsheet interface for creating online databases, either from scratch or by connecting to any Postgres/MySQL. Access your data through interactive UIs or via API and SQL. Get started for free.',
+            'Atmosphere provides an intuitive spreadsheet interface for creating online databases, either from scratch or by connecting to any Postgres/MySQL. Access your data through interactive UIs or via API and SQL. Get started for free.',
         },
-        { hid: 'og:url', property: 'og:url', content: 'https://nocodb.com' },
+        { hid: 'og:url', property: 'og:url', content: 'https://atmosphere.dev' },
         // Twitter
         { hid: 'twitter:card', name: 'twitter:card', content: 'summary_large_image' },
-        { hid: 'twitter:title', name: 'twitter:title', content: 'NocoDB' },
+        { hid: 'twitter:title', name: 'twitter:title', content: 'Atmosphere' },
         {
           hid: 'twitter:description',
           name: 'twitter:description',
           content:
-            'NocoDB provides an intuitive spreadsheet interface for creating online databases, either from scratch or by connecting to any Postgres/MySQL. Access your data through interactive UIs or via API and SQL. Get started for free.',
+            'Atmosphere provides an intuitive spreadsheet interface for creating online databases, either from scratch or by connecting to any Postgres/MySQL. Access your data through interactive UIs or via API and SQL. Get started for free.',
         },
         {
           hid: 'twitter:image',
@@ -130,7 +130,7 @@ export default defineNuxtConfig({
   },
 
   css: [
-    ...(process.env.NC_CDN_URL ? [] : ['~/assets/style/fonts-new.css']),
+    ...(process.env.ATMOSPHERE_CDN_URL ? [] : ['~/assets/style/fonts-new.css']),
     'virtual:windi.css',
     'virtual:windi-devtools',
     '~/assets/css/global.css',
@@ -163,8 +163,8 @@ export default defineNuxtConfig({
       rollupOptions: {
         output: {
           manualChunks(id) {
-            if (id.includes('/nocodb-sdk/')) {
-              return 'nocodb-sdk'
+            if (id.includes('/atmosphere-sdk/')) {
+              return 'atmosphere-sdk'
             }
           },
         },
@@ -178,12 +178,12 @@ export default defineNuxtConfig({
       Icons({
         autoInstall: false,
         compiler: 'vue3',
-        defaultClass: 'nc-icon',
+        defaultClass: 'atm-icon',
         customCollections: {
-          'nc-icons': FileSystemIconLoader('./assets/nc-icons', (svg) =>
+          'atm-icons': FileSystemIconLoader('./assets/atm-icons', (svg) =>
             svg.replace(/^<svg (?!=\s*data-ignore)/, '<svg stroke="currentColor" '),
           ),
-          'nc-icons-v2': FileSystemIconLoader('./assets/nc-icons-v2', (svg) =>
+          'atm-icons-v2': FileSystemIconLoader('./assets/atm-icons-v2', (svg) =>
             svg.replace(/^<svg (?!=\s*data-ignore)/, '<svg stroke="currentColor" '),
           ),
         },
@@ -213,7 +213,7 @@ export default defineNuxtConfig({
               'system-uicons',
               'vscode-icons',
               'simple-icons',
-              'nc-icons',
+              'atm-icons',
               'ion',
               'tabler',
               'carbon',
@@ -365,7 +365,7 @@ export default defineNuxtConfig({
         'y-protocols/sync',
         'y-protocols/awareness',
         'lib0/buffer',
-        'nocodb-sdk',
+        'atmosphere-sdk',
         '@tiptap/extension-task-item',
       ],
       esbuildOptions: {

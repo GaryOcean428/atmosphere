@@ -3,14 +3,14 @@ import type { AlertProps } from 'ant-design-vue/es'
 import { getI18n } from '~/plugins/a.i18n'
 
 /**
- * NcAlert Component
+ * AtAlert Component
  *
  * A customizable alert component with optional icons, descriptions, actions, and notifications.
  * Can be used as a standalone alert or inside the `message` notification system.
  *
  * @example
  * ```vue
- * <NcAlert
+ * <AtAlert
  *   type="error"
  *   message="Something went wrong"
  *   description="We couldn’t complete your request. Please try again."
@@ -19,7 +19,7 @@ import { getI18n } from '~/plugins/a.i18n'
  * />
  * ```
  */
-export interface NcAlertProps extends Pick<AlertProps, 'showIcon' | 'message' | 'description' | 'closable'> {
+export interface AtAlertProps extends Pick<AlertProps, 'showIcon' | 'message' | 'description' | 'closable'> {
   /**
    * type toast will be used only in message.toast('simple toast message')
    */
@@ -95,7 +95,7 @@ export interface NcAlertProps extends Pick<AlertProps, 'showIcon' | 'message' | 
   background?: boolean
 }
 
-const props = withDefaults(defineProps<NcAlertProps>(), {
+const props = withDefaults(defineProps<AtAlertProps>(), {
   visible: true,
   showIcon: true,
   bordered: true,
@@ -137,7 +137,7 @@ const isMessageAvailable = computed(() => !!(slots.message || props.message))
 
 const isDescriptionAvailable = computed(() => !!(slots.description || props.description))
 
-const align = computed<NcAlertProps['align']>(() => {
+const align = computed<AtAlertProps['align']>(() => {
   return isMessageAvailable.value && isDescriptionAvailable.value ? props.align : 'center'
 })
 
@@ -266,30 +266,30 @@ onUnmounted(() => {
 <template>
   <div
     v-if="vVisible"
-    class="nc-alert group"
+    class="atm-alert group"
     :class="[
-      `nc-alert-type-${type}`,
+      `atm-alert-type-${type}`,
       {
         'items-center': align === 'center',
         'items-start': align === 'top',
         'no-border': !bordered,
-        'nc-alert-notification': isNotification,
-        'nc-show-background': background,
+        'atm-alert-notification': isNotification,
+        'atm-show-background': background,
       },
     ]"
   >
-    <div v-if="showIcon" class="nc-alert-icon-wrapper">
+    <div v-if="showIcon" class="atm-alert-icon-wrapper">
       <slot name="icon">
-        <GeneralIcon :icon="iconName" class="nc-alert-icon" />
+        <GeneralIcon :icon="iconName" class="atm-alert-icon" />
       </slot>
     </div>
 
-    <div class="nc-alert-content flex-1">
-      <div v-if="message || $slots.message" class="nc-alert-message" :class="messageClass">
+    <div class="atm-alert-content flex-1">
+      <div v-if="message || $slots.message" class="atm-alert-message" :class="messageClass">
         <slot name="message">{{ message }}</slot>
       </div>
 
-      <NcTooltip
+      <AtTooltip
         v-if="description || $slots.description"
         :title="description"
         :line-clamp="isNotification ? 2 : 3"
@@ -297,56 +297,56 @@ onUnmounted(() => {
         :disabled="!description"
       >
         <div
-          class="nc-alert-description"
+          class="atm-alert-description"
           :class="[
             descriptionClass,
             {
-              'nc-only-description': isDescriptionAvailable && !isMessageAvailable,
+              'atm-only-description': isDescriptionAvailable && !isMessageAvailable,
             },
           ]"
         >
           <slot name="description">{{ description }}</slot>
         </div>
-      </NcTooltip>
+      </AtTooltip>
     </div>
 
-    <div v-if="$slots.action || copyText || closable" class="nc-alert-action">
+    <div v-if="$slots.action || copyText || closable" class="atm-alert-action">
       <slot name="action"> </slot>
-      <NcTooltip
+      <AtTooltip
         v-if="copyText"
         :title="copyBtnTooltip"
         :disabled="!copyBtnTooltip"
-        class="nc-alert-action-copy"
+        class="atm-alert-action-copy"
         :class="{
           'invisible group-hover:visible transition-all': isNotification,
         }"
       >
-        <NcButton size="xsmall" type="text" @click.stop="onClickCopy">
+        <AtButton size="xsmall" type="text" @click.stop="onClickCopy">
           <div class="flex children:flex-none relative h-4 w-4">
             <Transition name="icon-fade" :duration="200">
               <GeneralIcon v-if="isCopied" icon="check" class="h-4 w-4 opacity-80" />
               <GeneralIcon v-else icon="copy" class="h-4 w-4 opacity-80" />
             </Transition>
           </div>
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
       <slot v-if="closable" name="closable" :handle-close="handleClose">
-        <NcButton size="xsmall" type="text" @click.stop="handleClose">
-          <GeneralIcon icon="close" class="text-nc-content-gray-subtle" />
-        </NcButton>
+        <AtButton size="xsmall" type="text" @click.stop="handleClose">
+          <GeneralIcon icon="close" class="text-atm-content-gray-subtle" />
+        </AtButton>
       </slot>
     </div>
 
     <div
       v-if="isNotification && showDuration"
-      class="nc-alert-progress-wrapper"
+      class="atm-alert-progress-wrapper"
       :class="{
-        'bg-nc-bg-brand': remDurationPercent > 0,
-        'bg-nc-bg-gray-medium': remDurationPercent <= 0,
+        'bg-atm-bg-brand': remDurationPercent > 0,
+        'bg-atm-bg-gray-medium': remDurationPercent <= 0,
       }"
     >
       <div
-        class="nc-alert-progress"
+        class="atm-alert-progress"
         :style="{
           width: `${remDurationPercent}%`,
         }"
@@ -356,22 +356,22 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.nc-alert {
+.atm-alert {
   @apply flex gap-4;
 
-  &:not(.nc-alert-notification) {
-    @apply rounded-lg p-4 w-full border-1 border-nc-border-gray-medium;
+  &:not(.atm-alert-notification) {
+    @apply rounded-lg p-4 w-full border-1 border-atm-border-gray-medium;
   }
 
-  &.nc-alert-notification {
+  &.atm-alert-notification {
     @apply min-w-[calc(100vw_-_64px)] md:min-w-[308px] max-w-[488px] w-[calc(30vw_-_32px)];
-    .nc-alert-content {
-      .nc-alert-description {
+    .atm-alert-content {
+      .atm-alert-description {
         @apply line-clamp-2;
       }
     }
 
-    &.nc-alert-type-toast {
+    &.atm-alert-type-toast {
       @apply min-w-[fit-content]  md:min-w-[fit-content] max-w-[350px] w-[fit-content];
     }
   }
@@ -380,84 +380,84 @@ onUnmounted(() => {
     @apply border-none;
   }
 
-  .nc-alert-icon-wrapper {
+  .atm-alert-icon-wrapper {
     @apply flex children:flex-none;
 
-    .nc-alert-icon {
+    .atm-alert-icon {
       @apply h-6 w-6;
     }
   }
 
-  .nc-alert-content {
+  .atm-alert-content {
     @apply flex flex-col gap-1;
 
-    .nc-alert-message {
-      @apply text-base text-nc-content-gray font-weight-700;
+    .atm-alert-message {
+      @apply text-base text-atm-content-gray font-weight-700;
     }
 
-    .nc-alert-description {
+    .atm-alert-description {
       @apply text-sm font-weight-500 line-clamp-3;
 
-      &:not(.nc-only-description) {
-        @apply text-nc-content-gray-muted;
+      &:not(.atm-only-description) {
+        @apply text-atm-content-gray-muted;
       }
 
-      &.nc-only-description {
-        @apply text-nc-content-gray;
+      &.atm-only-description {
+        @apply text-atm-content-gray;
       }
     }
   }
 
-  .nc-alert-action {
+  .atm-alert-action {
     @apply flex items-center gap-3 children:flex-none;
   }
 
-  &.nc-alert-type-success,
-  &.nc-alert-type-undefined {
-    .nc-alert-icon-wrapper {
+  &.atm-alert-type-success,
+  &.atm-alert-type-undefined {
+    .atm-alert-icon-wrapper {
       @apply text-green-700;
     }
 
-    &.nc-show-background {
-      @apply bg-nc-bg-green-light dark:bg-nc-green-20;
+    &.atm-show-background {
+      @apply bg-atm-bg-green-light dark:bg-atm-green-20;
     }
   }
 
-  &.nc-alert-type-error {
-    .nc-alert-icon-wrapper {
+  &.atm-alert-type-error {
+    .atm-alert-icon-wrapper {
       @apply text-red-700;
     }
 
-    &.nc-show-background {
-      @apply bg-nc-bg-red-light dark:bg-nc-red-20;
+    &.atm-show-background {
+      @apply bg-atm-bg-red-light dark:bg-atm-red-20;
     }
   }
 
-  &.nc-alert-type-warning {
-    .nc-alert-icon-wrapper {
+  &.atm-alert-type-warning {
+    .atm-alert-icon-wrapper {
       @apply text-orange-700;
     }
 
-    &.nc-show-background {
-      @apply bg-nc-bg-orange-light dark:bg-nc-orange-20;
+    &.atm-show-background {
+      @apply bg-atm-bg-orange-light dark:bg-atm-orange-20;
     }
   }
 
-  &.nc-alert-type-info {
-    .nc-alert-icon-wrapper {
-      @apply text-nc-content-brand;
+  &.atm-alert-type-info {
+    .atm-alert-icon-wrapper {
+      @apply text-atm-content-brand;
     }
 
-    &.nc-show-background {
-      @apply bg-nc-bg-brand dark:bg-nc-brand-20;
+    &.atm-show-background {
+      @apply bg-atm-bg-brand dark:bg-atm-brand-20;
     }
   }
 
-  .nc-alert-progress-wrapper {
+  .atm-alert-progress-wrapper {
     @apply absolute bottom-0 left-0 right-0 h-1;
 
-    .nc-alert-progress {
-      @apply h-full  bg-nc-brand-400;
+    .atm-alert-progress {
+      @apply h-full  bg-atm-brand-400;
     }
   }
 }
@@ -468,18 +468,18 @@ onUnmounted(() => {
   @apply z-1053;
 
   .ant-message-notice {
-    &:has(.nc-alert-notification) {
+    &:has(.atm-alert-notification) {
       .ant-message-notice-content {
-        @apply bg-nc-bg-default !rounded-lg p-4 gap-4 box-border border-1 border-nc-border-gray-medium text-left relative overflow-hidden;
+        @apply bg-atm-bg-default !rounded-lg p-4 gap-4 box-border border-1 border-atm-border-gray-medium text-left relative overflow-hidden;
 
         .ant-message-custom-content > span {
           @apply flex-none w-full block;
         }
 
-        &:has(.nc-alert-type-toast) {
+        &:has(.atm-alert-type-toast) {
           @apply py-2.5 px-3 bg-gray-700 border-gray-700;
 
-          .nc-alert-description {
+          .atm-alert-description {
             @apply text-base-white;
           }
         }

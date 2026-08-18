@@ -1,5 +1,5 @@
-import { isLinksOrLTAR, UITypes } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import { isLinksOrLTAR, UITypes } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import {
   type Column,
   type LinkToAnotherRecordColumn,
@@ -8,7 +8,7 @@ import {
 } from '~/models';
 
 async function processColumn(
-  context: NcContext,
+  context: AtContext,
   column: Column,
   relatedModels: Map<string, Model>,
   visitedColumns = new Set<string>(),
@@ -95,7 +95,7 @@ async function processColumn(
 }
 
 export async function getRelatedModelMap(
-  context: NcContext,
+  context: AtContext,
   table: Model,
 ): Promise<Map<string, Model>> {
   const relatedModels: Map<string, Model> = new Map();

@@ -1,4 +1,4 @@
-import { isBtLikeV2Junction } from 'nocodb-sdk';
+import { isBtLikeV2Junction } from 'atmosphere-sdk';
 import { RollupGeneralHandler } from '../rollup/rollup.general.handler';
 import { LtarGeneralHandler } from '../ltar/ltar.general.handler';
 import type CustomKnex from '~/db/CustomKnex';

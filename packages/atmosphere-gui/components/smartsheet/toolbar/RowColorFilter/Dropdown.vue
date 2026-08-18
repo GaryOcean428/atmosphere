@@ -10,8 +10,8 @@ const isShowColoringButton = ref(false)
 <template>
   <!-- TODO: show "ONLY IN EE feature" -->
   <template v-if="isShowColoringButton">
-    <NcDropdown>
-      <NcButton type="text" size="small" class="nc-toolbar-btn !border-0 !h-7">
+    <AtDropdown>
+      <AtButton type="text" size="small" class="atm-toolbar-btn !border-0 !h-7">
         <div class="flex items-center gap-1 min-h-5">
           <div class="flex items-center gap-2">
             <component :is="iconMap.ncPaintRoller" class="h-4 w-4" />
@@ -21,15 +21,15 @@ const isShowColoringButton = ref(false)
               $t('objects.coloring.title')
             }}</span>
           </div>
-          <!-- <span v-if="groupedByColumnIds?.length" class="bg-nc-bg-brand text-nc-content-brand nc-toolbar-btn-chip">{{
+          <!-- <span v-if="groupedByColumnIds?.length" class="bg-atm-bg-brand text-atm-content-brand atm-toolbar-btn-chip">{{
             groupedByColumnIds.length
           }}</span> -->
         </div>
-      </NcButton>
+      </AtButton>
       <template #overlay>
         <SmartsheetToolbarRowColorFilterTypeOptionOSS />
       </template>
-    </NcDropdown>
+    </AtDropdown>
   </template>
   <template v-else></template>
 </template>

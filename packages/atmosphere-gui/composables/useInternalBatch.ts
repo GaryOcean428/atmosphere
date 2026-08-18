@@ -11,7 +11,7 @@
  * `$api.internal.*` call. Behaviour:
  *
  *   • If `operation` is in `BATCHABLE_INTERNAL_OPERATIONS` (defined in
- *     nocodb-sdk so both ends stay in sync), the call is queued into a
+ *     atmosphere-sdk so both ends stay in sync), the call is queued into a
  *     per-(workspaceId, baseId) batcher with a ~50ms leading-edge
  *     debounce. Up to `INTERNAL_BATCH_MAX_SIZE` ops per envelope.
  *   • Otherwise the call falls through to the original SDK method.
@@ -23,7 +23,7 @@
  *     envelope can't carry those faithfully.
  */
 
-import { BATCHABLE_INTERNAL_OPERATIONS, INTERNAL_BATCH_MAX_SIZE } from 'nocodb-sdk'
+import { BATCHABLE_INTERNAL_OPERATIONS, INTERNAL_BATCH_MAX_SIZE } from 'atmosphere-sdk'
 
 // Leading-edge debounce: the timer starts on the first queued call and
 // flushes after this window, regardless of how many more calls arrive.

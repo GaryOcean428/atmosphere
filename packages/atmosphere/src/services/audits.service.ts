@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { UITypes } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import { UITypes } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import { AppHooksListenerService } from '~/services/app-hooks-listener.service';
 import { Audit, PresignedUrl } from '~/models';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
@@ -14,7 +14,7 @@ export class AuditsService {
   ) {}
 
   async recordAuditList(
-    context: NcContext,
+    context: AtContext,
     param: {
       row_id: string;
       fk_model_id: string;

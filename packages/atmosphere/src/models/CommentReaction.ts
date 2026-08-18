@@ -1,5 +1,5 @@
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { extractProps } from '~/helpers/extractProps';
 
@@ -21,9 +21,9 @@ export default class CommentReaction {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     reaction: Partial<CommentReaction>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(reaction, [
       'comment_id',
@@ -44,9 +44,9 @@ export default class CommentReaction {
   }
 
   public static async delete(
-    context: NcContext,
+    context: AtContext,
     reactionId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaDelete(
       context.workspace_id,
@@ -59,9 +59,9 @@ export default class CommentReaction {
   }
 
   public static async listByComment(
-    context: NcContext,
+    context: AtContext,
     commentId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<CommentReaction[]> {
     const list = await ncMeta.metaList2(
       context.workspace_id,
@@ -79,9 +79,9 @@ export default class CommentReaction {
   }
 
   public static async listByComments(
-    context: NcContext,
+    context: AtContext,
     commentIds: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Map<string, CommentReaction[]>> {
     if (!commentIds.length) return new Map();
 
@@ -107,9 +107,9 @@ export default class CommentReaction {
    * Returns { added: true/false, reaction: CommentReaction | null }
    */
   public static async toggle(
-    context: NcContext,
+    context: AtContext,
     params: { comment_id: string; reaction: string; user_id: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<{ added: boolean; reaction: CommentReaction | null }> {
     const existing = await ncMeta.metaList2(
       context.workspace_id,
@@ -145,9 +145,9 @@ export default class CommentReaction {
   }
 
   static async deleteByBaseId(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaDelete(
       context.workspace_id,

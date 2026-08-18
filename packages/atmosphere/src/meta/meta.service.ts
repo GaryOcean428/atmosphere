@@ -1,7 +1,7 @@
 import { Injectable, Optional } from '@nestjs/common';
 import { customAlphabet } from 'nanoid';
 import { v7 as uuidv7 } from 'uuid';
-import { BaseVersion } from 'nocodb-sdk';
+import { BaseVersion } from 'atmosphere-sdk';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -12,15 +12,15 @@ import XcMigrationSourcev0 from '~/meta/migrations/XcMigrationSourcev0';
 import XcMigrationSource from '~/meta/migrations/XcMigrationSource';
 import XcMigrationSourcev2 from '~/meta/migrations/XcMigrationSourcev2';
 import { XKnex } from '~/db/CustomKnex';
-import { NcConfig } from '~/utils/nc-config';
-import Noco from '~/Noco';
+import { AtConfig } from '~/utils/atm-config';
+import Atmosphere from '~/Atmosphere';
 import {
   BaseRelatedMetaTables,
   MetaTable,
   RootScopes,
   RootScopeTables,
 } from '~/utils/globals';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { isWorker } from '~/utils';
 
 dayjs.extend(utc);
@@ -39,7 +39,7 @@ export class MetaService {
   protected _config: any;
 
   constructor(
-    config: NcConfig,
+    config: AtConfig,
     @Optional() trx = null,
     @Optional() nested = 0,
     @Optional() sharedKnex: knex.Knex | null = null,
@@ -69,7 +69,7 @@ export class MetaService {
     return this._knex;
   }
 
-  get config(): NcConfig {
+  get config(): AtConfig {
     return this._config;
   }
 
@@ -89,8 +89,8 @@ export class MetaService {
    * Guardrail against mixing a meta-DB transaction with a satellite table.
    *
    * A transaction started on the meta service is bound to the meta connection
-   * pool. Satellite tables (NC_AUDIT_DB / NC_CHAT_DB / NC_DOCS_DB /
-   * NC_OP_LOG_DB) live on a separate connection once their env var is set, so
+   * pool. Satellite tables (ATMOSPHERE_AUDIT_DB / ATMOSPHERE_CHAT_DB / ATMOSPHERE_DOCS_DB /
+   * ATMOSPHERE_OP_LOG_DB) live on a separate connection once their env var is set, so
    * they can never take part in a meta-DB transaction. Forwarding the meta
    * transaction to a satellite table silently "works" in single-DB deployments
    * (where the satellite falls back to the meta DB) but writes to the wrong DB
@@ -109,8 +109,8 @@ export class MetaService {
 
     const satelliteKnex = this.satelliteKnexForTable(target);
     if (satelliteKnex && satelliteKnex !== this.knexInstance) {
-      NcError.metaError({
-        message: `Cannot access satellite table "${target}" inside a meta transaction: it lives on a separate connection (NC_AUDIT_DB / NC_CHAT_DB / NC_DOCS_DB / NC_OP_LOG_DB) and cannot share the meta-DB transaction. Use the dedicated satellite service (Noco.ncAudit / ncChatMessages / ncDocsContent / ncOperationLogs) without forwarding the transaction.`,
+      AtError.metaError({
+        message: `Cannot access satellite table "${target}" inside a meta transaction: it lives on a separate connection (ATMOSPHERE_AUDIT_DB / ATMOSPHERE_CHAT_DB / ATMOSPHERE_DOCS_DB / ATMOSPHERE_OP_LOG_DB) and cannot share the meta-DB transaction. Use the dedicated satellite service (Atmosphere.ncAudit / ncChatMessages / ncDocsContent / ncOperationLogs) without forwarding the transaction.`,
         sql: '',
       });
     }
@@ -120,19 +120,19 @@ export class MetaService {
    * Returns the dedicated knex pool for a satellite table when that satellite
    * runs on its own connection, else undefined. Canonical list of satellite
    * tables — keep in sync with the satellite services wired in
-   * Noco.prepare*Service().
+   * Atmosphere.prepare*Service().
    */
   private satelliteKnexForTable(target: string): Knex | undefined {
     switch (target) {
       case MetaTable.AUDIT:
-        return Noco._ncAudit?.knexInstance;
+        return Atmosphere._ncAudit?.knexInstance;
       case MetaTable.CHAT_MESSAGES:
-        return Noco._ncChatMessages?.knexInstance;
+        return Atmosphere._ncChatMessages?.knexInstance;
       case MetaTable.DOC_CONTENT:
       case MetaTable.DOC_REVISIONS:
-        return Noco._ncDocsContent?.knexInstance;
+        return Atmosphere._ncDocsContent?.knexInstance;
       case MetaTable.OPERATION_LOGS:
-        return Noco._ncOperationLogs?.knexInstance;
+        return Atmosphere._ncOperationLogs?.knexInstance;
       default:
         return undefined;
     }
@@ -195,10 +195,10 @@ export class MetaService {
       [MetaTable.COL_BUTTON]: 'btn',
       [MetaTable.SNAPSHOT]: 'snap',
       [MetaTable.SNAPSHOT_SCHEDULE]: 'snsc',
-      [MetaTable.SYNC_CONFIGS]: 'sync',
+      [MetaTable.SYATMOSPHERE_CONFIGS]: 'sync',
       [MetaTable.TABLE_SYNCS]: 'tss',
-      [MetaTable.TABLE_SYNC_MAPPINGS]: 'tsm',
-      [MetaTable.TABLE_SYNC_COLUMN_MAPPINGS]: 'tscm',
+      [MetaTable.TABLE_SYATMOSPHERE_MAPPINGS]: 'tsm',
+      [MetaTable.TABLE_SYATMOSPHERE_COLUMN_MAPPINGS]: 'tscm',
       [MetaTable.PERMISSIONS]: 'perm',
       [MetaTable.PERMISSION_SUBJECTS]: 'pers',
       [MetaTable.DASHBOARDS]: 'dash',
@@ -238,7 +238,7 @@ export class MetaService {
       [MetaTable.OPERATION_LOGS]: 'opl',
     };
 
-    const prefix = prefixMap[target] || 'nc';
+    const prefix = prefixMap[target] || 'atm';
 
     // using nanoid to avoid collision with existing ids when duplicating
     return `${prefix}${
@@ -302,21 +302,21 @@ export class MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
@@ -325,7 +325,7 @@ export class MetaService {
       insertObj.fk_workspace_id = workspace_id;
 
       if (!base_id && base_id !== RootScopes.WORKSPACE) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -377,28 +377,28 @@ export class MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -461,28 +461,28 @@ export class MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -498,7 +498,7 @@ export class MetaService {
       query.whereIn('id', ids).update(updateObj);
     } else {
       if (![MetaTable.FILE_REFERENCES].includes(target as MetaTable)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'This table does not support conditional bulk update',
           sql: '',
         });
@@ -540,28 +540,28 @@ export class MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id && base_id !== RootScopes.WORKSPACE) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -659,28 +659,28 @@ export class MetaService {
       }
     } else if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -738,7 +738,7 @@ export class MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
@@ -750,21 +750,21 @@ export class MetaService {
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -828,28 +828,28 @@ export class MetaService {
       // bypass
     } else if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -901,28 +901,28 @@ export class MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -1068,18 +1068,18 @@ export class MetaService {
   }
 
   /***
-   * Check if legacy nc_projects table exists (used only to block upgrades from very old versions)
+   * Check if legacy atm_projects table exists (used only to block upgrades from very old versions)
    * */
   public async legacyProjectList(): Promise<any[]> {
     const tableExists = await this.knexConnection.schema.hasTable(
-      'nc_projects',
+      'atm_projects',
     );
 
     if (!tableExists) {
       return [];
     }
 
-    return this.knexConnection('nc_projects').select('id');
+    return this.knexConnection('atm_projects').select('id');
   }
 
   private getNanoId() {
@@ -1164,7 +1164,7 @@ export class MetaService {
     }
 
     // Throw an error if no condition is found in the query builder.
-    NcError.metaError({
+    AtError.metaError({
       message: 'A condition is required to ' + operation + ' records.',
       sql,
     });

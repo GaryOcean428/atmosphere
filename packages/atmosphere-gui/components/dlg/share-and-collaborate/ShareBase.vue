@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StringOrNullType } from 'nocodb-sdk'
+import type { StringOrNullType } from 'atmosphere-sdk'
 
 interface ShareBase {
   uuid?: string
@@ -142,10 +142,10 @@ const copyCustomUrl = async (custUrl = '') => {
 </script>
 
 <template>
-  <div class="flex flex-col py-2 px-3 gap-2 w-full" data-testid="nc-share-base-sub-modal">
-    <div class="flex flex-col w-full p-3 border-1 border-nc-border-gray-light rounded-md">
+  <div class="flex flex-col py-2 px-3 gap-2 w-full" data-testid="atm-share-base-sub-modal">
+    <div class="flex flex-col w-full p-3 border-1 border-atm-border-gray-light rounded-md">
       <div class="flex flex-row w-full justify-between">
-        <div class="text-nc-content-gray-emphasis font-medium">{{ $t('activity.enablePublicAccess') }}</div>
+        <div class="text-atm-content-gray-emphasis font-medium">{{ $t('activity.enablePublicAccess') }}</div>
         <a-switch
           v-if="!isPrivateBase"
           v-e="['c:share:base:enable:toggle']"
@@ -154,9 +154,9 @@ const copyCustomUrl = async (custUrl = '') => {
           class="ml-2"
           @click="toggleSharedBase"
         />
-        <div v-else class="text-nc-content-gray-muted">{{ $t('labels.sharingRestricted') }}</div>
+        <div v-else class="text-atm-content-gray-muted">{{ $t('labels.sharingRestricted') }}</div>
       </div>
-      <div v-if="isSharedBaseEnabled" class="flex flex-col gap-3 w-full mt-3 border-t-1 pt-3 border-nc-border-gray-light">
+      <div v-if="isSharedBaseEnabled" class="flex flex-col gap-3 w-full mt-3 border-t-1 pt-3 border-atm-border-gray-light">
         <GeneralCopyUrl v-model:url="url" />
         <DlgShareAndCollaborateCustomUrl
           v-if="sharedBase?.uuid && showEEFeatures"
@@ -168,9 +168,9 @@ const copyCustomUrl = async (custUrl = '') => {
         />
         <div
           v-if="!appInfo.ee && sharedBase?.role === ShareBaseRole.Editor"
-          class="flex flex-row justify-between bg-nc-bg-gray-extralight px-3 py-2 rounded-md"
+          class="flex flex-row justify-between bg-atm-bg-gray-extralight px-3 py-2 rounded-md"
         >
-          <div class="text-nc-content-gray-extreme">{{ $t('activity.editingAccess') }}</div>
+          <div class="text-atm-content-gray-extreme">{{ $t('activity.editingAccess') }}</div>
           <a-switch
             v-e="['c:share:base:role:toggle']"
             :loading="isRoleToggleLoading"

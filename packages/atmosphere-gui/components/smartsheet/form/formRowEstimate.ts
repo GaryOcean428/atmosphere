@@ -1,4 +1,4 @@
-import { FORM_ROW_FULL_WIDTH_UI_TYPES, UITypes } from 'nocodb-sdk'
+import { FORM_ROW_FULL_WIDTH_UI_TYPES, UITypes } from 'atmosphere-sdk'
 
 // Rough height estimates (px) used as the collapsed placeholder's min-height for
 // off-screen rows in the JS lazy-render path (`Form.vue`). They only apply until a

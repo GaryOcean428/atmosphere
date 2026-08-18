@@ -3,11 +3,11 @@ import * as Sentry from '@sentry/nestjs';
 
 import { ThrottlerException } from '@nestjs/throttler';
 import {
-  NcApiVersion,
-  NcErrorType,
-  NcSDKError,
+  AtApiVersion,
+  AtErrorType,
+  AtSDKError,
   BadRequest as SdkBadRequest,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { throttlerLogger } from '~/helpers/throttlerLogger';
@@ -18,9 +18,9 @@ import {
   ExternalError,
   extractDBError,
   Forbidden,
-  NcBaseError,
-  NcBaseErrorv2,
-  NcError,
+  AtBaseError,
+  AtBaseErrorv2,
+  AtError,
   NotFound,
   SsoError,
   TestConnectionError,
@@ -40,7 +40,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const apiVersion = (request as any).ncApiVersion;
 
-    // catch body-parser error and replace with NcBaseErrorv2
+    // catch body-parser error and replace with AtBaseErrorv2
     if (
       exception.name === 'BadRequestException' &&
       exception.status === 400 &&
@@ -48,19 +48,19 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         exception.message,
       )
     ) {
-      exception = NcError._.errorCodex.generateError(
-        NcErrorType.ERR_INVALID_JSON,
+      exception = AtError._.errorCodex.generateError(
+        AtErrorType.ERR_INVALID_JSON,
       );
     }
 
     // try to extract db error for unknown errors — kept here (in addition
     // to the mapper) so logging / SSO branches below can branch on it.
     const dbError =
-      exception instanceof NcBaseError ? null : extractDBError(exception);
+      exception instanceof AtBaseError ? null : extractDBError(exception);
 
     // skip unnecessary error logging
     if (
-      process.env.NC_ENABLE_ALL_API_ERROR_LOGGING === 'true' ||
+      process.env.ATMOSPHERE_ENABLE_ALL_API_ERROR_LOGGING === 'true' ||
       !(
         dbError ||
         exception instanceof BadRequest ||
@@ -75,12 +75,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         exception instanceof ThrottlerException ||
         exception instanceof ExternalError ||
         exception instanceof SdkBadRequest ||
-        exception instanceof NcSDKError ||
-        (exception instanceof NcBaseErrorv2 &&
+        exception instanceof AtSDKError ||
+        (exception instanceof AtBaseErrorv2 &&
           ![
-            NcErrorType.ERR_INTERNAL_SERVER,
-            NcErrorType.ERR_DATABASE_OP_FAILED,
-            NcErrorType.ERR_UNKNOWN,
+            AtErrorType.ERR_INTERNAL_SERVER,
+            AtErrorType.ERR_DATABASE_OP_FAILED,
+            AtErrorType.ERR_UNKNOWN,
           ].includes(exception.error))
       )
     )
@@ -125,7 +125,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       // Include actual error message only in development
       if (process.env.NODE_ENV !== 'production') {
-        const msgProp = apiVersion === NcApiVersion.V3 ? 'message' : 'msg';
+        const msgProp = apiVersion === AtApiVersion.V3 ? 'message' : 'msg';
         mapped.body.innerError = {
           [msgProp]: exception?.message || 'An unexpected error occurred',
           stack: exception?.stack,

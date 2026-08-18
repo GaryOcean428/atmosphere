@@ -3,7 +3,7 @@ import { promisify } from 'util';
 import { Readable } from 'stream';
 import path from 'path';
 import axios from 'axios';
-import { OperationSource } from 'nocodb-sdk';
+import { OperationSource } from 'atmosphere-sdk';
 import {
   GetObjectCommand,
   type PutObjectCommandInput,
@@ -11,11 +11,11 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Upload } from '@aws-sdk/lib-storage';
 import type { PutObjectRequest, S3 as S3Client } from '@aws-sdk/client-s3';
-import type { IStorageAdapterV2, XcFile } from '~/types/nc-plugin';
+import type { IStorageAdapterV2, XcFile } from '~/types/atm-plugin';
 import { getFilteredAgents } from '~/utils/ssrf';
 import { generateTempFilePath, waitForStreamClose } from '~/utils/pluginUtils';
-import { NcError } from '~/helpers/ncError';
-import { NC_ATTACHMENT_FIELD_SIZE } from '~/constants';
+import { AtError } from '~/helpers/ncError';
+import { ATMOSPHERE_ATTACHMENT_FIELD_SIZE } from '~/constants';
 
 interface GenericObjectStorageInput {
   bucket: string;
@@ -57,7 +57,7 @@ export default class GenericS3 implements IStorageAdapterV2 {
       const tempFile = generateTempFilePath();
       const createStream = fs.createWriteStream(tempFile);
       await waitForStreamClose(createStream);
-      await this.fileCreate('nc-test-file.txt', {
+      await this.fileCreate('atm-test-file.txt', {
         path: tempFile,
         mimetype: 'text/plain',
         originalname: 'temp.txt',
@@ -66,7 +66,7 @@ export default class GenericS3 implements IStorageAdapterV2 {
       await promisify(fs.unlink)(tempFile);
       return true;
     } catch (e) {
-      NcError._.pluginTestError(e?.message);
+      AtError._.pluginTestError(e?.message);
     }
   }
 
@@ -90,7 +90,7 @@ export default class GenericS3 implements IStorageAdapterV2 {
         });
       });
     } catch (error) {
-      NcError._.storageFileReadError(error.message);
+      AtError._.storageFileReadError(error.message);
     }
   }
 
@@ -99,14 +99,14 @@ export default class GenericS3 implements IStorageAdapterV2 {
       const fileStream = fs.createReadStream(file.path);
 
       fileStream.on('error', (err) => {
-        NcError._.storageFileCreateError(err.message);
+        AtError._.storageFileCreateError(err.message);
       });
 
       return await this.fileCreateByStream(key, fileStream, {
         mimetype: file?.mimetype,
       });
     } catch (error) {
-      NcError._.storageFileCreateError(error.message);
+      AtError._.storageFileCreateError(error.message);
     }
   }
 
@@ -135,7 +135,7 @@ export default class GenericS3 implements IStorageAdapterV2 {
 
       return await Promise.race([upload, streamError]);
     } catch (error) {
-      NcError._.storageFileStreamError(error.message);
+      AtError._.storageFileStreamError(error.message);
     }
   }
 
@@ -148,7 +148,7 @@ export default class GenericS3 implements IStorageAdapterV2 {
       const response = await axios.get(url, {
         ...getFilteredAgents({ url, source: OperationSource.PLUGINS }),
         responseType: buffer ? 'arraybuffer' : 'stream',
-        maxContentLength: NC_ATTACHMENT_FIELD_SIZE,
+        maxContentLength: ATMOSPHERE_ATTACHMENT_FIELD_SIZE,
       });
       const uploadParams: PutObjectRequest = {
         ...this.defaultParams,
@@ -163,7 +163,7 @@ export default class GenericS3 implements IStorageAdapterV2 {
         data: response.data,
       };
     } catch (error) {
-      NcError._.storageFileCreateError(
+      AtError._.storageFileCreateError(
         `Failed to create file from URL: ${error.message}`,
       );
     }
@@ -184,7 +184,7 @@ export default class GenericS3 implements IStorageAdapterV2 {
         expiresIn: expiresInSeconds,
       });
     } catch (error) {
-      NcError._.storageFileReadError(
+      AtError._.storageFileReadError(
         `Failed to generate signed URL: ${error.message}`,
       );
     }
@@ -204,7 +204,7 @@ export default class GenericS3 implements IStorageAdapterV2 {
 
       return this.patchUploadReturnKey(data.Location);
     } catch (error) {
-      NcError._.storageFileCreateError(error.message);
+      AtError._.storageFileCreateError(error.message);
     }
   }
 
@@ -221,12 +221,12 @@ export default class GenericS3 implements IStorageAdapterV2 {
 
       // Handle any stream errors that occur during reading
       stream.on('error', (error) => {
-        NcError._.storageFileStreamError(error.message);
+        AtError._.storageFileStreamError(error.message);
       });
 
       return stream;
     } catch (error) {
-      NcError._.storageFileStreamError(error.message);
+      AtError._.storageFileStreamError(error.message);
     }
   }
 
@@ -241,7 +241,7 @@ export default class GenericS3 implements IStorageAdapterV2 {
         return path.basename(content.Key);
       });
     } catch (error) {
-      NcError._.storageFileReadError(
+      AtError._.storageFileReadError(
         `Failed to list directory: ${error.message}`,
       );
     }
@@ -255,7 +255,7 @@ export default class GenericS3 implements IStorageAdapterV2 {
       });
       return true;
     } catch (error) {
-      NcError._.storageFileDeleteError(error.message);
+      AtError._.storageFileDeleteError(error.message);
     }
   }
 
@@ -266,9 +266,9 @@ export default class GenericS3 implements IStorageAdapterV2 {
     // remove the leading slash
     globPattern = globPattern.replace(/^\//, '');
 
-    // make sure pattern starts with nc/uploads/
-    if (!globPattern.startsWith('nc/uploads/')) {
-      globPattern = `nc/uploads/${globPattern}`;
+    // make sure pattern starts with atm/uploads/
+    if (!globPattern.startsWith('atm/uploads/')) {
+      globPattern = `atm/uploads/${globPattern}`;
     }
 
     // S3 does not support glob so remove *

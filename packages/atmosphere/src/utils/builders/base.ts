@@ -1,4 +1,4 @@
-import type { BaseType, BaseV3Type, SourceType } from 'nocodb-sdk';
+import type { BaseType, BaseV3Type, SourceType } from 'atmosphere-sdk';
 import { builderGenerator } from '~/utils/api-v3-data-transformation.builder';
 
 export const baseBuilder = builderGenerator<BaseType, BaseV3Type>({

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if [ ! -d "${NC_TOOL_DIR}" ] ; then
-  mkdir -p "$NC_TOOL_DIR"
+if [ ! -d "${ATMOSPHERE_TOOL_DIR}" ] ; then
+  mkdir -p "$ATMOSPHERE_TOOL_DIR"
 fi
 
 # ensure backwards compatibility of renamed env vars
@@ -20,12 +20,12 @@ fi
 
 
 use_litestream() {
-     [ -z "${NC_DB}" ] \
-  && [ -z "${NC_DB_JSON}" ] \
-  && [ -z "${NC_DB_JSON_FILE}" ] \
+     [ -z "${ATMOSPHERE_DB}" ] \
+  && [ -z "${ATMOSPHERE_DB_JSON}" ] \
+  && [ -z "${ATMOSPHERE_DB_JSON_FILE}" ] \
   && [ -z "${DATABASE_URL}" ] \
   && [ -z "${DATABASE_URL_FILE}" ] \
-  && [ -z "${NC_MINIMAL_DBS}" ] \
+  && [ -z "${ATMOSPHERE_MINIMAL_DBS}" ] \
   && [ -n "${LITESTREAM_S3_BUCKET}" ] \
   && [ -n "${LITESTREAM_S3_ACCESS_KEY_ID}" ] \
   && [ -n "${LITESTREAM_S3_SECRET_ACCESS_KEY}" ]
@@ -34,7 +34,7 @@ use_litestream() {
 if use_litestream ; then
 
   # set default bucket path if not provided
-  : "${LITESTREAM_S3_PATH:=nocodb}"
+  : "${LITESTREAM_S3_PATH:=atmosphere}"
 
   # enable age encryption in Litestream config if indicated
   LITESTREAM_CONFIG_PATH='/etc/litestream.yml'
@@ -51,23 +51,23 @@ if use_litestream ; then
   fi
 
   # remove any possible local DB leftovers
-  if [ -f "${NC_TOOL_DIR}noco.db" ] ; then
-    rm "${NC_TOOL_DIR}noco.db"
-    rm -f "${NC_TOOL_DIR}noco.db-shm"
-    rm -f "${NC_TOOL_DIR}noco.db-wal"
+  if [ -f "${ATMOSPHERE_TOOL_DIR}atmosphere.db" ] ; then
+    rm "${ATMOSPHERE_TOOL_DIR}atmosphere.db"
+    rm -f "${ATMOSPHERE_TOOL_DIR}atmosphere.db-shm"
+    rm -f "${ATMOSPHERE_TOOL_DIR}atmosphere.db-wal"
   fi
 
   # restore DB from Litestream replica
-  litestream restore "${NC_TOOL_DIR}noco.db"
+  litestream restore "${ATMOSPHERE_TOOL_DIR}atmosphere.db"
 
   # create empty DB file if no Litestream replica exists
-  if [ ! -f "${NC_TOOL_DIR}noco.db" ] ; then
-    touch "${NC_TOOL_DIR}noco.db"
+  if [ ! -f "${ATMOSPHERE_TOOL_DIR}atmosphere.db" ] ; then
+    touch "${ATMOSPHERE_TOOL_DIR}atmosphere.db"
   fi
 
   # start Litestream replication
   litestream replicate &
 fi
 
-# start NocoDB
+# start Atmosphere
 node docker/main.js

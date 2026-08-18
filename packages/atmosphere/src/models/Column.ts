@@ -7,12 +7,12 @@ import {
   RelationTypes,
   SqlUiFactory,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { Logger } from '@nestjs/common';
 import type { MetaService } from 'src/meta/meta.service';
-import type { ColumnReqType, ColumnType } from 'nocodb-sdk';
+import type { ColumnReqType, ColumnType } from 'atmosphere-sdk';
 import type { ColumnInternalMeta } from '~/types/column-internal-meta';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import FormulaColumn from '~/models/FormulaColumn';
 import LinkToAnotherRecordColumn from '~/models/LinkToAnotherRecordColumn';
 import LookupColumn from '~/models/LookupColumn';
@@ -26,16 +26,16 @@ import BarcodeColumn from '~/models/BarcodeColumn';
 import AIColumn from '~/models/AIColumn';
 import { ButtonColumn, FileReference, LinksColumn, Source } from '~/models';
 import { extractProps } from '~/helpers/extractProps';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import addFormulaErrorIfMissingColumn from '~/helpers/addFormulaErrorIfMissingColumn';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   CacheDelDirection,
   CacheGetType,
   CacheScope,
   MetaTable,
 } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import {
   parseMetaProp,
   prepareForDb,
@@ -47,7 +47,7 @@ import {
   clearSingleQueryCacheForColumnReferences,
   clearSingleQueryCacheForRenamedColumnReferences,
 } from '~/helpers/singleQueryCacheInvalidator';
-import { NcCache } from '~/decorators/nc-cache.decorator';
+import { AtCache } from '~/decorators/atm-cache.decorator';
 import { validateColumnInternalMeta } from '~/types/column-internal-meta';
 import { getReplay, isReplay } from '~/helpers/replayScope';
 
@@ -131,14 +131,14 @@ export default class Column<T = any> implements ColumnType {
   }
 
   public async getModel(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model> {
     return Model.get(context, this.fk_model_id, false, ncMeta);
   }
 
   public static async insert<T>(
-    context: NcContext,
+    context: AtContext,
     column: Partial<T> & {
       source_id?: string;
       [key: string]: any;
@@ -146,9 +146,9 @@ export default class Column<T = any> implements ColumnType {
       uidt: UITypes | string;
       view_id?: string;
     } & Pick<ColumnReqType, 'column_order'>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    if (!column.fk_model_id) NcError.badRequest('Missing model id');
+    if (!column.fk_model_id) AtError.badRequest('Missing model id');
 
     // TODO: fix type
     const insertObj = extractProps(column as any, [
@@ -253,7 +253,7 @@ export default class Column<T = any> implements ColumnType {
 
     const col = await this.get(context, { colId: row.id }, ncMeta);
 
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       context,
       CacheScope.COLUMN,
       [column.fk_model_id],
@@ -308,7 +308,7 @@ export default class Column<T = any> implements ColumnType {
     context,
     column: Partial<T> & { source_id?: string; [p: string]: any },
     colId,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     switch (column.uidt || column.ui_data_type) {
       case UITypes.Lookup: {
@@ -543,7 +543,7 @@ export default class Column<T = any> implements ColumnType {
           await ncMeta.metaInsert2(
             context.workspace_id,
             context.base_id,
-            'nc_col_props_v2',
+            'atm_col_props_v2',
             {
               column_id: model.column_id,
 
@@ -590,15 +590,15 @@ export default class Column<T = any> implements ColumnType {
     }
   }
 
-  @NcCache({
+  @AtCache({
     key: (args, thisArg) => thisArg.id,
     onCacheHit: async (_args, result, thisArg) => {
       thisArg.colOptions = result;
     },
   })
   public async getColOptions<U = T>(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<U> {
     let res: any;
 
@@ -660,9 +660,9 @@ export default class Column<T = any> implements ColumnType {
   }
 
   async loadModel(
-    context: NcContext,
+    context: AtContext,
     force = false,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model> {
     if (!this.model || force) {
       this.model = await Model.getByIdOrName(
@@ -679,14 +679,14 @@ export default class Column<T = any> implements ColumnType {
     return this.model;
   }
 
-  @NcCache({
+  @AtCache({
     key: (args) =>
       `${args[1].fk_model_id}:${args[1].fk_default_view_id ?? 'default'}:${
         args[1].includeDeleted ? 'd' : ''
       }`,
   })
   public static async list(
-    context: NcContext,
+    context: AtContext,
     {
       fk_model_id,
       fk_default_view_id,
@@ -696,9 +696,9 @@ export default class Column<T = any> implements ColumnType {
       fk_default_view_id?: string;
       includeDeleted?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column[]> {
-    const cachedList = await NocoCache.getList(context, CacheScope.COLUMN, [
+    const cachedList = await AtmosphereCache.getList(context, CacheScope.COLUMN, [
       fk_model_id,
     ]);
     let { list: columnsList } = cachedList;
@@ -734,7 +734,7 @@ export default class Column<T = any> implements ColumnType {
         column.internal_meta = parseMetaProp(column, 'internal_meta');
       });
 
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.COLUMN,
         [fk_model_id],
@@ -768,7 +768,7 @@ export default class Column<T = any> implements ColumnType {
     );
 
     /*const columns = ncMeta
-      .knex('nc_models_v2 as tab')
+      .knex('atm_models_v2 as tab')
       .select(
         'col.id',
         'col.cn',
@@ -778,10 +778,10 @@ export default class Column<T = any> implements ColumnType {
         'rel.ref_rel_cn',
         'rel.id as rel_id'
       )
-      .join('nc_columns_v2 as col', 'tab.id', 'col.model_id')
+      .join('atm_columns_v2 as col', 'tab.id', 'col.model_id')
       .leftJoin(
         ncMeta
-          .knex('nc_col_relations_v2 as r')
+          .knex('atm_col_relations_v2 as r')
           .select(
             'r.*',
             'col1.cn as rel_cn',
@@ -789,8 +789,8 @@ export default class Column<T = any> implements ColumnType {
             'col2.cn as ref_rel_cn',
             'col2._cn as _ref_rel_cn'
           )
-          .join('nc_columns_v2 as col1', 'col1.id', 'r.rel_column_id')
-          .join('nc_columns_v2 as col2', 'col2.id', 'r.ref_rel_column_id')
+          .join('atm_columns_v2 as col1', 'col1.id', 'r.rel_column_id')
+          .join('atm_columns_v2 as col2', 'col2.id', 'r.ref_rel_column_id')
           .as('rel'),
         'col.id',
         'rel.column_id'
@@ -804,11 +804,11 @@ export default class Column<T = any> implements ColumnType {
     return columns.map(c => new Column(c));*/
   }
 
-  @NcCache({
+  @AtCache({
     key: (args) => `${args[1].colId}:${args[1].includeDeleted ? 'd' : ''}`,
   })
   public static async get<T = any>(
-    context: NcContext,
+    context: AtContext,
     {
       colId,
       includeDeleted,
@@ -818,11 +818,11 @@ export default class Column<T = any> implements ColumnType {
       colId: string;
       includeDeleted?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column<T>> {
     let colData =
       colId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.COLUMN}:${colId}`,
         CacheGetType.TYPE_OBJECT,
@@ -841,7 +841,7 @@ export default class Column<T = any> implements ColumnType {
           colData.meta = {};
         }
         colData.internal_meta = parseMetaProp(colData, 'internal_meta');
-        await NocoCache.set(context, `${CacheScope.COLUMN}:${colId}`, colData);
+        await AtmosphereCache.set(context, `${CacheScope.COLUMN}:${colId}`, colData);
       }
     }
 
@@ -866,11 +866,11 @@ export default class Column<T = any> implements ColumnType {
 
   id: string;
 
-  static async delete(context: NcContext, id, ncMeta = Noco.ncMeta) {
+  static async delete(context: AtContext, id, ncMeta = Atmosphere.ncMeta) {
     return Column.delete2(context, { id }, ncMeta);
   }
   static async delete2(
-    context: NcContext,
+    context: AtContext,
     {
       id,
       includeDeleted,
@@ -898,7 +898,7 @@ export default class Column<T = any> implements ColumnType {
         columnId: string,
       ) => Promise<void>;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const col = await this.get(context, { colId: id, includeDeleted }, ncMeta);
 
@@ -940,7 +940,7 @@ export default class Column<T = any> implements ColumnType {
     // Cross-base lookup/rollup error-marking is also handled by ColumnDeleteDependencyHandler.
 
     {
-      const cachedList = await NocoCache.getList(context, CacheScope.COLUMN, [
+      const cachedList = await AtmosphereCache.getList(context, CacheScope.COLUMN, [
         col.fk_model_id,
       ]);
       let { list: buttonColumns } = cachedList;
@@ -989,7 +989,7 @@ export default class Column<T = any> implements ColumnType {
     }
 
     {
-      const cachedList = await NocoCache.getList(context, CacheScope.COLUMN, [
+      const cachedList = await AtmosphereCache.getList(context, CacheScope.COLUMN, [
         col.fk_model_id,
       ]);
       let { list: aiColumns } = cachedList;
@@ -1033,7 +1033,7 @@ export default class Column<T = any> implements ColumnType {
     }
 
     {
-      const cachedList = await NocoCache.getList(context, CacheScope.COLUMN, [
+      const cachedList = await AtmosphereCache.getList(context, CacheScope.COLUMN, [
         col.fk_model_id,
       ]);
       let { list: formulaColumns } = cachedList;
@@ -1145,7 +1145,7 @@ export default class Column<T = any> implements ColumnType {
         },
       );
       await afterRelatedColumnDelete?.(context, col.id);
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         context,
         `${cacheScopeName}:${col.id}`,
         CacheDelDirection.CHILD_TO_PARENT,
@@ -1189,7 +1189,7 @@ export default class Column<T = any> implements ColumnType {
         fk_column_id: id,
       });
       for (const viewColumn of viewColumns) {
-        await NocoCache.deepDel(
+        await AtmosphereCache.deepDel(
           context,
           `${cacheScope}:${viewColumn.id}`,
           CacheDelDirection.CHILD_TO_PARENT,
@@ -1231,7 +1231,7 @@ export default class Column<T = any> implements ColumnType {
       MetaTable.COLUMNS,
       col.id,
     );
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.COLUMN}:${col.id}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -1248,10 +1248,10 @@ export default class Column<T = any> implements ColumnType {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     colId: string,
     column: Partial<Column> & Partial<Pick<ColumnReqType, 'column_order'>>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
     skipFormulaInvalidate = false,
   ) {
     return this.update2(
@@ -1262,14 +1262,14 @@ export default class Column<T = any> implements ColumnType {
   }
 
   static async update2(
-    context: NcContext,
+    context: AtContext,
     param: {
       colId: string;
       column: Partial<Column> & Partial<Pick<ColumnReqType, 'column_order'>>;
       skipFormulaInvalidate?: boolean;
       isSimpleUpdate?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const { colId, column, skipFormulaInvalidate = false } = param;
 
@@ -1289,7 +1289,7 @@ export default class Column<T = any> implements ColumnType {
         colId,
       );
 
-      await NocoCache.update(
+      await AtmosphereCache.update(
         context,
         `${CacheScope.COLUMN}:${colId}`,
         updateObj,
@@ -1325,7 +1325,7 @@ export default class Column<T = any> implements ColumnType {
               fk_column_id: colId,
             },
           );
-          await NocoCache.deepDel(
+          await AtmosphereCache.deepDel(
             context,
             `${CacheScope.COL_LOOKUP}:${colId}`,
             CacheDelDirection.CHILD_TO_PARENT,
@@ -1341,7 +1341,7 @@ export default class Column<T = any> implements ColumnType {
               fk_column_id: colId,
             },
           );
-          await NocoCache.deepDel(
+          await AtmosphereCache.deepDel(
             context,
             `${CacheScope.COL_ROLLUP}:${colId}`,
             CacheDelDirection.CHILD_TO_PARENT,
@@ -1359,7 +1359,7 @@ export default class Column<T = any> implements ColumnType {
               fk_column_id: colId,
             },
           );
-          await NocoCache.deepDel(
+          await AtmosphereCache.deepDel(
             context,
             `${CacheScope.COL_RELATION}:${colId}`,
             CacheDelDirection.CHILD_TO_PARENT,
@@ -1376,7 +1376,7 @@ export default class Column<T = any> implements ColumnType {
             },
           );
 
-          await NocoCache.deepDel(
+          await AtmosphereCache.deepDel(
             context,
             `${CacheScope.COL_FORMULA}:${colId}`,
             CacheDelDirection.CHILD_TO_PARENT,
@@ -1403,7 +1403,7 @@ export default class Column<T = any> implements ColumnType {
             },
           );
 
-          await NocoCache.deepDel(
+          await AtmosphereCache.deepDel(
             context,
             `${CacheScope.COL_BUTTON}:${colId}`,
             CacheDelDirection.CHILD_TO_PARENT,
@@ -1421,7 +1421,7 @@ export default class Column<T = any> implements ColumnType {
             },
           );
 
-          await NocoCache.deepDel(
+          await AtmosphereCache.deepDel(
             context,
             `${CacheScope.COL_QRCODE}:${colId}`,
             CacheDelDirection.CHILD_TO_PARENT,
@@ -1439,7 +1439,7 @@ export default class Column<T = any> implements ColumnType {
             },
           );
 
-          await NocoCache.deepDel(
+          await AtmosphereCache.deepDel(
             context,
             `${CacheScope.COL_BARCODE}:${colId}`,
             CacheDelDirection.CHILD_TO_PARENT,
@@ -1458,7 +1458,7 @@ export default class Column<T = any> implements ColumnType {
             },
           );
 
-          await NocoCache.deepDel(
+          await AtmosphereCache.deepDel(
             context,
             `${CacheScope.COL_SELECT_OPTION}:${colId}:list`,
             CacheDelDirection.PARENT_TO_CHILD,
@@ -1476,7 +1476,7 @@ export default class Column<T = any> implements ColumnType {
             },
           );
 
-          await NocoCache.deepDel(
+          await AtmosphereCache.deepDel(
             context,
             `${CacheScope.COL_LONG_TEXT}:${colId}`,
             CacheDelDirection.CHILD_TO_PARENT,
@@ -1591,7 +1591,7 @@ export default class Column<T = any> implements ColumnType {
       colId,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.COLUMN}:${colId}`,
       prepareForResponse(updateObj, ['meta', 'internal_meta']),
@@ -1673,10 +1673,10 @@ export default class Column<T = any> implements ColumnType {
   }
 
   static async updateCustomIndexName(
-    context: NcContext,
+    context: AtContext,
     colId: string,
     customIndexName: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaUpdate(
       context.workspace_id,
@@ -1688,17 +1688,17 @@ export default class Column<T = any> implements ColumnType {
       colId,
     );
 
-    await NocoCache.update(context, `${CacheScope.COLUMN}:${colId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.COLUMN}:${colId}`, {
       custom_index_name: customIndexName,
     });
   }
 
   static async updateFormulaColumnToNewType(
-    context: NcContext,
+    context: AtContext,
     {
       formulaColumn,
       destinationColumn,
-      ncMeta = Noco.ncMeta,
+      ncMeta = Atmosphere.ncMeta,
     }: {
       formulaColumn: Column;
       destinationColumn: Column;
@@ -1755,22 +1755,22 @@ export default class Column<T = any> implements ColumnType {
       destinationColumn.id,
     );
     // update the caches to reflect new columns
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.COLUMN}:${formulaColumn.id}`,
       prepareForResponse(updateObj),
     );
-    await NocoCache.del(
+    await AtmosphereCache.del(
       context,
       `${CacheScope.COLUMN}:${destinationColumn.id}`,
     );
   }
 
   static async updateAlias(
-    context: NcContext,
+    context: AtContext,
     colId: string,
     { title }: { title: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // set meta
     await ncMeta.metaUpdate(
@@ -1783,7 +1783,7 @@ export default class Column<T = any> implements ColumnType {
       colId,
     );
 
-    await NocoCache.update(context, `${CacheScope.COLUMN}:${colId}`, { title });
+    await AtmosphereCache.update(context, `${CacheScope.COLUMN}:${colId}`, { title });
 
     const column = await Column.get(context, { colId }, ncMeta);
 
@@ -1798,18 +1798,18 @@ export default class Column<T = any> implements ColumnType {
     return null;
   }
 
-  async delete(context: NcContext, ncMeta = Noco.ncMeta) {
+  async delete(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     return await Column.delete(context, this.id, ncMeta);
   }
 
   static async checkTitleAvailable(
-    context: NcContext,
+    context: AtContext,
     {
       column_name,
       fk_model_id,
       exclude_id,
     }: { column_name; fk_model_id; exclude_id? },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // Physical column_name must be unique including soft-deleted columns
     // (the physical DB column still exists even when trashed)
@@ -1827,9 +1827,9 @@ export default class Column<T = any> implements ColumnType {
   }
 
   static async checkAliasAvailable(
-    context: NcContext,
+    context: AtContext,
     { title, fk_model_id, exclude_id }: { title; fk_model_id; exclude_id? },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return !(await ncMeta.metaGet2(
       context.workspace_id,
@@ -1851,10 +1851,10 @@ export default class Column<T = any> implements ColumnType {
   }
 
   static async markAsSystemField(
-    context: NcContext,
+    context: AtContext,
     colId: string,
     system = true,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // update system field in meta db
     await ncMeta.metaUpdate(
@@ -1867,7 +1867,7 @@ export default class Column<T = any> implements ColumnType {
       colId,
     );
 
-    await NocoCache.update(context, `${CacheScope.COLUMN}:${colId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.COLUMN}:${colId}`, {
       system,
     });
   }
@@ -1892,9 +1892,9 @@ export default class Column<T = any> implements ColumnType {
   }
 
   static async updateMeta(
-    context: NcContext,
+    context: AtContext,
     { colId, meta }: { colId: string; meta: any },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // set meta
     await ncMeta.metaUpdate(
@@ -1905,7 +1905,7 @@ export default class Column<T = any> implements ColumnType {
       colId,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.COLUMN}:${colId}`,
       prepareForResponse({ meta }),
@@ -1913,9 +1913,9 @@ export default class Column<T = any> implements ColumnType {
   }
 
   static async updateValidation(
-    context: NcContext,
+    context: AtContext,
     { colId, validate }: { colId: string; validate: any },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // set meta
     await ncMeta.metaUpdate(
@@ -1926,15 +1926,15 @@ export default class Column<T = any> implements ColumnType {
       colId,
     );
 
-    await NocoCache.update(context, `${CacheScope.COLUMN}:${colId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.COLUMN}:${colId}`, {
       validate,
     });
   }
 
   static async updateTargetView(
-    context: NcContext,
+    context: AtContext,
     { colId, fk_target_view_id }: { colId: string; fk_target_view_id: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaUpdate(
       context.workspace_id,
@@ -1948,18 +1948,18 @@ export default class Column<T = any> implements ColumnType {
       },
     );
 
-    await NocoCache.update(context, `${CacheScope.COL_RELATION}:${colId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.COL_RELATION}:${colId}`, {
       fk_target_view_id,
     });
   }
 
   static async updateDisplayValueColumn(
-    context: NcContext,
+    context: AtContext,
     {
       colId,
       fk_display_value_column_id,
     }: { colId: string; fk_display_value_column_id: string | null },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaUpdate(
       context.workspace_id,
@@ -1973,7 +1973,7 @@ export default class Column<T = any> implements ColumnType {
       },
     );
 
-    await NocoCache.update(context, `${CacheScope.COL_RELATION}:${colId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.COL_RELATION}:${colId}`, {
       fk_display_value_column_id,
     });
   }
@@ -1981,12 +1981,12 @@ export default class Column<T = any> implements ColumnType {
   // Clear fk_display_value_column_id on every LTAR row that points at `colId`.
   // Direct knex (not metaList2) catches cross-base LTAR references; scoped by
   // fk_workspace_id for tenant safety. The lookup is backed by the
-  // nc_col_relations_v2_fk_display_value_column_id_index added in
-  // nc_202605050000_ltar_display_value_column.
+  // atm_col_relations_v2_fk_display_value_column_id_index added in
+  // atm_202605050000_ltar_display_value_column.
   static async clearDisplayValueColumnReferences(
-    context: NcContext,
+    context: AtContext,
     colId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const links = await ncMeta
       .knex(MetaTable.COL_RELATIONS)
@@ -2012,14 +2012,14 @@ export default class Column<T = any> implements ColumnType {
   }
 
   static async bulkInsert(
-    context: NcContext,
+    context: AtContext,
     param: {
       columns: Column[];
       fk_model_id: any;
       source_id: string;
       base_id: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const extractedColumnMetas = [];
     const columns = [];
@@ -2109,9 +2109,9 @@ export default class Column<T = any> implements ColumnType {
   }
 
   private static async bulkInsertColOption<T>(
-    context: NcContext,
+    context: AtContext,
     columns: (Partial<T> & { source_id?: string; [p: string]: any })[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertGroups = new Map<UITypes, Record<string, any>[]>();
 

@@ -1,15 +1,15 @@
-import type { SortType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { SortType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import Model from '~/models/Model';
 import Column from '~/models/Column';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   CacheDelDirection,
   CacheGetType,
   CacheScope,
   MetaTable,
 } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import View from '~/models/View';
 import { isReplay } from '~/helpers/replayScope';
@@ -37,11 +37,11 @@ export default class Sort {
 
   // skip viewWebhookManager for this, Sort.deleteAll is not a standalone operation, it's invoked by view service
   public static async deleteAll(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.SORT}:${viewId}`,
       CacheDelDirection.PARENT_TO_CHILD,
@@ -70,9 +70,9 @@ export default class Sort {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     sortObj: Partial<Sort> & { push_to_top?: boolean; order?: number },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(sortObj, [
       'id',
@@ -151,7 +151,7 @@ export default class Sort {
           },
         },
       );
-      await NocoCache.setList(context, CacheScope.SORT, listCacheKey, sortList);
+      await AtmosphereCache.setList(context, CacheScope.SORT, listCacheKey, sortList);
     }
     // on insert, delete any optimised single query cache
     await Sort.clearSingleQueryCacheForSort(context, row, ncMeta);
@@ -159,14 +159,14 @@ export default class Sort {
     return this.get(context, row.id, ncMeta).then(async (sort) => {
       if (!sortObj.push_to_top) {
         if (sortObj.fk_view_id)
-          await NocoCache.appendToList(
+          await AtmosphereCache.appendToList(
             context,
             CacheScope.SORT,
             [sortObj.fk_view_id],
             `${CacheScope.SORT}:${row.id}`,
           );
         if (sortObj.fk_column_id)
-          await NocoCache.appendToList(
+          await AtmosphereCache.appendToList(
             context,
             CacheScope.SORT,
             [sortObj.fk_column_id],
@@ -175,7 +175,7 @@ export default class Sort {
         // Lookup-scoped list cache (distinct prefix to avoid colliding with the
         // view/column lists), mirrored by listByLookupColumn().
         if (sortObj.fk_lookup_col_id)
-          await NocoCache.appendToList(
+          await AtmosphereCache.appendToList(
             context,
             CacheScope.SORT,
             ['lookup', sortObj.fk_lookup_col_id],
@@ -186,7 +186,7 @@ export default class Sort {
     });
   }
 
-  public getColumn(context: NcContext, ncMeta = Noco.ncMeta): Promise<Column> {
+  public getColumn(context: AtContext, ncMeta = Atmosphere.ncMeta): Promise<Column> {
     if (!this.fk_column_id) return null;
     return Column.get(
       context,
@@ -198,12 +198,12 @@ export default class Sort {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     { viewId }: { viewId: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Sort[]> {
     if (!viewId) return null;
-    const cachedList = await NocoCache.getList(context, CacheScope.SORT, [
+    const cachedList = await AtmosphereCache.getList(context, CacheScope.SORT, [
       viewId,
     ]);
     let { list: sortList } = cachedList;
@@ -220,7 +220,7 @@ export default class Sort {
           },
         },
       );
-      await NocoCache.setList(context, CacheScope.SORT, [viewId], sortList);
+      await AtmosphereCache.setList(context, CacheScope.SORT, [viewId], sortList);
     }
     sortList.sort(
       (a, b) =>
@@ -233,12 +233,12 @@ export default class Sort {
   // Sorts scoped to a lookup column (used to order the relation sub-query).
   // Mirrors Filter.allLinkFilterList; cached under a distinct 'lookup' prefix.
   public static async listByLookupColumn(
-    context: NcContext,
+    context: AtContext,
     { columnId }: { columnId: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Sort[]> {
     if (!columnId) return [];
-    const cachedList = await NocoCache.getList(context, CacheScope.SORT, [
+    const cachedList = await AtmosphereCache.getList(context, CacheScope.SORT, [
       'lookup',
       columnId,
     ]);
@@ -254,7 +254,7 @@ export default class Sort {
           orderBy: { order: 'asc' },
         },
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.SORT,
         ['lookup', columnId],
@@ -272,9 +272,9 @@ export default class Sort {
   // Clear the single-query cache for the model a sort affects: the view's model
   // for view sorts, or the model owning the lookup column for lookup sorts.
   private static async clearSingleQueryCacheForSort(
-    context: NcContext,
+    context: AtContext,
     sort: { fk_view_id?: string; fk_lookup_col_id?: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (sort?.fk_view_id) {
       const view = await View.get(context, sort.fk_view_id, false, ncMeta);
@@ -304,10 +304,10 @@ export default class Sort {
   }
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     sortId,
     body,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, [
       'fk_column_id',
@@ -325,7 +325,7 @@ export default class Sort {
       sortId,
     );
 
-    await NocoCache.update(context, `${CacheScope.SORT}:${sortId}`, updateObj);
+    await AtmosphereCache.update(context, `${CacheScope.SORT}:${sortId}`, updateObj);
 
     // on update, delete any optimised single query cache
     {
@@ -337,9 +337,9 @@ export default class Sort {
   }
 
   public static async delete(
-    context: NcContext,
+    context: AtContext,
     sortId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const sort = await this.get(context, sortId, ncMeta);
 
@@ -350,7 +350,7 @@ export default class Sort {
       sortId,
     );
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.SORT}:${sortId}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -360,10 +360,10 @@ export default class Sort {
     await Sort.clearSingleQueryCacheForSort(context, sort, ncMeta);
   }
 
-  public static async get(context: NcContext, id: any, ncMeta = Noco.ncMeta) {
+  public static async get(context: AtContext, id: any, ncMeta = Atmosphere.ncMeta) {
     let sortData =
       id &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.SORT}:${id}`,
         CacheGetType.TYPE_OBJECT,
@@ -375,14 +375,14 @@ export default class Sort {
         MetaTable.SORT,
         id,
       );
-      await NocoCache.set(context, `${CacheScope.SORT}:${id}`, sortData);
+      await AtmosphereCache.set(context, `${CacheScope.SORT}:${id}`, sortData);
     }
     return sortData && new Sort(sortData);
   }
 
   public async getModel(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model> {
     return Model.getByIdOrName(
       context,

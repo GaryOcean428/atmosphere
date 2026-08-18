@@ -19,7 +19,7 @@ export class MultiSelectGeneralHandler extends GenericFieldHandler {
    * Single/MultiSelect ORDER BY in MySQL needs `CONCAT(col)` to coerce the
    * underlying `enum`/`set` type into a string — sorting on the native
    * `enum` orders by the declared option position, not the option label.
-   * NocoDB stores options as strings; users expect alphabetical sort. Other
+   * Atmosphere stores options as strings; users expect alphabetical sort. Other
    * dialects sort the raw column name fine.
    */
   override async applySort(

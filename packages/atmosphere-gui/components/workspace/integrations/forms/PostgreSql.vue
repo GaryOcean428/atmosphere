@@ -49,14 +49,14 @@ const onInputFocus = () => {
     <WorkspaceIntegrationsPanel title="Integration Details" icon="info">
       <template v-if="appInfo.isCloud && !appInfo.isOnPrem" #header-info>
         <div
-          class="text-nc-content-gray-muted !text-xs font-weight-normal flex items-center gap-2 cursor-pointer flex items-center"
+          class="text-atm-content-gray-muted !text-xs font-weight-normal flex items-center gap-2 cursor-pointer flex items-center"
           @click="copyIp"
         >
           <GeneralIcon icon="info" class="text-primary" />
           Whitelist our ip: 52.15.226.51 to allow database access
           <GeneralIcon
             icon="duplicate"
-            class="text-nc-content-gray w-5 h-5 p-1 border-1 rounded-md border-nc-border-gray-medium"
+            class="text-atm-content-gray w-5 h-5 p-1 border-1 rounded-md border-atm-border-gray-medium"
           />
         </div>
       </template>
@@ -142,7 +142,7 @@ const onInputFocus = () => {
   @apply w-3/4 flex flex-col;
 
   .panel {
-    @apply border-1 border-nc-border-gray-medium px-4 py-4 rounded-lg mb-4;
+    @apply border-1 border-atm-border-gray-medium px-4 py-4 rounded-lg mb-4;
 
     .panel-label {
       @apply text-md font-weight-bold;

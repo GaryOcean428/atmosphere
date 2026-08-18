@@ -60,7 +60,7 @@ const iconColors = computed(() => {
         class="flex-none w-3 h-3"
         :class="{
           'bg-green-600': i <= optionIndex + 1,
-          'bg-nc-bg-gray-dark': i > optionIndex + 1,
+          'bg-atm-bg-gray-dark': i > optionIndex + 1,
           'rounded-l-full': i === 1,
           'rounded-r-full': i === totalOptions,
         }"

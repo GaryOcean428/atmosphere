@@ -35,12 +35,12 @@ const up = async (knex: Knex) => {
     table.timestamp('published_at');
 
     // Indexes for performance
-    table.index(['fk_workspace_id'], 'nc_sandboxes_workspace_id_idx');
-    table.index(['created_by'], 'nc_sandboxes_created_by_idx');
-    table.index(['base_id'], 'nc_sandboxes_base_id_idx');
-    table.index(['visibility'], 'nc_sandboxes_visibility_idx');
-    table.index(['category'], 'nc_sandboxes_category_idx');
-    table.index(['deleted'], 'nc_sandboxes_deleted_idx');
+    table.index(['fk_workspace_id'], 'atm_sandboxes_workspace_id_idx');
+    table.index(['created_by'], 'atm_sandboxes_created_by_idx');
+    table.index(['base_id'], 'atm_sandboxes_base_id_idx');
+    table.index(['visibility'], 'atm_sandboxes_visibility_idx');
+    table.index(['category'], 'atm_sandboxes_category_idx');
+    table.index(['deleted'], 'atm_sandboxes_deleted_idx');
   });
 
   // Create sandbox_versions table to store serialized schemas for each published version
@@ -71,19 +71,19 @@ const up = async (knex: Knex) => {
 
     // Composite unique constraint: one schema per version per sandbox
     table.unique(['fk_sandbox_id', 'version'], {
-      indexName: 'nc_sandbox_versions_unique_idx',
+      indexName: 'atm_sandbox_versions_unique_idx',
     });
     table.unique(['fk_sandbox_id', 'version_number'], {
-      indexName: 'nc_sandbox_versions_number_unique_idx',
+      indexName: 'atm_sandbox_versions_number_unique_idx',
     });
 
     // Indexes for performance
-    table.index(['fk_sandbox_id'], 'nc_sandbox_versions_sandbox_id_idx');
-    table.index(['fk_workspace_id'], 'nc_sandbox_versions_workspace_id_idx');
-    table.index(['fk_sandbox_id', 'status'], 'nc_sandbox_versions_status_idx');
+    table.index(['fk_sandbox_id'], 'atm_sandbox_versions_sandbox_id_idx');
+    table.index(['fk_workspace_id'], 'atm_sandbox_versions_workspace_id_idx');
+    table.index(['fk_sandbox_id', 'status'], 'atm_sandbox_versions_status_idx');
     table.index(
       ['fk_sandbox_id', 'version_number'],
-      'nc_sandbox_versions_ordering_idx',
+      'atm_sandbox_versions_ordering_idx',
     );
   });
 
@@ -105,12 +105,12 @@ const up = async (knex: Knex) => {
 
   // Add indexes for sandbox relationship columns
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
-    table.index(['sandbox_master'], 'nc_bases_sandbox_master_idx');
-    table.index(['sandbox_id'], 'nc_bases_sandbox_id_idx');
-    table.index(['sandbox_version_id'], 'nc_bases_sandbox_version_id_idx');
+    table.index(['sandbox_master'], 'atm_bases_sandbox_master_idx');
+    table.index(['sandbox_id'], 'atm_bases_sandbox_id_idx');
+    table.index(['sandbox_version_id'], 'atm_bases_sandbox_version_id_idx');
     table.index(
       ['sandbox_id', 'auto_update'],
-      'nc_bases_sandbox_auto_update_idx',
+      'atm_bases_sandbox_auto_update_idx',
     );
   });
 
@@ -148,25 +148,25 @@ const up = async (knex: Knex) => {
       // Indexes for performance
       table.index(
         ['fk_workspace_id'],
-        'nc_sandbox_deployment_logs_workspace_id_idx',
+        'atm_sandbox_deployment_logs_workspace_id_idx',
       );
-      table.index(['base_id'], 'nc_sandbox_deployment_logs_base_id_idx');
+      table.index(['base_id'], 'atm_sandbox_deployment_logs_base_id_idx');
       table.index(
         ['fk_sandbox_id'],
-        'nc_sandbox_deployment_logs_sandbox_id_idx',
+        'atm_sandbox_deployment_logs_sandbox_id_idx',
       );
       table.index(
         ['base_id', 'created_at'],
-        'nc_sandbox_deployment_logs_base_created_idx',
+        'atm_sandbox_deployment_logs_base_created_idx',
       );
-      table.index(['status'], 'nc_sandbox_deployment_logs_status_idx');
+      table.index(['status'], 'atm_sandbox_deployment_logs_status_idx');
       table.index(
         ['from_version_id'],
-        'nc_sandbox_deployment_logs_from_version_idx',
+        'atm_sandbox_deployment_logs_from_version_idx',
       );
       table.index(
         ['to_version_id'],
-        'nc_sandbox_deployment_logs_to_version_idx',
+        'atm_sandbox_deployment_logs_to_version_idx',
       );
     },
   );
@@ -183,11 +183,11 @@ const down = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
     table.dropIndex(
       ['sandbox_id', 'auto_update'],
-      'nc_bases_sandbox_auto_update_idx',
+      'atm_bases_sandbox_auto_update_idx',
     );
-    table.dropIndex(['sandbox_version_id'], 'nc_bases_sandbox_version_id_idx');
-    table.dropIndex(['sandbox_id'], 'nc_bases_sandbox_id_idx');
-    table.dropIndex(['sandbox_master'], 'nc_bases_sandbox_master_idx');
+    table.dropIndex(['sandbox_version_id'], 'atm_bases_sandbox_version_id_idx');
+    table.dropIndex(['sandbox_id'], 'atm_bases_sandbox_id_idx');
+    table.dropIndex(['sandbox_master'], 'atm_bases_sandbox_master_idx');
   });
 
   // Drop sandbox columns from bases table

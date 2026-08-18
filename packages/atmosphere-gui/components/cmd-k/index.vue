@@ -404,9 +404,9 @@ defineExpose({
 <template>
   <div v-show="vOpen" class="cmdk-modal" :class="{ 'cmdk-modal-active': vOpen }">
     <div ref="modalEl" class="cmdk-modal-content h-[25.25rem]">
-      <div class="cmdk-header border-b-1 border-nc-border-gray-medium">
+      <div class="cmdk-header border-b-1 border-atm-border-gray-medium">
         <div class="cmdk-input-wrapper">
-          <GeneralIcon class="h-4 w-4 text-nc-content-gray-muted" icon="search" />
+          <GeneralIcon class="h-4 w-4 text-atm-content-gray-muted" icon="search" />
           <div
             v-for="el of nestedScope"
             :key="`cmdk-breadcrumb-${el.id}`"
@@ -415,7 +415,7 @@ defineExpose({
             @click="setScope(el.id)"
           >
             <div
-              class="text-nc-content-gray-subtle2 text-sm cursor-pointer flex gap-2 px-2 py-1 items-center justify-center font-medium capitalize"
+              class="text-atm-content-gray-subtle2 text-sm cursor-pointer flex gap-2 px-2 py-1 items-center justify-center font-medium capitalize"
             >
               <GeneralLoader v-if="cmdLoading && !el.label" />
               <template v-else>
@@ -480,25 +480,25 @@ defineExpose({
                   class="text-ellipsis truncate capitalize max-w-16"
                   style="word-break: keep-all; white-space: nowrap; display: inline"
                 >
-                  <NcTooltip show-on-truncate-only class="truncate" :tooltip-style="{ zIndex: 1100 }">
+                  <AtTooltip show-on-truncate-only class="truncate" :tooltip-style="{ zIndex: 1100 }">
                     <template #title>
                       {{ el.label }}
                     </template>
                     <span class="text-ellipsis max-w-16">
                       {{ el.label }}
                     </span>
-                  </NcTooltip>
+                  </AtTooltip>
                 </span>
               </template>
             </div>
 
-            <span class="text-nc-content-gray-subtle text-sm pl-1 font-medium">/</span>
+            <span class="text-atm-content-gray-subtle text-sm pl-1 font-medium">/</span>
           </div>
           <input ref="cmdInputEl" v-model="cmdInput" class="cmdk-input" type="text" :placeholder="cmdPlaceholder" />
         </div>
       </div>
       <div class="cmdk-body">
-        <div ref="cmdkActionsRef" class="cmdk-actions nc-scrollbar-md">
+        <div ref="cmdkActionsRef" class="cmdk-actions atm-scrollbar-md">
           <div v-if="searchedActionList.length === 0 && cmdLoading" class="w-full h-[250px] flex justify-center items-center">
             <GeneralLoader :size="30" />
           </div>
@@ -508,7 +508,7 @@ defineExpose({
               class="!w-[240px] flex-none"
               :alt="$t('placeholder.noResultsFoundForYourSearch')"
             />
-            <div class="text-nc-content-gray-muted">{{ $t('placeholder.noResultsFoundForYourSearch') }}</div>
+            <div class="text-atm-content-gray-muted">{{ $t('placeholder.noResultsFoundForYourSearch') }}</div>
           </div>
           <template v-else>
             <div class="cmdk-action-list">
@@ -604,11 +604,11 @@ defineExpose({
                             </span>
                           </a-tooltip>
                           <div
-                            class="bg-nc-bg-gray-medium text-nc-content-gray-subtle2 cmdk-keyboard hidden text-xs gap-2 p-0.5 items-center justify-center rounded-md ml-auto pl-2"
+                            class="bg-atm-bg-gray-medium text-atm-content-gray-subtle2 cmdk-keyboard hidden text-xs gap-2 p-0.5 items-center justify-center rounded-md ml-auto pl-2"
                           >
                             {{ $t('general.enter') }}
                             <div
-                              class="bg-nc-bg-default border-1 items-center flex justify-center border-nc-border-gray-dark text-nc-content-gray-subtle rounded h-5 w-5 px-0.25"
+                              class="bg-atm-bg-default border-1 items-center flex justify-center border-atm-border-gray-dark text-atm-content-gray-subtle rounded h-5 w-5 px-0.25"
                             >
                               ↩
                             </div>
@@ -638,11 +638,11 @@ defineExpose({
   --cmdk-icon-color: var(--cmdk-secondary-text-color);
   --cmdk-icon-size: 1.2em;
 
-  --cmdk-modal-background: var(--nc-bg-default);
+  --cmdk-modal-background: var(--atm-bg-default);
 }
 
 .dark .cmdk-modal {
-  color: var(--nc-content-gray-subtle);
+  color: var(--atm-content-gray-subtle);
 }
 
 .cmdk-modal {
@@ -671,7 +671,7 @@ defineExpose({
   }
 
   .cmdk-modal-content {
-    @apply dark:(border-1 border-nc-border-gray-medium);
+    @apply dark:(border-1 border-atm-border-gray-medium);
 
     position: relative;
     display: flex;
@@ -704,7 +704,7 @@ defineExpose({
     outline: none;
     box-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color) !important;
 
-    caret-color: var(--nc-brand-accent);
+    caret-color: var(--atm-brand-accent);
     color: rgb(60, 65, 73);
   }
 
@@ -792,16 +792,16 @@ defineExpose({
         align-items: center;
         padding: 8px 16px;
         font-size: 14px;
-        color: var(--nc-content-gray-muted);
+        color: var(--atm-content-gray-muted);
       }
     }
   }
 
   .cmdk-footer {
-    @apply dark:!text-nc-content-gray-subtle2;
+    @apply dark:!text-atm-content-gray-subtle2;
 
     display: flex;
-    border-top: 1px solid var(--nc-border-gray-medium);
+    border-top: 1px solid var(--atm-border-gray-medium);
     background: rgba(242, 242, 242, 0.4);
     font-size: 0.8em;
     padding: 0 0.6em;
@@ -821,7 +821,7 @@ defineExpose({
       flex-grow: 1;
       justify-content: flex-end;
       align-items: center;
-      .nc-brand-icon {
+      .atm-brand-icon {
         margin-left: 0.5em;
       }
     }

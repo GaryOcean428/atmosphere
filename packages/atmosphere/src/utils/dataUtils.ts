@@ -1,5 +1,5 @@
-import { isLinksOrLTAR } from 'nocodb-sdk';
-import type { ColumnType } from 'nocodb-sdk';
+import { isLinksOrLTAR } from 'atmosphere-sdk';
+import type { ColumnType } from 'atmosphere-sdk';
 import { MAX_CONCURRENT_TRANSFORMS } from '~/constants';
 
 export function getAliasGenerator(prefix = '__nc_') {

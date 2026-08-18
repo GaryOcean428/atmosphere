@@ -26,9 +26,9 @@ const addOrRemoveClass = (add = false) => {
   const dropdownRoot = ncLinksDropdownRef.value?.parentElement?.parentElement?.parentElement?.parentElement as HTMLElement
   if (dropdownRoot) {
     if (add) {
-      dropdownRoot.classList.add('inset-0', 'nc-link-dropdown-root', `nc-root-${randomClass}`)
+      dropdownRoot.classList.add('inset-0', 'atm-link-dropdown-root', `atm-root-${randomClass}`)
     } else {
-      dropdownRoot.classList.remove('inset-0', 'nc-link-dropdown-root', `nc-root-${randomClass}`)
+      dropdownRoot.classList.remove('inset-0', 'atm-link-dropdown-root', `atm-root-${randomClass}`)
     }
   }
 }
@@ -101,7 +101,7 @@ watch(
     if (next) {
       onClickOutside(document.querySelector(`.${randomClass}`)! as HTMLDivElement, (e) => {
         const targetEl = e?.target as HTMLElement
-        if (!targetEl?.classList.contains(`nc-root-${randomClass}`) || targetEl?.closest(`.nc-${randomClass}`)) {
+        if (!targetEl?.classList.contains(`atm-root-${randomClass}`) || targetEl?.closest(`.atm-${randomClass}`)) {
           return
         }
         isOpen.value = false
@@ -127,41 +127,41 @@ watch([ncLinksDropdownRef, isOpen], () => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     :visible="isOpen"
     placement="bottom"
-    :overlay-class-name="`nc-links-dropdown ${isSimple ? '!min-w-[320px]' : '!min-w-[540px]'} xs:(!min-w-[90vw]) ${
+    :overlay-class-name="`atm-links-dropdown ${isSimple ? '!min-w-[320px]' : '!min-w-[540px]'} xs:(!min-w-[90vw]) ${
       isOpen ? 'active' : ''
     }`"
-    :class="`.nc-${randomClass}`"
+    :class="`.atm-${randomClass}`"
   >
     <slot />
     <template #overlay>
       <div
         ref="ncLinksDropdownRef"
-        class="nc-links-dropdown-wrapper"
-        :class="[randomClass, { 'select-none': isResizing, 'nc-links-dropdown-wrapper-simple': isSimple }]"
+        class="atm-links-dropdown-wrapper"
+        :class="[randomClass, { 'select-none': isResizing, 'atm-links-dropdown-wrapper-simple': isSimple }]"
         :style="wrapperStyle"
       >
         <slot name="overlay" />
 
         <!-- Custom resize handle — absolute so it doesn't add to scroll height -->
-        <div class="nc-links-resize-handle" @mousedown="onResizeStart" />
+        <div class="atm-links-resize-handle" @mousedown="onResizeStart" />
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style lang="scss">
-.nc-links-dropdown {
-  @apply rounded-xl !border-nc-border-gray-medium overflow-hidden;
+.atm-links-dropdown {
+  @apply rounded-xl !border-atm-border-gray-medium overflow-hidden;
   z-index: 1000 !important;
 }
-.nc-link-dropdown-root {
+.atm-link-dropdown-root {
   z-index: 1000;
 }
 
-.nc-links-dropdown-wrapper {
+.atm-links-dropdown-wrapper {
   @apply h-[412px] w-[540px] xs:(w-[90vw] min-h-[312px] h-[312px]) relative;
   overflow-y: auto;
   overflow-x: hidden;
@@ -172,7 +172,7 @@ watch([ncLinksDropdownRef, isOpen], () => {
 
 /* Auto-fits its content (no dead space with few records), capped at 360px —
    the list inside scrolls beyond that. Manual resize overrides via inline style. */
-.nc-links-dropdown-wrapper-simple {
+.atm-links-dropdown-wrapper-simple {
   @apply w-[320px] xs:(w-[90vw] min-h-[312px] h-[312px]) flex flex-col;
   height: auto;
   min-height: 0;
@@ -180,22 +180,22 @@ watch([ncLinksDropdownRef, isOpen], () => {
   overflow-y: hidden;
 }
 
-.nc-links-resize-handle {
+.atm-links-resize-handle {
   @apply absolute bottom-0 right-0 w-4 h-4 z-10 xs:hidden;
   cursor: nwse-resize;
   background-image: linear-gradient(
     135deg,
     transparent 50%,
-    var(--nc-content-gray-muted) 50%,
-    var(--nc-content-gray-muted) 55%,
+    var(--atm-content-gray-muted) 50%,
+    var(--atm-content-gray-muted) 55%,
     transparent 55%,
     transparent 70%,
-    var(--nc-content-gray-muted) 70%,
-    var(--nc-content-gray-muted) 75%,
+    var(--atm-content-gray-muted) 70%,
+    var(--atm-content-gray-muted) 75%,
     transparent 75%,
     transparent 90%,
-    var(--nc-content-gray-muted) 90%,
-    var(--nc-content-gray-muted) 95%,
+    var(--atm-content-gray-muted) 90%,
+    var(--atm-content-gray-muted) 95%,
     transparent 95%
   );
   opacity: 0.5;

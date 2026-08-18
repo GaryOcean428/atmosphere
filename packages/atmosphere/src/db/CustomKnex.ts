@@ -3,10 +3,10 @@ import { defaults, types } from 'pg';
 import dayjs from 'dayjs';
 import { CTEGenerator } from './cte-generator';
 import { buildPgLikeRaw } from './conditionV1/pgLikeRaw';
-import type { FilterType, NcContext } from 'nocodb-sdk';
+import type { FilterType, AtContext } from 'atmosphere-sdk';
 import type { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
 import Filter from '~/models/Filter';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { isMuxEnabled } from '~/utils/envs';
 
 // refer : https://github.com/brianc/node-pg-types/blob/master/lib/builtins.js
@@ -737,7 +737,7 @@ const parseCondition = (obj, columnAliases, qb, pKey?) => {
               qb = qb.whereNotIn(fieldName, val);
               break;
             default:
-              NcError.metaError({
+              AtError.metaError({
                 message: `Found invalid conditional operator "${key}" in expression`,
                 sql: '',
               });
@@ -1091,7 +1091,7 @@ type CustomKnex = Knex & {
   attachToTransaction?: (fn: () => void) => void;
   ops?: (() => void)[];
   _cteGenerator?: CTEGenerator;
-  cteGenerator?: (context?: NcContext) => CTEGenerator;
+  cteGenerator?: (context?: AtContext) => CTEGenerator;
   applyCte?: (qb: Knex.QueryInterface) => void;
   extDb?: ExtDbConfig;
   isExternal?: boolean;
@@ -1311,7 +1311,7 @@ function CustomKnex(
           // so queued blocks are applied against the same generator.
           cteGenerator: {
             enumerable: true,
-            value: (context?: NcContext) => {
+            value: (context?: AtContext) => {
               if (!kn._cteGenerator && context) {
                 kn._cteGenerator = new CTEGenerator({ context, knex: kn });
               }
@@ -1373,7 +1373,7 @@ function CustomKnex(
     },
     cteGenerator: {
       enumerable: true,
-      value: (context?: NcContext) => {
+      value: (context?: AtContext) => {
         if (!kn._cteGenerator && context) {
           kn._cteGenerator = new CTEGenerator({ context, knex: kn });
         }

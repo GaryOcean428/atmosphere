@@ -1,1 +1,1 @@
-export { type SuppressedError } from 'nocodb-sdk'
+export { type SuppressedError } from 'atmosphere-sdk'

@@ -168,7 +168,7 @@ onUnmounted(() => {
 <template>
   <a-drawer
     v-model:visible="value"
-    class="nc-features-drawer"
+    class="atm-features-drawer"
     :mask-style="{ background: 'transparent' }"
     :width="isMobileMode ? 'min(95vw, 458px)' : 'min(32vw, 458px)'"
     :placement="isRtl ? 'left' : 'right'"
@@ -176,25 +176,25 @@ onUnmounted(() => {
   >
     <div class="flex flex-col h-full">
       <div
-        class="flex items-center gap-3 px-2 !pl-4 rtl:(!pr-4 !pl-2) border-b-1 h-[var(--toolbar-height)] flex-none border-nc-border-gray-medium"
+        class="flex items-center gap-3 px-2 !pl-4 rtl:(!pr-4 !pl-2) border-b-1 h-[var(--toolbar-height)] flex-none border-atm-border-gray-medium"
       >
-        <component :is="iconMap.bulb" class="text-nc-content-inverted-secondary opacity-85 h-5 w-5" @click="handleClick" />
-        <h1 class="text-base !text-nc-content-inverted-secondary font-weight-700 p-0 m-0">
+        <component :is="iconMap.bulb" class="text-atm-content-inverted-secondary opacity-85 h-5 w-5" @click="handleClick" />
+        <h1 class="text-base !text-atm-content-inverted-secondary font-weight-700 p-0 m-0">
           {{ $t('general.featurePreview') }}
         </h1>
-        <nc-button type="text" class="!w-8 !h-8 !min-w-0 ml-auto rtl:(ml-0 mr-auto)" @click="value = false">
-          <GeneralIcon icon="close" class="!text-nc-content-inverted-secondary" />
-        </nc-button>
+        <atm-button type="text" class="!w-8 !h-8 !min-w-0 ml-auto rtl:(ml-0 mr-auto)" @click="value = false">
+          <GeneralIcon icon="close" class="!text-atm-content-inverted-secondary" />
+        </atm-button>
       </div>
 
       <div
-        class="text-sm font-weight-500 text-nc-content-gray-subtle2 leading-5 m-4 mb-0 flex items-center justify-between gap-3 pr-3"
+        class="text-sm font-weight-500 text-atm-content-gray-subtle2 leading-5 m-4 mb-0 flex items-center justify-between gap-3 pr-3"
         @click="handleAdvancedClick"
       >
         <span>
           {{ $t('labels.toggleExperimentalFeature') }}
         </span>
-        <NcTooltip
+        <AtTooltip
           :title="
             isAllFeaturesEnabled
               ? `${$t('general.disable')} ${$t('general.all')}`
@@ -202,19 +202,19 @@ onUnmounted(() => {
           "
           class="flex"
         >
-          <NcSwitch v-model:checked="isAllFeaturesEnabled" />
-        </NcTooltip>
+          <AtSwitch v-model:checked="isAllFeaturesEnabled" />
+        </AtTooltip>
       </div>
 
       <div class="p-4">
-        <a-input v-model:value="searchQuery" type="text" placeholder="Search features..." class="nc-input-sm nc-input-shadow">
+        <a-input v-model:value="searchQuery" type="text" placeholder="Search features..." class="atm-input-sm atm-input-shadow">
           <template #prefix>
             <GeneralIcon
               :class="{
-                'text-nc-content-brand': searchQuery?.length,
+                'text-atm-content-brand': searchQuery?.length,
               }"
               icon="search"
-              class="nc-search-icon h-3.5 w-3.5 mr-1"
+              class="atm-search-icon h-3.5 w-3.5 mr-1"
             />
           </template>
         </a-input>
@@ -222,29 +222,29 @@ onUnmounted(() => {
 
       <div
         v-if="filteredFeatures?.length"
-        class="border-1 !border-nc-border-gray-medium !rounded-lg overflow-y-auto nc-scrollbar-thin flex-1 mx-4 mb-4"
+        class="border-1 !border-atm-border-gray-medium !rounded-lg overflow-y-auto atm-scrollbar-thin flex-1 mx-4 mb-4"
       >
         <div class="flex flex-col">
           <template v-for="feature in filteredFeatures" :key="feature.id">
             <div
               v-if="isFeatureVisible(feature)"
-              class="border-b-1 px-3 flex gap-2 flex-col py-2 !border-nc-border-gray-medium last:border-b-0"
+              class="border-b-1 px-3 flex gap-2 flex-col py-2 !border-atm-border-gray-medium last:border-b-0"
             >
               <div class="flex items-center justify-between">
-                <div class="text-sm text-nc-content-gray !font-weight-600">
+                <div class="text-sm text-atm-content-gray !font-weight-600">
                   {{ feature.title }}
                 </div>
-                <NcSwitch v-model:checked="selectedFeatures[feature.id]" @change="saveExperimentalFeatures" />
+                <AtSwitch v-model:checked="selectedFeatures[feature.id]" @change="saveExperimentalFeatures" />
               </div>
 
-              <div class="text-nc-content-gray-muted leading-4 text-[13px] font-weight-500">
+              <div class="text-atm-content-gray-muted leading-4 text-[13px] font-weight-500">
                 {{ feature.description }}
               </div>
             </div>
           </template>
         </div>
       </div>
-      <div v-else class="px-2 py-6 text-center text-nc-content-gray-muted flex flex-col items-center gap-6">
+      <div v-else class="px-2 py-6 text-center text-atm-content-gray-muted flex flex-col items-center gap-6">
         <img
           src="~assets/img/placeholder/no-search-result-found.png"
           class="!w-[164px] flex-none"
@@ -258,9 +258,9 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss">
-.nc-features-drawer {
+.atm-features-drawer {
   .ant-drawer-content-wrapper {
-    @apply !rounded-l-xl overflow-hidden mt-[48px] h-[calc(100vh_-_48px)] border-1 border-r-0 border-nc-border-gray-medium;
+    @apply !rounded-l-xl overflow-hidden mt-[48px] h-[calc(100vh_-_48px)] border-1 border-r-0 border-atm-border-gray-medium;
 
     @supports (height: 100dvh) {
       @apply h-[calc(100dvh_-_48px)];
@@ -276,23 +276,23 @@ onUnmounted(() => {
   }
 }
 
-.rtl .nc-features-drawer {
+.rtl .atm-features-drawer {
   .ant-drawer-content-wrapper {
     @apply !rounded-l-none !rounded-r-xl !border-l-0 !border-r-1;
   }
 }
 
 :deep(.field-list-with-search) {
-  .nc-divider {
+  .atm-divider {
     display: none !important;
   }
 
-  .nc-toolbar-dropdown-search-field-input {
+  .atm-toolbar-dropdown-search-field-input {
     @apply rounded-lg;
   }
 
-  .nc-list-item {
-    @apply h-8 hover:bg-nc-bg-gray-light gap-x-1.5;
+  .atm-list-item {
+    @apply h-8 hover:bg-atm-bg-gray-light gap-x-1.5;
   }
 }
 </style>

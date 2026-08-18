@@ -31,8 +31,8 @@ import {
   isSystemColumn,
   isVirtualCol,
   LongTextAiMetaProp,
-  NcApiVersion,
-  NcErrorType,
+  AtApiVersion,
+  AtErrorType,
   ncIsNull,
   ncIsNullOrUndefined,
   ncIsObject,
@@ -43,7 +43,7 @@ import {
   RelationTypes,
   resolveCurrentUserToken,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { v4 as uuidv4 } from 'uuid';
 import debug from 'debug';
 import type {
@@ -57,10 +57,10 @@ import type {
   DataUnlinkPayload,
   DataUpdatePayload,
   FilterType,
-  NcRequest,
+  AtRequest,
   ParsedFormulaNode,
   UpdatePayload,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type CustomKnex from '~/db/CustomKnex';
 import type { XKnex } from '~/db/CustomKnex';
@@ -69,7 +69,7 @@ import type {
   XcFilter,
   XcFilterWithAlias,
 } from '~/db/sql-data-mapper/lib/BaseModel';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type LookupColumn from '~/models/LookupColumn';
 import type { ResolverObj } from '~/utils';
 import type {
@@ -104,7 +104,7 @@ import formulaQueryBuilderv2 from '~/db/formulav2/formulaQueryBuilderv2';
 import { RelationManager } from '~/db/relation-manager';
 import sortV2 from '~/db/sortV2';
 import { customValidators } from '~/db/util/customValidators';
-import { NcError, OptionsNotExistsError } from '~/helpers/catchError';
+import { AtError, OptionsNotExistsError } from '~/helpers/catchError';
 import {
   _wherePk,
   applyPaginate,
@@ -145,13 +145,13 @@ import {
   Source,
   View,
 } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { HANDLE_WEBHOOK } from '~/services/hook-handler.service';
 import {
   extractColsMetaForAudit,
   extractExcludedColumnNames,
   generateAuditV1Payload,
-  nocoExecute,
+  atmosphereExecute,
   populateUpdatePayloadDiff,
   processConcurrently,
   remapWithAlias,
@@ -163,7 +163,7 @@ import {
   QUERY_STRING_FIELD_ID_ON_RESULT,
   QUERY_STRING_LINKS_AS_LTAR,
 } from '~/constants';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 import { prepareMetaUpdateQuery } from '~/helpers/metaColumnHelpers';
 import { supportsThumbnails } from '~/utils/attachmentUtils';
 import { Profiler } from '~/helpers/profiler';
@@ -175,7 +175,7 @@ import {
 } from '~/decorators/trace-command.decorator';
 import { isReplay } from '~/helpers/replayScope';
 
-const debugCount = debug('nc:db:query:basemodel:count');
+const debugCount = debug('atm:db:query:basemodel:count');
 
 dayjs.extend(utc);
 
@@ -201,7 +201,7 @@ export interface ExecAndParseOptions {
   raw?: boolean;
   first?: boolean;
   bulkAggregate?: boolean;
-  apiVersion?: NcApiVersion;
+  apiVersion?: AtApiVersion;
   // Bypass the public-viewer email redaction in convertUserFormat. Used by
   // write paths that need full emails to flow into webhook hooks; they apply
   // the redaction themselves on the response copy after firing hooks.
@@ -256,7 +256,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
    * Serial query queue shared across the entire resolution tree.
    * All DataLoader batch callbacks are wrapped with queue.add() so that
    * actual DB queries execute one at a time, preventing connection pool
-   * exhaustion while nocoExecute fires all .load() calls in parallel.
+   * exhaustion while atmosphereExecute fires all .load() calls in parallel.
    * Propagated to child BaseModel instances via Model.getBaseModelSQL({ queryQueue }).
    */
   protected _queryQueue: PQueue;
@@ -265,7 +265,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   protected _rlsConditions: Promise<Filter[]> | undefined;
   protected source: Source;
   public model: Model;
-  public context: NcContext;
+  public context: AtContext;
   public schema?: string;
   public formulaDryRunFailed?: boolean;
   protected logger = new Logger('BaseModelSqlv2');
@@ -311,7 +311,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   /**
    * Shared serial query queue (see `_queryQueue`). Exposed so out-of-band
    * relation resolvers can route their batched fetches through the same
-   * pool-safety mechanism nocoExecute uses.
+   * pool-safety mechanism atmosphereExecute uses.
    */
   public get queryQueue(): PQueue {
     return this._queryQueue;
@@ -341,7 +341,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     this._queryQueue =
       queryQueue ??
       new PQueue({
-        concurrency: +(process.env.NC_DB_QUERY_QUEUE_CONCURRENCY || 1),
+        concurrency: +(process.env.ATMOSPHERE_DB_QUERY_QUEUE_CONCURRENCY || 1),
       });
     autoBind(this);
   }
@@ -366,7 +366,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       getHiddenColumn?: boolean;
       throwErrorIfInvalidParams?: boolean;
       extractOnlyPrimaries?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       extractOrderColumn?: boolean;
       ignoreRls?: boolean;
       fk_display_value_column_id?: string | null;
@@ -391,12 +391,12 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       apiVersion,
       fk_display_value_column_id,
       skipSubstitutingColumnIds:
-        this.context.api_version === NcApiVersion.V3 &&
+        this.context.api_version === AtApiVersion.V3 &&
         query?.[QUERY_STRING_FIELD_ID_ON_RESULT] === 'true',
     });
 
     const linksAsLtar =
-      apiVersion === NcApiVersion.V3 &&
+      apiVersion === AtApiVersion.V3 &&
       query?.[QUERY_STRING_LINKS_AS_LTAR] === 'true';
 
     await this.selectObject({
@@ -450,7 +450,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
         first: true,
         apiVersion,
         skipSubstitutingColumnIds:
-          this.context.api_version === NcApiVersion.V3 &&
+          this.context.api_version === AtApiVersion.V3 &&
           query?.[QUERY_STRING_FIELD_ID_ON_RESULT] === 'true',
         skipPublicRedaction,
       });
@@ -479,7 +479,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     }
 
     return data
-      ? await nocoExecute(ast, data as ResolverObj, {}, parsedQuery)
+      ? await atmosphereExecute(ast, data as ResolverObj, {}, parsedQuery)
       : null;
   }
 
@@ -814,7 +814,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       limitOverride?: number;
       pks?: string;
       customConditions?: Filter[];
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       linksAsLtar?: boolean | string;
     } = {},
     options: {
@@ -1311,7 +1311,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     param: {
       colId: string;
       ids: any[];
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       nested?: boolean;
       linksAsLtar?: boolean;
     },
@@ -1327,7 +1327,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     param: {
       colId: string;
       parentId: any;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       nested?: boolean;
       linksAsLtar?: boolean;
     },
@@ -1370,7 +1370,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     param: {
       colId: string;
       id: any;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       nested?: boolean;
       linksAsLtar?: boolean;
     },
@@ -1400,7 +1400,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     param: {
       colId: string;
       parentIds: any[];
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       nested?: boolean;
       linksAsLtar?: boolean;
     },
@@ -1620,7 +1620,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     }
 
     // First priority on v3 api is sort object if exists
-    if (this.context.api_version === NcApiVersion.V3 && sort) {
+    if (this.context.api_version === AtApiVersion.V3 && sort) {
       const sortObj = extractSortsObject(
         this.context,
         sort,
@@ -1650,7 +1650,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       }
 
       // backward compatibility: if not v3, apply sort on this priority
-      if (this.context.api_version !== NcApiVersion.V3) {
+      if (this.context.api_version !== AtApiVersion.V3) {
         // Third priority query string sort
         if (!sort) return;
         const sortObj = extractSortsObject(
@@ -1672,7 +1672,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     aliasToColumnBuilder = {},
   ) {
     const formula = await column.getColOptions<FormulaColumn>(this.context);
-    if (formula.error) NcError.get(this.context).formulaError(formula.error);
+    if (formula.error) AtError.get(this.context).formulaError(formula.error);
 
     const qb = await formulaQueryBuilderv2({
       baseModel: this,
@@ -1687,10 +1687,10 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   }
 
   async getProto({
-    apiVersion = NcApiVersion.V2,
+    apiVersion = AtApiVersion.V2,
     linksAsLtar = false,
   }: {
-    apiVersion?: NcApiVersion;
+    apiVersion?: AtApiVersion;
     linksAsLtar?: boolean;
   } = {}) {
     if (this._proto) {
@@ -2133,10 +2133,10 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   _getListArgs(
     args: XcFilterWithAlias,
     {
-      apiVersion = NcApiVersion.V2,
+      apiVersion = AtApiVersion.V2,
       nested = false,
     }: {
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       nested?: boolean;
     } = {},
   ): XcFilter {
@@ -2175,13 +2175,13 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     return await selectObject(this, logger)(params);
   }
   public async afterSoftDeleteCompleted(_params: {
-    cookie: NcRequest;
+    cookie: AtRequest;
     operationNow: string;
   }): Promise<void> {
     // No-op — overridden in EE.
   }
 
-  async insert(data, request: NcRequest, trx?, _disableOptimization = false) {
+  async insert(data, request: AtRequest, trx?, _disableOptimization = false) {
     return await baseModelInsert(this).single(
       data,
       request,
@@ -2699,7 +2699,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     );
 
     if (!row) {
-      NcError.get(this.context).recordNotFound(rowId);
+      AtError.get(this.context).recordNotFound(rowId);
     }
 
     const orderCol = columns.find((c) => c.uidt === UITypes.Order);
@@ -2782,15 +2782,15 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       );
 
       if (!prevData) {
-        NcError.get(this.context).recordNotFound(id);
+        AtError.get(this.context).recordNotFound(id);
       }
 
-      await this.prepareNocoData(updateObj, false, cookie, prevData);
+      await this.prepareAtmosphereData(updateObj, false, cookie, prevData);
 
       // Reject empty payloads explicitly — knex would otherwise throw
       // "Empty .update() call detected" with no usable context for the user.
       if (!updateObj || Object.keys(updateObj).length === 0) {
-        NcError.get(this.context).invalidRequestBody(
+        AtError.get(this.context).invalidRequestBody(
           'No valid fields provided in update payload',
         );
       }
@@ -2799,7 +2799,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
       // mssql rejects UPDATEs that touch an IDENTITY column (error 8102:
       // "Cannot update identity column 'X'") even when the new value
-      // equals the old. NocoDB never legitimately changes a PK through
+      // equals the old. Atmosphere never legitimately changes a PK through
       // the update flow, so dropping the PK keys from the payload is
       // safe — only opt in for mssql to avoid churning cached SQL on
       // the other dialects.
@@ -2951,7 +2951,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     );
   }
 
-  async nestedInsert(data, request: NcRequest, _trx = null, param?) {
+  async nestedInsert(data, request: AtRequest, _trx = null, param?) {
     // const driver = trx ? trx : await this.dbDriver.transaction();
     try {
       const source = await this.getSource();
@@ -3019,7 +3019,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
       await this.beforeInsert(insertObj, request);
 
-      await this.prepareNocoData(insertObj, true, request, null, {
+      await this.prepareAtmosphereData(insertObj, true, request, null, {
         ncOrder: null,
         before: param?.before,
         undo: param?.undo,
@@ -3027,12 +3027,12 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
       // Oracle pins a session NLS datetime format with no offset token, so a
       // raw `…+00:00` value (carried by V1/V2 payloads) raises ORA-01830 on
-      // insert. prepareNocoData (called above) skips DateTime offset
+      // insert. prepareAtmosphereData (called above) skips DateTime offset
       // normalization for inserts, so do DateTime here — mirroring
       // handleValidateBulkInsert. Time is offset-stripped via the field
-      // handler's parseUserInput inside prepareNocoData (Oracle + mssql, all
+      // handler's parseUserInput inside prepareAtmosphereData (Oracle + mssql, all
       // insert/update paths), so it needs no inline handling here.
-      if (this.isOracle && this.context.api_version !== NcApiVersion.V3) {
+      if (this.isOracle && this.context.api_version !== AtApiVersion.V3) {
         for (const col of columns) {
           const v = insertObj[col.column_name];
           if (v === null || v === undefined) continue;
@@ -3439,7 +3439,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     nestedCols: Column[];
     data: Record<string, any>;
     insertObj: Record<string, any>;
-    req: NcRequest;
+    req: AtRequest;
   }) {
     return new NestedLinkPreparator().prepareNestedLinkQb(this, param);
   }
@@ -3521,7 +3521,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       throwOnDuplicate?: boolean;
       typecast?: boolean;
       /** V3 honours inline link fields; earlier versions ignore them. */
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       /**
        * Reports which pks were matched-and-updated. The return value merges
        * updates and inserts, so callers that need per-record status (v3
@@ -3623,7 +3623,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           const matchedRecords = existingMap.get(key);
 
           if (matchedRecords?.length > 1 && throwOnDuplicate) {
-            NcError.get(this.context).invalidRequestBody(
+            AtError.get(this.context).invalidRequestBody(
               `Multiple records match fieldsToMergeOn [${mergeColNames.join(
                 ', ',
               )}] — the combination must uniquely identify at most one record`,
@@ -3637,10 +3637,10 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
             for (const pk of this.model.primaryKeys) {
               data[pk.column_name] = existingRecord[pk.column_name];
             }
-            await this.prepareNocoData(data, false, cookie);
+            await this.prepareAtmosphereData(data, false, cookie);
             toUpdate.push(data);
           } else {
-            await this.prepareNocoData(data, true, cookie, null, {
+            await this.prepareAtmosphereData(data, true, cookie, null, {
               ncOrder: order,
               undo,
             });
@@ -3664,7 +3664,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           if (pkValues !== 'N/A' && pkValues !== undefined) {
             dataWithPks.push({ pk: pkValues, data });
           } else {
-            await this.prepareNocoData(data, true, cookie, null, {
+            await this.prepareAtmosphereData(data, true, cookie, null, {
               ncOrder: order,
               undo,
             });
@@ -3698,7 +3698,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
         for (const { pk, data } of dataWithPks) {
           if (existingPkSet.has(pk)) {
-            await this.prepareNocoData(data, false, cookie);
+            await this.prepareAtmosphereData(data, false, cookie);
             toUpdate.push(data);
           } else if (trashedPkSet.has(pk)) {
             // PK belongs to a trashed record — strip the PK and insert as a new record.
@@ -3707,14 +3707,14 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
               delete data[pkCol.column_name];
               delete data[pkCol.title];
             }
-            await this.prepareNocoData(data, true, cookie, null, {
+            await this.prepareAtmosphereData(data, true, cookie, null, {
               ncOrder: order,
               undo,
             });
             order = order?.plus(1);
             toInsert.push(data);
           } else {
-            await this.prepareNocoData(data, true, cookie, null, {
+            await this.prepareAtmosphereData(data, true, cookie, null, {
               ncOrder: order,
               undo,
             });
@@ -3729,7 +3729,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       // preparator `bulkInsert` uses; it mutates `insertObj` with the FK for
       // BELONGS_TO / MANY_TO_ONE, so it has to run before the INSERT is built.
       const nestedCols =
-        !raw && apiVersion === NcApiVersion.V3
+        !raw && apiVersion === AtApiVersion.V3
           ? columns.filter((col) => isLinksOrLTAR(col))
           : [];
 
@@ -3823,7 +3823,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
       // Everywhere but sqlite the link writes join `trx`, so a rejected link id
       // rolls the field writes back with it. sqlite's pool is a single
-      // connection, and in CE a meta source shares it with `Noco.ncMeta`, so
+      // connection, and in CE a meta source shares it with `Atmosphere.ncMeta`, so
       // there the link writer's own queries would wait on the connection `trx`
       // is holding — a deadlock that only ends at the 60s acquire timeout.
       // Those links are written after the commit instead, giving up atomicity.
@@ -4086,7 +4086,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   async chunkList(args: {
     pks: string[];
     chunkSize?: number;
-    apiVersion?: NcApiVersion;
+    apiVersion?: AtApiVersion;
     args?: Record<string, any>;
     ignoreRls?: boolean;
     extractOnlyPrimaries?: boolean;
@@ -4120,7 +4120,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           deletedOnly: args.deletedOnly,
         },
       );
-      chunkData = await nocoExecute(ast, chunkData, {}, args.args || {});
+      chunkData = await atmosphereExecute(ast, chunkData, {}, args.args || {});
       data.push(...chunkData);
     }
 
@@ -4152,13 +4152,13 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           isCreatedOrLastModifiedTimeCol(col) ||
           isCreatedOrLastModifiedByCol(col)
         ) {
-          NcError.get(this.context).badRequest(
+          AtError.get(this.context).badRequest(
             `Column "${col.title}" is auto generated and cannot be updated`,
           );
         }
 
         if (isVirtualCol(col) && !isLinksOrLTAR(col)) {
-          NcError.get(this.context).badRequest(
+          AtError.get(this.context).badRequest(
             `Column "${col.title}" is virtual and cannot be updated`,
           );
         }
@@ -4176,14 +4176,14 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           }
 
           if (shouldThrow) {
-            NcError.get(this.context).badRequest(
+            AtError.get(this.context).badRequest(
               `Column "${col.title}" is system column and cannot be updated`,
             );
           }
         }
 
         if (!allowSystemColumn && col.readonly) {
-          NcError.get(this.context).badRequest(
+          AtError.get(this.context).badRequest(
             `Column "${col.title}" is readonly column and cannot be updated`,
           );
         }
@@ -4196,7 +4196,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
             d[col.title] = d[col.id];
           } else {
             d[col.title] =
-              col.meta?.ag === 'nc' ? `rc_${nanoidv2()}` : uuidv4();
+              col.meta?.ag === 'atm' ? `rc_${nanoidv2()}` : uuidv4();
           }
         }
       }
@@ -4208,7 +4208,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           : !ncIsUndefined(d?.[col.title])
           ? d?.[col.title]
           : d?.[col.id];
-        if (val !== undefined && this.context.api_version !== NcApiVersion.V3) {
+        if (val !== undefined && this.context.api_version !== AtApiVersion.V3) {
           if (col.uidt === UITypes.Attachment && typeof val !== 'string') {
             val = JSON.stringify(val);
           }
@@ -4277,7 +4277,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     if (isMssql) {
       // T-SQL `datetime` / `datetime2` types reject the `+00:00` offset
       // suffix ("Conversion failed when converting date and/or time from
-      // character string"). NocoDB stores UTC wall-clock without TZ for
+      // character string"). Atmosphere stores UTC wall-clock without TZ for
       // mssql, so strip the offset after computing the UTC instant —
       // mirrors `DateTimeMssqlHandler.parseUserInput`.
       return dayjs(val).utc().format('YYYY-MM-DD HH:mm:ss');
@@ -4319,7 +4319,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     datas: any[],
     params?: {
       chunkSize?: number;
-      cookie?: NcRequest;
+      cookie?: AtRequest;
       foreign_key_checks?: boolean;
       skip_hooks?: boolean;
       raw?: boolean;
@@ -4328,11 +4328,11 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       allowSystemColumn?: boolean;
       typecast?: boolean;
       undo?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       onInsertedPks?: (pks: (string | number)[]) => void;
       /** Consumed by the EE override to skip per-field edit-permission checks. */
       skipPermissionCheck?: boolean;
-      /** Trusted internal copy paths only — see `prepareNocoData`. */
+      /** Trusted internal copy paths only — see `prepareAtmosphereData`. */
       skipAttachmentOwnershipCheck?: boolean;
     },
   ) {
@@ -4357,7 +4357,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       isSingleRecordUpdation?: boolean;
       allowSystemColumn?: boolean;
       typecast?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       skip_hooks?: boolean;
     } = {},
   ) {
@@ -4400,7 +4400,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
         if (!pkValues) {
           if (throwExceptionIfNotExist)
-            NcError.get(this.context).recordNotFound(pkValues);
+            AtError.get(this.context).recordNotFound(pkValues);
           continue;
         }
 
@@ -4422,8 +4422,8 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           query: {},
           extractOnlyPrimaries: false,
         });
-        // nocoexecute
-        const oldRecords = await nocoExecute(
+        // atmosphereexecute
+        const oldRecords = await atmosphereExecute(
           ast,
           oldRecordChunkList,
           {},
@@ -4439,10 +4439,10 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           if (!oldRecord) {
             // removed data from error param, record not found message do not use data
             if (throwExceptionIfNotExist)
-              NcError.get(this.context).recordNotFound(pk);
+              AtError.get(this.context).recordNotFound(pk);
             continue;
           }
-          await this.prepareNocoData(data, false, cookie, oldRecord);
+          await this.prepareAtmosphereData(data, false, cookie, oldRecord);
           prevData.push(oldRecord);
           if (attachmentCols.length > 0) {
             const attachmentOperation =
@@ -4465,7 +4465,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
           // mssql rejects UPDATEs that touch an IDENTITY column ("Cannot
           // update identity column 'X'", error 8102) even when the new
-          // value equals the old. NocoDB never legitimately changes a PK
+          // value equals the old. Atmosphere never legitimately changes a PK
           // through the update flow, so dropping the PK keys from the
           // payload is safe — only opt in for mssql to avoid churning
           // cached SQL on the other dialects.
@@ -4520,7 +4520,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
         throw ex;
       }
 
-      if (apiVersion === NcApiVersion.V3) {
+      if (apiVersion === AtApiVersion.V3) {
         profiler.log('updateLTARCols start');
         // remove LTAR/Links if part of the update request
         await this.updateLTARCols({
@@ -4547,8 +4547,8 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
             query: {},
             extractOnlyPrimaries: false,
           });
-          // nocoexecute
-          const updatedRecords = await nocoExecute(
+          // atmosphereexecute
+          const updatedRecords = await atmosphereExecute(
             ast,
             updatedRecordList,
             {},
@@ -4590,7 +4590,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     trx,
   }: {
     datas: any[];
-    cookie: NcRequest;
+    cookie: AtRequest;
     trx?: Knex.Transaction;
   }) {
     return LTARColsUpdater({ baseModel: this, logger }).updateLTARCols({
@@ -4619,7 +4619,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       skip_hooks = false,
       allowSystemColumn = false,
     }: {
-      cookie: NcRequest;
+      cookie: AtRequest;
       skip_hooks?: boolean;
       allowSystemColumn?: boolean;
     },
@@ -4642,13 +4642,13 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       // if attachment provided error out
       for (const col of columns) {
         if (col.uidt === UITypes.Attachment && updateData[col.column_name]) {
-          NcError.get(this.context).notImplemented(
+          AtError.get(this.context).notImplemented(
             `Attachment bulk update all`,
           );
         }
       }
 
-      await this.prepareNocoData(updateData, false, cookie);
+      await this.prepareAtmosphereData(updateData, false, cookie);
 
       const pkValues = this.extractPksValues(updateData);
       if (pkValues !== null && pkValues !== undefined) {
@@ -4778,7 +4778,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     // `in` operator — reject it with a 400 rather than a 500 TypeError.
     for (const d of ids ?? []) {
       if (!d || typeof d !== 'object') {
-        NcError.get(this.context).invalidRequestBody(
+        AtError.get(this.context).invalidRequestBody(
           'Each record to delete must be an object containing its primary key(s)',
         );
       }
@@ -4810,7 +4810,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
         if (!pkValues) {
           // throw or skip if no pk provided
           if (throwExceptionIfNotExist) {
-            NcError.get(this.context).recordNotFound(pkValues);
+            AtError.get(this.context).recordNotFound(pkValues);
           }
           continue;
         }
@@ -4841,7 +4841,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
               if (!oldRecord) {
                 // throw or skip if no record found
                 if (throwExceptionIfNotExist) {
-                  NcError.get(this.context).recordNotFound(pk);
+                  AtError.get(this.context).recordNotFound(pk);
                 }
                 continue;
               }
@@ -5235,7 +5235,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
         transaction = await this.dbDriver.transaction();
 
-        // execQueries are pre-filtered above: pushed only when NocoDB must
+        // execQueries are pre-filtered above: pushed only when Atmosphere must
         // cascade itself (meta source, or external FK with dr === 'NO ACTION').
         if (execQueries.length > 0) {
           for (const execQuery of execQueries) {
@@ -5331,7 +5331,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       skipPks?: string;
       permanentDelete?: boolean;
     } = {},
-    { cookie, skip_hooks = false }: { cookie: NcRequest; skip_hooks?: boolean },
+    { cookie, skip_hooks = false }: { cookie: AtRequest; skip_hooks?: boolean },
   ) {
     return await new BaseModelDelete(this).bulkAll({
       args,
@@ -5342,7 +5342,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   async permanentDeleteByIds(
     rowIds: string[],
-    cookie: NcRequest,
+    cookie: AtRequest,
     isBulkAllOperation = false,
   ) {
     return await new BaseModelDelete(this).permanentDeleteByIds(
@@ -5359,14 +5359,14 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   public async handleRichTextMentions(
     _prevData: Record<string, any> | Record<string, any>[] | null,
     _newData: Record<string, any> | Record<string, any>[],
-    _req: NcRequest,
+    _req: AtRequest,
   ) {
     return;
   }
 
   public async beforeInsert(
     data: Record<string, any>,
-    req: NcRequest,
+    req: AtRequest,
     params?: {
       allowSystemColumn?: boolean;
     },
@@ -5374,7 +5374,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     const { allowSystemColumn = false } = params || {};
 
     if (!allowSystemColumn && this.model.synced) {
-      NcError.get(this.context).prohibitedSyncTableOperation({
+      AtError.get(this.context).prohibitedSyncTableOperation({
         modelName: this.model.title,
         operation: 'insert',
       });
@@ -5385,7 +5385,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   public async beforeBulkInsert(
     data: Record<string, any>[],
-    req: NcRequest,
+    req: AtRequest,
     params?: {
       allowSystemColumn?: boolean;
       // Honored by the EE override (skips the TABLE_RECORD_ADD check for trusted
@@ -5396,7 +5396,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     const { allowSystemColumn = false } = params || {};
 
     if (!allowSystemColumn && this.model.synced) {
-      NcError.get(this.context).prohibitedSyncTableOperation({
+      AtError.get(this.context).prohibitedSyncTableOperation({
         modelName: this.model.title,
         operation: 'insert',
       });
@@ -5412,7 +5412,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   }: {
     data: Record<string, any>;
     insertData: Record<string, any>;
-    req: NcRequest;
+    req: AtRequest;
   }): Promise<void> {
     await this.handleHooks('after.insert', null, data, req);
     const id = this.extractPksValues(data);
@@ -5454,14 +5454,14 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   public async afterBulkInsert(
     data: Record<string, any>[],
-    req: NcRequest,
+    req: AtRequest,
   ): Promise<void> {
     await this.handleHooks('after.bulkInsert', null, data, req);
     let parentAuditId;
 
     // disable external source audit in cloud
     if (!req.ncParentAuditId && (await this.isDataAuditEnabled())) {
-      parentAuditId = await Noco.ncAudit.genNanoid(MetaTable.AUDIT);
+      parentAuditId = await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT);
 
       await Audit.insert(
         await generateAuditV1Payload<DataBulkDeletePayload>(
@@ -5530,7 +5530,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   public async afterDelete(
     data: Record<string, any>,
-    req: NcRequest,
+    req: AtRequest,
     eventType: AuditV1OperationTypes = AuditV1OperationTypes.DATA_DELETE,
   ): Promise<void> {
     const id = this.extractPksValues(data);
@@ -5559,7 +5559,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   public async afterBulkDelete(
     data: Record<string, any>[],
-    req: NcRequest,
+    req: AtRequest,
     isBulkAllOperation = false,
     bulkEventType: AuditV1OperationTypes = AuditV1OperationTypes.DATA_BULK_DELETE,
     rowEventType: AuditV1OperationTypes = AuditV1OperationTypes.DATA_DELETE,
@@ -5573,7 +5573,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     const reuseParent = isBulkAllOperation && !!req.ncParentAuditId;
     const parentAuditId = reuseParent
       ? req.ncParentAuditId
-      : await Noco.ncAudit.genNanoid(MetaTable.AUDIT);
+      : await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT);
 
     // disable external source audit in cloud
     if (!reuseParent && (await this.isDataAuditEnabled())) {
@@ -5636,7 +5636,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     const parentAuditId = reuseParent
       ? req.ncParentAuditId
       : isBulk || isBulkAllOperation
-      ? await Noco.ncAudit.genNanoid(MetaTable.AUDIT)
+      ? await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT)
       : undefined;
 
     if (
@@ -5701,7 +5701,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   public async afterBulkUpdate(
     prevData: Record<string, any>[] | null,
     newData: Record<string, any>[] | number,
-    req: NcRequest,
+    req: AtRequest,
     isBulkAllOperation = false,
   ): Promise<void> {
     if (!isBulkAllOperation && Array.isArray(newData)) {
@@ -5711,7 +5711,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     if (!Array.isArray(newData)) return;
 
     if (newData.length > 0) {
-      const parentAuditId = await Noco.ncAudit.genNanoid(MetaTable.AUDIT);
+      const parentAuditId = await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT);
 
       // disable external source audit in cloud
       if (await this.isDataAuditEnabled()) {
@@ -5813,12 +5813,12 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   public async beforeUpdate(
     data: Record<string, any>,
-    req: NcRequest,
+    req: AtRequest,
   ): Promise<void> {
     const ignoreWebhook = req.query?.ignoreWebhook;
     if (ignoreWebhook) {
       if (ignoreWebhook != 'true' && ignoreWebhook != 'false') {
-        NcError.get(this.context).badRequest(
+        AtError.get(this.context).badRequest(
           'ignoreWebhook value can be either true or false',
         );
       }
@@ -5831,7 +5831,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   public async afterUpdate(
     prevData: Record<string, any>,
     newData: Record<string, any>,
-    req: NcRequest,
+    req: AtRequest,
     updateObj?: Record<string, any>,
   ): Promise<void> {
     // TODO this is a temporary fix for the audit log / DOMPurify causes issue for long text
@@ -5899,7 +5899,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     const ignoreWebhook = req.query?.ignoreWebhook;
     if (ignoreWebhook) {
       if (ignoreWebhook != 'true' && ignoreWebhook != 'false') {
-        NcError.get(this.context).badRequest(
+        AtError.get(this.context).badRequest(
           'ignoreWebhook value can be either true or false',
         );
       }
@@ -5912,7 +5912,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   public async beforeDelete(
     data: Record<string, any>,
-    req: NcRequest,
+    req: AtRequest,
     params?: {
       allowSystemColumn?: boolean;
     },
@@ -5920,7 +5920,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     const { allowSystemColumn = false } = params || {};
 
     if (!allowSystemColumn && this.model.synced) {
-      NcError.get(this.context).prohibitedSyncTableOperation({
+      AtError.get(this.context).prohibitedSyncTableOperation({
         modelName: this.model.title,
         operation: 'delete',
       });
@@ -5931,7 +5931,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   public async beforeBulkDelete(
     _data: Record<string, any>[],
-    _req: NcRequest,
+    _req: AtRequest,
     params?: {
       allowSystemColumn?: boolean;
     },
@@ -5939,7 +5939,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     const { allowSystemColumn = false } = params || {};
 
     if (!allowSystemColumn && this.model.synced) {
-      NcError.get(this.context).prohibitedSyncTableOperation({
+      AtError.get(this.context).prohibitedSyncTableOperation({
         modelName: this.model.title,
         operation: 'delete',
       });
@@ -5950,7 +5950,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     hookName: string,
     prevData: Record<string, any> | Record<string, any>[] | null,
     newData: Record<string, any> | Record<string, any>[] | null,
-    req: NcRequest,
+    req: AtRequest,
   ): Promise<void> {
     // Webhook destinations are server-side and configured by the workspace
     // owner — they receive whatever the caller passes here. Public-viewer
@@ -5985,7 +5985,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       }
     };
 
-    Noco.eventEmitter.emit(HANDLE_WEBHOOK, {
+    Atmosphere.eventEmitter.emit(HANDLE_WEBHOOK, {
       context: { ...this.context, cache: false, cacheMap: undefined },
       hookName,
       prevData: snapshot(prevData),
@@ -6014,13 +6014,13 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   public async errorInsert(
     _e: Error,
     _data: Record<string, any>,
-    _cookie: NcRequest,
+    _cookie: AtRequest,
   ) {}
 
   public async errorUpdate(
     _e: Error,
     _data: Record<string, any>,
-    _cookie: NcRequest,
+    _cookie: AtRequest,
   ) {}
 
   // todo: handle composite primary key
@@ -6031,7 +6031,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   protected async errorDelete(
     _e: Error,
     _id: Record<string, any>,
-    _cookie: NcRequest,
+    _cookie: AtRequest,
   ) {}
 
   async validate(
@@ -6055,7 +6055,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           isCreatedOrLastModifiedTimeCol(column) ||
           isCreatedOrLastModifiedByCol(column)
         ) {
-          NcError.get(this.context).badRequest(
+          AtError.get(this.context).badRequest(
             `Column "${column.title}" is auto generated and cannot be updated`,
           );
         }
@@ -6080,14 +6080,14 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           }
 
           if (shouldThrow) {
-            NcError.get(this.context).badRequest(
+            AtError.get(this.context).badRequest(
               `Column "${column.title}" is system column and cannot be updated`,
             );
           }
         }
 
         if (!allowSystemColumn && column.readonly) {
-          NcError.get(this.context).badRequest(
+          AtError.get(this.context).badRequest(
             `Column "${column.title}" is readonly column and cannot be updated`,
           );
         }
@@ -6117,7 +6117,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
             id: column.fk_model_id,
           });
 
-          NocoSocket.broadcastEvent(this.context, {
+          AtmosphereSocket.broadcastEvent(this.context, {
             event: EventType.META_EVENT,
             payload: {
               action: 'column_update',
@@ -6167,7 +6167,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       typeof column.dtxp === 'number' &&
       column.dtxp < data[column.title]?.length
     ) {
-      NcError.get(this.context).badRequest(
+      AtError.get(this.context).badRequest(
         `Column "${column.title}" value exceeds the maximum length of ${column.dtxp}`,
       );
     }
@@ -6255,7 +6255,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       }
     }
     if (notExistedOptions.length > 0) {
-      NcError.get(this.context).optionsNotExists({
+      AtError.get(this.context).optionsNotExists({
         columnTitle,
         validOptions: options,
         options: notExistedOptions,
@@ -6293,7 +6293,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       !column ||
       ![UITypes.LinkToAnotherRecord, UITypes.Links].includes(column.uidt)
     )
-      NcError.get(this.context).fieldNotFound(colId);
+      AtError.get(this.context).fieldNotFound(colId);
 
     const colOptions = await column.getColOptions<LinkToAnotherRecordColumn>(
       this.context,
@@ -6443,7 +6443,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     refColumnTitle: string;
     rowId: unknown;
     refRowId: unknown;
-    req: NcRequest;
+    req: AtRequest;
     model: Model;
     refModel: Model;
     displayValue: unknown;
@@ -6515,7 +6515,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       columnId: string;
       refColumnTitle: string;
       refColumnId: string;
-      req: NcRequest;
+      req: AtRequest;
     },
     auditObjs: Array<{
       rowId: unknown;
@@ -6695,7 +6695,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       !column ||
       ![UITypes.LinkToAnotherRecord, UITypes.Links].includes(column.uidt)
     )
-      NcError.get(this.context).fieldNotFound(colId);
+      AtError.get(this.context).fieldNotFound(colId);
 
     const relationManager = await RelationManager.getRelationManager(
       this,
@@ -6729,7 +6729,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     refColumnTitle: string;
     rowId: unknown;
     refRowId: unknown;
-    req: NcRequest;
+    req: AtRequest;
     model: Model;
     refModel: Model;
     displayValue: unknown;
@@ -6810,7 +6810,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   ): Promise<Set<any>> {
     // TODO: Add virtual column support
     if (isVirtualCol(column)) {
-      NcError.get(this.context).notImplemented('Grouping for virtual columns');
+      AtError.get(this.context).notImplemented('Grouping for virtual columns');
     }
 
     let groupingValues: Set<any>;
@@ -6899,9 +6899,9 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       const columns = await this.model.getColumns(this.context);
       const column = columns?.find((col) => col.id === args.groupColumnId);
 
-      if (!column) NcError.get(this.context).fieldNotFound(args.groupColumnId);
+      if (!column) AtError.get(this.context).fieldNotFound(args.groupColumnId);
       if (isVirtualCol(column))
-        NcError.get(this.context).notImplemented(
+        AtError.get(this.context).notImplemented(
           'Grouping for virtual columns',
         );
 
@@ -7107,9 +7107,9 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     const columns = await this.model.getColumns(this.context);
     const column = columns?.find((col) => col.id === args.groupColumnId);
 
-    if (!column) NcError.get(this.context).fieldNotFound(args.groupColumnId);
+    if (!column) AtError.get(this.context).fieldNotFound(args.groupColumnId);
     if (isVirtualCol(column))
-      NcError.get(this.context).notImplemented('Grouping for virtual columns');
+      AtError.get(this.context).notImplemented('Grouping for virtual columns');
 
     const qb = this.dbDriver(this.tnPath).count('*', { as: 'count' });
 
@@ -7291,7 +7291,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       raw: false,
       first: false,
       bulkAggregate: false,
-      apiVersion: NcApiVersion.V2,
+      apiVersion: AtApiVersion.V2,
     },
   ) {
     if (options.raw || options.bulkAggregate) {
@@ -7409,7 +7409,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       );
     }
 
-    if (options.apiVersion === NcApiVersion.V3) {
+    if (options.apiVersion === AtApiVersion.V3) {
       data = await this.convertMultiSelectTypes(data, dependencyColumns);
       await FieldHandler.fromBaseModel(this).parseDataDbValue({
         data,
@@ -7505,7 +7505,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
             continue;
           }
         } else if (!col.colOptions) {
-          // An LTAR/Links column whose colOptions (nc_col_relations) row is
+          // An LTAR/Links column whose colOptions (atm_col_relations) row is
           // missing. This can surface transiently while the relation is being
           // dropped concurrently — most notably a self-referencing link, whose
           // column and its inverse both live on the table being listed, so a
@@ -7628,19 +7628,19 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   protected async convertUserFormat(
     data: Record<string, any>[],
     dependencyColumns?: Column[],
-    apiVersion?: NcApiVersion,
+    apiVersion?: AtApiVersion,
     options?: { skipPublicRedaction?: boolean },
   ): Promise<Record<string, any>[]>;
   protected async convertUserFormat(
     data: Record<string, any>,
     dependencyColumns?: Column[],
-    apiVersion?: NcApiVersion,
+    apiVersion?: AtApiVersion,
     options?: { skipPublicRedaction?: boolean },
   ): Promise<Record<string, any>>;
   protected async convertUserFormat(
     data: Record<string, any>,
     dependencyColumns?: Column[],
-    apiVersion?: NcApiVersion,
+    apiVersion?: AtApiVersion,
     options?: { skipPublicRedaction?: boolean },
   ) {
     // user is stored as id within the database
@@ -7739,7 +7739,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     userColumns: Column[],
     baseUsers: Partial<User>[],
     d: Record<string, any>,
-    apiVersion?: NcApiVersion,
+    apiVersion?: AtApiVersion,
     userMapInit?: Map<string, Partial<User> & BaseUser>,
   ) {
     try {
@@ -7778,7 +7778,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
             const { id, email, display_name, meta } = user;
 
             let metaObj: any;
-            if (apiVersion !== NcApiVersion.V3) {
+            if (apiVersion !== AtApiVersion.V3) {
               metaObj = ncIsObject(meta)
                 ? extractProps(meta, ['icon', 'iconType'])
                 : null;
@@ -8033,8 +8033,8 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           thumbnailPath = `thumbnails/${cleanPath}/${key}.jpg`;
         } else if (attachment.url) {
           const thumbnailUrl = attachment.url.replace(
-            'nc/uploads',
-            'nc/thumbnails',
+            'atm/uploads',
+            'atm/thumbnails',
           );
           thumbnailPath = `${thumbnailUrl}/${key}.jpg`;
         }
@@ -8368,7 +8368,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
           if (this.isSqlite) {
             // if there is no timezone info,
-            // we assume the input is on NocoDB server timezone
+            // we assume the input is on Atmosphere server timezone
             // then we convert to UTC from server timezone
             // example: datetime without timezone
             // we need to display 2023-04-27 10:00:00 (in HKT)
@@ -8408,7 +8408,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
             d[col.id].slice(-1) !== 'Z'
           ) {
             // if there is no timezone info,
-            // we assume the input is on NocoDB server timezone
+            // we assume the input is on Atmosphere server timezone
             // then we convert to UTC from server timezone
             // e.g. 2023-04-27 10:00:00 (IST) -> 2023-04-27 04:30:00+00:00
             d[col.id] = dayjs(d[col.id])
@@ -8439,7 +8439,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       // CONVERT_TZ(...,'+00:00') + a literal '+00:00' suffix in select-object.ts
       // so the string is already correct UTC. Without this branch,
       // dayjs.utc(keepLocalTime=true) would re-anchor the wall clock to the
-      // NocoDB server's local timezone before stamping +00:00 — on a non-UTC
+      // Atmosphere server's local timezone before stamping +00:00 — on a non-UTC
       // server (e.g. IST), this re-shifts the value and the displayed records
       // no longer match the group-by SELECT's UTC keys.
       if (
@@ -8547,7 +8547,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   }
 
   async ooRead(
-    { colId, id }: { colId; id; apiVersion?: NcApiVersion },
+    { colId, id }: { colId; id; apiVersion?: AtApiVersion },
     _args: { limit?; offset?; fieldSet?: Set<string> } = {},
   ) {
     try {
@@ -8555,7 +8555,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
       const relColumn = this.model.columnsById[colId];
       if (!relColumn) {
-        NcError.get(this.context).fieldNotFound(colId);
+        AtError.get(this.context).fieldNotFound(colId);
       }
       const relColOptions = (await relColumn.getColOptions(
         this.context,
@@ -8603,7 +8603,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   }
 
   async btRead(
-    { colId, id }: { colId; id; apiVersion?: NcApiVersion },
+    { colId, id }: { colId; id; apiVersion?: AtApiVersion },
     args: { limit?; offset?; fieldSet?: Set<string> } = {},
   ) {
     try {
@@ -8628,7 +8628,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
       // validate rowId
       if (!row) {
-        NcError.get(this.context).recordNotFound(id);
+        AtError.get(this.context).recordNotFound(id);
       }
 
       const colOptions = (await relColumn.getColOptions(
@@ -8763,7 +8763,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       .filter((id) => id != null && id !== '')
       .map((id) => String(id));
     if (normalizedRowIds.length) {
-      Noco.eventEmitter.emit(AppEvents.ROW_LMT_TOUCHED, {
+      Atmosphere.eventEmitter.emit(AppEvents.ROW_LMT_TOUCHED, {
         context: { ...this.context, cache: false, cacheMap: undefined },
         modelId: model.id,
         rowIds: normalizedRowIds,
@@ -8774,7 +8774,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   findIntermediateOrder(before: BigNumber, after: BigNumber): BigNumber {
     if (after.lte(before)) {
-      NcError.get(this.context).cannotCalculateIntermediateOrderError();
+      AtError.get(this.context).cannotCalculateIntermediateOrderError();
     }
     return before.plus(after.minus(before).div(2));
   }
@@ -8782,7 +8782,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   async getUniqueOrdersBeforeItem(before: unknown, amount = 1, depth = 0) {
     try {
       if (depth > MAX_RECURSION_DEPTH) {
-        NcError.get(this.context).reorderFailed();
+        AtError.get(this.context).reorderFailed();
       }
 
       const orderColumn = this.model.columns.find((c) => isOrderCol(c));
@@ -8837,7 +8837,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           intermediateOrder.eq(adjacentOrder) ||
           intermediateOrder.eq(currentRowOrder)
         ) {
-          NcError.get(this.context).cannotCalculateIntermediateOrderError();
+          AtError.get(this.context).cannotCalculateIntermediateOrderError();
         }
 
         orders.push(intermediateOrder);
@@ -8845,7 +8845,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
       return orders;
     } catch (error) {
-      if (error.error === NcErrorType.ERR_CANNOT_CALCULATE_INTERMEDIATE_ORDER) {
+      if (error.error === AtErrorType.ERR_CANNOT_CALCULATE_INTERMEDIATE_ORDER) {
         console.error('Error in getUniqueOrdersBeforeItem:', error);
         await this.recalculateFullOrder();
         return await this.getUniqueOrdersBeforeItem(before, amount, depth + 1);
@@ -8899,14 +8899,14 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
     const orderColumn = this.model.columns.find((c) => isOrderCol(c));
     if (!orderColumn) {
-      NcError.get(this.context).badRequest(
+      AtError.get(this.context).badRequest(
         'Order column not found to recalculateOrder',
       );
     }
 
     const client = this.dbDriver.clientType();
     if (!sql[client]) {
-      NcError.get(this.context).notImplemented(
+      AtError.get(this.context).notImplemented(
         'Recalculate order not implemented for this database',
       );
     }
@@ -8971,7 +8971,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     }
   }
 
-  async prepareNocoData(
+  async prepareAtmosphereData(
     data,
     isInsertData = false,
     cookie?: { user?: any; system?: boolean },
@@ -9047,7 +9047,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       if (
         !isInsertData &&
         (this.isOracle || this.isMssql) &&
-        this.context.api_version !== NcApiVersion.V3 &&
+        this.context.api_version !== AtApiVersion.V3 &&
         column.uidt === UITypes.DateTime &&
         !ncIsUndefined(data[column.column_name]) &&
         !ncIsNull(data[column.column_name]) &&
@@ -9062,7 +9062,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       if (
         !ncIsUndefined(data[column.column_name]) &&
         !ncIsNull(data[column.column_name]) &&
-        (this.context.api_version === NcApiVersion.V3 ||
+        (this.context.api_version === AtApiVersion.V3 ||
           // partially open the parseUserInput to several UITypes
           [
             UITypes.LongText,
@@ -9144,7 +9144,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       }
       if (
         column.uidt === UITypes.Attachment &&
-        this.context.api_version === NcApiVersion.V3
+        this.context.api_version === AtApiVersion.V3
       ) {
         if (column.column_name in data) {
           if (
@@ -9157,7 +9157,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
         }
       } else if (
         column.uidt === UITypes.Attachment &&
-        this.context.api_version !== NcApiVersion.V3
+        this.context.api_version !== AtApiVersion.V3
       ) {
         if (column.column_name in data) {
           if (data && data[column.column_name]) {
@@ -9170,12 +9170,12 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
                 data[column.column_name] &&
                 !Array.isArray(data[column.column_name])
               ) {
-                NcError.get(this.context).invalidAttachmentJson(
+                AtError.get(this.context).invalidAttachmentJson(
                   data[column.column_name],
                 );
               }
             } catch (e) {
-              NcError.get(this.context).invalidAttachmentJson(
+              AtError.get(this.context).invalidAttachmentJson(
                 data[column.column_name],
               );
             }
@@ -9183,20 +9183,20 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
             // Confirm that all urls are valid urls
             for (const attachment of data[column.column_name] || []) {
               if (!('url' in attachment) && !('path' in attachment)) {
-                NcError.get(this.context).unprocessableEntity(
+                AtError.get(this.context).unprocessableEntity(
                   'Attachment object must contain either url or path',
                 );
               }
 
               if (attachment.url) {
                 if (attachment.url.startsWith('data:')) {
-                  NcError.get(this.context).unprocessableEntity(
+                  AtError.get(this.context).unprocessableEntity(
                     `Attachment urls do not support data urls`,
                   );
                 }
 
                 if (attachment.url.length > 8 * 1024) {
-                  NcError.get(this.context).unprocessableEntity(
+                  AtError.get(this.context).unprocessableEntity(
                     `Attachment url '${attachment.url}' is too long`,
                   );
                 }
@@ -9278,7 +9278,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           if (Array.isArray(data[column.column_name])) {
             for (const attachment of data[column.column_name]) {
               if (!('url' in attachment) && !('path' in attachment)) {
-                NcError.get(this.context).unprocessableEntity(
+                AtError.get(this.context).unprocessableEntity(
                   'Attachment object must contain either url or path',
                 );
               }
@@ -9307,9 +9307,9 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
                 // persists `file_url: url ?? path`, and read-time signing
                 // (`getSignedUrl`) reduces even an http(s) `url` to its pathname
                 // and, on external storage, signs THAT as a storage key — so a
-                // crafted `https://anything/nc/uploads/<victim>/secret.pdf`
+                // crafted `https://anything/atm/uploads/<victim>/secret.pdf`
                 // discloses another tenant's object. We therefore check any
-                // reference whose resolved storage key lives under `nc/uploads/`
+                // reference whose resolved storage key lives under `atm/uploads/`
                 // (using the same `getPathFromUrl` normalisation `getSignedUrl`
                 // applies, so URL-encoding can't slip past this), plus any
                 // non-http(s) `url` (an opaque local path). Only a reference the
@@ -9332,7 +9332,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
                       },
                     );
                   if (!accessible) {
-                    NcError.get(this.context).unprocessableEntity(
+                    AtError.get(this.context).unprocessableEntity(
                       'Invalid attachment reference',
                     );
                   }
@@ -9416,7 +9416,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
                 if ('id' in user) {
                   const u = baseUsers.find((u) => u.id === user.id);
                   if (!u) {
-                    NcError.get(this.context).unprocessableEntity(
+                    AtError.get(this.context).unprocessableEntity(
                       `User with id '${user.id}' is not part of this workspace`,
                     );
                   }
@@ -9430,18 +9430,18 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
                   if (user.email.length === 0) continue;
                   const u = baseUsers.find((u) => u.email === user.email);
                   if (!u) {
-                    NcError.get(this.context).unprocessableEntity(
+                    AtError.get(this.context).unprocessableEntity(
                       `User with email '${user.email}' is not part of this workspace`,
                     );
                   }
                   userIds.push(u.id);
                 } else {
-                  NcError.get(this.context).unprocessableEntity(
+                  AtError.get(this.context).unprocessableEntity(
                     'Invalid user object',
                   );
                 }
               } catch (e) {
-                NcError.get(this.context).unprocessableEntity(e.message);
+                AtError.get(this.context).unprocessableEntity(e.message);
               }
             }
           } else if (typeof data[column.column_name] === 'string') {
@@ -9454,7 +9454,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
                 if (user.includes('@')) {
                   const u = baseUsers.find((u) => u.email === user);
                   if (!u) {
-                    NcError.get(this.context).unprocessableEntity(
+                    AtError.get(this.context).unprocessableEntity(
                       `User with email '${user}' is not part of this workspace`,
                     );
                   }
@@ -9462,21 +9462,21 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
                 } else {
                   const u = baseUsers.find((u) => u.id === user);
                   if (!u) {
-                    NcError.get(this.context).unprocessableEntity(
+                    AtError.get(this.context).unprocessableEntity(
                       `User with id '${user}' is not part of this workspace`,
                     );
                   }
                   userIds.push(u.id);
                 }
               } catch (e) {
-                NcError.get(this.context).unprocessableEntity(e.message);
+                AtError.get(this.context).unprocessableEntity(e.message);
               }
             }
           } else {
             logger.error(
               `${data[column.column_name]} is not a valid user input`,
             );
-            NcError.get(this.context).unprocessableEntity(
+            AtError.get(this.context).unprocessableEntity(
               'Invalid user object',
             );
           }
@@ -9487,7 +9487,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
             const userSet = new Set(userIds);
 
             if (userSet.size !== userIds.length) {
-              NcError.get(this.context).unprocessableEntity(
+              AtError.get(this.context).unprocessableEntity(
                 'Duplicate users not allowed for user field',
               );
             }
@@ -9496,7 +9496,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
               data[column.column_name] = userIds.join(',');
             } else {
               if (userIds.length > 1) {
-                NcError.get(this.context).unprocessableEntity(
+                AtError.get(this.context).unprocessableEntity(
                   `Multiple users not allowed for '${column.title}'`,
                 );
               } else {
@@ -9748,7 +9748,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       args: ast.dependencyFields,
     });
 
-    NocoSocket.broadcastBulkDataEvent(this.context, {
+    AtmosphereSocket.broadcastBulkDataEvent(this.context, {
       tableId: this.model.id,
       rows: list.map((item) => ({
         id: this.extractPksValues(item),
@@ -10152,7 +10152,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     qb: any;
     data?: Record<string, any>;
     conditions: FilterType[];
-    req: NcRequest;
+    req: AtRequest;
     event: BulkAuditV1OperationTypes;
   }) {
     try {
@@ -10219,7 +10219,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     rowIds: any[];
     conditions: FilterType[];
     data?: Record<string, any>;
-    req: NcRequest;
+    req: AtRequest;
   }) {
     // disable external source audit in cloud
     if (!(await this.isDataAuditEnabled())) return;
@@ -10268,7 +10268,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   protected async bulkDeleteAudit(_: {
     rowIds: any[];
     conditions: FilterType[];
-    req: NcRequest;
+    req: AtRequest;
   }) {
     // placeholder
   }
@@ -10317,7 +10317,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   /**
    * Returns a knex where-clause callback that excludes soft-deleted records,
-   * or null if the table has no __nc_deleted column or is not a meta (NocoDB-managed) source.
+   * or null if the table has no __nc_deleted column or is not a meta (Atmosphere-managed) source.
    */
   public async getSoftDeleteFilter(): Promise<Knex.QueryCallback | null> {
     if (this._softDeleteFilter !== undefined) return this._softDeleteFilter;

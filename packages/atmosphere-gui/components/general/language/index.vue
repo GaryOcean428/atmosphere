@@ -34,34 +34,34 @@ const isDropdownOpen = ref(false)
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="isDropdownOpen"
     class="select-none color-transition cursor-pointer"
     :trigger="['click']"
-    overlay-class-name="nc-dropdown-menu-translate overflow-hidden"
+    overlay-class-name="atm-dropdown-menu-translate overflow-hidden"
   >
-    <NcButton
+    <AtButton
       v-if="props.button"
       :class="{
-        '!border-nc-border-brand !shadow-selected': isDropdownOpen,
+        '!border-atm-border-brand !shadow-selected': isDropdownOpen,
       }"
       type="secondary"
       size="small"
     >
-      <div class="flex items-center text-nc-content-gray justify-between">
+      <div class="flex items-center text-atm-content-gray justify-between">
         <div class="flex items-center min-w-24 gap-2">
-          <MaterialSymbolsTranslate class="text-caption nc-menu-translate" />
+          <MaterialSymbolsTranslate class="text-caption atm-menu-translate" />
           <span class="text-caption">{{ Language[locale] }}</span>
         </div>
-        <GeneralIcon icon="arrowDown" class="text-caption nc-menu-translate" />
+        <GeneralIcon icon="arrowDown" class="text-caption atm-menu-translate" />
       </div>
-    </NcButton>
+    </AtButton>
     <div v-else v-bind="$attrs" class="flex items-center justify-center">
-      <MaterialSymbolsTranslate class="text-base nc-menu-translate" />
+      <MaterialSymbolsTranslate class="text-base atm-menu-translate" />
     </div>
 
     <template #overlay>
-      <NcList :value="locale" :list="languages" @change="changeLanguage" />
+      <AtList :value="locale" :list="languages" @change="changeLanguage" />
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

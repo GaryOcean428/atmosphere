@@ -223,9 +223,9 @@ export enum AppEvents {
   PLUGIN_INSTALL = 'plugin.install',
   PLUGIN_UNINSTALL = 'plugin.uninstall',
 
-  SYNC_SOURCE_CREATE = 'sync.source.create',
-  SYNC_SOURCE_UPDATE = 'sync.source.update',
-  SYNC_SOURCE_DELETE = 'sync.source.delete',
+  SYATMOSPHERE_SOURCE_CREATE = 'sync.source.create',
+  SYATMOSPHERE_SOURCE_UPDATE = 'sync.source.update',
+  SYATMOSPHERE_SOURCE_DELETE = 'sync.source.delete',
 
   RELATION_DELETE = 'relation.delete',
   RELATION_CREATE = 'relation.create',
@@ -322,12 +322,12 @@ export enum AppEvents {
   DASHBOARD_DUPLICATE_COMPLETE = 'dashboard.duplicate.complete',
   DASHBOARD_DUPLICATE_FAIL = 'dashboard.duplicate.fail',
 
-  TABLE_SYNC_CREATE = 'tableSync.create',
-  TABLE_SYNC_UPDATE = 'tableSync.update',
-  TABLE_SYNC_DELETE = 'tableSync.delete',
-  TABLE_SYNC_FREEZE = 'tableSync.freeze',
-  TABLE_SYNC_RESUME = 'tableSync.resume',
-  TABLE_SYNC_RESYNC = 'tableSync.resync',
+  TABLE_SYATMOSPHERE_CREATE = 'tableSync.create',
+  TABLE_SYATMOSPHERE_UPDATE = 'tableSync.update',
+  TABLE_SYATMOSPHERE_DELETE = 'tableSync.delete',
+  TABLE_SYATMOSPHERE_FREEZE = 'tableSync.freeze',
+  TABLE_SYATMOSPHERE_RESUME = 'tableSync.resume',
+  TABLE_SYATMOSPHERE_RESYNC = 'tableSync.resync',
 
   WIDGET_CREATE = 'widget.create',
   WIDGET_UPDATE = 'widget.update',
@@ -447,10 +447,10 @@ export enum AppEvents {
 export enum ClickhouseTables {
   API_CALLS = 'usage_api_calls',
   API_COUNT = 'usage_api_count',
-  NOTIFICATION = 'nc_notification',
+  NOTIFICATION = 'atm_notification',
   PAGE_SNAPSHOT = 'docs_page_snapshot',
   TELEMETRY = 'usage_telemetry',
-  AUDIT = 'nc_audit',
+  AUDIT = 'atm_audit',
 }
 
 export enum WorkspaceStatus {
@@ -664,7 +664,7 @@ export enum SSLUsage {
 
 export enum SyncDataType {
   // Database
-  NOCODB = 'nocodb',
+  ATMOSPHERE = 'atmosphere',
   MICROSOFT_ACCESS = 'microsoft-access',
   TABLEAU = 'tableau',
   // AI
@@ -782,7 +782,7 @@ export enum IconType {
   ICON = 'ICON',
 }
 
-export enum NcApiVersion {
+export enum AtApiVersion {
   V1,
   V2,
   V3,
@@ -860,7 +860,7 @@ export enum MapProvider {
 }
 
 /** Default org ID for on-prem deployments */
-export const NC_DEFAULT_ORG_ID = 'org_default';
+export const ATMOSPHERE_DEFAULT_ORG_ID = 'org_default';
 
 export enum OperationSource {
   AT_IMPORT = 'at_import',
@@ -873,7 +873,7 @@ export enum OperationSource {
   PLUGINS = 'plugins',
   SYNC = 'sync',
   // Editor-accessible "fetch via URL" data import (axiosRequestMake).
-  // Kept separate from HOOKS so the webhook SSRF bypass (NC_ALLOW_LOCAL_HOOKS)
+  // Kept separate from HOOKS so the webhook SSRF bypass (ATMOSPHERE_ALLOW_LOCAL_HOOKS)
   // does not also loosen the lower-privilege data-import path.
   DATA_IMPORT = 'data_import',
 }

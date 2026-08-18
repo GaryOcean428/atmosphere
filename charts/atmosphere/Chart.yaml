@@ -1,19 +1,19 @@
 apiVersion: v2
-name: nocodb
-description: NocoDB — A Free & Self-hostable Airtable Alternative. Production-ready chart for external Postgres and Redis.
+name: atmosphere
+description: Atmosphere — A Free & Self-hostable Airtable Alternative. Production-ready chart for external Postgres and Redis.
 type: application
 version: 1.0.0
 appVersion: "2026.06.1"
-home: https://nocodb.com
-icon: https://github.com/nocodb/nocodb/raw/develop/packages/nc-gui/assets/img/icons/512x512.png
+home: https://atmosphere.dev
+icon: https://github.com/GaryOcean428/atmosphere/raw/develop/packages/atmosphere-gui/assets/img/icons/512x512.png
 sources:
-  - https://github.com/nocodb/nocodb
+  - https://github.com/GaryOcean428/atmosphere
 keywords:
-  - nocodb
+  - atmosphere
   - airtable
   - database
   - no-code
 maintainers:
-  - name: NocoDB
-    url: https://github.com/nocodb/nocodb
+  - name: Atmosphere
+    url: https://github.com/GaryOcean428/atmosphere
 dependencies: []

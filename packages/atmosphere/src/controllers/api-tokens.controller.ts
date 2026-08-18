@@ -14,7 +14,7 @@ import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { ApiTokensService } from '~/services/api-tokens.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
-import { NcRequest } from '~/interface/config';
+import { AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -29,7 +29,7 @@ export class ApiTokensController {
     blockApiTokenAccess: true,
     blockOAuthTokenAccess: true,
   })
-  async apiTokenList(@Req() req: NcRequest) {
+  async apiTokenList(@Req() req: AtRequest) {
     return new PagedResponseImpl(
       await this.apiTokensService.apiTokenList({ userId: req['user'].id, req }),
     );
@@ -44,7 +44,7 @@ export class ApiTokensController {
     blockApiTokenAccess: true,
     blockOAuthTokenAccess: true,
   })
-  async apiTokenCreate(@Req() req: NcRequest, @Body() body) {
+  async apiTokenCreate(@Req() req: AtRequest, @Body() body) {
     return await this.apiTokensService.apiTokenCreate({
       tokenBody: body,
       userId: req['user'].id,
@@ -61,7 +61,7 @@ export class ApiTokensController {
     blockOAuthTokenAccess: true,
   })
   async apiTokenDelete(
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('tokenId') tokenId: string,
   ) {
     return await this.apiTokensService.apiTokenDelete({

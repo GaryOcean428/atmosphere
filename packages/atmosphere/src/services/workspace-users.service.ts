@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { extractRolesObj, OrgUserRoles, WorkspaceUserRoles } from 'nocodb-sdk';
+import { extractRolesObj, OrgUserRoles, WorkspaceUserRoles } from 'atmosphere-sdk';
 import { v4 as uuidv4 } from 'uuid';
 import validator from 'validator';
-import type { UserType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
-import Noco from '~/Noco';
+import type { UserType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import validateParams from '~/helpers/validateParams';
 import { User } from '~/models';
 import Workspace from '~/models/Workspace';
@@ -25,7 +25,7 @@ export class WorkspaceUsersService {
     protected usersService: UsersService,
   ) {}
 
-  async list(param: { workspaceId: string }, ncMeta = Noco.ncMeta) {
+  async list(param: { workspaceId: string }, ncMeta = Atmosphere.ncMeta) {
     const users = await WorkspaceUser.userList(
       { fk_workspace_id: param.workspaceId },
       ncMeta,
@@ -42,9 +42,9 @@ export class WorkspaceUsersService {
       userId: string;
       roles: WorkspaceUserRoles;
       siteUrl?: string;
-      req: NcRequest;
+      req: AtRequest;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const workspaceUser = await WorkspaceUser.get(
       param.workspaceId,
@@ -53,7 +53,7 @@ export class WorkspaceUsersService {
       ncMeta,
     );
 
-    if (!workspaceUser) NcError.userNotFound(param.userId);
+    if (!workspaceUser) AtError.userNotFound(param.userId);
 
     // Validate role value
     if (
@@ -66,7 +66,7 @@ export class WorkspaceUsersService {
         WorkspaceUserRoles.NO_ACCESS,
       ].includes(param.roles)
     ) {
-      NcError.badRequest('Invalid role');
+      AtError.badRequest('Invalid role');
     }
 
     // Super admin bypasses role power checks
@@ -81,7 +81,7 @@ export class WorkspaceUsersService {
           workspace_roles: extractRolesObj(workspaceUser.roles),
         }) > getWorkspaceRolePower(param.req.user)
       ) {
-        NcError.badRequest('Insufficient privilege to update user');
+        AtError.badRequest('Insufficient privilege to update user');
       }
 
       // Check current user can assign target role
@@ -90,7 +90,7 @@ export class WorkspaceUsersService {
           workspace_roles: extractRolesObj(param.roles),
         }) > getWorkspaceRolePower(param.req.user)
       ) {
-        NcError.badRequest(
+        AtError.badRequest(
           'Insufficient privilege to update user with this role',
         );
       }
@@ -106,7 +106,7 @@ export class WorkspaceUsersService {
         (u) => u.roles === WorkspaceUserRoles.OWNER,
       ).length;
       if (ownerCount <= 1) {
-        NcError.badRequest('At least one owner should be there');
+        AtError.badRequest('At least one owner should be there');
       }
     }
 
@@ -126,9 +126,9 @@ export class WorkspaceUsersService {
       body: any;
       invitedBy?: UserType;
       siteUrl: string;
-      req: NcRequest;
+      req: AtRequest;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validateParams(['email', 'roles'], param.body);
 
@@ -146,7 +146,7 @@ export class WorkspaceUsersService {
         WorkspaceUserRoles.NO_ACCESS,
       ].includes(roles)
     ) {
-      NcError.badRequest('Invalid role');
+      AtError.badRequest('Invalid role');
     }
 
     // Role power check (super admin bypasses)
@@ -160,11 +160,11 @@ export class WorkspaceUsersService {
         workspace_roles: extractRolesObj(roles),
       }) > getWorkspaceRolePower(param.req.user)
     ) {
-      NcError.badRequest('Insufficient privilege to invite with this role');
+      AtError.badRequest('Insufficient privilege to invite with this role');
     }
 
     const workspace = await Workspace.get(workspaceId, false, ncMeta);
-    if (!workspace) NcError.workspaceNotFound(workspaceId);
+    if (!workspace) AtError.workspaceNotFound(workspaceId);
 
     // Parse emails
     const emails = (email || '')
@@ -174,12 +174,12 @@ export class WorkspaceUsersService {
       .filter(Boolean);
 
     if (!emails.length) {
-      return NcError.badRequest('Invalid email address');
+      return AtError.badRequest('Invalid email address');
     }
 
     const invalidEmails = emails.filter((v) => !validator.isEmail(v));
     if (invalidEmails.length) {
-      NcError.badRequest('Invalid email address : ' + invalidEmails.join(', '));
+      AtError.badRequest('Invalid email address : ' + invalidEmails.join(', '));
     }
 
     const error = [];

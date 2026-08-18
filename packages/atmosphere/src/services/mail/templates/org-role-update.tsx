@@ -12,8 +12,8 @@ import {
   Text,
 } from '@react-email/components';
 import * as React from 'react';
-import type { WhiteLabelConfig } from 'nocodb-sdk';
-import { NC_EMAIL_ASSETS_BASE_URL } from '~/constants';
+import type { WhiteLabelConfig } from 'atmosphere-sdk';
+import { ATMOSPHERE_EMAIL_ASSETS_BASE_URL } from '~/constants';
 import {
   ContentWrapper,
   Footer,
@@ -51,13 +51,13 @@ export const OrganizationRoleUpdate = ({
             <Row>
               <Column className="flex max-w-[210px] mx-auto">
                 <Img
-                  src={`${NC_EMAIL_ASSETS_BASE_URL}/badges/${oldRole}.png`}
+                  src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/badges/${oldRole}.png`}
                   alt={oldRole}
                   className="h-7"
                 />
                 <Text className="h-5 text-gray-800 !mt-0.5 !ml-2">➜</Text>
                 <Img
-                  src={`${NC_EMAIL_ASSETS_BASE_URL}/badges/${newRole}.png`}
+                  src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/badges/${newRole}.png`}
                   alt={newRole}
                   className="h-7 ml-2"
                 />
@@ -90,9 +90,9 @@ export const OrganizationRoleUpdate = ({
 OrganizationRoleUpdate.PreviewProps = {
   newRole: 'creator',
   oldRole: 'editor',
-  email: 'janedoe@nocodb.com',
+  email: 'janedoe@atmosphere.dev',
   name: 'Jane Doe',
-  link: 'https://nocodb.com',
+  link: 'https://atmosphere.dev',
 };
 
 export default OrganizationRoleUpdate;

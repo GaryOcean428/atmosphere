@@ -1,4 +1,4 @@
-import type { ColumnType, TableType, TextOrNullType } from 'nocodb-sdk'
+import type { ColumnType, TableType, TextOrNullType } from 'atmosphere-sdk'
 
 export function useTemplatedMessage(
   template: MaybeRefOrGetter<TextOrNullType | undefined>,

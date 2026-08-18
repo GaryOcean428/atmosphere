@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ColumnType, GridType, LinkToAnotherRecordType } from 'nocodb-sdk'
+import type { ColumnType, GridType, LinkToAnotherRecordType } from 'atmosphere-sdk'
 import {
   RelationTypes,
   UITypes,
@@ -8,7 +8,7 @@ import {
   ViewTypes,
   isLinksOrLTAR,
   isSystemColumn,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import Draggable from 'vuedraggable'
 import { getColumnUidtByID as sortGetColumnUidtByID } from '~/utils/sortUtils'
 
@@ -406,22 +406,22 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="open"
     offset-y
     :trigger="['click']"
-    overlay-class-name="nc-dropdown-group-by-menu nc-toolbar-dropdown overflow-hidden"
+    overlay-class-name="atm-dropdown-group-by-menu atm-toolbar-dropdown overflow-hidden"
   >
-    <NcTooltip
+    <AtTooltip
       :disabled="(!isMobileMode || props.keepLabelOnMobile) && !isToolbarIconMode"
-      :class="{ 'nc-active-btn': groupedByColumnIds?.length }"
+      :class="{ 'atm-active-btn': groupedByColumnIds?.length }"
     >
       <template #title>
         {{ $t('activity.group') }}
       </template>
-      <NcButton
+      <AtButton
         v-e="['c:group-by']"
-        class="nc-group-by-menu-btn nc-toolbar-btn !border-0 !h-7"
+        class="atm-group-by-menu-btn atm-toolbar-btn !border-0 !h-7"
         size="small"
         type="secondary"
         :show-as-disabled="isLocked"
@@ -438,16 +438,16 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
               {{ $t('activity.group') }}
             </span>
           </div>
-          <span v-if="groupedByColumnIds?.length" class="bg-nc-bg-brand text-nc-content-brand nc-toolbar-btn-chip">{{
+          <span v-if="groupedByColumnIds?.length" class="bg-atm-bg-brand text-atm-content-brand atm-toolbar-btn-chip">{{
             groupedByColumnIds.length
           }}</span>
         </div>
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
     <template #overlay>
       <div
         :class="{
-          'nc-locked-view': isLocked,
+          'atm-locked-view': isLocked,
         }"
       >
         <!-- Empty state: show create group-by picker -->
@@ -462,14 +462,14 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
         <!-- Group-by list -->
         <div
           v-else-if="_groupBy.length || syncedGroupByEntries.length"
-          class="flex flex-col bg-nc-bg-default overflow-auto nc-group-by-list menu-filter-dropdown xs:nc-w-screen-95 sm:w-100 p-4"
-          data-testid="nc-group-by-menu"
+          class="flex flex-col bg-atm-bg-default overflow-auto atm-group-by-list menu-filter-dropdown xs:atm-w-screen-95 sm:w-100 p-4"
+          data-testid="atm-group-by-menu"
         >
           <div class="max-h-100" @click.stop>
             <Draggable
               :model-value="_groupBy"
               item-key="fk_column_id"
-              ghost-class="bg-nc-bg-gray-extralight"
+              ghost-class="bg-atm-bg-gray-extralight"
               :disabled="isLocked || !appInfo.ee || hideReorder"
               @change="onMove($event)"
             >
@@ -478,22 +478,22 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
                   :key="group.fk_column_id"
                   class="flex first:mb-0 !mb-1.5 !last:mb-0 items-center gap-2"
                   :class="{
-                    'nc-group-by-disabled-row': appInfo.ee && supportsGroupByEnabledToggle && group.enabled === false,
+                    'atm-group-by-disabled-row': appInfo.ee && supportsGroupByEnabledToggle && group.enabled === false,
                   }"
                 >
-                  <NcCheckbox
+                  <AtCheckbox
                     v-if="appInfo.ee && supportsGroupByEnabledToggle"
                     :checked="group.enabled !== false"
                     size="default"
                     :disabled="isLocked"
-                    class="nc-group-by-enabled-checkbox"
+                    class="atm-group-by-enabled-checkbox"
                     @change="onToggleGroupByEnabled(group)"
                   />
                   <!-- joined control group (no internal gap so the field/sort/drag/remove stay connected) -->
                   <div class="flex items-center flex-1 min-w-0">
                     <LazySmartsheetToolbarFieldListAutoCompleteDropdown
                       v-model="group.fk_column_id"
-                      class="caption nc-group-field-select !w-36"
+                      class="caption atm-group-field-select !w-36"
                       :columns="getFieldsToGroupBy(group)"
                       :allow-empty="true"
                       :meta="meta"
@@ -501,12 +501,12 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
                       @change="saveGroupBy"
                       @click.stop
                     />
-                    <NcSelect
+                    <AtSelect
                       ref=""
                       v-model:value="group.sort"
-                      class="flex flex-grow-1 w-full nc-group-sort-dir-select"
+                      class="flex flex-grow-1 w-full atm-group-sort-dir-select"
                       :label="$t('labels.operation')"
-                      dropdown-class-name="sort-dir-dropdown nc-dropdown-group-sort-dir"
+                      dropdown-class-name="sort-dir-dropdown atm-dropdown-group-sort-dir"
                       :disabled="!group.fk_column_id || isLocked"
                       @change="saveGroupBy"
                       @click.stop
@@ -521,45 +521,45 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
                           <component
                             :is="iconMap.check"
                             v-if="group.sort === option.value"
-                            id="nc-selected-item-icon"
+                            id="atm-selected-item-icon"
                             class="text-primary w-4 h-4"
                           />
                         </div>
                       </a-select-option>
-                    </NcSelect>
+                    </AtSelect>
 
-                    <!--                <NcDropdown :disabled="!isColumnSupportsGroupBySettings(columnByID[group.fk_column_id])" :trigger="['click']">
-                  <NcButton
+                    <!--                <AtDropdown :disabled="!isColumnSupportsGroupBySettings(columnByID[group.fk_column_id])" :trigger="['click']">
+                  <AtButton
                     :disabled="!isColumnSupportsGroupBySettings(columnByID[group.fk_column_id])"
-                    class="!rounded-none !border-nc-border-gray-medium !border-l-transparent"
+                    class="!rounded-none !border-atm-border-gray-medium !border-l-transparent"
                     type="secondary"
                     size="small"
                   >
                     <GeneralIcon icon="ncSettings" />
-                  </NcButton>
+                  </AtButton>
 
                   <template #overlay>
-                    <NcMenu>
-                      <NcMenuItem> Hide groups with no records </NcMenuItem>
-                      <NcMenuItem> Show groups with no records </NcMenuItem>
-                    </NcMenu>
+                    <AtMenu>
+                      <AtMenuItem> Hide groups with no records </AtMenuItem>
+                      <AtMenuItem> Show groups with no records </AtMenuItem>
+                    </AtMenu>
                   </template>
-                </NcDropdown> -->
+                </AtDropdown> -->
 
-                    <NcButton
+                    <AtButton
                       v-if="appInfo.ee && !hideReorder && !isMobileMode"
                       type="secondary"
                       size="small"
-                      class="nc-group-by-item-reorder-btn !border-l-transparent !rounded-none"
+                      class="atm-group-by-item-reorder-btn !border-l-transparent !rounded-none"
                       :shadow="false"
                       :disabled="isLocked"
                     >
                       <component :is="iconMap.drag" />
-                    </NcButton>
-                    <NcTooltip placement="top" :title="$t('general.remove')" class="flex-none">
-                      <NcButton
+                    </AtButton>
+                    <AtTooltip placement="top" :title="$t('general.remove')" class="flex-none">
+                      <AtButton
                         v-e="['c:group-by:remove']"
-                        class="nc-group-by-item-remove-btn !border-l-transparent !rounded-l-none"
+                        class="atm-group-by-item-remove-btn !border-l-transparent !rounded-l-none"
                         size="small"
                         type="secondary"
                         :shadow="false"
@@ -567,8 +567,8 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
                         @click.stop="removeFieldFromGroupBy(group)"
                       >
                         <component :is="iconMap.deleteListItem" />
-                      </NcButton>
-                    </NcTooltip>
+                      </AtButton>
+                    </AtTooltip>
                   </div>
                 </div>
               </template>
@@ -577,7 +577,7 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
 
           <!-- Add Sub Group button -->
           <div v-if="!isPersonalViewNonOwner" class="flex items-center justify-between mt-2 empty:hidden">
-            <NcDropdown
+            <AtDropdown
               v-if="
                 availableColumns.length &&
                 fieldsToGroupBy.length > totalGroupByCount &&
@@ -586,17 +586,17 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
               "
               v-model:visible="showCreateGroupBy"
               :trigger="['click']"
-              overlay-class-name="nc-toolbar-dropdown"
+              overlay-class-name="atm-toolbar-dropdown"
               :disabled="isLocked"
             >
-              <NcButton
+              <AtButton
                 v-e="['c:group-by:add']"
                 type="text"
                 size="small"
                 style="width: fit-content"
-                class="nc-add-group-by-btn"
+                class="atm-add-group-by-btn"
                 :class="{
-                  '!text-nc-content-brand': !isLocked,
+                  '!text-atm-content-brand': !isLocked,
                 }"
                 :disabled="isLocked"
                 @click.stop="showCreateGroupBy = true"
@@ -605,7 +605,7 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
                   <GeneralIcon icon="plus" />
                   {{ $t('activity.addSubGroup') }}
                 </div>
-              </NcButton>
+              </AtButton>
               <template #overlay>
                 <SmartsheetToolbarCreateGroupBy
                   :is-parent-open="showCreateGroupBy"
@@ -613,7 +613,7 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
                   @created="addFieldToGroupBy"
                 />
               </template>
-            </NcDropdown>
+            </AtDropdown>
 
             <LazyGeneralCopyFromAnotherViewActionBtn
               v-if="view && !isPublic && !isSharedBase"
@@ -626,21 +626,21 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
           <!-- Hide empty groups toggle -->
           <div
             v-if="view?.type === ViewTypes.GRID"
-            class="flex items-center gap-1 px-0 pt-2 border-t-1 border-nc-border-gray-medium mt-2"
+            class="flex items-center gap-1 px-0 pt-2 border-t-1 border-atm-border-gray-medium mt-2"
           >
-            <NcSwitch
+            <AtSwitch
               v-model:checked="hideEmptyGroupsToggle"
               v-e="['c:group-by:hide-empty-groups']"
               size="xsmall"
-              class="nc-switch"
-              data-testid="nc-group-by-hide-empty-groups"
+              class="atm-switch"
+              data-testid="atm-group-by-hide-empty-groups"
               :loading="isHideEmptyGroupsLoading"
               :disabled="isLocked"
             >
-              <div class="text-sm text-nc-content-gray">
+              <div class="text-sm text-atm-content-gray">
                 {{ $t('activity.hideEmptyGroups') }}
               </div>
-            </NcSwitch>
+            </AtSwitch>
           </div>
         </div>
         <GeneralLockedViewFooter
@@ -652,7 +652,7 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
         />
         <div
           v-else-if="view && !_groupBy.length && !syncedGroupByEntries.length"
-          class="flex items-center justify-end empty:hidden pl-3 pr-2 py-1.5 border-t-1 border-nc-border-gray-medium"
+          class="flex items-center justify-end empty:hidden pl-3 pr-2 py-1.5 border-t-1 border-atm-border-gray-medium"
         >
           <LazyGeneralCopyFromAnotherViewActionBtn
             :view="view"
@@ -662,15 +662,15 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
         </div>
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style scoped lang="scss">
-:deep(.nc-group-field-select) {
+:deep(.atm-group-field-select) {
   @apply !w-36;
   // field is the leftmost control of the joined pill — round its left, square its right (joins sort)
   .ant-select-selector {
-    @apply !rounded-l-lg !rounded-r-none !border-r-0 !border-nc-border-gray-medium !shadow-none !w-36;
+    @apply !rounded-l-lg !rounded-r-none !border-r-0 !border-atm-border-gray-medium !shadow-none !w-36;
 
     &.ant-select-focused:not(.ant-select-disabled) {
       @apply !border-r-transparent;
@@ -682,24 +682,24 @@ const getFieldsToGroupBy = (currentGroup: Group) => {
   }
 }
 
-:deep(.nc-select:not(.ant-select-disabled):hover) {
+:deep(.atm-select:not(.ant-select-disabled):hover) {
   &,
   .ant-select-selector {
-    @apply bg-nc-bg-gray-extralight;
+    @apply bg-atm-bg-gray-extralight;
   }
 }
 
-:deep(.nc-group-sort-dir-select) {
+:deep(.atm-group-sort-dir-select) {
   .ant-select-selector {
-    @apply !rounded-none !border-nc-border-gray-medium !shadow-none;
+    @apply !rounded-none !border-atm-border-gray-medium !shadow-none;
   }
 }
 
 // Disabled group-by: dim the field + sort controls, keep the checkbox,
 // reorder handle and remove button fully interactive.
-.nc-group-by-disabled-row {
-  .nc-group-field-select,
-  .nc-group-sort-dir-select {
+.atm-group-by-disabled-row {
+  .atm-group-field-select,
+  .atm-group-sort-dir-select {
     @apply opacity-40 pointer-events-none;
   }
 }

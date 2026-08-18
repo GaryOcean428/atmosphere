@@ -8,9 +8,9 @@ import TeleBatchProcessor from '~/utils/TeleBatchProcessor';
 import { getRedisURL } from '~/helpers/redisHelpers';
 import { ncSiteUrl } from '~/utils/envs';
 
-const isDisabled = !!process.env.NC_DISABLE_TELE;
+const isDisabled = !!process.env.ATMOSPHERE_DISABLE_TELE;
 const cache = !!getRedisURL();
-const executable = !!process.env.NC_BINARY_BUILD;
+const executable = !!process.env.ATMOSPHERE_BINARY_BUILD;
 const litestream = !!(
   process.env.LITESTREAM_S3_BUCKET &&
   process.env.LITESTREAM_S3_SECRET_ACCESS_KEY &&
@@ -22,7 +22,7 @@ const sendEvt = () => {
     const upTime = Math.round(process.uptime() / 3600);
     Tele.emit('evt', {
       evt_type: 'alive',
-      count: global.NC_COUNT,
+      count: global.ATMOSPHERE_COUNT,
       upTime,
       cache,
       litestream,
@@ -66,7 +66,7 @@ class Tele {
 
         let package_id = '';
         let xc_version = '';
-        xc_version = process.env.NC_SERVER_UUID;
+        xc_version = process.env.ATMOSPHERE_SERVER_UUID;
         package_id = packageVersion;
 
         const teleData: Record<string, any> = {
@@ -78,7 +78,7 @@ class Tele {
           docker: isDocker(),
           xc_version: xc_version,
           env: process.env.NODE_ENV || 'production',
-          oneClick: !!process.env.NC_ONE_CLICK,
+          oneClick: !!process.env.ATMOSPHERE_ONE_CLICK,
         };
         teleData.machine_id = `${machineIdSync()},,`;
         Tele.emitter.on('evt_app_started', async (msg) => {
@@ -87,14 +87,14 @@ class Tele {
             if (isDisabled) return;
 
             if (msg && msg.count !== undefined) {
-              global.NC_COUNT = msg.count;
+              global.ATMOSPHERE_COUNT = msg.count;
             }
 
-            await axios.post('https://telemetry.nocodb.com/api/v1/telemetry', {
+            await axios.post('https://telemetry.atmosphere.dev/api/v1/telemetry', {
               ...teleData,
               evt_type: 'started',
               payload: {
-                count: global.NC_COUNT,
+                count: global.ATMOSPHERE_COUNT,
               },
             });
           } catch (e) {
@@ -121,13 +121,13 @@ class Tele {
               return;
 
             if (payload.evt_type === 'project:invite') {
-              global.NC_COUNT = payload.count || global.NC_COUNT;
+              global.ATMOSPHERE_COUNT = payload.count || global.ATMOSPHERE_COUNT;
             }
             if (payload.evt_type === 'user:first_signup') {
-              global.NC_COUNT = +global.NC_COUNT || 1;
+              global.ATMOSPHERE_COUNT = +global.ATMOSPHERE_COUNT || 1;
             }
 
-            await axios.post('https://telemetry.nocodb.com/api/v1/telemetry', {
+            await axios.post('https://telemetry.atmosphere.dev/api/v1/telemetry', {
               ...teleData,
               evt_type: payload.evt_type,
               payload: { ...instanceMeta, ...(payload || {}) },
@@ -156,7 +156,7 @@ class Tele {
             };
             if (isDisabled) return;
             await axios.post(
-              'https://telemetry.nocodb.com/api/v1/telemetry/apis_created',
+              'https://telemetry.atmosphere.dev/api/v1/telemetry/apis_created',
               stats,
             );
           } catch (e) {}
@@ -166,7 +166,7 @@ class Tele {
           try {
             if (isDisabled) return;
             await axios.post(
-              'https://telemetry.nocodb.com/api/v1/newsletter/sdhjh34u3yuy34bj343jhj4iwolaAdsdj3434uiut4nn',
+              'https://telemetry.atmosphere.dev/api/v1/newsletter/sdhjh34u3yuy34bj343jhj4iwolaAdsdj3434uiut4nn',
               {
                 email,
               },
@@ -251,23 +251,23 @@ class Tele {
 
   static async payload() {
     // Skip telemetry payload in test/dev environments
-    // For EE builds: skip only when licensed (Noco.isEE()) or cloud — free/unlicensed users should send
+    // For EE builds: skip only when licensed (Atmosphere.isEE()) or cloud — free/unlicensed users should send
     if (
       process.env.NODE_ENV === 'test' ||
       process.env.NODE_ENV === 'development'
     )
       return null;
 
-    // Lazy import to avoid circular dependency — Noco is not available at module load time
-    const { default: Noco } = await import('~/Noco');
-    if (Noco.isEE()) return null;
+    // Lazy import to avoid circular dependency — Atmosphere is not available at module load time
+    const { default: Atmosphere } = await import('~/Atmosphere');
+    if (Atmosphere.isEE()) return null;
 
     const payload: Record<string, any> = {
       package_id: packageVersion,
       node_version: process.version,
-      xc_version: process.env.NC_SERVER_UUID,
+      xc_version: process.env.ATMOSPHERE_SERVER_UUID,
       env: process.env.NODE_ENV || 'production',
-      oneClick: !!process.env.NC_ONE_CLICK,
+      oneClick: !!process.env.ATMOSPHERE_ONE_CLICK,
       disabled: isDisabled,
     };
     try {
@@ -278,7 +278,7 @@ class Tele {
       payload.machine_id = `${this.id},,`;
       payload.payload = {
         ...((await Tele.getInstanceMeta()) || {}),
-        count: global.NC_COUNT,
+        count: global.ATMOSPHERE_COUNT,
         upTime: Math.round(process.uptime() / 3600),
         cache,
         litestream,
@@ -310,7 +310,7 @@ if (ncSiteUrl) {
   }, 2 * 60 * 60 * 1000).unref();
 }
 
-if (process.env.NC_ONE_CLICK) {
+if (process.env.ATMOSPHERE_ONE_CLICK) {
   try {
     Tele.emit('evt', {
       evt_type: 'ONE_CLICK',

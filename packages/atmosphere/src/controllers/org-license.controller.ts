@@ -6,7 +6,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { OrgUserRoles } from 'nocodb-sdk';
+import { OrgUserRoles } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { OrgLicenseService } from '~/services/org-license.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';

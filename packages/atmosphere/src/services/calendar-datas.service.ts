@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UITypes, ViewTypes } from 'nocodb-sdk';
+import { UITypes, ViewTypes } from 'atmosphere-sdk';
 import dayjs from 'dayjs';
-import type { CalendarRangeType, FilterType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { CalendarRangeType, FilterType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import { CalendarRange, Column, Model, View } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { DatasService } from '~/services/datas.service';
 import { sanitizePublicQuery } from '~/helpers/publicQuerySanitizer';
 
@@ -15,7 +15,7 @@ export class CalendarDatasService {
   constructor(protected datasService: DatasService) {}
 
   async getCalendarDataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       query: any;
@@ -28,23 +28,23 @@ export class CalendarDatasService {
     const { viewId, query, from_date, to_date, next_date, prev_date } = param;
 
     if (!from_date || !to_date || !next_date || !prev_date)
-      NcError.get(context).badRequest('from_date and to_date are required');
+      AtError.get(context).badRequest('from_date and to_date are required');
 
     if (dayjs(to_date).diff(dayjs(from_date), 'days') > 42) {
-      NcError.get(context).badRequest('Date range should not exceed 42 days');
+      AtError.get(context).badRequest('Date range should not exceed 42 days');
     }
 
     const view = await View.get(context, viewId);
 
-    if (!view) NcError.get(context).viewNotFound(viewId);
+    if (!view) AtError.get(context).viewNotFound(viewId);
 
     if (view.type !== ViewTypes.CALENDAR)
-      NcError.get(context).badRequest('View is not a calendar view');
+      AtError.get(context).badRequest('View is not a calendar view');
 
     const calendarRange = await CalendarRange.read(context, view.id);
 
     if (!calendarRange?.ranges?.length)
-      NcError.get(context).badRequest('No ranges found');
+      AtError.get(context).badRequest('No ranges found');
 
     const colId = calendarRange.ranges[0].fk_from_column_id;
     let isDate = false;
@@ -52,7 +52,7 @@ export class CalendarDatasService {
     if (colId) {
       const column = await Column.get(context, { colId });
       if (!column)
-        NcError.get(context).badRequest('Invalid column for calendar view');
+        AtError.get(context).badRequest('Invalid column for calendar view');
       isDate = column.uidt === UITypes.Date;
     }
 
@@ -85,7 +85,7 @@ export class CalendarDatasService {
   }
 
   async getPublicCalendarRecordCount(
-    context: NcContext,
+    context: AtContext,
     param: {
       password: string;
       query: any;
@@ -101,13 +101,13 @@ export class CalendarDatasService {
     const query = sanitizePublicQuery(param.query ?? {});
     const view = await View.getByUUID(context, sharedViewUuid);
 
-    if (!view) NcError.get(context).viewNotFound(sharedViewUuid);
+    if (!view) AtError.get(context).viewNotFound(sharedViewUuid);
     if (view.type !== ViewTypes.CALENDAR) {
-      NcError.get(context).notFound('View is not a calendar view');
+      AtError.get(context).notFound('View is not a calendar view');
     }
 
     if (!(await View.verifyPassword(view, password))) {
-      return NcError.get(context).invalidSharedViewPassword();
+      return AtError.get(context).invalidSharedViewPassword();
     }
 
     return this.getCalendarRecordCount(context, {
@@ -121,7 +121,7 @@ export class CalendarDatasService {
   }
 
   async getPublicCalendarDataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       password: string;
       query: any;
@@ -137,13 +137,13 @@ export class CalendarDatasService {
     const query = sanitizePublicQuery(param.query ?? {});
     const view = await View.getByUUID(context, sharedViewUuid);
 
-    if (!view) NcError.get(context).viewNotFound(sharedViewUuid);
+    if (!view) AtError.get(context).viewNotFound(sharedViewUuid);
     if (view.type !== ViewTypes.CALENDAR) {
-      NcError.get(context).notFound('View is not a calendar view');
+      AtError.get(context).notFound('View is not a calendar view');
     }
 
     if (!(await View.verifyPassword(view, password))) {
-      return NcError.get(context).invalidSharedViewPassword();
+      return AtError.get(context).invalidSharedViewPassword();
     }
 
     return this.getCalendarDataList(context, {
@@ -157,7 +157,7 @@ export class CalendarDatasService {
   }
 
   async getCalendarRecordCount(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       query: any;
@@ -170,23 +170,23 @@ export class CalendarDatasService {
     const { viewId, query, from_date, to_date, next_date, prev_date } = param;
 
     if (!from_date || !to_date || !next_date || !prev_date)
-      NcError.get(context).badRequest('from_date and to_date are required');
+      AtError.get(context).badRequest('from_date and to_date are required');
 
     if (dayjs(to_date).diff(dayjs(from_date), 'days') > 395) {
-      NcError.get(context).badRequest('Date range should not exceed 395 days');
+      AtError.get(context).badRequest('Date range should not exceed 395 days');
     }
 
     const view = await View.get(context, viewId);
 
-    if (!view) NcError.get(context).viewNotFound(viewId);
+    if (!view) AtError.get(context).viewNotFound(viewId);
 
     if (view.type !== ViewTypes.CALENDAR)
-      NcError.get(context).badRequest('View is not a calendar view');
+      AtError.get(context).badRequest('View is not a calendar view');
 
     const ranges = await CalendarRange.read(context, view.id);
 
     if (!ranges?.ranges.length)
-      NcError.get(context).badRequest('No ranges found');
+      AtError.get(context).badRequest('No ranges found');
 
     const colId = ranges.ranges[0].fk_from_column_id;
     let isDate = false;
@@ -194,7 +194,7 @@ export class CalendarDatasService {
     if (colId) {
       const column = await Column.get(context, { colId });
       if (!column)
-        NcError.get(context).badRequest('Invalid column for calendar view');
+        AtError.get(context).badRequest('Invalid column for calendar view');
       isDate = column.uidt === UITypes.Date;
     }
 
@@ -223,7 +223,7 @@ export class CalendarDatasService {
       ignorePagination: true,
     });
 
-    if (!data) NcError.get(context).notFound('Data not found');
+    if (!data) AtError.get(context).notFound('Data not found');
 
     const dates: Array<string> = [];
 
@@ -250,7 +250,7 @@ export class CalendarDatasService {
   }
 
   async buildFilterArr(
-    context: NcContext,
+    context: AtContext,
     {
       viewId,
       from_date,
@@ -268,7 +268,7 @@ export class CalendarDatasService {
   ): Promise<Array<FilterType>> {
     const calendarRange = await CalendarRange.read(context, viewId);
     if (!calendarRange?.ranges?.length)
-      NcError.get(context).badRequest('No ranges found');
+      AtError.get(context).badRequest('No ranges found');
 
     const filterArr: FilterType = {
       is_group: true,

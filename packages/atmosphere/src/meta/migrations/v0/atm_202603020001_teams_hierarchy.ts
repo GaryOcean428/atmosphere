@@ -7,7 +7,7 @@ const up = async (knex: Knex) => {
     table.string('fk_parent_team_id', 20);
     table.integer('depth').defaultTo(0);
     table.text('path');
-    table.index('fk_parent_team_id', 'nc_teams_parent_idx');
+    table.index('fk_parent_team_id', 'atm_teams_parent_idx');
   });
 
   // Backfill existing teams as root teams
@@ -39,7 +39,7 @@ const down = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.TEAMS, (table) => {
-    table.dropIndex([], 'nc_teams_parent_idx');
+    table.dropIndex([], 'atm_teams_parent_idx');
     table.dropColumn('fk_parent_team_id');
     table.dropColumn('depth');
     table.dropColumn('path');

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnType, GalleryType, KanbanType, ListType, LookupType } from 'nocodb-sdk'
-import { UITypes, ViewTypes, isLinksOrLTAR, isSystemColumn } from 'nocodb-sdk'
+import type { ColumnType, GalleryType, KanbanType, ListType, LookupType } from 'atmosphere-sdk'
+import { UITypes, ViewTypes, isLinksOrLTAR, isSystemColumn } from 'atmosphere-sdk'
 import Draggable from 'vuedraggable'
 
 import type { SelectProps } from 'ant-design-vue'
@@ -75,7 +75,7 @@ const { updateViewMeta } = viewStore
 // Coalesce bursts of FIELD_RELOAD into one viewColumnList fetch — a single
 // column CUD can emit FIELD_RELOAD from the save site, the useColumnCreateStore
 // path, and the realtime socket. Without this, each emit reissues the same
-// `viewColumnList` call. See nocodb#6778.
+// `viewColumnList` call. See atmosphere#6778.
 const loadViewColumnsDebounced = useDebounceFn(loadViewColumns, 50)
 
 const eventBusHandler = async (event: SmartsheetStoreEvents, payload?: any) => {
@@ -482,7 +482,7 @@ const lookupDropdownsTickle = ref(0)
 
 function scrollToLatestField() {
   setTimeout(() => {
-    document.querySelector('.nc-fields-menu-item:last-child')?.scrollIntoView({ behavior: 'smooth' })
+    document.querySelector('.atm-fields-menu-item:last-child')?.scrollIntoView({ behavior: 'smooth' })
   }, 500)
 }
 
@@ -561,17 +561,17 @@ const onAddColumnDropdownVisibilityChange = () => {
 </script>
 
 <template>
-  <NcDropDrawer
+  <AtDropDrawer
     v-model:visible="open"
     :trigger="['click']"
-    overlay-class-name="nc-dropdown-fields-menu nc-toolbar-dropdown overflow-hidden"
-    drawer-body-class-name="nc-dropdown-fields-menu !px-0 !pb-0 h-full"
+    overlay-class-name="atm-dropdown-fields-menu atm-toolbar-dropdown overflow-hidden"
+    drawer-body-class-name="atm-dropdown-fields-menu !px-0 !pb-0 h-full"
     :scrollable-body="false"
     :auto-close="openSubmenusCount === 0"
     @visible-change="onFieldsMenuDropdownVisibilityChange"
   >
     <template #default="{ onClick }">
-      <NcTooltip :disabled="!isMobileMode && !isToolbarIconMode" :class="{ 'nc-active-btn': numberOfHiddenFields }">
+      <AtTooltip :disabled="!isMobileMode && !isToolbarIconMode" :class="{ 'atm-active-btn': numberOfHiddenFields }">
         <template #title>
           {{
             activeView?.type === ViewTypes.KANBAN || activeView?.type === ViewTypes.GALLERY
@@ -580,9 +580,9 @@ const onAddColumnDropdownVisibilityChange = () => {
           }}
         </template>
 
-        <NcButton
+        <AtButton
           v-e="['c:fields']"
-          class="nc-fields-menu-btn nc-toolbar-btn !h-7 !border-0"
+          class="atm-fields-menu-btn atm-toolbar-btn !h-7 !border-0"
           size="small"
           type="secondary"
           :show-as-disabled="isFieldsMenuReadOnly"
@@ -607,42 +607,42 @@ const onAddColumnDropdownVisibilityChange = () => {
                 </template>
               </span>
             </div>
-            <span v-if="numberOfHiddenFields" class="bg-nc-bg-brand text-nc-content-brand nc-toolbar-btn-chip">
+            <span v-if="numberOfHiddenFields" class="bg-atm-bg-brand text-atm-content-brand atm-toolbar-btn-chip">
               {{ numberOfHiddenFields }}
             </span>
           </div>
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
     </template>
     <template #overlay>
       <div
-        class="w-full xs:(h-full flex flex-col) sm:w-[320px] rounded-lg nc-table-toolbar-menu"
-        data-testid="nc-fields-menu"
+        class="w-full xs:(h-full flex flex-col) sm:w-[320px] rounded-lg atm-table-toolbar-menu"
+        data-testid="atm-fields-menu"
         @click.stop
       >
         <div
           v-if="!isPublic && (activeView?.type === ViewTypes.GALLERY || activeView?.type === ViewTypes.KANBAN)"
-          class="flex items-center gap-2 p-2 sm:w-80 border-b-1 border-nc-border-gray-light"
+          class="flex items-center gap-2 p-2 sm:w-80 border-b-1 border-atm-border-gray-light"
         >
-          <div class="pl-2 flex text-sm select-none text-nc-content-gray-subtle2 xs:flex-1">
+          <div class="pl-2 flex text-sm select-none text-atm-content-gray-subtle2 xs:flex-1">
             {{ $t('labels.coverImageField') }}
           </div>
 
           <div
-            class="flex-1 nc-dropdown-cover-image-wrapper flex items-stretch border-1 border-nc-border-gray-medium rounded-lg transition-all duration-0.3s max-w-[206px] mr-2"
+            class="flex-1 atm-dropdown-cover-image-wrapper flex items-stretch border-1 border-atm-border-gray-medium rounded-lg transition-all duration-0.3s max-w-[206px] mr-2"
             :class="{
-              'nc-disabled': isFieldsMenuReadOnly,
+              'atm-disabled': isFieldsMenuReadOnly,
             }"
           >
             <a-select
               v-model:value="coverImageColumnId"
               class="flex-1 max-w-[calc(100%_-_33px)]"
-              dropdown-class-name="nc-dropdown-cover-image !rounded-lg"
+              dropdown-class-name="atm-dropdown-cover-image !rounded-lg"
               :bordered="false"
               :disabled="isFieldsMenuReadOnly"
               @click.stop
             >
-              <template #suffixIcon><GeneralIcon class="text-nc-content-gray-subtle" icon="arrowDown" /></template>
+              <template #suffixIcon><GeneralIcon class="text-atm-content-gray-subtle" icon="arrowDown" /></template>
 
               <a-select-option v-for="option of coverOptions" :key="option.value" :value="option.value">
                 <div class="w-full h-full flex gap-2 items-center justify-between max-w-[400px]">
@@ -657,46 +657,46 @@ const onAddColumnDropdownVisibilityChange = () => {
                       v-if="option.value && metaColumnById[option.value]"
                       :column="metaColumnById[option.value]"
                       class="!w-3.5 !h-3.5 !ml-0"
-                      color="text-nc-content-gray-subtle"
+                      color="text-atm-content-gray-subtle"
                     />
 
-                    <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                       <template #title>
                         {{ option.label }}
                       </template>
                       <template #default>{{ option.label }}</template>
-                    </NcTooltip>
+                    </AtTooltip>
                   </div>
                   <GeneralIcon
                     v-if="coverImageColumnId === option.value"
-                    id="nc-selected-item-icon"
+                    id="atm-selected-item-icon"
                     icon="check"
-                    class="flex-none text-nc-content-brand w-4 h-4"
+                    class="flex-none text-atm-content-brand w-4 h-4"
                   />
                 </div>
               </a-select-option>
             </a-select>
-            <NcDropdown
+            <AtDropdown
               v-if="coverImageObjectFit"
               v-model:visible="coverImageObjectFitDropdown.isOpen"
               :disabled="isFieldsMenuReadOnly"
               placement="bottomRight"
             >
               <button
-                class="flex items-center px-2 border-l-1 border-nc-border-gray-medium disabled:(cursor-not-allowed opacity-80)"
+                class="flex items-center px-2 border-l-1 border-atm-border-gray-medium disabled:(cursor-not-allowed opacity-80)"
                 :disabled="isFieldsMenuReadOnly"
               >
                 <GeneralIcon
                   icon="settings"
                   class="h-4 w-4"
                   :class="{
-                    '!text-nc-content-brand': coverImageObjectFitDropdown.isOpen,
+                    '!text-atm-content-brand': coverImageObjectFitDropdown.isOpen,
                   }"
                 />
               </button>
               <template #overlay>
-                <NcMenu class="nc-cover-image-object-fit-dropdown-menu min-w-[168px]">
-                  <NcMenuItem
+                <AtMenu class="atm-cover-image-object-fit-dropdown-menu min-w-[168px]">
+                  <AtMenuItem
                     v-for="option in coverImageObjectFitOptions"
                     :key="option.value"
                     class="!children:w-full"
@@ -715,34 +715,34 @@ const onAddColumnDropdownVisibilityChange = () => {
                     <GeneralIcon
                       v-else-if="option.value === coverImageObjectFit"
                       icon="check"
-                      class="flex-none text-nc-content-brand w-4 h-4"
+                      class="flex-none text-atm-content-brand w-4 h-4"
                     />
-                  </NcMenuItem>
-                </NcMenu>
+                  </AtMenuItem>
+                </AtMenu>
               </template>
-            </NcDropdown>
+            </AtDropdown>
           </div>
         </div>
 
         <!--
-        <div v-if="!isPublic && isList" class="flex items-center gap-2 p-2 w-80 border-b-1 border-nc-border-gray-light">
-          <div class="pl-2 flex text-sm select-none text-nc-content-gray-subtle2">{{ $t('labels.prefixField') }}</div>
+        <div v-if="!isPublic && isList" class="flex items-center gap-2 p-2 w-80 border-b-1 border-atm-border-gray-light">
+          <div class="pl-2 flex text-sm select-none text-atm-content-gray-subtle2">{{ $t('labels.prefixField') }}</div>
 
           <div
-            class="flex-1 nc-dropdown-prefix-column-wrapper flex items-stretch border-1 border-nc-border-gray-medium rounded-lg transition-all duration-0.3s"
+            class="flex-1 atm-dropdown-prefix-column-wrapper flex items-stretch border-1 border-atm-border-gray-medium rounded-lg transition-all duration-0.3s"
             :class="{
-              'nc-disabled': isFieldsMenuReadOnly,
+              'atm-disabled': isFieldsMenuReadOnly,
             }"
           >
             <a-select
               v-model:value="prefixColumnId"
               class="flex-1 w-full"
-              dropdown-class-name="nc-dropdown-prefix-column !rounded-lg"
+              dropdown-class-name="atm-dropdown-prefix-column !rounded-lg"
               :bordered="false"
               :disabled="isFieldsMenuReadOnly"
               @click.stop
             >
-              <template #suffixIcon><GeneralIcon class="text-nc-content-gray-subtle" icon="arrowDown" /></template>
+              <template #suffixIcon><GeneralIcon class="text-atm-content-gray-subtle" icon="arrowDown" /></template>
 
               <a-select-option v-for="option of prefixColumnOptions" :key="option.value" :value="option.value">
                 <div class="w-full flex gap-2 items-center justify-between max-w-[400px]">
@@ -757,21 +757,21 @@ const onAddColumnDropdownVisibilityChange = () => {
                       v-if="option.value && metaColumnById[option.value]"
                       :column="metaColumnById[option.value]"
                       class="!w-3.5 !h-3.5 !ml-0"
-                      color="text-nc-content-gray-subtle"
+                      color="text-atm-content-gray-subtle"
                     />
 
-                    <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                       <template #title>
                         {{ option.label }}
                       </template>
                       <template #default>{{ option.label }}</template>
-                    </NcTooltip>
+                    </AtTooltip>
                   </div>
                   <GeneralIcon
                     v-if="prefixColumnId === option.value"
-                    id="nc-selected-item-icon"
+                    id="atm-selected-item-icon"
                     icon="check"
-                    class="flex-none text-nc-content-brand w-4 h-4"
+                    class="flex-none text-atm-content-brand w-4 h-4"
                   />
                 </div>
               </a-select-option>
@@ -787,17 +787,17 @@ const onAddColumnDropdownVisibilityChange = () => {
             ref="fieldsMenuSearchRef"
             v-model:value="filterQuery"
             :placeholder="$t('placeholder.searchFields')"
-            class="nc-toolbar-dropdown-search-field-input !border-none !shadow-none !h-8"
+            class="atm-toolbar-dropdown-search-field-input !border-none !shadow-none !h-8"
           >
-            <template #prefix> <GeneralIcon icon="search" class="nc-search-icon h-3.5 w-3.5 mr-1 ml-2" /> </template>
+            <template #prefix> <GeneralIcon icon="search" class="atm-search-icon h-3.5 w-3.5 mr-1 ml-2" /> </template>
             <template #suffix>
               <div class="pl-2 flex items-center gap-2">
-                <NcSwitch
+                <AtSwitch
                   v-model:checked="showAllColumns"
                   :disabled="isDisabledShowAllColumns"
                   :loading="isLoadingShowAllColumns"
                   :size="getResponsiveValue('small', 'xsmall')"
-                  class="!mr-1 nc-fields-toggle-show-all-fields"
+                  class="!mr-1 atm-fields-toggle-show-all-fields"
                 />
               </div>
             </template>
@@ -805,13 +805,13 @@ const onAddColumnDropdownVisibilityChange = () => {
         </div>
 
         <div
-          class="flex flex-col nc-scrollbar-thin xs:flex-1 sm:(max-h-[315px] min-h-[240px]) p-2 overflow-y-auto border-t-1 border-nc-border-gray-medium"
+          class="flex flex-col atm-scrollbar-thin xs:flex-1 sm:(max-h-[315px] min-h-[240px]) p-2 overflow-y-auto border-t-1 border-atm-border-gray-medium"
           style="scrollbar-gutter: stable !important"
         >
-          <div class="nc-fields-list">
+          <div class="atm-fields-list">
             <div
               v-if="!localFilteredFieldList.length"
-              class="px-2 py-6 text-nc-content-gray-muted flex flex-col items-center gap-6 text-center"
+              class="px-2 py-6 text-atm-content-gray-muted flex flex-col items-center gap-6 text-center"
             >
               <img
                 src="~assets/img/placeholder/no-search-result-found.png"
@@ -825,7 +825,7 @@ const onAddColumnDropdownVisibilityChange = () => {
               v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 40 })"
               v-model="fields"
               item-key="id"
-              ghost-class="nc-fields-menu-items-ghost"
+              ghost-class="atm-fields-menu-items-ghost"
               :disabled="isFieldsMenuReadOnly || isMobileMode"
               :filter="isTouchEvent"
               @change="onMove($event)"
@@ -836,17 +836,17 @@ const onAddColumnDropdownVisibilityChange = () => {
                 <div
                   v-if="localFilteredFieldList.includes(field)"
                   :key="field.id"
-                  :data-testid="`nc-fields-menu-${field.title}`"
-                  class="nc-fields-menu-item pl-2 flex flex-row items-center rounded-md"
+                  :data-testid="`atm-fields-menu-${field.title}`"
+                  class="atm-fields-menu-item pl-2 flex flex-row items-center rounded-md"
                   :class="{
-                    'hover:bg-nc-bg-gray-light': !isFieldsMenuReadOnly,
+                    'hover:bg-atm-bg-gray-light': !isFieldsMenuReadOnly,
                   }"
                   @click.stop
                 >
                   <component
                     :is="iconMap.drag"
                     v-if="!isMobileMode"
-                    class="!h-3.75 text-nc-content-gray-subtle2 mr-1"
+                    class="!h-3.75 text-atm-content-gray-subtle2 mr-1"
                     :class="{
                       'cursor-not-allowed': isFieldsMenuReadOnly,
                       'cursor-move': !isFieldsMenuReadOnly,
@@ -874,11 +874,11 @@ const onAddColumnDropdownVisibilityChange = () => {
                           v-if="field.fk_column_id && metaColumnById[field.fk_column_id]"
                           :column="metaColumnById[field.fk_column_id]"
                           class="!w-3.5 !h-3.5"
-                          color="text-nc-content-gray-subtle2"
+                          color="text-atm-content-gray-subtle2"
                           @click.stop
                         />
 
-                        <NcTooltip
+                        <AtTooltip
                           class="pl-1 truncate"
                           :class="{
                             'mr-3 flex-1': !showAddLookupDropdown(field) && !searchBasisIdMap[field.fk_column_id!],
@@ -892,22 +892,22 @@ const onAddColumnDropdownVisibilityChange = () => {
                           <template #default>
                             {{ field.title }}
                           </template>
-                        </NcTooltip>
+                        </AtTooltip>
                         <div v-if="searchBasisIdMap[field.fk_column_id!]" class="flex-1 flex ml-1 mr-3">
-                          <NcTooltip :title="searchBasisIdMap[field.fk_column_id!]" class="flex cursor-help">
-                            <GeneralIcon icon="info" class="h-3.5 w-3.5 opacity-80 text-nc-content-gray-muted" />
-                          </NcTooltip>
+                          <AtTooltip :title="searchBasisIdMap[field.fk_column_id!]" class="flex cursor-help">
+                            <GeneralIcon icon="info" class="h-3.5 w-3.5 opacity-80 text-atm-content-gray-muted" />
+                          </AtTooltip>
                         </div>
                         <div v-if="showAddLookupDropdown(field)" class="flex-1 flex mr-3">
-                          <NcTooltip :disabled="isOpened">
+                          <AtTooltip :disabled="isOpened">
                             <template #title>
                               {{ $t('tooltip.addLookupFields') }}
                             </template>
 
-                            <div class="px-1 text-nc-content-gray-subtle2">
+                            <div class="px-1 text-atm-content-gray-subtle2">
                               <GeneralIcon icon="chevronRight" class="flex-none !w-3.5 !h-3.5" />
                             </div>
-                          </NcTooltip>
+                          </AtTooltip>
                         </div>
 
                         <div
@@ -918,12 +918,12 @@ const onAddColumnDropdownVisibilityChange = () => {
                           "
                           class="flex mr-2"
                         >
-                          <NcButton
+                          <AtButton
                             :class="{
-                              '!text-nc-content-brand !bg-nc-bg-brand hover:!bg-nc-brand-100 active:!bg-nc-brand-200': field.bold,
+                              '!text-atm-content-brand !bg-atm-bg-brand hover:!bg-atm-brand-100 active:!bg-atm-brand-200': field.bold,
                               '!rounded-r-none': field.italic,
                             }"
-                            class="!w-5 !h-5 hover:!bg-nc-bg-gray-medium active:!bg-nc-bg-gray-dark relative"
+                            class="!w-5 !h-5 hover:!bg-atm-bg-gray-medium active:!bg-atm-bg-gray-dark relative"
                             size="xsmall"
                             type="text"
                             :disabled="isFieldsMenuReadOnly"
@@ -934,15 +934,15 @@ const onAddColumnDropdownVisibilityChange = () => {
                               v-if="field.bold"
                               class="bg-primary w-1.25 h-1.25 rounded-full absolute top-0.25 right-0.5 border-1 border-base-white"
                             />
-                          </NcButton>
-                          <NcButton
+                          </AtButton>
+                          <AtButton
                             :class="{
-                              '!text-nc-content-brand !bg-nc-bg-brand hover:!bg-nc-brand-100 active:!bg-nc-brand-200':
+                              '!text-atm-content-brand !bg-atm-bg-brand hover:!bg-atm-brand-100 active:!bg-atm-brand-200':
                                 field.italic,
                               '!rounded-l-none': field.bold,
                               '!rounded-r-none': field.underline,
                             }"
-                            class="!w-5 !h-5 hover:!bg-nc-bg-gray-medium active:!bg-nc-bg-gray-dark relative"
+                            class="!w-5 !h-5 hover:!bg-atm-bg-gray-medium active:!bg-atm-bg-gray-dark relative"
                             size="xsmall"
                             type="text"
                             :disabled="isFieldsMenuReadOnly"
@@ -953,14 +953,14 @@ const onAddColumnDropdownVisibilityChange = () => {
                               v-if="field.italic"
                               class="bg-primary w-1.25 h-1.25 rounded-full absolute top-0.25 right-0.5 border-1 border-base-white"
                             />
-                          </NcButton>
-                          <NcButton
+                          </AtButton>
+                          <AtButton
                             :class="{
-                              '!text-nc-content-brand !bg-nc-bg-brand hover:!bg-nc-brand-100 active:!bg-nc-brand-200':
+                              '!text-atm-content-brand !bg-atm-bg-brand hover:!bg-atm-brand-100 active:!bg-atm-brand-200':
                                 field.underline,
                               '!rounded-l-none': field.italic,
                             }"
-                            class="!w-5 !h-5 hover:!bg-nc-bg-gray-medium active:!bg-nc-bg-gray-dark relative"
+                            class="!w-5 !h-5 hover:!bg-atm-bg-gray-medium active:!bg-atm-bg-gray-dark relative"
                             size="xsmall"
                             type="text"
                             :disabled="isFieldsMenuReadOnly"
@@ -971,10 +971,10 @@ const onAddColumnDropdownVisibilityChange = () => {
                               v-if="field.underline"
                               class="bg-primary w-1.25 h-1.25 rounded-full absolute top-0.25 right-0.5 border-1 border-base-white"
                             />
-                          </NcButton>
+                          </AtButton>
                         </div>
 
-                        <NcTooltip
+                        <AtTooltip
                           v-if="!field.show && isHideBlockingRequired(meta?.columnsById?.[field.fk_column_id!])"
                           placement="left"
                           class="flex items-center mr-1.5"
@@ -984,14 +984,14 @@ const onAddColumnDropdownVisibilityChange = () => {
                           </template>
                           <GeneralIcon
                             icon="alertTriangleSolid"
-                            class="!w-3.5 !h-3.5 text-nc-content-yellow-dark"
-                            data-testid="nc-field-hidden-required-warning"
+                            class="!w-3.5 !h-3.5 text-atm-content-yellow-dark"
+                            data-testid="atm-field-hidden-required-warning"
                             @click.stop
                           />
-                        </NcTooltip>
+                        </AtTooltip>
 
                         <span class="flex children:flex-none" @click.stop="conditionalToggleFieldVisibility(field)">
-                          <NcSwitch
+                          <AtSwitch
                             :checked="field.show"
                             :disabled="field.isViewEssentialField || isFieldsMenuReadOnly || isLoadingShowAllColumns"
                             :size="getResponsiveValue('xsmall', 'xxsmall')"
@@ -1012,43 +1012,43 @@ const onAddColumnDropdownVisibilityChange = () => {
 
         <div
           v-if="!isLocalMode && !filterQuery && !isFieldsMenuReadOnly"
-          class="flex px-2 gap-1 py-2 border-t-1 justify-between border-nc-border-gray-medium"
+          class="flex px-2 gap-1 py-2 border-t-1 justify-between border-atm-border-gray-medium"
         >
-          <NcButton
-            class="nc-fields-show-system-fields !px-2 !font-normal"
+          <AtButton
+            class="atm-fields-show-system-fields !px-2 !font-normal"
             size="xs"
             type="text"
             @click="showSystemField = !showSystemField"
           >
             <GeneralIcon :icon="showSystemField ? 'eyeSlash' : 'eye'" class="!w-4 !h-4 mr-2" />
             <span> {{ $t('title.systemFields') }} </span>
-          </NcButton>
-          <NcDropdown
+          </AtButton>
+          <AtDropdown
             v-if="isAddingColumnAllowed || !!addFieldReason"
             v-model:visible="addColumnDropdown"
             :trigger="addFieldReason ? [] : ['click']"
-            overlay-class-name="nc-dropdown-add-column !bg-transparent !border-none !shadow-none !rounded-2xl"
+            overlay-class-name="atm-dropdown-add-column !bg-transparent !border-none !shadow-none !rounded-2xl"
             placement="right"
             :align="{
               offset: [9, -15],
             }"
             @visible-change="onAddColumnDropdownVisibilityChange"
           >
-            <NcTooltip :disabled="!addFieldReason">
+            <AtTooltip :disabled="!addFieldReason">
               <template #title>{{ addFieldReason ? $t(addFieldReason) : '' }}</template>
-              <NcButton
+              <AtButton
                 text-color="primary"
-                class="nc-fields-add-new-field !font-normal !px-2"
+                class="atm-fields-add-new-field !font-normal !px-2"
                 size="xs"
                 type="text"
                 :disabled="!!addFieldReason"
               >
                 <GeneralIcon icon="ncPlus" class="!w-4 !h-4 mr-1" />
                 <span>{{ $t('general.new') }} {{ $t('objects.field') }}</span>
-              </NcButton>
-            </NcTooltip>
+              </AtButton>
+            </AtTooltip>
             <template #overlay>
-              <div class="nc-edit-or-add-provider-wrapper">
+              <div class="atm-edit-or-add-provider-wrapper">
                 <LazySmartsheetColumnEditOrAddProvider
                   v-if="addColumnDropdown"
                   ref="editOrAddProviderRef"
@@ -1059,7 +1059,7 @@ const onAddColumnDropdownVisibilityChange = () => {
                 />
               </div>
             </template>
-          </NcDropdown>
+          </AtDropdown>
         </div>
 
         <GeneralLockedViewFooter
@@ -1072,60 +1072,60 @@ const onAddColumnDropdownVisibilityChange = () => {
         </GeneralLockedViewFooter>
       </div>
     </template>
-  </NcDropDrawer>
+  </AtDropDrawer>
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-toolbar-dropdown-search-field-input .ant-input::placeholder) {
-  @apply text-nc-content-gray-muted;
+:deep(.atm-toolbar-dropdown-search-field-input .ant-input::placeholder) {
+  @apply text-atm-content-gray-muted;
 }
 :deep(.xxsmall) {
   @apply !min-w-0;
 }
 
-.nc-fields-menu-item {
+.atm-fields-menu-item {
   &:has(.is-opened-add-lookup) {
-    @apply bg-nc-bg-gray-light;
+    @apply bg-atm-bg-gray-light;
   }
 }
 
-.nc-fields-menu-items-ghost {
-  @apply bg-nc-bg-gray-extralight;
+.atm-fields-menu-items-ghost {
+  @apply bg-atm-bg-gray-extralight;
 }
 
-.nc-cover-image-object-fit-dropdown-menu {
-  :deep(.nc-menu-item-inner) {
+.atm-cover-image-object-fit-dropdown-menu {
+  :deep(.atm-menu-item-inner) {
     @apply !w-full flex items-center justify-between;
   }
 }
-.nc-dropdown-cover-image-wrapper {
+.atm-dropdown-cover-image-wrapper {
   @apply h-8;
 
-  &:not(.nc-disabled):not(:focus-within) {
+  &:not(.atm-disabled):not(:focus-within) {
     @apply shadow-default hover:shadow-hover;
   }
-  &:not(.nc-disabled):focus-within {
-    @apply shadow-selected border-nc-border-brand;
+  &:not(.atm-disabled):focus-within {
+    @apply shadow-selected border-atm-border-brand;
   }
 }
-.nc-dropdown-prefix-column-wrapper {
+.atm-dropdown-prefix-column-wrapper {
   @apply h-8;
 
-  &:not(.nc-disabled):not(:focus-within) {
+  &:not(.atm-disabled):not(:focus-within) {
     @apply shadow-default hover:shadow-hover;
   }
-  &:not(.nc-disabled):focus-within {
-    @apply shadow-selected border-nc-border-brand;
+  &:not(.atm-disabled):focus-within {
+    @apply shadow-selected border-atm-border-brand;
   }
 }
 
 :deep(.ant-input-affix-wrapper) {
   &:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-focused):not(:focus) {
-    @apply shadow-default hover:(shadow-hover border-nc-border-gray-medium);
+    @apply shadow-default hover:(shadow-hover border-atm-border-gray-medium);
   }
   &.ant-input-affix-wrapper-focused,
   &:focus {
-    @apply border-nc-border-brand shadow-selected;
+    @apply border-atm-border-brand shadow-selected;
   }
 }
 

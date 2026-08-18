@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { UserType } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
 
 const props = withDefaults(
   defineProps<{
@@ -32,7 +32,7 @@ const isLoading = ref(false)
 
 const collaborators = ref<UserType[]>([])
 
-// Template ref to NcList — exposes its search-filtered `list` so Select all can honor the active search
+// Template ref to AtList — exposes its search-filtered `list` so Select all can honor the active search
 const ncListRef = ref<{ list?: UserType[] } | null>(null)
 
 const emailMap = computed<Record<string, boolean>>(() => {
@@ -67,7 +67,7 @@ function isSelected(email: string) {
   return !!emailMap.value[email]
 }
 
-function filterOption(query: string, option: NcListItemType) {
+function filterOption(query: string, option: AtListItemType) {
   return antSelectFilterOption(query, option, ['email', 'display_name'])
 }
 
@@ -157,26 +157,26 @@ watch(isOpen, (open) => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="isOpen"
     :disabled="disabled"
     placement="bottomRight"
-    overlay-class-name="nc-form-email-responses-overlay"
+    overlay-class-name="atm-form-email-responses-overlay"
   >
     <div
       v-e="['a:form-view:email-responses']"
-      class="nc-form-email-responses-trigger flex items-center justify-between gap-2 min-w-[180px] h-8 px-3 rounded-lg border-1 border-nc-border-gray-medium transition-colors"
-      :class="disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:border-nc-border-gray-dark'"
-      data-testid="nc-form-email-responses-trigger"
+      class="atm-form-email-responses-trigger flex items-center justify-between gap-2 min-w-[180px] h-8 px-3 rounded-lg border-1 border-atm-border-gray-medium transition-colors"
+      :class="disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:border-atm-border-gray-dark'"
+      data-testid="atm-form-email-responses-trigger"
     >
-      <span class="truncate" :class="selectedCount ? 'text-nc-content-gray' : 'text-nc-content-gray-muted'">
+      <span class="truncate" :class="selectedCount ? 'text-atm-content-gray' : 'text-atm-content-gray-muted'">
         {{ triggerLabel }}
       </span>
-      <GeneralIcon icon="settings" class="flex-none text-nc-content-gray-muted" />
+      <GeneralIcon icon="settings" class="flex-none text-atm-content-gray-muted" />
     </div>
 
     <template #overlay>
-      <NcList
+      <AtList
         ref="ncListRef"
         :open="isOpen"
         :value="selectedEmails"
@@ -191,12 +191,12 @@ watch(isOpen, (open) => {
         :search-input-placeholder="$t('placeholder.findBaseCollaborator')"
         :filter-option="filterOption"
         :empty-description="$t('labels.noResults')"
-        class="nc-form-email-responses-list !w-[300px]"
+        class="atm-form-email-responses-list !w-[300px]"
         item-class-name="!py-1"
       >
         <template #listItem="{ option }">
-          <div class="flex items-center w-full min-w-0" :data-testid="`nc-form-email-responses-item-${option.email}`">
-            <NcSwitch
+          <div class="flex items-center w-full min-w-0" :data-testid="`atm-form-email-responses-item-${option.email}`">
+            <AtSwitch
               :checked="isSelected(option.email)"
               :disabled="disabled"
               placement="right"
@@ -204,37 +204,37 @@ watch(isOpen, (open) => {
               content-wrapper-class="flex-1 min-w-0 !pl-0"
               @change="(val: boolean) => toggle(option.email, val)"
             >
-              <NcUserInfo :user="(option as UserType)" :disabled="disabled" />
-            </NcSwitch>
+              <AtUserInfo :user="(option as UserType)" :disabled="disabled" />
+            </AtSwitch>
           </div>
         </template>
 
         <template #listFooter>
-          <NcDivider class="!my-1" />
+          <AtDivider class="!my-1" />
           <div class="flex items-center gap-4 px-3 py-1">
-            <NcButton
+            <AtButton
               v-e="['a:form-view:email-responses:select-all']"
               type="text"
               size="small"
               :disabled="disabled || !collaborators.length"
-              data-testid="nc-form-email-responses-select-all"
+              data-testid="atm-form-email-responses-select-all"
               @click="selectAll"
             >
               {{ $t('general.selectAll') }}
-            </NcButton>
-            <NcButton
+            </AtButton>
+            <AtButton
               v-e="['a:form-view:email-responses:clear-all']"
               type="text"
               size="small"
               :disabled="disabled || !selectedCount"
-              data-testid="nc-form-email-responses-clear-all"
+              data-testid="atm-form-email-responses-clear-all"
               @click="clearAll"
             >
               {{ $t('labels.clearAll') }}
-            </NcButton>
+            </AtButton>
           </div>
         </template>
-      </NcList>
+      </AtList>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

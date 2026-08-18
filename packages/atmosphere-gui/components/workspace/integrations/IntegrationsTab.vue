@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VNodeRef } from '@vue/runtime-core'
-import { IntegrationCategoryType, PlanFeatureTypes } from 'nocodb-sdk'
-import NcModal from '~/components/nc/Modal.vue'
+import { IntegrationCategoryType, PlanFeatureTypes } from 'atmosphere-sdk'
+import AtModal from '~/components/atm/Modal.vue'
 
 import { type IntegrationItemType, SyncDataType } from '#imports'
 
@@ -142,7 +142,7 @@ const getIntegrationsByCategory = (category: IntegrationCategoryType, query: str
     // one-docker image is an EE build (isEeUI === true) regardless of license.
     const isOssOnlyAllowed = isEEFeatureBlocked.value || !i?.isOssOnly
 
-    if (!isDataReflectionEnabled.value && i.sub_type === SyncDataType.NOCODB) return false
+    if (!isDataReflectionEnabled.value && i.sub_type === SyncDataType.ATMOSPHERE) return false
 
     if (i.hidden) return false
 
@@ -313,28 +313,28 @@ watch(activeViewTab, (value) => {
 
 <template>
   <component
-    :is="isModal ? NcModal : 'div'"
+    :is="isModal ? AtModal : 'div'"
     v-model:visible="isAddNewIntegrationModalOpen"
     centered
     size="large"
     :class="{
       'h-full': !isModal,
     }"
-    wrap-class-name="nc-modal-available-integrations-list"
+    wrap-class-name="atm-modal-available-integrations-list"
     @keydown.esc="isAddNewIntegrationModalOpen = false"
   >
     <a-layout>
-      <a-layout-content class="nc-integration-layout-content">
-        <div v-if="isModal" class="p-4 w-full flex items-center justify-between gap-3 border-b-1 border-nc-border-gray-medium">
-          <NcButton type="text" size="small" @click="isAddNewIntegrationModalOpen = false">
+      <a-layout-content class="atm-integration-layout-content">
+        <div v-if="isModal" class="p-4 w-full flex items-center justify-between gap-3 border-b-1 border-atm-border-gray-medium">
+          <AtButton type="text" size="small" @click="isAddNewIntegrationModalOpen = false">
             <GeneralIcon icon="arrowLeft" />
-          </NcButton>
+          </AtButton>
           <GeneralIcon icon="gitCommit" class="flex-none h-5 w-5" />
           <div class="flex-1 text-base font-weight-700">{{ $t('labels.newConnection') }}</div>
           <div class="flex items-center gap-3">
-            <NcButton size="small" type="text" @click="isAddNewIntegrationModalOpen = false">
-              <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-            </NcButton>
+            <AtButton size="small" type="text" @click="isAddNewIntegrationModalOpen = false">
+              <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+            </AtButton>
           </div>
         </div>
         <div
@@ -346,43 +346,43 @@ watch(activeViewTab, (value) => {
         >
           <div v-if="integrationListContainerWidth" class="px-6 pt-4">
             <div
-              class="flex justify-end flex-wrap gap-3 m-auto nc-content-max-w"
+              class="flex justify-end flex-wrap gap-3 m-auto atm-content-max-w"
               :class="{
                 'items-start': showTitle,
                 'items-center': !showTitle,
               }"
             >
               <div class="flex-1">
-                <h2 v-if="showTitle" class="text-lg font-semibold text-nc-content-gray mb-2">
+                <h2 v-if="showTitle" class="text-lg font-semibold text-atm-content-gray mb-2">
                   {{ $t('general.integrations') }}
                 </h2>
 
-                <div class="text-sm font-normal text-nc-content-gray-subtle2">
+                <div class="text-sm font-normal text-atm-content-gray-subtle2">
                   <div>
                     {{ showActiveConnections ? $t('msg.manageConnectionsAndIntegrations') : $t('msg.connectIntegrations') }}
-                    <a href="https://nocodb.com/docs/product-docs/integrations" target="_blank" rel="noopener noreferrer">{{
+                    <a href="https://atmosphere.dev/docs/product-docs/integrations" target="_blank" rel="noopener noreferrer">{{
                       $t('msg.learnMore')
                     }}</a>
                   </div>
                 </div>
               </div>
-              <NcButton
+              <AtButton
                 v-if="easterEggToggle"
                 type="ghost"
                 size="small"
-                class="!text-nc-content-brand"
+                class="!text-atm-content-brand"
                 @click="requestIntegration.isOpen = true"
               >
                 Request Integration
-              </NcButton>
+              </AtButton>
             </div>
             <!-- Search + filter — full width, outside the header row -->
-            <div class="flex items-center gap-2 nc-content-max-w m-auto !mt-4">
+            <div class="flex items-center gap-2 atm-content-max-w m-auto !mt-4">
               <a-input
                 ref="searchInputRef"
                 v-model:value="searchQuery"
                 type="text"
-                class="flex-1 nc-input-border-on-value nc-search-integration-input !rounded-lg !py-2 !h-9"
+                class="flex-1 atm-input-border-on-value atm-search-integration-input !rounded-lg !py-2 !h-9"
                 :placeholder="
                   showActiveConnections
                     ? $t('placeholder.searchConnectionsOrIntegrations')
@@ -391,24 +391,24 @@ watch(activeViewTab, (value) => {
                 allow-clear
               >
                 <template #prefix>
-                  <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-nc-content-gray-muted" />
+                  <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-atm-content-gray-muted" />
                 </template>
               </a-input>
-              <NcDropdown v-if="easterEggToggle && showFilter" v-model:visible="isOpenFilter" placement="bottomRight">
-                <NcButton size="medium" type="secondary" class="!px-1 !min-h-9 !min-w-9 !h-9 !w-9">
+              <AtDropdown v-if="easterEggToggle && showFilter" v-model:visible="isOpenFilter" placement="bottomRight">
+                <AtButton size="medium" type="secondary" class="!px-1 !min-h-9 !min-w-9 !h-9 !w-9">
                   <div class="flex items-center gap-2">
                     <GeneralIcon icon="filter" />
                     <div
                       v-if="integrationCategoriesRef.length - categoriesQuery.length"
-                      class="bg-nc-bg-brand text-nc-content-brand p-1 text-xs rounded-md min-w-6"
+                      class="bg-atm-bg-brand text-atm-content-brand p-1 text-xs rounded-md min-w-6"
                     >
                       {{ integrationCategoriesRef.length - categoriesQuery.length }}
                     </div>
                   </div>
-                </NcButton>
+                </AtButton>
 
                 <template #overlay>
-                  <NcList
+                  <AtList
                     v-model:value="categoriesQuery"
                     v-model:open="isOpenFilter"
                     :list="integrationCategoriesRef"
@@ -418,10 +418,10 @@ watch(activeViewTab, (value) => {
                     variant="medium"
                   >
                     <template #listFooter>
-                      <NcDivider class="!mt-0 !mb-2" />
+                      <AtDivider class="!mt-0 !mb-2" />
                       <div class="px-2 mb-2">
                         <div
-                          class="px-2 py-1.5 flex items-center justify-between gap-2 text-sm font-weight-500 !text-nc-content-brand hover:bg-nc-bg-gray-light rounded-md cursor-pointer"
+                          class="px-2 py-1.5 flex items-center justify-between gap-2 text-sm font-weight-500 !text-atm-content-brand hover:bg-atm-bg-gray-light rounded-md cursor-pointer"
                           @click="toggleShowOrHideAllCategory"
                         >
                           <div class="flex items-center gap-2">
@@ -432,16 +432,16 @@ watch(activeViewTab, (value) => {
                           </div>
                         </div>
                       </div>
-                    </template></NcList
+                    </template></AtList
                   >
                 </template>
-              </NcDropdown>
+              </AtDropdown>
             </div>
           </div>
 
           <div
             ref="integrationListRef"
-            class="flex-1 px-6 pb-8 flex flex-col nc-workspace-settings-integrations-list overflow-y-auto nc-scrollbar-thin"
+            class="flex-1 px-6 pb-8 flex flex-col atm-workspace-settings-integrations-list overflow-y-auto atm-scrollbar-thin"
           >
             <div
               v-if="integrationListContainerWidth"
@@ -450,7 +450,7 @@ watch(activeViewTab, (value) => {
                 'flex-1': isEmptyList,
               }"
             >
-              <div class="flex flex-col space-y-6 w-full nc-content-max-w">
+              <div class="flex flex-col space-y-6 w-full atm-content-max-w">
                 <!-- Full-page skeleton during initial load (non-modal only) -->
                 <WorkspaceIntegrationsSkeleton v-if="showActiveConnections && !isModal && !isLoadedIntegrations" />
 
@@ -486,16 +486,16 @@ watch(activeViewTab, (value) => {
                           :feature-enabled-callback="() => !blockAiIntegrations"
                           remove-click
                         />
-                        <NcBadge
+                        <AtBadge
                           v-else-if="!category.isAvailable"
                           :border="false"
-                          class="text-nc-content-brand !h-5 bg-nc-bg-brand text-xs font-normal px-2"
-                          >{{ $t('msg.toast.futureRelease') }}</NcBadge
+                          class="text-atm-content-brand !h-5 bg-atm-bg-brand text-xs font-normal px-2"
+                          >{{ $t('msg.toast.futureRelease') }}</AtBadge
                         >
                       </div>
                       <div v-if="category.list.length" class="integration-type-list grid grid-cols-1 gap-3">
                         <template v-for="integration of category.list" :key="integration.sub_type">
-                          <NcTooltip
+                          <AtTooltip
                             v-if="isIntegrationVisible(integration, category)"
                             :disabled="integration?.isAvailable"
                             placement="bottom"
@@ -517,9 +517,9 @@ watch(activeViewTab, (value) => {
                                 <div class="name">{{ $t(integration.title) }}</div>
                                 <div v-if="integration.subtitle" class="subtitle flex-1">{{ $t(integration.subtitle) }}</div>
                               </div>
-                              <div v-if="!isDataReflectionEnabled && integration?.sub_type === SyncDataType.NOCODB"></div>
-                              <div v-else-if="integration?.sub_type === SyncDataType.NOCODB" class="flex items-center">
-                                <NcButton
+                              <div v-if="!isDataReflectionEnabled && integration?.sub_type === SyncDataType.ATMOSPHERE"></div>
+                              <div v-else-if="integration?.sub_type === SyncDataType.ATMOSPHERE" class="flex items-center">
+                                <AtButton
                                   v-if="dataReflectionEnabled"
                                   type="secondary"
                                   size="xs"
@@ -528,15 +528,15 @@ watch(activeViewTab, (value) => {
                                   <div class="flex items-center gap-2">
                                     <GeneralIcon icon="ncCheck" class="text-primary flex-none" />
                                   </div>
-                                </NcButton>
-                                <NcButton v-else type="secondary" size="xs" class="action-btn !rounded-lg !px-1 !py-0">
+                                </AtButton>
+                                <AtButton v-else type="secondary" size="xs" class="action-btn !rounded-lg !px-1 !py-0">
                                   <div class="flex items-center gap-2">
                                     <GeneralIcon icon="ncPlus" class="flex-none" />
                                   </div>
-                                </NcButton>
+                                </AtButton>
                               </div>
 
-                              <NcButton
+                              <AtButton
                                 v-else-if="integration?.isAvailable"
                                 type="secondary"
                                 size="xs"
@@ -545,9 +545,9 @@ watch(activeViewTab, (value) => {
                                 <div class="flex items-center gap-2">
                                   <GeneralIcon icon="ncPlus" class="flex-none" />
                                 </div>
-                              </NcButton>
+                              </AtButton>
                               <div v-else class="">
-                                <NcButton
+                                <AtButton
                                   type="secondary"
                                   size="xs"
                                   class="integration-upvote-btn !rounded-lg !px-1 !py-0"
@@ -558,10 +558,10 @@ watch(activeViewTab, (value) => {
                                   <div class="flex items-center gap-2">
                                     <GeneralIcon icon="ncArrowUp" />
                                   </div>
-                                </NcButton>
+                                </AtButton>
                               </div>
                             </div>
-                          </NcTooltip>
+                          </AtTooltip>
                         </template>
                       </div>
                     </div>
@@ -576,7 +576,7 @@ watch(activeViewTab, (value) => {
             <div v-else class="h-full flex items-center justify-center"><GeneralLoader size="xlarge" /></div>
           </div>
         </div>
-        <NcModal
+        <AtModal
           v-model:visible="requestIntegration.isOpen"
           centered
           size="medium"
@@ -584,71 +584,71 @@ watch(activeViewTab, (value) => {
         >
           <div v-show="requestIntegration.isOpen" class="flex flex-col gap-4">
             <div class="flex items-center justify-between gap-4">
-              <div class="text-base font-bold text-nc-content-gray">Request Integration</div>
-              <NcButton size="small" type="text" @click="requestIntegration.isOpen = false">
-                <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-              </NcButton>
+              <div class="text-base font-bold text-atm-content-gray">Request Integration</div>
+              <AtButton size="small" type="text" @click="requestIntegration.isOpen = false">
+                <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+              </AtButton>
             </div>
             <div class="flex flex-col gap-2">
               <a-textarea
                 :ref="focusTextArea"
                 v-model:value="requestIntegration.msg"
-                class="!rounded-md !text-sm !min-h-[120px] max-h-[500px] nc-scrollbar-thin"
+                class="!rounded-md !text-sm !min-h-[120px] max-h-[500px] atm-scrollbar-thin"
                 size="large"
                 hide-details
                 placeholder="Provide integration name and your use-case."
               />
             </div>
             <div class="flex items-center justify-end gap-3">
-              <NcButton size="small" type="secondary" @click="requestIntegration.isOpen = false">
+              <AtButton size="small" type="secondary" @click="requestIntegration.isOpen = false">
                 {{ $t('general.cancel') }}
-              </NcButton>
-              <NcButton
+              </AtButton>
+              <AtButton
                 :disabled="!requestIntegration.msg?.trim()"
                 :loading="requestIntegration.isLoading"
                 size="small"
                 @click="saveIntegrationRequest(requestIntegration.msg)"
               >
                 {{ $t('general.submit') }}
-              </NcButton>
+              </AtButton>
             </div>
           </div>
-        </NcModal>
+        </AtModal>
       </a-layout-content>
     </a-layout>
   </component>
 </template>
 
 <style lang="scss" scoped>
-.nc-integration-layout-sidebar {
-  @apply !bg-nc-bg-default border-r-1 border-nc-border-gray-medium !min-w-[260px] !max-w-[260px];
+.atm-integration-layout-sidebar {
+  @apply !bg-atm-bg-default border-r-1 border-atm-border-gray-medium !min-w-[260px] !max-w-[260px];
 
   flex: 1 1 260px !important;
 
-  .nc-integration-category-item {
-    @apply flex gap-2 p-2 rounded-lg hover:bg-nc-bg-gray-light cursor-pointer transition-all;
+  .atm-integration-category-item {
+    @apply flex gap-2 p-2 rounded-lg hover:bg-atm-bg-gray-light cursor-pointer transition-all;
 
     &.active {
-      @apply bg-nc-bg-gray-light;
+      @apply bg-atm-bg-gray-light;
     }
 
-    .nc-integration-category-item-icon-wrapper {
+    .atm-integration-category-item-icon-wrapper {
       @apply flex-none w-5 h-5 flex items-center justify-center rounded;
 
-      .nc-integration-category-item-icon {
+      .atm-integration-category-item-icon {
         @apply flex-none w-4 h-4;
       }
     }
 
-    .nc-integration-category-item-content-wrapper {
+    .atm-integration-category-item-content-wrapper {
       @apply flex-1 flex flex-col gap-1;
 
-      .nc-integration-category-item-title {
-        @apply text-sm text-nc-content-gray font-weight-500;
+      .atm-integration-category-item-title {
+        @apply text-sm text-atm-content-gray font-weight-500;
       }
 
-      .nc-integration-category-item-subtitle {
-        @apply text-xs text-nc-content-gray-muted font-weight-500;
+      .atm-integration-category-item-subtitle {
+        @apply text-xs text-atm-content-gray-muted font-weight-500;
       }
     }
   }
@@ -661,7 +661,7 @@ watch(activeViewTab, (value) => {
     @apply w-full;
   }
   &:not(.active) {
-    @apply cursor-pointer hover:bg-nc-bg-gray-extralight;
+    @apply cursor-pointer hover:bg-atm-bg-gray-extralight;
 
     &:hover {
       box-shadow: 0px 4px 8px -2px rgba(var(--rgb-base), 0.08), 0px 2px 4px -2px rgba(var(--rgb-base), 0.04);
@@ -672,18 +672,18 @@ watch(activeViewTab, (value) => {
     @apply flex items-center gap-4;
 
     .name {
-      @apply text-base font-semibold text-nc-content-gray;
+      @apply text-base font-semibold text-atm-content-gray;
     }
   }
 }
 .source-card-link {
-  @apply !text-nc-content-gray-extreme !no-underline;
-  .nc-new-integration-type-title {
-    @apply text-sm font-weight-600 text-nc-content-gray-subtle2;
+  @apply !text-atm-content-gray-extreme !no-underline;
+  .atm-new-integration-type-title {
+    @apply text-sm font-weight-600 text-atm-content-gray-subtle2;
   }
 }
 
-.nc-workspace-settings-integrations-list {
+.atm-workspace-settings-integrations-list {
   .integration-type-wrapper {
     @apply flex flex-col gap-3;
 
@@ -715,7 +715,7 @@ watch(activeViewTab, (value) => {
       }
 
       .source-card {
-        @apply flex items-center gap-4 border-1 border-nc-border-gray-medium rounded-xl p-3 cursor-pointer transition-all duration-300;
+        @apply flex items-center gap-4 border-1 border-atm-border-gray-medium rounded-xl p-3 cursor-pointer transition-all duration-300;
 
         .integration-icon-wrapper {
           @apply flex-none h-[44px] w-[44px] rounded-lg flex items-center justify-center;
@@ -735,7 +735,7 @@ watch(activeViewTab, (value) => {
 
         &.is-available {
           &:hover {
-            @apply bg-nc-bg-gray-extralight;
+            @apply bg-atm-bg-gray-extralight;
 
             box-shadow: 0px 4px 8px -2px rgba(var(--rgb-base), 0.08), 0px 2px 4px -2px rgba(var(--rgb-base), 0.04);
 
@@ -745,16 +745,16 @@ watch(activeViewTab, (value) => {
           }
 
           // .integration-icon-wrapper {
-          //   @apply bg-nc-bg-gray-light;
+          //   @apply bg-atm-bg-gray-light;
           // }
           .name {
-            @apply text-nc-content-gray;
+            @apply text-atm-content-gray;
           }
         }
         &:not(.is-available) {
           &:not(:hover) {
             .integration-icon-wrapper {
-              // @apply bg-nc-bg-gray-extralight;
+              // @apply bg-atm-bg-gray-extralight;
 
               // .integration-icon {
               //   @apply !grayscale;
@@ -764,19 +764,19 @@ watch(activeViewTab, (value) => {
             }
 
             .name {
-              @apply text-nc-content-gray;
+              @apply text-atm-content-gray;
             }
           }
 
           &:hover {
             .name {
-              @apply text-nc-content-gray;
+              @apply text-atm-content-gray;
             }
           }
 
           .integration-upvote-btn {
             &.selected {
-              @apply shadow-selected !text-nc-content-brand !border-nc-border-brand !cursor-not-allowed pointer-events-none;
+              @apply shadow-selected !text-atm-content-brand !border-atm-border-brand !cursor-not-allowed pointer-events-none;
             }
           }
         }
@@ -784,15 +784,15 @@ watch(activeViewTab, (value) => {
     }
 
     .category-type-title {
-      @apply text-sm text-nc-content-gray-subtle font-weight-700;
+      @apply text-sm text-atm-content-gray-subtle font-weight-700;
     }
   }
 }
 </style>
 
 <style lang="scss">
-.nc-modal-available-integrations-list {
-  .nc-modal {
+.atm-modal-available-integrations-list {
+  .atm-modal {
     @apply !p-0;
     height: min(calc(100vh - 100px), 1024px);
     max-height: min(calc(100vh - 100px), 1024px) !important;

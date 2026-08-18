@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ColumnType } from 'nocodb-sdk'
-import { PlanFeatureTypes, PlanTitles, ViewTypes } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
+import { PlanFeatureTypes, PlanTitles, ViewTypes } from 'atmosphere-sdk'
 
 const props = withDefaults(
   defineProps<{
@@ -101,9 +101,9 @@ const templatesList = computed(() => {
 </script>
 
 <template>
-  <div :class="{ 'nc-interface-compact-add-record-menu': !!interfacePageDataApi }">
+  <div :class="{ 'atm-interface-compact-add-record-menu': !!interfacePageDataApi }">
     <!-- Manage Templates -->
-    <NcList
+    <AtList
       v-if="showEEFeatures && !interfacePageDataApi"
       value=""
       :list="[
@@ -139,11 +139,11 @@ const templatesList = computed(() => {
           class="-my-1"
         />
       </template>
-    </NcList>
+    </AtList>
 
     <template v-if="!blockRecordTemplates && templates.length && showEEFeatures">
-      <NcDivider class="!my-0" />
-      <NcList
+      <AtDivider class="!my-0" />
+      <AtList
         :value="selectedTemplate?.id ?? ''"
         :list="templatesList"
         variant="small"
@@ -161,12 +161,12 @@ const templatesList = computed(() => {
         <template #listItemExtraLeft>
           <GeneralIcon icon="ncClipboardType" class="h-4 w-4 flex-none" />
         </template>
-      </NcList>
+      </AtList>
     </template>
 
-    <NcDivider class="!my-0" />
+    <AtDivider class="!my-0" />
 
-    <NcList
+    <AtList
       :value="!selectedTemplate ? `${!!isAddNewRecordGridMode}` : ''"
       :list="defaultOptions"
       variant="small"
@@ -180,27 +180,27 @@ const templatesList = computed(() => {
       "
     >
       <template #listItemExtraLeft="{ option }">
-        <component :is="option.icon" class="nc-view-icon text-inherit" />
+        <component :is="option.icon" class="atm-view-icon text-inherit" />
       </template>
-    </NcList>
+    </AtList>
   </div>
 </template>
 
 <style scoped lang="scss">
-:deep(.nc-menu-item-inner) {
+:deep(.atm-menu-item-inner) {
   @apply w-full;
 }
 
-.nc-interface-compact-add-record-menu {
-  // Hug the widest item (label + selected checkmark) instead of NcList's
+.atm-interface-compact-add-record-menu {
+  // Hug the widest item (label + selected checkmark) instead of AtList's
   // fixed w-64 panel width.
   @apply w-max min-w-40;
 
-  :deep(.nc-list-root) {
+  :deep(.atm-list-root) {
     @apply w-full;
   }
 
-  :deep(.nc-list-item) {
+  :deep(.atm-list-item) {
     @apply text-[13px];
 
     svg {

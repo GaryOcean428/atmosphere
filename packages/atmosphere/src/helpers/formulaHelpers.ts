@@ -1,11 +1,11 @@
-import { formulaJsep, UITypes } from 'nocodb-sdk';
+import { formulaJsep, UITypes } from 'atmosphere-sdk';
 import type FormulaColumn from '../models/FormulaColumn';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { ButtonColumn, Column } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export async function getFormulasReferredTheColumn(
-  context: NcContext,
+  context: AtContext,
   {
     column,
     columns,
@@ -13,7 +13,7 @@ export async function getFormulasReferredTheColumn(
     column: Column;
     columns: Column[];
   },
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<Column[]> {
   const fn = (pt) => {
     if (pt.type === 'CallExpression') {

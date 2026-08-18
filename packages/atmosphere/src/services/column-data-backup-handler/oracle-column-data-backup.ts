@@ -1,4 +1,4 @@
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import type { ColumnDataBackupDriver } from '~/services/column-data-backup-handler';
 
 const EE_ONLY = 'Oracle is only available in the enterprise (EE) build';

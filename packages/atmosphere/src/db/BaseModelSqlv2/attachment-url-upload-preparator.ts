@@ -1,12 +1,12 @@
-import { NcApiVersion, type NcRequest } from 'nocodb-sdk';
+import { AtApiVersion, type AtRequest } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import { type AttachmentUrlUploadJobData, JobTypes } from '~/interface/Jobs';
 import { EMIT_EVENT } from '~/constants';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { dataWrapper } from '~/helpers/dbHelpers';
 import { type Column, FileReference } from '~/models';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import {
   constructFilePath,
   getFileNameFromUrl,
@@ -23,7 +23,7 @@ export class AttachmentUrlUploadPreparator {
     }: {
       attachmentCols: Column[];
       data: Record<string, any>;
-      req?: NcRequest;
+      req?: AtRequest;
     },
   ) {
     const postInsertOps: ((
@@ -34,7 +34,7 @@ export class AttachmentUrlUploadPreparator {
       [];
     const postInsertAuditOps: ((rowId: any) => Promise<void>)[] = [];
     // return early if not v3
-    if (baseModel.context.api_version !== NcApiVersion.V3) {
+    if (baseModel.context.api_version !== AtApiVersion.V3) {
       return { postInsertOps, preInsertOps, postInsertAuditOps };
     }
     for (const col of attachmentCols) {
@@ -62,7 +62,7 @@ export class AttachmentUrlUploadPreparator {
 
       // only process when temp id exists
       if (attachmentData.some((attr) => attr.id?.startsWith('temp_'))) {
-        const storageAdapter = await NcPluginMgrv2.storageAdapter();
+        const storageAdapter = await AtPluginMgrv2.storageAdapter();
         attachmentData = await Promise.all(
           attachmentData.map(async (attr) => {
             if (attr.id?.startsWith('temp_')) {
@@ -107,7 +107,7 @@ export class AttachmentUrlUploadPreparator {
           }),
         );
         postInsertOps.push(async (recordId) => {
-          Noco.eventEmitter.emit(EMIT_EVENT.HANDLE_ATTACHMENT_URL_UPLOAD, {
+          Atmosphere.eventEmitter.emit(EMIT_EVENT.HANDLE_ATTACHMENT_URL_UPLOAD, {
             jobName: JobTypes.AttachmentUrlUpload,
             context: baseModel.context,
             modelId: baseModel.model.id,

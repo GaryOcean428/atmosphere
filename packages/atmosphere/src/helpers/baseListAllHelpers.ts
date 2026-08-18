@@ -1,7 +1,7 @@
-import { ProjectRoles } from 'nocodb-sdk';
+import { ProjectRoles } from 'atmosphere-sdk';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { parseMetaProp } from '~/utils/modelUtils';
 
 export interface BaseListAllResult {
@@ -23,11 +23,11 @@ export interface BaseListAllResult {
 
 export async function getBaseListAll(
   userId: string,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<BaseListAllResult> {
   const key = `${CacheScope.CMD_PALETTE}:baseListAll:${userId}`;
 
-  let cached = await NocoCache.get('root', key, CacheGetType.TYPE_OBJECT);
+  let cached = await AtmosphereCache.get('root', key, CacheGetType.TYPE_OBJECT);
 
   if (!cached) {
     const rows = await ncMeta
@@ -58,18 +58,18 @@ export async function getBaseListAll(
     cached = {
       workspaces: [
         {
-          id: 'nc',
-          title: 'NocoDB',
+          id: 'atm',
+          title: 'Atmosphere',
           meta: {},
           bases,
         },
       ],
     };
 
-    await NocoCache.set('root', key, cached);
+    await AtmosphereCache.set('root', key, cached);
     // Append to the same lists command palette uses so cleanup piggybacks
-    await NocoCache.set('root', `${CacheScope.CMD_PALETTE}:ws`, [key]);
-    await NocoCache.set('root', `${CacheScope.CMD_PALETTE}:user:${userId}`, [
+    await AtmosphereCache.set('root', `${CacheScope.CMD_PALETTE}:ws`, [key]);
+    await AtmosphereCache.set('root', `${CacheScope.CMD_PALETTE}:user:${userId}`, [
       key,
     ]);
   }

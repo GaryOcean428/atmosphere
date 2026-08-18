@@ -31,7 +31,7 @@ export type ResolverObj =
  * @param cache        memoization tree — caches resolved values across lookups
  * @param rootArgs     pagination/filter args passed down for nested resolution
  */
-const nocoExecute = async (
+const atmosphereExecute = async (
   requestAST: FieldRequest,
   resolverObj?: ResolverObj | ResolverObj[],
   cache = {},
@@ -42,7 +42,7 @@ const nocoExecute = async (
   if (Array.isArray(resolverObj)) {
     return Promise.all(
       resolverObj.map((record, i) =>
-        nocoExecute(requestAST, record, (cache[i] = cache[i] || {}), rootArgs),
+        atmosphereExecute(requestAST, record, (cache[i] = cache[i] || {}), rootArgs),
       ),
     );
   }
@@ -142,7 +142,7 @@ const nocoExecute = async (
     }
   }
 
-  // Build nested args for recursive nocoExecute calls
+  // Build nested args for recursive atmosphereExecute calls
   function buildNestedArgs(key: string) {
     return Object.assign(
       {
@@ -168,7 +168,7 @@ const nocoExecute = async (
   for (const key of requestedKeys) {
     resolveField(key, rootArgs?.nested?.[key]);
 
-    // Phase 2 (chained): For nested AST nodes, chain recursive nocoExecute
+    // Phase 2 (chained): For nested AST nodes, chain recursive atmosphereExecute
     // onto the resolved value. Promise.resolve() safely wraps non-Promise values.
     if (
       requestAST[key] &&
@@ -180,7 +180,7 @@ const nocoExecute = async (
           if (Array.isArray(resolved)) {
             return (cache[key] = Promise.all(
               resolved.map((item, i) =>
-                nocoExecute(
+                atmosphereExecute(
                   requestAST[key] as FieldRequest,
                   item,
                   cache?.[key]?.[i],
@@ -189,7 +189,7 @@ const nocoExecute = async (
               ),
             ));
           } else if (resolved) {
-            return (cache[key] = nocoExecute(
+            return (cache[key] = atmosphereExecute(
               requestAST[key] as FieldRequest,
               resolved,
               cache[key],
@@ -216,4 +216,4 @@ const nocoExecute = async (
   return output;
 };
 
-export { nocoExecute };
+export { atmosphereExecute };

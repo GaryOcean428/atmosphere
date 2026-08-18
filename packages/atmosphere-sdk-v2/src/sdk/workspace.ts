@@ -1,4 +1,4 @@
-import { NocoDBBase } from './base';
+import { AtmosphereBase } from './base';
 import type { Base, BaseCreate, BaseUpdate } from './lib/Api';
 import type { InternalAPI } from './types';
 
@@ -31,7 +31,7 @@ export class Workspace {
     return this.internalAPI.v3MetaBasesDelete(baseId);
   }
 
-  base(baseId: string): NocoDBBase {
-    return new NocoDBBase(this.internalAPI, baseId, this);
+  base(baseId: string): AtmosphereBase {
+    return new AtmosphereBase(this.internalAPI, baseId, this);
   }
 }

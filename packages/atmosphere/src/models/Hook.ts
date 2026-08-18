@@ -3,13 +3,13 @@ import {
   type HookReqType,
   type HookType,
   PlanLimitTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import {
   compareOperationCode,
   operationArrToCode,
   operationCodeToArr,
 } from 'src/helpers/webhookHelpers';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import Model from '~/models/Model';
 import Filter from '~/models/Filter';
 import HookFilter from '~/models/HookFilter';
@@ -19,10 +19,10 @@ import {
   CacheScope,
   MetaTable,
 } from '~/utils/globals';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { isReplay } from '~/helpers/replayScope';
 
 export default class Hook implements HookType {
@@ -77,14 +77,14 @@ export default class Hook implements HookType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     hookId: string,
     includeDeleted = false,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let hook =
       hookId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.HOOK}:${hookId}`,
         CacheGetType.TYPE_OBJECT,
@@ -107,13 +107,13 @@ export default class Hook implements HookType {
           (field) => field.fk_column_id,
         );
       }
-      await NocoCache.set(context, `${CacheScope.HOOK}:${hookId}`, hook);
+      await AtmosphereCache.set(context, `${CacheScope.HOOK}:${hookId}`, hook);
     }
     if (hook?.deleted && !includeDeleted) return null;
     return hook && new Hook(hook);
   }
 
-  public async getFilters(context: NcContext, ncMeta = Noco.ncMeta) {
+  public async getFilters(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     return await Filter.rootFilterListByHook(
       context,
       { hookId: this.id },
@@ -122,7 +122,7 @@ export default class Hook implements HookType {
   }
 
   static async list(
-    context: NcContext,
+    context: AtContext,
     param: {
       fk_model_id: string;
       event?: HookType['event'];
@@ -130,9 +130,9 @@ export default class Hook implements HookType {
       affectedColumns?: string[];
       includeDeleted?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    const cachedList = await NocoCache.getList(context, CacheScope.HOOK, [
+    const cachedList = await AtmosphereCache.getList(context, CacheScope.HOOK, [
       param.fk_model_id,
     ]);
     let { list: hooks } = cachedList;
@@ -173,7 +173,7 @@ export default class Hook implements HookType {
           }
         }
       }
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.HOOK,
         [param.fk_model_id],
@@ -220,9 +220,9 @@ export default class Hook implements HookType {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     hook: Partial<Hook>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj: Partial<Hook> & { operation?: string | string[] } =
       extractProps(hook, [
@@ -301,7 +301,7 @@ export default class Hook implements HookType {
       );
     }
 
-    await NocoCache.incrHashField(
+    await AtmosphereCache.incrHashField(
       'root',
       `${CacheScope.RESOURCE_STATS}:workspace:${context.workspace_id}`,
       PlanLimitTypes.LIMIT_WEBHOOK_PER_WORKSPACE,
@@ -309,7 +309,7 @@ export default class Hook implements HookType {
     );
 
     return this.get(context, id, false, ncMeta).then(async (hook) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.HOOK,
         [hook.fk_model_id],
@@ -322,9 +322,9 @@ export default class Hook implements HookType {
   // temporary
   // TODO: remove after v2 has been sunsetted
   public static async insertV2(
-    context: NcContext,
+    context: AtContext,
     hook: Partial<Hook>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj: Partial<Hook> & { operation?: string | string[] } =
       extractProps(hook, [
@@ -400,7 +400,7 @@ export default class Hook implements HookType {
       );
     }
 
-    await NocoCache.incrHashField(
+    await AtmosphereCache.incrHashField(
       'root',
       `${CacheScope.RESOURCE_STATS}:workspace:${context.workspace_id}`,
       PlanLimitTypes.LIMIT_WEBHOOK_PER_WORKSPACE,
@@ -408,7 +408,7 @@ export default class Hook implements HookType {
     );
 
     return this.get(context, id, false, ncMeta).then(async (hook) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.HOOK,
         [hook.fk_model_id],
@@ -419,10 +419,10 @@ export default class Hook implements HookType {
   }
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     hookId: string,
     hook: Partial<Hook>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj: HookType & { operation?: HookType['operation'] | string } =
       extractProps(hook, [
@@ -455,7 +455,7 @@ export default class Hook implements HookType {
         updateObj.operation as any,
       )
     ) {
-      NcError.badRequest(`${updateObj.operation} not supported in v1 hook`);
+      AtError.badRequest(`${updateObj.operation} not supported in v1 hook`);
     }
 
     if (updateObj.notification && typeof updateObj.notification === 'object') {
@@ -512,16 +512,16 @@ export default class Hook implements HookType {
       updateObj.trigger_fields = hook.trigger_fields;
     }
 
-    await NocoCache.update(context, `${CacheScope.HOOK}:${hookId}`, updateObj);
+    await AtmosphereCache.update(context, `${CacheScope.HOOK}:${hookId}`, updateObj);
 
     return this.get(context, hookId, false, ncMeta);
   }
 
   static async softDelete(
-    context: NcContext,
+    context: AtContext,
     hookId: string,
     deleted: boolean,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaUpdate(
       context.workspace_id,
@@ -530,12 +530,12 @@ export default class Hook implements HookType {
       { deleted },
       hookId,
     );
-    await NocoCache.update(context, `${CacheScope.HOOK}:${hookId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.HOOK}:${hookId}`, {
       deleted,
     });
 
     // Adjust workspace resource stats cache: -1 on trash, +1 on restore.
-    await NocoCache.incrHashField(
+    await AtmosphereCache.incrHashField(
       'root',
       `${CacheScope.RESOURCE_STATS}:workspace:${context.workspace_id}`,
       PlanLimitTypes.LIMIT_WEBHOOK_PER_WORKSPACE,
@@ -543,7 +543,7 @@ export default class Hook implements HookType {
     );
   }
 
-  static async delete(context: NcContext, hookId: any, ncMeta = Noco.ncMeta) {
+  static async delete(context: AtContext, hookId: any, ncMeta = Atmosphere.ncMeta) {
     // Delete Hook Filters
     const filterList = await ncMeta.metaList2(
       context.workspace_id,
@@ -554,7 +554,7 @@ export default class Hook implements HookType {
       },
     );
     for (const filter of filterList) {
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         context,
         `${CacheScope.FILTER_EXP}:${filter.id}`,
         CacheDelDirection.CHILD_TO_PARENT,
@@ -562,13 +562,13 @@ export default class Hook implements HookType {
       await HookFilter.delete(context, filter.id, ncMeta);
     }
     // Delete Hook
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.HOOK}:${hookId}`,
       CacheDelDirection.CHILD_TO_PARENT,
     );
 
-    await NocoCache.incrHashField(
+    await AtmosphereCache.incrHashField(
       'root',
       `${CacheScope.RESOURCE_STATS}:workspace:${context.workspace_id}`,
       PlanLimitTypes.LIMIT_WEBHOOK_PER_WORKSPACE,
@@ -593,9 +593,9 @@ export default class Hook implements HookType {
   }
 
   static async hookUsages(
-    context: NcContext,
+    context: AtContext,
     hookId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return await ncMeta.metaList2(
       context.workspace_id,
@@ -608,9 +608,9 @@ export default class Hook implements HookType {
   }
 
   static async deleteTriggersByColumnId(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaDelete(
       context.workspace_id,

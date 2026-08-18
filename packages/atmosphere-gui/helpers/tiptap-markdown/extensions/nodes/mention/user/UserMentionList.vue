@@ -100,14 +100,14 @@ export default {
 
 <template>
   <div
-    class="w-64 bg-nc-bg-default scroll-smooth nc-mention-list nc-scrollbar-md border-1 border-nc-border-gray-medium rounded-lg max-h-64 !py-2"
+    class="w-64 bg-atm-bg-default scroll-smooth atm-mention-list atm-scrollbar-md border-1 border-atm-border-gray-medium rounded-lg max-h-64 !py-2"
   >
     <template v-if="items.length">
       <div
         v-for="(item, index) in items"
         :key="index"
         :class="{ 'is-selected': index === selectedIndex }"
-        class="py-2 flex hover:bg-nc-bg-gray-light transition-all cursor-pointer items-center text-nc-content-gray pl-4"
+        class="py-2 flex hover:bg-atm-bg-gray-light transition-all cursor-pointer items-center text-atm-content-gray pl-4"
         @click="selectItem(index, $event)"
       >
         <GeneralUserIcon
@@ -122,7 +122,7 @@ export default {
           <div class="truncate leading-4">
             {{ extractUserDisplayNameOrEmail({ display_name: item.name, email: item.email }) }}
           </div>
-          <div v-if="item.email" class="truncate text-xs leading-4 text-nc-content-gray-muted">
+          <div v-if="item.email" class="truncate text-xs leading-4 text-atm-content-gray-muted">
             {{ item.email }}
           </div>
         </div>
@@ -134,6 +134,6 @@ export default {
 
 <style lang="scss" scoped>
 .is-selected {
-  @apply bg-nc-bg-gray-light;
+  @apply bg-atm-bg-gray-light;
 }
 </style>

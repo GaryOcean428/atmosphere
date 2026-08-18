@@ -3,8 +3,8 @@ import addFormats from 'ajv-formats';
 import ajvErrors from 'ajv-errors';
 import type { ErrorObject } from 'ajv';
 import type { NextFunction, Request, Response } from 'express';
-import type { NcApiVersion, NcRequest } from 'nocodb-sdk';
-import { NcError } from '~/helpers/catchError';
+import type { AtApiVersion, AtRequest } from 'atmosphere-sdk';
+import { AtError } from '~/helpers/catchError';
 import {
   formatAjvErrorMessage,
   formatAjvErrors,
@@ -49,11 +49,11 @@ export const validatePayload = (
   schema: string,
   payload: any,
   humanReadableError = false,
-  context: { api_version?: NcApiVersion } = undefined,
+  context: { api_version?: AtApiVersion } = undefined,
 ) => {
   const validate = ajv.getSchema(schema);
   if (!validate) {
-    NcError.get(context).genericNotFound('Validation schema', schema);
+    AtError.get(context).genericNotFound('Validation schema', schema);
   }
 
   const valid = validate(payload);
@@ -62,7 +62,7 @@ export const validatePayload = (
     const errors: ErrorObject[] = ajv.errors || validate.errors || [];
     const formatted = formatAjvErrors(errors);
 
-    NcError.get(context).ajvValidationError({
+    AtError.get(context).ajvValidationError({
       message: formatAjvErrorMessage(errors),
       errors: formatted,
       humanReadableError,
@@ -77,7 +77,7 @@ export const validatePayload = (
  */
 export function getApiTokenFromHeader(
   req?:
-    | NcRequest
+    | AtRequest
     | {
         headers?: Record<string, unknown>;
       },

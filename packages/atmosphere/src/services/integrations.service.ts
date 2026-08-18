@@ -1,17 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AppEvents, ClientType } from 'nocodb-sdk';
-import { IntegrationsType } from 'nocodb-sdk';
-import type { IntegrationReqType } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+import { AppEvents, ClientType } from 'atmosphere-sdk';
+import { IntegrationsType } from 'atmosphere-sdk';
+import type { IntegrationReqType } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
 import { Base, Integration, IntegrationLink } from '~/models';
-import { NcBaseError, NcError } from '~/helpers/catchError';
+import { AtBaseError, AtError } from '~/helpers/catchError';
 import { Source } from '~/models';
 import { CacheScope, MetaTable, RootScopes } from '~/utils/globals';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { SourcesService } from '~/services/sources.service';
 import { generateUniqueName } from '~/helpers/exportImportHelpers';
 import { validateAndNormalizeSqliteConfig } from '~/helpers/validateSqliteFilename';
@@ -26,13 +26,13 @@ export class IntegrationsService {
   ) {}
 
   async integrationGetWithConfig(
-    context: NcContext,
+    context: AtContext,
     param: { integrationId: any; includeSources?: boolean },
   ) {
     const integration = await Integration.get(context, param.integrationId);
 
     if (!integration) {
-      NcError.get(context).integrationNotFound(param.integrationId);
+      AtError.get(context).integrationNotFound(param.integrationId);
     }
 
     integration.config = await integration.getConnectionConfig();
@@ -45,11 +45,11 @@ export class IntegrationsService {
   }
 
   async integrationUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       integrationId: string;
       integration: IntegrationReqType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload(
@@ -95,7 +95,7 @@ export class IntegrationsService {
   }
 
   async integrationList(param: {
-    req: NcRequest;
+    req: AtRequest;
     includeDatabaseInfo: boolean;
     type?: IntegrationsType;
     limit?: number;
@@ -114,10 +114,10 @@ export class IntegrationsService {
   }
 
   async integrationDelete(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     param: { integrationId: string; req: any; force: boolean },
   ) {
-    const ncMeta = await Noco.ncMeta.startTransaction();
+    const ncMeta = await Atmosphere.ncMeta.startTransaction();
     try {
       const integration = await Integration.get(
         context,
@@ -127,7 +127,7 @@ export class IntegrationsService {
       );
 
       if (!integration) {
-        NcError.get(context).integrationNotFound(param.integrationId);
+        AtError.get(context).integrationNotFound(param.integrationId);
       }
 
       // get linked sources
@@ -161,7 +161,7 @@ export class IntegrationsService {
           }),
         );
 
-        NcError.get(context).integrationLinkedWithMultiple(bases, sources);
+        AtError.get(context).integrationLinkedWithMultiple(bases, sources);
       }
 
       // Delete integration links
@@ -185,25 +185,25 @@ export class IntegrationsService {
       await ncMeta.commit();
     } catch (e) {
       await ncMeta.rollback(e);
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error('Error deleting integeration', e);
-      NcError.get(context).internalServerError('Error deleting integeration');
+      AtError.get(context).internalServerError('Error deleting integeration');
     }
 
     return true;
   }
 
   async integrationSoftDelete(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     param: { integrationId: string; req: any },
   ) {
     try {
       const integration = await Integration.get(context, param.integrationId);
       if (!integration) {
-        NcError.get(context).integrationNotFound(param.integrationId);
+        AtError.get(context).integrationNotFound(param.integrationId);
       }
 
-      const ncMeta = await Noco.ncMeta.startTransaction();
+      const ncMeta = await Atmosphere.ncMeta.startTransaction();
       try {
         // get linked sources
         const sourceListQb = ncMeta
@@ -252,28 +252,28 @@ export class IntegrationsService {
         await ncMeta.commit();
       } catch (e) {
         await ncMeta.rollback(e);
-        if (e instanceof NcError || e instanceof NcBaseError) throw e;
+        if (e instanceof AtError || e instanceof AtBaseError) throw e;
         this.logger.error('Error  deleting integeration', e);
-        NcError.get(context).internalServerError('Error deleting integeration');
+        AtError.get(context).internalServerError('Error deleting integeration');
       }
     } catch (e) {
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error('Error  deleting integeration', e);
-      NcError.get(context).internalServerError('Error deleting integeration');
+      AtError.get(context).internalServerError('Error deleting integeration');
     }
 
     return true;
   }
 
   async integrationCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       workspaceId?: string;
       integration: IntegrationReqType;
       logger?: (message: string) => void;
       req: any;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload(
       'swagger.json#/components/schemas/IntegrationReq',
@@ -291,7 +291,7 @@ export class IntegrationsService {
       );
 
       if (!integrationBody?.id) {
-        NcError.get(context).integrationNotFound(
+        AtError.get(context).integrationNotFound(
           param.integration.copy_from_id,
         );
       }
@@ -305,7 +305,7 @@ export class IntegrationsService {
           param.req.user?.id,
         )
       ) {
-        NcError.get(context).integrationNotFound(
+        AtError.get(context).integrationNotFound(
           param.integration.copy_from_id,
         );
       }
@@ -318,9 +318,9 @@ export class IntegrationsService {
     integrationBody.title = integrationBody.title?.trim();
     // SQLite connections are only offered on the free self-hosted edition
     // (CE + unlicensed On-Prem). Block on licensed On-Prem and Cloud, where
-    // Noco.isEE() is true — mirrors the frontend isEEFeatureBlocked gating.
-    if (integrationBody.sub_type === 'sqlite3' && Noco.isEE()) {
-      NcError.get(context).badRequest(
+    // Atmosphere.isEE() is true — mirrors the frontend isEEFeatureBlocked gating.
+    if (integrationBody.sub_type === 'sqlite3' && Atmosphere.isEE()) {
+      AtError.get(context).badRequest(
         'SQLite connections are only available on the free self-hosted edition',
       );
     }
@@ -352,7 +352,7 @@ export class IntegrationsService {
             (integrationBody.config?.connection?.filename ||
               integrationBody.config?.connection?.connection?.filename)
           ) {
-            NcError.get(context).badRequest(
+            AtError.get(context).badRequest(
               'Integration with same file already exists',
             );
           }
@@ -407,7 +407,7 @@ export class IntegrationsService {
   }
 
   async integrationStore(
-    context: NcContext,
+    context: AtContext,
     integration: Integration,
     payload?:
       | {
@@ -444,7 +444,7 @@ export class IntegrationsService {
     }: {
       integration: Integration;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // get all the bases which are using this integration
     const sources = await ncMeta.metaList2(
@@ -477,7 +477,7 @@ export class IntegrationsService {
       const source = new Source(sourceObj);
 
       // update the cache with the new config(encrypted)
-      await NocoCache.update(
+      await AtmosphereCache.update(
         {
           workspace_id: source.fk_workspace_id,
           base_id: source.base_id,
@@ -489,12 +489,12 @@ export class IntegrationsService {
       );
 
       // Destroy local connection + bump Redis version for cross-server invalidation
-      await NcConnectionMgrv2.resetSource(source);
+      await AtConnectionMgrv2.resetSource(source);
     }
   }
 
   public async callIntegrationEndpoint(
-    context: NcContext,
+    context: AtContext,
     params: {
       integrationId: string;
       endpoint: string;
@@ -508,7 +508,7 @@ export class IntegrationsService {
     const wrapper = integration.getIntegrationWrapper();
 
     if (!integrationMeta || !wrapper) {
-      NcError.get(context).badRequest('Invalid integration');
+      AtError.get(context).badRequest('Invalid integration');
     }
 
     if (
@@ -516,7 +516,7 @@ export class IntegrationsService {
       !(params.endpoint in wrapper) ||
       typeof wrapper[params.endpoint] !== 'function'
     ) {
-      NcError.get(context).genericNotFound('Endpoint', params.endpoint);
+      AtError.get(context).genericNotFound('Endpoint', params.endpoint);
     }
 
     return wrapper[params.endpoint](params.payload);

@@ -1,15 +1,15 @@
-import * as nc_001_init from '~/meta/migrations/chat-messages/nc_001_init';
-import * as nc_002_base_id from '~/meta/migrations/chat-messages/nc_002_base_id';
-import * as nc_003_created_files from '~/meta/migrations/chat-messages/nc_003_created_files';
-import * as nc_004_ui_context_record from '~/meta/migrations/chat-messages/nc_004_ui_context_record';
+import * as atm_001_init from '~/meta/migrations/chat-messages/atm_001_init';
+import * as atm_002_base_id from '~/meta/migrations/chat-messages/atm_002_base_id';
+import * as atm_003_created_files from '~/meta/migrations/chat-messages/atm_003_created_files';
+import * as atm_004_ui_context_record from '~/meta/migrations/chat-messages/atm_004_ui_context_record';
 
 export default class XcMigrationSourceChatMessages {
   public getMigrations(): Promise<any> {
     return Promise.resolve([
-      'nc_001_init',
-      'nc_002_base_id',
-      'nc_003_created_files',
-      'nc_004_ui_context_record',
+      'atm_001_init',
+      'atm_002_base_id',
+      'atm_003_created_files',
+      'atm_004_ui_context_record',
     ]);
   }
 
@@ -19,14 +19,14 @@ export default class XcMigrationSourceChatMessages {
 
   public getMigration(migration): any {
     switch (migration) {
-      case 'nc_001_init':
-        return nc_001_init;
-      case 'nc_002_base_id':
-        return nc_002_base_id;
-      case 'nc_003_created_files':
-        return nc_003_created_files;
-      case 'nc_004_ui_context_record':
-        return nc_004_ui_context_record;
+      case 'atm_001_init':
+        return atm_001_init;
+      case 'atm_002_base_id':
+        return atm_002_base_id;
+      case 'atm_003_created_files':
+        return atm_003_created_files;
+      case 'atm_004_ui_context_record':
+        return atm_004_ui_context_record;
     }
   }
 }

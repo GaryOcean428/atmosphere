@@ -1,4 +1,4 @@
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import type { AggregationHandlerInterface } from '~/dbQueryClient/aggregations/aggregation-handler.interface';
 import { PgAggregationHandler } from '~/dbQueryClient/aggregations/handlers/pg.handler';
 import { MysqlAggregationHandler } from '~/dbQueryClient/aggregations/handlers/mysql.handler';

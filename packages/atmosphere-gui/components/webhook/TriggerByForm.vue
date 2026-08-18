@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type ViewType, ViewTypes } from 'nocodb-sdk'
+import { type ViewType, ViewTypes } from 'atmosphere-sdk'
 
 interface Props {
   tableId: string
@@ -53,16 +53,16 @@ onMounted(() => {
 <template>
   <div class="w-full flex items-center justify-between h-[28px]">
     <label class="cursor-pointer flex items-center" @click.prevent="triggerForm = !triggerForm">
-      <NcSwitch
+      <AtSwitch
         :checked="triggerForm"
-        class="nc-check-box-trigger-field"
+        class="atm-check-box-trigger-field"
         :disabled="formOptions.length === 0"
         @change="onChangeTriggerForm"
       >
-        <span class="!text-nc-content-gray-subtle font-semibold"> Trigger only when specific form submitted </span>
-      </NcSwitch>
+        <span class="!text-atm-content-gray-subtle font-semibold"> Trigger only when specific form submitted </span>
+      </AtSwitch>
     </label>
-    <NcListViewSelector
+    <AtListViewSelector
       v-if="triggerForm"
       v-model:value="triggerFormId"
       :table-id="tableId"

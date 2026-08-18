@@ -46,19 +46,19 @@ watch(visible, (open) => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="visible"
     :show-separator="false"
     size="small"
-    wrap-class-name="nc-change-view-password-modal-wrapper"
+    wrap-class-name="atm-change-view-password-modal-wrapper"
     @keydown.esc="onCancel"
   >
     <template #header>
       <div class="flex flex-col gap-2 w-full">
-        <div class="text-base font-bold text-nc-content-gray-emphasis">
+        <div class="text-base font-bold text-atm-content-gray-emphasis">
           {{ props.title || $t('labels.changeViewPassword') }}
         </div>
-        <div class="text-bodySm font-normal text-nc-content-gray-subtle">
+        <div class="text-bodySm font-normal text-atm-content-gray-subtle">
           {{ $t('msg.info.viewPasswordNotVisibleAfterSave') }}
         </div>
       </div>
@@ -69,30 +69,30 @@ watch(visible, (open) => {
         v-model:value="passwordInput"
         :placeholder="$t('placeholder.password.enter')"
         class="!rounded-lg !py-1.5"
-        data-testid="nc-change-view-password-input"
+        data-testid="atm-change-view-password-input"
         size="small"
         autofocus
         autocomplete="new-password"
-        name="nc-change-view-password-new"
+        name="atm-change-view-password-new"
         @press-enter="onSave"
       />
 
-      <div class="flex flex-row justify-end gap-2 pt-2 border-t-1 border-nc-border-gray-medium mt-2">
-        <NcButton data-testid="nc-change-view-password-cancel-btn" size="small" type="secondary" @click="onCancel">
+      <div class="flex flex-row justify-end gap-2 pt-2 border-t-1 border-atm-border-gray-medium mt-2">
+        <AtButton data-testid="atm-change-view-password-cancel-btn" size="small" type="secondary" @click="onCancel">
           {{ $t('general.cancel') }}
-        </NcButton>
-        <NcButton
+        </AtButton>
+        <AtButton
           v-e="[props.telemetryKey]"
           :disabled="!isValid"
           :loading="props.loading"
-          data-testid="nc-change-view-password-save-btn"
+          data-testid="atm-change-view-password-save-btn"
           size="small"
           type="primary"
           @click="onSave"
         >
           {{ $t('general.save') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>

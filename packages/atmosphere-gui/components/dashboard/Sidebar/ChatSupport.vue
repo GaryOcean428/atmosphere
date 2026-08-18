@@ -19,9 +19,9 @@ const toggleVisibility = () => {
 </script>
 
 <template>
-  <div v-e="['c:nocodb:chat-support']" class="nc-mini-sidebar-btn-full-width" data-testid="nc-sidebar-chat-support">
+  <div v-e="['c:atmosphere:chat-support']" class="atm-mini-sidebar-btn-full-width" data-testid="atm-sidebar-chat-support">
     <div
-      class="nc-mini-sidebar-btn relative"
+      class="atm-mini-sidebar-btn relative"
       :class="{
         active: isModalVisible,
       }"

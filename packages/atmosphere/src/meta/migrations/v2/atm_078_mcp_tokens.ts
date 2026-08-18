@@ -16,7 +16,7 @@ const up = async (knex: Knex) => {
 
     table.timestamps(true, true);
 
-    table.index(['base_id', 'fk_workspace_id'], 'nc_mc_tokens_context');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_mc_tokens_context');
   });
 };
 

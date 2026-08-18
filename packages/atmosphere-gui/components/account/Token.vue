@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ApiTokenType, RequestParams } from 'nocodb-sdk'
+import type { ApiTokenType, RequestParams } from 'atmosphere-sdk'
 
 const { api } = useApi()
 const { $e } = useNuxtApp()
@@ -154,7 +154,7 @@ const onCreateCancel = () => {
 
 <template>
   <div class="flex flex-col">
-    <NcPageHeader>
+    <AtPageHeader>
       <template #icon>
         <GeneralIcon icon="ncKey2" class="flex-none h-5 w-5" />
       </template>
@@ -163,20 +163,20 @@ const onCreateCancel = () => {
           {{ viewMode === 'list' ? $t('title.tokens') : $t('title.createNewToken') }}
         </span>
       </template>
-    </NcPageHeader>
-    <div class="nc-content-max-w p-6 h-[calc(100vh_-_100px)] flex flex-col gap-6 overflow-auto nc-scrollbar-thin">
+    </AtPageHeader>
+    <div class="atm-content-max-w p-6 h-[calc(100vh_-_100px)] flex flex-col gap-6 overflow-auto atm-scrollbar-thin">
       <!-- ============ CREATE FORM ============ -->
       <div v-if="viewMode === 'create'" class="max-w-202 mx-auto w-full">
         <AccountTokenCreateWizard @created="onTokenCreated" @cancel="onCreateCancel" />
       </div>
 
       <!-- ============ TOKEN LIST ============ -->
-      <div v-else class="max-w-202 mx-auto h-full w-full" data-testid="nc-token-list">
+      <div v-else class="max-w-202 mx-auto h-full w-full" data-testid="atm-token-list">
         <div class="flex gap-4 items-baseline justify-between">
-          <h6 class="text-xl text-left font-bold my-0 text-nc-content-gray" data-rec="true">{{ $t('title.apiTokens') }}</h6>
-          <NcButton
+          <h6 class="text-xl text-left font-bold my-0 text-atm-content-gray" data-rec="true">{{ $t('title.apiTokens') }}</h6>
+          <AtButton
             class="!rounded-md"
-            data-testid="nc-token-create"
+            data-testid="atm-token-create"
             size="middle"
             type="primary"
             tooltip="bottom"
@@ -188,7 +188,7 @@ const onCreateCancel = () => {
             <span class="flex items-center justify-center md:hidden" data-rec="true">
               <component :is="iconMap.plus" />
             </span>
-          </NcButton>
+          </AtButton>
         </div>
         <span data-rec="true">{{ $t('msg.apiTokenCreate') }}</span>
 
@@ -201,86 +201,86 @@ const onCreateCancel = () => {
           }"
         >
           <div class="h-full w-full overflow-y-auto rounded-md">
-            <div class="flex w-full pl-5 bg-nc-bg-gray-extralight border-1 rounded-t-md">
-              <span class="py-3.5 text-nc-content-gray-muted font-medium text-3.5 w-2/9" data-rec="true">{{
+            <div class="flex w-full pl-5 bg-atm-bg-gray-extralight border-1 rounded-t-md">
+              <span class="py-3.5 text-atm-content-gray-muted font-medium text-3.5 w-2/9" data-rec="true">{{
                 $t('title.tokenName')
               }}</span>
-              <span class="py-3.5 pl-2 text-nc-content-gray-muted font-medium text-3.5 w-2/9 text-start" data-rec="true">{{
+              <span class="py-3.5 pl-2 text-atm-content-gray-muted font-medium text-3.5 w-2/9 text-start" data-rec="true">{{
                 $t('title.creator')
               }}</span>
-              <span class="py-3.5 pl-2 text-nc-content-gray-muted font-medium text-3.5 w-3/9 text-start" data-rec="true">{{
+              <span class="py-3.5 pl-2 text-atm-content-gray-muted font-medium text-3.5 w-3/9 text-start" data-rec="true">{{
                 $t('labels.token')
               }}</span>
               <span
-                class="py-3.5 pl-5 lg:pl-19 text-nc-content-gray-muted font-medium text-3.5 w-2/9 text-start"
+                class="py-3.5 pl-5 lg:pl-19 text-atm-content-gray-muted font-medium text-3.5 w-2/9 text-start"
                 data-rec="true"
                 >{{ $t('labels.actions') }}</span
               >
             </div>
-            <div class="nc-scrollbar-md !overflow-y-auto flex flex-col h-[calc(100%-52px)]">
+            <div class="atm-scrollbar-md !overflow-y-auto flex flex-col h-[calc(100%-52px)]">
               <div
                 v-for="el of tokens"
                 :key="el.id"
-                data-testid="nc-token-row"
+                data-testid="atm-token-row"
                 class="flex pl-5 py-3 justify-between token items-center border-l-1 border-r-1 border-b-1"
               >
-                <span class="text-nc-content-gray-extreme font-bold text-3.5 text-start w-2/9">
+                <span class="text-atm-content-gray-extreme font-bold text-3.5 text-start w-2/9">
                   <div class="flex items-center gap-2">
-                    <NcTooltip class="truncate" show-on-truncate-only>
+                    <AtTooltip class="truncate" show-on-truncate-only>
                       <template #title>
                         {{ el.description }}
                       </template>
                       {{ el.description }}
-                    </NcTooltip>
-                    <NcTooltip v-if="el.fk_sso_client_id" placement="top">
+                    </AtTooltip>
+                    <AtTooltip v-if="el.fk_sso_client_id" placement="top">
                       <template #title>{{ $t('msg.ssoTokenTooltip') }}</template>
-                      <NcBadge color="orange" class="!text-xs !py-0.5 !px-1.5 mr-4"> SSO </NcBadge>
-                    </NcTooltip>
+                      <AtBadge color="orange" class="!text-xs !py-0.5 !px-1.5 mr-4"> SSO </AtBadge>
+                    </AtTooltip>
                   </div>
                 </span>
-                <span class="pl-2 text-nc-content-gray-muted font-medium text-3.5 text-start w-2/9">
-                  <NcTooltip class="truncate" show-on-truncate-only>
+                <span class="pl-2 text-atm-content-gray-muted font-medium text-3.5 text-start w-2/9">
+                  <AtTooltip class="truncate" show-on-truncate-only>
                     <template #title>
                       {{ el.created_by }}
                     </template>
                     {{ el.created_by }}
-                  </NcTooltip>
+                  </AtTooltip>
                 </span>
-                <span class="pl-2 text-nc-content-gray-muted font-medium text-3.5 text-start w-3/9 truncate">
-                  <NcTooltip v-if="el.token === selectedToken.id && selectedToken.isShow" class="truncate" show-on-truncate-only>
+                <span class="pl-2 text-atm-content-gray-muted font-medium text-3.5 text-start w-3/9 truncate">
+                  <AtTooltip v-if="el.token === selectedToken.id && selectedToken.isShow" class="truncate" show-on-truncate-only>
                     <template #title>
                       {{ el.token }}
                     </template>
                     {{ el.token }}
-                  </NcTooltip>
+                  </AtTooltip>
                   <span v-else>************************************</span>
                 </span>
-                <div class="flex justify-end items-center gap-3 pr-5 text-nc-content-gray-muted font-medium text-3.5 w-2/9">
-                  <NcTooltip placement="top">
+                <div class="flex justify-end items-center gap-3 pr-5 text-atm-content-gray-muted font-medium text-3.5 w-2/9">
+                  <AtTooltip placement="top">
                     <template #title>{{ $t('labels.showOrHide') }}</template>
                     <component
                       :is="iconMap.eye"
-                      class="nc-toggle-token-visibility hover::cursor-pointer w-h-4 mb-[1.8px]"
+                      class="atm-toggle-token-visibility hover::cursor-pointer w-h-4 mb-[1.8px]"
                       @click="hideOrShowToken(el.token as string)"
                     />
-                  </NcTooltip>
-                  <NcTooltip placement="top">
+                  </AtTooltip>
+                  <AtTooltip placement="top">
                     <template #title>{{ $t('general.copy') }}</template>
                     <component
                       :is="iconMap.copy"
-                      class="hover::cursor-pointer w-4 h-4 text-nc-content-gray-subtle2"
+                      class="hover::cursor-pointer w-4 h-4 text-atm-content-gray-subtle2"
                       @click="copyToken(el.token)"
                     />
-                  </NcTooltip>
-                  <NcTooltip placement="top">
+                  </AtTooltip>
+                  <AtTooltip placement="top">
                     <template #title>{{ $t('general.delete') }}</template>
                     <component
                       :is="iconMap.delete"
-                      data-testid="nc-token-row-action-icon"
-                      class="nc-delete-icon hover::cursor-pointer w-4 h-4"
+                      data-testid="atm-token-row-action-icon"
+                      class="atm-delete-icon hover::cursor-pointer w-4 h-4"
                       @click="triggerDeleteModal(el.token as string, el.description as string)"
                     />
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
               </div>
             </div>
@@ -293,18 +293,18 @@ const onCreateCancel = () => {
           class="max-w-[40rem] border px-3 py-6 flex flex-col items-center justify-center gap-6 text-center"
         >
           <img src="~assets/img/placeholder/api-tokens.png" class="!w-[22rem] flex-none" />
-          <div class="text-2xl text-nc-content-gray font-bold">{{ $t('placeholder.noTokenCreated') }}</div>
-          <div class="text-sm text-nc-content-gray-subtle">
+          <div class="text-2xl text-atm-content-gray font-bold">{{ $t('placeholder.noTokenCreated') }}</div>
+          <div class="text-sm text-atm-content-gray-subtle">
             {{ $t('placeholder.noTokenCreatedLabel') }}
           </div>
-          <NcButton class="!rounded-lg !py-3 !h-10" data-testid="nc-token-create" type="primary" @click="openCreateForm">
+          <AtButton class="!rounded-lg !py-3 !h-10" data-testid="atm-token-create" type="primary" @click="openCreateForm">
             <span class="hidden md:block" data-rec="true">
               {{ $t('title.createNewToken') }}
             </span>
             <span class="flex items-center justify-center md:hidden" data-rec="true">
               <component :is="iconMap.plus" />
             </span>
-          </NcButton>
+          </AtButton>
         </div>
 
         <div v-if="pagination.total > 10" class="flex items-center justify-center mt-5">
@@ -325,9 +325,9 @@ const onCreateCancel = () => {
         <template #entity-preview>
           <span>
             <div
-              class="flex flex-row items-center py-2.25 px-2.5 bg-nc-bg-gray-extralight rounded-lg text-nc-content-gray-subtle mb-4"
+              class="flex flex-row items-center py-2.25 px-2.5 bg-atm-bg-gray-extralight rounded-lg text-atm-content-gray-subtle mb-4"
             >
-              <GeneralIcon icon="key" class="nc-view-icon" />
+              <GeneralIcon icon="key" class="atm-view-icon" />
               <div
                 class="capitalize text-ellipsis overflow-hidden select-none w-full pl-1.75"
                 :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap', display: 'inline' }"

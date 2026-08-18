@@ -1,6 +1,6 @@
-import { PluginCategory, XcActionType, XcType } from 'nocodb-sdk';
+import { PluginCategory, XcActionType, XcType } from 'atmosphere-sdk';
 import S3Plugin from './S3Plugin';
-import type { XcPluginConfig } from '~/types/nc-plugin';
+import type { XcPluginConfig } from '~/types/atm-plugin';
 
 const config: XcPluginConfig = {
   builder: S3Plugin,

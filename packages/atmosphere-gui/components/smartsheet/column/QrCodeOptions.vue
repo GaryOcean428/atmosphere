@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ColumnType, UITypes } from 'nocodb-sdk'
-import { AllowedColumnTypesForQrAndBarcodes } from 'nocodb-sdk'
+import type { ColumnType, UITypes } from 'atmosphere-sdk'
+import { AllowedColumnTypesForQrAndBarcodes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   modelValue: any
@@ -49,7 +49,7 @@ setAvoidShowingToastMsgForValidations({
 <template>
   <div class="flex flex-col gap-2">
     <a-form-item
-      class="flex nc-qr-code-value-column-select"
+      class="flex atm-qr-code-value-column-select"
       :label="`${$t('placeholder.value')} ${t('objects.field').toLowerCase()}`"
       v-bind="validateInfos.fk_qr_value_column_id"
     >
@@ -59,25 +59,25 @@ setAvoidShowingToastMsgForValidations({
         @click.stop
       >
         <template #suffixIcon>
-          <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+          <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
         </template>
 
         <a-select-option v-for="(option, index) of columnsAllowedAsQrValue" :key="index" :value="option.id">
-          <div class="flex gap-2 w-full truncate items-center" :data-testid="`nc-qr-${option.title}`">
+          <div class="flex gap-2 w-full truncate items-center" :data-testid="`atm-qr-${option.title}`">
             <div class="inline-flex items-center gap-2 flex-1 truncate">
-              <SmartsheetHeaderIcon :column="option" class="!mx-0 w-4 h-4" color="text-nc-content-gray-subtle2" />
+              <SmartsheetHeaderIcon :column="option" class="!mx-0 w-4 h-4" color="text-atm-content-gray-subtle2" />
 
-              <NcTooltip show-on-truncate-only class="flex-1 truncate">
+              <AtTooltip show-on-truncate-only class="flex-1 truncate">
                 <template #title>{{ option.title }}</template>
                 {{ option.title }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
 
             <component
               :is="iconMap.check"
               v-if="vModel.fk_qr_value_column_id === option.id"
-              id="nc-selected-item-icon"
-              class="text-nc-content-brand w-4 h-4"
+              id="atm-selected-item-icon"
+              class="text-atm-content-brand w-4 h-4"
             />
           </div>
         </a-select-option>

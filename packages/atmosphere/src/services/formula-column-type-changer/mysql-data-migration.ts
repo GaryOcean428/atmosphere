@@ -1,4 +1,4 @@
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import type { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
 import type { Column, FormulaColumn } from '~/models';
 import type { FormulaDataMigrationDriver } from '~/services/formula-column-type-changer/index';

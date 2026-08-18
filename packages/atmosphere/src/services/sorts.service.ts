@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, EventType, isVirtualCol, UITypes } from 'nocodb-sdk';
-import Noco from 'src/Noco';
-import type { SortReqType } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+import { AppEvents, EventType, isVirtualCol, UITypes } from 'atmosphere-sdk';
+import Atmosphere from 'src/Atmosphere';
+import type { SortReqType } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { MetaService } from '~/meta/meta.service';
 import {
   type ViewWebhookManager,
@@ -11,35 +11,35 @@ import {
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
 import { assertLookupSortLimitLicensed } from '~/helpers/lookupSortLimitGate';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { Column, Sort, View } from '~/models';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 @Injectable()
 export class SortsService {
   constructor(protected readonly appHooksService: AppHooksService) {}
 
-  async sortGet(context: NcContext, param: { sortId: string }) {
+  async sortGet(context: AtContext, param: { sortId: string }) {
     return Sort.get(context, param.sortId);
   }
 
   async sortDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       sortId: string;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     const sort = await Sort.get(context, param.sortId, ncMeta);
 
     if (!sort) {
-      NcError.badRequest('Sort not found');
+      AtError.badRequest('Sort not found');
     }
 
     const column = await Column.get(
@@ -51,7 +51,7 @@ export class SortsService {
     // Lookup-scoped sort (fk_lookup_col_id, no view): no view webhooks/hooks.
     if (!sort.fk_view_id) {
       await Sort.delete(context, param.sortId, ncMeta);
-      NocoSocket.broadcastEvent(
+      AtmosphereSocket.broadcastEvent(
         context,
         {
           event: EventType.META_EVENT,
@@ -84,7 +84,7 @@ export class SortsService {
       context,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -104,17 +104,17 @@ export class SortsService {
   }
 
   async sortUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       sortId: any;
       sort: SortReqType;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     validatePayload('swagger.json#/components/schemas/SortReq', param.sort);
@@ -126,7 +126,7 @@ export class SortsService {
         ncMeta,
       );
       if (col?.colOptions?.error) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           `Cannot use column '${col.title}' in sort: ${col.colOptions.error}`,
         );
       }
@@ -135,7 +135,7 @@ export class SortsService {
     const sort = await Sort.get(context, param.sortId, ncMeta);
 
     if (!sort) {
-      NcError.badRequest('Sort not found');
+      AtError.badRequest('Sort not found');
     }
 
     const column = await Column.get(
@@ -148,7 +148,7 @@ export class SortsService {
     // view webhooks/hooks, so just persist the change and broadcast.
     if (!sort.fk_view_id) {
       const res = await Sort.update(context, param.sortId, param.sort, ncMeta);
-      NocoSocket.broadcastEvent(
+      AtmosphereSocket.broadcastEvent(
         context,
         {
           event: EventType.META_EVENT,
@@ -188,7 +188,7 @@ export class SortsService {
       context,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -210,17 +210,17 @@ export class SortsService {
   }
 
   async sortCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       sort: SortReqType;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
     validatePayload('swagger.json#/components/schemas/SortReq', param.sort);
 
@@ -231,7 +231,7 @@ export class SortsService {
         ncMeta,
       );
       if (col?.colOptions?.error) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           `Cannot use column '${col.title}' in sort: ${col.colOptions.error}`,
         );
       }
@@ -240,7 +240,7 @@ export class SortsService {
     const view = await View.get(context, param.viewId, false, ncMeta);
 
     if (!view) {
-      NcError.badRequest('View not found');
+      AtError.badRequest('View not found');
     }
     const viewWebhookManager =
       param.viewWebhookManager ??
@@ -275,7 +275,7 @@ export class SortsService {
       context,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -293,7 +293,7 @@ export class SortsService {
     return sort;
   }
 
-  async sortList(context: NcContext, param: { viewId: string }) {
+  async sortList(context: AtContext, param: { viewId: string }) {
     return Sort.list(context, { viewId: param.viewId });
   }
 
@@ -301,12 +301,12 @@ export class SortsService {
   // Order the relation sub-query of a Lookup column. CRUD by sortId for
   // update/delete reuses the existing sortUpdate/sortDelete.
   async lookupSortCreate(
-    context: NcContext,
-    param: { columnId: string; sort: SortReqType; req: NcRequest },
+    context: AtContext,
+    param: { columnId: string; sort: SortReqType; req: AtRequest },
     ncMeta?: MetaService,
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     // Per-lookup sort is a paid feature — gate creation behind the license so it
@@ -322,7 +322,7 @@ export class SortsService {
       ncMeta,
     );
     if (!lookupCol || lookupCol.uidt !== UITypes.Lookup) {
-      NcError.get(context).badRequest('Lookup column not found');
+      AtError.get(context).badRequest('Lookup column not found');
     }
 
     // The sort column must belong to the lookup's related table — otherwise it
@@ -341,7 +341,7 @@ export class SortsService {
       // doesn't have — allowing one would emit an invalid ORDER BY and 500 on
       // every filtered read. Mirrors the UI's disabled-column rule (LookupSort.vue).
       if (sortCol && isVirtualCol(sortCol)) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'Lookup sort column must be a sortable (scalar) field',
         );
       }
@@ -363,7 +363,7 @@ export class SortsService {
       }
       if (relatedModelId) {
         if (!sortCol || sortCol.fk_model_id !== relatedModelId) {
-          NcError.get(context).badRequest(
+          AtError.get(context).badRequest(
             'Lookup sort column must belong to the related table',
           );
         }
@@ -381,7 +381,7 @@ export class SortsService {
   }
 
   async lookupSortList(
-    context: NcContext,
+    context: AtContext,
     param: { columnId: string },
     ncMeta?: MetaService,
   ) {

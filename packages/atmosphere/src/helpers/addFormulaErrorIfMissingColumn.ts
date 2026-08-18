@@ -1,4 +1,4 @@
-import { formulaJsep } from 'nocodb-sdk';
+import { formulaJsep } from 'atmosphere-sdk';
 import type FormulaColumn from '~/models/FormulaColumn';
 import type { ButtonColumn } from '~/models';
 

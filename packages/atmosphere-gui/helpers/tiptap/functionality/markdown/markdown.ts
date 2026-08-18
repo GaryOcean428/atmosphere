@@ -1,7 +1,7 @@
 import MarkdownIt from 'markdown-it'
 import DOMPurify from 'isomorphic-dompurify'
 import mdTaskList from 'markdown-it-task-lists'
-import type { UserType } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
 import { mdImageAsText, mdLinkRuleSetupExt } from '.'
 import { parseUserMention } from '~/helpers/tiptap-markdown/extensions'
 
@@ -12,9 +12,9 @@ declare module 'markdown-it-task-lists' {
   export default taskLists
 }
 
-export type NcMarkdownExtension = MarkdownIt.PluginSimple | MarkdownIt.PluginWithOptions<any> | MarkdownIt.PluginWithParams
+export type AtMarkdownExtension = MarkdownIt.PluginSimple | MarkdownIt.PluginWithOptions<any> | MarkdownIt.PluginWithParams
 
-export interface NcMarkdownParserConstructorType {
+export interface AtMarkdownParserConstructorType {
   openLinkOnClick?: boolean
   enableMention?: boolean
   users?: (Partial<UserType> | Partial<User>)[]
@@ -22,7 +22,7 @@ export interface NcMarkdownParserConstructorType {
   html?: boolean
   linkify?: boolean
   breaks?: boolean
-  extensions?: NcMarkdownExtension[]
+  extensions?: AtMarkdownExtension[]
   maxBlockTokens?: number // Add this to limit block tokens
 }
 
@@ -30,8 +30,8 @@ export interface NcMarkdownParserConstructorType {
 const taskRegex = /^(?!.*- )(\s*)\[( |x|X)\]/gm // Matches unchecked and checked tasks
 const strikeThroughRegex = /(?<!~)~(?!~)(.*?)(?<!~)~(?!~)/g // Matches strikethrough syntax
 
-export class NcMarkdownParser {
-  private static instance: NcMarkdownParser | null = null
+export class AtMarkdownParser {
+  private static instance: AtMarkdownParser | null = null
   private md: MarkdownIt
   private openLinkOnClick = true
   private maxBlockTokens?: number
@@ -46,7 +46,7 @@ export class NcMarkdownParser {
     breaks = false,
     extensions = [],
     maxBlockTokens,
-  }: NcMarkdownParserConstructorType = {}) {
+  }: AtMarkdownParserConstructorType = {}) {
     this.openLinkOnClick = openLinkOnClick
     this.maxBlockTokens = maxBlockTokens
 
@@ -63,8 +63,8 @@ export class NcMarkdownParser {
     /**
      * Todo: Remove this once we enable proper image support in the rich text editor.
      * Also, replace its usage in other places such as:
-     * 1. packages/nc-gui/helpers/tiptap-markdown/parse/MarkdownParser.ts
-     * 2. packages/nc-gui/helpers/tiptap-markdown/extensions/nodes/image.ts
+     * 1. packages/atmosphere-gui/helpers/tiptap-markdown/parse/MarkdownParser.ts
+     * 2. packages/atmosphere-gui/helpers/tiptap-markdown/extensions/nodes/image.ts
      */
     this.md.use(mdImageAsText)
 
@@ -73,23 +73,23 @@ export class NcMarkdownParser {
   }
 
   /**
-   * Gets the singleton instance of NcMarkdownParser.
+   * Gets the singleton instance of AtMarkdownParser.
    * If no instance exists, it creates and returns a new instance.
    * @param options - The options to initialize the parser.
    * @returns The singleton instance of the parser.
    */
-  public static getInstance(options: NcMarkdownParserConstructorType = {}): NcMarkdownParser {
-    if (!NcMarkdownParser.instance) {
-      NcMarkdownParser.instance = new NcMarkdownParser(options)
+  public static getInstance(options: AtMarkdownParserConstructorType = {}): AtMarkdownParser {
+    if (!AtMarkdownParser.instance) {
+      AtMarkdownParser.instance = new AtMarkdownParser(options)
     } else {
       // Reconfigure the instance based on new options
-      NcMarkdownParser.instance.updateConfiguration(options)
+      AtMarkdownParser.instance.updateConfiguration(options)
     }
 
-    return NcMarkdownParser.instance
+    return AtMarkdownParser.instance
   }
 
-  private updateConfiguration(options: NcMarkdownParserConstructorType) {
+  private updateConfiguration(options: AtMarkdownParserConstructorType) {
     // Update properties that may change
 
     this.maxBlockTokens = options.maxBlockTokens
@@ -117,26 +117,26 @@ export class NcMarkdownParser {
   }
 
   /**
-   * Parses the content and optionally accepts options to initialize a new NcMarkdownParser instance.
+   * Parses the content and optionally accepts options to initialize a new AtMarkdownParser instance.
    * @param content - The markdown content to parse.
    * @param options - Optional options to initialize the parser instance dynamically.
    */
-  public static parse<T extends string>(content: T, options: NcMarkdownParserConstructorType = {}, useSingleton = false): string {
+  public static parse<T extends string>(content: T, options: AtMarkdownParserConstructorType = {}, useSingleton = false): string {
     if (!ncIsString(content)) return content
 
-    let parser: NcMarkdownParser
+    let parser: AtMarkdownParser
 
     if (useSingleton) {
       // Use the singleton instance
-      parser = NcMarkdownParser.getInstance(options)
+      parser = AtMarkdownParser.getInstance(options)
     } else {
       // Create a new instance for each parse call
-      parser = new NcMarkdownParser(options)
+      parser = new AtMarkdownParser(options)
     }
 
     // If content is a string, parse it and sanitize to prevent XSS
     if (ncIsString(content)) {
-      return DOMPurify.sanitize(parser.md.render(NcMarkdownParser.preprocessMarkdown(content)))
+      return DOMPurify.sanitize(parser.md.render(AtMarkdownParser.preprocessMarkdown(content)))
     }
 
     return content
@@ -148,7 +148,7 @@ export class NcMarkdownParser {
 
   public mentionExt(
     md: MarkdownIt,
-    { users, currentUser }: Pick<NcMarkdownParserConstructorType, 'users' | 'currentUser'>,
+    { users, currentUser }: Pick<AtMarkdownParserConstructorType, 'users' | 'currentUser'>,
   ): void {
     md.use(parseUserMention(users || [], currentUser, true))
   }
@@ -159,7 +159,7 @@ export class NcMarkdownParser {
    */
   private setupLinkRules(
     md: MarkdownIt,
-    { openLinkOnClick = true }: Pick<NcMarkdownParserConstructorType, 'openLinkOnClick'> = {},
+    { openLinkOnClick = true }: Pick<AtMarkdownParserConstructorType, 'openLinkOnClick'> = {},
   ): void {
     md.use(mdLinkRuleSetupExt, { openLinkOnClick })
   }
@@ -168,7 +168,7 @@ export class NcMarkdownParser {
    * Dynamically apply custom extensions passed via constructor to the markdown-it instance.
    * @param extensions - Array of markdown-it plugins (extensions).
    */
-  private applyCustomExtensions(extensions: NcMarkdownExtension[]): void {
+  private applyCustomExtensions(extensions: AtMarkdownExtension[]): void {
     extensions.forEach((extension) => {
       this.md.use(extension)
     })

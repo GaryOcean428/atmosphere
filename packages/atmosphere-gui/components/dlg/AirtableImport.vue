@@ -55,7 +55,7 @@ const syncSource = ref({
   type: 'Airtable',
   details: {
     syncInterval: '15mins',
-    syncDirection: 'Airtable to NocoDB',
+    syncDirection: 'Airtable to Atmosphere',
     syncRetryCount: 1,
     apiKey: '',
     appId: '',
@@ -234,7 +234,7 @@ async function loadSyncSrc() {
       type: 'Airtable',
       details: {
         syncInterval: '15mins',
-        syncDirection: 'Airtable to NocoDB',
+        syncDirection: 'Airtable to Atmosphere',
         syncRetryCount: 1,
         apiKey: '',
         appId: '',
@@ -326,7 +326,7 @@ const collapseKey = ref('')
     :keyboard="step !== 2"
     :mask-closable="step !== 2"
     width="448px"
-    wrap-class-name="nc-modal-airtable-import"
+    wrap-class-name="atm-modal-airtable-import"
     hide
     @keydown.esc="dialogShow = false"
   >
@@ -341,8 +341,8 @@ const collapseKey = ref('')
 
       <template v-if="step === 1">
         <a
-          href="https://nocodb.com/docs/product-docs/bases/import-base-from-airtable#get-airtable-credentials"
-          class="!text-nc-content-gray-subtle2 text-sm font-weight-500 ml-auto"
+          href="https://atmosphere.dev/docs/product-docs/bases/import-base-from-airtable#get-airtable-credentials"
+          class="!text-atm-content-gray-subtle2 text-sm font-weight-500 ml-auto"
           target="_blank"
           rel="noopener"
         >
@@ -351,15 +351,15 @@ const collapseKey = ref('')
       </template>
 
       <div v-else-if="step === 2" class="flex items-center gap-2">
-        <nc-button type="text" size="xs" class="ml-auto" @click="detailsIsShown = !detailsIsShown">
+        <atm-button type="text" size="xs" class="ml-auto" @click="detailsIsShown = !detailsIsShown">
           {{ detailsIsShown ? 'Hide' : 'Show' }} Details
           <GeneralIcon icon="chevronDown" class="ml-2 transition-all transform" :class="{ 'rotate-180': detailsIsShown }" />
-        </nc-button>
-        <NcButton v-if="!isInProgress" icon-only type="text" size="xs" @click.stop="dialogShow = false">
+        </atm-button>
+        <AtButton v-if="!isInProgress" icon-only type="text" size="xs" @click.stop="dialogShow = false">
           <template #icon>
-            <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
+            <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
           </template>
-        </NcButton>
+        </AtButton>
       </div>
     </div>
 
@@ -369,13 +369,13 @@ const collapseKey = ref('')
         :model="syncSource"
         name="quick-import-airtable-form"
         layout="vertical"
-        class="m-0 !text-nc-content-gray"
+        class="m-0 !text-atm-content-gray"
       >
         <a-form-item v-bind="validateInfos['details.apiKey']" class="!my-5">
           <div class="flex items-end">
-            <label class="text-nc-content-gray text-sm"> {{ $t('labels.personalAccessToken') }} </label>
+            <label class="text-atm-content-gray text-sm"> {{ $t('labels.personalAccessToken') }} </label>
             <a
-              href="https://nocodb.com/docs/product-docs/bases/import-base-from-airtable#get-airtable-credentials"
+              href="https://atmosphere.dev/docs/product-docs/bases/import-base-from-airtable#get-airtable-credentials"
               class="!text-brand text-sm ml-auto"
               target="_blank"
               rel="noopener"
@@ -387,7 +387,7 @@ const collapseKey = ref('')
           <a-input-password
             v-model:value="syncSource.details.apiKey"
             placeholder="Enter your Airtable Personal Access Token"
-            class="!rounded-lg mt-2 nc-input-api-key nc-input-shadow !text-nc-content-gray"
+            class="!rounded-lg mt-2 atm-input-api-key atm-input-shadow !text-atm-content-gray"
           >
             <template #iconRender="isVisible">
               <GeneralIcon :icon="!isVisible ? 'ncEye' : 'ncEyeOff'" />
@@ -396,16 +396,16 @@ const collapseKey = ref('')
         </a-form-item>
 
         <a-form-item v-bind="validateInfos['details.syncSourceUrlOrId']" class="!my-5">
-          <label class="text-nc-content-gray text-sm"> {{ `${$t('labels.sharedBase')} ID/URL` }} </label>
+          <label class="text-atm-content-gray text-sm"> {{ `${$t('labels.sharedBase')} ID/URL` }} </label>
           <a-input
             v-model:value="syncSource.details.syncSourceUrlOrId"
             placeholder="Paste the Base URL or Base ID from Airtable"
-            class="!rounded-lg !mt-2 nc-input-shared-base nc-input-shadow !text-nc-content-gray"
+            class="!rounded-lg !mt-2 atm-input-shared-base atm-input-shadow !text-atm-content-gray"
           />
         </a-form-item>
 
         <div class="my-5">
-          <NcListSourceSelector
+          <AtListSourceSelector
             ref="sourceSelectorRef"
             v-model:source-id="sourceIdRef"
             :base-id="baseId"
@@ -414,49 +414,49 @@ const collapseKey = ref('')
           />
         </div>
 
-        <nc-button type="text" size="small" @click="collapseKey = !collapseKey ? 'advanced-settings' : ''">
+        <atm-button type="text" size="small" @click="collapseKey = !collapseKey ? 'advanced-settings' : ''">
           {{ $t('title.advancedSettings') }}
           <GeneralIcon
             icon="chevronDown"
             class="ml-2 !transition-all !transform"
             :class="{ '!rotate-180': collapseKey === 'advanced-settings' }"
           />
-        </nc-button>
+        </atm-button>
 
-        <a-collapse v-model:active-key="collapseKey" ghost class="nc-import-collapse">
+        <a-collapse v-model:active-key="collapseKey" ghost class="atm-import-collapse">
           <a-collapse-panel key="advanced-settings">
             <div class="mb-2">
-              <NcCheckbox v-model:checked="syncSource.details.options.syncData">{{ $t('labels.importData') }}</NcCheckbox>
+              <AtCheckbox v-model:checked="syncSource.details.options.syncData">{{ $t('labels.importData') }}</AtCheckbox>
             </div>
 
             <div class="my-2">
-              <NcCheckbox v-model:checked="syncSource.details.options.syncViews">
+              <AtCheckbox v-model:checked="syncSource.details.options.syncViews">
                 {{ $t('labels.importSecondaryViews') }}
-              </NcCheckbox>
+              </AtCheckbox>
             </div>
 
             <div class="my-2">
-              <NcCheckbox v-model:checked="syncSource.details.options.syncRollup">
+              <AtCheckbox v-model:checked="syncSource.details.options.syncRollup">
                 {{ $t('labels.importRollupColumns') }}
-              </NcCheckbox>
+              </AtCheckbox>
             </div>
 
             <div class="my-2">
-              <NcCheckbox v-model:checked="syncSource.details.options.syncLookup">
+              <AtCheckbox v-model:checked="syncSource.details.options.syncLookup">
                 {{ $t('labels.importLookupColumns') }}
-              </NcCheckbox>
+              </AtCheckbox>
             </div>
 
             <div class="my-2">
-              <NcCheckbox v-model:checked="syncSource.details.options.syncAttachment">
+              <AtCheckbox v-model:checked="syncSource.details.options.syncAttachment">
                 {{ $t('labels.importAttachmentColumns') }}
-              </NcCheckbox>
+              </AtCheckbox>
             </div>
 
             <div class="my-2">
-              <NcCheckbox v-model:checked="syncSource.details.options.syncFormula" disabled>
+              <AtCheckbox v-model:checked="syncSource.details.options.syncFormula" disabled>
                 {{ $t('labels.importFormulaColumns') }}
-              </NcCheckbox>
+              </AtCheckbox>
             </div>
           </a-collapse-panel>
         </a-collapse>
@@ -473,7 +473,7 @@ const collapseKey = ref('')
           </span>
         </template>
         <template v-else-if="lastProgress?.status === JobStatus.FAILED">
-          <NcAlert
+          <AtAlert
             align="center"
             type="error"
             show-icon
@@ -494,14 +494,14 @@ const collapseKey = ref('')
       </div>
 
       <div v-if="!isInProgress" class="text-right mt-5">
-        <nc-button v-if="lastProgress?.status === JobStatus.FAILED" size="small" @click="step = 1"> Retry import </nc-button>
-        <nc-button v-else size="small" @click="dialogShow = false"> {{ $t('labels.goToBase') }} </nc-button>
+        <atm-button v-if="lastProgress?.status === JobStatus.FAILED" size="small" @click="step = 1"> Retry import </atm-button>
+        <atm-button v-else size="small" @click="dialogShow = false"> {{ $t('labels.goToBase') }} </atm-button>
       </div>
     </div>
 
     <template #footer>
       <div v-if="step === 1" class="flex justify-between mt-5">
-        <nc-button
+        <atm-button
           key="back"
           type="text"
           size="small"
@@ -515,54 +515,54 @@ const collapseKey = ref('')
           <GeneralIcon v-if="showBackBtn" icon="chevronLeft" class="mr-1" />
 
           {{ showBackBtn ? $t('general.back') : $t('general.cancel') }}
-        </nc-button>
+        </atm-button>
 
-        <nc-button
+        <atm-button
           key="submit"
           v-e="['c:sync-airtable:save-and-sync']"
           type="primary"
-          class="nc-btn-airtable-import"
+          class="atm-btn-airtable-import"
           size="small"
           :loading="isLoading"
           :disabled="disableImportButton"
           @click="saveAndSync"
         >
           {{ $t('activity.import') }} Base
-        </nc-button>
+        </atm-button>
       </div>
     </template>
   </a-modal>
 </template>
 
 <style lang="scss" scoped>
-.nc-import-collapse :deep(.ant-collapse-header) {
+.atm-import-collapse :deep(.ant-collapse-header) {
   display: none !important;
 }
 
-.nc-import-collapse :deep(.ant-collapse-content-box) {
+.atm-import-collapse :deep(.ant-collapse-content-box) {
   @apply !pb-0 !pt-2 !pr-0.2;
 }
 
-.nc-input-api-key {
+.atm-input-api-key {
   :deep(.ant-input-password-icon) {
     @apply !text-current !hover:text-current;
   }
 }
 
-.nc-input-api-key,
-.nc-input-shared-base {
-  @apply !text-nc-content-gray;
+.atm-input-api-key,
+.atm-input-shared-base {
+  @apply !text-atm-content-gray;
   input {
-    @apply !text-nc-content-gray;
+    @apply !text-atm-content-gray;
   }
 }
 </style>
 
 <style>
-.nc-modal-airtable-import .ant-modal-footer {
+.atm-modal-airtable-import .ant-modal-footer {
   @apply !border-none p-0;
 }
-.nc-modal-airtable-import .ant-collapse-content-box {
+.atm-modal-airtable-import .ant-collapse-content-box {
   padding-left: 6px;
 }
 </style>

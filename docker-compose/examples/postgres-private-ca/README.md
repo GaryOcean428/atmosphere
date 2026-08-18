@@ -11,11 +11,11 @@ For environments where the database uses a private or self-signed CA certificate
 ```bash
 cp -r examples/postgres-private-ca ./my-deployment
 cd my-deployment
-# Edit docker.env: set NC_REDIS_URL
+# Edit docker.env: set ATMOSPHERE_REDIS_URL
 # Edit docker-compose.yml:
-#   - Replace nocodb.example.com with your domain
+#   - Replace atmosphere.example.com with your domain
 #   - Replace admin@example.com with your email
-# Edit nocodb/db.json:
+# Edit atmosphere/db.json:
 #   - Set your database host, credentials, and port
 #   - Replace the ca value with your CA certificate content
 #     (newlines replaced with \n, all on one line)

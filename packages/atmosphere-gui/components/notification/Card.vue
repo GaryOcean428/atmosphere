@@ -23,29 +23,29 @@ const { unreadNotifications, readNotifications, readPageInfo, unreadPageInfo, no
     :style="!isMobileMode ? 'width: min(80svw, 520px);' : ''"
     :class="{
       'max-h-[70vh] h-[620px]': !isMobileMode,
-      'nc-h-screen nc-w-screen': isMobileMode,
+      'atm-h-screen atm-w-screen': isMobileMode,
     }"
     class="!rounded-lg pt-4"
   >
     <div class="space-y-3">
       <div class="flex px-6 justify-between items-center">
-        <span class="text-md font-bold text-nc-content-gray" @click.stop> {{ $t('general.notification') }}s </span>
+        <span class="text-md font-bold text-atm-content-gray" @click.stop> {{ $t('general.notification') }}s </span>
 
-        <NcButton v-if="isMobileMode" size="small" type="secondary" @click="emits('close')">
-          <GeneralIcon icon="close" class="text-nc-content-gray-subtle" />
-        </NcButton>
+        <AtButton v-if="isMobileMode" size="small" type="secondary" @click="emits('close')">
+          <GeneralIcon icon="close" class="text-atm-content-gray-subtle" />
+        </AtButton>
       </div>
       <div
         v-if="notificationTab !== 'read'"
         :class="{
-          'text-nc-content-gray-disabled': !unreadNotifications?.length,
+          'text-atm-content-gray-disabled': !unreadNotifications?.length,
         }"
-        class="cursor-pointer right-5 pointer-events-auto top-12.5 z-2 absolute text-[13px] text-nc-content-gray-subtle2 font-weight-semibold"
+        class="cursor-pointer right-5 pointer-events-auto top-12.5 z-2 absolute text-[13px] text-atm-content-gray-subtle2 font-weight-semibold"
         @click.stop="markAllAsRead"
       >
         {{ $t('activity.markAllAsRead') }}
       </div>
-      <NcTabs v-model:active-key="notificationTab">
+      <AtTabs v-model:active-key="notificationTab">
         <a-tab-pane key="unread">
           <template #tab>
             <span
@@ -66,7 +66,7 @@ const { unreadNotifications, readNotifications, readPageInfo, unreadPageInfo, no
           >
             <template v-if="!unreadNotifications?.length">
               <div class="text-sm !text-gray-500">{{ $t('msg.noNewNotifications') }}</div>
-              <GeneralIcon icon="inbox" class="!text-40px !text-nc-content-gray-muted" />
+              <GeneralIcon icon="inbox" class="!text-40px !text-atm-content-gray-muted" />
             </template>
             <template v-else>
               <NotificationItem v-for="item in unreadNotifications" :key="item.id" :item="item" @close="emits('close')" />
@@ -99,8 +99,8 @@ const { unreadNotifications, readNotifications, readPageInfo, unreadPageInfo, no
             }"
           >
             <template v-if="!readNotifications?.length">
-              <div class="text-sm text-nc-content-gray-muted">{{ $t('msg.noNewNotifications') }}</div>
-              <GeneralIcon icon="inbox" class="!text-40px text-nc-content-gray-muted" />
+              <div class="text-sm text-atm-content-gray-muted">{{ $t('msg.noNewNotifications') }}</div>
+              <GeneralIcon icon="inbox" class="!text-40px text-atm-content-gray-muted" />
             </template>
             <template v-else>
               <NotificationItem v-for="item in readNotifications" :key="item.id" :item="item" @close="emits('close')" />
@@ -113,7 +113,7 @@ const { unreadNotifications, readNotifications, readPageInfo, unreadPageInfo, no
             </template>
           </div>
         </a-tab-pane>
-      </NcTabs>
+      </AtTabs>
     </div>
   </div>
 </template>

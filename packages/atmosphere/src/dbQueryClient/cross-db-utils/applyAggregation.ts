@@ -1,9 +1,9 @@
-import { UITypes, validateAggregationColType } from 'nocodb-sdk';
+import { UITypes, validateAggregationColType } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { BarcodeColumn, QrCodeColumn } from '~/models';
 import { Column } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { getColumnNameQuery } from '~/db/getColumnNameQuery';
 import { DBQueryClient } from '~/dbQueryClient';
 
@@ -26,7 +26,7 @@ export interface ApplyAggregationParams {
  * `DBQueryClient.fromKnex(...)` factory.
  *
  * Returns `undefined` when the column has no aggregation or carries a stored
- * `colOptions.error`. Throws `NcError.notImplemented` for aggregation × UIType
+ * `colOptions.error`. Throws `AtError.notImplemented` for aggregation × UIType
  * combinations the SDK validator rejects.
  */
 export async function applyAggregation({
@@ -61,7 +61,7 @@ export async function applyAggregation({
   const aggType = validateAggregationColType(column, aggregation);
 
   if (aggType === false || aggType === 'unknown') {
-    NcError.get(context).notImplemented(
+    AtError.get(context).notImplemented(
       `Aggregation ${aggregation} is not implemented yet`,
     );
     return;

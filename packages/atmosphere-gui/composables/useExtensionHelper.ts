@@ -1,4 +1,4 @@
-import { type ViewType } from 'nocodb-sdk'
+import { type ViewType } from 'atmosphere-sdk'
 import type { ExtensionManifest, ExtensionType } from '#imports'
 
 const [useProvideExtensionHelper, useExtensionHelper] = useInjectionState(
@@ -77,7 +77,7 @@ const [useProvideExtensionHelper, useExtensionHelper] = useInjectionState(
 
       const nextPage = async () => {
         const { list: records, pageInfo } = await $api.dbViewRow.list(
-          'noco',
+          'atmosphere',
           baseId.value!,
           tableId,
           viewId as string,

@@ -16,5 +16,5 @@ defineEmits(['update:isAddImageMode', 'update:isImageEditMode'])
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

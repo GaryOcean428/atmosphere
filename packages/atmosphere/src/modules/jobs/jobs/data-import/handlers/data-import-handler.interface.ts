@@ -3,7 +3,7 @@ import type {
   FileImportColumn,
   FileImportParserConfig,
   ImportPreviewSheet,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 
 export type ImportRow = Record<string, any>;
 

@@ -3,8 +3,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import { User } from '~/models';
 import { UsersService } from '~/services/users/users.service';
-import { NcError } from '~/helpers/ncError';
-import Noco from '~/Noco';
+import { AtError } from '~/helpers/ncError';
+import Atmosphere from '~/Atmosphere';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await User.getByEmail(jwtPayload?.email);
 
     if (!user) {
-      NcError.get().unauthorized('Token Expired. Please login again.');
+      AtError.get().unauthorized('Token Expired. Please login again.');
     }
 
     if (
@@ -34,12 +34,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       !jwtPayload.token_version ||
       user.token_version !== jwtPayload.token_version
     ) {
-      NcError.get().unauthorized('Token Expired. Please login again.');
+      AtError.get().unauthorized('Token Expired. Please login again.');
     }
     const userWithRoles = await User.getWithRoles(req.context, user.id, {
       user,
       baseId: req.ncBaseId,
-      workspaceId: req.ncWorkspaceId || Noco.ncDefaultWorkspaceId || undefined,
+      workspaceId: req.ncWorkspaceId || Atmosphere.ncDefaultWorkspaceId || undefined,
     });
 
     return userWithRoles && { ...userWithRoles, isAuthorized: true };

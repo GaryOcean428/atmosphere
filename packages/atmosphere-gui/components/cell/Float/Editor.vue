@@ -50,7 +50,7 @@ const focus: VNodeRef = (el) =>
   <input
     :ref="focus"
     v-model="vModel"
-    class="nc-cell-field outline-none px-1 border-none w-full h-full"
+    class="atm-cell-field outline-none px-1 border-none w-full h-full"
     type="number"
     step="0.1"
     :disabled="readOnly"

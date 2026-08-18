@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, UITypes } from 'nocodb-sdk'
+import { ColumnHelper, UITypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -23,7 +23,7 @@ const picked = computed({
 
 const isOpenColorPicker = ref(false)
 
-// Interface pages get the redesigned colour panel (NcColorPanel); the classic
+// Interface pages get the redesigned colour panel (AtColorPanel); the classic
 // data app keeps the legacy picker.
 const isInterfaceContext = useIsInterfaceUi()
 
@@ -41,7 +41,7 @@ const iconColor = computed(() => {
     return getColor(themeV4Colors.gray['600'])
   }
 
-  return getOppositeColorOfBackground(getColor('var(--nc-bg-default)'), vModel.value.meta.color, ['#4a5268', '#d5dce8'])
+  return getOppositeColorOfBackground(getColor('var(--atm-bg-default)'), vModel.value.meta.color, ['#4a5268', '#d5dce8'])
 })
 
 // antdv doesn't support object as value
@@ -64,14 +64,14 @@ watch(
   <a-row :gutter="8">
     <a-col :span="12">
       <a-form-item :label="$t('labels.icon')">
-        <a-select v-model:value="vModel.meta.iconIdx" class="w-52" dropdown-class-name="nc-dropdown-checkbox-icon">
+        <a-select v-model:value="vModel.meta.iconIdx" class="w-52" dropdown-class-name="atm-dropdown-checkbox-icon">
           <template #suffixIcon>
-            <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+            <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
           </template>
 
           <a-select-option v-for="(icon, i) of iconList" :key="i" :value="i">
             <div class="flex gap-2 w-full truncate items-center">
-              <div class="flex-1 flex items-center text-nc-content-gray-subtle gap-2 children:(h-4 w-4)">
+              <div class="flex-1 flex items-center text-atm-content-gray-subtle gap-2 children:(h-4 w-4)">
                 <component :is="getMdiIcon(icon.checked)" />
                 <component :is="getMdiIcon(icon.unchecked)" />
               </div>
@@ -79,8 +79,8 @@ watch(
               <component
                 :is="iconMap.check"
                 v-if="vModel.meta.iconIdx === i"
-                id="nc-selected-item-icon"
-                class="text-nc-content-brand w-4 h-4"
+                id="atm-selected-item-icon"
+                class="text-atm-content-brand w-4 h-4"
               />
             </div>
           </a-select-option>
@@ -89,17 +89,17 @@ watch(
     </a-col>
     <a-col :span="12">
       <a-form-item :label="$t('general.colour')">
-        <NcDropdown
+        <AtDropdown
           v-model:visible="isOpenColorPicker"
           placement="bottomRight"
           :auto-close="false"
           use-backdrop
-          class="nc-color-picker-dropdown-trigger"
+          class="atm-color-picker-dropdown-trigger"
         >
           <div
-            class="flex-1 border-1 border-nc-border-gray-dark rounded-lg h-8 px-[11px] flex items-center justify-between transition-all cursor-pointer"
+            class="flex-1 border-1 border-atm-border-gray-dark rounded-lg h-8 px-[11px] flex items-center justify-between transition-all cursor-pointer"
             :class="{
-              'border-nc-border-brand shadow-selected': isOpenColorPicker,
+              'border-atm-border-brand shadow-selected': isOpenColorPicker,
             }"
           >
             <div class="flex-1 flex items-center gap-2 children:(h-4 w-4)">
@@ -117,7 +117,7 @@ watch(
               />
             </div>
 
-            <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle h-4 w-4" />
+            <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle h-4 w-4" />
           </div>
           <template #overlay>
             <div>
@@ -135,7 +135,7 @@ watch(
               ></LazyGeneralAdvanceColorPicker>
             </div>
           </template>
-        </NcDropdown>
+        </AtDropdown>
       </a-form-item>
     </a-col>
   </a-row>

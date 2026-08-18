@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PresencePageType } from 'nocodb-sdk'
+import type { PresencePageType } from 'atmosphere-sdk'
 
 // CE stub — collaborator presence is EE-only. The EE overlay at
 // ee/components/dashboard/TreeView/PresenceAvatars.vue provides the real implementation;
@@ -13,5 +13,5 @@ defineProps<Props>()
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

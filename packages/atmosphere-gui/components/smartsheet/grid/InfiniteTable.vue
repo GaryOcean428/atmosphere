@@ -17,7 +17,7 @@ import {
   isOrderCol,
   isSystemColumn,
   isVirtualCol,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 import axios from 'axios'
 import { useColumnDrag } from './useColumnDrag'
@@ -151,7 +151,7 @@ const { clearLTARCell, cleaMMCell } = useSmartsheetLtarHelpersOrThrow()
 
 const { loadViewAggregate } = useViewAggregateOrThrow()
 
-const { isAiFeaturesEnabled, generateRows, generatingRows, generatingColumnRows, generatingColumns, aiIntegrations } = useNocoAi()
+const { isAiFeaturesEnabled, generateRows, generatingRows, generatingColumnRows, generatingColumns, aiIntegrations } = useAtmosphereAi()
 
 const {
   showRecordPlanLimitExceededModal,
@@ -847,7 +847,7 @@ const {
   expandRows,
   (e: KeyboardEvent) => {
     const activeDropdownEl = document.querySelector(
-      '.nc-dropdown-single-select-cell.active,.nc-dropdown-multi-select-cell.active',
+      '.atm-dropdown-single-select-cell.active,.atm-dropdown-multi-select-cell.active',
     )
     if (activeDropdownEl) {
       e.preventDefault()
@@ -1258,7 +1258,7 @@ onClickOutside(tableBodyEl, (e) => {
   // ignore unselecting if clicked inside or on the picker(Date, Time, DateTime, Year)
   // or single/multi select options
   const activePickerOrDropdownEl = document.querySelector(
-    '.nc-picker-datetime.active,.nc-dropdown-single-select-cell.active,.nc-dropdown-multi-select-cell.active,.nc-dropdown-user-select-cell.active,.nc-picker-date.active,.nc-picker-year.active,.nc-picker-time.active,.nc-link-dropdown-root',
+    '.atm-picker-datetime.active,.atm-dropdown-single-select-cell.active,.atm-dropdown-multi-select-cell.active,.atm-dropdown-user-select-cell.active,.atm-picker-date.active,.atm-picker-year.active,.atm-picker-time.active,.atm-link-dropdown-root',
   )
   if (
     e.target &&
@@ -1845,7 +1845,7 @@ useEventListener(document, 'mousedown', (e) => {
     scrolling.value = true
   }
 
-  if ((e.target as HTMLElement).closest('.nc-grid-cell:not(.caption)')) {
+  if ((e.target as HTMLElement).closest('.atm-grid-cell:not(.caption)')) {
     isGridCellMouseDown.value = true
   }
 })
@@ -1865,7 +1865,7 @@ useEventListener(document, 'keyup', async (e: KeyboardEvent) => {
     disableUrlOverlay.value = false
   }
 
-  const activeDropdownEl = document.querySelector('.nc-dropdown-single-select-cell.active,.nc-dropdown-multi-select-cell.active')
+  const activeDropdownEl = document.querySelector('.atm-dropdown-single-select-cell.active,.atm-dropdown-multi-select-cell.active')
 
   const cmdOrCtrl = isMac() ? e.metaKey : e.ctrlKey
 
@@ -2211,7 +2211,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
       :class="{
         'hidden w-0 !h-0 left-0 !max-h-0 !max-w-0': !draggedCol,
       }"
-      class="absolute flex items-center z-40 top-0 h-full bg-nc-bg-gray-extralight pointer-events-none opacity-60"
+      class="absolute flex items-center z-40 top-0 h-full bg-atm-bg-gray-extralight pointer-events-none opacity-60"
     >
       <div
         v-if="draggedCol"
@@ -2220,12 +2220,12 @@ const headerFilteredOrSortedClass = (colId: string) => {
         'max-width': gridViewCols[draggedCol.id!]?.width || '200px',
         'width': gridViewCols[draggedCol.id!]?.width || '200px',
       }"
-        class="border-r-1 border-l-1 border-nc-border-gray-medium h-full"
+        class="border-r-1 border-l-1 border-atm-border-gray-medium h-full"
       ></div>
     </div>
     <div
       v-if="isBulkOperationInProgress || tableState.viewProgress"
-      class="absolute h-full flex items-center justify-center z-70 w-full inset-0 bg-nc-bg-default/50"
+      class="absolute h-full flex items-center justify-center z-70 w-full inset-0 bg-atm-bg-default/50"
     >
       <div class="flex gap-2 items-center">
         {{ tableState.viewProgress?.progress }}
@@ -2234,11 +2234,11 @@ const headerFilteredOrSortedClass = (colId: string) => {
       <a-spin size="large" />
     </div>
 
-    <div ref="gridWrapper" class="nc-grid-wrapper min-h-0 flex-1 relative !overflow-auto">
-      <NcDropdown
+    <div ref="gridWrapper" class="atm-grid-wrapper min-h-0 flex-1 relative !overflow-auto">
+      <AtDropdown
         v-model:visible="contextMenu"
         :trigger="isSqlView ? [] : ['contextmenu']"
-        overlay-class-name="nc-dropdown-grid-context-menu"
+        overlay-class-name="atm-dropdown-grid-context-menu"
       >
         <div>
           <table
@@ -2246,14 +2246,14 @@ const headerFilteredOrSortedClass = (colId: string) => {
               mobile: isMobileMode,
               desktop: !isMobileMode,
             }"
-            class="nc-grid backgroundColorDefault !h-auto bg-nc-bg-default sticky top-0 z-5"
+            class="atm-grid backgroundColorDefault !h-auto bg-atm-bg-default sticky top-0 z-5"
           >
             <thead>
               <tr v-if="isViewColumnsLoading">
                 <td
                   v-for="(_col, colIndex) of dummyColumnDataForLoading"
                   :key="colIndex"
-                  class="!bg-nc-bg-gray-extralight h-full border-b-1 border-r-1"
+                  class="!bg-atm-bg-gray-extralight h-full border-b-1 border-r-1"
                   :class="{ 'min-w-45': colIndex !== 0, 'min-w-16': colIndex === 0 }"
                 >
                   <a-skeleton
@@ -2268,10 +2268,10 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   />
                 </td>
               </tr>
-              <tr v-show="!isViewColumnsLoading" class="nc-grid-header transform">
+              <tr v-show="!isViewColumnsLoading" class="atm-grid-header transform">
                 <th ref="numColHeader" class="w-[80px] min-w-[80px]" data-testid="grid-id-column">
-                  <div v-if="!readOnly" data-testid="nc-check-all" class="flex items-center pl-2 pr-1 w-full h-full">
-                    <div class="nc-no-label text-nc-content-gray-muted" :class="{ hidden: vSelectedAllRecords }">#</div>
+                  <div v-if="!readOnly" data-testid="atm-check-all" class="flex items-center pl-2 pr-1 w-full h-full">
+                    <div class="atm-no-label text-atm-content-gray-muted" :class="{ hidden: vSelectedAllRecords }">#</div>
                     <div
                       :class="{
                         'hidden': !vSelectedAllRecords,
@@ -2279,15 +2279,15 @@ const headerFilteredOrSortedClass = (colId: string) => {
                         'pl-[21px]': isOrderColumnExists && !isRowReorderDisabled,
                         'pl-[2px]': !(isOrderColumnExists && !isRowReorderDisabled),
                       }"
-                      class="nc-check-all w-full items-center"
+                      class="atm-check-all w-full items-center"
                     >
-                      <NcCheckbox v-model:checked="vSelectedAllRecords" />
+                      <AtCheckbox v-model:checked="vSelectedAllRecords" />
 
                       <span class="flex-1" />
                     </div>
                   </div>
                   <template v-else>
-                    <div class="w-full h-full text-nc-content-gray-muted flex pl-2 pr-1" data-testid="nc-check-all">#</div>
+                    <div class="w-full h-full text-atm-content-gray-muted flex pl-2 pr-1" data-testid="atm-check-all">#</div>
                   </template>
                 </th>
                 <th
@@ -2307,7 +2307,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                     'max-width': gridViewCols[fields[0].id]?.width || '180px',
                     'width': gridViewCols[fields[0].id]?.width || '180px',
                   }"
-                  class="nc-grid-column-header"
+                  class="atm-grid-column-header"
                   :class="{
                     '!border-r-blue-400 !border-r-3': toBeDroppedColId === fields[0].id,
                     'no-resize': isLocked || !isViewOperationsAllowed,
@@ -2318,7 +2318,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   @xcresizing="onXcResizing(fields[0].id, $event)"
                 >
                   <div
-                    class="w-full h-full flex items-center text-nc-content-gray-muted pl-2 pr-1"
+                    class="w-full h-full flex items-center text-atm-content-gray-muted pl-2 pr-1"
                     draggable="false"
                     @dragstart.stop="onDragStart(fields[0].id!, $event)"
                     @drag.stop="onDrag($event)"
@@ -2340,7 +2340,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                     maxWidth: `${placeholderStartFields.width}px`,
                     width: `${placeholderStartFields.width}px`,
                   }"
-                  class="nc-grid-column-header"
+                  class="atm-grid-column-header"
                 ></th>
                 <th
                   v-for="{ field: col, index } in visibleFields"
@@ -2359,7 +2359,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                     'max-width': gridViewCols[col.id]?.width || '180px',
                     'width': gridViewCols[col.id]?.width || '180px',
                   }"
-                  class="nc-grid-column-header"
+                  class="atm-grid-column-header"
                   :class="{
                     '!border-r-blue-400 !border-r-3': toBeDroppedColId === col.id,
                     'no-resize': isLocked || !isViewOperationsAllowed,
@@ -2370,7 +2370,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   @xcresizing="onXcResizing(col.id, $event)"
                 >
                   <div
-                    class="w-full h-full flex items-center text-nc-content-gray-muted pl-2 pr-1"
+                    class="w-full h-full flex items-center text-atm-content-gray-muted pl-2 pr-1"
                     :draggable="isMobileMode || index === 0 || readOnly || !hasEditPermission || isLocked ? 'false' : 'true'"
                     @dragstart.stop="onDragStart(col.id!, $event)"
                     @drag.stop="onDrag($event)"
@@ -2392,7 +2392,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                     maxWidth: `${placeholderEndFields.width}px`,
                     width: `${placeholderEndFields.width}px`,
                   }"
-                  class="nc-grid-column-header"
+                  class="atm-grid-column-header"
                 ></th>
                 <th
                   v-if="isAddingColumnAllowed || !!addColumnReason"
@@ -2404,14 +2404,14 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   @click.stop="!addColumnReason && (addColumnDropdown = true)"
                 >
                   <div
-                    class="absolute top-0 left-0 h-8 border-b-1 border-r-1 border-nc-border-gray-medium nc-grid-add-edit-column group"
+                    class="absolute top-0 left-0 h-8 border-b-1 border-r-1 border-atm-border-gray-medium atm-grid-add-edit-column group"
                   >
-                    <NcTooltip :disabled="!addColumnReason">
+                    <AtTooltip :disabled="!addColumnReason">
                       <template #title>{{ addColumnReason ? $t(addColumnReason) : '' }}</template>
                       <a-dropdown
                         v-model:visible="addColumnDropdown"
                         :trigger="addColumnReason ? [] : ['click']"
-                        overlay-class-name="nc-dropdown-add-column rounded-2xl"
+                        overlay-class-name="atm-dropdown-add-column rounded-2xl"
                         @visible-change="onVisibilityChange"
                       >
                         <div
@@ -2420,11 +2420,11 @@ const headerFilteredOrSortedClass = (colId: string) => {
                         >
                           <component
                             :is="iconMap.plus"
-                            class="text-base nc-column-add text-nc-content-gray-muted !group-hover:text-nc-content-gray-extreme"
+                            class="text-base atm-column-add text-atm-content-gray-muted !group-hover:text-atm-content-gray-extreme"
                           />
                         </div>
                         <template #overlay>
-                          <div class="nc-edit-or-add-provider-wrapper">
+                          <div class="atm-edit-or-add-provider-wrapper">
                             <LazySmartsheetColumnEditOrAddProvider
                               v-if="addColumnDropdown"
                               ref="editOrAddProviderRef"
@@ -2440,7 +2440,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                           </div>
                         </template>
                       </a-dropdown>
-                    </NcTooltip>
+                    </AtTooltip>
                   </div>
                 </th>
                 <th
@@ -2473,7 +2473,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
             }"
           >
             <table
-              class="xc-row-table nc-grid backgroundColorDefault !h-auto bg-nc-bg-default relative"
+              class="xc-row-table atm-grid backgroundColorDefault !h-auto bg-atm-bg-default relative"
               :class="{
                 'mobile': isMobileMode,
                 'desktop': !isMobileMode,
@@ -2483,7 +2483,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
             >
               <tbody
                 ref="tableBodyEl"
-                class="xc-row-table !bg-nc-bg-red-dark"
+                class="xc-row-table !bg-atm-bg-red-dark"
                 :style="{
                   transform: `translateY(${topOffset}px)`,
                 }"
@@ -2510,17 +2510,17 @@ const headerFilteredOrSortedClass = (colId: string) => {
                       class="absolute z-30 left-0 w-full flex"
                     >
                       <div
-                        class="sticky left-0 flex items-center gap-2 transform bg-nc-yellow-500 px-2 py-1 rounded-br-md font-semibold text-xs text-nc-content-gray"
+                        class="sticky left-0 flex items-center gap-2 transform bg-atm-yellow-500 px-2 py-1 rounded-br-md font-semibold text-xs text-atm-content-gray"
                       >
                         {{ $t('labels.rowFiltered') }}
 
-                        <NcTooltip>
+                        <AtTooltip>
                           <template #title>
                             {{ $t('tooltip.recordHiddenByFilter') }}
                           </template>
 
-                          <GeneralIcon icon="info" class="w-4 h-4 text-nc-content-gray" />
-                        </NcTooltip>
+                          <GeneralIcon icon="info" class="w-4 h-4 text-atm-content-gray" />
+                        </AtTooltip>
                       </div>
                     </div>
                     <div
@@ -2532,15 +2532,15 @@ const headerFilteredOrSortedClass = (colId: string) => {
                       class="absolute transform z-30 left-0 w-full flex"
                     >
                       <div
-                        class="sticky left-0 flex items-center gap-2 transform bg-nc-yellow-500 px-2 py-1 rounded-br-md font-semibold text-xs text-nc-content-gray"
+                        class="sticky left-0 flex items-center gap-2 transform bg-atm-yellow-500 px-2 py-1 rounded-br-md font-semibold text-xs text-atm-content-gray"
                       >
                         {{ $t('labels.rowMoved') }}
 
-                        <NcTooltip>
+                        <AtTooltip>
                           <template #title> {{ $t('tooltip.recordWillMove') }} </template>
 
-                          <GeneralIcon icon="info" class="w-4 h-4 text-nc-content-gray" />
-                        </NcTooltip>
+                          <GeneralIcon icon="info" class="w-4 h-4 text-atm-content-gray" />
+                        </AtTooltip>
                       </div>
                     </div>
                     <div
@@ -2552,19 +2552,19 @@ const headerFilteredOrSortedClass = (colId: string) => {
                       class="absolute transform z-30 left-0 w-full flex"
                     >
                       <div
-                        class="sticky left-0 flex items-center gap-2 transform bg-nc-yellow-500 px-2 py-1 rounded-br-md font-semibold text-xs text-nc-content-gray"
+                        class="sticky left-0 flex items-center gap-2 transform bg-atm-yellow-500 px-2 py-1 rounded-br-md font-semibold text-xs text-atm-content-gray"
                       >
                         {{ $t('labels.rowHidden') }}
 
-                        <NcTooltip>
+                        <AtTooltip>
                           <template #title> {{ $t('tooltip.recordHiddenByPermission') }} </template>
 
-                          <GeneralIcon icon="info" class="w-4 h-4 text-nc-content-gray" />
-                        </NcTooltip>
+                          <GeneralIcon icon="info" class="w-4 h-4 text-atm-content-gray" />
+                        </AtTooltip>
                       </div>
                     </div>
                     <tr
-                      class="nc-grid-row transition-all duration-500 opacity-100 !xs:h-10"
+                      class="atm-grid-row transition-all duration-500 opacity-100 !xs:h-10"
                       :style="{
                         height: `${rowHeight}px`,
                         filter:
@@ -2586,13 +2586,13 @@ const headerFilteredOrSortedClass = (colId: string) => {
                       }"
                     >
                       <td
-                        class="caption nc-grid-cell w-[80px] min-w-[80px]"
+                        class="caption atm-grid-cell w-[80px] min-w-[80px]"
                         :data-testid="`cell-Id-${row.rowMeta.rowIndex}`"
                         @contextmenu="contextMenuTarget = null"
                       >
                         <div class="w-full flex items-center h-full px-1 gap-0.5">
                           <div
-                            class="nc-row-no min-w-4 h-4 flex items-center justify-between text-nc-content-gray-muted pl-1.5 w-full"
+                            class="atm-row-no min-w-4 h-4 flex items-center justify-between text-atm-content-gray-muted pl-1.5 w-full"
                             :class="{
                               'toggle': !readOnly,
                               'hidden': row.rowMeta?.selected || vSelectedAllRecords,
@@ -2610,9 +2610,9 @@ const headerFilteredOrSortedClass = (colId: string) => {
                           <div
                             v-if="isOrderColumnExists && !isRowReorderDisabled"
                             :class="{ 'toggle': !readOnly, '!block': row.rowMeta?.selected || !!vSelectedAllRecords }"
-                            class="nc-drag-handle hidden"
+                            class="atm-drag-handle hidden"
                           >
-                            <NcButton
+                            <AtButton
                               size="xxsmall"
                               type="text"
                               :disabled="!!selectedRows.length || !!vSelectedAllRecords"
@@ -2620,13 +2620,13 @@ const headerFilteredOrSortedClass = (colId: string) => {
                             >
                               <GeneralIcon
                                 :class="{
-                                  'text-nc-content-gray hover:text-nc-content-brand':
+                                  'text-atm-content-gray hover:text-atm-content-brand':
                                     !selectedRows.length && !vSelectedAllRecords,
-                                  'text-nc-content-gray-muted': !(!selectedRows.length && !vSelectedAllRecords),
+                                  'text-atm-content-gray-muted': !(!selectedRows.length && !vSelectedAllRecords),
                                 }"
                                 icon="ncDrag"
                               />
-                            </NcButton>
+                            </AtButton>
                           </div>
                           <div
                             v-if="!readOnly"
@@ -2635,9 +2635,9 @@ const headerFilteredOrSortedClass = (colId: string) => {
                               'flex': row.rowMeta?.selected || vSelectedAllRecords,
                               'pl-1.5': !(isOrderColumnExists && !isRowReorderDisabled),
                             }"
-                            class="nc-row-expand-and-checkbox"
+                            class="atm-row-expand-and-checkbox"
                           >
-                            <NcCheckbox
+                            <AtCheckbox
                               :checked="row.rowMeta.selected || vSelectedAllRecords"
                               :disabled="
                                 (!row.rowMeta.selected && selectedRows.length >= EXTERNAL_SOURCE_VISIBLE_ROWS) ||
@@ -2647,10 +2647,10 @@ const headerFilteredOrSortedClass = (colId: string) => {
                               @change="toggleRowSelection(row.rowMeta.rowIndex)"
                             />
                           </div>
-                          <div :data-testid="`nc-expand-${row.rowMeta.rowIndex}`" class="flex-1 flex items-center justify-end">
+                          <div :data-testid="`atm-expand-${row.rowMeta.rowIndex}`" class="flex-1 flex items-center justify-end">
                             <a-spin
                               v-if="row.rowMeta?.saving || row.rowMeta?.isLoading"
-                              class="hidden nc-row-spinner items-center"
+                              class="hidden atm-row-spinner items-center"
                               :data-testid="`row-save-spinner-${row.rowMeta.rowIndex}`"
                             />
 
@@ -2659,24 +2659,24 @@ const headerFilteredOrSortedClass = (colId: string) => {
                                 v-if="row.rowMeta?.commentCount && expandForm"
                                 v-e="['c:expanded-form:open']"
                                 :class="{
-                                  'nc-comment': row.rowMeta?.commentCount,
+                                  'atm-comment': row.rowMeta?.commentCount,
                                   'text-[10px] font-600 px-0.5': row.rowMeta.commentCount > 99,
                                   'text-small font-500 px-0.8': row.rowMeta.commentCount <= 99,
                                 }"
-                                class="text-center rounded-md rounded-bl-none transition-all border-1 border-brand-200 cursor-pointer font-sembold select-none leading-5 text-nc-content-brand bg-nc-bg-brand hover:bg-brand-100 !min-h-4.5 !min-w-5 !leading-5 inline-block"
+                                class="text-center rounded-md rounded-bl-none transition-all border-1 border-brand-200 cursor-pointer font-sembold select-none leading-5 text-atm-content-brand bg-atm-bg-brand hover:bg-brand-100 !min-h-4.5 !min-w-5 !leading-5 inline-block"
                                 @click="expandAndLooseFocus(row, state)"
                               >
                                 {{ row.rowMeta.commentCount > 99 ? '99+' : row.rowMeta.commentCount }}
                               </span>
                               <div
                                 v-else-if="showInterfaceRowExpand"
-                                class="cursor-pointer nc-expand flex items-center border-1 border-nc-border-gray-light active:ring rounded-md p-0.75 hover:(bg-nc-bg-default border-nc-border-gray-medium)"
+                                class="cursor-pointer atm-expand flex items-center border-1 border-atm-border-gray-light active:ring rounded-md p-0.75 hover:(bg-atm-bg-default border-atm-border-gray-medium)"
                               >
                                 <component
                                   :is="iconMap.maximize"
                                   v-if="expandForm"
                                   v-e="['c:row-expand:open']"
-                                  class="select-none transform nc-row-expand opacity-90 w-3.5 h-3.5"
+                                  class="select-none transform atm-row-expand opacity-90 w-3.5 h-3.5"
                                   @click="expandAndLooseFocus(row, state)"
                                 />
                               </div>
@@ -2691,13 +2691,13 @@ const headerFilteredOrSortedClass = (colId: string) => {
                           (activeCell.row === row.rowMeta.rowIndex && activeCell.col === 0) ||
                           (selectedRange._start?.row === row.rowMeta.rowIndex && selectedRange._start?.col === 0)
                         "
-                        class="cell relative nc-grid-cell cursor-pointer"
+                        class="cell relative atm-grid-cell cursor-pointer"
                         :class="{
                           'active': selectRangeMap[`${row.rowMeta.rowIndex}-0`],
                           'active-cell !after:h-[calc(100%-1px)]':
                             (activeCell.row === row.rowMeta.rowIndex && activeCell.col === 0) ||
                             (selectedRange._start?.row === row.rowMeta.rowIndex && selectedRange._start?.col === 0),
-                          'nc-required-cell':
+                          'atm-required-cell':
                             !row.rowMeta?.isLoading && cellMeta[index]?.[0]?.isColumnRequiredAndNull && !isPublicView,
                           'filling': fillRangeMap[`${row.rowMeta.rowIndex}-0`],
                           'readonly':
@@ -2731,7 +2731,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                       >
                         <template v-if="cellMeta[index][0]?.cellProgress && !switchingTab">
                           <div
-                            class="opacity-0.4 gap-2 truncate flex items-center overflow-x-hidden text-sm text-nc-content-gray-muted"
+                            class="opacity-0.4 gap-2 truncate flex items-center overflow-x-hidden text-sm text-atm-content-gray-muted"
                           >
                             <GeneralIcon
                               v-if="cellMeta[index][0]?.cellProgress?.icon"
@@ -2783,7 +2783,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                           maxWidth: `${placeholderStartFields.width}px`,
                           width: `${placeholderStartFields.width}px`,
                         }"
-                        class="nc-grid-cell"
+                        class="atm-grid-cell"
                       ></td>
                       <SmartsheetTableDataCell
                         v-for="{ field: columnObj, index: colIndex } of visibleFields"
@@ -2792,13 +2792,13 @@ const headerFilteredOrSortedClass = (colId: string) => {
                           (activeCell.row === row.rowMeta.rowIndex && activeCell.col === colIndex) ||
                           (selectedRange._start?.row === row.rowMeta.rowIndex && selectedRange._start?.col === colIndex)
                         "
-                        class="cell relative nc-grid-cell cursor-pointer"
+                        class="cell relative atm-grid-cell cursor-pointer"
                         :class="{
                           'active': selectRangeMap[`${row.rowMeta.rowIndex}-${colIndex}`],
                           'active-cell':
                             (activeCell.row === row.rowMeta.rowIndex && activeCell.col === colIndex) ||
                             (selectedRange._start?.row === row.rowMeta.rowIndex && selectedRange._start?.col === colIndex),
-                          'nc-required-cell':
+                          'atm-required-cell':
                             !row.rowMeta?.isLoading && cellMeta[index][colIndex].isColumnRequiredAndNull && !isPublicView,
 
                           'filling': fillRangeMap[`${row.rowMeta.rowIndex}-${colIndex}`],
@@ -2835,7 +2835,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                       >
                         <template v-if="cellMeta[index][colIndex]?.cellProgress && !switchingTab">
                           <div
-                            class="opacity-0.4 gap-2 truncate flex items-center overflow-x-hidden text-sm text-nc-content-gray-muted"
+                            class="opacity-0.4 gap-2 truncate flex items-center overflow-x-hidden text-sm text-atm-content-gray-muted"
                           >
                             <GeneralIcon
                               v-if="cellMeta[index][colIndex]?.cellProgress?.icon"
@@ -2886,7 +2886,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                           maxWidth: `${placeholderEndFields.width}px`,
                           width: `${placeholderEndFields.width}px`,
                         }"
-                        class="nc-grid-cell"
+                        class="atm-grid-cell"
                       ></td>
                     </tr>
                   </template>
@@ -2901,7 +2901,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                 <tr
                   v-if="isAddingEmptyRowAllowed && !removeInlineAddRecord"
                   v-e="['c:row:add:grid-bottom']"
-                  class="text-left nc-grid-add-new-cell mb-[80px] transition-all cursor-pointer group relative z-3 xs:hidden"
+                  class="text-left atm-grid-add-new-cell mb-[80px] transition-all cursor-pointer group relative z-3 xs:hidden"
                   :class="{
                     '!border-r-2 !border-r-gray-100': visibleColLength === 1,
                   }"
@@ -2911,15 +2911,15 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   @click="addEmptyRow()"
                 >
                   <td
-                    class="nc-grid-add-new-cell-item h-8 border-b-1 border-nc-border-gray-light bg-nc-bg-default group-hover:bg-nc-bg-gray-extralight absolute left-0 bottom-0 px-2 sticky z-40 w-full flex items-center text-nc-content-gray-muted"
+                    class="atm-grid-add-new-cell-item h-8 border-b-1 border-atm-border-gray-light bg-atm-bg-default group-hover:bg-atm-bg-gray-extralight absolute left-0 bottom-0 px-2 sticky z-40 w-full flex items-center text-atm-content-gray-muted"
                   >
                     <component
                       :is="iconMap.plus"
                       v-if="!isViewColumnsLoading"
-                      class="text-pint-500 text-base ml-2 mt-0 text-nc-content-gray-subtle2 group-hover:text-nc-content-gray-extreme"
+                      class="text-pint-500 text-base ml-2 mt-0 text-atm-content-gray-subtle2 group-hover:text-atm-content-gray-extreme"
                     />
                   </td>
-                  <td :colspan="visibleColLength" class="!border-nc-border-gray-light"></td>
+                  <td :colspan="visibleColLength" class="!border-atm-border-gray-light"></td>
                 </tr>
               </tbody>
             </table>
@@ -2927,7 +2927,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
             <div
               v-show="showFillHandle"
               ref="fillHandle"
-              class="nc-fill-handle"
+              class="atm-fill-handle"
               :class="{
                 'z-3': !selectedRange.isEmpty() && selectedRange.end.col !== 0,
                 'z-4': selectedRange.isEmpty() && activeCell.col !== 0,
@@ -2943,9 +2943,9 @@ const headerFilteredOrSortedClass = (colId: string) => {
         </div>
 
         <template #overlay>
-          <NcMenu class="!rounded !py-0" variant="small" @click="contextMenu = false">
+          <AtMenu class="!rounded !py-0" variant="small" @click="contextMenu = false">
             <template v-if="!vSelectedAllRecords">
-              <NcMenuItem
+              <AtMenuItem
                 v-if="appInfo.ee && !contextMenuClosing && !contextMenuTarget && !isDataReadOnly && selectedRows.length"
                 @click="emits('bulkUpdateDlg')"
               >
@@ -2953,12 +2953,12 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   <component :is="iconMap.ncEdit" />
                   {{ $t('title.updateSelectedRows') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
 
-              <NcMenuItem
+              <AtMenuItem
                 v-if="!contextMenuClosing && !contextMenuTarget && !isDataReadOnly && selectedRows.length"
-                class="nc-base-menu-item"
-                data-testid="nc-delete-row"
+                class="atm-base-menu-item"
+                data-testid="atm-delete-row"
                 danger
                 @click="deleteSelectedRows([])"
               >
@@ -2970,24 +2970,24 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   <GeneralIcon icon="delete" />
                   {{ $t('activity.deleteSelectedRow') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
             </template>
-            <NcMenuItem
+            <AtMenuItem
               v-if="vSelectedAllRecords"
-              class="nc-base-menu-item"
+              class="atm-base-menu-item"
               danger
-              data-testid="nc-delete-all-row"
+              data-testid="atm-delete-all-row"
               @click="deleteAllRecords([])"
             >
               <div v-e="['a:row:delete-all']" class="flex gap-2 items-center">
                 <GeneralIcon icon="delete" />
                 {{ $t('activity.deleteAllRecords') }}
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
             <template v-if="isOrderColumnExists && hasEditPermission && !isDataReadOnly && isPkAvail">
-              <NcMenuItem
+              <AtMenuItem
                 v-if="contextMenuTarget"
-                class="nc-base-menu-item"
+                class="atm-base-menu-item"
                 data-testid="context-menu-item-add-above"
                 @click="callAddNewRow(contextMenuTarget, 'above')"
               >
@@ -2995,11 +2995,11 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   <GeneralIcon icon="ncChevronUp" />
                   {{ $t('general.insertAbove') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
 
-              <NcMenuItem
+              <AtMenuItem
                 v-if="contextMenuTarget && !isInsertBelowDisabled"
-                class="nc-base-menu-item"
+                class="atm-base-menu-item"
                 data-testid="context-menu-item-add-below"
                 @click="callAddNewRow(contextMenuTarget, 'below')"
               >
@@ -3007,7 +3007,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   <GeneralIcon icon="ncChevronDown" />
                   {{ $t('general.insertBelow') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
               <PermissionsTooltip
                 v-if="contextMenuTarget && !isInsertBelowDisabled"
                 :entity="PermissionEntity.TABLE"
@@ -3016,13 +3016,13 @@ const headerFilteredOrSortedClass = (colId: string) => {
                 placement="right"
               >
                 <template #default="{ isAllowed }">
-                  <NcTooltip v-if="meta?.synced" placement="left">
+                  <AtTooltip v-if="meta?.synced" placement="left">
                     <template #title>
                       {{ $t('msg.info.duplicateNotAvailableForSyncedTable') }}
                     </template>
-                    <NcMenuItem
+                    <AtMenuItem
                       key="duplicate-row"
-                      class="nc-base-menu-item"
+                      class="atm-base-menu-item"
                       disabled
                       data-testid="context-menu-item-duplicate-row"
                     >
@@ -3030,12 +3030,12 @@ const headerFilteredOrSortedClass = (colId: string) => {
                         <GeneralIcon icon="duplicate" />
                         {{ $t('labels.duplicateRecord') }}
                       </div>
-                    </NcMenuItem>
-                  </NcTooltip>
-                  <NcMenuItem
+                    </AtMenuItem>
+                  </AtTooltip>
+                  <AtMenuItem
                     v-else
                     key="duplicate-row"
-                    class="nc-base-menu-item"
+                    class="atm-base-menu-item"
                     data-testid="context-menu-item-duplicate-row"
                     :disabled="!isAllowed"
                     @click="duplicateRow(contextMenuTarget)"
@@ -3044,13 +3044,13 @@ const headerFilteredOrSortedClass = (colId: string) => {
                       <GeneralIcon icon="duplicate" />
                       {{ $t('labels.duplicateRecord') }}
                     </div>
-                  </NcMenuItem>
+                  </AtMenuItem>
                 </template>
               </PermissionsTooltip>
-              <NcDivider v-if="contextMenuTarget" />
+              <AtDivider v-if="contextMenuTarget" />
             </template>
 
-            <NcTooltip
+            <AtTooltip
               v-if="contextMenuTarget && hasEditPermission && !isDataReadOnly && isSelectedOnlyAI.enabled"
               :disabled="!isSelectedOnlyAI.disabled"
             >
@@ -3059,8 +3059,8 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   aiIntegrations.length ? $t('tooltip.aiIntegrationReConfigure') : $t('tooltip.aiIntegrationAddAndReConfigure')
                 }}
               </template>
-              <NcMenuItem
-                class="nc-base-menu-item"
+              <AtMenuItem
+                class="atm-base-menu-item"
                 data-testid="context-menu-item-bulk"
                 :disabled="isSelectedOnlyAI.disabled"
                 @click="generateAIBulk"
@@ -3069,12 +3069,12 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   <GeneralIcon icon="ncAutoAwesome" class="h-4 w-4" />
                   {{ $t('labels.generateType', { type: selectedRange.isSingleCell() ? $t('objects.cell') : $t('general.all') }) }}
                 </div>
-              </NcMenuItem>
-            </NcTooltip>
+              </AtMenuItem>
+            </AtTooltip>
 
-            <NcMenuItem
+            <AtMenuItem
               v-if="isSelectedOnlyScript.enabled"
-              class="nc-base-menu-item"
+              class="atm-base-menu-item"
               data-testid="context-menu-item-bulk-script"
               :disabled="isSelectedOnlyScript.disabled"
               @click="bulkExecuteScript"
@@ -3083,11 +3083,11 @@ const headerFilteredOrSortedClass = (colId: string) => {
                 <GeneralIcon icon="ncScript" class="h-4 w-4" />
                 {{ $t('labels.executeType', { type: selectedRange.isSingleCell() ? $t('objects.cell') : $t('general.all') }) }}
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
-            <NcMenuItem
+            <AtMenuItem
               v-if="contextMenuTarget"
-              class="nc-base-menu-item"
+              class="atm-base-menu-item"
               data-testid="context-menu-item-copy"
               @click="copyValue(contextMenuTarget)"
             >
@@ -3096,11 +3096,11 @@ const headerFilteredOrSortedClass = (colId: string) => {
                 <!-- Copy -->
                 {{ $t('general.copy') }} {{ $t('objects.cell').toLowerCase() }}
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
-            <NcMenuItem
+            <AtMenuItem
               v-if="contextMenuTarget && hasEditPermission && !isDataReadOnly"
-              class="nc-base-menu-item"
+              class="atm-base-menu-item"
               data-testid="context-menu-item-paste"
               :disabled="disablePasteCell"
               @click="paste"
@@ -3110,10 +3110,10 @@ const headerFilteredOrSortedClass = (colId: string) => {
                 <!-- Paste -->
                 {{ $t('general.paste') }} {{ $t('objects.cell').toLowerCase() }}
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
             <!-- Clear cell -->
-            <NcMenuItem
+            <AtMenuItem
               v-if="
                 contextMenuTarget &&
                 hasEditPermission &&
@@ -3121,7 +3121,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
                 (isLinksOrLTAR(fields[contextMenuTarget.col]) || !cellMeta[0]?.[contextMenuTarget.col].isVirtualCol) &&
                 !isDataReadOnly
               "
-              class="nc-base-menu-item"
+              class="atm-base-menu-item"
               :disabled="disableClearCell"
               data-testid="context-menu-item-clear"
               @click="clearCell(contextMenuTarget)"
@@ -3130,48 +3130,48 @@ const headerFilteredOrSortedClass = (colId: string) => {
                 <GeneralIcon icon="close" />
                 {{ $t('general.clear') }} {{ $t('objects.cell').toLowerCase() }}
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
             <!-- Clear cell -->
-            <NcMenuItem
+            <AtMenuItem
               v-else-if="contextMenuTarget && hasEditPermission && !isDataReadOnly"
-              class="nc-base-menu-item"
+              class="atm-base-menu-item"
               :disabled="selectedReadonly"
               data-testid="context-menu-item-clear"
               @click="clearSelectedRangeOfCells()"
             >
               <div v-e="['a:row:clear-range']" class="flex gap-2 items-center">
-                <GeneralIcon icon="closeBox" class="text-nc-content-gray-muted" />
+                <GeneralIcon icon="closeBox" class="text-atm-content-gray-muted" />
                 {{ $t('general.clear') }} {{ $t('objects.cell').toLowerCase() }}
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
 
             <template v-if="contextMenuTarget && selectedRange.isSingleCell() && isUIAllowed('commentEdit') && !isMobileMode">
-              <NcDivider />
-              <NcMenuItem class="nc-base-menu-item" @click="commentRow(contextMenuTarget.row)">
+              <AtDivider />
+              <AtMenuItem class="atm-base-menu-item" @click="commentRow(contextMenuTarget.row)">
                 <div v-e="['a:row:comment']" class="flex gap-2 items-center">
                   <MdiMessageOutline class="h-4 w-4" />
                   {{ $t('general.add') }} {{ $t('general.comment').toLowerCase() }}
                 </div>
-              </NcMenuItem>
-              <NcMenuItem
+              </AtMenuItem>
+              <AtMenuItem
                 v-if="contextMenuRowId && !isPublicView && appInfo.ee"
-                class="nc-base-menu-item"
+                class="atm-base-menu-item"
                 @click="showSendRecordModal = true"
               >
                 <div class="flex gap-2 items-center">
                   <GeneralIcon icon="mail" class="h-4 w-4" />
                   {{ $t('activity.sendRecord') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
             </template>
 
             <template v-if="canAddDeleteRows && !isDataReadOnly">
-              <NcDivider v-if="!(!contextMenuClosing && !contextMenuTarget && (selectedRows.length || vSelectedAllRecords))" />
-              <NcMenuItem
+              <AtDivider v-if="!(!contextMenuClosing && !contextMenuTarget && (selectedRows.length || vSelectedAllRecords))" />
+              <AtMenuItem
                 v-if="contextMenuTarget && (selectedRange.isSingleCell() || selectedRange.isSingleRow())"
-                class="nc-base-menu-item"
-                data-testid="nc-grid-context-menu-delete"
+                class="atm-base-menu-item"
+                data-testid="atm-grid-context-menu-delete"
                 damger
                 @click="confirmDeleteRow(contextMenuTarget.row)"
               >
@@ -3180,10 +3180,10 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   <!-- Delete Row -->
                   {{ $t('activity.deleteRow') }}
                 </div>
-              </NcMenuItem>
-              <NcMenuItem
+              </AtMenuItem>
+              <AtMenuItem
                 v-else-if="contextMenuTarget && deleteRangeOfRows"
-                class="nc-base-menu-item"
+                class="atm-base-menu-item"
                 danger
                 @click="deleteSelectedRangeOfRows"
               >
@@ -3192,15 +3192,15 @@ const headerFilteredOrSortedClass = (colId: string) => {
                   <!-- Delete Rows -->
                   {{ $t('activity.deleteRows') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
             </template>
-          </NcMenu>
+          </AtMenu>
         </template>
-      </NcDropdown>
+      </AtDropdown>
       <div v-if="removeInlineAddRecord" class="sticky left-0 py-[120px]">
         <div class="flex flex-col gap-5 p-6 max-w-[520px] text-center mx-auto">
           <div class="flex flex-col gap-2">
-            <div class="text-base font-700 text-nc-content-gray">{{ $t('upgrade.upgradeToSeeMoreRecordInline') }}</div>
+            <div class="text-base font-700 text-atm-content-gray">{{ $t('upgrade.upgradeToSeeMoreRecordInline') }}</div>
             <div>
               {{
                 $t('upgrade.upgradeToSeeMoreRecordInlineSubtitle', {
@@ -3213,12 +3213,12 @@ const headerFilteredOrSortedClass = (colId: string) => {
             </div>
           </div>
           <div class="flex items-center justify-center gap-3">
-            <a href="https://nocodb.com/pricing" target="_blank">
-              <NcButton size="small" type="secondary">
+            <a href="https://atmosphere.dev/pricing" target="_blank">
+              <AtButton size="small" type="secondary">
                 {{ $t('msg.learnMore') }}
-              </NcButton>
+              </AtButton>
             </a>
-            <NcButton
+            <AtButton
               size="small"
               @click="
                 navigateToPricing({
@@ -3228,19 +3228,19 @@ const headerFilteredOrSortedClass = (colId: string) => {
               "
             >
               {{ isWsOwner ? $t('general.upgrade') : $t('general.requestUpgrade') }}
-            </NcButton>
+            </AtButton>
           </div>
         </div>
       </div>
     </div>
 
     <div class="absolute bottom-12 z-5 left-2 rtl:(right-2 left-auto)" @click.stop>
-      <NcDropdown v-if="isAddingEmptyRowAllowed && !removeInlineAddRecord">
-        <div class="flex shadow-nc-sm rounded-lg">
-          <NcButton
+      <AtDropdown v-if="isAddingEmptyRowAllowed && !removeInlineAddRecord">
+        <div class="flex shadow-atm-sm rounded-lg">
+          <AtButton
             v-if="isMobileMode"
             v-e="[isAddNewRecordGridMode ? 'c:row:add:grid' : 'c:row:add:form']"
-            class="nc-grid-add-new-row"
+            class="atm-grid-add-new-row"
             size="small"
             type="secondary"
             :shadow="false"
@@ -3250,61 +3250,61 @@ const headerFilteredOrSortedClass = (colId: string) => {
               <GeneralIcon icon="plus" />
               {{ $t('activity.newRecord') }}
             </div>
-          </NcButton>
-          <NcButton
+          </AtButton>
+          <AtButton
             v-else
             v-e="[isAddNewRecordGridMode ? 'c:row:add:grid' : 'c:row:add:form']"
-            class="!rounded-r-none !border-r-0 rtl:(!rounded-r-lg !border-r-1 !rounded-l-none !border-l-0) nc-grid-add-new-row"
+            class="!rounded-r-none !border-r-0 rtl:(!rounded-r-lg !border-r-1 !rounded-l-none !border-l-0) atm-grid-add-new-row"
             size="small"
             type="secondary"
             :shadow="false"
             @click.stop="isAddNewRecordGridMode ? addEmptyRow() : onNewRecordToFormClick()"
           >
-            <div data-testid="nc-pagination-add-record" class="flex items-center gap-2">
+            <div data-testid="atm-pagination-add-record" class="flex items-center gap-2">
               <GeneralIcon icon="plus" />
               <template v-if="isAddNewRecordGridMode">
                 {{ $t('activity.newRecord') }}
               </template>
               <template v-else> {{ $t('activity.newRecord') }} - {{ $t('objects.viewType.form') }} </template>
             </div>
-          </NcButton>
-          <NcButton
+          </AtButton>
+          <AtButton
             v-if="!isMobileMode"
             size="small"
-            class="!rounded-l-none rtl:(!rounded-l-lg !rounded-r-none) nc-add-record-more-info"
+            class="!rounded-l-none rtl:(!rounded-l-lg !rounded-r-none) atm-add-record-more-info"
             type="secondary"
             :shadow="false"
           >
             <GeneralIcon icon="arrowUp" />
-          </NcButton>
+          </AtButton>
         </div>
 
         <template #overlay>
-          <NcMenu variant="small">
-            <NcMenuItem
+          <AtMenu variant="small">
+            <AtMenuItem
               v-e="['c:row:add:grid']"
-              class="nc-new-record-with-grid group"
+              class="atm-new-record-with-grid group"
               :disabled="removeInlineAddRecord"
               @click="onNewRecordToGridClick"
             >
               <div class="flex flex-row items-center justify-start gap-x-3">
-                <component :is="viewIcons[ViewTypes.GRID]?.icon" class="nc-view-icon text-inherit" />
+                <component :is="viewIcons[ViewTypes.GRID]?.icon" class="atm-view-icon text-inherit" />
                 {{ $t('activity.newRecord') }} - {{ $t('objects.viewType.grid') }}
               </div>
 
               <GeneralIcon v-if="isAddNewRecordGridMode" icon="check" class="w-4 h-4 text-primary" />
-            </NcMenuItem>
-            <NcMenuItem v-e="['c:row:add:form']" class="nc-new-record-with-form group" @click="onNewRecordToFormClick">
+            </AtMenuItem>
+            <AtMenuItem v-e="['c:row:add:form']" class="atm-new-record-with-form group" @click="onNewRecordToFormClick">
               <div class="flex flex-row items-center justify-start gap-x-3">
-                <component :is="viewIcons[ViewTypes.FORM]?.icon" class="nc-view-icon text-inherit" />
+                <component :is="viewIcons[ViewTypes.FORM]?.icon" class="atm-view-icon text-inherit" />
                 {{ $t('activity.newRecord') }} - {{ $t('objects.viewType.form') }}
               </div>
 
               <GeneralIcon v-if="!isAddNewRecordGridMode" icon="check" class="w-4 h-4 text-primary" />
-            </NcMenuItem>
-          </NcMenu>
+            </AtMenuItem>
+          </AtMenu>
         </template>
-      </NcDropdown>
+      </AtDropdown>
     </div>
 
     <LazySmartsheetGridPaginationV2
@@ -3348,53 +3348,53 @@ const headerFilteredOrSortedClass = (colId: string) => {
 </style>
 
 <style scoped lang="scss">
-.nc-grid-wrapper {
+.atm-grid-wrapper {
   @apply h-full w-full;
 
-  .nc-grid-add-edit-column {
-    @apply bg-nc-bg-gray-extralight;
+  .atm-grid-add-edit-column {
+    @apply bg-atm-bg-gray-extralight;
   }
 
-  .nc-grid-add-new-cell:hover td {
-    @apply text-nc-content-gray-extreme !bg-nc-bg-gray-extralight;
+  .atm-grid-add-new-cell:hover td {
+    @apply text-atm-content-gray-extreme !bg-atm-bg-gray-extralight;
   }
 
-  td:not(.nc-grid-add-new-cell-item),
+  td:not(.atm-grid-add-new-cell-item),
   th {
-    @apply border-nc-border-gray-light border-solid border-r bg-nc-bg-gray-light p-0;
+    @apply border-atm-border-gray-light border-solid border-r bg-atm-bg-gray-light p-0;
     min-height: 32px !important;
     height: 32px !important;
     position: relative;
   }
 
   th {
-    @apply border-b-1 border-nc-border-gray-medium;
+    @apply border-b-1 border-atm-border-gray-medium;
 
     :deep(.name) {
       @apply text-small;
     }
 
-    :deep(.nc-cell-icon),
-    :deep(.nc-virtual-cell-icon) {
+    :deep(.atm-cell-icon),
+    :deep(.atm-virtual-cell-icon) {
       @apply !w-3.5 !h-3.5 !text-small;
     }
   }
 
-  .nc-grid-header th:last-child {
+  .atm-grid-header th:last-child {
     @apply !border-b-1;
   }
 
-  td:not(.nc-grid-add-new-cell-item) {
-    @apply bg-nc-bg-default border-b;
+  td:not(.atm-grid-add-new-cell-item) {
+    @apply bg-atm-bg-default border-b;
   }
 
-  td:not(:first-child):not(.nc-grid-add-new-cell-item) {
+  td:not(:first-child):not(.atm-grid-add-new-cell-item) {
     @apply px-3;
 
     &.align-top {
       @apply py-2;
 
-      &:has(.nc-cell.nc-cell-longtext textarea) {
+      &:has(.atm-cell.atm-cell-longtext textarea) {
         @apply py-0 pr-0;
       }
     }
@@ -3402,7 +3402,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
     &.align-middle {
       @apply py-0;
 
-      &:has(.nc-cell.nc-cell-longtext textarea) {
+      &:has(.atm-cell.atm-cell-longtext textarea) {
         @apply pr-0;
       }
     }
@@ -3412,54 +3412,54 @@ const headerFilteredOrSortedClass = (colId: string) => {
       @apply flex h-auto;
     }
     &.active-cell {
-      :deep(.nc-cell) {
-        a.nc-cell-field-link {
-          @apply !text-nc-content-brand;
+      :deep(.atm-cell) {
+        a.atm-cell-field-link {
+          @apply !text-atm-content-brand;
 
           &:hover,
-          .nc-cell-field {
-            @apply !text-nc-content-brand;
+          .atm-cell-field {
+            @apply !text-atm-content-brand;
           }
         }
       }
     }
-    :deep(.nc-cell),
-    :deep(.nc-virtual-cell) {
+    :deep(.atm-cell),
+    :deep(.atm-virtual-cell) {
       @apply !text-small;
 
-      .nc-cell-field,
+      .atm-cell-field,
       input,
       textarea {
         @apply !text-small !pl-0 !py-0 m-0;
       }
 
-      &:not(.nc-display-value-cell) {
-        @apply text-nc-content-gray-subtle2;
+      &:not(.atm-display-value-cell) {
+        @apply text-atm-content-gray-subtle2;
         font-weight: 500;
 
-        .nc-cell-field:not(.nc-null),
-        input:not(.nc-null),
-        textarea:not(.nc-null) {
-          @apply text-nc-content-gray-subtle2;
+        .atm-cell-field:not(.atm-null),
+        input:not(.atm-null),
+        textarea:not(.atm-null) {
+          @apply text-atm-content-gray-subtle2;
           font-weight: 500;
         }
       }
 
-      .nc-cell-field,
-      a.nc-cell-field-link,
+      .atm-cell-field,
+      a.atm-cell-field-link,
       input,
       textarea {
         @apply !pl-0 !py-0 m-0;
       }
 
-      a.nc-cell-field-link {
+      a.atm-cell-field-link {
         @apply !text-current;
         &:hover {
           @apply !text-current;
         }
       }
 
-      &.nc-cell-longtext {
+      &.atm-cell-longtext {
         @apply leading-[18px];
 
         textarea {
@@ -3477,19 +3477,19 @@ const headerFilteredOrSortedClass = (colId: string) => {
         }
       }
 
-      &.nc-cell-attachment {
-        .nc-attachment-cell {
-          .nc-attachment-wrapper {
+      &.atm-cell-attachment {
+        .atm-attachment-cell {
+          .atm-attachment-wrapper {
             @apply !py-0.5;
 
-            .nc-attachment {
+            .atm-attachment {
               @apply !min-h-4;
             }
           }
         }
       }
 
-      &.nc-cell-longtext .long-text-wrapper .nc-rich-text-grid {
+      &.atm-cell-longtext .long-text-wrapper .atm-rich-text-grid {
         @apply pl-0 -ml-1;
       }
 
@@ -3513,13 +3513,13 @@ const headerFilteredOrSortedClass = (colId: string) => {
   }
 
   table {
-    background-color: var(--nc-bg-gray-extralight);
+    background-color: var(--atm-bg-gray-extralight);
 
     border-collapse: separate;
     border-spacing: 0;
   }
 
-  td:not(.nc-grid-add-new-cell-item) {
+  td:not(.atm-grid-add-new-cell-item) {
     text-overflow: ellipsis;
   }
 
@@ -3540,7 +3540,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
   }
 
   td.active.readonly::after {
-    @apply text-primary bg-nc-bg-gray-extralight bg-opacity-5 !border-nc-border-gray-medium;
+    @apply text-primary bg-atm-bg-gray-extralight bg-opacity-5 !border-atm-border-gray-medium;
   }
 
   td.active-cell::after {
@@ -3567,7 +3567,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
 
   // todo: replace with css variable
   td.filling::after {
-    @apply border-1 border-dashed text-primary border-current bg-nc-bg-gray-light bg-opacity-50;
+    @apply border-1 border-dashed text-primary border-current bg-atm-bg-gray-light bg-opacity-50;
   }
 
   //td.active::before {
@@ -3582,7 +3582,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
     z-index: 5;
   }
 
-  tbody td:not(.placeholder-column):not(.nc-grid-add-new-cell-item):nth-child(1) {
+  tbody td:not(.placeholder-column):not(.atm-grid-add-new-cell-item):nth-child(1) {
     position: sticky !important;
     left: 0;
     z-index: 4;
@@ -3594,19 +3594,19 @@ const headerFilteredOrSortedClass = (colId: string) => {
       position: sticky !important;
       z-index: 5;
       left: 80px;
-      @apply border-r-1 border-r-nc-border-gray-medium;
+      @apply border-r-1 border-r-atm-border-gray-medium;
     }
 
-    tbody tr:not(.nc-grid-add-new-cell):not(.placeholder) td:not(.placeholder-column):nth-child(2) {
+    tbody tr:not(.atm-grid-add-new-cell):not(.placeholder) td:not(.placeholder-column):nth-child(2) {
       position: sticky !important;
       z-index: 4;
       left: 80px;
       // background: white;
-      @apply border-r-1 border-r-nc-border-gray-light;
+      @apply border-r-1 border-r-atm-border-gray-light;
     }
 
     tbody {
-      tr:not(.nc-grid-add-new-cell):not(.placeholder) td:nth-child(3) {
+      tr:not(.atm-grid-add-new-cell):not(.placeholder) td:nth-child(3) {
         &.active-cell {
           @apply border-l-[1.5px] !border-l-transparent;
         }
@@ -3615,7 +3615,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
         }
       }
 
-      tr:not(.nc-grid-add-new-cell):not(.placeholder):nth-child(1) td {
+      tr:not(.atm-grid-add-new-cell):not(.placeholder):nth-child(1) td {
         &.active-cell {
           @apply border-t-[1.5px] !border-t-transparent;
         }
@@ -3624,7 +3624,7 @@ const headerFilteredOrSortedClass = (colId: string) => {
         }
       }
 
-      tr:not(.nc-grid-add-new-cell):not(.placeholder):nth-last-child(2) td {
+      tr:not(.atm-grid-add-new-cell):not(.placeholder):nth-last-child(2) td {
         &.active-cell {
           @apply border-b-[1.5px] !border-b-transparent;
         }
@@ -3635,18 +3635,18 @@ const headerFilteredOrSortedClass = (colId: string) => {
     }
   }
 
-  .nc-grid-skeleton-loader {
+  .atm-grid-skeleton-loader {
     thead th:nth-child(2) {
-      @apply border-r-1 !border-r-nc-border-gray-extralight;
+      @apply border-r-1 !border-r-atm-border-gray-extralight;
     }
 
-    tbody td:not(.placeholder-column):not(.nc-grid-add-new-cell-item):nth-child(2) {
-      @apply border-r-1 !border-r-nc-border-gray-extralight;
+    tbody td:not(.placeholder-column):not(.atm-grid-add-new-cell-item):nth-child(2) {
+      @apply border-r-1 !border-r-atm-border-gray-extralight;
     }
   }
 }
 
-.nc-grid-column-header {
+.atm-grid-column-header {
   &.no-resize :deep(.resizer) {
     @apply hidden;
   }
@@ -3655,22 +3655,22 @@ const headerFilteredOrSortedClass = (colId: string) => {
   :deep(.resizer:active),
   :deep(.resizer:focus) {
     // todo: replace with primary color
-    @apply bg-nc-blue-500/50;
+    @apply bg-atm-blue-500/50;
     cursor: col-resize;
   }
 }
 
-.nc-grid-row {
-  td.nc-grid-cell.column-filtered.active {
-    @apply !bg-nc-bg-green-dark;
+.atm-grid-row {
+  td.atm-grid-cell.column-filtered.active {
+    @apply !bg-atm-bg-green-dark;
 
     :deep(input),
     :deep(textarea) {
       @apply !bg-transparent;
     }
   }
-  td.nc-grid-cell.column-sorted.active {
-    @apply !bg-nc-bg-orange-dark;
+  td.atm-grid-cell.column-sorted.active {
+    @apply !bg-atm-bg-orange-dark;
 
     :deep(input),
     :deep(textarea) {
@@ -3678,94 +3678,94 @@ const headerFilteredOrSortedClass = (colId: string) => {
     }
   }
 
-  .nc-row-expand-and-checkbox {
+  .atm-row-expand-and-checkbox {
     @apply !xs:hidden items-center justify-between;
   }
 
-  .nc-row-spinner {
+  .atm-row-spinner {
     @apply hidden;
   }
 
-  .nc-expand {
-    &:not(.nc-comment) {
+  .atm-expand {
+    &:not(.atm-comment) {
       @apply hidden;
     }
 
-    &.nc-comment {
+    &.atm-comment {
       display: flex;
     }
   }
 
   &.active-row,
   &:not(.mouse-down):hover {
-    .nc-row-no.toggle {
+    .atm-row-no.toggle {
       @apply hidden;
     }
 
-    .nc-drag-handle {
+    .atm-drag-handle {
       @apply block;
     }
 
-    .nc-expand {
+    .atm-expand {
       @apply flex;
     }
 
-    .nc-row-spinner {
+    .atm-row-spinner {
       @apply block;
     }
 
-    .nc-row-expand-and-checkbox {
+    .atm-row-expand-and-checkbox {
       @apply !xs:hidden !flex;
     }
 
     &:not(.selected-row) {
-      td.nc-grid-cell:not(.active),
+      td.atm-grid-cell:not(.active),
       td:nth-child(2):not(.active) {
-        @apply !bg-nc-bg-gray-extralight border-b-nc-border-gray-medium border-r-nc-border-gray-medium;
+        @apply !bg-atm-bg-gray-extralight border-b-atm-border-gray-medium border-r-atm-border-gray-medium;
 
         &.column-filtered {
-          @apply !bg-nc-bg-green-dark;
+          @apply !bg-atm-bg-green-dark;
         }
 
         &.column-sorted {
-          @apply !bg-nc-bg-orange-dark;
+          @apply !bg-atm-bg-orange-dark;
         }
       }
     }
   }
 
   &.selected-row {
-    td.nc-grid-cell:not(.active),
+    td.atm-grid-cell:not(.active),
     td:nth-child(2):not(.active) {
-      @apply !bg-nc-bg-brand border-b-nc-border-gray-medium border-r-nc-border-gray-medium border-b-nc-border-gray-medium;
+      @apply !bg-atm-bg-brand border-b-atm-border-gray-medium border-r-atm-border-gray-medium border-b-atm-border-gray-medium;
 
       &.column-filtered {
-        @apply !bg-nc-bg-green-dark;
+        @apply !bg-atm-bg-green-dark;
       }
 
       &.column-sorted {
-        @apply !bg-nc-bg-orange-dark;
+        @apply !bg-atm-bg-orange-dark;
       }
     }
   }
 
   &:not(.selected-row):has(+ .selected-row) {
-    td.nc-grid-cell:not(.active),
-    td:nth-child(2):not(.active):not(.nc-grid-add-new-cell-item) {
-      @apply border-b-nc-border-gray-medium;
+    td.atm-grid-cell:not(.active),
+    td:nth-child(2):not(.active):not(.atm-grid-add-new-cell-item) {
+      @apply border-b-atm-border-gray-medium;
     }
   }
 
   &:not(.selected-row) {
-    td.nc-grid-cell:not(.active),
+    td.atm-grid-cell:not(.active),
     td:nth-child(2):not(.active) {
       &.column-filtered,
       &.column-sorted {
-        @apply border-b-nc-border-gray-medium border-r-nc-border-gray-medium;
+        @apply border-b-atm-border-gray-medium border-r-atm-border-gray-medium;
       }
       &:has(+ .column-filtered),
       &:has(+ .column-sorted) {
-        @apply border-r-nc-border-gray-medium;
+        @apply border-r-atm-border-gray-medium;
       }
     }
   }
@@ -3773,21 +3773,21 @@ const headerFilteredOrSortedClass = (colId: string) => {
   &:not(.active-row):has(+ .active-row),
   &:not(.mouse-down):has(+ :hover) {
     &:not(.selected-row) {
-      td.nc-grid-cell:not(.active),
-      td:nth-child(2):not(.active):not(.nc-grid-add-new-cell-item) {
-        @apply border-b-nc-border-gray-medium;
+      td.atm-grid-cell:not(.active),
+      td:nth-child(2):not(.active):not(.atm-grid-add-new-cell-item) {
+        @apply border-b-atm-border-gray-medium;
       }
     }
   }
 }
 
-.nc-grid-header {
+.atm-grid-header {
   &:hover {
-    .nc-no-label {
+    .atm-no-label {
       @apply hidden;
     }
 
-    .nc-check-all {
+    .atm-check-all {
       @apply flex;
     }
   }
@@ -3810,26 +3810,26 @@ const headerFilteredOrSortedClass = (colId: string) => {
   }
 }
 
-.nc-required-cell {
+.atm-required-cell {
   box-shadow: inset 0 0 2px var(--color-red-500);
 }
 
-.nc-fill-handle {
-  @apply w-[6px] h-[6px] absolute rounded-full bg-nc-red-500 !pointer-events-auto mt-[-4px] ml-[-4px];
+.atm-fill-handle {
+  @apply w-[6px] h-[6px] absolute rounded-full bg-atm-red-500 !pointer-events-auto mt-[-4px] ml-[-4px];
 }
 
-.nc-fill-handle:hover,
-.nc-fill-handle:active,
-.nc-fill-handle:focus {
+.atm-fill-handle:hover,
+.atm-fill-handle:active,
+.atm-fill-handle:focus {
   @apply w-[8px] h-[8px] mt-[-5px] ml-[-5px];
 }
 
 :deep(.ant-skeleton-input) {
-  @apply rounded text-nc-gray-100 !bg-nc-bg-gray-light !bg-opacity-65;
+  @apply rounded text-atm-gray-100 !bg-atm-bg-gray-light !bg-opacity-65;
   animation: slow-show-1 5s ease 5s forwards;
 }
 
-.nc-grid-add-new-row {
+.atm-grid-add-new-row {
   :deep(.ant-btn.ant-dropdown-trigger.ant-btn-icon-only) {
     @apply !flex items-center justify-center;
   }

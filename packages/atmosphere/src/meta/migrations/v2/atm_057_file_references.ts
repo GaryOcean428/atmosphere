@@ -19,7 +19,7 @@ const up = async (knex: Knex) => {
 
     // this index is used on migration, this can be removed after migration
     if (!knex.client.config.client.includes('mysql')) {
-      table.index(['file_url', 'storage'], 'nc_file_references_temp');
+      table.index(['file_url', 'storage'], 'atm_file_references_temp');
     }
   });
 };

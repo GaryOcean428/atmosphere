@@ -48,10 +48,10 @@ const onAddExtension = (ext: any) => {
 </script>
 
 <template>
-  <div class="h-full py-4 overflow-auto nc-scrollbar-thin">
+  <div class="h-full py-4 overflow-auto atm-scrollbar-thin">
     <div class="h-full flex flex-col gap-5 flex-1 pt-2 px-6 w-full mx-auto">
-      <div class="text-base font-bold text-nc-content-gray">Popular Extensions</div>
-      <div v-if="searchQuery" class="text-base text-nc-content-gray-subtle">Search result for ‘{{ searchQuery }}’</div>
+      <div class="text-base font-bold text-atm-content-gray">Popular Extensions</div>
+      <div v-if="searchQuery" class="text-base text-atm-content-gray-subtle">Search result for ‘{{ searchQuery }}’</div>
 
       <div
         class="pb-2 grid gap-4"
@@ -66,8 +66,8 @@ const onAddExtension = (ext: any) => {
       >
         <template v-for="ext of filteredAvailableExtensions" :key="ext.id">
           <div
-            class="nc-market-extension-item flex items-center gap-3 border-1 rounded-xl p-3 cursor-pointer hover:bg-nc-bg-gray-extralight transition-all"
-            :data-testid="`nc-extension-${ext.id}`"
+            class="atm-market-extension-item flex items-center gap-3 border-1 rounded-xl p-3 cursor-pointer hover:bg-atm-bg-gray-extralight transition-all"
+            :data-testid="`atm-extension-${ext.id}`"
             @click="onExtensionClick(ext.id)"
           >
             <div class="h-[56px] w-[56px] overflow-hidden m-auto flex-none">
@@ -76,30 +76,30 @@ const onAddExtension = (ext: any) => {
             <div class="flex-1 flex flex-grow flex-col gap-2">
               <div>
                 <div class="flex items-center gap-2">
-                  <div class="text-sm font-bold text-nc-content-gray line-clamp-1">
+                  <div class="text-sm font-bold text-atm-content-gray line-clamp-1">
                     {{ ext.title }}
                   </div>
-                  <NcBadgeBeta v-if="ext.showAsBeta" />
+                  <AtBadgeBeta v-if="ext.showAsBeta" />
                 </div>
-                <div v-if="ext.publisher?.name" class="mt-0.5 text-xs leading-[18px] text-nc-content-gray-muted line-clamp-1">
+                <div v-if="ext.publisher?.name" class="mt-0.5 text-xs leading-[18px] text-atm-content-gray-muted line-clamp-1">
                   Built by {{ ext.publisher.name }}
                 </div>
               </div>
 
-              <NcTooltip
+              <AtTooltip
                 :title="ext.subTitle"
                 show-on-truncate-only
                 :line-clamp="2"
-                class="text-small leading-[18px] text-nc-content-gray-subtle line-clamp-2"
+                class="text-small leading-[18px] text-atm-content-gray-subtle line-clamp-2"
               >
                 {{ ext.subTitle }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
-            <NcTooltip v-if="!blockAddNewExtension" :disabled="extensionAccess.create">
+            <AtTooltip v-if="!blockAddNewExtension" :disabled="extensionAccess.create">
               <template #title>
                 {{ $t('tooltip.youDoNotHaveSufficientPermissionToAddExtension') }}
               </template>
-              <NcButton
+              <AtButton
                 size="small"
                 type="secondary"
                 class="flex-none !px-7px"
@@ -110,15 +110,15 @@ const onAddExtension = (ext: any) => {
                   <GeneralIcon icon="plus" />
                   {{ $t('general.add') }}
                 </div>
-              </NcButton>
-            </NcTooltip>
+              </AtButton>
+            </AtTooltip>
           </div>
         </template>
         <div
           v-if="searchQuery && !filteredAvailableExtensions.length && availableExtensions.length"
           class="w-full h-full flex items-center justify-center"
         >
-          <div class="pb-6 text-nc-content-gray-muted flex flex-col items-center gap-6 text-center">
+          <div class="pb-6 text-atm-content-gray-muted flex flex-col items-center gap-6 text-center">
             <img
               src="~assets/img/placeholder/no-search-result-found.png"
               class="!w-[164px] flex-none"
@@ -134,7 +134,7 @@ const onAddExtension = (ext: any) => {
 </template>
 
 <style lang="scss" scoped>
-.nc-market-extension-item {
+.atm-market-extension-item {
   &:hover {
     box-shadow: 0px 4px 8px -2px rgba(var(--rgb-base), 0.08), 0px 2px 4px -2px rgba(var(--rgb-base), 0.04);
   }

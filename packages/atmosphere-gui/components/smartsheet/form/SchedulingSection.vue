@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { FormType } from 'nocodb-sdk'
+import type { FormType } from 'atmosphere-sdk'
 
 interface Props {
   formViewData: FormType
@@ -13,5 +13,5 @@ defineEmits(['updateView'])
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

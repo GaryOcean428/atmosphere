@@ -75,7 +75,7 @@ async function initialize(shareId, appId?: string) {
     if (!headers || !link) {
       throw {
         message:
-          'Please ensure www.airtable.com/<SharedBaseID> is available for public access. Refer https://dub.sh/import-airtable-to-nocodb for details',
+          'Please ensure www.airtable.com/<SharedBaseID> is available for public access. Refer https://dub.sh/import-airtable-to-atmosphere for details',
       };
     }
 
@@ -125,7 +125,7 @@ async function initialize(shareId, appId?: string) {
     } else {
       throw {
         message:
-          'Error processing Shared Base :: Ensure www.airtable.com/<SharedBaseID> is accessible. Refer https://dub.sh/import-airtable-to-nocodb for details',
+          'Error processing Shared Base :: Ensure www.airtable.com/<SharedBaseID> is accessible. Refer https://dub.sh/import-airtable-to-atmosphere for details',
       };
     }
   }

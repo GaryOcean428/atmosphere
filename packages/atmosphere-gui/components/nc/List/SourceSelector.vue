@@ -108,8 +108,8 @@ defineExpose({
   <a-form-item
     v-if="selectedSource"
     name="sourceId"
-    class="!mb-0 nc-source-selector"
-    :class="`nc-force-layout-${forceLayout}`"
+    class="!mb-0 atm-source-selector"
+    :class="`atm-force-layout-${forceLayout}`"
     :validate-status="selectedSource?.ncItemDisabled ? 'error' : ''"
     :help="selectedSource?.ncItemDisabled ? [selectedSource.ncItemTooltip] : []"
     @click.stop
@@ -118,7 +118,7 @@ defineExpose({
     <template #label>
       <div>{{ t('general.datasource') }}</div>
     </template>
-    <NcListDropdown
+    <AtListDropdown
       v-model:is-open="isOpenSourceSelectDropdown"
       :disabled="!isSourceChangeable"
       :has-error="!!selectedSource?.ncItemDisabled"
@@ -134,7 +134,7 @@ defineExpose({
         />
       </div>
       <template #overlay="{ onEsc }">
-        <NcList
+        <AtList
           v-model:open="isOpenSourceSelectDropdown"
           :value="sourceId || selectedSource?.value || ''"
           :list="sourceList"
@@ -144,8 +144,8 @@ defineExpose({
           @update:value="onUpdateValue($event as string)"
           @escape="onEsc"
         >
-        </NcList>
+        </AtList>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </a-form-item>
 </template>

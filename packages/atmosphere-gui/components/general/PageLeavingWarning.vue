@@ -52,18 +52,18 @@ const handleRedirect = (proceedToLink = false) => {
         :src="brandIcon"
         class="object-contain"
       />
-      <img v-else class="dark:hidden" width="56px" height="56px" alt="NocoDB" src="~/assets/img/icons/256x256.png" />
+      <img v-else class="dark:hidden" width="56px" height="56px" alt="Atmosphere" src="~/assets/img/icons/256x256.png" />
     </div>
-    <div class="text-xl font-bold text-nc-content-gray">{{ $t('title.youAreLeavingNocoDB') }}</div>
-    <div class="text-sm font-weight-500 text-nc-content-gray-subtle2">{{ $t('title.onlyProceedIfYouTrustThisLink') }}</div>
-    <a class="text-sm font-weight-500 text-nc-content-gray-subtle" :href="redirectUrl">{{ redirectUrl }}</a>
+    <div class="text-xl font-bold text-atm-content-gray">{{ $t('title.youAreLeavingAtmosphere') }}</div>
+    <div class="text-sm font-weight-500 text-atm-content-gray-subtle2">{{ $t('title.onlyProceedIfYouTrustThisLink') }}</div>
+    <a class="text-sm font-weight-500 text-atm-content-gray-subtle" :href="redirectUrl">{{ redirectUrl }}</a>
     <div class="flex items-center gap-3 mt-3">
-      <NcButton type="secondary" size="small" @click="handleRedirect(false)">
+      <AtButton type="secondary" size="small" @click="handleRedirect(false)">
         {{ $t('general.back') }}
-      </NcButton>
-      <NcButton size="small" @click="handleRedirect(true)">
+      </AtButton>
+      <AtButton size="small" @click="handleRedirect(true)">
         {{ $t('labels.proceedToLink') }}
-      </NcButton>
+      </AtButton>
     </div>
   </div>
 </template>

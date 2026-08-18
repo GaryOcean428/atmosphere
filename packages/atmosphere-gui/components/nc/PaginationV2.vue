@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { UseVirtualList } from '@vueuse/components'
-import type { NcButtonProps } from './Button.vue'
-import NcTooltip from '~/components/nc/Tooltip.vue'
+import type { AtButtonProps } from './Button.vue'
+import AtTooltip from '~/components/atm/Tooltip.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -59,7 +59,7 @@ const { isMobileMode } = useGlobal()
 
 const mode = computed(() => props.mode || (isMobileMode.value ? 'simple' : 'full'))
 
-const btnSize = computed<NcButtonProps['size']>(() => (props.variant === 'default' ? 'xsmall' : 'xs'))
+const btnSize = computed<AtButtonProps['size']>(() => (props.variant === 'default' ? 'xsmall' : 'xs'))
 
 const changePage = ({ increase, set }: { increase?: boolean; set?: number }) => {
   if (set) {
@@ -107,13 +107,13 @@ const pageSizeOptions = [
 </script>
 
 <template>
-  <div class="nc-pagination flex flex-row items-center gap-x-0.25" :class="`nc-variant-${variant}`">
-    <div class="nc-pagition-btns-wrapper">
-      <component :is="props.firstPageTooltip && mode === 'full' ? NcTooltip : 'div'" v-if="mode === 'full'">
+  <div class="atm-pagination flex flex-row items-center gap-x-0.25" :class="`atm-variant-${variant}`">
+    <div class="atm-pagition-btns-wrapper">
+      <component :is="props.firstPageTooltip && mode === 'full' ? AtTooltip : 'div'" v-if="mode === 'full'">
         <template v-if="props.firstPageTooltip" #title>
           {{ props.firstPageTooltip }}
         </template>
-        <NcButton
+        <AtButton
           v-e="[`a:pagination:${entityName}:first-page`]"
           class="first-page !border-0"
           type="text"
@@ -121,16 +121,16 @@ const pageSizeOptions = [
           :disabled="current === 1"
           @click="goToFirstPage"
         >
-          <GeneralIcon icon="doubleLeftArrow" class="nc-pagination-icon" />
-        </NcButton>
+          <GeneralIcon icon="doubleLeftArrow" class="atm-pagination-icon" />
+        </AtButton>
       </component>
-      <div v-if="variant === 'v2'" class="nc-pagition-v2-border"></div>
+      <div v-if="variant === 'v2'" class="atm-pagition-v2-border"></div>
 
-      <component :is="props.prevPageTooltip && mode === 'full' ? NcTooltip : 'div'">
+      <component :is="props.prevPageTooltip && mode === 'full' ? AtTooltip : 'div'">
         <template v-if="props.prevPageTooltip" #title>
           {{ props.prevPageTooltip }}
         </template>
-        <NcButton
+        <AtButton
           v-e="[`a:pagination:${entityName}:prev-page`]"
           class="prev-page"
           type="text"
@@ -138,15 +138,15 @@ const pageSizeOptions = [
           :disabled="current === 1"
           @click="changePage({ increase: false })"
         >
-          <GeneralIcon icon="arrowLeft" class="nc-pagination-icon" />
-        </NcButton>
+          <GeneralIcon icon="arrowLeft" class="atm-pagination-icon" />
+        </AtButton>
       </component>
     </div>
 
-    <div v-if="!isMobileMode" class="nc-pagination-selector-wrapper text-nc-content-gray-muted">
-      <NcDropdown placement="top" overlay-class-name="!shadow-none">
+    <div v-if="!isMobileMode" class="atm-pagination-selector-wrapper text-atm-content-gray-muted">
+      <AtDropdown placement="top" overlay-class-name="!shadow-none">
         <div class="flex items-center gap-2">
-          <NcButton class="nc-select-page" :type="variant === 'default' ? 'text' : 'secondary'" :size="btnSize">
+          <AtButton class="atm-select-page" :type="variant === 'default' ? 'text' : 'secondary'" :size="btnSize">
             <div
               class="flex items-center"
               :class="{
@@ -154,48 +154,48 @@ const pageSizeOptions = [
                 'gap-2': variant !== 'default',
               }"
             >
-              <span class="nc-current-page">
+              <span class="atm-current-page">
                 {{ current }}
               </span>
-              <GeneralIcon icon="arrowDown" class="text-nc-content-gray mt-0.5 nc-select-expand-btn" />
+              <GeneralIcon icon="arrowDown" class="text-atm-content-gray mt-0.5 atm-select-expand-btn" />
             </div>
-          </NcButton>
-          <div v-if="variant === 'v2'" class="text-small1 font-500 text-nc-content-gray-subtle">/{{ pagesList.length }}</div>
+          </AtButton>
+          <div v-if="variant === 'v2'" class="text-small1 font-500 text-atm-content-gray-subtle">/{{ pagesList.length }}</div>
         </div>
 
         <template #overlay>
-          <NcMenu class="nc-pagination-menu overflow-hidden" variant="small">
-            <NcSubMenu
+          <AtMenu class="atm-pagination-menu overflow-hidden" variant="small">
+            <AtSubMenu
               v-if="showSizeChanger"
               :key="`${localPageSize}page`"
-              class="bg-nc-bg-gray-light z-20 top-0 !sticky"
+              class="bg-atm-bg-gray-light z-20 top-0 !sticky"
               variant="small"
             >
               <template #title>
                 <div class="rounded-lg text-[13px] font-medium w-full">{{ localPageSize }} / page</div>
               </template>
 
-              <NcMenuItem v-for="option in pageSizeOptions" :key="option.value" @click="localPageSize = option.value">
+              <AtMenuItem v-for="option in pageSizeOptions" :key="option.value" @click="localPageSize = option.value">
                 <span
                   class="text-[13px]"
                   :class="{
-                    '!text-nc-content-brand': option.value === localPageSize,
+                    '!text-atm-content-brand': option.value === localPageSize,
                   }"
                 >
                   {{ option.value }} / page
                 </span>
-              </NcMenuItem>
-            </NcSubMenu>
+              </AtMenuItem>
+            </AtSubMenu>
 
             <UseVirtualList
               :key="localPageSize"
               :list="pagesList"
               height="auto"
               :options="{ itemHeight: 28 }"
-              class="mt-1 max-h-46 nc-scrollbar-thin"
+              class="mt-1 max-h-46 atm-scrollbar-thin"
             >
               <template #default="{ data: item }">
-                <NcMenuItem
+                <AtMenuItem
                   :key="`${localPageSize}${item.value}`"
                   :style="{
                     height: '28px',
@@ -208,26 +208,26 @@ const pageSizeOptions = [
                 >
                   <div
                     :class="{
-                      'text-nc-content-brand': item.value === current,
+                      'text-atm-content-brand': item.value === current,
                     }"
-                    class="flex text-[13px] !w-full text-nc-content-gray items-center justify-between"
+                    class="flex text-[13px] !w-full text-atm-content-gray items-center justify-between"
                   >
                     {{ item.label }}
                   </div>
-                </NcMenuItem>
+                </AtMenuItem>
               </template>
             </UseVirtualList>
-          </NcMenu>
+          </AtMenu>
         </template>
-      </NcDropdown>
+      </AtDropdown>
     </div>
 
-    <div class="nc-pagition-btns-wrapper">
-      <component :is="props.nextPageTooltip && mode === 'full' ? NcTooltip : 'div'">
+    <div class="atm-pagition-btns-wrapper">
+      <component :is="props.nextPageTooltip && mode === 'full' ? AtTooltip : 'div'">
         <template v-if="props.nextPageTooltip" #title>
           {{ props.nextPageTooltip }}
         </template>
-        <NcButton
+        <AtButton
           v-e="[`a:pagination:${entityName}:next-page`]"
           class="next-page"
           type="text"
@@ -235,16 +235,16 @@ const pageSizeOptions = [
           :disabled="current === totalPages"
           @click="changePage({ increase: true })"
         >
-          <GeneralIcon icon="arrowRight" class="nc-pagination-icon" />
-        </NcButton>
+          <GeneralIcon icon="arrowRight" class="atm-pagination-icon" />
+        </AtButton>
       </component>
-      <div v-if="variant === 'v2'" class="nc-pagition-v2-border"></div>
+      <div v-if="variant === 'v2'" class="atm-pagition-v2-border"></div>
 
-      <component :is="props.lastPageTooltip && mode === 'full' ? NcTooltip : 'div'" v-if="mode === 'full'">
+      <component :is="props.lastPageTooltip && mode === 'full' ? AtTooltip : 'div'" v-if="mode === 'full'">
         <template v-if="props.lastPageTooltip" #title>
           {{ props.lastPageTooltip }}
         </template>
-        <NcButton
+        <AtButton
           v-e="[`a:pagination:${entityName}:last-page`]"
           class="last-page"
           type="text"
@@ -252,17 +252,17 @@ const pageSizeOptions = [
           :disabled="current === totalPages"
           @click="goToLastPage"
         >
-          <GeneralIcon icon="doubleRightArrow" class="nc-pagination-icon" />
-        </NcButton>
+          <GeneralIcon icon="doubleRightArrow" class="atm-pagination-icon" />
+        </AtButton>
       </component>
     </div>
 
-    <div v-if="showSizeChanger && !isMobileMode" class="text-nc-content-gray-muted"></div>
+    <div v-if="showSizeChanger && !isMobileMode" class="text-atm-content-gray-muted"></div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-pagination-icon {
+.atm-pagination-icon {
   @apply w-4 h-4;
 }
 
@@ -270,25 +270,25 @@ const pageSizeOptions = [
   @apply justify-center;
 }
 
-:deep(.nc-button:not(:disabled)) {
-  .nc-pagination-icon {
-    @apply !text-nc-content-gray-muted;
+:deep(.atm-button:not(:disabled)) {
+  .atm-pagination-icon {
+    @apply !text-atm-content-gray-muted;
   }
 }
 
-.nc-pagition-btns-wrapper {
+.atm-pagition-btns-wrapper {
   @apply flex items-center gap-x-0.25;
 }
 
-.nc-pagination {
-  &.nc-variant-v2 {
+.atm-pagination {
+  &.atm-variant-v2 {
     @apply w-full max-w-[308px] justify-between gap-2;
 
-    .nc-pagition-btns-wrapper {
-      @apply border-1 border-nc-border-gray-medium rounded-lg gap-x-0 items-stretch;
+    .atm-pagition-btns-wrapper {
+      @apply border-1 border-atm-border-gray-medium rounded-lg gap-x-0 items-stretch;
 
-      .nc-pagition-v2-border {
-        @apply self-stretch border-r-1 border-nc-border-gray-medium;
+      .atm-pagition-v2-border {
+        @apply self-stretch border-r-1 border-atm-border-gray-medium;
       }
 
       .first-page,
@@ -302,7 +302,7 @@ const pageSizeOptions = [
       }
     }
 
-    .nc-pagination-selector-wrapper {
+    .atm-pagination-selector-wrapper {
       @apply flex-1 flex justify-center items-center children:flex-none;
     }
   }

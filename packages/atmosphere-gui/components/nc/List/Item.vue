@@ -1,18 +1,18 @@
 <script lang="ts" setup>
-import type { NcListItemProps } from '#imports'
+import type { AtListItemProps } from '#imports'
 
 /**
- * NcListItem — standalone list-row component.
+ * AtListItem — standalone list-row component.
  *
  * Encapsulates all state-based styling (selected, active, disabled, locked,
  * variant padding, group-header, itemFullWidth) that was previously inlined
- * inside NcList.  Can be used:
+ * inside AtList.  Can be used:
  *
- *   1. Inside NcList — NcList drives isSelected / isActive via its own state.
+ *   1. Inside AtList — AtList drives isSelected / isActive via its own state.
  *   2. Standalone — caller passes isSelected / isActive / isDisabled directly
  *      and handles the `click` / `mouseover` emits itself.
  *
- * Slots mirror NcList's named slots so NcList can forward them unchanged:
+ * Slots mirror AtList's named slots so AtList can forward them unchanged:
  *   - listItemGroupHeader  { option }
  *   - listItem             { option, isSelected }
  *   - listItemExtraLeft    { option, isSelected, searchBasisInfo }
@@ -21,7 +21,7 @@ import type { NcListItemProps } from '#imports'
  *   - listItemSelectedIcon { option, isSelected }
  */
 
-const props = withDefaults(defineProps<NcListItemProps>(), {
+const props = withDefaults(defineProps<AtListItemProps>(), {
   variant: 'default',
   index: -1,
   optionLabelKey: 'label',
@@ -38,7 +38,7 @@ const props = withDefaults(defineProps<NcListItemProps>(), {
 })
 
 const emits = defineEmits<{
-  (e: 'click', option: NcListItemType, index: number, event: MouseEvent): void
+  (e: 'click', option: AtListItemType, index: number, event: MouseEvent): void
   (e: 'mouseover'): void
 }>()
 
@@ -54,19 +54,19 @@ const handleMouseover = () => {
 </script>
 
 <template>
-  <NcTooltip
-    class="flex items-center gap-2 nc-list-item w-full px-2 my-[2px] first-of-type:mt-0 last-of-type:mb-0"
+  <AtTooltip
+    class="flex items-center gap-2 atm-list-item w-full px-2 my-[2px] first-of-type:mt-0 last-of-type:mb-0"
     :class="[
-      `nc-list-option-${index}`,
+      `atm-list-option-${index}`,
       {
-        'nc-list-group-header text-nc-content-gray-muted text-bodySmBold border-t !border-t-nc-border-gray-medium !first-of-type:border-t-transparent flex items-center':
+        'atm-list-group-header text-atm-content-gray-muted text-bodySmBold border-t !border-t-atm-border-gray-medium !first-of-type:border-t-transparent flex items-center':
           option.ncGroupHeader,
         'rounded-md': !itemFullWidth && !option.ncGroupHeader,
-        'nc-list-option-selected': isSelected,
-        'bg-nc-bg-gray-light': !option?.ncItemDisabled && showHoverEffect && isSelected,
-        'bg-nc-bg-gray-light nc-list-option-active': !option?.ncItemDisabled && isActive && !option.ncGroupHeader,
+        'atm-list-option-selected': isSelected,
+        'bg-atm-bg-gray-light': !option?.ncItemDisabled && showHoverEffect && isSelected,
+        'bg-atm-bg-gray-light atm-list-option-active': !option?.ncItemDisabled && isActive && !option.ncGroupHeader,
         'opacity-60 cursor-not-allowed': option?.ncItemDisabled && !option?.ncGroupHeader,
-        'hover:bg-nc-bg-gray-light cursor-pointer': !option?.ncItemDisabled && !option?.ncGroupHeader,
+        'hover:bg-atm-bg-gray-light cursor-pointer': !option?.ncItemDisabled && !option?.ncGroupHeader,
         'py-2': variant === 'default' && !option.ncGroupHeader,
         'py-[5px]': variant === 'medium' && !option.ncGroupHeader,
         'py-[3px]': variant === 'small' && !option.ncGroupHeader,
@@ -99,14 +99,14 @@ const handleMouseover = () => {
       <slot name="listItemExtraLeft" :option="option" :is-selected="isSelected" :search-basis-info="searchBasisInfo" />
 
       <slot name="listItemContent" :option="option" :is-selected="isSelected" :search-basis-info="searchBasisInfo">
-        <NcTooltip class="truncate" :class="{ 'flex-1': !searchBasisInfo }" show-on-truncate-only>
+        <AtTooltip class="truncate" :class="{ 'flex-1': !searchBasisInfo }" show-on-truncate-only>
           <template #title>{{ option[optionLabelKey] }}</template>
           {{ option[optionLabelKey] }}
-        </NcTooltip>
+        </AtTooltip>
         <div v-if="searchBasisInfo" class="flex-1 flex">
-          <NcTooltip :title="searchBasisInfo" class="flex cursor-help">
-            <GeneralIcon icon="info" class="flex-none h-3.5 w-3.5 text-nc-content-gray-muted" />
-          </NcTooltip>
+          <AtTooltip :title="searchBasisInfo" class="flex cursor-help">
+            <GeneralIcon icon="info" class="flex-none h-3.5 w-3.5 text-atm-content-gray-muted" />
+          </AtTooltip>
         </div>
       </slot>
 
@@ -115,11 +115,11 @@ const handleMouseover = () => {
       <slot name="listItemSelectedIcon" :option="option" :is-selected="isSelected">
         <GeneralIcon
           v-if="showSelectedOption && isSelected"
-          id="nc-selected-item-icon"
+          id="atm-selected-item-icon"
           icon="check"
-          class="flex-none text-nc-content-brand w-4 h-4"
+          class="flex-none text-atm-content-brand w-4 h-4"
         />
       </slot>
     </slot>
-  </NcTooltip>
+  </AtTooltip>
 </template>

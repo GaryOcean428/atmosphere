@@ -5,30 +5,30 @@ import {
   isLinksOrLTAR,
   isLinkV2,
   isVirtualCol,
-  NcApiVersion,
-  NcBaseError,
+  AtApiVersion,
+  AtBaseError,
   parseProp,
   RelationTypes,
   SqlUiFactory,
   UITypes,
   ViewTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import hash from 'object-hash';
 import papaparse from 'papaparse';
 import { MetaTable } from 'src/cli';
 import PQueue from 'p-queue';
 import { elapsedTime, initTime } from '../../helpers';
 import type { ColumnWebhookManager } from '~/utils/column-webhook-manager';
-import type { UserType, ViewCreateReqType } from 'nocodb-sdk';
+import type { UserType, ViewCreateReqType } from 'atmosphere-sdk';
 import type { Readable } from 'stream';
-import type { NcContext, NcRequest } from '~/interface/config';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { CalendarView, LinksColumn, User } from '~/models';
 import { getCustomLinkParam } from '~/helpers/linkHelpers';
 import { validateImportSchema } from '~/utils/modelUtils';
 import { RowColorViewHelpers } from '~/helpers/rowColorViewHelpers';
 import { sanitizeColumnName } from '~/helpers';
 import { sanitizeCommentBody } from '~/helpers/sanitizeCommentBody';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import {
   findWithIdentifier,
   generateUniqueName,
@@ -38,7 +38,7 @@ import {
   withoutId,
   withoutNull,
 } from '~/helpers/exportImportHelpers';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import {
   Base,
   Column,
@@ -64,13 +64,13 @@ import { SortsService } from '~/services/sorts.service';
 import { TablesService } from '~/services/tables.service';
 import { ViewColumnsService } from '~/services/view-columns.service';
 import { ViewsService } from '~/services/views.service';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
-import Noco from '~/Noco';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
 
 @Injectable()
 export class ImportService {
-  protected readonly debugLog = debug('nc:jobs:import');
+  protected readonly debugLog = debug('atm:jobs:import');
   protected readonly logger = new Logger(ImportService.name);
 
   constructor(
@@ -92,49 +92,49 @@ export class ImportService {
   ) {}
 
   async importUsers(
-    context: NcContext,
+    context: AtContext,
     _payload: {
       users: {
         email: string;
         display_name?: string;
       }[];
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
-    NcError.get(context).notImplemented('Import users not implemented');
+    AtError.get(context).notImplemented('Import users not implemented');
   }
 
   async importScripts(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       user: User;
       baseId: string;
       data: Array<any>;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     // Not Implemented
   }
 
   async importDocuments(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       user: User;
       baseId: string;
       data: Array<any>;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     // Not Implemented in CE
   }
 
   async importDashboards(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       user: User;
       baseId: string;
       data: Array<any>;
-      req: NcRequest;
+      req: AtRequest;
       idMap: Map<string, string>;
     },
   ) {
@@ -143,11 +143,11 @@ export class ImportService {
   }
 
   async importInterfaces(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       user: User;
       data: Array<any>;
-      req: NcRequest;
+      req: AtRequest;
       idMap: Map<string, string>;
     },
   ) {
@@ -156,12 +156,12 @@ export class ImportService {
   }
 
   async importWorkflows(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       user: User;
       baseId: string;
       data: Array<any>;
-      req: NcRequest;
+      req: AtRequest;
       idMap: Map<string, string>;
     },
   ) {
@@ -170,23 +170,23 @@ export class ImportService {
   }
 
   async importPermissions(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       permissions: any[];
       getIdOrExternalId: (id: string) => string | undefined;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     //  create permissions
   }
 
   async importModels(
-    context: NcContext,
+    context: AtContext,
     param: {
       user: User;
       baseId: string;
       sourceId: string;
-      targetContext?: NcContext;
+      targetContext?: AtContext;
       data:
         | {
             models: {
@@ -211,7 +211,7 @@ export class ImportService {
               rowColorConditions?: any[];
             };
           }[];
-      req: NcRequest;
+      req: AtRequest;
       externalModels?: Model[];
       existingModel?: Model;
       importColumnIds?: string[];
@@ -222,7 +222,7 @@ export class ImportService {
     const targetContext = param.targetContext ?? context;
     const hrTime = initTime();
 
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
 
     // structured id to db id
     const idMap = new Map<string, string>();
@@ -234,11 +234,11 @@ export class ImportService {
 
     const base = await Base.get(context, param.baseId);
 
-    if (!base) return NcError.baseNotFound(param.baseId);
+    if (!base) return AtError.baseNotFound(param.baseId);
 
     const source = await Source.get(context, param.sourceId);
 
-    if (!source) return NcError.sourceNotFound(param.sourceId);
+    if (!source) return AtError.sourceNotFound(param.sourceId);
     const sqlUi = SqlUiFactory.create(await source.getConnectionConfig());
 
     const tableReferences = new Map<string, Model>();
@@ -964,7 +964,7 @@ export class ImportService {
                     }) as any,
                     req: param.req,
                     user: param.user,
-                    apiVersion: NcApiVersion.V2,
+                    apiVersion: AtApiVersion.V2,
                     columnWebhookManager: param.columnWebhookManager,
                   },
                 )) as Model;
@@ -2004,13 +2004,13 @@ export class ImportService {
   }
 
   async createView(
-    context: NcContext,
+    context: AtContext,
     idMap: Map<string, string>,
     md: Model,
     vw: Partial<View>,
     views: View[],
     user: UserType,
-    req: NcRequest,
+    req: AtRequest,
   ): Promise<View> {
     if ((vw as any)?.is_default) {
       const view = views?.[0];
@@ -2197,7 +2197,7 @@ export class ImportService {
   }
 
   async importBase(
-    context: NcContext,
+    context: AtContext,
     param: {
       user: User;
       baseId: string;
@@ -2208,7 +2208,7 @@ export class ImportService {
         url?: string;
         file?: any;
       };
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const hrTime = initTime();
@@ -2218,14 +2218,14 @@ export class ImportService {
     const destProject = await Base.get(context, baseId);
     const destBase = await Source.get(context, sourceId);
 
-    if (!destProject) return NcError.baseNotFound(baseId);
-    if (!destBase) return NcError.sourceNotFound(sourceId);
+    if (!destProject) return AtError.baseNotFound(baseId);
+    if (!destBase) return AtError.sourceNotFound(sourceId);
 
     switch (src.type) {
       case 'local': {
         const path = src.path.replace(/\/$/, '');
 
-        const storageAdapter = await NcPluginMgrv2.storageAdapter();
+        const storageAdapter = await AtPluginMgrv2.storageAdapter();
 
         try {
           const schema = JSON.parse(
@@ -2308,9 +2308,9 @@ export class ImportService {
             elapsedTime(hrTime, `import links`, 'importBase');
           }
         } catch (e) {
-          if (e instanceof NcError || e instanceof NcBaseError) throw e;
+          if (e instanceof AtError || e instanceof AtBaseError) throw e;
           this.logger.error('Error Importing base', e);
-          NcError.get(context).internalServerError(e?.message);
+          AtError.get(context).internalServerError(e?.message);
         }
         break;
       }
@@ -2337,7 +2337,7 @@ export class ImportService {
    * tables. Best-effort: a failure on one column is logged, not fatal.
    */
   private async resetPgAutoIncrementSequences(
-    context: NcContext,
+    context: AtContext,
     model: Model,
     source: Source,
   ) {
@@ -2350,9 +2350,9 @@ export class ImportService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: null,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
-    const sqlClient = await NcConnectionMgrv2.getSqlClient(source);
+    const sqlClient = await AtConnectionMgrv2.getSqlClient(source);
     const tnPath = baseModel.getTnPath(model.table_name);
 
     for (const col of aiColumns) {
@@ -2379,7 +2379,7 @@ export class ImportService {
   }
 
   importDataFromCsvStream(
-    context: NcContext,
+    context: AtContext,
     param: {
       idMap: Map<string, string>;
       dataStream: Readable;
@@ -2499,7 +2499,7 @@ export class ImportService {
                     // rather than from an ACL-checked base. Thread the flag
                     // per-caller once remote import transfers attachment files
                     // instead of passing refs through verbatim.
-                    // github.com/nocodb/nocohub/pull/10063#discussion_r3773398681
+                    // github.com/GaryOcean428/atmospherehub/pull/10063#discussion_r3773398681
                     skipAttachmentOwnershipCheck: true,
                   });
                 } catch (e) {
@@ -2563,7 +2563,7 @@ export class ImportService {
 
   // import links and return handled links
   async importLinkFromCsvStream(
-    context: NcContext,
+    context: AtContext,
     param: {
       idMap: Map<string, string>;
       linkStream: Readable;

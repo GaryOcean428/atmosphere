@@ -35,7 +35,7 @@ const buildBuyLicenseUrl = (seatCount?: number, instanceId?: string) => {
   // request headers (incl. X-Forwarded-Host) and is more reliable behind
   // proxies than window.location.origin.
   const instanceUrl = appInfo.value.ncSiteUrl || window.location.origin
-  const licenseServerUrl = appInfo.value.licenseServerUrl || NC_CLOUD_URL
+  const licenseServerUrl = appInfo.value.licenseServerUrl || ATMOSPHERE_CLOUD_URL
   const state = encodeOnPremCheckoutState({
     v: 1,
     instance_url: instanceUrl,
@@ -163,7 +163,7 @@ const onBuyLicense = async () => {
   // Manage license: skip checkout state and go straight to the cloud
   // self-hosted page; instance_id deep-links to this license's detail.
   if (licenseStatus.value !== 'none') {
-    const licenseServerUrl = appInfo.value.licenseServerUrl || NC_CLOUD_URL
+    const licenseServerUrl = appInfo.value.licenseServerUrl || ATMOSPHERE_CLOUD_URL
     window.open(
       `${licenseServerUrl}/account/self-hosted${instanceId ? `?instance_id=${encodeURIComponent(instanceId)}` : ''}`,
       '_blank',
@@ -179,7 +179,7 @@ loadLicense()
 
 <template>
   <div class="flex flex-col h-full">
-    <NcPageHeader>
+    <AtPageHeader>
       <template #icon>
         <div class="flex justify-center items-center h-5 w-5">
           <GeneralIcon icon="ncKey2" class="flex-none text-[20px]" />
@@ -190,29 +190,29 @@ loadLicense()
           {{ $t('title.license') }}
         </span>
       </template>
-    </NcPageHeader>
-    <div class="flex-1 overflow-y-auto nc-scrollbar-thin flex flex-col items-center p-6">
+    </AtPageHeader>
+    <div class="flex-1 overflow-y-auto atm-scrollbar-thin flex flex-col items-center p-6">
       <div class="flex flex-col gap-6 w-150">
         <template v-if="isPostgresRequired">
-          <NcAlert visible type="warning" background>
+          <AtAlert visible type="warning" background>
             <template #description>
               {{ $t('msg.info.licenseRequiresPostgres') }}
             </template>
-          </NcAlert>
+          </AtAlert>
         </template>
 
         <template v-else>
           <!-- Activate License card -->
-          <div class="flex flex-col border-1 rounded-2xl border-nc-border-gray-medium p-6 gap-5">
+          <div class="flex flex-col border-1 rounded-2xl border-atm-border-gray-medium p-6 gap-5">
             <div class="flex flex-col gap-1">
-              <span class="font-bold text-base text-nc-content-gray">{{ $t('title.licenseKey') }}</span>
-              <span class="text-sm text-nc-content-gray-subtle2">
+              <span class="font-bold text-base text-atm-content-gray">{{ $t('title.licenseKey') }}</span>
+              <span class="text-sm text-atm-content-gray-subtle2">
                 {{ $t('labels.licenseKeyDescription') }}
                 <a
-                  href="https://nocodb.com/docs/product-docs/cloud-enterprise-edition/community-vs-paid-editions"
+                  href="https://atmosphere.dev/docs/product-docs/cloud-enterprise-edition/community-vs-paid-editions"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="!text-nc-content-brand !no-underline hover:underline"
+                  class="!text-atm-content-brand !no-underline hover:underline"
                   >{{ $t('msg.learnMore') }}</a
                 >
               </span>
@@ -222,10 +222,10 @@ loadLicense()
               class="flex items-center gap-3 p-3 rounded-lg border-1"
               :class="
                 licenseStatus === 'active'
-                  ? 'bg-nc-bg-green-light border-nc-border-green'
+                  ? 'bg-atm-bg-green-light border-atm-border-green'
                   : licenseStatus === 'expired'
-                  ? 'bg-nc-bg-red-light border-nc-border-red'
-                  : 'bg-nc-bg-gray-light border-nc-border-gray-medium'
+                  ? 'bg-atm-bg-red-light border-atm-border-red'
+                  : 'bg-atm-bg-gray-light border-atm-border-gray-medium'
               "
             >
               <GeneralIcon
@@ -233,10 +233,10 @@ loadLicense()
                 class="h-4.5 w-4.5 flex-none"
                 :class="
                   licenseStatus === 'active'
-                    ? 'text-nc-content-green-dark'
+                    ? 'text-atm-content-green-dark'
                     : licenseStatus === 'expired'
-                    ? 'text-nc-content-red-dark'
-                    : 'text-nc-content-gray-subtle'
+                    ? 'text-atm-content-red-dark'
+                    : 'text-atm-content-gray-subtle'
                 "
               />
               <span class="text-sm font-medium">
@@ -257,66 +257,66 @@ loadLicense()
             </div>
 
             <template v-if="isLicenseKeySetByEnv">
-              <NcAlert visible type="warning" background>
+              <AtAlert visible type="warning" background>
                 <template #description>
                   {{ $t('labels.licenseKeySetByEnv') }}
                   <a
-                    href="https://nocodb.com/docs/self-hosting/license-activation"
+                    href="https://atmosphere.dev/docs/self-hosting/license-activation"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="!text-nc-content-brand !no-underline hover:underline"
+                    class="!text-atm-content-brand !no-underline hover:underline"
                     >{{ $t('msg.learnMore') }}</a
                   >
                 </template>
-              </NcAlert>
+              </AtAlert>
             </template>
 
             <template v-else>
               <a-input
                 v-model:value="key"
                 :placeholder="$t('labels.enterLicenseKey')"
-                class="!rounded-lg nc-license-key-input"
+                class="!rounded-lg atm-license-key-input"
                 spellcheck="false"
                 size="large"
-                data-testid="nc-license-key-input"
+                data-testid="atm-license-key-input"
               >
                 <template v-if="key" #suffix>
-                  <NcTooltip :title="$t('general.copy')">
-                    <NcButton type="text" size="xs" @click="copyLicenseKey">
+                  <AtTooltip :title="$t('general.copy')">
+                    <AtButton type="text" size="xs" @click="copyLicenseKey">
                       <GeneralIcon :icon="isCopied ? 'ncCheck' : 'ncCopy'" class="h-4 w-4" />
-                    </NcButton>
-                  </NcTooltip>
+                    </AtButton>
+                  </AtTooltip>
                 </template>
               </a-input>
 
               <div class="flex gap-3">
-                <NcButton
+                <AtButton
                   type="primary"
                   size="small"
                   :disabled="!key?.trim() || key.trim() === savedKey.trim()"
                   :loading="isLoading"
-                  data-testid="nc-license-save-btn"
+                  data-testid="atm-license-save-btn"
                   @click="setLicense"
                 >
                   {{ $t('general.save') }}
-                </NcButton>
-                <NcTooltip v-if="savedKey" :title="$t('labels.removeLicenseTooltip')">
-                  <NcButton type="secondary" size="small" data-testid="nc-license-remove-btn" @click="removeLicense">
+                </AtButton>
+                <AtTooltip v-if="savedKey" :title="$t('labels.removeLicenseTooltip')">
+                  <AtButton type="secondary" size="small" data-testid="atm-license-remove-btn" @click="removeLicense">
                     {{ $t('labels.removeLicense') }}
-                  </NcButton>
-                </NcTooltip>
-                <NcTooltip v-if="savedKey && isEEActive" :title="$t('labels.refreshLicenseTooltip')">
-                  <NcButton
+                  </AtButton>
+                </AtTooltip>
+                <AtTooltip v-if="savedKey && isEEActive" :title="$t('labels.refreshLicenseTooltip')">
+                  <AtButton
                     v-e="['c:account:license:refresh']"
                     type="secondary"
                     size="small"
                     :loading="isRefreshing"
-                    data-testid="nc-license-refresh-btn"
+                    data-testid="atm-license-refresh-btn"
                     @click="refreshLicense"
                   >
                     {{ $t('upgrade.refreshLicense') }}
-                  </NcButton>
-                </NcTooltip>
+                  </AtButton>
+                </AtTooltip>
               </div>
             </template>
           </div>
@@ -324,29 +324,29 @@ loadLicense()
           <AccountLicenseCredits v-if="isEeUI" />
 
           <!-- Buy / Manage License card -->
-          <div class="flex flex-col border-1 rounded-2xl border-nc-border-gray-medium p-6 gap-4">
+          <div class="flex flex-col border-1 rounded-2xl border-atm-border-gray-medium p-6 gap-4">
             <div class="flex flex-col gap-1">
-              <span class="font-bold text-base text-nc-content-gray">
+              <span class="font-bold text-base text-atm-content-gray">
                 {{ licenseStatus === 'none' ? $t('labels.buyLicense') : $t('labels.manageLicense') }}
               </span>
-              <span class="text-sm text-nc-content-gray-subtle2">
+              <span class="text-sm text-atm-content-gray-subtle2">
                 {{ licenseStatus === 'none' ? $t('labels.noLicenseYet') : $t('labels.manageLicenseOnCloud') }}
               </span>
             </div>
 
             <div>
-              <NcButton
+              <AtButton
                 v-e="['c:account:license:buy']"
                 type="secondary"
                 size="small"
-                data-testid="nc-license-buy-btn"
+                data-testid="atm-license-buy-btn"
                 @click="onBuyLicense"
               >
                 <div class="flex gap-2 items-center">
                   {{ licenseStatus === 'none' ? $t('labels.buyLicense') : $t('labels.manageLicense') }}
                   <GeneralIcon icon="ncExternalLink" />
                 </div>
-              </NcButton>
+              </AtButton>
             </div>
           </div>
         </template>
@@ -356,8 +356,8 @@ loadLicense()
 </template>
 
 <style lang="scss">
-.nc-license-key-input,
-.nc-license-key-input .ant-input {
+.atm-license-key-input,
+.atm-license-key-input .ant-input {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !important;
   font-size: 14px !important;
 }

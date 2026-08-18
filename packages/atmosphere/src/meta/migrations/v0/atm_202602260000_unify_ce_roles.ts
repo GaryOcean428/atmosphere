@@ -1,6 +1,6 @@
-import { ProjectRoles, WorkspaceUserRoles } from 'nocodb-sdk';
+import { ProjectRoles, WorkspaceUserRoles } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
-import { MetaTable, NC_STORE_DEFAULT_WORKSPACE_ID_KEY } from '~/utils/globals';
+import { MetaTable, ATMOSPHERE_STORE_DEFAULT_WORKSPACE_ID_KEY } from '~/utils/globals';
 
 // Role hierarchy for upgrade comparison (higher index = higher privilege)
 const WS_ROLE_ORDER = [
@@ -19,10 +19,10 @@ const WS_ROLE_ORDER = [
  * for both CE and EE on-prem. Org-level roles are ignored.
  *
  * Steps:
- * 1. Resolve the default workspace (idempotent — created by nc_098 on upgrades,
+ * 1. Resolve the default workspace (idempotent — created by atm_098 on upgrades,
  *    or by verifyDefaultWorkspace() at runtime on fresh installs)
  * 2. Batch-add missing users to the workspace with NO_ACCESS
- * 3. For users whose nc_users_v2.roles contains 'org-level-creator', upgrade
+ * 3. For users whose atm_users_v2.roles contains 'org-level-creator', upgrade
  *    their workspace role to workspace-level-creator if current ws role is lower.
  * 4. For workspace-level-creator users, insert no-access base_user entries
  *    on every existing base they don't already have access to — this blocks
@@ -33,9 +33,9 @@ const up = async (knex: Knex) => {
   // ── Step 1: Resolve default workspace ID ──────────────────────────────
   let defaultWsId: string | null = null;
 
-  // Check nc_store first
+  // Check atm_store first
   const storeRow = await knex(MetaTable.STORE)
-    .where('key', NC_STORE_DEFAULT_WORKSPACE_ID_KEY)
+    .where('key', ATMOSPHERE_STORE_DEFAULT_WORKSPACE_ID_KEY)
     .first();
 
   if (storeRow?.value) {
@@ -50,7 +50,7 @@ const up = async (knex: Knex) => {
       defaultWsId = existingWs.id;
       // Store it so verifyDefaultWorkspace can find it
       await knex(MetaTable.STORE).insert({
-        key: NC_STORE_DEFAULT_WORKSPACE_ID_KEY,
+        key: ATMOSPHERE_STORE_DEFAULT_WORKSPACE_ID_KEY,
         value: defaultWsId,
       });
     }
@@ -58,7 +58,7 @@ const up = async (knex: Knex) => {
 
   // No workspace at all — nothing to migrate.
   // Fresh install: verifyDefaultWorkspace() creates it at runtime on first signup.
-  // Upgrade: nc_098 (v2) already created it, so we'd have found it above.
+  // Upgrade: atm_098 (v2) already created it, so we'd have found it above.
   if (!defaultWsId) {
     return;
   }
@@ -95,11 +95,11 @@ const up = async (knex: Knex) => {
   }
 
   // ── Step 3: Promote org-level-creators to workspace-level-creator ──
-  // For users whose nc_users_v2.roles contains 'org-level-creator',
+  // For users whose atm_users_v2.roles contains 'org-level-creator',
   // upgrade their workspace_user row to workspace-level-creator only
   // if their current ws role is lower on the hierarchy.
   // Do NOT touch viewers — they keep whatever workspace role they already have.
-  // Do NOT strip org roles from nc_users_v2.roles.
+  // Do NOT strip org roles from atm_users_v2.roles.
   const orgCreators = await knex(MetaTable.USERS)
     .where('roles', 'like', '%org-level-creator%')
     .select('id');

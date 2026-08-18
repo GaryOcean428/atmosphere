@@ -1,4 +1,4 @@
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
 import SlackPluginConfig from '~/plugins/slack';
 import TeamsPluginConfig from '~/plugins/teams';
 import DiscordPluginConfig from '~/plugins/discord';
@@ -55,7 +55,7 @@ const logger = {
 
 // This upgrader helps to merge the duplicate plugins and recover the broken plugins
 // and also adds a unique id to the plugin to avoid the duplicate plugins in the future
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   logger.log('Merging duplicate plugins and updating the plugin id');
   // get the plugins which are valid and matches the plugin title
   // update the plugin with the new id

@@ -27,7 +27,7 @@ const { isEditColumn } = toRefs(props)
 
 const { $api } = useNuxtApp()
 
-const { aiIntegrations } = useNocoAi()
+const { aiIntegrations } = useAtmosphereAi()
 
 const lastIntegrationId = ref<string | null>(null)
 
@@ -92,39 +92,39 @@ onMounted(async () => {
 </script>
 
 <template>
-  <NcDropdown v-model:visible="isDropdownOpen" :trigger="['click']" placement="bottomRight" overlay-class-name="overflow-hidden">
+  <AtDropdown v-model:visible="isDropdownOpen" :trigger="['click']" placement="bottomRight" overlay-class-name="overflow-hidden">
     <slot>
-      <GeneralIcon icon="ncSettings" class="text-nc-content-gray-muted cursor-pointer" />
+      <GeneralIcon icon="ncSettings" class="text-atm-content-gray-muted cursor-pointer" />
     </slot>
 
     <template #overlay>
       <div class="flex flex-col w-[320px] overflow-hidden">
-        <div class="flex items-center justify-between w-full p-3 bg-nc-bg-purple-light">
-          <span class="text-sm font-bold text-nc-content-gray">{{ $t('labels.settings') }}</span>
+        <div class="flex items-center justify-between w-full p-3 bg-atm-bg-purple-light">
+          <span class="text-sm font-bold text-atm-content-gray">{{ $t('labels.settings') }}</span>
           <!-- Todo: add docs link  -->
           <a
             target="_blank"
             rel="noopener noreferrer"
-            class="!no-underline !hover:(underline text-nc-content-purple-dark) text-nc-content-purple-dark"
+            class="!no-underline !hover:(underline text-atm-content-purple-dark) text-atm-content-purple-dark"
             >{{ $t('title.docs') }}</a
           >
         </div>
         <div class="flex flex-col p-3 text-sm gap-3">
           <!-- Integration Select -->
           <div class="flex items-center gap-2">
-            <span class="text-nc-content-gray w-2/6">{{ $t('general.integration') }}</span>
+            <span class="text-atm-content-gray w-2/6">{{ $t('general.integration') }}</span>
             <div v-if="showTooltip" class="w-1/6 flex justify-end">
-              <NcTooltip placement="top">
+              <AtTooltip placement="top">
                 <template #title>
                   <span>Integration to use for this operation</span>
                 </template>
-                <GeneralIcon icon="info" class="text-sm text-nc-content-gray-muted" />
-              </NcTooltip>
+                <GeneralIcon icon="info" class="text-sm text-atm-content-gray-muted" />
+              </AtTooltip>
             </div>
             <a-form-item class="flex-1 !my-0 min-w-0">
-              <NcSelect
+              <AtSelect
                 v-model:value="vFkIntegrationId"
-                class="w-full nc-select-shadow nc-ai-input"
+                class="w-full atm-select-shadow atm-ai-input"
                 size="middle"
                 placeholder="- select integration -"
                 @change="onIntegrationChange"
@@ -132,45 +132,45 @@ onMounted(async () => {
                 <a-select-option v-for="integration in aiIntegrations" :key="integration.id" :value="integration.id">
                   <div class="w-full flex gap-2 items-center">
                     <GeneralIntegrationIcon v-if="integration?.sub_type" :type="integration.sub_type" />
-                    <NcTooltip class="flex-1 truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 truncate" show-on-truncate-only>
                       <template #title>
                         {{ integration.title }}
                       </template>
                       {{ integration.title }}
-                    </NcTooltip>
+                    </AtTooltip>
                     <component
                       :is="iconMap.check"
                       v-if="vFkIntegrationId === integration.id"
-                      id="nc-selected-item-icon"
-                      class="text-nc-content-purple-medium w-4 h-4"
+                      id="atm-selected-item-icon"
+                      class="text-atm-content-purple-medium w-4 h-4"
                     />
                   </div>
                 </a-select-option>
-              </NcSelect>
+              </AtSelect>
             </a-form-item>
           </div>
           <!-- Model Select -->
           <div v-if="isGlobalIntegration" class="flex items-center gap-2">
-            <span class="text-nc-content-gray w-2/6">Model</span>
-            <span class="flex-1 text-nc-content-gray-muted nc-ai-model-auto-note">
+            <span class="text-atm-content-gray w-2/6">Model</span>
+            <span class="flex-1 text-atm-content-gray-muted atm-ai-model-auto-note">
               {{ $t('labels.aiModelAutoSelected') }}
             </span>
           </div>
           <div v-else class="flex items-center gap-2">
-            <span class="text-nc-content-gray w-2/6">Model</span>
+            <span class="text-atm-content-gray w-2/6">Model</span>
             <div v-if="showTooltip" class="w-1/6 flex justify-end">
-              <NcTooltip placement="top">
+              <AtTooltip placement="top">
                 <template #title>
                   <span>Model to use for this operation</span>
                 </template>
-                <GeneralIcon icon="info" class="text-sm text-nc-content-gray-muted" />
-              </NcTooltip>
+                <GeneralIcon icon="info" class="text-sm text-atm-content-gray-muted" />
+              </AtTooltip>
             </div>
 
             <a-form-item class="flex-1 !my-0 min-w-0">
-              <NcSelect
+              <AtSelect
                 v-model:value="vModel"
-                class="w-full nc-select-shadow nc-ai-input"
+                class="w-full atm-select-shadow atm-ai-input"
                 size="middle"
                 placeholder="- select model -"
                 :disabled="!vFkIntegrationId || availableModels.length === 0"
@@ -178,51 +178,51 @@ onMounted(async () => {
               >
                 <a-select-option v-for="md in availableModels" :key="md.label" :value="md.value">
                   <div class="w-full flex gap-2 items-center">
-                    <NcTooltip class="flex-1 truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 truncate" show-on-truncate-only>
                       <template #title>
                         {{ md.label }}
                       </template>
                       {{ md.label }}
-                    </NcTooltip>
+                    </AtTooltip>
                     <component
                       :is="iconMap.check"
                       v-if="vModel === md.value"
-                      id="nc-selected-item-icon"
-                      class="text-nc-content-purple-medium w-4 h-4"
+                      id="atm-selected-item-icon"
+                      class="text-atm-content-purple-medium w-4 h-4"
                     />
                   </div>
                 </a-select-option>
-              </NcSelect>
+              </AtSelect>
             </a-form-item>
           </div>
           <!-- Randomness 
           <div class="flex items-center gap-2">
-            <span class="text-nc-content-gray w-2/6">Randomness</span>
+            <span class="text-atm-content-gray w-2/6">Randomness</span>
             <div v-if="showTooltip" class="w-1/6 flex justify-end">
-              <NcTooltip placement="top">
+              <AtTooltip placement="top">
                 <template #title>
                   <span>Randomness of the response</span>
                 </template>
-                <GeneralIcon icon="info" class="text-sm text-nc-content-gray-muted" />
-              </NcTooltip>
+                <GeneralIcon icon="info" class="text-sm text-atm-content-gray-muted" />
+              </AtTooltip>
             </div>
             <div class="flex-1">
-              <NcSelect v-model:value="vModel.randomness" class="w-full" size="middle" :disabled="!vModel.fk_integration_id">
+              <AtSelect v-model:value="vModel.randomness" class="w-full" size="middle" :disabled="!vModel.fk_integration_id">
                 <a-select-option value="high">High</a-select-option>
                 <a-select-option value="medium">Medium</a-select-option>
                 <a-select-option value="low">Low (Default)</a-select-option>
-              </NcSelect>
+              </AtSelect>
             </div>
           </div>
           -->
         </div>
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-select.ant-select) {
+:deep(.atm-select.ant-select) {
   .ant-select-selector {
     @apply !rounded-lg;
   }

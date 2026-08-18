@@ -1,21 +1,21 @@
 import figlet from "figlet";
 import { Command } from 'commander';
-import { getNocoConfig } from "./core";
+import { getAtmosphereConfig } from "./core";
 import { SecretManager } from "./core";
-import { NcError } from "./core";
+import { AtError } from "./core";
 import { logger } from "./core";
 
-console.log(figlet.textSync("NocoDB Secret CLI"));
+console.log(figlet.textSync("Atmosphere Secret CLI"));
 
 const program = new Command();
 
 program
   .version('1.0.0')
-  .description('NocoDB Secret CLI')
+  .description('Atmosphere Secret CLI')
   .arguments('<prevSecret> <newSecret>')
-  .option('--nc-db <char>', 'NocoDB  connection database url, equivalent to NC_DB env variable')
-  .option('--nc-db-json <char>', 'NocoDB connection database json, equivalent to NC_DB_JSON env variable')
-  .option('--nc-db-json-file <char>', 'NocoDB connection database json file path, equivalent to NC_DB_JSON_FILE env variable')
+  .option('--atm-db <char>', 'Atmosphere  connection database url, equivalent to ATMOSPHERE_DB env variable')
+  .option('--atm-db-json <char>', 'Atmosphere connection database json, equivalent to ATMOSPHERE_DB_JSON env variable')
+  .option('--atm-db-json-file <char>', 'Atmosphere connection database json file path, equivalent to ATMOSPHERE_DB_JSON_FILE env variable')
   .option('--database-url <char>', 'JDBC database url, equivalent to DATABASE_URL env variable')
   .option('--database-url-file <char>', 'JDBC database url file path, equivalent to DATABASE_URL_FILE env variable')
   .option('-p, --prev <char>', 'old secret string to decrypt sources and integrations')
@@ -25,7 +25,7 @@ program
     try {
       // extract options
       const options = program.opts();
-      const config = await getNocoConfig(options);
+      const config = await getAtmosphereConfig(options);
       const { prevSecret = prevVal, newSecret = newVal } = program.opts();
 
       if (!prevSecret || !newSecret) {
@@ -46,7 +46,7 @@ program
 
       }
     } catch (e) {
-      if (e instanceof NcError) {
+      if (e instanceof AtError) {
         // print error message in a better way
         logger.error(e.message);
         process.exit(1);

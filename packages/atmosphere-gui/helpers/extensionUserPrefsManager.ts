@@ -17,7 +17,7 @@ export class ExtensionUserPrefsManager {
   private readonly TTL = 90 * 24 * 60 * 60 * 1000 // 90 days
 
   constructor() {
-    this.storage = useStorage<ExtensionUserPrefs>('nc-extension-user-prefs', {})
+    this.storage = useStorage<ExtensionUserPrefs>('atm-extension-user-prefs', {})
     this.cleanExpired()
   }
 

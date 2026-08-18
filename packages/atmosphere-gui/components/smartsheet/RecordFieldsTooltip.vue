@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 import type { Row } from '~/lib/types'
 
 interface Props {
@@ -19,19 +19,19 @@ const showLabels = computed(() => visibleFields.value.length > 1)
 </script>
 
 <template>
-  <div class="nc-record-fields-tooltip-content flex flex-col gap-2 text-left">
-    <div v-for="field in visibleFields" :key="field.id" class="nc-record-tooltip-field">
-      <div v-if="showLabels" class="nc-record-tooltip-label">{{ field.title }}</div>
+  <div class="atm-record-fields-tooltip-content flex flex-col gap-2 text-left">
+    <div v-for="field in visibleFields" :key="field.id" class="atm-record-tooltip-field">
+      <div v-if="showLabels" class="atm-record-tooltip-label">{{ field.title }}</div>
       <LazySmartsheetPlainCell :model-value="record.row[field.title!]" :column="field" />
     </div>
   </div>
 </template>
 
 <!-- Global (non-scoped): the tooltip overlay is teleported to <body>, so scoped
-     styles can't reach it. Any NcTooltip using this content sets
-     overlay-class-name="nc-record-fields-tooltip". -->
+     styles can't reach it. Any AtTooltip using this content sets
+     overlay-class-name="atm-record-fields-tooltip". -->
 <style lang="scss">
-.nc-record-fields-tooltip {
+.atm-record-fields-tooltip {
   // Roughly a month-cell/record-chip width — the labeled fields read as short
   // rows instead of a tall wrapped column (antd's default caps at 250px).
   max-width: 280px;
@@ -43,7 +43,7 @@ const showLabels = computed(() => visibleFields.value.length > 1)
   }
 }
 
-.nc-record-fields-tooltip-content {
+.atm-record-fields-tooltip-content {
   .plain-cell {
     display: block;
     width: 100%;
@@ -56,13 +56,13 @@ const showLabels = computed(() => visibleFields.value.length > 1)
     }
   }
 
-  .nc-record-tooltip-field {
+  .atm-record-tooltip-field {
     display: flex;
     flex-direction: column;
     gap: 1px;
   }
 
-  .nc-record-tooltip-label {
+  .atm-record-tooltip-label {
     font-size: 11px;
     line-height: 14px;
     font-weight: 500;

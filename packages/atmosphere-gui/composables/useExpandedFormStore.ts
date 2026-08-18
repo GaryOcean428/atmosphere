@@ -6,7 +6,7 @@ import type {
   MetaType,
   PlanLimitExceededDetailsType,
   TableType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import {
   EventType,
   PermissionEntity,
@@ -18,7 +18,7 @@ import {
   isReadOnlyColumn,
   isSystemColumn,
   isVirtualCol,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import dayjs from 'dayjs'
 import { dataEventSubscriptionKey } from '~/utils/realtimeUtils'
@@ -310,7 +310,7 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
         console.error(e)
         const errorInfo = await extractSdkResponseErrorMsgv2(e)
 
-        if (isPaymentEnabled.value && errorInfo.error === NcErrorType.ERR_PLAN_LIMIT_EXCEEDED) {
+        if (isPaymentEnabled.value && errorInfo.error === AtErrorType.ERR_PLAN_LIMIT_EXCEEDED) {
           const details = errorInfo.details as PlanLimitExceededDetailsType
 
           handleUpgradePlan({
@@ -378,7 +378,7 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
         const op = queue.value[0]
         if (op.op === 'link') {
           await $api.dbTableRow.nestedAdd(
-            NOCO,
+            ATMOSPHERE,
             op.baseId,
             op.tableId,
             encodeURIComponent(op.rowId),
@@ -388,7 +388,7 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
           )
         } else {
           await $api.dbTableRow.nestedRemove(
-            NOCO,
+            ATMOSPHERE,
             op.baseId,
             op.tableId,
             encodeURIComponent(op.rowId),
@@ -430,7 +430,7 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
 
         if (missingRequiredColumns.size) return
 
-        data = await $api.dbTableRow.create('noco', meta.value.base_id, meta.value.id, {
+        data = await $api.dbTableRow.create('atmosphere', meta.value.base_id, meta.value.id, {
           ...insertObj,
           ...(ltarState || {}),
         })
@@ -482,7 +482,7 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
 
           if (Object.keys(updateOrInsertObj).length) {
             const updatedData = await $api.dbTableRow.update(
-              NOCO,
+              ATMOSPHERE,
               meta.value.base_id ?? (base.value.id as string),
               meta.value.id,
               encodeURIComponent(id),
@@ -505,7 +505,7 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
           }
         } else {
           // No columns to update
-          message.info(t('msg.info.noColumnsToUpdate'))
+          message.info(t('msg.info.atmospherelumnsToUpdate'))
           return
         }
       }
@@ -545,7 +545,7 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
       let record: Record<string, any> = {}
       try {
         record = await $api.dbTableRow.read(
-          NOCO,
+          ATMOSPHERE,
           // todo: base_id missing on view type
           ((meta.value?.base_id ?? base?.value?.id) || (sharedView.value?.view as any)?.base_id) as string,
           meta.value.id as string,
@@ -614,7 +614,7 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
         const recordId = rowId ?? extractPkFromRow(row.value.row, meta.value.columns as ColumnType[])
 
         const res: { message?: string[] } | number = await $api.dbTableRow.delete(
-          NOCO,
+          ATMOSPHERE,
           meta.value?.base_id ?? (base.value.id as string),
           meta.value.id as string,
           encodeURIComponent(recordId),

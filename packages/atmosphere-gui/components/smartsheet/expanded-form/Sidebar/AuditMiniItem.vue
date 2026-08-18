@@ -7,7 +7,7 @@ import {
   isAIPromptCol,
   parseHelper,
   ratingIconListMap,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 const props = defineProps<{
   audit: AuditType
@@ -184,7 +184,7 @@ function toggleLongText(key: string) {
 
 <template>
   <div v-for="columnKey of columnKeys" :key="columnKey" class="py-2 px-3">
-    <div class="w-full flex items-center gap-1 !text-nc-content-gray-subtle2 text-xs font-weight-500 nc-audit-mini-item-header">
+    <div class="w-full flex items-center gap-1 !text-atm-content-gray-subtle2 text-xs font-weight-500 atm-audit-mini-item-header">
       <SmartsheetHeaderIcon
         :column="{
           uidt: meta[columnKey]?.type,
@@ -193,7 +193,7 @@ function toggleLongText(key: string) {
         }"
         class="!w-4 !h-4 !mx-0"
       />
-      <NcTooltip
+      <AtTooltip
         class="truncate"
         :class="{
           'max-w-1/2': isAiGeneratedText(columnKey),
@@ -205,8 +205,8 @@ function toggleLongText(key: string) {
         </template>
 
         {{ columnKey }}
-      </NcTooltip>
-      <span v-if="isAiGeneratedText(columnKey)" class="whitespace-nowrap text-xs text-nc-content-purple-medium">
+      </AtTooltip>
+      <span v-if="isAiGeneratedText(columnKey)" class="whitespace-nowrap text-xs text-atm-content-purple-medium">
         ({{ $t('labels.generatedByAi') }})
       </span>
     </div>
@@ -214,30 +214,30 @@ function toggleLongText(key: string) {
       <template v-if="meta[columnKey]?.type === 'Attachment'">
         <div
           v-if="processOldDataFor(columnKey)?.length > 0"
-          class="border-1 border-nc-border-red rounded-md bg-nc-bg-red-light w-full p-0.5"
+          class="border-1 border-atm-border-red rounded-md bg-atm-bg-red-light w-full p-0.5"
         >
           <div class="flex flex-col items-start gap-0.5">
             <div
               v-for="(item, i) of processOldDataFor(columnKey)"
               :key="item.url || item.title"
-              class="border-1 border-nc-border-gray-medium rounded-md bg-nc-bg-default w-full"
+              class="border-1 border-atm-border-gray-medium rounded-md bg-atm-bg-default w-full"
             >
               <div class="flex items-center gap-2 w-full">
                 <div class="flex items-center justify-center w-8 aspect-square">
                   <LazyCellAttachmentPreviewImage
                     v-if="isImage(item.title, item.mimetype ?? item.type)"
                     :alt="item.title || `#${i}`"
-                    class="nc-attachment rounded !w-5.5 !h-5.5 object-cover overflow-hidden"
+                    class="atm-attachment rounded !w-5.5 !h-5.5 object-cover overflow-hidden"
                     :srcs="getPossibleAttachmentSrc(item, 'small')"
                   />
-                  <div v-else class="nc-attachment flex items-center justify-center">
+                  <div v-else class="atm-attachment flex items-center justify-center">
                     <CellAttachmentIconView :item="item" class="!w-8 !h-8" />
                   </div>
                 </div>
-                <span class="w-0 flex-1 truncate text-small1 font-weight-500 text-nc-content-gray-subtle2">
+                <span class="w-0 flex-1 truncate text-small1 font-weight-500 text-atm-content-gray-subtle2">
                   {{ item.title }}
                 </span>
-                <span class="text-xs font-weight-500 p-2 text-nc-content-gray-muted">
+                <span class="text-xs font-weight-500 p-2 text-atm-content-gray-muted">
                   {{ getReadableFileSize(item.size) }}
                 </span>
               </div>
@@ -246,30 +246,30 @@ function toggleLongText(key: string) {
         </div>
         <div
           v-if="processNewDataFor(columnKey)?.length > 0"
-          class="border-1 border-nc-border-green rounded-md bg-nc-bg-green-light w-full p-0.5"
+          class="border-1 border-atm-border-green rounded-md bg-atm-bg-green-light w-full p-0.5"
         >
           <div class="flex flex-col items-start gap-0.5">
             <div
               v-for="(item, i) of processNewDataFor(columnKey)"
               :key="item.url || item.title"
-              class="border-1 border-nc-border-gray-medium rounded-md bg-nc-bg-default w-full"
+              class="border-1 border-atm-border-gray-medium rounded-md bg-atm-bg-default w-full"
             >
               <div class="flex items-center gap-2 w-full">
                 <div class="flex items-center justify-center w-8 aspect-square">
                   <LazyCellAttachmentPreviewImage
                     v-if="isImage(item.title, item.mimetype ?? item.type)"
                     :alt="item.title || `#${i}`"
-                    class="nc-attachment rounded !w-5.5 !h-5.5 object-cover overflow-hidden"
+                    class="atm-attachment rounded !w-5.5 !h-5.5 object-cover overflow-hidden"
                     :srcs="getPossibleAttachmentSrc(item, 'small')"
                   />
-                  <div v-else class="nc-attachment flex items-center justify-center">
+                  <div v-else class="atm-attachment flex items-center justify-center">
                     <CellAttachmentIconView :item="item" class="!w-8 !h-8" />
                   </div>
                 </div>
-                <span class="w-0 flex-1 truncate text-small1 font-weight-500 text-nc-content-gray-subtle2">
+                <span class="w-0 flex-1 truncate text-small1 font-weight-500 text-atm-content-gray-subtle2">
                   {{ item.title }}
                 </span>
-                <span class="text-xs font-weight-500 p-2 text-nc-content-gray-muted">
+                <span class="text-xs font-weight-500 p-2 text-atm-content-gray-muted">
                   {{ getReadableFileSize(item.size) }}
                 </span>
               </div>
@@ -280,13 +280,13 @@ function toggleLongText(key: string) {
       <template v-else-if="shouldShowRaw(columnKey)">
         <div
           v-if="isShowableValue(oldData[columnKey])"
-          class="text-small1 text-nc-content-red-dark border-1 border-nc-red-200 rounded-md px-1 bg-nc-bg-red-light line-through break-all"
+          class="text-small1 text-atm-content-red-dark border-1 border-atm-red-200 rounded-md px-1 bg-atm-bg-red-light line-through break-all"
         >
           {{ oldData[columnKey] }}
         </div>
         <div
           v-if="isShowableValue(newData[columnKey])"
-          class="text-small1 text-nc-content-green-dark border-1 border-nc-green-200 rounded-md px-1 bg-nc-bg-green-light break-all"
+          class="text-small1 text-atm-content-green-dark border-1 border-atm-green-200 rounded-md px-1 bg-atm-bg-green-light break-all"
         >
           {{ newData[columnKey] }}
         </div>
@@ -296,13 +296,13 @@ function toggleLongText(key: string) {
           <template v-for="(block, i) of diffTextBlocks(oldData[columnKey] || '', newData[columnKey] || '')" :key="i">
             <span
               v-if="block.op === 'removed'"
-              class="max-w-full text-small1 text-nc-content-red-dark border-1 border-nc-red-200 rounded-md px-1 mr-1 bg-nc-bg-red-light line-through decoration-clone"
+              class="max-w-full text-small1 text-atm-content-red-dark border-1 border-atm-red-200 rounded-md px-1 mr-1 bg-atm-bg-red-light line-through decoration-clone"
             >
               {{ block.text }}
             </span>
             <span
               v-else-if="block.op === 'added'"
-              class="max-w-full text-small1 text-nc-content-green-dark border-1 border-nc-green-200 rounded-md px-1 mr-1 bg-nc-bg-green-light decoration-clone"
+              class="max-w-full text-small1 text-atm-content-green-dark border-1 border-atm-green-200 rounded-md px-1 mr-1 bg-atm-bg-green-light decoration-clone"
             >
               {{ block.text }}
             </span>
@@ -317,7 +317,7 @@ function toggleLongText(key: string) {
           <div
             class="relative"
             :class="{
-              'nc-audit-long-text-collapsed': isLongTextCollapsible(columnKey) && !longTextExpanded[columnKey],
+              'atm-audit-long-text-collapsed': isLongTextCollapsible(columnKey) && !longTextExpanded[columnKey],
             }"
           >
             <template
@@ -333,7 +333,7 @@ function toggleLongText(key: string) {
             >
               <span
                 v-if="block.op === 'removed'"
-                class="max-w-full text-nc-content-red-dark px-1 bg-nc-bg-red-light rounded-md line-through decoration-clone !leading-[18px]"
+                class="max-w-full text-atm-content-red-dark px-1 bg-atm-bg-red-light rounded-md line-through decoration-clone !leading-[18px]"
                 :class="{
                   'whitespace-pre-wrap': meta[columnKey]?.type === 'LongText',
                 }"
@@ -342,7 +342,7 @@ function toggleLongText(key: string) {
               </span>
               <span
                 v-else-if="block.op === 'added'"
-                class="max-w-full text-nc-content-green-dark px-1 bg-nc-bg-green-light rounded-md decoration-clone !leading-[18px]"
+                class="max-w-full text-atm-content-green-dark px-1 bg-atm-bg-green-light rounded-md decoration-clone !leading-[18px]"
                 :class="{
                   'whitespace-pre-wrap': meta[columnKey]?.type === 'LongText',
                 }"
@@ -363,7 +363,7 @@ function toggleLongText(key: string) {
           <button
             v-if="isLongTextCollapsible(columnKey)"
             type="button"
-            class="nc-audit-long-text-toggle mt-1 text-xs font-weight-500 text-nc-content-gray-subtle2 hover:text-nc-content-gray-emphasis"
+            class="atm-audit-long-text-toggle mt-1 text-xs font-weight-500 text-atm-content-gray-subtle2 hover:text-atm-content-gray-emphasis"
             @click="toggleLongText(columnKey)"
           >
             {{ longTextExpanded[columnKey] ? $t('general.showLess') : $t('general.showMore') }}
@@ -371,16 +371,16 @@ function toggleLongText(key: string) {
         </div>
       </template>
       <template v-else-if="meta[columnKey]?.type === 'JSON'">
-        <div class="overflow-x-auto nc-scrollbar-thin whitespace-nowrap">
+        <div class="overflow-x-auto atm-scrollbar-thin whitespace-nowrap">
           <template v-for="(block, i) of safeJsonDiff(columnKey)" :key="i">
             <pre
               v-if="block.op === 'removed'"
-              class="text-small1 text-nc-content-red-dark border-1 border-nc-red-200 rounded-md px-1 bg-nc-bg-red-light line-through decoration-clone inline"
+              class="text-small1 text-atm-content-red-dark border-1 border-atm-red-200 rounded-md px-1 bg-atm-bg-red-light line-through decoration-clone inline"
               >{{ block.text }}</pre
             >
             <pre
               v-else-if="block.op === 'added'"
-              class="text-small1 text-nc-content-green-dark border-1 border-nc-green-200 rounded-md px-1 bg-nc-bg-green-light decoration-clone inline"
+              class="text-small1 text-atm-content-green-dark border-1 border-atm-green-200 rounded-md px-1 bg-atm-bg-green-light decoration-clone inline"
               >{{ block.text }}</pre
             >
             <pre v-else class="inline text-small1">{{ block.text }}</pre>
@@ -390,7 +390,7 @@ function toggleLongText(key: string) {
       <template v-else>
         <div
           v-if="isShowableValue(processOldDataFor(columnKey))"
-          class="max-w-full nc-audit-mini-item-cell nc-audit-removal !text-nc-content-red-dark border-1 border-nc-red-200 rounded-md bg-nc-bg-red-light line-through"
+          class="max-w-full atm-audit-mini-item-cell atm-audit-removal !text-atm-content-red-dark border-1 border-atm-red-200 rounded-md bg-atm-bg-red-light line-through"
           :class="{
             'px-1 py-0.25': shouldUseNormalizedPadding(columnKey),
             '!p-0.25': shouldUseUniformPadding(columnKey),
@@ -409,12 +409,12 @@ function toggleLongText(key: string) {
             :class="{
               'min-w-[100px]': normalizeMeta(columnKey).is_progress,
             }"
-            class="!text-nc-content-red-dark"
+            class="!text-atm-content-red-dark"
           />
         </div>
         <div
           v-if="isShowableValue(processNewDataFor(columnKey))"
-          class="nc-audit-mini-item-cell nc-audit-addition border-1 border-nc-green-200 rounded-md bg-nc-bg-green-light"
+          class="atm-audit-mini-item-cell atm-audit-addition border-1 border-atm-green-200 rounded-md bg-atm-bg-green-light"
           :class="{
             'px-1 py-0.25': shouldUseNormalizedPadding(columnKey),
             '!p-0.25': shouldUseUniformPadding(columnKey),
@@ -433,7 +433,7 @@ function toggleLongText(key: string) {
             :class="{
               'min-w-[100px]': normalizeMeta(columnKey).is_progress,
             }"
-            class="!text-nc-content-green-dark"
+            class="!text-atm-content-green-dark"
           />
         </div>
       </template>
@@ -444,14 +444,14 @@ function toggleLongText(key: string) {
 <style lang="scss" scoped>
 // LongText / RichText / SmartText — clamp long values with a fade-out so the
 // revision sidebar stays scannable; expand via the inline toggle.
-.nc-audit-long-text-collapsed {
+.atm-audit-long-text-collapsed {
   max-height: 6.5rem;
   overflow: hidden;
   -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
 }
 
-.nc-audit-long-text-toggle {
+.atm-audit-long-text-toggle {
   cursor: pointer;
   background: transparent;
   border: 0;
@@ -459,35 +459,35 @@ function toggleLongText(key: string) {
   line-height: 1.2;
 }
 
-.nc-audit-mini-item-cell :deep(.nc-cell-checkbox > div:first-child) {
+.atm-audit-mini-item-cell :deep(.atm-cell-checkbox > div:first-child) {
   @apply pl-0;
 }
-.nc-audit-mini-item-cell :deep(.nc-cell-field.nc-multi-select > div) {
+.atm-audit-mini-item-cell :deep(.atm-cell-field.atm-multi-select > div) {
   @apply !gap-1 !flex;
   & > span {
     @apply !m-0 flex items-center h-[22px];
   }
 }
-.nc-audit-mini-item-cell :deep(.nc-cell-field.nc-single-select > div) {
+.atm-audit-mini-item-cell :deep(.atm-cell-field.atm-single-select > div) {
   height: 20px !important;
   & > span {
     @apply !m-0;
   }
 }
-.nc-audit-mini-item-cell.nc-audit-removal :deep(.nc-cell-field.nc-multi-select > div) {
+.atm-audit-mini-item-cell.atm-audit-removal :deep(.atm-cell-field.atm-multi-select > div) {
   span.ant-tag span.text-ellipsis {
     @apply line-through;
   }
 }
-.nc-audit-mini-item-cell.nc-audit-removal :deep(.nc-cell-field.nc-single-select > div) {
+.atm-audit-mini-item-cell.atm-audit-removal :deep(.atm-cell-field.atm-single-select > div) {
   span.ant-tag span.text-ellipsis {
     @apply line-through;
   }
 }
-.nc-audit-mini-item-cell :deep(.nc-cell-rating .ant-rate) {
+.atm-audit-mini-item-cell :deep(.atm-cell-rating .ant-rate) {
   @apply !p-0 transform -translate-y-[1px];
 }
-.nc-audit-mini-item-cell :deep(.nc-cell-percent) {
+.atm-audit-mini-item-cell :deep(.atm-cell-percent) {
   & > div > div {
     @apply !p-0;
     &,
@@ -499,8 +499,8 @@ function toggleLongText(key: string) {
     }
   }
 }
-.nc-audit-mini-item-cell :deep(.nc-cell-datetime) {
-  .nc-date-picker {
+.atm-audit-mini-item-cell :deep(.atm-cell-datetime) {
+  .atm-date-picker {
     @apply !inline !text-inherit text-small1;
 
     & > div {
@@ -515,26 +515,26 @@ function toggleLongText(key: string) {
     }
   }
 }
-.nc-audit-mini-item-cell.nc-audit-removal :deep(.nc-cell-time) {
-  .nc-time-picker span {
+.atm-audit-mini-item-cell.atm-audit-removal :deep(.atm-cell-time) {
+  .atm-time-picker span {
     text-decoration: line-through;
   }
 }
-.nc-audit-mini-item-cell.nc-audit-removal :deep(.nc-cell-year) {
-  .nc-year-picker span {
+.atm-audit-mini-item-cell.atm-audit-removal :deep(.atm-cell-year) {
+  .atm-year-picker span {
     text-decoration: line-through;
   }
 }
-.nc-audit-mini-item-cell.nc-audit-removal :deep(.nc-cell-date) {
-  .nc-date-picker span {
+.atm-audit-mini-item-cell.atm-audit-removal :deep(.atm-cell-date) {
+  .atm-date-picker span {
     text-decoration: line-through;
   }
 }
-.nc-audit-mini-item-cell :deep(.nc-cell-user) {
-  .nc-cell-field > div {
+.atm-audit-mini-item-cell :deep(.atm-cell-user) {
+  .atm-cell-field > div {
     display: flex !important;
     & > .ant-tag {
-      @apply !m-0 !text-inherit !border-1 !border-nc-border-gray-dark !pr-1 !pl-0.5 !bg-nc-bg-gray-light !rounded-[17px];
+      @apply !m-0 !text-inherit !border-1 !border-atm-border-gray-dark !pr-1 !pl-0.5 !bg-atm-bg-gray-light !rounded-[17px];
       & > span > div + div {
         @apply flex items-center !text-small1 font-weight-500 !leading-[16px];
       }
@@ -542,56 +542,56 @@ function toggleLongText(key: string) {
         @apply gap-1;
       }
     }
-    .nc-user-avatar {
-      @apply border-1 border-nc-border-gray-medium !text-[8px];
+    .atm-user-avatar {
+      @apply border-1 border-atm-border-gray-medium !text-[8px];
       height: 16px !important;
       width: 16px !important;
     }
   }
 }
-.nc-audit-mini-item-cell :deep(.nc-cell-user:has(.ant-tag + .ant-tag)) {
+.atm-audit-mini-item-cell :deep(.atm-cell-user:has(.ant-tag + .ant-tag)) {
   .ant-tag {
-    @apply !border-1 !border-nc-border-gray-dark !py-0.5 !px-1 !bg-nc-bg-gray-light !rounded-[6px];
+    @apply !border-1 !border-atm-border-gray-dark !py-0.5 !px-1 !bg-atm-bg-gray-light !rounded-[6px];
   }
 }
-.nc-audit-mini-item-cell.nc-audit-removal :deep(.nc-cell-user) {
+.atm-audit-mini-item-cell.atm-audit-removal :deep(.atm-cell-user) {
   .ant-tag > span > div + div {
-    @apply !text-nc-content-red-dark;
+    @apply !text-atm-content-red-dark;
   }
 }
-.nc-audit-mini-item-cell.nc-audit-addition :deep(.nc-cell-user) {
+.atm-audit-mini-item-cell.atm-audit-addition :deep(.atm-cell-user) {
   .ant-tag > span > div + div {
-    @apply !text-nc-content-green-dark;
+    @apply !text-atm-content-green-dark;
   }
 }
 </style>
 
 <style lang="scss">
-.nc-audit-mini-item-header {
+.atm-audit-mini-item-header {
   svg {
     height: 12px;
   }
 }
-.nc-audit-mini-item-cell:has(.nc-cell-user .ant-tag + .ant-tag) {
+.atm-audit-mini-item-cell:has(.atm-cell-user .ant-tag + .ant-tag) {
   @apply !p-1;
-  .nc-cell-field > div {
+  .atm-cell-field > div {
     @apply gap-1;
   }
 }
-.nc-audit-mini-item-cell.nc-audit-removal:has(.nc-cell-user) {
+.atm-audit-mini-item-cell.atm-audit-removal:has(.atm-cell-user) {
   text-decoration: none;
   .ant-tag div + div {
     text-decoration: line-through;
   }
 }
-.nc-audit-mini-item-cell.nc-audit-mini-item-cell.nc-audit-mini-item-cell.nc-audit-mini-item-cell
-  .nc-cell
-  .nc-cell-field.nc-cell-field {
+.atm-audit-mini-item-cell.atm-audit-mini-item-cell.atm-audit-mini-item-cell.atm-audit-mini-item-cell
+  .atm-cell
+  .atm-cell-field.atm-cell-field {
   font-size: 13px !important;
 }
-.nc-audit-mini-item-cell.nc-audit-mini-item-cell.nc-audit-mini-item-cell.nc-audit-mini-item-cell
-  .nc-cell
-  :where(.nc-date-picker)
+.atm-audit-mini-item-cell.atm-audit-mini-item-cell.atm-audit-mini-item-cell.atm-audit-mini-item-cell
+  .atm-cell
+  :where(.atm-date-picker)
   span {
   font-size: 13px !important;
 }

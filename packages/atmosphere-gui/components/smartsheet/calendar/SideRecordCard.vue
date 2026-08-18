@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import dayjs from 'dayjs'
-import { CalendarEventTheme } from 'nocodb-sdk'
+import { CalendarEventTheme } from 'atmosphere-sdk'
 import type { Row } from '~/lib/types'
 
 interface Props {
@@ -120,50 +120,50 @@ const errorInfo = computed(() => {
 
 <template>
   <div
-    :class="[`nc-side-card--${sideTheme}`, { 'nc-side-card--uncolored': !colors.hasColor }]"
+    :class="[`atm-side-card--${sideTheme}`, { 'atm-side-card--uncolored': !colors.hasColor }]"
     :style="themeVars"
-    class="nc-side-card cursor-pointer h-12.5 flex-none flex gap-2 flex-col rounded-lg overflow-hidden"
+    class="atm-side-card cursor-pointer h-12.5 flex-none flex gap-2 flex-col rounded-lg overflow-hidden"
   >
     <div class="flex relative items-center gap-2">
-      <span v-if="showLeftBar" class="nc-side-card-leftbar block h-12 w-1"></span>
+      <span v-if="showLeftBar" class="atm-side-card-leftbar block h-12 w-1"></span>
       <!-- Align the dot with the first line (title), matching the calendar view's
            dot theme: a box the height of the title line (leading-4 → h-4), offset
            by the body's top padding (py-1) and centred, so it sits on the title
            rather than the middle of the 2-line card. -->
       <span v-else-if="isDot" class="self-start mt-1 h-4 ml-2 flex items-center flex-none">
-        <span class="nc-side-card-dot"></span>
+        <span class="atm-side-card-dot"></span>
       </span>
       <slot name="image" />
       <div class="flex gap-1 py-1 flex-col" :class="{ 'pl-2': isSolid || isBordered }">
-        <NcTooltip
+        <AtTooltip
           wrap-child="span"
           :disabled="!$slots.tooltip"
-          overlay-class-name="nc-record-fields-tooltip"
+          overlay-class-name="atm-record-fields-tooltip"
           :class="{
             '!max-w-35': invalid,
           }"
-          class="text-[13px] leading-4 max-w-56 font-medium truncate text-nc-content-gray"
+          class="text-[13px] leading-4 max-w-56 font-medium truncate text-atm-content-gray"
         >
           <template #title>
             <slot name="tooltip" />
           </template>
           <slot />
-        </NcTooltip>
-        <NcTooltip v-if="invalid" placement="left" class="top-1 absolute right-1">
-          <NcBadge color="red" :border="false" class="!h-5">
+        </AtTooltip>
+        <AtTooltip v-if="invalid" placement="left" class="top-1 absolute right-1">
+          <AtBadge color="red" :border="false" class="!h-5">
             <div class="flex items-center gap-1">
-              <GeneralIcon icon="warning" class="text-nc-content-red-medium !h-4 !w-4" />
+              <GeneralIcon icon="warning" class="text-atm-content-red-medium !h-4 !w-4" />
               <span class="font-normal text-xs">{{ errorInfo.message }}</span>
             </div>
-          </NcBadge>
+          </AtBadge>
           <template #title>
             {{ errorInfo.tooltip }}
           </template>
-        </NcTooltip>
-        <NcTooltip
+        </AtTooltip>
+        <AtTooltip
           v-if="showDate"
           show-on-truncate-only
-          class="nc-side-card-date text-xs font-medium truncate max-w-58 leading-4 text-nc-content-gray-subtle2"
+          class="atm-side-card-date text-xs font-medium truncate max-w-58 leading-4 text-atm-content-gray-subtle2"
         >
           {{
             fromDate && toDate
@@ -185,25 +185,25 @@ const errorInfo = computed(() => {
                 : fromDate || toDate || ''
             }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-side-card-leftbar {
+.atm-side-card-leftbar {
   background: var(--cal-accent);
 }
 
-.nc-side-card-dot {
+.atm-side-card-dot {
   @apply w-2 h-2 rounded-full;
   background: var(--cal-accent);
 }
 
 // Bordered — accent-derived tint + border (stays visible in dark mode, where the
 // row-colouring tint resolves to near-black; see RecordCard for rationale).
-.nc-side-card--bordered {
+.atm-side-card--bordered {
   @apply border-1;
   background: color-mix(in srgb, var(--cal-accent) 14%, transparent);
   border-color: color-mix(in srgb, var(--cal-accent) 42%, transparent);
@@ -211,16 +211,16 @@ const errorInfo = computed(() => {
 
 // Uncoloured events keep the classic white card (not the gray accent wash) so the
 // default look matches the pre-theme calendar.
-.nc-side-card--bordered.nc-side-card--uncolored {
-  background: var(--nc-bg-default);
-  border-color: var(--nc-border-gray-medium);
+.atm-side-card--bordered.atm-side-card--uncolored {
+  background: var(--atm-bg-default);
+  border-color: var(--atm-border-gray-medium);
 }
 
 // Solid — fill, readable text on the accent.
-.nc-side-card--solid {
+.atm-side-card--solid {
   background: var(--cal-accent);
 
-  :deep(.nc-side-card-date),
+  :deep(.atm-side-card-date),
   :deep(span) {
     color: var(--cal-on-accent) !important;
   }
@@ -228,9 +228,9 @@ const errorInfo = computed(() => {
 
 // Flat themes — transparent, marker only (bar for minimal, dot for dot, nothing
 // for pill — matches the month-view RecordCard look).
-.nc-side-card--minimal,
-.nc-side-card--dot,
-.nc-side-card--pill {
+.atm-side-card--minimal,
+.atm-side-card--dot,
+.atm-side-card--pill {
   @apply bg-transparent border-1 border-transparent;
 }
 </style>

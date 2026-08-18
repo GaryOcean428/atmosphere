@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProgressBarShape } from 'nocodb-sdk'
+import type { ProgressBarShape } from 'atmosphere-sdk'
 
 interface Props {
   percentage: number
@@ -48,7 +48,7 @@ const slotHasChildren = (name?: string) => {
     >
       <template v-if="shape === 'circle'">
         <span
-          class="nc-percent-progress-circle inline-flex shrink-0"
+          class="atm-percent-progress-circle inline-flex shrink-0"
           :style="{ width: `${circleSize}px`, height: `${circleSize}px`, transform: 'rotate(-90deg)' }"
         >
           <svg
@@ -58,7 +58,7 @@ const slotHasChildren = (name?: string) => {
             style="shape-rendering: geometricprecision"
           >
             <circle
-              class="nc-percent-progress-circle-track"
+              class="atm-percent-progress-circle-track"
               :cx="circleCenter"
               :cy="circleCenter"
               :r="circleRadius"
@@ -67,7 +67,7 @@ const slotHasChildren = (name?: string) => {
             />
             <circle
               v-if="cPercentage > 0"
-              class="nc-percent-progress-circle-bar"
+              class="atm-percent-progress-circle-bar"
               :cx="circleCenter"
               :cy="circleCenter"
               :r="circleRadius"
@@ -79,15 +79,15 @@ const slotHasChildren = (name?: string) => {
             />
           </svg>
         </span>
-        <div class="text-captionSm text-nc-content-gray-muted">
+        <div class="text-captionSm text-atm-content-gray-muted">
           {{ `${formatPercentage(percentage, precision)}` }}
         </div>
       </template>
       <template v-else>
         <div class="relative flex-1 flex rounded-full overflow-hidden self-center" :class="isShowNumber ? 'h-full' : 'h-[6px]'">
-          <div class="bg-nc-brand-500" style="align-self: stretch" :style="{ width: `${cPercentage}%` }"></div>
+          <div class="bg-atm-brand-500" style="align-self: stretch" :style="{ width: `${cPercentage}%` }"></div>
           <div
-            class="bg-[#e5e5e5] dark:bg-nc-bg-brand-inverted"
+            class="bg-[#e5e5e5] dark:bg-atm-bg-brand-inverted"
             style="align-self: stretch"
             :style="{ width: `${100 - cPercentage}%` }"
           ></div>
@@ -104,7 +104,7 @@ const slotHasChildren = (name?: string) => {
             </div>
           </template>
         </div>
-        <div v-if="!isShowNumber" class="text-captionSm text-nc-content-gray-muted">
+        <div v-if="!isShowNumber" class="text-captionSm text-atm-content-gray-muted">
           {{ `${formatPercentage(percentage, precision)}` }}
         </div>
       </template>
@@ -137,19 +137,19 @@ const slotHasChildren = (name?: string) => {
   transition: visibility 0.1s ease-out, opacity 0.1s ease-out, display 0.1s allow-discrete;
 }
 
-.nc-percent-progress-circle {
+.atm-percent-progress-circle {
   line-height: 0;
 }
 
-.nc-percent-progress-circle-track {
+.atm-percent-progress-circle-track {
   stroke: #e5e5e5;
 }
 
-.dark .nc-percent-progress-circle-track {
-  stroke: var(--nc-bg-brand-inverted);
+.dark .atm-percent-progress-circle-track {
+  stroke: var(--atm-bg-brand-inverted);
 }
 
-.nc-percent-progress-circle-bar {
+.atm-percent-progress-circle-bar {
   stroke: var(--color-brand-500);
 }
 </style>

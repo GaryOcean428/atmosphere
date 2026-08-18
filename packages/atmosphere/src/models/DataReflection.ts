@@ -1,15 +1,15 @@
 import { extractProps } from '~/helpers/extractProps';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   CacheGetType,
   CacheScope,
   MetaTable,
   RootScopes,
 } from '~/utils/globals';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { Base } from '~/models';
-import NocoCache from '~/cache/NocoCache';
-import { NC_DATA_REFLECTION_SETTINGS } from '~/helpers/dataReflectionHelpers';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import { ATMOSPHERE_DATA_REFLECTION_SETTINGS } from '~/helpers/dataReflectionHelpers';
 
 export default class DataReflection {
   id?: string;
@@ -30,7 +30,7 @@ export default class DataReflection {
 
   protected static async insert(
     dataReflection: Partial<DataReflection>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertData = extractProps(dataReflection, [
       'fk_workspace_id',
@@ -54,22 +54,22 @@ export default class DataReflection {
       id?: string;
       fk_workspace_id?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const condition = extractProps(params, ['id', 'fk_workspace_id']);
 
     if (!condition.id && !condition.fk_workspace_id) {
-      NcError.badRequest('id or fk_workspace_id is required');
+      AtError.badRequest('id or fk_workspace_id is required');
     }
 
     let dataReflection = condition.id
-      ? await NocoCache.get(
+      ? await AtmosphereCache.get(
           'root',
           `${CacheScope.DATA_REFLECTION}:${condition.id}`,
           CacheGetType.TYPE_OBJECT,
         )
       : condition.fk_workspace_id
-      ? await NocoCache.get(
+      ? await AtmosphereCache.get(
           'root',
           `${CacheScope.DATA_REFLECTION}:${condition.fk_workspace_id}`,
           CacheGetType.TYPE_OBJECT,
@@ -87,17 +87,17 @@ export default class DataReflection {
         return null;
       }
 
-      dataReflection.host = NC_DATA_REFLECTION_SETTINGS.host;
-      dataReflection.port = NC_DATA_REFLECTION_SETTINGS.port;
+      dataReflection.host = ATMOSPHERE_DATA_REFLECTION_SETTINGS.host;
+      dataReflection.port = ATMOSPHERE_DATA_REFLECTION_SETTINGS.port;
 
       if (dataReflection) {
-        await NocoCache.set(
+        await AtmosphereCache.set(
           'root',
           `${CacheScope.DATA_REFLECTION}:${dataReflection.id}`,
           dataReflection,
         );
 
-        await NocoCache.set(
+        await AtmosphereCache.set(
           'root',
           `${CacheScope.DATA_REFLECTION}:${dataReflection.fk_workspace_id}`,
           dataReflection,
@@ -113,12 +113,12 @@ export default class DataReflection {
       id?: string;
       fk_workspace_id?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const condition = extractProps(params, ['id', 'fk_workspace_id']);
 
     if (!condition.id && !condition.fk_workspace_id) {
-      NcError.badRequest('id or fk_workspace_id is required');
+      AtError.badRequest('id or fk_workspace_id is required');
     }
 
     const dataReflection = await this.get(condition, ncMeta);
@@ -127,11 +127,11 @@ export default class DataReflection {
       return;
     }
 
-    await NocoCache.del(
+    await AtmosphereCache.del(
       'root',
       `${CacheScope.DATA_REFLECTION}:${dataReflection.id}`,
     );
-    await NocoCache.del(
+    await AtmosphereCache.del(
       'root',
       `${CacheScope.DATA_REFLECTION}:${dataReflection.fk_workspace_id}`,
     );
@@ -146,7 +146,7 @@ export default class DataReflection {
 
   public static async availableSchemas(
     fk_workspace_id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const data = await Base.list(fk_workspace_id, ncMeta);
 
@@ -155,14 +155,14 @@ export default class DataReflection {
 
   public static async create(
     fk_workspace_id: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<DataReflection> {
-    NcError.notImplemented('Data Reflection');
+    AtError.notImplemented('Data Reflection');
   }
 
   public static async destroy(
     fk_workspace_id: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     return;
   }
@@ -170,7 +170,7 @@ export default class DataReflection {
   public static async grantBase(
     fk_workspace_id: string,
     base_id: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return;
   }
@@ -178,7 +178,7 @@ export default class DataReflection {
   public static async revokeBase(
     fk_workspace_id: string,
     base_id: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return;
   }

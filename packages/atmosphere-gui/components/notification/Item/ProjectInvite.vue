@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProjectInviteEventType } from 'nocodb-sdk'
+import type { ProjectInviteEventType } from 'atmosphere-sdk'
 
 const props = defineProps<{
   item: ProjectInviteEventType

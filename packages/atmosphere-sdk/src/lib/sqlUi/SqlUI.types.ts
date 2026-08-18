@@ -62,7 +62,7 @@ export interface SqlUi {
 
   getUnsupportedFnList(): string[];
   /**
-   * Whether this dialect supports a NocoDB UNIQUE constraint on the given
+   * Whether this dialect supports a Atmosphere UNIQUE constraint on the given
    * field type. Optional — when absent, unique is allowed for every type in
    * UNIQUE_CONSTRAINT_SUPPORTED_TYPES (pg/mysql/sqlite).
    * MSSQL returns false for the `nvarchar(MAX)`-backed text types

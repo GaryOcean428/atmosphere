@@ -1,7 +1,7 @@
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import User from '~/models/User';
-import { NcError } from '~/helpers/catchError';
-import Noco from '~/Noco';
+import { AtError } from '~/helpers/catchError';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
 import { MetaTable } from '~/utils/globals';
 import { isReplay } from '~/helpers/replayScope';
@@ -22,19 +22,19 @@ export default class SyncSource {
     Object.assign(this, syncSource);
   }
 
-  public getUser(ncMeta = Noco.ncMeta) {
+  public getUser(ncMeta = Atmosphere.ncMeta) {
     return User.get(this.fk_user_id, ncMeta);
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     syncSourceId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const syncSource = await ncMeta.metaGet2(
       context.workspace_id,
       context.base_id,
-      MetaTable.SYNC_SOURCE,
+      MetaTable.SYATMOSPHERE_SOURCE,
       syncSourceId,
     );
     if (!syncSource) return null;
@@ -47,10 +47,10 @@ export default class SyncSource {
   }
 
   static async list(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
     sourceId?: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const condition = sourceId
       ? { base_id: baseId, source_id: sourceId }
@@ -58,7 +58,7 @@ export default class SyncSource {
     const syncSources = await ncMeta.metaList2(
       context.workspace_id,
       context.base_id,
-      MetaTable.SYNC_SOURCE,
+      MetaTable.SYATMOSPHERE_SOURCE,
       {
         condition,
         orderBy: {
@@ -78,9 +78,9 @@ export default class SyncSource {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     syncSource: Partial<SyncSource>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(syncSource, [
       'title',
@@ -103,7 +103,7 @@ export default class SyncSource {
     const { id } = await ncMeta.metaInsert2(
       context.workspace_id,
       context.base_id,
-      MetaTable.SYNC_SOURCE,
+      MetaTable.SYATMOSPHERE_SOURCE,
       insertObj,
     );
 
@@ -111,10 +111,10 @@ export default class SyncSource {
   }
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     syncSourceId: string,
     syncSource: Partial<SyncSource>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(syncSource, [
       'id',
@@ -135,7 +135,7 @@ export default class SyncSource {
     await ncMeta.metaUpdate(
       context.workspace_id,
       context.base_id,
-      MetaTable.SYNC_SOURCE,
+      MetaTable.SYATMOSPHERE_SOURCE,
       updateObj,
       syncSourceId,
     );
@@ -144,23 +144,23 @@ export default class SyncSource {
   }
 
   static async delete(
-    context: NcContext,
+    context: AtContext,
     syncSourceId: any,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return await ncMeta.metaDelete(
       context.workspace_id,
       context.base_id,
-      MetaTable.SYNC_SOURCE,
+      MetaTable.SYATMOSPHERE_SOURCE,
       syncSourceId,
     );
   }
 
-  static async deleteByUserId(userId: string, ncMeta = Noco.ncMeta) {
-    if (!userId) NcError.badRequest('User Id is required');
+  static async deleteByUserId(userId: string, ncMeta = Atmosphere.ncMeta) {
+    if (!userId) AtError.badRequest('User Id is required');
 
     return await ncMeta
-      .knex(MetaTable.SYNC_SOURCE)
+      .knex(MetaTable.SYATMOSPHERE_SOURCE)
       .where({
         fk_user_id: userId,
       })

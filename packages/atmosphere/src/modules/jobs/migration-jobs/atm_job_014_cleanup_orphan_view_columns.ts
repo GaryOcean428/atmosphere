@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import debug from 'debug';
 import { MetaTable } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 /**
  * One-time cleanup of orphaned view-column rows whose `fk_column_id` no longer
- * points to an existing `nc_columns` row.
+ * points to an existing `atm_columns` row.
  *
  * Such orphans are left behind by code paths that remove a column via raw
  * `metaDelete` instead of the cascading `Column.delete` — e.g. the Links V1→V2
@@ -19,8 +19,8 @@ import Noco from '~/Noco';
  *
  * Source-agnostic, one-time cleanup: removes dangling rows regardless of which
  * path created them. Column ids are globally unique nanoids, so a `fk_column_id`
- * that matches no `nc_columns` row anywhere is genuinely orphaned (cross-base
- * links still reference a LOCAL column that exists in `nc_columns`).
+ * that matches no `atm_columns` row anywhere is genuinely orphaned (cross-base
+ * links still reference a LOCAL column that exists in `atm_columns`).
  *
  * Idempotent — a re-run finds zero orphans. Best-effort per table: a failure is
  * logged and skipped, never aborting the whole job.
@@ -37,12 +37,12 @@ const VIEW_COLUMN_TABLES = [
 @Injectable()
 export class CleanupOrphanViewColumnsMigration {
   private readonly debugLog = debug(
-    'nc:migration-jobs:cleanup-orphan-view-columns',
+    'atm:migration-jobs:cleanup-orphan-view-columns',
   );
   private readonly logger = new Logger(CleanupOrphanViewColumnsMigration.name);
 
   async job() {
-    const knex = Noco.ncMeta.knexConnection;
+    const knex = Atmosphere.ncMeta.knexConnection;
 
     let total = 0;
 

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, EventType, ViewTypes } from 'nocodb-sdk';
+import { AppEvents, EventType, ViewTypes } from 'atmosphere-sdk';
 import type {
   CalendarUpdateReqType,
   UserType,
   ViewCreateReqType,
-} from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
-import { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { MetaService } from '~/meta/meta.service';
 import {
   type ViewWebhookManager,
@@ -16,30 +16,30 @@ import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
 import { assertPersonalViewAllowed } from '~/helpers/checkPersonalViewFeature';
 import { assertNotSandbox } from '~/helpers/sandboxGuards';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
 import { CalendarView, Model, User, View } from '~/models';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheScope } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 @Injectable()
 export class CalendarsService {
   constructor(protected readonly appHooksService: AppHooksService) {}
 
-  async calendarViewGet(context: NcContext, param: { calendarViewId: string }) {
+  async calendarViewGet(context: AtContext, param: { calendarViewId: string }) {
     return await CalendarView.get(context, param.calendarViewId);
   }
 
   @TraceCommand(OperationName.calendarViewCreate)
   async calendarViewCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       calendar: ViewCreateReqType;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
       ownedBy?: string;
       viewWebhookManager?: ViewWebhookManager;
     },
@@ -58,7 +58,7 @@ export class CalendarsService {
     );
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     await assertPersonalViewAllowed(context, param.calendar.lock_type);
@@ -75,7 +75,7 @@ export class CalendarsService {
       ncMeta,
     );
     if (existingView) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'view',
         alias: param.calendar.title,
         label: 'title',
@@ -114,7 +114,7 @@ export class CalendarsService {
 
     const view = await View.get(context, id, false, ncMeta);
 
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       context,
       CacheScope.VIEW,
       [view.fk_model_id],
@@ -139,7 +139,7 @@ export class CalendarsService {
 
     await view.getView(context);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -160,11 +160,11 @@ export class CalendarsService {
 
   @TraceCommand(OperationName.calendarViewUpdate)
   async calendarViewUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       calendarViewId: string;
       calendar: CalendarUpdateReqType;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -177,7 +177,7 @@ export class CalendarsService {
     const view = await View.get(context, param.calendarViewId, false, ncMeta);
 
     if (!view) {
-      NcError.viewNotFound(param.calendarViewId);
+      AtError.viewNotFound(param.calendarViewId);
     }
 
     const viewWebhookManager =
@@ -226,7 +226,7 @@ export class CalendarsService {
     // Strip the stored bcrypt password hash from every outbound payload.
     const safeView = View.maskPasswordForResponse(view);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,

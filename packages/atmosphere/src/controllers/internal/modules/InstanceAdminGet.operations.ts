@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import type { OPERATION_SCOPES } from '~/controllers/internal/operationScopes';
-import type { NcContext, NcRequest } from 'nocodb-sdk';
+import type { AtContext, AtRequest } from 'atmosphere-sdk';
 import type {
   InternalApiModule,
   InternalGETResponseType,
 } from '~/utils/internal-type';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { User, Workspace } from '~/models';
 import { calculateInstanceEditorCount } from '~/helpers/instanceAdminHelpers';
@@ -22,7 +22,7 @@ export class InstanceAdminGetOperations
   httpMethod = 'GET' as const;
 
   async handle(
-    _context: NcContext,
+    _context: AtContext,
     {
       operation,
     }: {
@@ -30,7 +30,7 @@ export class InstanceAdminGetOperations
       baseId: string;
       operation: keyof typeof OPERATION_SCOPES;
       payload: any;
-      req: NcRequest;
+      req: AtRequest;
     },
   ): InternalGETResponseType {
     switch (operation) {
@@ -44,7 +44,7 @@ export class InstanceAdminGetOperations
   }
 
   private async getStats() {
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
 
     const [totalWorkspaces, totalUsers, editorCount, baseCountResult] =
       await Promise.all([
@@ -72,7 +72,7 @@ export class InstanceAdminGetOperations
   }
 
   private async getWorkspaces() {
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
 
     const workspaces = await ncMeta.knexConnection
       .select(
@@ -127,7 +127,7 @@ export class InstanceAdminGetOperations
   }
 
   private async getBases() {
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
 
     const bases = await ncMeta.knexConnection
       .select(

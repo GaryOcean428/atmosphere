@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PlanFeatureTypes, PlanTitles } from 'nocodb-sdk'
+import { PlanFeatureTypes, PlanTitles } from 'atmosphere-sdk'
 import {
   type BaseType,
   type LinkToAnotherRecordType,
@@ -8,7 +8,7 @@ import {
   UITypes,
   type WorkspaceType,
   WorkspaceUserRoles,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 const props = defineProps<{
   modelValue: boolean
@@ -257,7 +257,7 @@ onMounted(() => {
     :mask-closable="!isLoading"
     :keyboard="!isLoading"
     centered
-    wrap-class-name="nc-modal-table-duplicate"
+    wrap-class-name="atm-modal-table-duplicate"
     :mask-style="{
       'background-color': 'rgba(0, 0, 0, 0.08)',
     }"
@@ -266,52 +266,52 @@ onMounted(() => {
     @keydown.esc="dialogShow = false"
   >
     <div>
-      <div class="text-base text-nc-content-gray-emphasis leading-6 font-bold self-center" @dblclick="isEaster = !isEaster">
+      <div class="text-base text-atm-content-gray-emphasis leading-6 font-bold self-center" @dblclick="isEaster = !isEaster">
         {{ $t('general.duplicate') }} {{ $t('objects.table') }} "{{ table.title }}"
       </div>
 
       <div class="mt-5 flex gap-3 flex-col">
         <div class="flex">
           <div
-            class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+            class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
             @click="options.includeData = !options.includeData"
           >
-            <NcSwitch :checked="options.includeData" />
+            <AtSwitch :checked="options.includeData" />
             {{ $t('labels.includeRecords') }}
           </div>
         </div>
         <div class="flex">
           <div
-            class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+            class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
             @click="options.includeViews = !options.includeViews"
           >
-            <NcSwitch :checked="options.includeViews" />
+            <AtSwitch :checked="options.includeViews" />
             {{ $t('labels.includeView') }}
           </div>
         </div>
 
         <div v-show="isEaster" class="flex">
           <div
-            class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+            class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
             @click="options.includeHooks = !options.includeHooks"
           >
-            <NcSwitch :checked="options.includeHooks" />
+            <AtSwitch :checked="options.includeHooks" />
             {{ $t('labels.includeWebhook') }}
           </div>
         </div>
       </div>
 
       <div v-if="isEeActive" class="mb-5">
-        <NcDivider divider-class="!my-5" />
+        <AtDivider divider-class="!my-5" />
 
-        <div v-if="isTargetOtherWsSufficientPlan" class="text-nc-content-gray font-medium leading-5 mb-2">
+        <div v-if="isTargetOtherWsSufficientPlan" class="text-atm-content-gray font-medium leading-5 mb-2">
           {{ $t('labels.workspace') }}
           <div class="flex items-center content-center gap-2">
-            <NcTooltip :disabled="canTargetOtherBase" class="mt-2 flex-1">
+            <AtTooltip :disabled="canTargetOtherBase" class="mt-2 flex-1">
               <template v-if="!canTargetOtherBase" #title>
                 <span> This table contains linked records that reference data in the current base. </span>
               </template>
-              <NcListDropdown v-model:is-open="wsDropdownOpen" :disabled="!canTargetOtherBase" default-slot-wrapper-class="gap-2">
+              <AtListDropdown v-model:is-open="wsDropdownOpen" :disabled="!canTargetOtherBase" default-slot-wrapper-class="gap-2">
                 <GeneralWorkspaceIcon size="small" :workspace="targetWorkspace!" />
 
                 <div class="flex-1 capitalize truncate">
@@ -319,7 +319,7 @@ onMounted(() => {
                 </div>
 
                 <div class="flex gap-2 items-center">
-                  <div v-if="activeWorkspace?.id === targetWorkspace?.id" class="text-nc-content-gray-muted leading-4.5 text-xs">
+                  <div v-if="activeWorkspace?.id === targetWorkspace?.id" class="text-atm-content-gray-muted leading-4.5 text-xs">
                     {{ $t('labels.currentWorkspace') }}
                   </div>
                   <GeneralIcon
@@ -332,12 +332,12 @@ onMounted(() => {
                 </div>
 
                 <template #overlay="{ onEsc }">
-                  <NcList
+                  <AtList
                     v-model:open="wsDropdownOpen"
                     :value="targetWorkspace?.id ?? ''"
                     :item-height="32"
                     close-on-select
-                    class="nc-base-workspace-selection w-full"
+                    class="atm-base-workspace-selection w-full"
                     :min-items-for-search="6"
                     container-class-name="w-full"
                     :list="workspaceOptions"
@@ -348,25 +348,25 @@ onMounted(() => {
                     @escape="onEsc"
                   >
                     <template #listHeader>
-                      <div class="text-nc-content-gray-muted text-[13px] px-3 pt-2.5 pb-1.5 font-medium leading-5">
+                      <div class="text-atm-content-gray-muted text-[13px] px-3 pt-2.5 pb-1.5 font-medium leading-5">
                         {{ $t('labels.duplicateTableMessage') }}
                       </div>
 
-                      <NcDivider />
+                      <AtDivider />
                     </template>
 
                     <template #listItemExtraLeft="{ option: optionItem }">
                       <GeneralWorkspaceIcon :workspace="optionItem as WorkspaceType" size="small" />
                     </template>
                     <template #listItemExtraRight="{ option: optionItem }">
-                      <div v-if="activeWorkspace?.id === optionItem.id" class="text-nc-content-gray-muted leading-4.5 text-xs">
+                      <div v-if="activeWorkspace?.id === optionItem.id" class="text-atm-content-gray-muted leading-4.5 text-xs">
                         {{ $t('labels.currentWorkspace') }}
                       </div>
                     </template>
-                  </NcList>
+                  </AtList>
                 </template>
-              </NcListDropdown>
-            </NcTooltip>
+              </AtListDropdown>
+            </AtTooltip>
             <LazyPaymentUpgradeBadge
               class="mt-2"
               :feature="PlanFeatureTypes.FEATURE_DUPLICATE_TABLE_TO_OTHER_WS"
@@ -377,11 +377,11 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="text-nc-content-gray font-medium leading-5">
+        <div class="text-atm-content-gray font-medium leading-5">
           {{ $t('objects.project') }}
 
           <div class="flex items-center content-center gap-2">
-            <NcTooltip :disabled="canTargetOtherBase && isTargetOtherBaseSufficientPlan" class="mt-2 flex-1">
+            <AtTooltip :disabled="canTargetOtherBase && isTargetOtherBaseSufficientPlan" class="mt-2 flex-1">
               <template v-if="!canTargetOtherBase || !isTargetOtherBaseSufficientPlan" #title>
                 <span v-if="!canTargetOtherBase">
                   This table contains linked records that reference data in the current base.
@@ -390,7 +390,7 @@ onMounted(() => {
                   {{ $t('upgrade.upgradeToDuplicateTableToOtherBase') }}
                 </span>
               </template>
-              <NcListDropdown
+              <AtListDropdown
                 v-model:is-open="baseDropdownOpen"
                 :disabled="!canTargetOtherBase || !isTargetOtherBaseSufficientPlan"
                 default-slot-wrapper-class="gap-2"
@@ -413,7 +413,7 @@ onMounted(() => {
                   <div class="flex-1 capitalize truncate flex gap-1"></div>
                 </template>
                 <div class="flex gap-2 items-center">
-                  <div v-if="activeBase?.id === targetBase?.id" class="text-nc-content-gray-muted leading-4.5 text-xs">
+                  <div v-if="activeBase?.id === targetBase?.id" class="text-atm-content-gray-muted leading-4.5 text-xs">
                     {{ $t('labels.currentBase') }}
                   </div>
                   <GeneralIcon
@@ -426,12 +426,12 @@ onMounted(() => {
                 </div>
 
                 <template #overlay="{ onEsc }">
-                  <NcList
+                  <AtList
                     v-model:open="baseDropdownOpen"
                     :value="targetBase?.id ?? ''"
                     :item-height="32"
                     close-on-select
-                    class="nc-base-workspace-selection"
+                    class="atm-base-workspace-selection"
                     :min-items-for-search="6"
                     container-class-name="w-full"
                     :list="targetBases"
@@ -442,11 +442,11 @@ onMounted(() => {
                     @escape="onEsc"
                   >
                     <template #listHeader>
-                      <div class="text-nc-content-gray-muted text-[13px] px-3 pt-2.5 pb-1.5 font-medium leading-5">
+                      <div class="text-atm-content-gray-muted text-[13px] px-3 pt-2.5 pb-1.5 font-medium leading-5">
                         {{ $t('labels.duplicateTableMessage') }}
                       </div>
 
-                      <NcDivider />
+                      <AtDivider />
                     </template>
 
                     <template #listItemExtraLeft="{ option: optionItem }">
@@ -461,14 +461,14 @@ onMounted(() => {
                       />
                     </template>
                     <template #listItemExtraRight="{ option: optionItem }">
-                      <div v-if="activeBase?.id === optionItem.id" class="text-nc-content-gray-muted leading-4.5 text-xs">
+                      <div v-if="activeBase?.id === optionItem.id" class="text-atm-content-gray-muted leading-4.5 text-xs">
                         {{ $t('labels.currentBase') }}
                       </div>
                     </template>
-                  </NcList>
+                  </AtList>
                 </template>
-              </NcListDropdown>
-            </NcTooltip>
+              </AtListDropdown>
+            </AtTooltip>
             <LazyPaymentUpgradeBadge
               class="mt-2"
               :feature="PlanFeatureTypes.FEATURE_DUPLICATE_TABLE_TO_OTHER_BASE"
@@ -480,27 +480,27 @@ onMounted(() => {
       </div>
     </div>
     <div class="flex flex-row gap-x-2 mt-5 justify-end">
-      <NcButton v-if="!isLoading" key="back" type="secondary" size="small" @click="dialogShow = false">{{
+      <AtButton v-if="!isLoading" key="back" type="secondary" size="small" @click="dialogShow = false">{{
         $t('general.cancel')
-      }}</NcButton>
-      <NcButton key="submit" v-e="['a:table:duplicate']" type="primary" size="small" :loading="isLoading" @click="_duplicate">
+      }}</AtButton>
+      <AtButton key="submit" v-e="['a:table:duplicate']" type="primary" size="small" :loading="isLoading" @click="_duplicate">
         Duplicate Table
-      </NcButton>
+      </AtButton>
     </div>
   </GeneralModal>
 </template>
 
 <style scoped lang="scss">
-.nc-list-root {
+.atm-list-root {
   @apply !w-[432px] !pt-0;
 }
 </style>
 
 <style lang="scss">
-.nc-base-workspace-selection {
-  .nc-list {
+.atm-base-workspace-selection {
+  .atm-list {
     @apply !px-1;
-    .nc-list-item {
+    .atm-list-item {
       @apply !py-1;
     }
   }

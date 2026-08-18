@@ -1,31 +1,31 @@
 import path from 'path';
-import { NcError } from '~/helpers/catchError';
-import { getToolDir } from '~/utils/nc-config';
+import { AtError } from '~/helpers/catchError';
+import { getToolDir } from '~/utils/atm-config';
 
 /**
- * Reject SQLite filenames that point at NocoDB's own state (`noco.db`,
- * `nc_data.db`, `nc_minimal_dbs/`). SQLite is not a supported production
+ * Reject SQLite filenames that point at Atmosphere's own state (`atmosphere.db`,
+ * `atm_data.db`, `atm_minimal_dbs/`). SQLite is not a supported production
  * database on cloud; self-host operators are trusted for everything else.
  */
 export function validateSqliteFilename(rawFilename: unknown): string {
   if (typeof rawFilename !== 'string' || rawFilename.length === 0) {
-    NcError.badRequest('SQLite filename is required');
+    AtError.badRequest('SQLite filename is required');
   }
   if ((rawFilename as string).includes('\0')) {
-    NcError.badRequest('Invalid SQLite filename');
+    AtError.badRequest('Invalid SQLite filename');
   }
   const resolved = path.resolve(rawFilename as string);
   const toolDir = path.resolve(getToolDir());
 
   if (
-    resolved === path.resolve(toolDir, 'noco.db') ||
-    resolved === path.resolve(toolDir, 'nc_data.db')
+    resolved === path.resolve(toolDir, 'atmosphere.db') ||
+    resolved === path.resolve(toolDir, 'atm_data.db')
   ) {
-    NcError.badRequest('Access to NocoDB internal database is not allowed');
+    AtError.badRequest('Access to Atmosphere internal database is not allowed');
   }
-  const minimalDbs = path.resolve(toolDir, 'nc_minimal_dbs');
+  const minimalDbs = path.resolve(toolDir, 'atm_minimal_dbs');
   if (resolved === minimalDbs || resolved.startsWith(minimalDbs + path.sep)) {
-    NcError.badRequest('Access to NocoDB tenant databases is not allowed');
+    AtError.badRequest('Access to Atmosphere tenant databases is not allowed');
   }
   return resolved;
 }

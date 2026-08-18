@@ -2,17 +2,17 @@ import { Readable } from 'stream';
 import debug from 'debug';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { OperationSource } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+import { OperationSource } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { Base, Source } from '~/models';
 import { getFilteredAgents } from '~/utils/ssrf';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { assertNotSandbox } from '~/helpers/sandboxGuards';
 import { ExportService } from '~/modules/jobs/jobs/export-import/export.service';
 
 @Injectable()
 export class MigrateService {
-  private readonly debugLog = debug('nc:jobs:export');
+  private readonly debugLog = debug('atm:jobs:export');
 
   constructor(private readonly exportService: ExportService) {}
 
@@ -24,12 +24,12 @@ export class MigrateService {
     instanceUrl,
     req,
   }: {
-    context: NcContext;
+    context: AtContext;
     base: Base;
     source: Source;
     secret: string;
     instanceUrl: string;
-    req: NcRequest;
+    req: AtRequest;
   }) {
     await assertNotSandbox(
       context,
@@ -37,11 +37,11 @@ export class MigrateService {
     );
 
     if (!base) {
-      NcError.get(context).baseNotFound('Base not found!');
+      AtError.get(context).baseNotFound('Base not found!');
     }
 
     if (!source) {
-      NcError.get(context).sourceNotFound('Source not found!');
+      AtError.get(context).sourceNotFound('Source not found!');
     }
 
     const models = (await source.getModels(context)).filter(
@@ -55,7 +55,7 @@ export class MigrateService {
       });
 
     if (!exportedModels) {
-      NcError.get(context).baseError('Export failed for source ' + source.id);
+      AtError.get(context).baseError('Export failed for source ' + source.id);
     }
 
     const exportedUsers = await this.exportService.serializeUsers(context, {

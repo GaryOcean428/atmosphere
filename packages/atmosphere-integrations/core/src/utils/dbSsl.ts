@@ -1,4 +1,4 @@
-import { SSLUsage } from 'nocodb-sdk';
+import { SSLUsage } from 'atmosphere-sdk';
 
 // Re-exported so the DB auth integrations can build their SSL-mode dropdowns
 // from the same enum the built-in "Database" data-source form uses, keeping

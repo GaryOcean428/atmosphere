@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import MdiPdfBox from '~icons/nc-icons-v2/file-type-pdf'
-import MdiFileWordOutline from '~icons/nc-icons-v2/file-type-word'
-import MdiFilePowerpointBox from '~icons/nc-icons-v2/file-type-presentation'
-import MdiFileExcelOutline from '~icons/nc-icons-v2/file-type-csv'
-import IcOutlineInsertDriveFile from '~icons/nc-icons-v2/file-type-unknown'
+import MdiPdfBox from '~icons/atm-icons-v2/file-type-pdf'
+import MdiFileWordOutline from '~icons/atm-icons-v2/file-type-word'
+import MdiFilePowerpointBox from '~icons/atm-icons-v2/file-type-presentation'
+import MdiFileExcelOutline from '~icons/atm-icons-v2/file-type-csv'
+import IcOutlineInsertDriveFile from '~icons/atm-icons-v2/file-type-unknown'
 
 interface Props {
   alt?: string
@@ -74,7 +74,7 @@ const onError = async () => {
         :src="srcs[index]"
         :alt="props?.alt || ''"
         :class="[imageClass, { '!object-contain': props.objectFit === 'contain' }]"
-        class="m-auto h-full max-h-full w-auto nc-attachment-image object-cover origin-center"
+        class="m-auto h-full max-h-full w-auto atm-attachment-image object-cover origin-center"
         loading="lazy"
         @error="onError"
       />

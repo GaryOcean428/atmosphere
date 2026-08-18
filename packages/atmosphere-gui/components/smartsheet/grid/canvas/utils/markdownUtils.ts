@@ -1,4 +1,4 @@
-import type { UserType } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
 import { decode as decodeHtmlEntities } from 'html-entities'
 
 type MarkdownStyle = 'bold' | 'italic' | 'underline' | 'strikethrough' | 'link' | 'mention'

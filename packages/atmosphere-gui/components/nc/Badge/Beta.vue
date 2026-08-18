@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import type { NcBadgeProps } from './index.vue'
+import type { AtBadgeProps } from './index.vue'
 
-withDefaults(defineProps<NcBadgeProps>(), {
+withDefaults(defineProps<AtBadgeProps>(), {
   border: false,
   color: 'brand',
   size: 'xs',
@@ -9,9 +9,9 @@ withDefaults(defineProps<NcBadgeProps>(), {
 </script>
 
 <template>
-  <NcBadge :border="border" :color="color" :size="size" class="text-bodyDefaultSm">
+  <AtBadge :border="border" :color="color" :size="size" class="text-bodyDefaultSm">
     <slot>
       {{ $t('general.beta') }}
     </slot>
-  </NcBadge>
+  </AtBadge>
 </template>

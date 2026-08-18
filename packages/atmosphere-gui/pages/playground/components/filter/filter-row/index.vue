@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ClientType } from 'nocodb-sdk'
+import { ClientType } from 'atmosphere-sdk'
 import { defaultColumns } from '../../../-helper/columns'
 const columns = defaultColumns
 
@@ -42,7 +42,7 @@ const isFieldInaccessible1 = ref(true)
 </script>
 
 <template>
-  <div class="bg-nc-bg-gray-light overflow-y-scroll">
+  <div class="bg-atm-bg-gray-light overflow-y-scroll">
     <a-card>
       <div class="flex flex-col gap-2">
         <h4>Simple</h4>
@@ -50,48 +50,48 @@ const isFieldInaccessible1 = ref(true)
         <div class="flex">
           <span>Filter:</span>
 
-          <div class="w-[300px] max-h-[100px] overflow-wrap bg-nc-bg-gray-dark overflow-y-scroll">
+          <div class="w-[300px] max-h-[100px] overflow-wrap bg-atm-bg-gray-dark overflow-y-scroll">
             {{ filter1 }}
           </div>
 
           <span>Last change event:</span>
-          <div class="w-[300px] max-h-[100px] overflow-wrap bg-nc-bg-gray-dark overflow-y-scroll">
+          <div class="w-[300px] max-h-[100px] overflow-wrap bg-atm-bg-gray-dark overflow-y-scroll">
             {{ lastChangeEvent1 }}
           </div>
         </div>
         <div class="flex">
           <span>Delete: {{ deleted1Times }}</span>
 
-          <div class="w-[300px] max-h-[100px] overflow-wrap bg-nc-bg-gray-dark overflow-y-scroll">
+          <div class="w-[300px] max-h-[100px] overflow-wrap bg-atm-bg-gray-dark overflow-y-scroll">
             {{ deleted1LastEvent }}
           </div>
         </div>
         <div class="flex gap-2">
           <div class="flex flex-col gap-2">
-            <div><NcSwitch v-model:checked="options1.disabled">disabled</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.webHook">webHook</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.link">link</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.isLogicalOpChangeAllowed">isLogicalOpChangeAllowed</NcSwitch><br /></div>
-            <div><NcSwitch v-model:checked="options1.isLockedView">isLockedView</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.showNullAndEmptyInFilter">showNullAndEmptyInFilter</NcSwitch></div>
+            <div><AtSwitch v-model:checked="options1.disabled">disabled</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.webHook">webHook</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.link">link</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.isLogicalOpChangeAllowed">isLogicalOpChangeAllowed</AtSwitch><br /></div>
+            <div><AtSwitch v-model:checked="options1.isLockedView">isLockedView</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.showNullAndEmptyInFilter">showNullAndEmptyInFilter</AtSwitch></div>
             <div>
               dbClientType:
-              <NcSelect v-model:value="options1.dbClientType">
+              <AtSelect v-model:value="options1.dbClientType">
                 <a-select-option :value="ClientType.PG"> PG </a-select-option>
                 <a-select-option :value="ClientType.SQLITE"> sqlite </a-select-option>
                 <a-select-option :value="ClientType.MYSQL"> mysql </a-select-option>
-              </NcSelect>
+              </AtSelect>
             </div>
             <div>
-              Index: <input v-model="options1.index" type="number" class="text-xs p-1 border-nc-border-gray-medium" /><br />
+              Index: <input v-model="options1.index" type="number" class="text-xs p-1 border-atm-border-gray-medium" /><br />
             </div>
           </div>
           <div class="flex">
-            <NcSelect v-model:value="column1Id" @change="filter1.fk_column_id = column1Id">
+            <AtSelect v-model:value="column1Id" @change="filter1.fk_column_id = column1Id">
               <a-select-option v-for="col of columns" :key="col.id" :value="col.id">
                 {{ col.id }} - {{ col.uidt }}
               </a-select-option>
-            </NcSelect>
+            </AtSelect>
             <div class="w-[300px] overflow-wrap">
               {{ column1 }}
             </div>
@@ -148,7 +148,7 @@ const isFieldInaccessible1 = ref(true)
 
         <div class="flex gap-2">
           <div class="flex flex-col gap-2">
-            <div><NcSwitch v-model:checked="isFieldInaccessible1">isFieldInaccessible1</NcSwitch></div>
+            <div><AtSwitch v-model:checked="isFieldInaccessible1">isFieldInaccessible1</AtSwitch></div>
           </div>
         </div>
       </div>
@@ -168,11 +168,11 @@ const isFieldInaccessible1 = ref(true)
         @delete="onFilter1Delete($event)"
       >
         <template v-if="isFieldInaccessible1" #fieldInaccessibleError>
-          <NcTooltip class="flex-1 flex items-center gap-2 px-2 !text-nc-content-red-medium cursor-pointer" :disabled="false">
+          <AtTooltip class="flex-1 flex items-center gap-2 px-2 !text-atm-content-red-medium cursor-pointer" :disabled="false">
             <template #title> Field inaccessible error message</template>
             <GeneralIcon icon="alertTriangle" class="flex-none" />
             {{ $t('title.fieldInaccessible') }}
-          </NcTooltip>
+          </AtTooltip>
         </template>
       </SmartsheetToolbarFilterRow>
     </div>

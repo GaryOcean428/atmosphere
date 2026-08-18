@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { GalleryType, KanbanType, TableType, ViewType } from 'nocodb-sdk'
-import { PermissionEntity, PermissionKey, PlanFeatureTypes, PlanTitles, ViewTypes, viewTypeAlias } from 'nocodb-sdk'
+import type { GalleryType, KanbanType, TableType, ViewType } from 'atmosphere-sdk'
+import { PermissionEntity, PermissionKey, PlanFeatureTypes, PlanTitles, ViewTypes, viewTypeAlias } from 'atmosphere-sdk'
 import { LockType } from '#imports'
 
 const props = withDefaults(
@@ -388,11 +388,11 @@ defineOptions({
 
 /**
  * ## Known Issue and Fix
- * - **Issue**: When conditionally rendering `NcMenuItem` using `v-if` without a corresponding `v-else` fallback,
+ * - **Issue**: When conditionally rendering `AtMenuItem` using `v-if` without a corresponding `v-else` fallback,
  *   Vue may throw a
  * `NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node.`.
  *
- * - This issue occurs specifically when the `NcMenu` is open, and the condition changes dynamically (e.g., during runtime state changes)
+ * - This issue occurs specifically when the `AtMenu` is open, and the condition changes dynamically (e.g., during runtime state changes)
  *
  * - **Fix**: Use `v-show` instead of `v-if` when no replacement (fallback) node is provided. This keeps the element
  *   in the DOM but toggles its visibility, preventing the DOM manipulation issue.
@@ -400,7 +400,7 @@ defineOptions({
 </script>
 
 <template>
-  <NcMenu
+  <AtMenu
     v-if="view"
     v-bind="$attrs"
     :data-testid="`view-sidebar-view-actions-${view!.alias || view!.title}`"
@@ -408,7 +408,7 @@ defineOptions({
     data-id="toolbar-actions"
     variant="small"
   >
-    <NcMenuItemCopyId
+    <AtMenuItemCopyId
       v-if="view"
       :id="view.id"
       :tooltip="$t('labels.clickToCopyViewID')"
@@ -420,9 +420,9 @@ defineOptions({
     />
     <template v-if="!showOnlyCopyId">
       <template v-if="isUIAllowed('viewCreateOrEdit')">
-        <NcDivider />
+        <AtDivider />
         <template v-if="inSidebar">
-          <NcMenuItem v-if="canModifyView" @click="onRenameMenuClick">
+          <AtMenuItem v-if="canModifyView" @click="onRenameMenuClick">
             <GeneralIcon icon="rename" class="opacity-80" />
             {{
               $t('general.renameEntity', {
@@ -430,10 +430,10 @@ defineOptions({
                   view.type !== ViewTypes.FORM ? $t('objects.view').toLowerCase() : $t('objects.viewType.form').toLowerCase(),
               })
             }}
-          </NcMenuItem>
-          <NcTooltip v-else>
+          </AtMenuItem>
+          <AtTooltip v-else>
             <template #title> {{ modifyViewDisabledReason }} </template>
-            <NcMenuItem disabled>
+            <AtMenuItem disabled>
               <GeneralIcon icon="rename" class="opacity-80" />
               {{
                 $t('general.renameEntity', {
@@ -441,35 +441,35 @@ defineOptions({
                     view.type !== ViewTypes.FORM ? $t('objects.view').toLowerCase() : $t('objects.viewType.form').toLowerCase(),
                 })
               }}
-            </NcMenuItem>
-          </NcTooltip>
-          <NcMenuItem v-if="canModifyView" @click="onDescriptionUpdateClick">
+            </AtMenuItem>
+          </AtTooltip>
+          <AtMenuItem v-if="canModifyView" @click="onDescriptionUpdateClick">
             <GeneralIcon icon="ncAlignLeft" class="opacity-80" />
 
             {{ $t('labels.editDescription') }}
-          </NcMenuItem>
-          <NcTooltip v-else>
+          </AtMenuItem>
+          <AtTooltip v-else>
             <template #title> {{ modifyViewDisabledReason }} </template>
-            <NcMenuItem disabled>
+            <AtMenuItem disabled>
               <GeneralIcon icon="ncAlignLeft" class="opacity-80" />
               {{ $t('labels.editDescription') }}
-            </NcMenuItem>
-          </NcTooltip>
-          <NcMenuItemChangeIcon v-if="canModifyView" v-e="['c:view:change-icon']" @change-icon="emits('changeIcon')" />
-          <NcTooltip v-else>
+            </AtMenuItem>
+          </AtTooltip>
+          <AtMenuItemChangeIcon v-if="canModifyView" v-e="['c:view:change-icon']" @change-icon="emits('changeIcon')" />
+          <AtTooltip v-else>
             <template #title> {{ modifyViewDisabledReason }} </template>
-            <NcMenuItemChangeIcon disabled />
-          </NcTooltip>
+            <AtMenuItemChangeIcon disabled />
+          </AtTooltip>
         </template>
-        <NcMenuItem @click="onDuplicate">
+        <AtMenuItem @click="onDuplicate">
           <GeneralLoader v-if="isOnDuplicateLoading" size="regular" />
-          <GeneralIcon v-else class="nc-view-copy-icon opacity-80" icon="duplicate" />
+          <GeneralIcon v-else class="atm-view-copy-icon opacity-80" icon="duplicate" />
           {{
             $t('general.duplicateEntity', {
               entity: view.type !== ViewTypes.FORM ? $t('objects.view').toLowerCase() : $t('objects.viewType.form').toLowerCase(),
             })
           }}
-        </NcMenuItem>
+        </AtMenuItem>
 
         <SmartsheetToolbarViewActionMenuMoveToSection
           v-if="showEEFeatures"
@@ -491,7 +491,7 @@ defineOptions({
         </template>
         <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_COPY_VIEW_SETTING_FROM_OTHER">
           <template #default="{ click }">
-            <NcMenuItem
+            <AtMenuItem
               inner-class="w-full"
               :disabled="copyViewConfigMenuItemStatus.isDisabled"
               @click="click(PlanFeatureTypes.FEATURE_COPY_VIEW_SETTING_FROM_OTHER, () => onClickCopyViewConfig())"
@@ -522,16 +522,16 @@ defineOptions({
                   :on-click-callback="() => emits('closeModal')"
                 />
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
           </template>
         </PaymentUpgradeBadgeProvider>
       </SmartsheetToolbarNotAllowedTooltip>
       <template v-if="view.type !== ViewTypes.FORM">
-        <NcDivider />
+        <AtDivider />
         <template v-if="isUploadAllowed">
-          <NcSubMenu key="upload" variant="small" :disabled="isUploadDisabledForMmTable">
+          <AtSubMenu key="upload" variant="small" :disabled="isUploadDisabledForMmTable">
             <template #title>
-              <NcTooltip
+              <AtTooltip
                 :disabled="!isUploadDisabledForMmTable"
                 :title="$t('tooltip.uploadNotSupportedOnJunctionTable')"
                 placement="right"
@@ -544,17 +544,17 @@ defineOptions({
                       sidebar: props.inSidebar,
                     },
                   ]"
-                  class="nc-base-menu-item group"
+                  class="atm-base-menu-item group"
                 >
                   <GeneralIcon icon="upload" class="opacity-80" />
                   {{ $t('general.upload') }}
                 </div>
-              </NcTooltip>
+              </AtTooltip>
             </template>
 
-            <NcMenuItemLabel>
+            <AtMenuItemLabel>
               {{ $t('activity.uploadData') }}
-            </NcMenuItemLabel>
+            </AtMenuItemLabel>
 
             <template v-for="(dialog, type) in quickImportDialogs">
               <PermissionsTooltip
@@ -567,7 +567,7 @@ defineOptions({
                 :description="$t('objects.permissions.uploadDataTooltip')"
               >
                 <template #default="{ isAllowed }">
-                  <NcMenuItem
+                  <AtMenuItem
                     :disabled="!isAllowed || !!table?.synced"
                     :title="!!table?.synced ? $t('tooltip.cantUploadDataInSyncedTable') : undefined"
                     @click="onImportClick(dialog)"
@@ -580,7 +580,7 @@ defineOptions({
                         },
                       ]"
                       :class="{ disabled: lockType === LockType.Locked || !!table?.synced }"
-                      class="nc-base-menu-item"
+                      class="atm-base-menu-item"
                     >
                       <component
                         :is="importAlias[type].icon"
@@ -589,13 +589,13 @@ defineOptions({
                       />
                       {{ importAlias[type]?.title }}
                     </div>
-                  </NcMenuItem>
+                  </AtMenuItem>
                 </template>
               </PermissionsTooltip>
             </template>
-          </NcSubMenu>
+          </AtSubMenu>
         </template>
-        <NcSubMenu key="download" variant="small">
+        <AtSubMenu key="download" variant="small">
           <template #title>
             <div
               v-e="[
@@ -604,7 +604,7 @@ defineOptions({
                   sidebar: props.inSidebar,
                 },
               ]"
-              class="nc-base-menu-item group nc-view-context-download-option"
+              class="atm-base-menu-item group atm-view-context-download-option"
             >
               <GeneralIcon icon="download" class="opacity-80" />
               {{ $t('general.download') }}
@@ -612,19 +612,19 @@ defineOptions({
           </template>
 
           <LazySmartsheetToolbarExportSubActions />
-        </NcSubMenu>
+        </AtSubMenu>
       </template>
 
       <template v-if="isUIAllowed('viewCreateOrEdit')">
-        <NcDivider />
-        <NcSubMenu
+        <AtDivider />
+        <AtSubMenu
           key="lock-type"
           variant="small"
           :disabled="disableLockTypeMenu"
           class="scrollbar-thin-dull max-h-90vh overflow-auto !py-0"
         >
           <template #title>
-            <NcTooltip :disabled="!disableLockTypeMenu" :title="lockTypeMenuDisabledReason" placement="right" class="w-full">
+            <AtTooltip :disabled="!disableLockTypeMenu" :title="lockTypeMenuDisabledReason" placement="right" class="w-full">
               <div
                 v-e="[
                   'c:navdraw:preview-as',
@@ -637,33 +637,33 @@ defineOptions({
                 <div>
                   {{ $t('labels.viewMode') }}
                 </div>
-                <div class="nc-base-menu-item flex !flex-shrink group !py-1 !px-1 rounded-md bg-nc-bg-brand">
+                <div class="atm-base-menu-item flex !flex-shrink group !py-1 !px-1 rounded-md bg-atm-bg-brand">
                   <LazySmartsheetToolbarLockType
                     :type="lockType"
-                    class="flex nc-view-actions-lock-type !text-nc-content-brand !flex-shrink !cursor-auto"
+                    class="flex atm-view-actions-lock-type !text-atm-content-brand !flex-shrink !cursor-auto"
                     hide-tick
                   />
                 </div>
                 <div class="flex flex-grow"></div>
               </div>
-            </NcTooltip>
+            </AtTooltip>
           </template>
 
-          <NcMenuItemLabel>
+          <AtMenuItemLabel>
             {{ $t('labels.viewMode') }}
-          </NcMenuItemLabel>
+          </AtMenuItemLabel>
           <SmartsheetToolbarNotAllowedTooltip :enabled="disableCollaborativeOption">
             <template #title>
               <div class="max-w-80">{{ collabOptionDisabledReason }}</div>
             </template>
-            <NcMenuItem
-              class="!mx-1 !py-2 !rounded-md nc-view-action-lock-subaction max-w-[100px]"
-              data-testid="nc-view-action-lock-subaction-Collaborative"
+            <AtMenuItem
+              class="!mx-1 !py-2 !rounded-md atm-view-action-lock-subaction max-w-[100px]"
+              data-testid="atm-view-action-lock-subaction-Collaborative"
               :disabled="disableCollaborativeOption"
               @click="changeLockType(LockType.Collaborative)"
             >
               <SmartsheetToolbarLockType :type="LockType.Collaborative" :disabled="disableCollaborativeOption" />
-            </NcMenuItem>
+            </AtMenuItem>
           </SmartsheetToolbarNotAllowedTooltip>
           <SmartsheetToolbarNotAllowedTooltip v-if="showEEFeatures" :enabled="disablePersonalView">
             <template #title>
@@ -671,10 +671,10 @@ defineOptions({
             </template>
             <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_PERSONAL_VIEWS">
               <template #default="{ click }">
-                <NcMenuItem
-                  data-testid="nc-view-action-lock-subaction-Personal"
+                <AtMenuItem
+                  data-testid="atm-view-action-lock-subaction-Personal"
                   :disabled="disablePersonalView"
-                  class="!mx-1 !py-2 !rounded-md nc-view-action-lock-subaction max-w-[100px] children:w-full children:children:w-full group"
+                  class="!mx-1 !py-2 !rounded-md atm-view-action-lock-subaction max-w-[100px] children:w-full children:children:w-full group"
                   @click="click(PlanFeatureTypes.FEATURE_PERSONAL_VIEWS, () => changeLockType(LockType.Personal))"
                 >
                   <SmartsheetToolbarLockType
@@ -682,7 +682,7 @@ defineOptions({
                     :disabled="disablePersonalView"
                     @cancel="emits('closeModal')"
                   />
-                </NcMenuItem>
+                </AtMenuItem>
               </template>
             </PaymentUpgradeBadgeProvider>
           </SmartsheetToolbarNotAllowedTooltip>
@@ -690,16 +690,16 @@ defineOptions({
             <template #title>
               <div class="max-w-80">{{ lockedOptionDisabledReason }}</div>
             </template>
-            <NcMenuItem
-              data-testid="nc-view-action-lock-subaction-Locked"
-              class="!mx-1 !py-2 !rounded-md nc-view-action-lock-subaction"
+            <AtMenuItem
+              data-testid="atm-view-action-lock-subaction-Locked"
+              class="!mx-1 !py-2 !rounded-md atm-view-action-lock-subaction"
               :disabled="!isUIAllowed('fieldAdd')"
               @click="changeLockType(LockType.Locked)"
             >
               <SmartsheetToolbarLockType :type="LockType.Locked" :disabled="!isUIAllowed('fieldAdd')" />
-            </NcMenuItem>
+            </AtMenuItem>
           </SmartsheetToolbarNotAllowedTooltip>
-        </NcSubMenu>
+        </AtSubMenu>
         <template v-if="showEEFeatures">
           <SmartsheetToolbarNotAllowedTooltip
             v-if="isPersonalView"
@@ -708,7 +708,7 @@ defineOptions({
           >
             <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_PERSONAL_VIEWS">
               <template #default="{ click }">
-                <NcMenuItem
+                <AtMenuItem
                   inner-class="w-full"
                   :disabled="!isUIAllowed('reAssignViewOwner')"
                   @click="click(PlanFeatureTypes.FEATURE_PERSONAL_VIEWS, () => openReAssignDlg())"
@@ -737,7 +737,7 @@ defineOptions({
                       :on-click-callback="() => emits('closeModal')"
                     />
                   </div>
-                </NcMenuItem>
+                </AtMenuItem>
               </template>
             </PaymentUpgradeBadgeProvider>
           </SmartsheetToolbarNotAllowedTooltip>
@@ -754,7 +754,7 @@ defineOptions({
           >
             <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_PERSONAL_VIEWS">
               <template #default="{ click }">
-                <NcMenuItem
+                <AtMenuItem
                   inner-class="w-full"
                   :disabled="disableAssignAsPersonalView"
                   @click="click(PlanFeatureTypes.FEATURE_PERSONAL_VIEWS, () => openReAssignDlg())"
@@ -785,7 +785,7 @@ defineOptions({
                       :on-click-callback="() => emits('closeModal')"
                     />
                   </div>
-                </NcMenuItem>
+                </AtMenuItem>
               </template>
             </PaymentUpgradeBadgeProvider>
           </SmartsheetToolbarNotAllowedTooltip>
@@ -795,7 +795,7 @@ defineOptions({
           :feature="PlanFeatureTypes.FEATURE_CARD_FIELD_HEADER_VISIBILITY"
         >
           <template #default="{ click }">
-            <NcMenuItem
+            <AtMenuItem
               inner-class="w-full"
               @click="click(PlanFeatureTypes.FEATURE_CARD_FIELD_HEADER_VISIBILITY, () => onToggleFieldHeaderVisibility())"
             >
@@ -815,7 +815,7 @@ defineOptions({
                 :on-click-callback="() => emits('closeModal')"
                 show-as-lock
               />
-            </NcMenuItem>
+            </AtMenuItem>
           </template>
         </PaymentUpgradeBadgeProvider>
       </template>
@@ -834,36 +834,36 @@ defineOptions({
       />
 
       <template v-if="isUIAllowed('viewCreateOrEdit')">
-        <NcDivider />
-        <NcTooltip v-if="isDeleteDisabled" placement="right">
+        <AtDivider />
+        <AtTooltip v-if="isDeleteDisabled" placement="right">
           <template #title>
             {{ deleteDisabledReason }}
           </template>
-          <NcMenuItem disabled>
-            <GeneralIcon class="nc-view-delete-icon opacity-80" icon="delete" />
+          <AtMenuItem disabled>
+            <GeneralIcon class="atm-view-delete-icon opacity-80" icon="delete" />
             {{
               $t('general.deleteEntity', {
                 entity:
                   view.type !== ViewTypes.FORM ? $t('objects.view').toLowerCase() : $t('objects.viewType.form').toLowerCase(),
               })
             }}
-          </NcMenuItem>
-        </NcTooltip>
-        <NcMenuItem v-else danger @click="onDelete">
-          <GeneralIcon class="nc-view-delete-icon opacity-80" icon="delete" />
+          </AtMenuItem>
+        </AtTooltip>
+        <AtMenuItem v-else danger @click="onDelete">
+          <GeneralIcon class="atm-view-delete-icon opacity-80" icon="delete" />
           {{
             $t('general.deleteEntity', {
               entity: view.type !== ViewTypes.FORM ? $t('objects.view').toLowerCase() : $t('objects.viewType.form').toLowerCase(),
             })
           }}
-        </NcMenuItem>
+        </AtMenuItem>
       </template>
     </template>
-  </NcMenu>
+  </AtMenu>
   <span v-else v-bind="$attrs"></span>
 
   <template v-if="table?.base_id && currentSourceId && isUploadAllowed">
-    <!-- Don't add this inside the NcMenu else it will show 2 modals at the same time -->
+    <!-- Don't add this inside the AtMenu else it will show 2 modals at the same time -->
     <LazyDlgQuickImport
       v-for="tp in quickImportDialogTypes"
       :key="tp"
@@ -877,21 +877,21 @@ defineOptions({
 </template>
 
 <style lang="scss" scoped>
-.nc-base-menu-item {
+.atm-base-menu-item {
   @apply !py-0;
 }
 
-.nc-view-actions-lock-type {
+.atm-view-actions-lock-type {
   @apply !min-w-0;
 }
 </style>
 
 <style lang="scss">
-.nc-view-actions-lock-type > div {
+.atm-view-actions-lock-type > div {
   @apply !py-0;
 }
 
-.nc-view-action-lock-subaction {
+.atm-view-action-lock-subaction {
   @apply !min-w-82;
 }
 </style>

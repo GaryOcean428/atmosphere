@@ -12,7 +12,7 @@
     "build",
     "coverage",
     "dist",
-    "nc"
+    "atm"
   ],
   "plugins": [
     "import",

@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 
 const FLUSH_INTERVAL_MS = 60_000;
 // 1.5x window — absorbs clock skew between pods so a late-arriving leader
@@ -51,13 +51,13 @@ export class ThrottlerLogger {
       let total = bucket.count;
       let isLeader = true;
       try {
-        total = await NocoCache.incrbyExpiring(
+        total = await AtmosphereCache.incrbyExpiring(
           'root',
           counterKey,
           bucket.count,
           REDIS_DEDUP_TTL_SECONDS,
         );
-        isLeader = await NocoCache.setIfNotExist(
+        isLeader = await AtmosphereCache.setIfNotExist(
           'root',
           leaderKey,
           '1',
@@ -83,7 +83,7 @@ export class ThrottlerLogger {
 
 // Module-level singleton — guarded against re-evaluation under nest watch /
 // hot reload to avoid leaking a setInterval per reload.
-const SINGLETON_KEY = Symbol.for('nocodb.throttlerLogger');
+const SINGLETON_KEY = Symbol.for('atmosphere.throttlerLogger');
 const g = globalThis as { [SINGLETON_KEY]?: ThrottlerLogger };
 
 if (!g[SINGLETON_KEY]) {

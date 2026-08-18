@@ -47,27 +47,27 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div v-if="currentWorkspace" class="flex w-full flex-col nc-workspace-integrations">
-    <div class="flex gap-2 items-center min-w-0 p-2 h-[var(--topbar-height)] border-b-1 border-nc-border-gray-medium">
-      <div class="flex-1 nc-breadcrumb nc-no-negative-margin pl-1">
-        <div class="nc-breadcrumb-item capitalize">
+  <div v-if="currentWorkspace" class="flex w-full flex-col atm-workspace-integrations">
+    <div class="flex gap-2 items-center min-w-0 p-2 h-[var(--topbar-height)] border-b-1 border-atm-border-gray-medium">
+      <div class="flex-1 atm-breadcrumb atm-no-negative-margin pl-1">
+        <div class="atm-breadcrumb-item capitalize">
           {{ currentWorkspace?.title }}
         </div>
-        <GeneralIcon icon="ncSlash1" class="nc-breadcrumb-divider" />
-        <h1 class="nc-breadcrumb-item active">
+        <GeneralIcon icon="ncSlash1" class="atm-breadcrumb-divider" />
+        <h1 class="atm-breadcrumb-item active">
           {{ $t('general.integrations') }}
         </h1>
       </div>
     </div>
 
-    <NcTabs v-model:active-key="activeViewTab">
+    <AtTabs v-model:active-key="activeViewTab">
       <template #leftExtra>
         <div class="w-3"></div>
       </template>
       <template v-if="isUIAllowed('workspaceIntegrations')">
         <a-tab-pane key="integrations" class="w-full">
           <template #tab>
-            <div class="tab-title" data-testid="nc-workspace-settings-tab-integrations">
+            <div class="tab-title" data-testid="atm-workspace-settings-tab-integrations">
               <GeneralIcon icon="integration" />
               {{ $t('general.integrations') }}
             </div>
@@ -80,7 +80,7 @@ onBeforeMount(() => {
       <template v-if="isUIAllowed('workspaceIntegrations')">
         <a-tab-pane key="connections" class="w-full">
           <template #tab>
-            <div class="tab-title" data-testid="nc-workspace-settings-tab-integrations">
+            <div class="tab-title" data-testid="atm-workspace-settings-tab-integrations">
               <GeneralIcon icon="gitCommit" />
               {{ $t('general.connections') }}
               <div
@@ -88,7 +88,7 @@ onBeforeMount(() => {
                 class="tab-info flex-none"
                 :class="{
                   'bg-primary-selected': activeViewTab === 'connections',
-                  'bg-nc-bg-gray-extralight': activeViewTab !== 'connections',
+                  'bg-atm-bg-gray-extralight': activeViewTab !== 'connections',
                 }"
               >
                 {{ integrationPaginationData.totalRows }}
@@ -100,13 +100,13 @@ onBeforeMount(() => {
           </div>
         </a-tab-pane>
       </template>
-    </NcTabs>
+    </AtTabs>
     <WorkspaceIntegrationsEditOrAdd></WorkspaceIntegrationsEditOrAdd>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-workspace-avatar {
+.atm-workspace-avatar {
   @apply min-w-6 h-6 rounded-[6px] flex items-center justify-center text-white font-weight-bold uppercase;
   font-size: 0.7rem;
 }

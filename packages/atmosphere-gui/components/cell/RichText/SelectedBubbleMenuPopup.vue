@@ -52,7 +52,7 @@ const handleEditorMouseDown = (e: MouseEvent) => {
     return
   }
 
-  const pageContent = document.querySelector('.nc-textarea-rich-editor')
+  const pageContent = document.querySelector('.atm-textarea-rich-editor')
   pageContent?.classList.add('bubble-menu-hidden')
 }
 
@@ -66,7 +66,7 @@ const handleEditorMouseUp = (e: MouseEvent) => {
   }
 
   setTimeout(() => {
-    const pageContent = document.querySelector('.nc-textarea-rich-editor')
+    const pageContent = document.querySelector('.atm-textarea-rich-editor')
     pageContent?.classList.remove('bubble-menu-hidden')
   }, 100)
 }

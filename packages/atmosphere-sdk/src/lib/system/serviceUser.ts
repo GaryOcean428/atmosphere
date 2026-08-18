@@ -2,60 +2,60 @@ const ServiceUserType = {
   SYSTEM_USER: 'SYSTEM_USER',
   ANONYMOUS_USER: 'ANONYMOUS_USER',
   AUTOMATION_USER: 'AUTOMATION_USER',
-  SYNC_USER: 'SYNC_USER',
+  SYATMOSPHERE_USER: 'SYATMOSPHERE_USER',
   WORKFLOW_USER: 'WORKFLOW_USER',
   TRASH_CLEANUP_USER: 'TRASH_CLEANUP_USER',
   SNAPSHOT_USER: 'SNAPSHOT_USER',
 } as const;
 
-const NOCO_SERVICE_USERS = {
+const ATMOSPHERE_SERVICE_USERS = {
   [ServiceUserType.SYSTEM_USER]: {
     id: 'usrsystem',
-    email: 'system@nocodb.com',
-    display_name: 'NocoDB System',
+    email: 'system@atmosphere.dev',
+    display_name: 'Atmosphere System',
     email_verified: true,
   },
   // Anonymous actor for unauthenticated public access (shared form / shared
   // view submissions, shared base). Keeps audits attributable instead of NULL.
   [ServiceUserType.ANONYMOUS_USER]: {
     id: 'usranonymous',
-    email: 'anonymous@nocodb.com',
+    email: 'anonymous@atmosphere.dev',
     display_name: 'Anonymous',
     email_verified: true,
   },
   [ServiceUserType.AUTOMATION_USER]: {
     id: 'usrautomation',
-    email: 'automation@nocodb.com',
-    display_name: 'NocoDB Automation',
+    email: 'automation@atmosphere.dev',
+    display_name: 'Atmosphere Automation',
     email_verified: true,
   },
-  [ServiceUserType.SYNC_USER]: {
+  [ServiceUserType.SYATMOSPHERE_USER]: {
     id: 'usrsync',
-    email: 'sync-service@nocodb.com',
-    display_name: 'NocoDB Sync',
+    email: 'sync-service@atmosphere.dev',
+    display_name: 'Atmosphere Sync',
     email_verified: true,
   },
   [ServiceUserType.WORKFLOW_USER]: {
     id: 'usrworkflow',
-    email: 'workflow-service@nocodb.com',
-    display_name: 'NocoDB Workflow',
+    email: 'workflow-service@atmosphere.dev',
+    display_name: 'Atmosphere Workflow',
     email_verified: true,
   },
   [ServiceUserType.TRASH_CLEANUP_USER]: {
     id: 'usrtrashcleanup',
-    email: 'trash-cleanup@nocodb.com',
-    display_name: 'NocoDB Trash Cleanup',
+    email: 'trash-cleanup@atmosphere.dev',
+    display_name: 'Atmosphere Trash Cleanup',
     email_verified: true,
   },
   [ServiceUserType.SNAPSHOT_USER]: {
     id: 'usrsnapshot',
-    email: 'snapshot-service@nocodb.com',
-    display_name: 'NocoDB Snapshot',
+    email: 'snapshot-service@atmosphere.dev',
+    display_name: 'Atmosphere Snapshot',
     email_verified: true,
   },
 } as const;
 
-type ServiceUserKey = keyof typeof NOCO_SERVICE_USERS;
+type ServiceUserKey = keyof typeof ATMOSPHERE_SERVICE_USERS;
 
 const isServiceUser = (
   user: any,
@@ -69,15 +69,15 @@ const isServiceUser = (
 
   // If specific service type is provided, check against that service user only
   if (serviceType) {
-    const serviceUser = NOCO_SERVICE_USERS[serviceType];
+    const serviceUser = ATMOSPHERE_SERVICE_USERS[serviceType];
     return user?.email === serviceUser.email || user?.id === serviceUser.id;
   }
 
   // Otherwise, check against all service users
-  return Object.values(NOCO_SERVICE_USERS).some(
+  return Object.values(ATMOSPHERE_SERVICE_USERS).some(
     (serviceUser) =>
       user?.email === serviceUser.email || user?.id === serviceUser.id
   );
 };
 
-export { ServiceUserType, NOCO_SERVICE_USERS, isServiceUser };
+export { ServiceUserType, ATMOSPHERE_SERVICE_USERS, isServiceUser };

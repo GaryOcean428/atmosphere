@@ -1,4 +1,4 @@
-import { IntegrationsType } from 'nocodb-sdk';
+import { IntegrationsType } from 'atmosphere-sdk';
 
 export enum IntegrationSlots {
   SLOT0 = 'slot_0',

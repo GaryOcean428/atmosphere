@@ -1,4 +1,4 @@
-import { OperationSource } from 'nocodb-sdk';
+import { OperationSource } from 'atmosphere-sdk';
 import {
   type RequestFilteringHttpAgent,
   type RequestFilteringHttpsAgent,
@@ -24,25 +24,25 @@ export function isSsrfProtectionEnabled({
   if (isCloud) return true;
 
   // Global override — disables all SSRF protection for self-hosted
-  if (process.env.NC_DISABLE_SSRF_PROTECTION === 'true') return false;
+  if (process.env.ATMOSPHERE_DISABLE_SSRF_PROTECTION === 'true') return false;
 
   // Granular overrides per source
   if (
     source === OperationSource.HOOKS &&
-    (process.env.NC_ALLOW_LOCAL_HOOKS === 'true' ||
-      process.env.NC_WEBHOOK_ALLOW_PRIVATE_NETWORK === 'true')
+    (process.env.ATMOSPHERE_ALLOW_LOCAL_HOOKS === 'true' ||
+      process.env.ATMOSPHERE_WEBHOOK_ALLOW_PRIVATE_NETWORK === 'true')
   )
     return false;
 
   if (
     source === OperationSource.EXTERNAL_DBS &&
-    process.env.NC_ALLOW_LOCAL_EXTERNAL_DBS === 'true'
+    process.env.ATMOSPHERE_ALLOW_LOCAL_EXTERNAL_DBS === 'true'
   )
     return false;
 
   if (
     source === OperationSource.DATA_IMPORT &&
-    process.env.NC_ALLOW_LOCAL_DATA_IMPORT === 'true'
+    process.env.ATMOSPHERE_ALLOW_LOCAL_DATA_IMPORT === 'true'
   )
     return false;
 

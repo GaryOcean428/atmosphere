@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IntegrationCategoryType } from 'nocodb-sdk'
+import { IntegrationCategoryType } from 'atmosphere-sdk'
 
 interface Props {
   /** 'workspace' shows all available categories, 'base' shows only Database */
@@ -68,7 +68,7 @@ const isCategoryAllowed = (cat: (typeof integrationCategories)[number]) => {
 const isIntegrationAllowed = (i: (typeof allIntegrations)[number], category: (typeof integrationCategories)[number]) => {
   if (i.hidden) return false
   if (!i.isAvailable) return false
-  if (i.sub_type === SyncDataType.NOCODB) return false
+  if (i.sub_type === SyncDataType.ATMOSPHERE) return false
   // EE-only data sources (e.g. MSSQL, Oracle) are hidden in CE; in EE they're gated by their paid add-on.
   // EE-only sources (MSSQL, Oracle) are hidden in CE and in community mode.
   if (!showEEFeatures.value && i.isEeOnly) return false
@@ -84,9 +84,9 @@ const isIntegrationAllowed = (i: (typeof allIntegrations)[number], category: (ty
   return true
 }
 
-// Build the list of available integrations for NcList
+// Build the list of available integrations for AtList
 const integrationListItems = computed(() => {
-  const items: NcListItemType[] = []
+  const items: AtListItemType[] = []
 
   for (const cat of integrationCategories) {
     if (!isCategoryAllowed(cat)) continue
@@ -114,7 +114,7 @@ const categoryGroupOrder = computed(() => {
   return integrationCategories.filter((c) => isCategoryAllowed(c)).map((c) => t(c.title))
 })
 
-const handleSelect = (option: NcListItemType) => {
+const handleSelect = (option: AtListItemType) => {
   if (option?.integration) {
     addIntegration(option.integration)
     isOpen.value = false
@@ -123,13 +123,13 @@ const handleSelect = (option: NcListItemType) => {
 </script>
 
 <template>
-  <NcDropdown v-model:visible="isOpen" placement="bottomRight">
-    <NcButton v-e="['c:integration:add-connection']" size="small" data-testid="nc-add-connection-btn">
+  <AtDropdown v-model:visible="isOpen" placement="bottomRight">
+    <AtButton v-e="['c:integration:add-connection']" size="small" data-testid="atm-add-connection-btn">
       <GeneralIcon icon="plus" class="mr-1" />
       {{ t('labels.addConnection') }}
-    </NcButton>
+    </AtButton>
     <template #overlay>
-      <NcList
+      <AtList
         v-model:open="isOpen"
         :list="integrationListItems"
         :group-order="categoryGroupOrder"
@@ -139,7 +139,7 @@ const handleSelect = (option: NcListItemType) => {
         :show-selected-option="false"
         :close-on-select="true"
         :item-height="36"
-        class="nc-add-connection-list w-72 !h-auto"
+        class="atm-add-connection-list w-72 !h-auto"
         @change="handleSelect"
       >
         <template #listItem="{ option }">
@@ -148,16 +148,16 @@ const handleSelect = (option: NcListItemType) => {
               <GeneralIntegrationIcon :type="option.value" size="lg" />
             </div>
             <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium text-nc-content-gray truncate">
+              <div class="text-sm font-medium text-atm-content-gray truncate">
                 {{ option.label }}
               </div>
-              <div v-if="option.connectedCount" class="text-xs text-nc-content-brand">
+              <div v-if="option.connectedCount" class="text-xs text-atm-content-brand">
                 {{ option.connectedCount }} {{ t('general.connected').toLowerCase() }}
               </div>
             </div>
           </div>
         </template>
-      </NcList>
+      </AtList>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

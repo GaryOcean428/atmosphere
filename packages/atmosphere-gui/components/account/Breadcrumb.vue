@@ -165,10 +165,10 @@ const onClick = async (item: BreadcrumbType) => {
 </script>
 
 <template>
-  <div class="nc-breadcrumb">
+  <div class="atm-breadcrumb">
     <template v-for="(item, i) of breadcrumb" :key="i">
       <div
-        class="nc-breadcrumb-item capitalize"
+        class="atm-breadcrumb-item capitalize"
         :class="{
           'active': item.active,
           'cursor-pointer hover:underline': item.path && !item.active,
@@ -177,7 +177,7 @@ const onClick = async (item: BreadcrumbType) => {
       >
         {{ item.title }}
       </div>
-      <GeneralIcon v-if="i !== breadcrumb.length - 1" icon="ncSlash1" class="nc-breadcrumb-divider" />
+      <GeneralIcon v-if="i !== breadcrumb.length - 1" icon="ncSlash1" class="atm-breadcrumb-divider" />
     </template>
   </div>
 </template>

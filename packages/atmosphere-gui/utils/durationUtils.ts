@@ -1,1 +1,1 @@
-export { convertMS2Duration, convertDurationToSeconds, durationOptions } from 'nocodb-sdk'
+export { convertMS2Duration, convertDurationToSeconds, durationOptions } from 'atmosphere-sdk'

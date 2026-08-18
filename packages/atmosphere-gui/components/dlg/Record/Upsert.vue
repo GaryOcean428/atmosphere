@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onKeyDown } from '@vueuse/core'
-import { PermissionEntity, PermissionKey, type TableType } from 'nocodb-sdk'
+import { PermissionEntity, PermissionKey, type TableType } from 'atmosphere-sdk'
 
 const props = withDefaults(
   defineProps<{
@@ -57,7 +57,7 @@ const close = () => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-if="dialogShow"
     v-model:visible="dialogShow"
     :show-separator="false"
@@ -65,11 +65,11 @@ const close = () => {
     size="small"
     @keydown.esc="dialogShow = false"
   >
-    <div class="flex justify-between w-full text-base font-semibold mb-2 text-nc-content-gray-emphasis items-center">
+    <div class="flex justify-between w-full text-base font-semibold mb-2 text-atm-content-gray-emphasis items-center">
       {{ 'Do you want to expand this table ?' }}
     </div>
-    <div data-testid="nc-expand-upsert-modal" class="flex flex-col">
-      <div class="mb-2 nc-content-gray">
+    <div data-testid="atm-expand-upsert-modal" class="flex flex-col">
+      <div class="mb-2 atm-content-gray">
         To accommodate your pasted data, we need to
         <span v-if="cellsOverwritten && rowsUpdated" class="font-bold">
           overwrite {{ cellsOverwritten }} {{ cellsOverwritten === 1 ? 'cell' : 'cells' }} in {{ rowsUpdated }}
@@ -88,7 +88,7 @@ const close = () => {
       <a-radio-group v-if="(newRows ?? 0) > 0" v-model:value="expand">
         <PermissionsTooltip :entity="PermissionEntity.TABLE" :entity-id="meta?.id" :permission="PermissionKey.TABLE_RECORD_ADD">
           <a-radio
-            data-testid="nc-table-expand-yes"
+            data-testid="atm-table-expand-yes"
             :style="{
               display: 'flex',
               height: '30px',
@@ -97,21 +97,21 @@ const close = () => {
             :value="true"
             :disabled="!isAddingEmptyRowPermitted"
           >
-            <div class="nc-content-gray">
+            <div class="atm-content-gray">
               <span class="font-semibold"> {{ $t('title.expand') }} </span>
               table to accommodate all pasted cells
             </div>
           </a-radio>
         </PermissionsTooltip>
         <a-radio
-          data-testid="nc-table-expand-no"
+          data-testid="atm-table-expand-no"
           :style="{
             display: 'flex',
             lineHeight: '30px',
           }"
           :value="false"
         >
-          <div class="nc-content-gray leading-5">
+          <div class="atm-content-gray leading-5">
             <span class="font-semibold"> Don't expand </span>
             the table. Values beyond the table's current size will be skipped.
           </div>
@@ -120,15 +120,15 @@ const close = () => {
     </div>
     <div class="flex flex-row mt-5 justify-end gap-x-2">
       <div class="flex gap-2 items-center">
-        <NcButton data-testid="nc-table-expand-cancel" type="secondary" size="small" @click="close">
+        <AtButton data-testid="atm-table-expand-cancel" type="secondary" size="small" @click="close">
           {{ $t('labels.cancel') }}
-        </NcButton>
+        </AtButton>
       </div>
       <div class="flex gap-2 items-center">
-        <NcButton data-testid="nc-table-expand" type="primary" size="small" @click="updateExpand">
+        <AtButton data-testid="atm-table-expand" type="primary" size="small" @click="updateExpand">
           {{ $t('labels.continue') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>

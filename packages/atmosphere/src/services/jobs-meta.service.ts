@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import dayjs from 'dayjs';
-import type { NcContext, NcRequest } from '~/interface/config';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { JobTypes } from '~/interface/Jobs';
 import { JobStatus } from '~/interface/Jobs';
 import { Job } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 @Injectable()
 export class JobsMetaService {
   constructor() {}
 
   async list(
-    context: NcContext,
+    context: AtContext,
     param: { job?: JobTypes; status?: JobStatus },
-    req: NcRequest,
+    req: AtRequest,
   ) {
     /*
      * List jobs for the current base.
@@ -45,7 +45,7 @@ export class JobsMetaService {
             _or: [
               {
                 updated_at: {
-                  gt: Noco.ncMeta.formatDateTime(
+                  gt: Atmosphere.ncMeta.formatDateTime(
                     dayjs().subtract(1, 'hour').toISOString(),
                   ),
                 },

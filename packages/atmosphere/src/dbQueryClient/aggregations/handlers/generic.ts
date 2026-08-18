@@ -1,4 +1,4 @@
-import { AllAggregations } from 'nocodb-sdk';
+import { AllAggregations } from 'atmosphere-sdk';
 import type { Knex } from '~/db/CustomKnex';
 import type { AggregationGeneratorParams } from '~/dbQueryClient/types';
 import type {

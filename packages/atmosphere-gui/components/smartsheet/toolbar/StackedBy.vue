@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { KanbanType } from 'nocodb-sdk'
-import { UITypes } from 'nocodb-sdk'
+import type { KanbanType } from 'atmosphere-sdk'
+import { UITypes } from 'atmosphere-sdk'
 import type { SelectProps } from 'ant-design-vue'
 
 provide(IsKanbanInj, ref(true))
@@ -118,20 +118,20 @@ const handleChange = () => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-if="!IsPublic"
     v-model:visible="open"
     :trigger="['click']"
-    overlay-class-name="nc-dropdown-kanban-stacked-by-menu overflow-hidden"
+    overlay-class-name="atm-dropdown-kanban-stacked-by-menu overflow-hidden"
   >
-    <NcTooltip :disabled="!isToolbarIconMode" class="nc-kanban-btn">
+    <AtTooltip :disabled="!isToolbarIconMode" class="atm-kanban-btn">
       <template #title>
         {{ $t('activity.kanban.stackedBy') }}
       </template>
 
-      <NcButton
+      <AtButton
         v-e="['c:kanban:change-grouping-field']"
-        class="nc-kanban-stacked-by-menu-btn nc-toolbar-btn !border-0 !h-7 group"
+        class="atm-kanban-stacked-by-menu-btn atm-toolbar-btn !border-0 !h-7 group"
         size="small"
         type="secondary"
         :show-as-disabled="isLocked"
@@ -143,36 +143,36 @@ const handleChange = () => {
               {{ $t('activity.kanban.stackedBy') }}
             </span>
             <div
-              class="flex items-center rounded-md transition-colors duration-0.3s bg-nc-bg-gray-light px-1 min-h-5 max-w-[108px]"
+              class="flex items-center rounded-md transition-colors duration-0.3s bg-atm-bg-gray-light px-1 min-h-5 max-w-[108px]"
               :class="{
-                'group-hover:bg-nc-bg-gray-medium': !isLocked,
+                'group-hover:bg-atm-bg-gray-medium': !isLocked,
               }"
             >
               <span class="!text-[13px] font-medium truncate !leading-5">{{ groupingField }}</span>
             </div>
           </div>
         </div>
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
 
     <template #overlay>
-      <div v-if="open" class="p-4 w-90 bg-nc-bg-default nc-table-toolbar-menu rounded-lg flex flex-col gap-5" @click.stop>
+      <div v-if="open" class="p-4 w-90 bg-atm-bg-default atm-table-toolbar-menu rounded-lg flex flex-col gap-5" @click.stop>
         <div class="flex flex-col gap-2">
           <div>
             {{ $t('general.groupingField') }}
           </div>
-          <div class="nc-fields-list">
+          <div class="atm-fields-list">
             <div class="grouping-field">
               <a-select
                 v-model:value="groupingFieldColumnId"
-                class="nc-select-shadow w-full nc-kanban-grouping-field-select !rounded-lg"
+                class="atm-select-shadow w-full atm-kanban-grouping-field-select !rounded-lg"
                 dropdown-class-name="!rounded-lg"
                 :placeholder="$t('placeholder.selectGroupField')"
                 :disabled="isLocked"
                 @change="handleChange"
                 @click.stop
               >
-                <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" /></template>
+                <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" /></template>
                 <a-select-option v-for="option of singleSelectFieldOptions" :key="option.value" :value="option.value">
                   <div class="w-full h-full flex gap-2 items-center justify-between" :title="option.label">
                     <div class="flex items-center gap-1 max-w-[calc(100%_-_20px)]">
@@ -183,16 +183,16 @@ const handleChange = () => {
                         color="text-current"
                       />
 
-                      <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                      <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                         <template #title>
                           {{ option.label }}
                         </template>
                         <template #default>{{ option.label }}</template>
-                      </NcTooltip>
+                      </AtTooltip>
                     </div>
                     <GeneralIcon
                       v-if="groupingFieldColumnId === option.value"
-                      id="nc-selected-item-icon"
+                      id="atm-selected-item-icon"
                       icon="check"
                       class="flex-none text-primary w-4 h-4"
                     />
@@ -203,38 +203,38 @@ const handleChange = () => {
         </div>
         <div class="flex flex-col gap-3">
           <div class="flex items-center gap-1">
-            <NcSwitch
+            <AtSwitch
               v-model:checked="hideEmptyStack"
               v-e="['c:kanban:toggle-hide-empty-stack', { enabled: hideEmptyStack }]"
               size="small"
-              class="nc-switch nc-kanban-hide-empty-stack-toggle"
+              class="atm-switch atm-kanban-hide-empty-stack-toggle"
               :loading="isLoading === 'hideEmptyStack'"
               :disabled="isLocked"
             >
-              <div class="text-sm text-nc-content-gray">
+              <div class="text-sm text-atm-content-gray">
                 {{ $t('general.hide') }}
                 {{ $t('general.empty').toLowerCase() }}
                 {{ $t('general.stack').toLowerCase() }}
               </div>
-            </NcSwitch>
+            </AtSwitch>
           </div>
           <div class="flex items-center gap-1">
-            <NcSwitch
+            <AtSwitch
               v-model:checked="autoCollapseEmptyStack"
               v-e="['c:kanban:toggle-auto-collapse-empty-stack', { enabled: autoCollapseEmptyStack }]"
               size="small"
-              class="nc-switch nc-kanban-auto-collapse-empty-stack-toggle"
+              class="atm-switch atm-kanban-auto-collapse-empty-stack-toggle"
               :loading="isLoading === 'autoCollapseEmptyStack'"
               :disabled="isLocked"
             >
-              <div class="text-sm text-nc-content-gray">
+              <div class="text-sm text-atm-content-gray">
                 {{ $t('activity.kanban.autoCollapseEmptyStack') }}
               </div>
-            </NcSwitch>
+            </AtSwitch>
           </div>
         </div>
         <GeneralLockedViewFooter v-if="isLocked" class="-mb-4 -mx-4" @on-open="open = false" />
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

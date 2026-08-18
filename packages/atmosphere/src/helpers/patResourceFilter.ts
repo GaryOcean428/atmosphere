@@ -1,4 +1,4 @@
-import type { NcRequest } from '~/interface/config';
+import type { AtRequest } from '~/interface/config';
 
 /**
  * CE stub — fine-grained API tokens are an EE-only feature.
@@ -11,7 +11,7 @@ export interface PatResourceFilter {
 }
 
 export async function getPatResourceFilter(
-  _req?: NcRequest,
+  _req?: AtRequest,
 ): Promise<PatResourceFilter | null> {
   return null;
 }

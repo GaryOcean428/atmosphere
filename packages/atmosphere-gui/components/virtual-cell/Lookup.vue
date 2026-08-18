@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { type ColumnType, type LinkToAnotherRecordType, type LookupType, isBtLikeV2Junction, isMMOrMMLike } from 'nocodb-sdk'
-import { FormulaDataTypes, RelationTypes, UITypes, getEffectiveLookupColumn, isVirtualCol } from 'nocodb-sdk'
+import { type ColumnType, type LinkToAnotherRecordType, type LookupType, isBtLikeV2Junction, isMMOrMMLike } from 'atmosphere-sdk'
+import { FormulaDataTypes, RelationTypes, UITypes, getEffectiveLookupColumn, isVirtualCol } from 'atmosphere-sdk'
 
 const { getMeta, getMetaByKey } = useMetas()
 
@@ -264,7 +264,7 @@ provide(MetaInj, lookupTableMeta)
 // attachment via its own (model, row). Expose the parent table's modelId, the
 // parent row's pk and the lookup columnId so the attachment cell downloads via
 // the parent row's lookup column (which the user is authorised to read).
-// See https://github.com/nocodb/nocodb/issues — lookup attachment download.
+// See https://github.com/GaryOcean428/atmosphere/issues — lookup attachment download.
 const lookupAttachmentDownloadCtx = computed(() => {
   const modelId = parentMeta.value?.id
   const columnId = column.value?.id
@@ -346,7 +346,7 @@ const triggerRef = ref<HTMLDivElement | null>(null)
 
 const randomClass = `lookup-${Math.floor(Math.random() * 99999)}`
 
-const cell = computed(() => triggerRef.value?.closest('td, .nc-data-cell'))
+const cell = computed(() => triggerRef.value?.closest('td, .atm-data-cell'))
 
 const dropdownOverlayRef = ref<HTMLInputElement | null>(null)
 const active = inject(ActiveCellInj, ref(false))
@@ -439,7 +439,7 @@ const cellHeight = computed(() =>
 )
 
 const handleCloseDropdown = (e: MouseEvent) => {
-  if (e.target && e.target.closest('.nc-attachment-item')) {
+  if (e.target && e.target.closest('.atm-attachment-item')) {
     e.stopPropagation()
     dropdownVisible.value = false
   }
@@ -478,25 +478,25 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
     :src="attachmentUrl"
     class="object-contain h-full w-full"
   />
-  <div v-else-if="column && column.colOptions && column.colOptions.error" class="nc-cell-field">
-    <NcTooltip placement="bottom" class="text-nc-content-orange-dark">
+  <div v-else-if="column && column.colOptions && column.colOptions.error" class="atm-cell-field">
+    <AtTooltip placement="bottom" class="text-atm-content-orange-dark">
       <template #title>
         <span class="font-bold">{{ column.colOptions.error }}</span>
       </template>
       <span>ERR!</span>
-    </NcTooltip>
+    </AtTooltip>
   </div>
-  <NcDropdown
+  <AtDropdown
     v-else
     :disabled="disableDropdown"
     :trigger="[]"
     :visible="!disableDropdown && dropdownVisible"
     :auto-close="false"
-    :overlay-class-name="`!min-w-[300px] nc-links-dropdown ${dropdownVisible ? 'active' : ''}`"
+    :overlay-class-name="`!min-w-[300px] atm-links-dropdown ${dropdownVisible ? 'active' : ''}`"
   >
     <div
       ref="triggerRef"
-      class="nc-cell-field h-full w-full nc-lookup-cell"
+      class="atm-cell-field h-full w-full atm-lookup-cell"
       tabindex="-1"
       :style="{
         height: cellHeight,
@@ -506,7 +506,7 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
       <div
         class="h-full w-full overflow-hidden"
         :class="{
-          'nc-cell-lookup-scroll': rowHeight === 1,
+          'atm-cell-lookup-scroll': rowHeight === 1,
           'flex gap-1': !(
             lookupColumn &&
             (isAttachment(lookupColumn) || isAttachmentLeafLookup) &&
@@ -563,16 +563,16 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
             <!-- For attachment cell avoid adding chip style -->
             <template v-else>
               <div
-                class="max-h-full max-w-full w-full nc-cell-lookup-scroll !overflow-x-hidden"
+                class="max-h-full max-w-full w-full atm-cell-lookup-scroll !overflow-x-hidden"
                 :class="{
-                  'nc-scrollbar-thin ': rowHeight !== 1 && !isAttachment(lookupColumn),
+                  'atm-scrollbar-thin ': rowHeight !== 1 && !isAttachment(lookupColumn),
                 }"
               >
                 <div
                   class="flex gap-1.5 w-full h-full"
                   :class="{
                     'flex-wrap': rowHeight !== 1 && !isAttachment(lookupColumn),
-                    '!overflow-hidden nc-cell-lookup-scroll': rowHeight === 1 || isAttachment(lookupColumn),
+                    '!overflow-hidden atm-cell-lookup-scroll': rowHeight === 1 || isAttachment(lookupColumn),
                     'items-center': rowHeight === 1,
                     'items-start': rowHeight !== 1,
                     'py-[3px]': !isAttachment(lookupColumn),
@@ -583,8 +583,8 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
                     :key="i"
                     class="flex-none"
                     :class="{
-                      'bg-nc-bg-default rounded-full': !isAttachment(lookupColumn),
-                      'border-nc-border-gray-medium rounded border-1 max-w-full': ![
+                      'bg-atm-bg-default rounded-full': !isAttachment(lookupColumn),
+                      'border-atm-border-gray-medium rounded border-1 max-w-full': ![
                         UITypes.Attachment,
                         UITypes.MultiSelect,
                         UITypes.SingleSelect,
@@ -610,7 +610,7 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
                       :read-only="true"
                       :model-value="v"
                       :column="lookupColumn"
-                      :class="isFormulaUrlLookup ? 'px-2 nc-formula-url-lookup' : 'px-2'"
+                      :class="isFormulaUrlLookup ? 'px-2 atm-formula-url-lookup' : 'px-2'"
                     />
                     <LazySmartsheetCell
                       v-else
@@ -649,7 +649,7 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
       >
         <a-input v-if="isSearchable" v-model:value="search" :placeholder="$t('general.search')" class="lookup-search-input">
           <template #prefix>
-            <GeneralIcon icon="search" class="text-nc-content-gray-muted" />
+            <GeneralIcon icon="search" class="text-atm-content-gray-muted" />
           </template>
         </a-input>
         <div class="flex flex-wrap gap-2 items-start overflow-y-auto px-3 py-2">
@@ -664,7 +664,7 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
           </div>
           <div
             v-else-if="isAttachmentLeafLookup && arrValue[0] && ncIsObject(arrValue[0])"
-            class="nc-lookup-attachment-wrapper"
+            class="atm-lookup-attachment-wrapper"
             @click="handleCloseDropdown"
           >
             <LazySmartsheetCell :model-value="arrValue" :column="lookupLeafColumn" :edit-enabled="false" :read-only="true" />
@@ -691,7 +691,7 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
           <template v-else>
             <div
               v-if="isAttachment(lookupColumn) && arrValue[0] && ncIsObject(arrValue[0])"
-              class="nc-lookup-attachment-wrapper"
+              class="atm-lookup-attachment-wrapper"
               @click="handleCloseDropdown"
             >
               <LazySmartsheetCell :model-value="arrValue" :column="lookupColumn" :edit-enabled="false" :read-only="true" />
@@ -703,8 +703,8 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
                 :key="i"
                 class="flex-none"
                 :class="{
-                  'bg-nc-bg-default rounded-full': !isAttachment(lookupColumn),
-                  'border-nc-border-gray-medium rounded border-1 max-w-full': ![
+                  'bg-atm-bg-default rounded-full': !isAttachment(lookupColumn),
+                  'border-atm-border-gray-medium rounded border-1 max-w-full': ![
                     UITypes.Attachment,
                     UITypes.MultiSelect,
                     UITypes.SingleSelect,
@@ -731,7 +731,7 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
                   :read-only="true"
                   :model-value="v"
                   :column="lookupColumn"
-                  :class="isFormulaUrlLookup ? 'px-2 nc-formula-url-lookup' : 'px-2'"
+                  :class="isFormulaUrlLookup ? 'px-2 atm-formula-url-lookup' : 'px-2'"
                 />
                 <LazySmartsheetCell
                   v-else
@@ -748,74 +748,74 @@ const attachmentUrl = computed(() => getPossibleAttachmentSrc(arrValue.value[0])
         </div>
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style lang="scss">
-.nc-cell-lookup-scroll {
+.atm-cell-lookup-scroll {
   &::-webkit-scrollbar-thumb {
     @apply bg-transparent;
   }
 }
 
-.nc-cell-lookup-scroll:hover {
+.atm-cell-lookup-scroll:hover {
   &::-webkit-scrollbar-thumb {
-    @apply bg-nc-bg-gray-medium;
+    @apply bg-atm-bg-gray-medium;
   }
 }
-.nc-lookup-cell .nc-text-area-clamped-text {
+.atm-lookup-cell .atm-text-area-clamped-text {
   @apply !mr-1;
 }
 
-.nc-formula-url-lookup .nc-cell-field,
-.nc-formula-url-lookup .nc-cell-field-link {
+.atm-formula-url-lookup .atm-cell-field,
+.atm-formula-url-lookup .atm-cell-field-link {
   @apply !py-0;
 }
 
-.nc-lookup-cell {
-  &:has(.nc-cell-attachment) {
+.atm-lookup-cell {
+  &:has(.atm-cell-attachment) {
     height: auto !important;
   }
 
-  .nc-cell-checkbox {
+  .atm-cell-checkbox {
     @apply children:pl-0;
     & > div {
       @apply !h-auto;
     }
   }
 
-  .nc-cell-url {
+  .atm-cell-url {
     a {
       @apply !py-0;
     }
   }
 
-  .nc-attachment-image {
+  .atm-attachment-image {
     @apply !hover:cursor-pointer;
   }
 }
 .lookup-dropdown {
-  .nc-cell-field > span {
+  .atm-cell-field > span {
     @apply !text-[13px];
   }
   .lookup-search-input {
     // order matters hence using vanilla css
     border: none;
     border-bottom: 1px solid;
-    @apply !shadow-none px-3 py-[6.5px] rounded-[14px_14px_0_0] !border-nc-border-gray-medium;
+    @apply !shadow-none px-3 py-[6.5px] rounded-[14px_14px_0_0] !border-atm-border-gray-medium;
     input::placeholder {
-      @apply !text-nc-content-gray-muted;
+      @apply !text-atm-content-gray-muted;
     }
     .ant-input-prefix {
       @apply mr-2;
     }
   }
 
-  .nc-lookup-attachment-wrapper {
-    .nc-attachment-cell > div:first-of-type {
+  .atm-lookup-attachment-wrapper {
+    .atm-attachment-cell > div:first-of-type {
       @apply !h-auto justify-start pr-6;
 
-      .nc-attachment-image {
+      .atm-attachment-image {
         @apply !hover:cursor-pointer;
       }
     }

@@ -1,4 +1,4 @@
-import type { AIRecordType } from 'nocodb-sdk';
+import type { AIRecordType } from 'atmosphere-sdk';
 import type { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
 import type KnexClient from '~/db/sql-client/lib/KnexClient';
 import type { Column, Model, Source, User } from '~/models';

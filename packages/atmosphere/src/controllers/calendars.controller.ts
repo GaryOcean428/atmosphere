@@ -9,13 +9,13 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ViewCreateReqType } from 'nocodb-sdk';
+import { ViewCreateReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { CalendarsService } from '~/services/calendars.service';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -28,7 +28,7 @@ export class CalendarsController {
   ])
   @Acl('calendarViewGet')
   async calendarViewGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('calendarViewId') calendarViewId: string,
   ) {
     return await this.calendarsService.calendarViewGet(context, {
@@ -43,10 +43,10 @@ export class CalendarsController {
   @HttpCode(200)
   @Acl('calendarViewCreate')
   async calendarViewCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Body() body: ViewCreateReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.calendarsService.calendarViewCreate(context, {
       tableId,
@@ -62,10 +62,10 @@ export class CalendarsController {
   ])
   @Acl('calendarViewUpdate')
   async calendarViewUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('calendarViewId') calendarViewId: string,
     @Body() body,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.calendarsService.calendarViewUpdate(context, {
       calendarViewId,

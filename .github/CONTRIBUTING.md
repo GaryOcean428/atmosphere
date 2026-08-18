@@ -1,6 +1,6 @@
-# NocoDB Contributing Guide
+# Atmosphere Contributing Guide
 
-Thanks for spending your time to contribute! The following is a set of guidelines for contributing to NocoDB. 
+Thanks for spending your time to contribute! The following is a set of guidelines for contributing to Atmosphere. 
 
 ## Table of Contents
 
@@ -11,7 +11,7 @@ Thanks for spending your time to contribute! The following is a set of guideline
 
 ## Pull Request Guidelines
 
-- When you create a PR, you should fill in all the info defined in this [template](https://github.com/nocodb/nocodb/blob/master/.github/PULL_REQUEST_TEMPLATE.md).
+- When you create a PR, you should fill in all the info defined in this [template](https://github.com/GaryOcean428/atmosphere/blob/master/.github/PULL_REQUEST_TEMPLATE.md).
 
 - We adopt [Gitflow Design](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow). However, we do not have release branches. 
 
@@ -27,7 +27,7 @@ Thanks for spending your time to contribute! The following is a set of guideline
 
 ## Development Setup
 
-Please refer to [Development Setup](https://docs.nocodb.com/engineering/development-setup).
+Please refer to [Development Setup](https://docs.atmosphere.dev/engineering/development-setup).
 
 ### Committing Changes
 
@@ -35,5 +35,5 @@ We encourage all contributors to commit messages following [Commit Message Conve
 
 ### Applying License
 
-We require a CLA (Contributor License Agreement). This is a one-time process. Please click this [link](https://cla-assistant.io/nocodb/nocodb) to agree to the CLA for nocodb/nocodb. 
+We require a CLA (Contributor License Agreement). This is a one-time process. Please click this [link](https://cla-assistant.io/atmosphere/atmosphere) to agree to the CLA for atmosphere/atmosphere. 
 

@@ -5,12 +5,12 @@ type SectionType = 'starred' | 'private' | 'owned' | 'managed' | 'default'
 
 const props = defineProps<{
   type: SectionType
-  bases: NcProject[]
+  bases: AtProject[]
   isFilterApplied: boolean
   // Functions to check if a base has starred/private attributes
   // Used to show indicator icons when base is displayed in a lower-priority section
-  isBaseStarred?: (base: NcProject) => boolean
-  isBasePrivate?: (base: NcProject) => boolean
+  isBaseStarred?: (base: AtProject) => boolean
+  isBasePrivate?: (base: AtProject) => boolean
 }>()
 
 const { isFilterApplied } = toRefs(props)
@@ -47,7 +47,7 @@ const sectionConfig = computed(() => {
 
 // Create bases by ID lookup for efficient access during drag
 const basesById = computed(() =>
-  props.bases.reduce<Record<string, NcProject>>((acc, base) => {
+  props.bases.reduce<Record<string, AtProject>>((acc, base) => {
     acc[base.id!] = base
     return acc
   }, {}),
@@ -58,12 +58,12 @@ const canReorder = computed(() => {
 })
 
 // Determine if indicator icons should be shown based on section type
-const shouldShowStarIndicator = (base: NcProject) => {
+const shouldShowStarIndicator = (base: AtProject) => {
   if (props.type === 'starred') return false
   return props.isBaseStarred?.(base) ?? false
 }
 
-const shouldShowPrivateIndicator = (base: NcProject) => {
+const shouldShowPrivateIndicator = (base: AtProject) => {
   if (props.type === 'private') return false
   return props.isBasePrivate?.(base) ?? false
 }
@@ -147,16 +147,16 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div v-if="bases.length || isFilterApplied" class="nc-bases-section mb-6" style="container-type: inline-size">
-    <div class="flex items-center gap-2 mb-4 text-xs font-medium text-nc-content-gray-muted capitalize tracking-wide">
+  <div v-if="bases.length || isFilterApplied" class="atm-bases-section mb-6" style="container-type: inline-size">
+    <div class="flex items-center gap-2 mb-4 text-xs font-medium text-atm-content-gray-muted capitalize tracking-wide">
       <GeneralIcon
         :icon="sectionConfig.icon"
         class="w-3.5 h-3.5"
-        :class="type === 'starred' ? 'nc-starred-icon text-nc-content-yellow-dark' : ''"
+        :class="type === 'starred' ? 'atm-starred-icon text-atm-content-yellow-dark' : ''"
       />
       <span>{{ sectionConfig.label }}</span>
     </div>
-    <div v-if="bases.length" ref="gridRef" class="nc-bases-grid grid grid-cols-1 gap-3" :class="{ dragging }">
+    <div v-if="bases.length" ref="gridRef" class="atm-bases-grid grid grid-cols-1 gap-3" :class="{ dragging }">
       <WorkspaceBaseListModalBaseNode
         v-for="base in bases"
         :key="base.id"
@@ -172,13 +172,13 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped lang="scss">
-.nc-starred-icon {
+.atm-starred-icon {
   :deep(path) {
     fill: currentColor;
   }
 }
 
-.nc-bases-grid {
+.atm-bases-grid {
   // Fallback for browsers without container query support
   @supports not (container-type: inline-size) {
     @media (min-width: 540px) {
@@ -212,7 +212,7 @@ onBeforeUnmount(() => {
   }
 
   .ghost {
-    @apply !bg-nc-bg-gray-medium !opacity-50 !border-nc-border-brand;
+    @apply !bg-atm-bg-gray-medium !opacity-50 !border-atm-border-brand;
   }
 
   .chosen {

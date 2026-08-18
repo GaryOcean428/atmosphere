@@ -10,7 +10,7 @@ const rowHeight = inject(RowHeightInj, ref(undefined))
 
 <template>
   <LazyCellClampedText
-    class="nc-cell-field nc-uuid-cell"
+    class="atm-cell-field atm-uuid-cell"
     :value="modelValue"
     :lines="rowHeight"
     :style="{ 'word-break': 'break-word', 'font-family': 'monospace' }"
@@ -18,7 +18,7 @@ const rowHeight = inject(RowHeightInj, ref(undefined))
 </template>
 
 <style scoped>
-.nc-uuid-cell {
+.atm-uuid-cell {
   font-family: monospace;
 }
 </style>

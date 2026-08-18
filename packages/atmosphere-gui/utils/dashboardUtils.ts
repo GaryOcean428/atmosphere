@@ -1,4 +1,4 @@
-import { ChartTypes, TextWidgetTypes } from 'nocodb-sdk'
+import { ChartTypes, TextWidgetTypes } from 'atmosphere-sdk'
 
 export const chartIconMap = {
   [ChartTypes.BAR]: 'ncChartBar',

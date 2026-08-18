@@ -179,7 +179,7 @@ function handleClear() {
 function scrollToSelected(colRef: HTMLDivElement | undefined, behavior: ScrollBehavior = 'instant') {
   if (!colRef) return
   setTimeout(() => {
-    const el = colRef.querySelector('.nc-dtp-selected') as HTMLElement
+    const el = colRef.querySelector('.atm-dtp-selected') as HTMLElement
     el?.scrollIntoView({ behavior, block: 'center' })
   }, 50)
 }
@@ -201,32 +201,32 @@ watch(isOpen, (next) => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="isOpen"
     placement="bottomLeft"
     :auto-close="true"
     :trigger="['click']"
     :disabled="disabled"
-    overlay-class-name="nc-date-time-picker-dropdown !min-w-[0] overflow-hidden"
+    overlay-class-name="atm-date-time-picker-dropdown !min-w-[0] overflow-hidden"
   >
     <!-- Input trigger -->
     <div
-      class="nc-date-time-picker-input flex items-center h-8 rounded-lg border-1 border-nc-border-gray-medium px-2 gap-1 transition-colors cursor-pointer"
+      class="atm-date-time-picker-input flex items-center h-8 rounded-lg border-1 border-atm-border-gray-medium px-2 gap-1 transition-colors cursor-pointer"
       :class="{
-        'bg-nc-bg-gray-light': disabled,
-        'hover:border-nc-border-brand': !disabled,
-        'border-nc-border-brand': isOpen && !disabled,
+        'bg-atm-bg-gray-light': disabled,
+        'hover:border-atm-border-brand': !disabled,
+        'border-atm-border-brand': isOpen && !disabled,
       }"
-      data-testid="nc-date-time-picker"
+      data-testid="atm-date-time-picker"
     >
-      <GeneralIcon icon="calendar" class="w-4 h-4 text-nc-content-gray-subtle2 flex-none" />
+      <GeneralIcon icon="calendar" class="w-4 h-4 text-atm-content-gray-subtle2 flex-none" />
 
       <!-- Date input -->
       <input
         :value="selectedDate?.format(dateFormat) ?? ''"
         :placeholder="isDateOnly ? placeholder || dateFormat : dateFormat"
         :readonly="disabled"
-        class="nc-dtp-date-input flex-1 min-w-0 text-sm bg-transparent border-none outline-none text-nc-content-gray placeholder:text-nc-content-gray-subtle2"
+        class="atm-dtp-date-input flex-1 min-w-0 text-sm bg-transparent border-none outline-none text-atm-content-gray placeholder:text-atm-content-gray-subtle2"
         @blur="handleDateInputBlur"
         @keydown.enter="
           (event) => {
@@ -238,15 +238,15 @@ watch(isOpen, (next) => {
 
       <!-- Time input -->
       <template v-if="!isDateOnly">
-        <div class="w-px h-4 bg-nc-border-gray-medium flex-none" />
+        <div class="w-px h-4 bg-atm-border-gray-medium flex-none" />
 
-        <GeneralIcon icon="clock" class="w-3.5 h-3.5 text-nc-content-gray-subtle2 flex-none" />
+        <GeneralIcon icon="clock" class="w-3.5 h-3.5 text-atm-content-gray-subtle2 flex-none" />
 
         <input
           :value="selectedDate?.format(timeFormat) ?? ''"
           :placeholder="timeFormat"
           :readonly="disabled"
-          class="nc-dtp-time-input flex-none text-sm bg-transparent border-none outline-none text-nc-content-gray placeholder:text-nc-content-gray-subtle2"
+          class="atm-dtp-time-input flex-none text-sm bg-transparent border-none outline-none text-atm-content-gray placeholder:text-atm-content-gray-subtle2"
           :class="is12hrFormat ? 'w-[72px]' : 'w-[48px]'"
           @blur="handleTimeInputBlur"
           @keydown.enter="
@@ -261,17 +261,17 @@ watch(isOpen, (next) => {
       <GeneralIcon
         v-if="allowClear && modelValue && !disabled"
         icon="close"
-        class="w-4 h-4 text-nc-content-gray-subtle2 flex-none hover:text-nc-content-gray cursor-pointer"
+        class="w-4 h-4 text-atm-content-gray-subtle2 flex-none hover:text-atm-content-gray cursor-pointer"
         @click.stop="handleClear"
       />
     </div>
 
     <!-- Dropdown overlay -->
     <template #overlay>
-      <div class="nc-dtp-dropdown-content flex">
+      <div class="atm-dtp-dropdown-content flex">
         <!-- Date calendar -->
-        <div class="nc-dtp-date-panel w-[256px] flex-none">
-          <NcDatePicker
+        <div class="atm-dtp-date-panel w-[256px] flex-none">
+          <AtDatePicker
             :selected-date="selectedDate"
             :page-date="selectedDate || undefined"
             :is-open="isOpen"
@@ -285,28 +285,28 @@ watch(isOpen, (next) => {
         </div>
 
         <!-- Time columns -->
-        <div v-if="!isDateOnly" class="nc-dtp-time-panel flex flex-col border-l-1 border-nc-border-gray-medium">
+        <div v-if="!isDateOnly" class="atm-dtp-time-panel flex flex-col border-l-1 border-atm-border-gray-medium">
           <!-- Column headers -->
-          <div class="flex flex-none border-b-1 border-nc-border-gray-medium h-10 items-center">
-            <div class="nc-dtp-col-header w-[46px] text-center text-nc-content-gray-subtle text-sm font-semibold">Hr</div>
-            <div class="w-px h-full bg-nc-border-gray-light" />
-            <div class="nc-dtp-col-header w-[46px] text-center text-nc-content-gray-subtle text-sm font-semibold">Min</div>
+          <div class="flex flex-none border-b-1 border-atm-border-gray-medium h-10 items-center">
+            <div class="atm-dtp-col-header w-[46px] text-center text-atm-content-gray-subtle text-sm font-semibold">Hr</div>
+            <div class="w-px h-full bg-atm-border-gray-light" />
+            <div class="atm-dtp-col-header w-[46px] text-center text-atm-content-gray-subtle text-sm font-semibold">Min</div>
             <template v-if="is12hrFormat">
-              <div class="w-px h-full bg-nc-border-gray-light" />
-              <div class="nc-dtp-col-header w-[46px] text-center text-xs font-semibold text-nc-content-gray-subtle2" />
+              <div class="w-px h-full bg-atm-border-gray-light" />
+              <div class="atm-dtp-col-header w-[46px] text-center text-xs font-semibold text-atm-content-gray-subtle2" />
             </template>
           </div>
 
           <!-- Scrollable columns -->
           <div class="flex flex-1 overflow-hidden">
             <!-- Hours -->
-            <div ref="hourColRef" class="w-[46px] overflow-y-auto nc-scrollbar-thin">
+            <div ref="hourColRef" class="w-[46px] overflow-y-auto atm-scrollbar-thin">
               <div
                 v-for="h of hours"
                 :key="h"
-                class="nc-dtp-item py-1 text-sm text-nc-content-gray-subtle2 text-center cursor-pointer hover:bg-nc-bg-gray-light transition-colors"
+                class="atm-dtp-item py-1 text-sm text-atm-content-gray-subtle2 text-center cursor-pointer hover:bg-atm-bg-gray-light transition-colors"
                 :class="{
-                  'nc-dtp-selected bg-nc-bg-gray-dark !font-weight-600': selectedHour === h,
+                  'atm-dtp-selected bg-atm-bg-gray-dark !font-weight-600': selectedHour === h,
                 }"
                 @click="handleSelectHour(h)"
               >
@@ -314,16 +314,16 @@ watch(isOpen, (next) => {
               </div>
             </div>
 
-            <div class="w-px bg-nc-border-gray-light" />
+            <div class="w-px bg-atm-border-gray-light" />
 
             <!-- Minutes -->
-            <div ref="minColRef" class="w-[46px] overflow-y-auto nc-scrollbar-thin">
+            <div ref="minColRef" class="w-[46px] overflow-y-auto atm-scrollbar-thin">
               <div
                 v-for="m of minutes"
                 :key="m"
-                class="nc-dtp-item py-1 text-sm text-nc-content-gray-subtle2 text-center cursor-pointer hover:bg-nc-bg-gray-light transition-colors"
+                class="atm-dtp-item py-1 text-sm text-atm-content-gray-subtle2 text-center cursor-pointer hover:bg-atm-bg-gray-light transition-colors"
                 :class="{
-                  'nc-dtp-selected bg-nc-bg-gray-dark !font-weight-600': selectedMinute === m,
+                  'atm-dtp-selected bg-atm-bg-gray-dark !font-weight-600': selectedMinute === m,
                 }"
                 @click="handleSelectMinute(m)"
               >
@@ -333,14 +333,14 @@ watch(isOpen, (next) => {
 
             <!-- AM/PM -->
             <template v-if="is12hrFormat">
-              <div class="w-px bg-nc-border-gray-light" />
-              <div ref="ampmColRef" class="w-[46px] overflow-y-auto nc-scrollbar-thin">
+              <div class="w-px bg-atm-border-gray-light" />
+              <div ref="ampmColRef" class="w-[46px] overflow-y-auto atm-scrollbar-thin">
                 <div
                   v-for="period of ['AM', 'PM']"
                   :key="period"
-                  class="nc-dtp-item py-1 text-sm text-nc-content-gray-subtle2 text-center cursor-pointer hover:bg-nc-bg-gray-light transition-colors"
+                  class="atm-dtp-item py-1 text-sm text-atm-content-gray-subtle2 text-center cursor-pointer hover:bg-atm-bg-gray-light transition-colors"
                   :class="{
-                    'nc-dtp-selected bg-nc-bg-gray-dark !font-weight-600': selectedAmPm === period,
+                    'atm-dtp-selected bg-atm-bg-gray-dark !font-weight-600': selectedAmPm === period,
                   }"
                   @click="handleSelectAmPm(period)"
                 >
@@ -352,24 +352,24 @@ watch(isOpen, (next) => {
         </div>
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style lang="scss" scoped>
-.nc-dtp-dropdown-content {
+.atm-dtp-dropdown-content {
   // Fixed height so time columns don't grow unbounded
   height: 320px;
 
-  .nc-dtp-date-panel {
+  .atm-dtp-date-panel {
     height: 100%;
 
-    :deep(.nc-date-week-header),
-    :deep(.nc-month-picker-pagination) {
-      border-color: var(--nc-border-gray-medium);
+    :deep(.atm-date-week-header),
+    :deep(.atm-month-picker-pagination) {
+      border-color: var(--atm-border-gray-medium);
     }
   }
 
-  .nc-dtp-time-panel {
+  .atm-dtp-time-panel {
     height: 100%;
   }
 }

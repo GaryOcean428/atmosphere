@@ -153,7 +153,7 @@ function escapeLiteral(v: string) {
   return (
     v
       // 1️⃣ Temporarily protect real newline
-      .replace(/\\n/g, '__NC_NEWLINE__')
+      .replace(/\\n/g, '__ATMOSPHERE_NEWLINE__')
 
       // 2️⃣ Escape unescaped backslashes (replace \ to \\, escape only unescaped \)
       .replace(/([^\\]|^)\\(?!\\)/g, `$1\\\\`)
@@ -163,6 +163,6 @@ function escapeLiteral(v: string) {
       .replace(/([^\\]|^)'/g, `$1\\'`)
 
       // 4️⃣ Restore protected newline and tab
-      .replace(/__NC_NEWLINE__/g, '\\n')
+      .replace(/__ATMOSPHERE_NEWLINE__/g, '\\n')
   );
 }

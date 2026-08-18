@@ -1,4 +1,4 @@
-import { jsepTreeToFormula } from 'nocodb-sdk';
+import { jsepTreeToFormula } from 'atmosphere-sdk';
 
 export default function (args: {
   virtualColumns;

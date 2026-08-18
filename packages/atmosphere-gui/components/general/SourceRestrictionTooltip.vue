@@ -15,7 +15,7 @@ defineProps<{
 </script>
 
 <template>
-  <NcTooltip
+  <AtTooltip
     :disabled="!enabled"
     :tooltip-style="{ 'min-width': 'max-content' }"
     :overlay-inner-style="{ 'min-width': 'max-content' }"
@@ -31,7 +31,7 @@ defineProps<{
         <a
           v-if="!isSqlView"
           class="!text-current"
-          href="https://nocodb.com/docs/product-docs/data-sources/connect-to-data-source#configuring-permissions"
+          href="https://atmosphere.dev/docs/product-docs/data-sources/connect-to-data-source#configuring-permissions"
           target="_blank"
         >
           {{ $t('msg.learnMore') }}
@@ -39,5 +39,5 @@ defineProps<{
       </slot>
     </template>
     <slot />
-  </NcTooltip>
+  </AtTooltip>
 </template>

@@ -1,5 +1,5 @@
-import { UITypes, isLinksOrLTAR } from 'nocodb-sdk'
-import type { ColumnType, LinkToAnotherRecordType, LookupType, TableType } from 'nocodb-sdk'
+import { UITypes, isLinksOrLTAR } from 'atmosphere-sdk'
+import type { ColumnType, LinkToAnotherRecordType, LookupType, TableType } from 'atmosphere-sdk'
 
 /**
  * Preload the related-table metas referenced by a table's Lookup columns,

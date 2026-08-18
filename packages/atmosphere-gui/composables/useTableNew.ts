@@ -1,5 +1,5 @@
-import type { ColumnType, LinkToAnotherRecordType, TableType } from 'nocodb-sdk'
-import { UITypes, getFirstNonPersonalView, isSystemColumn } from 'nocodb-sdk'
+import type { ColumnType, LinkToAnotherRecordType, TableType } from 'atmosphere-sdk'
+import { UITypes, getFirstNonPersonalView, isSystemColumn } from 'atmosphere-sdk'
 import type { SidebarTableNode } from '~/lib/types'
 import { generateUniqueTitle as generateTitle } from '#imports'
 
@@ -58,9 +58,9 @@ export function useTableNew(param: {
       if (!base) throw new Error('Base not found')
     }
 
-    let workspaceIdOrType = workspaceId.value ?? 'nc'
+    let workspaceIdOrType = workspaceId.value ?? 'atm'
 
-    if (['nc', 'base'].includes(route.value.params.typeOrId as string)) {
+    if (['atm', 'base'].includes(route.value.params.typeOrId as string)) {
       workspaceIdOrType = route.value.params.typeOrId as string
     }
 
@@ -219,7 +219,7 @@ export function useTableNew(param: {
     // 'Click Submit to Delete The table'
     Modal.confirm({
       title: `${t('msg.info.deleteTableConfirmation')} : ${table.title}?`,
-      wrapClassName: 'nc-modal-table-delete',
+      wrapClassName: 'atm-modal-table-delete',
       okText: t('general.yes'),
       okType: 'danger',
       cancelText: t('general.no'),

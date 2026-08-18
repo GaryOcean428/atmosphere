@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { FilterType, InterfacePageType, InterfaceVizFieldConfig, PaginatedType, SortType, TableType } from 'nocodb-sdk'
+import type { FilterType, InterfacePageType, InterfaceVizFieldConfig, PaginatedType, SortType, TableType } from 'atmosphere-sdk'
 
 /** Environment a consumer-facing interface page renders against. */
 export type InterfacePageDataEnv = 'draft' | 'published'
@@ -11,7 +11,7 @@ export type InterfacePageDataEnv = 'draft' | 'published'
  * so CE code (e.g. `store/views.ts`) can detect synthetic views without
  * importing from `ee/`.
  */
-export const INTERFACE_VIEW_ID_PREFIX = 'nc-interface-'
+export const INTERFACE_VIEW_ID_PREFIX = 'atm-interface-'
 
 /**
  * Synthetic interface views are client-fabricated — the server has never heard

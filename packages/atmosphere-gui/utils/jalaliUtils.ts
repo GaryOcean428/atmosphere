@@ -1,5 +1,5 @@
 import type dayjs from 'dayjs'
-import { jalaaliMonthLength, toGregorian, toJalaali } from 'nocodb-sdk'
+import { jalaaliMonthLength, toGregorian, toJalaali } from 'atmosphere-sdk'
 
 /**
  * dayjs-based helpers used by the date picker components to render and navigate a

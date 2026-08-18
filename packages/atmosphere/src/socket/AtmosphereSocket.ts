@@ -1,4 +1,4 @@
-export default class NocoSocket {
+export default class AtmosphereSocket {
   public static ioServer;
 
   public static handleConnection(..._args: unknown[]) {}

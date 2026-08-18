@@ -1,6 +1,6 @@
-import { DependencyTableType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import { DependencyTableType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { dependencySlotMapper } from '~/helpers/DependencySlotMapper';
 
@@ -105,7 +105,7 @@ export default class DependencyTracker implements DependencyTrackerType {
    * Track dependencies - type-safe overloads
    */
   public static async trackDependencies(
-    context: NcContext,
+    context: AtContext,
     dependentType: DependencyTableType.Widget,
     dependentId: string,
     dependencies: WidgetDependencies,
@@ -114,7 +114,7 @@ export default class DependencyTracker implements DependencyTrackerType {
   ): Promise<void>;
 
   public static async trackDependencies(
-    context: NcContext,
+    context: AtContext,
     dependentType: DependencyTableType.Workflow,
     dependentId: string,
     dependencies: WorkflowDependencies,
@@ -123,7 +123,7 @@ export default class DependencyTracker implements DependencyTrackerType {
   ): Promise<void>;
 
   public static async trackDependencies(
-    context: NcContext,
+    context: AtContext,
     dependentType: DependencyTableType.DateDependency,
     dependentId: string,
     dependencies: Dependencies,
@@ -132,7 +132,7 @@ export default class DependencyTracker implements DependencyTrackerType {
   ): Promise<void>;
 
   public static async trackDependencies(
-    context: NcContext,
+    context: AtContext,
     dependentType: DependencyTableType.Bookmark,
     dependentId: string,
     dependencies: Dependencies,
@@ -141,7 +141,7 @@ export default class DependencyTracker implements DependencyTrackerType {
   ): Promise<void>;
 
   public static async trackDependencies(
-    context: NcContext,
+    context: AtContext,
     dependentType: DependencyTableType.InterfacePage,
     dependentId: string,
     dependencies: Dependencies,
@@ -150,11 +150,11 @@ export default class DependencyTracker implements DependencyTrackerType {
   ): Promise<void>;
 
   public static async trackDependencies(
-    context: NcContext,
+    context: AtContext,
     dependentType: DependencyTableType,
     dependentId: string,
     dependencies: Dependencies | WidgetDependencies | WorkflowDependencies,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
     ignoreClear?: boolean,
   ): Promise<void> {
     if (!ignoreClear) {
@@ -213,10 +213,10 @@ export default class DependencyTracker implements DependencyTrackerType {
    * Generic method to clear all dependencies for a dependent
    */
   public static async clearDependencies(
-    context: NcContext,
+    context: AtContext,
     dependentType: DependencyTableType,
     dependentId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     await ncMeta.metaDelete(
       context.workspace_id,
@@ -233,9 +233,9 @@ export default class DependencyTracker implements DependencyTrackerType {
    * Clear all dependency rows for a base (used on base hard-delete).
    */
   public static async deleteByBaseId(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     await ncMeta.metaDelete(
       context.workspace_id,
@@ -251,7 +251,7 @@ export default class DependencyTracker implements DependencyTrackerType {
    * Get dependencies with filters based on dependent type - type-safe overloads
    */
   public static async getDependentsBySource<T extends DependencyTableType>(
-    context: NcContext,
+    context: AtContext,
     sourceType: T,
     sourceId: string,
     options: {
@@ -263,7 +263,7 @@ export default class DependencyTracker implements DependencyTrackerType {
   ): Promise<HydratedDependencyTrackerType<T>[]>;
 
   public static async getDependentsBySource<T extends DependencyTableType>(
-    context: NcContext,
+    context: AtContext,
     sourceType: T,
     sourceId: string,
     options?: {
@@ -271,7 +271,7 @@ export default class DependencyTracker implements DependencyTrackerType {
       dependentId?: string;
       nodeType?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<HydratedDependencyTrackerType<T>[]> {
     const condition: any = {
       source_type: sourceType,
@@ -325,7 +325,7 @@ export default class DependencyTracker implements DependencyTrackerType {
    * Check if deleting a source would break any dependents
    */
   public static async checkBreakingChanges(
-    context: NcContext,
+    context: AtContext,
     {
       sourceType,
       sourceId,
@@ -333,7 +333,7 @@ export default class DependencyTracker implements DependencyTrackerType {
       sourceType: DependencyTableType;
       sourceId: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<{
     hasBreakingChanges: boolean;
     affected: Array<{ type: DependencyTableType; id: string }>;
@@ -367,11 +367,11 @@ export default class DependencyTracker implements DependencyTrackerType {
    * Recursively find all transitive dependents of a source.
    */
   public static async getTransitiveDependents(
-    context: NcContext,
+    context: AtContext,
     sourceType: DependencyTableType,
     sourceId: string,
     maxDepth: number = 10,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<
     Array<
       HydratedDependencyTrackerType & {
@@ -452,10 +452,10 @@ export default class DependencyTracker implements DependencyTrackerType {
    * Check breaking changes including transitive dependencies.
    */
   public static async checkTransitiveBreakingChanges(
-    context: NcContext,
+    context: AtContext,
     sourceType: DependencyTableType,
     sourceId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<{
     hasBreakingChanges: boolean;
     affected: Array<{

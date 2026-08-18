@@ -1,4 +1,4 @@
-import { type ColumnType, type SelectOptionsType, UITypes, dateFormats, isBtLikeV2Junction, timeFormats } from 'nocodb-sdk'
+import { type ColumnType, type SelectOptionsType, UITypes, dateFormats, isBtLikeV2Junction, timeFormats } from 'atmosphere-sdk'
 
 export const valueToTitle = (value: string, col: ColumnType, displayValueProp?: string) => {
   if (col.uidt === UITypes.Checkbox) {

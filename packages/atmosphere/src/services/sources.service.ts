@@ -4,27 +4,27 @@ import {
   EventType,
   IntegrationsType,
   validateAndExtractSSLProp,
-} from 'nocodb-sdk';
-import type { BaseReqType, IntegrationType } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { BaseReqType, IntegrationType } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { populateMeta, validatePayload } from '~/helpers';
 import { syncBaseMigration } from '~/helpers/syncMigration';
 import { Base, Integration, Source } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { validateAndNormalizeSqliteConfig } from '~/helpers/validateSqliteFilename';
-import Noco from '~/Noco';
-import NocoSocket from '~/socket/NocoSocket';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 @Injectable()
 export class SourcesService {
   constructor(protected readonly appHooksService: AppHooksService) {}
 
-  async baseGetWithConfig(context: NcContext, param: { sourceId: any }) {
+  async baseGetWithConfig(context: AtContext, param: { sourceId: any }) {
     const source = await Source.get(context, param.sourceId);
 
     if (!source) {
-      NcError.get(context).sourceNotFound(param.sourceId);
+      AtError.get(context).sourceNotFound(param.sourceId);
     }
 
     source.config = await source.getSourceConfig();
@@ -33,12 +33,12 @@ export class SourcesService {
   }
 
   async baseUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       sourceId: string;
       source: BaseReqType;
       baseId: string;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload('swagger.json#/components/schemas/BaseReq', param.source);
@@ -46,7 +46,7 @@ export class SourcesService {
     const oldSource = await Source.get(context, param.sourceId);
 
     if (!oldSource) {
-      NcError.get(context).sourceNotFound(param.sourceId);
+      AtError.get(context).sourceNotFound(param.sourceId);
     }
 
     const baseBody = param.source;
@@ -78,7 +78,7 @@ export class SourcesService {
       context,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -93,16 +93,16 @@ export class SourcesService {
     return source;
   }
 
-  async baseList(context: NcContext, param: { baseId: string }) {
+  async baseList(context: AtContext, param: { baseId: string }) {
     const sources = await Source.list(context, { baseId: param.baseId });
 
     return sources;
   }
 
   async baseDelete(
-    context: NcContext,
+    context: AtContext,
     param: { sourceId: string; req: any },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     try {
       const source = await Source.get(context, param.sourceId, true, ncMeta);
@@ -124,15 +124,15 @@ export class SourcesService {
         context,
       });
     } catch (e) {
-      NcError.get(context).badRequest(e);
+      AtError.get(context).badRequest(e);
     }
     return true;
   }
 
   async baseSoftDelete(
-    context: NcContext,
+    context: AtContext,
     param: { sourceId: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     try {
       const source = await Source.get(context, param.sourceId, false, ncMeta);
@@ -141,7 +141,7 @@ export class SourcesService {
       source.config = undefined;
       source.integration_config = undefined;
 
-      NocoSocket.broadcastEvent(
+      AtmosphereSocket.broadcastEvent(
         context,
         {
           event: EventType.META_EVENT,
@@ -153,13 +153,13 @@ export class SourcesService {
         context.socket_id,
       );
     } catch (e) {
-      NcError.get(context).badRequest(e);
+      AtError.get(context).badRequest(e);
     }
     return true;
   }
 
   async baseCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       source: BaseReqType;
@@ -173,7 +173,7 @@ export class SourcesService {
     validatePayload('swagger.json#/components/schemas/BaseReq', param.source);
 
     // Unlike baseUpdate, this path never validated the filename — a source could
-    // point at NocoDB's own metadata database (noco.db / nc_data.db).
+    // point at Atmosphere's own metadata database (atmosphere.db / atm_data.db).
     validateAndNormalizeSqliteConfig(
       param.source.config,
       (param.source.config as any)?.client ?? param.source.type,
@@ -194,8 +194,8 @@ export class SourcesService {
     if (!(baseBody as any).fk_integration_id) {
       // This branch creates the Integration model directly, bypassing
       // integrationCreate and its guards — mirror the enterprise SQLite block.
-      if (baseBody.config?.client === 'sqlite3' && Noco.isEE()) {
-        NcError.get(context).badRequest(
+      if (baseBody.config?.client === 'sqlite3' && Atmosphere.isEE()) {
+        AtError.get(context).badRequest(
           'SQLite connections are only available on the free self-hosted edition',
         );
       }
@@ -222,7 +222,7 @@ export class SourcesService {
 
       // Check if integration exists
       if (!integration) {
-        NcError.get(context).integrationNotFound(
+        AtError.get(context).integrationNotFound(
           (baseBody as any).fk_integration_id,
         );
       }
@@ -232,7 +232,7 @@ export class SourcesService {
         integration.type !== IntegrationsType.Database ||
         !integration.sub_type
       ) {
-        NcError.badRequest('Integration type should be Database');
+        AtError.badRequest('Integration type should be Database');
       }
 
       baseBody.type = integration.sub_type as unknown as BaseReqType['type'];
@@ -280,7 +280,7 @@ export class SourcesService {
         context,
       });
 
-      NocoSocket.broadcastEvent(
+      AtmosphereSocket.broadcastEvent(
         context,
         {
           event: EventType.META_EVENT,

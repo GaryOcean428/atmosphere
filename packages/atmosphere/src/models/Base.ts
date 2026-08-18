@@ -1,8 +1,8 @@
 import { Logger } from '@nestjs/common';
-import { BaseVersion } from 'nocodb-sdk';
-import type { BaseType, BoolType, MetaType } from 'nocodb-sdk';
+import { BaseVersion } from 'atmosphere-sdk';
+import type { BaseType, BoolType, MetaType } from 'atmosphere-sdk';
 import type { DB_TYPES } from '~/utils/globals';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import {
   BaseUser,
   CustomUrl,
@@ -12,7 +12,7 @@ import {
   MCPToken,
   Source,
 } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   CacheDelDirection,
   CacheGetType,
@@ -21,11 +21,11 @@ import {
   RootScopes,
 } from '~/utils/globals';
 import { extractProps } from '~/helpers/extractProps';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { parseMetaProp, stringifyMetaProp } from '~/utils/modelUtils';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { cleanCommandPaletteCache } from '~/helpers/commandPaletteHelpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { cleanBaseSchemaCacheForBase } from '~/helpers/scriptHelper';
 
 const logger = new Logger('Base');
@@ -82,7 +82,7 @@ export default class Base implements BaseType {
 
   public static async createProject(
     base: Partial<BaseType>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Base> {
     const insertObj = extractProps(base, [
       'id',
@@ -122,7 +122,7 @@ export default class Base implements BaseType {
       insertObj.type = 'database';
     }
 
-    insertObj.fk_workspace_id = Noco.ncDefaultWorkspaceId;
+    insertObj.fk_workspace_id = Atmosphere.ncDefaultWorkspaceId;
 
     const createdBase = await ncMeta.metaInsert2(
       RootScopes.BASE,
@@ -148,7 +148,7 @@ export default class Base implements BaseType {
       );
     }
 
-    await NocoCache.del('root', CacheScope.INSTANCE_META);
+    await AtmosphereCache.del('root', CacheScope.INSTANCE_META);
 
     await DataReflection.grantBase(base.fk_workspace_id, base.id, ncMeta);
 
@@ -158,7 +158,7 @@ export default class Base implements BaseType {
 
     return this.getWithInfo(context, createdBase.id, true, ncMeta).then(
       async (base) => {
-        await NocoCache.appendToList(
+        await AtmosphereCache.appendToList(
           {
             workspace_id: base.fk_workspace_id,
             base_id: null,
@@ -174,11 +174,11 @@ export default class Base implements BaseType {
 
   static async list(
     workspaceId?: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Base[]> {
     // todo: pagination
     const cachedList = workspaceId
-      ? await NocoCache.getList(
+      ? await AtmosphereCache.getList(
           {
             workspace_id: workspaceId,
             base_id: null,
@@ -227,7 +227,7 @@ export default class Base implements BaseType {
           },
         },
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         {
           workspace_id: workspaceId,
           base_id: null,
@@ -262,13 +262,13 @@ export default class Base implements BaseType {
 
   // @ts-ignore
   static async get(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Base> {
     let baseData =
       baseId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         { workspace_id: context.workspace_id, base_id: null },
         `${CacheScope.PROJECT}:${baseId}`,
         CacheGetType.TYPE_OBJECT,
@@ -285,7 +285,7 @@ export default class Base implements BaseType {
       );
       if (baseData) {
         baseData.meta = parseMetaProp(baseData);
-        await NocoCache.set(
+        await AtmosphereCache.set(
           { workspace_id: baseData.fk_workspace_id, base_id: null },
           `${CacheScope.PROJECT}:${baseId}`,
           baseData,
@@ -307,7 +307,7 @@ export default class Base implements BaseType {
 
   async getSources(
     includeConfig = true,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Source[]> {
     const sources = await Source.list(
       { workspace_id: this.fk_workspace_id, base_id: this.id },
@@ -326,14 +326,14 @@ export default class Base implements BaseType {
 
   // @ts-ignore
   static async getWithInfo(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
     includeConfig = true,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Base> {
     let baseData =
       baseId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         { workspace_id: context.workspace_id, base_id: null },
         `${CacheScope.PROJECT}:${baseId}`,
         CacheGetType.TYPE_OBJECT,
@@ -351,7 +351,7 @@ export default class Base implements BaseType {
       );
       if (baseData) {
         baseData.meta = parseMetaProp(baseData);
-        await NocoCache.set(
+        await AtmosphereCache.set(
           {
             workspace_id: context.workspace_id,
             base_id: null,
@@ -361,7 +361,7 @@ export default class Base implements BaseType {
         );
       }
       if (baseData?.uuid) {
-        await NocoCache.set(
+        await AtmosphereCache.set(
           {
             workspace_id: context.workspace_id,
             base_id: null,
@@ -391,9 +391,9 @@ export default class Base implements BaseType {
 
   // @ts-ignore
   static async softDelete(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<any> {
     const base = (await this.get(context, baseId, ncMeta)) as Base;
 
@@ -403,7 +403,7 @@ export default class Base implements BaseType {
       // delete <scope>:<title>
       // delete <scope>:<uuid>
       // delete <scope>:ref:<titleOfId>
-      await NocoCache.del(
+      await AtmosphereCache.del(
         {
           workspace_id: base.fk_workspace_id,
           base_id: null,
@@ -417,10 +417,10 @@ export default class Base implements BaseType {
       );
     }
 
-    await NocoCache.del('root', CacheScope.INSTANCE_META);
+    await AtmosphereCache.del('root', CacheScope.INSTANCE_META);
 
     // remove item in cache list
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       {
         workspace_id: context.workspace_id,
         base_id: null,
@@ -459,10 +459,10 @@ export default class Base implements BaseType {
 
   // @ts-ignore
   static async update(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
     base: Partial<Base>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<any> {
     const updateObj = extractProps(base, [
       'title',
@@ -498,7 +498,7 @@ export default class Base implements BaseType {
 
     // get existing cache
     const key = `${CacheScope.PROJECT}:${baseId}`;
-    let o = await NocoCache.get(
+    let o = await AtmosphereCache.get(
       {
         workspace_id: context.workspace_id,
         base_id: null,
@@ -510,14 +510,14 @@ export default class Base implements BaseType {
       // update data
       // new uuid is generated
       if (o.uuid && updateObj.uuid && o.uuid !== updateObj.uuid) {
-        await NocoCache.del(
+        await AtmosphereCache.del(
           {
             workspace_id: context.workspace_id,
             base_id: null,
           },
           `${CacheScope.PROJECT_ALIAS}:${o.uuid}`,
         );
-        await NocoCache.set(
+        await AtmosphereCache.set(
           {
             workspace_id: context.workspace_id,
             base_id: null,
@@ -528,7 +528,7 @@ export default class Base implements BaseType {
       }
       // disable shared base
       if (o.uuid && updateObj.uuid === null) {
-        await NocoCache.del(
+        await AtmosphereCache.del(
           {
             workspace_id: context.workspace_id,
             base_id: null,
@@ -537,14 +537,14 @@ export default class Base implements BaseType {
         );
       }
       if (o.title && updateObj.title && o.title !== updateObj.title) {
-        await NocoCache.del(
+        await AtmosphereCache.del(
           {
             workspace_id: context.workspace_id,
             base_id: null,
           },
           `${CacheScope.PROJECT_ALIAS}:${o.title}`,
         );
-        await NocoCache.set(
+        await AtmosphereCache.set(
           {
             workspace_id: context.workspace_id,
             base_id: null,
@@ -555,10 +555,10 @@ export default class Base implements BaseType {
       }
       o = { ...o, ...updateObj };
 
-      await NocoCache.del('root', CacheScope.INSTANCE_META);
+      await AtmosphereCache.del('root', CacheScope.INSTANCE_META);
 
       // set cache
-      await NocoCache.set(
+      await AtmosphereCache.set(
         {
           workspace_id: context.workspace_id,
           base_id: null,
@@ -589,11 +589,11 @@ export default class Base implements BaseType {
     );
   }
 
-  // Todo: Remove the base entry from the connection pool in NcConnectionMgrv2
+  // Todo: Remove the base entry from the connection pool in AtConnectionMgrv2
   static async delete(
-    context: NcContext,
+    context: AtContext,
     baseId,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<any> {
     const base = await ncMeta.metaGet2(
       context.workspace_id,
@@ -603,7 +603,7 @@ export default class Base implements BaseType {
     );
 
     if (!base) {
-      NcError.baseNotFound(baseId);
+      AtError.baseNotFound(baseId);
     }
 
     const users = await BaseUser.getUsersList(
@@ -634,7 +634,7 @@ export default class Base implements BaseType {
       // delete <scope>:<uuid>
       // delete <scope>:<title>
       // delete <scope>:ref:<titleOfId>
-      await NocoCache.del(
+      await AtmosphereCache.del(
         {
           workspace_id: base.fk_workspace_id,
           base_id: null,
@@ -648,7 +648,7 @@ export default class Base implements BaseType {
       );
     }
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       {
         workspace_id: context.workspace_id,
         base_id: null,
@@ -657,7 +657,7 @@ export default class Base implements BaseType {
       CacheDelDirection.CHILD_TO_PARENT,
     );
 
-    await Noco.ncAudit.metaDelete(
+    await Atmosphere.ncAudit.metaDelete(
       context.workspace_id,
       context.base_id,
       MetaTable.AUDIT,
@@ -690,10 +690,10 @@ export default class Base implements BaseType {
     );
   }
 
-  static async getByUuid(context: NcContext, uuid, ncMeta = Noco.ncMeta) {
+  static async getByUuid(context: AtContext, uuid, ncMeta = Atmosphere.ncMeta) {
     const baseId =
       uuid &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         {
           workspace_id: context.workspace_id,
           base_id: null,
@@ -713,7 +713,7 @@ export default class Base implements BaseType {
       );
       if (baseData) {
         baseData.meta = parseMetaProp(baseData);
-        await NocoCache.set(
+        await AtmosphereCache.set(
           {
             workspace_id: context.workspace_id,
             base_id: null,
@@ -729,9 +729,9 @@ export default class Base implements BaseType {
   }
 
   static async getWithInfoByTitle(
-    context: NcContext,
+    context: AtContext,
     title: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const base = await this.getByTitle(context, title, ncMeta);
     if (base) {
@@ -742,13 +742,13 @@ export default class Base implements BaseType {
   }
 
   static async getByTitle(
-    context: NcContext,
+    context: AtContext,
     title: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const baseId =
       title &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         {
           workspace_id: context.workspace_id,
           base_id: null,
@@ -769,7 +769,7 @@ export default class Base implements BaseType {
       );
       if (baseData) {
         baseData.meta = parseMetaProp(baseData);
-        await NocoCache.set(
+        await AtmosphereCache.set(
           {
             workspace_id: context.workspace_id,
             base_id: null,
@@ -785,13 +785,13 @@ export default class Base implements BaseType {
   }
 
   static async getByTitleOrId(
-    context: NcContext,
+    context: AtContext,
     titleOrId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const baseId =
       titleOrId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         {
           workspace_id: context.workspace_id,
           base_id: null,
@@ -829,7 +829,7 @@ export default class Base implements BaseType {
         // parse meta
         baseData.meta = parseMetaProp(baseData);
 
-        await NocoCache.set(
+        await AtmosphereCache.set(
           {
             workspace_id: context.workspace_id,
             base_id: null,
@@ -845,9 +845,9 @@ export default class Base implements BaseType {
   }
 
   static async getWithInfoByTitleOrId(
-    context: NcContext,
+    context: AtContext,
     titleOrId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const base = await this.getByTitleOrId(context, titleOrId, ncMeta);
 
@@ -861,15 +861,15 @@ export default class Base implements BaseType {
   }
 
   static async clearConnectionPool(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const base = await this.get(context, baseId, ncMeta);
     if (base) {
       const sources = await base.getSources(false, ncMeta);
       for (const source of sources) {
-        await NcConnectionMgrv2.deleteAwait(source);
+        await AtConnectionMgrv2.deleteAwait(source);
       }
     }
   }

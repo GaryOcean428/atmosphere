@@ -40,24 +40,24 @@ onMounted(async () => await fetchReleaseInfo())
 
 <template>
   <div v-if="releaseAlert && !appInfo.ee" class="flex items-center">
-    <a-dropdown :trigger="['click']" placement="bottom" overlay-class-name="nc-dropdown-upgrade-menu">
-      <NcButton class="!bg-primary !border-none !mr-3" size="small">
+    <a-dropdown :trigger="['click']" placement="bottom" overlay-class-name="atm-dropdown-upgrade-menu">
+      <AtButton class="!bg-primary !border-none !mr-3" size="small">
         <div class="flex gap-1 items-center text-white">
           <span class="text-sm font-weight-medium">{{ $t('activity.upgrade.available') }}</span>
           <mdi-menu-down />
         </div>
-      </NcButton>
+      </AtButton>
 
       <template #overlay>
-        <div class="mt-1 bg-nc-bg-default shadow-lg !border">
+        <div class="mt-1 bg-atm-bg-default shadow-lg !border">
           <nuxt-link
             no-prefetch
             no-rel
             class="!text-primary !no-underline"
-            to="https://github.com/nocodb/nocodb/releases"
+            to="https://github.com/GaryOcean428/atmosphere/releases"
             target="_blank"
           >
-            <div class="nc-menu-item">
+            <div class="atm-menu-item">
               <mdi-script-text-outline />
               {{ latestRelease }} {{ $t('activity.upgrade.releaseNote') }}
             </div>
@@ -67,10 +67,10 @@ onMounted(async () => await fetchReleaseInfo())
             no-prefetch
             rel="noopener"
             class="!text-primary !no-underline"
-            to="https://nocodb.com/docs/self-hosting/maintenance/upgrading"
+            to="https://atmosphere.dev/docs/self-hosting/maintenance/upgrading"
             target="_blank"
           >
-            <div class="nc-menu-item">
+            <div class="atm-menu-item">
               <mdi-rocket-launch-outline />
               <!-- How to upgrade? -->
               {{ $t('activity.upgrade.howTo') }}
@@ -79,7 +79,7 @@ onMounted(async () => await fetchReleaseInfo())
 
           <a-divider class="!m-0" />
 
-          <div class="nc-menu-item" @click="releaseAlert = false">
+          <div class="atm-menu-item" @click="releaseAlert = false">
             <mdi-close />
             <!-- Hide menu -->
             {{ $t('general.hideMenu') }}

@@ -1,7 +1,7 @@
 <h1 align="center" style="border-bottom: none">
     <div>
-        <a style="color:#36f" href="https://www.nocodb.com">
-            <img src="/packages/nc-gui/assets/img/brand/nocodb-full.png" height="80" />
+        <a style="color:#36f" href="https://www.atmosphere.dev">
+            <img src="/packages/atmosphere-gui/assets/img/brand/atmosphere-full.png" height="80" />
             <br>
     Airtable 的开源替代软件 
         </a>
@@ -10,20 +10,20 @@
 </h1>
 
 <p align="center">
-NocoDB 是构建在线数据库最快且最简单的方式。
+Atmosphere 是构建在线数据库最快且最简单的方式。
 </p>
 
 
 <p align="center">
-    <a href="http://www.nocodb.com"><b>网站</b></a> •
+    <a href="http://www.atmosphere.dev"><b>网站</b></a> •
     <a href="https://discord.gg/c7GEYrvFtT"><b>Discord</b></a> •
-    <a href="https://community.nocodb.com/"><b>社区</b></a> •
-    <a href="https://twitter.com/nocodb"><b>Twitter</b></a> •
-    <a href="https://www.reddit.com/r/NocoDB/"><b>Reddit</b></a> •
-    <a href="https://docs.nocodb.com/"><b>文档</b></a>
+    <a href="https://community.atmosphere.dev/"><b>社区</b></a> •
+    <a href="https://twitter.com/atmosphere"><b>Twitter</b></a> •
+    <a href="https://www.reddit.com/r/Atmosphere/"><b>Reddit</b></a> •
+    <a href="https://docs.atmosphere.dev/"><b>文档</b></a>
 </p>
 
-![video avi](https://github.com/nocodb/nocodb/assets/86527202/e2fad786-f211-4dcb-9bd3-aaece83a6783)
+![video avi](https://github.com/GaryOcean428/atmosphere/assets/86527202/e2fad786-f211-4dcb-9bd3-aaece83a6783)
 
 <div align="center">
 
@@ -49,7 +49,7 @@ NocoDB 是构建在线数据库最快且最简单的方式。
 <img src="https://discordapp.com/api/guilds/661905455894888490/widget.png?style=banner3" alt="">
 </a>
 
-[![@nocodb/nocodb 项目关注者列表](http://reporoster.com/stars/nocodb/nocodb)](https://github.com/nocodb/nocodb/stargazers)
+[![@atmosphere/atmosphere 项目关注者列表](http://reporoster.com/stars/atmosphere/atmosphere)](https://github.com/GaryOcean428/atmosphere/stargazers)
 
 # 安装
 
@@ -57,39 +57,39 @@ NocoDB 是构建在线数据库最快且最简单的方式。
 
 ```bash 
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  nocodb/nocodb:latest
+  atmosphere/atmosphere:latest
   ```
 
 ## 使用 PostgreSQL 的 Docker 部署
 
 ```bash
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  -e NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
-  -e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-  nocodb/nocodb:latest
+  -e ATMOSPHERE_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
+  -e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+  atmosphere/atmosphere:latest
 ```
 
 ## 自动安装升级
-自动安装升级指令是一个在服务器上部署生产可用的 NocoDB 的单一命令。
+自动安装升级指令是一个在服务器上部署生产可用的 Atmosphere 的单一命令。
 在幕后，它会为你自动生成 docker-compose 文件。
 
 ```bash
-bash <(curl -sSL http://install.nocodb.com/noco.sh) <(mktemp)
+bash <(curl -sSL http://install.atmosphere.dev/atmosphere.sh) <(mktemp)
 ```
 
 自动安装升级执行以下操作：🕊
 - 🐳 自动安装所有的依赖软件，如 docker、docker-compose
-- 🚀 使用 Docker Compose 自动安装带有 PostgreSQL、Redis、Traefik 网关的 NocoDB。 🐘 🗄️ 🌐
-- 🔄 当您再次运行该命令时，会自动将 NocoDB 升级到最新版本。
+- 🚀 使用 Docker Compose 自动安装带有 PostgreSQL、Redis、Traefik 网关的 Atmosphere。 🐘 🗄️ 🌐
+- 🔄 当您再次运行该命令时，会自动将 Atmosphere 升级到最新版本。
 - 🔒 自动配置并续订 SSL 证书。在安装时需要输入域名或子域名。
 
-> install.nocodb.com/noco.sh 脚本可以在 [我们的 github](https://raw.githubusercontent.com/nocodb/nocodb/develop/docker-compose/1_Auto_Upstall/noco.sh) 中找到
+> install.atmosphere.dev/atmosphere.sh 脚本可以在 [我们的 github](https://raw.githubusercontent.com/atmosphere/atmosphere/develop/docker-compose/1_Auto_Upstall/atmosphere.sh) 中找到
 
 ## 其他方式
 
@@ -97,27 +97,27 @@ bash <(curl -sSL http://install.nocodb.com/noco.sh) <(mktemp)
 
 | 安装方式                          | 安装命令                                                                                          |
 |-------------------------------|-----------------------------------------------------------------------------------------------|
-| 🍏 MacOS arm64 <br>(二进制文件)    | `curl http://get.nocodb.com/macos-arm64 -o nocodb -L && chmod +x nocodb && ./nocodb`          |
-| 🍏 MacOS x64 <br>(二进制文件)     | `curl http://get.nocodb.com/macos-x64 -o nocodb -L && chmod +x nocodb && ./nocodb`            |
-| 🐧 Linux arm64 <br>(二进制文件)   | `curl http://get.nocodb.com/linux-arm64 -o nocodb -L && chmod +x nocodb && ./nocodb`          |
-| 🐧 Linux x64 <br>(二进制文件)     | `curl http://get.nocodb.com/linux-x64 -o nocodb -L && chmod +x nocodb && ./nocodb`            |
-| 🪟 Windows arm64 <br>(二进制文件) | `iwr http://get.nocodb.com/win-arm64.exe -OutFile Noco-win-arm64.exe && .\Noco-win-arm64.exe` |
-| 🪟 Windows x64 <br>(二进制文件)   | `iwr http://get.nocodb.com/win-x64.exe -OutFile Noco-win-x64.exe && .\Noco-win-x64.exe`       |
+| 🍏 MacOS arm64 <br>(二进制文件)    | `curl http://get.atmosphere.dev/macos-arm64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`          |
+| 🍏 MacOS x64 <br>(二进制文件)     | `curl http://get.atmosphere.dev/macos-x64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`            |
+| 🐧 Linux arm64 <br>(二进制文件)   | `curl http://get.atmosphere.dev/linux-arm64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`          |
+| 🐧 Linux x64 <br>(二进制文件)     | `curl http://get.atmosphere.dev/linux-x64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`            |
+| 🪟 Windows arm64 <br>(二进制文件) | `iwr http://get.atmosphere.dev/win-arm64.exe -OutFile Atmosphere-win-arm64.exe && .\Atmosphere-win-arm64.exe` |
+| 🪟 Windows x64 <br>(二进制文件)   | `iwr http://get.atmosphere.dev/win-x64.exe -OutFile Atmosphere-win-x64.exe && .\Atmosphere-win-x64.exe`       |
 
-> 本地运行时通过此地址访问 nocodb: [http://localhost:8080/dashboard](http://localhost:8080/dashboard)
+> 本地运行时通过此地址访问 atmosphere: [http://localhost:8080/dashboard](http://localhost:8080/dashboard)
 
-更多安装方法，请参考 [我们的文档](https://docs.nocodb.com/category/installation)
+更多安装方法，请参考 [我们的文档](https://docs.atmosphere.dev/category/installation)
 
 # 截图
 
-![2](https://github.com/nocodb/nocodb/assets/86527202/a127c05e-2121-4af2-a342-128e0e2d0291)
-![3](https://github.com/nocodb/nocodb/assets/86527202/674da952-8a06-4848-a0e8-a7b02d5f5c88)
-![4](https://github.com/nocodb/nocodb/assets/86527202/cbc5152a-9caf-4f77-a8f7-92a9d06d025b)
-![5](https://github.com/nocodb/nocodb/assets/86527202/dc75dfdc-c486-4f5a-a853-2a8f9e6b569a)
+![2](https://github.com/GaryOcean428/atmosphere/assets/86527202/a127c05e-2121-4af2-a342-128e0e2d0291)
+![3](https://github.com/GaryOcean428/atmosphere/assets/86527202/674da952-8a06-4848-a0e8-a7b02d5f5c88)
+![4](https://github.com/GaryOcean428/atmosphere/assets/86527202/cbc5152a-9caf-4f77-a8f7-92a9d06d025b)
+![5](https://github.com/GaryOcean428/atmosphere/assets/86527202/dc75dfdc-c486-4f5a-a853-2a8f9e6b569a)
 
 ![5](https://user-images.githubusercontent.com/35857179/194844886-a17006e0-979d-493f-83c4-0e72f5a9b716.png)
-![7](https://github.com/nocodb/nocodb/assets/86527202/be64e619-7295-43e2-aa95-cace4462b17f)
-![8](https://github.com/nocodb/nocodb/assets/86527202/4538bf5a-371f-4ec1-a867-8197e5824286)
+![7](https://github.com/GaryOcean428/atmosphere/assets/86527202/be64e619-7295-43e2-aa95-cace4462b17f)
+![8](https://github.com/GaryOcean428/atmosphere/assets/86527202/4538bf5a-371f-4ec1-a867-8197e5824286)
 
 ![8](https://user-images.githubusercontent.com/35857179/194844893-82d5e21b-ae61-41bd-9990-31ad659bf490.png)
 ![9](https://user-images.githubusercontent.com/35857179/194844897-cfd79946-e413-4c97-b16d-eb4d7678bb79.png)
@@ -140,7 +140,7 @@ bash <(curl -sSL http://install.nocodb.com/noco.sh) <(mktemp)
 
 ### 支持工作流程自动化的应用商店
 
-我们在三个主要类别中提供不同的集成。详见 <a href="https://docs.nocodb.com/account-settings/oss-specific-details/#app-store" target="_blank">App Store</a>。
+我们在三个主要类别中提供不同的集成。详见 <a href="https://docs.atmosphere.dev/account-settings/oss-specific-details/#app-store" target="_blank">App Store</a>。
 
 - ⚡ &nbsp;聊天：Slack、Discord、Mattermost 等
 - ⚡ &nbsp;电子邮件: AWS SES，SMTP，MailerSend 等
@@ -148,14 +148,14 @@ bash <(curl -sSL http://install.nocodb.com/noco.sh) <(mktemp)
 
 ### 通过编程访问
 
-我们为用户提供下列所述的编程调用方法。你可以使用 token（JWT 或 Social Auth）来对你的请求进行签名，从而获得对 NocoDB 的认证。
+我们为用户提供下列所述的编程调用方法。你可以使用 token（JWT 或 Social Auth）来对你的请求进行签名，从而获得对 Atmosphere 的认证。
 
 - ⚡ &nbsp;REST APIs
-- ⚡ &nbsp;NocoDB SDK
+- ⚡ &nbsp;Atmosphere SDK
 
 # 贡献
 
-请参考 [贡献指南](https://github.com/nocodb/nocodb/blob/master/.github/CONTRIBUTING.md).
+请参考 [贡献指南](https://github.com/GaryOcean428/atmosphere/blob/master/.github/CONTRIBUTING.md).
 
 # 我们为什么要构建此软件？
 
@@ -175,6 +175,6 @@ bash <(curl -sSL http://install.nocodb.com/noco.sh) <(mktemp)
 
 感谢您的贡献！我们感谢社区的所有贡献。
 
-<a href="https://github.com/nocodb/nocodb/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=nocodb/nocodb" />
+<a href="https://github.com/GaryOcean428/atmosphere/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=atmosphere/atmosphere" />
 </a>

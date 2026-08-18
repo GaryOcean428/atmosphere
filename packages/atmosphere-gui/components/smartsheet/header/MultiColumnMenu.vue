@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnType } from 'nocodb-sdk'
-import { PlanLimitTypes, UITypes } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
+import { PlanLimitTypes, UITypes } from 'atmosphere-sdk'
 import { SmartsheetStoreEvents } from '#imports'
 
 // Bulk-action menu shown when the user has 2+ column headers selected on the
@@ -204,30 +204,30 @@ const onPermissionsSaved = () => {
 </script>
 
 <template>
-  <NcMenu
+  <AtMenu
     variant="small"
-    class="flex flex-col gap-1 border-nc-border-gray-medium nc-multi-column-options !min-w-60 nc-max-h-screen nc-scrollbar-thin"
+    class="flex flex-col gap-1 border-atm-border-gray-medium atm-multi-column-options !min-w-60 atm-max-h-screen atm-scrollbar-thin"
   >
-    <div class="px-3 py-1.5 text-caption text-nc-content-gray-subtle">
+    <div class="px-3 py-1.5 text-caption text-atm-content-gray-subtle">
       {{ t('labels.nFieldsSelected', { count: columnCount }) }}
     </div>
 
-    <NcDivider />
+    <AtDivider />
 
-    <NcMenuItem
+    <AtMenuItem
       v-if="appInfo.ee && !isPublic && isUIAllowed('permissionEdit')"
-      data-testid="nc-multi-field-permissions"
+      data-testid="atm-multi-field-permissions"
       @click="onPermissions"
     >
-      <div v-e="['a:field:permissions:multi']" class="nc-multi-column-permissions nc-header-menu-item">
+      <div v-e="['a:field:permissions:multi']" class="atm-multi-column-permissions atm-header-menu-item">
         <GeneralIcon icon="ncLock" class="opacity-80 !w-4 !h-4" />
         {{ t('labels.editNFieldPermissions', { count: columnCount }) }}
       </div>
-    </NcMenuItem>
+    </AtMenuItem>
 
-    <NcDivider v-if="appInfo.ee && !isPublic && isUIAllowed('permissionEdit')" />
+    <AtDivider v-if="appInfo.ee && !isPublic && isUIAllowed('permissionEdit')" />
 
-    <NcTooltip :disabled="isAnyFilterable && !isFilterLimitBlocking">
+    <AtTooltip :disabled="isAnyFilterable && !isFilterLimitBlocking">
       <template #title>
         {{
           !isAnyFilterable
@@ -237,19 +237,19 @@ const onPermissionsSaved = () => {
             : ''
         }}
       </template>
-      <NcMenuItem
+      <AtMenuItem
         :disabled="isLocked || !isAnyFilterable || isFilterLimitBlocking"
-        data-testid="nc-multi-field-filter"
+        data-testid="atm-multi-field-filter"
         @click="filterByAllSelected"
       >
-        <div class="nc-multi-column-filter nc-header-menu-item">
+        <div class="atm-multi-column-filter atm-header-menu-item">
           <component :is="iconMap.filter" class="opacity-80" />
           {{ t('activity.filterByTheseFields') }}
         </div>
-      </NcMenuItem>
-    </NcTooltip>
+      </AtMenuItem>
+    </AtTooltip>
 
-    <NcTooltip :disabled="(isAnyGroupable && !isGroupLimitBlocking) || !(isEeUI && !isPublic)">
+    <AtTooltip :disabled="(isAnyGroupable && !isGroupLimitBlocking) || !(isEeUI && !isPublic)">
       <template #title>
         {{
           !isAnyGroupable
@@ -259,32 +259,32 @@ const onPermissionsSaved = () => {
             : ''
         }}
       </template>
-      <NcMenuItem
+      <AtMenuItem
         :disabled="isLocked || !isAnyGroupable || isGroupLimitBlocking"
-        data-testid="nc-multi-field-groupby"
+        data-testid="atm-multi-field-groupby"
         @click="groupByAllSelected"
       >
-        <div class="nc-multi-column-groupby nc-header-menu-item">
+        <div class="atm-multi-column-groupby atm-header-menu-item">
           <component :is="iconMap.group" class="opacity-80" />
           {{ t('activity.groupByNFields', { count: groupableColumns.length }) }}
         </div>
-      </NcMenuItem>
-    </NcTooltip>
+      </AtMenuItem>
+    </AtTooltip>
 
-    <NcDivider />
+    <AtDivider />
 
-    <NcTooltip :disabled="nonPvColumns.length === columnCount" placement="right">
+    <AtTooltip :disabled="nonPvColumns.length === columnCount" placement="right">
       <template #title>{{ t('tooltip.displayValueFieldExcluded') }}</template>
-      <NcMenuItem :disabled="isLocked || isHiding" data-testid="nc-multi-field-hide" @click="hideAllSelected">
-        <div class="nc-multi-column-hide nc-header-menu-item">
+      <AtMenuItem :disabled="isLocked || isHiding" data-testid="atm-multi-field-hide" @click="hideAllSelected">
+        <div class="atm-multi-column-hide atm-header-menu-item">
           <GeneralLoader v-if="isHiding" size="regular" />
           <component :is="iconMap.eyeSlash" v-else class="!w-4 !h-4 opacity-80" />
           {{ t('labels.hideNFields', { count: nonPvColumns.length }) }}
         </div>
-      </NcMenuItem>
-    </NcTooltip>
+      </AtMenuItem>
+    </AtTooltip>
 
-    <NcTooltip
+    <AtTooltip
       v-if="isUIAllowed('fieldDelete') || !!fieldDeleteReason"
       :disabled="!fieldDeleteReason && nonPvColumns.length === columnCount"
       placement="right"
@@ -293,13 +293,13 @@ const onPermissionsSaved = () => {
         <template v-if="fieldDeleteReason">{{ t(fieldDeleteReason) }}</template>
         <template v-else>{{ t('tooltip.displayValueFieldExcluded') }}</template>
       </template>
-      <NcMenuItem danger :disabled="!!fieldDeleteReason" data-testid="nc-multi-field-delete" @click="onDelete">
-        <div class="nc-multi-column-delete nc-header-menu-item">
+      <AtMenuItem danger :disabled="!!fieldDeleteReason" data-testid="atm-multi-field-delete" @click="onDelete">
+        <div class="atm-multi-column-delete atm-header-menu-item">
           <component :is="iconMap.delete" class="opacity-80" />
           {{ t('labels.deleteNFields', { count: nonPvColumns.length }) }}
         </div>
-      </NcMenuItem>
-    </NcTooltip>
+      </AtMenuItem>
+    </AtTooltip>
 
     <div class="non-menu-items">
       <SmartsheetHeaderMultiDeleteColumnModal
@@ -314,20 +314,20 @@ const onPermissionsSaved = () => {
         @saved="onPermissionsSaved"
       />
     </div>
-  </NcMenu>
+  </AtMenu>
 </template>
 
 <style scoped lang="scss">
-:deep(.nc-menu-item-inner) {
+:deep(.atm-menu-item-inner) {
   @apply !w-full;
 }
 
-:deep(.nc-header-menu-item) {
+:deep(.atm-header-menu-item) {
   @apply text-dropdown flex items-center gap-2;
 }
 
-.nc-multi-column-options {
-  .nc-icons {
+.atm-multi-column-options {
+  .atm-icons {
     @apply !w-5 !h-5;
   }
 }

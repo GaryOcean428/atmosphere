@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Draggable from 'vuedraggable'
-import { PlanLimitTypes, type SourceType } from 'nocodb-sdk'
+import { PlanLimitTypes, type SourceType } from 'atmosphere-sdk'
 import { ClientType } from '#imports'
 
 interface Props {
@@ -310,26 +310,26 @@ const handleClickRow = (source: SourceType, tab?: string) => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full p-6" data-testid="nc-settings-datasources-tab">
+  <div class="flex flex-col h-full p-6" data-testid="atm-settings-datasources-tab">
     <div class="mb-6 flex items-center justify-between gap-3">
       <a-input
         v-model:value="searchQuery"
         type="text"
-        class="nc-search-data-source-input nc-input-border-on-value !max-w-90 nc-input-sm"
+        class="atm-search-data-source-input atm-input-border-on-value !max-w-90 atm-input-sm"
         placeholder="Search data source"
         allow-clear
       >
         <template #prefix>
-          <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-nc-content-gray-muted" />
+          <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-atm-content-gray-muted" />
         </template>
       </a-input>
 
-      <NcTooltip
+      <AtTooltip
         v-if="(!isDataSourceLimitReached && isUIAllowed('sourceCreate')) || !!sourceCreateReason"
         :title="sourceCreateReason ? $t(sourceCreateReason) : ''"
         :disabled="!sourceCreateReason"
       >
-        <NcButton
+        <AtButton
           size="large"
           class="z-10 !px-2"
           type="primary"
@@ -346,21 +346,21 @@ const handleClickRow = (source: SourceType, tab?: string) => {
             <component :is="iconMap.plus" />
             <div class="flex">{{ $t('activity.newSource') }}</div>
           </div>
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
     </div>
     <div
-      data-testid="nc-settings-datasources"
-      class="flex flex-row w-full nc-data-sources-view flex-grow min-h-0"
+      data-testid="atm-settings-datasources"
+      class="flex flex-row w-full atm-data-sources-view flex-grow min-h-0"
       :style="{
         maxHeight: isNewBaseModalOpen ? '100%' : activeSource ? 'calc(100% - 46px)' : 'calc(100% - 66px)',
       }"
     >
-      <NcModal
+      <AtModal
         v-model:visible="isOpenModal"
         centered
         size="large"
-        wrap-class-name="nc-active-data-sources-view"
+        wrap-class-name="atm-active-data-sources-view"
         @keydown.esc="activeSource = null"
       >
         <div v-if="activeSource" class="h-full">
@@ -374,15 +374,15 @@ const handleClickRow = (source: SourceType, tab?: string) => {
               </a-breadcrumb-item>
             </a-breadcrumb>
 
-            <NcButton size="small" type="text" class="nc-close-btn" @click="isOpenModal = false">
-              <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-            </NcButton>
+            <AtButton size="small" type="text" class="atm-close-btn" @click="isOpenModal = false">
+              <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+            </AtButton>
           </div>
 
-          <NcTabs v-model:active-key="openedTab" class="nc-source-tab w-full h-[calc(100%_-_58px)] max-h-[calc(100%_-_58px)]">
+          <AtTabs v-model:active-key="openedTab" class="atm-source-tab w-full h-[calc(100%_-_58px)] max-h-[calc(100%_-_58px)]">
             <a-tab-pane v-if="!activeSource.is_meta && !activeSource.is_local" key="edit">
               <template #tab>
-                <div class="tab" data-testid="nc-connection-tab">
+                <div class="tab" data-testid="atm-connection-tab">
                   <div>{{ $t('labels.connectionDetails') }}</div>
                 </div>
               </template>
@@ -396,7 +396,7 @@ const handleClickRow = (source: SourceType, tab?: string) => {
             </a-tab-pane>
             <a-tab-pane key="erd">
               <template #tab>
-                <div class="tab" data-testid="nc-erd-tab">
+                <div class="tab" data-testid="atm-erd-tab">
                   <div>{{ $t('title.erdView') }}</div>
                 </div>
               </template>
@@ -412,7 +412,7 @@ const handleClickRow = (source: SourceType, tab?: string) => {
 
             <a-tab-pane key="acl">
               <template #tab>
-                <div class="tab" data-testid="nc-acl-tab">
+                <div class="tab" data-testid="atm-acl-tab">
                   <div>{{ $t('labels.viewHide') }}</div>
                 </div>
               </template>
@@ -423,7 +423,7 @@ const handleClickRow = (source: SourceType, tab?: string) => {
             </a-tab-pane>
             <a-tab-pane v-if="!activeSource.is_meta && !activeSource.is_local" key="meta-sync">
               <template #tab>
-                <div class="tab" data-testid="nc-meta-sync-tab">
+                <div class="tab" data-testid="atm-meta-sync-tab">
                   <div>{{ $t('labels.metaSync') }}</div>
                 </div>
               </template>
@@ -431,9 +431,9 @@ const handleClickRow = (source: SourceType, tab?: string) => {
                 <DashboardSettingsMetadata :source-id="activeSource.id" @source-synced="loadBases(true)" />
               </div>
             </a-tab-pane>
-          </NcTabs>
+          </AtTabs>
         </div>
-      </NcModal>
+      </AtModal>
       <div
         class="flex flex-col w-full"
         :class="{
@@ -448,8 +448,8 @@ const handleClickRow = (source: SourceType, tab?: string) => {
             @source-created="loadBases(true)"
           />
         </template>
-        <div v-else class="ds-table overflow-y-auto nc-scrollbar-thin relative max-h-full mb-4">
-          <div class="ds-table-head sticky top-0 bg-nc-bg-default z-10">
+        <div v-else class="ds-table overflow-y-auto atm-scrollbar-thin relative max-h-full mb-4">
+          <div class="ds-table-head sticky top-0 bg-atm-bg-default z-10">
             <div class="ds-table-row !border-0">
               <div class="ds-table-col ds-table-enabled cursor-pointer">{{ $t('general.visibility') }}</div>
               <div class="ds-table-col ds-table-name">{{ $t('general.name') }}</div>
@@ -469,13 +469,13 @@ const handleClickRow = (source: SourceType, tab?: string) => {
               <template v-if="'default'.includes(searchQuery.toLowerCase())" #header>
                 <div
                   v-if="sources[0]"
-                  class="ds-table-row border-nc-border-gray-medium cursor-pointer"
+                  class="ds-table-row border-atm-border-gray-medium cursor-pointer"
                   @click="handleClickRow(sources[0], 'erd')"
                 >
                   <div class="ds-table-col ds-table-enabled">
                     <div class="flex items-center gap-1" @click.stop>
                       <div v-if="sources.length > 2" class="ds-table-handle" />
-                      <NcTooltip>
+                      <AtTooltip>
                         <template #title>
                           <template v-if="sources[0].enabled">{{ $t('activity.hideInUI') }}</template>
                           <template v-else>{{ $t('activity.showInUI') }}</template>
@@ -486,7 +486,7 @@ const handleClickRow = (source: SourceType, tab?: string) => {
                           size="small"
                           @change="toggleBase(sources[0], $event)"
                         />
-                      </NcTooltip>
+                      </AtTooltip>
                     </div>
                   </div>
                   <div class="ds-table-col ds-table-name font-medium">
@@ -505,13 +505,13 @@ const handleClickRow = (source: SourceType, tab?: string) => {
 
                   <div class="ds-table-col justify-end gap-x-1 ds-table-actions" @click.stop>
                     <div class="flex justify-end">
-                      <NcDropdown placement="bottomRight">
-                        <NcButton size="small" type="secondary">
+                      <AtDropdown placement="bottomRight">
+                        <AtButton size="small" type="secondary">
                           <GeneralIcon icon="threeDotVertical" />
-                        </NcButton>
+                        </AtButton>
                         <template #overlay>
-                          <NcMenu variant="small">
-                            <NcMenuItemCopyId
+                          <AtMenu variant="small">
+                            <AtMenuItemCopyId
                               :id="sources[0].id"
                               :tooltip="$t('labels.clickToCopySourceID')"
                               :label="
@@ -522,16 +522,16 @@ const handleClickRow = (source: SourceType, tab?: string) => {
                             />
 
                             <template v-if="!sources[0].is_meta && !sources[0].is_local">
-                              <NcDivider />
+                              <AtDivider />
 
-                              <NcMenuItem @click="baseAction(sources[0].id, DataSourcesSubTab.Edit)">
+                              <AtMenuItem @click="baseAction(sources[0].id, DataSourcesSubTab.Edit)">
                                 <GeneralIcon icon="edit" />
                                 <span>{{ $t('general.edit') }}</span>
-                              </NcMenuItem>
+                              </AtMenuItem>
                             </template>
-                          </NcMenu>
+                          </AtMenu>
                         </template>
-                      </NcDropdown>
+                      </AtDropdown>
                     </div>
                   </div>
                 </div>
@@ -539,7 +539,7 @@ const handleClickRow = (source: SourceType, tab?: string) => {
               <template #item="{ element: source, index }">
                 <div
                   v-if="index !== 0"
-                  class="ds-table-row border-nc-border-gray-medium cursor-pointer"
+                  class="ds-table-row border-atm-border-gray-medium cursor-pointer"
                   :class="{
                     '!hidden': !source?.alias?.toLowerCase()?.includes(searchQuery.toLowerCase()),
                   }"
@@ -548,7 +548,7 @@ const handleClickRow = (source: SourceType, tab?: string) => {
                   <div class="ds-table-col ds-table-enabled">
                     <div class="flex items-center gap-1" @click.stop>
                       <GeneralIcon v-if="sources.length > 2" icon="dragVertical" small class="ds-table-handle" />
-                      <NcTooltip>
+                      <AtTooltip>
                         <template #title>
                           <template v-if="source.enabled">{{ $t('activity.hideInUI') }}</template>
                           <template v-else>{{ $t('activity.showInUI') }}</template>
@@ -559,47 +559,47 @@ const handleClickRow = (source: SourceType, tab?: string) => {
                           size="small"
                           @change="toggleBase(source, $event)"
                         />
-                      </NcTooltip>
+                      </AtTooltip>
                     </div>
                   </div>
                   <div class="ds-table-col ds-table-name font-medium w-full">
                     <div v-if="source.is_meta || source.is_local" class="h-8 w-1">-</div>
 
-                    <NcTooltip v-else class="truncate" show-on-truncate-only>
+                    <AtTooltip v-else class="truncate" show-on-truncate-only>
                       <template #title>
                         {{ source.is_meta || source.is_local ? $t('general.base') : source.alias }}
                       </template>
                       {{ source.is_meta || source.is_local ? $t('general.base') : source.alias }}
-                    </NcTooltip>
+                    </AtTooltip>
                   </div>
                   <div class="ds-table-col ds-table-integration-name w-full">
-                    <NcTooltip class="truncate" show-on-truncate-only>
+                    <AtTooltip class="truncate" show-on-truncate-only>
                       <template #title>
                         {{ source?.integration_title || '-' }}
                       </template>
                       {{ source?.integration_title || '-' }}
-                    </NcTooltip>
+                    </AtTooltip>
                   </div>
 
                   <div class="ds-table-col ds-table-type">
-                    <NcBadge rounded="lg" class="flex items-center gap-2 px-0 py-1 !h-7 truncate !border-transparent">
+                    <AtBadge rounded="lg" class="flex items-center gap-2 px-0 py-1 !h-7 truncate !border-transparent">
                       <GeneralBaseLogo :source-type="source.type" class="flex-none !w-4 !h-4" />
-                      <NcTooltip placement="bottom" show-on-truncate-only class="text-sm truncate">
+                      <AtTooltip placement="bottom" show-on-truncate-only class="text-sm truncate">
                         <template #title> {{ clientTypesMap[source.type]?.text || source.type }}</template>
 
                         {{ source.type && clientTypesMap[source.type] ? clientTypesMap[source.type]?.text : source.type }}
-                      </NcTooltip>
-                    </NcBadge>
+                      </AtTooltip>
+                    </AtBadge>
                   </div>
                   <div class="ds-table-col justify-end gap-x-1 ds-table-actions" @click.stop>
                     <div class="flex justify-end">
-                      <NcDropdown placement="bottomRight">
-                        <NcButton size="small" type="secondary">
+                      <AtDropdown placement="bottomRight">
+                        <AtButton size="small" type="secondary">
                           <GeneralIcon icon="threeDotVertical" />
-                        </NcButton>
+                        </AtButton>
                         <template #overlay>
-                          <NcMenu variant="small">
-                            <NcMenuItemCopyId
+                          <AtMenu variant="small">
+                            <AtMenuItemCopyId
                               :id="source.id"
                               :tooltip="$t('labels.clickToCopySourceID')"
                               :label="
@@ -610,22 +610,22 @@ const handleClickRow = (source: SourceType, tab?: string) => {
                             />
 
                             <template v-if="!source.is_meta && !source.is_local">
-                              <NcDivider />
+                              <AtDivider />
 
-                              <NcMenuItem @click="handleClickRow(source, 'edit')">
+                              <AtMenuItem @click="handleClickRow(source, 'edit')">
                                 <GeneralIcon icon="edit" />
                                 <span>{{ $t('general.edit') }}</span>
-                              </NcMenuItem>
+                              </AtMenuItem>
 
-                              <NcDivider />
-                              <NcMenuItem danger @click.stop="openDeleteBase(source)">
+                              <AtDivider />
+                              <AtMenuItem danger @click.stop="openDeleteBase(source)">
                                 <GeneralIcon icon="delete" />
                                 {{ $t('general.remove') }}
-                              </NcMenuItem>
+                              </AtMenuItem>
                             </template>
-                          </NcMenu>
+                          </AtMenu>
                         </template>
-                      </NcDropdown>
+                      </AtDropdown>
                     </div>
                   </div>
                 </div>
@@ -636,7 +636,7 @@ const handleClickRow = (source: SourceType, tab?: string) => {
               v-if="!isReloading && sources?.length && !isSearchResultAvailable()"
               class="flex-none integration-table-empty flex items-center justify-center py-8 px-6"
             >
-              <div class="px-2 py-6 text-nc-content-gray-muted flex flex-col items-center gap-6 text-center">
+              <div class="px-2 py-6 text-atm-content-gray-muted flex flex-col items-center gap-6 text-center">
                 <img
                   src="~assets/img/placeholder/no-search-result-found.png"
                   class="!w-[164px] flex-none"
@@ -667,7 +667,7 @@ const handleClickRow = (source: SourceType, tab?: string) => {
           <template #entity-preview>
             <div
               v-if="toBeDeletedBase"
-              class="flex flex-row items-center py-2 px-3.25 bg-nc-bg-gray-extralight rounded-lg text-nc-content-gray-subtle mb-4"
+              class="flex flex-row items-center py-2 px-3.25 bg-atm-bg-gray-extralight rounded-lg text-atm-content-gray-subtle mb-4"
             >
               <GeneralBaseLogo :source-type="toBeDeletedBase.type" />
               <div
@@ -686,10 +686,10 @@ const handleClickRow = (source: SourceType, tab?: string) => {
 
 <style scoped lang="scss">
 .ds-table {
-  @apply border-1 border-nc-border-gray-medium rounded-lg h-full;
+  @apply border-1 border-atm-border-gray-medium rounded-lg h-full;
 }
 .ds-table-head {
-  @apply flex items-center border-b-1 text-nc-content-gray-muted bg-nc-bg-gray-extralight text-sm font-weight-500;
+  @apply flex items-center border-b-1 text-atm-content-gray-muted bg-atm-bg-gray-extralight text-sm font-weight-500;
 }
 
 .ds-table-body {
@@ -697,7 +697,7 @@ const handleClickRow = (source: SourceType, tab?: string) => {
 }
 
 .ds-table-row {
-  @apply grid grid-cols-18 border-b border-nc-border-gray-light w-full h-full;
+  @apply grid grid-cols-18 border-b border-atm-border-gray-light w-full h-full;
 }
 
 .ds-table-col {
@@ -732,7 +732,7 @@ const handleClickRow = (source: SourceType, tab?: string) => {
   @apply cursor-pointer justify-self-start mr-2 w-[16px];
 }
 .ds-table-body .ds-table-row:hover {
-  @apply bg-nc-bg-gray-extralight/60;
+  @apply bg-atm-bg-gray-extralight/60;
 }
 
 :deep(.ant-tabs-content),
@@ -745,11 +745,11 @@ const handleClickRow = (source: SourceType, tab?: string) => {
 </style>
 
 <style lang="scss">
-.nc-active-data-sources-view {
+.atm-active-data-sources-view {
   .ant-modal-content {
     @apply overflow-hidden;
   }
-  .nc-modal {
+  .atm-modal {
     @apply !p-0;
     height: min(calc(100vh - 100px), 1024px);
     max-height: min(calc(100vh - 100px), 1024px) !important;

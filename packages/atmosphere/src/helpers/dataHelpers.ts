@@ -9,13 +9,13 @@ import {
   parseProp,
   roundUpToPrecision,
   UITypes,
-} from 'nocodb-sdk';
-import type { ColumnType } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import type { ColumnType } from 'atmosphere-sdk';
 import type LinkToAnotherRecordColumn from '~/models/LinkToAnotherRecordColumn';
 import type LookupColumn from '~/models/LookupColumn';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type Column from '~/models/Column';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { Model, View } from '~/models';
 import Base from '~/models/Base';
 import { V1_V2_DATA_PAYLOAD_LIMIT } from '~/constants';
@@ -33,7 +33,7 @@ export interface OldPathParams {
 }
 
 export async function getViewAndModelByAliasOrId(
-  context: NcContext,
+  context: AtContext,
   param: {
     baseName: string;
     tableName: string;
@@ -47,7 +47,7 @@ export async function getViewAndModelByAliasOrId(
     aliasOrId: param.tableName,
   });
 
-  if (!model) NcError.tableNotFound(param.tableName);
+  if (!model) AtError.tableNotFound(param.tableName);
 
   const view =
     param.viewName &&
@@ -55,13 +55,13 @@ export async function getViewAndModelByAliasOrId(
       titleOrId: param.viewName,
       fk_model_id: model.id,
     }));
-  if (param.viewName && !view) NcError.viewNotFound(param.viewName);
+  if (param.viewName && !view) AtError.viewNotFound(param.viewName);
 
   return { model, view };
 }
 
 export async function serializeCellValue(
-  context: NcContext,
+  context: AtContext,
   {
     value,
     column,
@@ -251,7 +251,7 @@ export async function serializeCellValue(
 }
 
 export async function getColumnByIdOrName(
-  context: NcContext,
+  context: AtContext,
   columnNameOrId: string,
   model: Model,
 ) {
@@ -262,13 +262,13 @@ export async function getColumnByIdOrName(
       c.column_name === columnNameOrId,
   );
 
-  if (!column) NcError.fieldNotFound(columnNameOrId);
+  if (!column) AtError.fieldNotFound(columnNameOrId);
 
   return column;
 }
 
 export const validateV1V2DataPayloadLimit = (
-  context: NcContext,
+  context: AtContext,
   param: { body: any },
 ) => {
   if (
@@ -276,6 +276,6 @@ export const validateV1V2DataPayloadLimit = (
     Array.isArray(param.body) &&
     param.body.length > V1_V2_DATA_PAYLOAD_LIMIT
   ) {
-    NcError.get(context).maxPayloadLimitExceeded(V1_V2_DATA_PAYLOAD_LIMIT);
+    AtError.get(context).maxPayloadLimitExceeded(V1_V2_DATA_PAYLOAD_LIMIT);
   }
 };

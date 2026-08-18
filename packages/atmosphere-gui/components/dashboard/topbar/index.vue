@@ -11,8 +11,8 @@ const navigateToWorkspace = () => {
 </script>
 
 <template>
-  <div class="flex items-center justify-between w-full border-b-1 border-nc-gray-medium py-2 px-4 h-[56px]">
-    <GeneralIcon icon="nocodbSquarePuck" class="w-8 h-8 cursor-pointer" @click.stop="navigateToWorkspace" />
+  <div class="flex items-center justify-between w-full border-b-1 border-atm-gray-medium py-2 px-4 h-[56px]">
+    <GeneralIcon icon="atmosphereSquarePuck" class="w-8 h-8 cursor-pointer" @click.stop="navigateToWorkspace" />
     <DashboardTopbarUserInfo />
   </div>
 </template>

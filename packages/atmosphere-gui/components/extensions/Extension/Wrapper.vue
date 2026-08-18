@@ -33,7 +33,7 @@ const { height } = useElementSize(headerRef)
     <div
       class="extension-content-container"
       :class="{
-        'fullscreen nc-scrollbar-thin': fullscreen,
+        'fullscreen atm-scrollbar-thin': fullscreen,
         'h-full': !fullscreen,
         'relative': showAccessPermissionOverlay,
       }"
@@ -49,7 +49,7 @@ const { height } = useElementSize(headerRef)
         class="!bg-opacity-15 rounded-xl overflow-hidden"
       >
         <slot name="accessPermissionOverlay">
-          <div class="flex flex-col items-center justify-center h-full w-full !bg-nc-bg-default !bg-opacity-80">
+          <div class="flex flex-col items-center justify-center h-full w-full !bg-atm-bg-default !bg-opacity-80">
             <div class="max-w-sm text-center !font-semibold" :class="fullscreen ? 'text-bodyLg' : 'text-body'">
               {{ $t('tooltip.youDoNotHaveSufficientPermissionToConfigureThisExtension') }}
             </div>

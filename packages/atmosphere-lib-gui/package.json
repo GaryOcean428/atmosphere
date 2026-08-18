@@ -1,12 +1,12 @@
 {
-  "name": "nc-lib-gui",
+  "name": "atmosphere-lib-gui",
   "version": "0.301.3",
-  "description": "NocoDB GUI",
+  "description": "Atmosphere GUI",
   "author": {
-    "name": "NocoDB",
-    "url": "https://nocodb.com/"
+    "name": "Atmosphere",
+    "url": "https://atmosphere.dev/"
   },
-  "homepage": "https://github.com/nocodb/nocodb",
+  "homepage": "https://github.com/GaryOcean428/atmosphere",
   "license": "Sustainable Use License",
   "main": "lib/XcLibGui.js",
   "directories": {
@@ -18,13 +18,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:nocodb/nocodb.git"
+    "url": "git+ssh://git@github.com:atmosphere/atmosphere.git"
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
-    "url": "https://github.com/nocodb/nocodb/issues"
+    "url": "https://github.com/GaryOcean428/atmosphere/issues"
   },
   "dependencies": {
     "express": "^4.17.1"

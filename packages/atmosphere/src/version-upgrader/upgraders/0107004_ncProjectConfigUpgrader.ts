@@ -1,5 +1,5 @@
 import CryptoJS from 'crypto-js';
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
 import { Source } from '~/models';
 import { MetaTable } from '~/utils/globals';
 
@@ -9,7 +9,7 @@ const TEMP_KEY = 'temporary-key';
 // So any base created in version 0.107.0 won't be able to decrypt the base source config.
 // So we need to update the base base config with the new secret key.
 // Get all the base sources and update the base config with the new secret key.
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   const actions = [];
 
   // Get all the base sources

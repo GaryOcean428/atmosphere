@@ -1,5 +1,5 @@
-import type { Api, ButtonType, TableType } from 'nocodb-sdk'
-import type { UserObject } from 'packages/nc-gui/composables/useUserSync'
+import type { Api, ButtonType, TableType } from 'atmosphere-sdk'
+import type { UserObject } from 'packages/atmosphere-gui/composables/useUserSync'
 import type { InterfacePageDataApi } from '~/lib/interfaceData'
 
 interface ActionState {

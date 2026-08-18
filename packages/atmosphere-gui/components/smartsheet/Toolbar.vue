@@ -89,7 +89,7 @@ function triggerToolbarControl(selector: string) {
     :class="{
       'px-4': isMobileMode,
     }"
-    class="nc-table-toolbar bg-nc-bg-default relative px-3 flex gap-2 items-center border-b border-nc-border-gray-medium overflow-hidden min-h-[var(--toolbar-height)] max-h-[var(--toolbar-height)] z-7"
+    class="atm-table-toolbar bg-atm-bg-default relative px-3 flex gap-2 items-center border-b border-atm-border-gray-medium overflow-hidden min-h-[var(--toolbar-height)] max-h-[var(--toolbar-height)] z-7"
   >
     <template v-if="isViewsLoading">
       <a-skeleton-input :active="true" class="!w-44 !h-4 ml-2 !rounded overflow-hidden" />
@@ -200,77 +200,77 @@ function triggerToolbarControl(selector: string) {
         <SmartsheetToolbarCalendarRange v-if="isViewOperationsAllowed" />
       </div>
 
-      <NcDropdown v-if="isCalendar && isMobileMode" :trigger="['click']" overlay-class-name="nc-dropdown-calendar-mobile-more">
-        <NcButton
-          class="nc-toolbar-btn !border-0 !h-7 !px-1.5 !min-w-7"
+      <AtDropdown v-if="isCalendar && isMobileMode" :trigger="['click']" overlay-class-name="atm-dropdown-calendar-mobile-more">
+        <AtButton
+          class="atm-toolbar-btn !border-0 !h-7 !px-1.5 !min-w-7"
           size="small"
           type="secondary"
-          data-testid="nc-calendar-mobile-more-btn"
+          data-testid="atm-calendar-mobile-more-btn"
         >
           <GeneralIcon icon="threeDotVertical" class="!h-4 !w-4" />
-        </NcButton>
+        </AtButton>
         <template #overlay>
-          <NcMenu class="!min-w-44" variant="small">
-            <NcMenuItem
+          <AtMenu class="!min-w-44" variant="small">
+            <AtMenuItem
               v-if="isViewOperationsAllowed"
-              data-testid="nc-calendar-more-filter"
+              data-testid="atm-calendar-more-filter"
               inner-class="w-full"
-              @click="triggerToolbarControl('.nc-filter-menu-btn')"
+              @click="triggerToolbarControl('.atm-filter-menu-btn')"
             >
               <div class="flex items-center gap-2 w-full">
-                <GeneralIcon icon="filter" class="!h-4 !w-4 text-nc-content-gray-subtle" />
+                <GeneralIcon icon="filter" class="!h-4 !w-4 text-atm-content-gray-subtle" />
                 {{ $t('activity.filter') }}
-                <span v-if="calendarFilterCount" class="ml-auto nc-toolbar-btn-chip bg-nc-bg-brand text-nc-content-brand">
+                <span v-if="calendarFilterCount" class="ml-auto atm-toolbar-btn-chip bg-atm-bg-brand text-atm-content-brand">
                   {{ calendarFilterCount }}
                 </span>
               </div>
-            </NcMenuItem>
-            <NcMenuItem
-              data-testid="nc-calendar-more-fields"
+            </AtMenuItem>
+            <AtMenuItem
+              data-testid="atm-calendar-more-fields"
               inner-class="w-full"
-              @click="triggerToolbarControl('.nc-fields-menu-btn')"
+              @click="triggerToolbarControl('.atm-fields-menu-btn')"
             >
               <div class="flex items-center gap-2 w-full">
-                <GeneralIcon icon="fields" class="!h-4 !w-4 text-nc-content-gray-subtle" />
+                <GeneralIcon icon="fields" class="!h-4 !w-4 text-atm-content-gray-subtle" />
                 {{ $t('objects.fields') }}
-                <span v-if="numberOfHiddenFields" class="ml-auto nc-toolbar-btn-chip bg-nc-bg-brand text-nc-content-brand">
+                <span v-if="numberOfHiddenFields" class="ml-auto atm-toolbar-btn-chip bg-atm-bg-brand text-atm-content-brand">
                   {{ numberOfHiddenFields }}
                 </span>
               </div>
-            </NcMenuItem>
-            <NcMenuItem
-              data-testid="nc-calendar-more-record-height"
-              @click="triggerToolbarControl('[data-testid=nc-calendar-record-height]')"
+            </AtMenuItem>
+            <AtMenuItem
+              data-testid="atm-calendar-more-record-height"
+              @click="triggerToolbarControl('[data-testid=atm-calendar-record-height]')"
             >
               <div class="flex items-center gap-2">
-                <GeneralIcon icon="rowHeight" class="!h-4 !w-4 text-nc-content-gray-subtle" />
+                <GeneralIcon icon="rowHeight" class="!h-4 !w-4 text-atm-content-gray-subtle" />
                 {{ $t('objects.rowHeight') }}
               </div>
-            </NcMenuItem>
-            <NcMenuItem
+            </AtMenuItem>
+            <AtMenuItem
               v-if="!isPublic && !isSharedBase && isViewOperationsAllowed && showEEFeatures"
-              data-testid="nc-calendar-more-event-theme"
+              data-testid="atm-calendar-more-event-theme"
               inner-class="w-full"
-              @click="triggerToolbarControl('[data-testid=nc-calendar-event-theme]')"
+              @click="triggerToolbarControl('[data-testid=atm-calendar-event-theme]')"
             >
               <div class="flex items-center gap-2 w-full">
-                <GeneralIcon icon="palette" class="!h-4 !w-4 text-nc-content-gray-subtle" />
+                <GeneralIcon icon="palette" class="!h-4 !w-4 text-atm-content-gray-subtle" />
                 {{ $t('activity.eventTheme') }}
               </div>
-            </NcMenuItem>
-            <NcMenuItem
+            </AtMenuItem>
+            <AtMenuItem
               v-if="isViewOperationsAllowed"
-              data-testid="nc-calendar-more-settings"
-              @click="triggerToolbarControl('[data-testid=nc-calendar-range-btn]')"
+              data-testid="atm-calendar-more-settings"
+              @click="triggerToolbarControl('[data-testid=atm-calendar-range-btn]')"
             >
               <div class="flex items-center gap-2">
-                <GeneralIcon icon="settings" class="!h-4 !w-4 text-nc-content-gray-subtle" />
+                <GeneralIcon icon="settings" class="!h-4 !w-4 text-atm-content-gray-subtle" />
                 {{ $t('activity.settings') }}
               </div>
-            </NcMenuItem>
-          </NcMenu>
+            </AtMenuItem>
+          </AtMenu>
         </template>
-      </NcDropdown>
+      </AtDropdown>
 
       <SmartsheetToolbarCalendarToggleSideBar v-if="isCalendar && isMobileMode" />
 
@@ -289,13 +289,13 @@ function triggerToolbarControl(selector: string) {
         v-if="isEeUI && isGrid && isUIAllowed('viewOperations') && !isPublic && !isSharedBase && !isMobileMode"
         class="hidden sr-only"
       />
-      <NcFullScreenToggleButton v-if="showFullScreenToggle && !isMobileMode" />
+      <AtFullScreenToggleButton v-if="showFullScreenToggle && !isMobileMode" />
     </template>
   </div>
 </template>
 
 <style scoped>
-.nc-table-toolbar-mobile {
+.atm-table-toolbar-mobile {
   @apply flex-wrap h-auto py-2;
 }
 </style>

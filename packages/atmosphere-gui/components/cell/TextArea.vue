@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { AIRecordType } from 'nocodb-sdk'
-import { isSmartText } from 'nocodb-sdk'
-import { NcMarkdownParser } from '~/helpers/tiptap'
+import type { AIRecordType } from 'atmosphere-sdk'
+import { isSmartText } from 'atmosphere-sdk'
+import { AtMarkdownParser } from '~/helpers/tiptap'
 
 const props = defineProps<{
   modelValue?: string | number
@@ -15,7 +15,7 @@ const props = defineProps<{
 
 const emits = defineEmits(['update:modelValue', 'update:isAiEdited', 'generate', 'close'])
 
-const STORAGE_KEY = 'nc-long-text-expanded-modal-size'
+const STORAGE_KEY = 'atm-long-text-expanded-modal-size'
 
 const meta = inject(MetaInj, ref())
 
@@ -70,7 +70,7 @@ const { showNull, user } = useGlobal()
 
 const { currentRow } = useSmartsheetRowStoreOrThrow()
 
-const { aiLoading, aiIntegrations, generatingRows, generatingColumnRows } = useNocoAi()
+const { aiLoading, aiIntegrations, generatingRows, generatingColumnRows } = useAtmosphereAi()
 
 const baseStore = useBase()
 
@@ -186,13 +186,13 @@ watch(isVisible, (newVal, oldVal) => {
 })
 
 onClickOutside(inputWrapperRef, (e) => {
-  if ((e.target as HTMLElement)?.className.includes('nc-long-text-toggle-expand')) return
+  if ((e.target as HTMLElement)?.className.includes('atm-long-text-toggle-expand')) return
 
   const targetEl = e?.target as HTMLElement
 
   if (
     targetEl?.closest(
-      '.bubble-menu, .tippy-content, .nc-textarea-rich-editor, .tippy-box, .mention, .nc-mention-list, .tippy-content',
+      '.bubble-menu, .tippy-content, .atm-textarea-rich-editor, .tippy-box, .mention, .atm-mention-list, .tippy-content',
     )
   ) {
     return
@@ -234,7 +234,7 @@ const isRichPreview = computed(() => isRichMode.value || (isSmartMode.value && !
 const richTextContent = computedAsync(async () => {
   if (isRichPreview.value && vModel.value) {
     return Promise.resolve(
-      NcMarkdownParser.parse(
+      AtMarkdownParser.parse(
         unref(vModel.value),
         {
           enableMention: true,
@@ -352,7 +352,7 @@ const onMouseUp = (e: MouseEvent) => {
 watch(
   position,
   () => {
-    const dom = document.querySelector('.nc-long-text-expanded-modal .ant-modal-content') as HTMLElement
+    const dom = document.querySelector('.atm-long-text-expanded-modal .ant-modal-content') as HTMLElement
     if (!dom || !position.value) return
 
     // Set left and top of dom
@@ -366,7 +366,7 @@ watch(
 const dragStart = (e: MouseEvent) => {
   if (isEditColumn.value) return
 
-  const dom = document.querySelector('.nc-long-text-expanded-modal .ant-modal-content') as HTMLElement
+  const dom = document.querySelector('.atm-long-text-expanded-modal .ant-modal-content') as HTMLElement
 
   mousePosition.value = {
     top: e.clientY - dom.getBoundingClientRect().top,
@@ -423,7 +423,7 @@ watch(inputWrapperRef, () => {
   if (!isEditColumn.value) return
 
   // stop event propogation in edit column
-  const modal = document.querySelector('.nc-long-text-expanded-modal') as HTMLElement
+  const modal = document.querySelector('.atm-long-text-expanded-modal') as HTMLElement
 
   if (!modal?.parentElement) return
 
@@ -477,9 +477,9 @@ onMounted(() => {
   forcedNextTick(() => {
     if (onCellEvent(canvasCellEventData.event, true)) return
 
-    if (getElementAtMouse('.nc-canvas-table-editable-cell-wrapper .nc-textarea-expand', position)) {
+    if (getElementAtMouse('.atm-canvas-table-editable-cell-wrapper .atm-textarea-expand', position)) {
       onExpand()
-    } else if (getElementAtMouse('.nc-canvas-table-editable-cell-wrapper .nc-textarea-generate', position)) {
+    } else if (getElementAtMouse('.atm-canvas-table-editable-cell-wrapper .atm-textarea-generate', position)) {
       generate()
     } else if (isRichMode.value || props.isAi) {
       onExpand()
@@ -517,10 +517,10 @@ watch(isVisible, (open) => {
 const updateSize = () => {
   try {
     const size = localStorage.getItem(STORAGE_KEY)
-    let elem = document.querySelector('.nc-text-area-expanded') as HTMLElement
+    let elem = document.querySelector('.atm-text-area-expanded') as HTMLElement
 
     if (isRichMode.value) {
-      elem = document.querySelector('.nc-long-text-expanded-modal .nc-textarea-rich-editor .tiptap.ProseMirror') as HTMLElement
+      elem = document.querySelector('.atm-long-text-expanded-modal .atm-textarea-rich-editor .tiptap.ProseMirror') as HTMLElement
     }
 
     const parsedJSON = JSON.parse(size)
@@ -543,11 +543,11 @@ const getResizeEl = () => {
 
   if (isRichMode.value) {
     return inputWrapperRef.value.querySelector(
-      '.nc-long-text-expanded-modal .nc-textarea-rich-editor .tiptap.ProseMirror',
+      '.atm-long-text-expanded-modal .atm-textarea-rich-editor .tiptap.ProseMirror',
     ) as HTMLElement
   }
 
-  return inputWrapperRef.value.querySelector('.nc-text-area-expanded') as HTMLElement
+  return inputWrapperRef.value.querySelector('.atm-text-area-expanded') as HTMLElement
 }
 
 useResizeObserver(inputWrapperRef, () => {
@@ -596,7 +596,7 @@ useResizeObserver(inputWrapperRef, () => {
 <template>
   <div
     :class="{
-      'nc-expanded-form-open': isExpandedFormOpen,
+      'atm-expanded-form-open': isExpandedFormOpen,
     }"
   >
     <div
@@ -617,7 +617,7 @@ useResizeObserver(inputWrapperRef, () => {
           <CellRichText
             v-model:value="vModel"
             :class="{
-              'border-t-1 border-nc-border-gray-light allow-vertical-resize': !readOnly,
+              'border-t-1 border-atm-border-gray-light allow-vertical-resize': !readOnly,
             }"
             :autofocus="false"
             show-menu
@@ -629,12 +629,12 @@ useResizeObserver(inputWrapperRef, () => {
 
       <div
         v-else-if="isRichPreview"
-        class="w-full cursor-pointer nc-readonly-rich-text-wrapper"
+        class="w-full cursor-pointer atm-readonly-rich-text-wrapper"
         :class="[
-          isExpandedFormOpen ? 'nc-scrollbar-thin' : 'overflow-hidden',
+          isExpandedFormOpen ? 'atm-scrollbar-thin' : 'overflow-hidden',
           {
-            'nc-readonly-rich-text-grid ': !isExpandedFormOpen && !isForm,
-            'nc-readonly-rich-text-sort-height':
+            'atm-readonly-rich-text-grid ': !isExpandedFormOpen && !isForm,
+            'atm-readonly-rich-text-sort-height':
               localRowHeight === 1 && !isExpandedFormOpen && !isForm && !isPageDesignerPreviewPanel,
           },
         ]"
@@ -656,7 +656,7 @@ useResizeObserver(inputWrapperRef, () => {
       >
         <div
           v-dompurify-html="richTextContent"
-          class="nc-cell-field nc-rich-text-content nc-rich-text-content-grid"
+          class="atm-cell-field atm-rich-text-content atm-rich-text-content-grid"
           :class="
             !isExpandedFormOpen && !isPageDesignerPreviewPanel
               ? `line-clamp-${rowHeightTruncateLines(localRowHeight, true)}`
@@ -676,20 +676,20 @@ useResizeObserver(inputWrapperRef, () => {
         "
         class="h-full w-full"
         :class="{
-          'my-1 bg-nc-bg-purple-light rounded-lg': props.isAi && isExpandedFormOpen && !readOnly,
+          'my-1 bg-atm-bg-purple-light rounded-lg': props.isAi && isExpandedFormOpen && !readOnly,
         }"
       >
         <textarea
           ref="textAreaRef"
           v-model="vModel"
           :rows="isForm ? 5 : 4"
-          class="nc-inline-textarea h-full w-full !outline-none nc-scrollbar-thin"
+          class="atm-inline-textarea h-full w-full !outline-none atm-scrollbar-thin"
           :class="{
             'p-2': editEnabled || isUnderFormula,
             'py-1 h-full': isForm,
             'px-2': isExpandedFormOpen,
             'border-none': !(props.isAi && isExpandedFormOpen),
-            'nc-inline-textarea-ai border-1 border-nc-border-gray-medium rounded-lg !focus:(shadow-selected-ai border-nc-border-purple ring-0) transition-shadow duration-300':
+            'atm-inline-textarea-ai border-1 border-atm-border-gray-medium rounded-lg !focus:(shadow-selected-ai border-atm-border-purple ring-0) transition-shadow duration-300':
               props.isAi && isExpandedFormOpen,
             'bg-transparent': isUnderFormula,
           }"
@@ -714,10 +714,10 @@ useResizeObserver(inputWrapperRef, () => {
         />
         <div v-if="!readOnly && props.isAi && isExpandedFormOpen" class="-mt-1">
           <div v-if="props.aiMeta?.isStale" ref="aiWarningRef">
-            <div class="flex items-start p-3 bg-nc-bg-purple-light gap-4">
-              <GeneralIcon icon="alertTriangleSolid" class="text-nc-content-purple-medium h-4 w-4 flex-none" />
+            <div class="flex items-start p-3 bg-atm-bg-purple-light gap-4">
+              <GeneralIcon icon="alertTriangleSolid" class="text-atm-content-purple-medium h-4 w-4 flex-none" />
               <div class="flex flex-col">
-                <div class="text-small leading-[18px] text-nc-content-gray-muted">
+                <div class="text-small leading-[18px] text-atm-content-gray-muted">
                   AI generated content may be outdated. The source data for this record has changed.
                 </div>
               </div>
@@ -725,13 +725,13 @@ useResizeObserver(inputWrapperRef, () => {
           </div>
 
           <div v-if="!isEditColumn" class="flex items-center gap-2 px-3 pt-0.5 pb-[3.5px] !text-small leading-[18px]">
-            <NcTooltip v-if="isAiEdited" class="text-nc-content-green-dark flex-1 truncate" show-on-truncate-only>
+            <AtTooltip v-if="isAiEdited" class="text-atm-content-green-dark flex-1 truncate" show-on-truncate-only>
               <template #title> Edited by you </template>
               Edited by you
-            </NcTooltip>
-            <NcTooltip
+            </AtTooltip>
+            <AtTooltip
               v-else-if="props.aiMeta?.lastModifiedBy && idUserMap[props.aiMeta?.lastModifiedBy]"
-              class="text-nc-content-green-dark flex-1 truncate"
+              class="text-atm-content-green-dark flex-1 truncate"
               show-on-truncate-only
             >
               <template #title>
@@ -748,15 +748,15 @@ useResizeObserver(inputWrapperRef, () => {
                   ? 'you'
                   : extractUserDisplayNameOrEmail(idUserMap[props.aiMeta?.lastModifiedBy])
               }}
-            </NcTooltip>
-            <span v-else class="text-nc-content-purple-light truncate flex-1">Generated by AI</span>
-            <NcTooltip :disabled="isFieldAiIntegrationAvailable" class="flex">
+            </AtTooltip>
+            <span v-else class="text-atm-content-purple-light truncate flex-1">Generated by AI</span>
+            <AtTooltip :disabled="isFieldAiIntegrationAvailable" class="flex">
               <template #title>
                 {{
                   aiIntegrations.length ? $t('tooltip.aiIntegrationReConfigure') : $t('tooltip.aiIntegrationAddAndReConfigure')
                 }}
               </template>
-              <NcButton
+              <AtButton
                 type="text"
                 theme="ai"
                 size="xs"
@@ -769,19 +769,19 @@ useResizeObserver(inputWrapperRef, () => {
                 </template>
                 <template #loading> Re-generating... </template>
                 Re-generate
-              </NcButton>
-            </NcTooltip>
+              </AtButton>
+            </AtTooltip>
           </div>
         </div>
       </div>
 
-      <span v-else-if="vModel === null && showNull" class="nc-null uppercase">{{ $t('general.null') }}</span>
+      <span v-else-if="vModel === null && showNull" class="atm-null uppercase">{{ $t('general.null') }}</span>
 
       <CellClampedText
         v-else-if="rowHeight"
         :value="vModel"
         :lines="isUnderLookup && (isGallery || isKanban) && !isExpandedFormOpen ? 1 : rowHeightTruncateLines(localRowHeight)"
-        class="nc-text-area-clamped-text"
+        class="atm-text-area-clamped-text"
         :style="{
           'word-break': 'break-word',
           'max-height': `${25 * rowHeightTruncateLines(localRowHeight)}px`,
@@ -794,7 +794,7 @@ useResizeObserver(inputWrapperRef, () => {
 
       <div
         v-if="!isPageDesignerPreviewPanel"
-        class="!absolute nc-text-area-expand-btn z-3 items-center gap-1"
+        class="!absolute atm-text-area-expand-btn z-3 items-center gap-1"
         :class="{
           'active': active && isCanvasInjected,
           'right-1': isForm,
@@ -815,18 +815,18 @@ useResizeObserver(inputWrapperRef, () => {
           '!hidden group-hover:block': !(isExpandedFormOpen && isSmartMode),
         }"
       >
-        <NcTooltip
+        <AtTooltip
           v-if="!isVisible && !isForm && !readOnly && props.isAi && !isExpandedFormOpen && !isEditColumn"
           placement="bottom"
-          class="nc-action-icon"
+          class="atm-action-icon"
         >
           <template #title>
             {{ isAiGenerating ? 'Re-generating...' : 'Re-generate' }}
           </template>
-          <NcButton
+          <AtButton
             type="secondary"
             size="xsmall"
-            class="!p-0 !w-5 !h-5 !min-w-[fit-content] nc-textarea-generate"
+            class="!p-0 !w-5 !h-5 !min-w-[fit-content] atm-textarea-generate"
             :disabled="isAiGenerating"
             loader-size="small"
             icon-only
@@ -835,26 +835,26 @@ useResizeObserver(inputWrapperRef, () => {
             <template #icon>
               <GeneralIcon
                 icon="refresh"
-                class="transform group-hover:(!text-nc-content-gray) text-nc-content-inverted-secondary w-3 h-3"
+                class="transform group-hover:(!text-atm-content-gray) text-atm-content-inverted-secondary w-3 h-3"
                 :class="{ 'animate-infinite animate-spin': isAiGenerating }"
               />
             </template>
-          </NcButton>
-        </NcTooltip>
-        <NcTooltip v-if="!isVisible && !isForm && (!isSmartMode || isExpandedFormOpen)" placement="bottom" class="nc-action-icon">
+          </AtButton>
+        </AtTooltip>
+        <AtTooltip v-if="!isVisible && !isForm && (!isSmartMode || isExpandedFormOpen)" placement="bottom" class="atm-action-icon">
           <template #title>{{ isExpandedFormOpen ? $t('title.expand') : $t('tooltip.expandShiftSpace') }}</template>
-          <NcButton
+          <AtButton
             type="secondary"
             size="xsmall"
-            class="nc-textarea-expand !p-0 !w-5 !h-5 !min-w-[fit-content]"
+            class="atm-textarea-expand !p-0 !w-5 !h-5 !min-w-[fit-content]"
             @click.stop="onExpand"
           >
             <component
               :is="iconMap.maximize"
-              class="transform group-hover:(!text-nc-content-gray) text-nc-content-inverted-secondary w-3 h-3"
+              class="transform group-hover:(!text-atm-content-gray) text-atm-content-inverted-secondary w-3 h-3"
             />
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
       </div>
     </div>
     <a-modal
@@ -862,7 +862,7 @@ useResizeObserver(inputWrapperRef, () => {
       v-model:visible="isVisible"
       :closable="false"
       :footer="null"
-      wrap-class-name="nc-long-text-expanded-modal"
+      wrap-class-name="atm-long-text-expanded-modal"
       :mask="true"
       :mask-closable="false"
       :mask-style="{ zIndex: 1051 }"
@@ -879,7 +879,7 @@ useResizeObserver(inputWrapperRef, () => {
       >
         <div
           v-if="column"
-          class="flex flex-row gap-x-1 items-center font-medium pl-3 pb-2.5 pt-3 border-b-1 border-nc-border-gray-light overflow-hidden"
+          class="flex flex-row gap-x-1 items-center font-medium pl-3 pb-2.5 pt-3 border-b-1 border-atm-border-gray-light overflow-hidden"
           :class="{
             'select-none': isDragging,
             'cursor-move': !isEditColumn,
@@ -907,14 +907,14 @@ useResizeObserver(inputWrapperRef, () => {
           <template v-if="!props.isAi && !isRichMode">
             <div class="flex-1" />
 
-            <NcButton class="mr-2" type="text" size="small" @click="isVisible = false">
+            <AtButton class="mr-2" type="text" size="small" @click="isVisible = false">
               <GeneralIcon icon="close" />
-            </NcButton>
+            </AtButton>
           </template>
           <template v-if="props.isAi && !isEditColumn">
             <div class="flex items-center text-small leading-[18px] gap-3 ml-2">
               <template v-if="!readOnly">
-                <span v-if="isAiEdited" class="text-nc-content-green-dark truncate"> Edited by you </span>
+                <span v-if="isAiEdited" class="text-atm-content-green-dark truncate"> Edited by you </span>
                 <span v-else-if="props.aiMeta?.lastModifiedBy && idUserMap[props.aiMeta?.lastModifiedBy]" class="text-green-600">
                   Edited by
                   {{
@@ -923,18 +923,18 @@ useResizeObserver(inputWrapperRef, () => {
                       : extractUserDisplayNameOrEmail(idUserMap[props.aiMeta?.lastModifiedBy])
                   }}
                 </span>
-                <span v-else class="text-nc-content-purple-dark truncate">Generated by AI</span>
+                <span v-else class="text-atm-content-purple-dark truncate">Generated by AI</span>
               </template>
             </div>
             <div class="flex-1"></div>
             <div v-if="!readOnly" class="flex items-center gap-1">
-              <NcTooltip :disabled="isFieldAiIntegrationAvailable" class="flex">
+              <AtTooltip :disabled="isFieldAiIntegrationAvailable" class="flex">
                 <template #title>
                   {{
                     aiIntegrations.length ? $t('tooltip.aiIntegrationReConfigure') : $t('tooltip.aiIntegrationAddAndReConfigure')
                   }}
                 </template>
-                <NcButton
+                <AtButton
                   type="secondary"
                   :bordered="false"
                   theme="ai"
@@ -942,7 +942,7 @@ useResizeObserver(inputWrapperRef, () => {
                   inner-class="!gap-2"
                   :disabled="!isFieldAiIntegrationAvailable"
                   :class="{
-                    '!text-nc-content-purple-medium !bg-nc-bg-purple-light hover:!bg-nc-bg-purple-dark':
+                    '!text-atm-content-purple-medium !bg-atm-bg-purple-light hover:!bg-atm-bg-purple-dark':
                       isFieldAiIntegrationAvailable,
                   }"
                   :loading="isAiGenerating"
@@ -956,26 +956,26 @@ useResizeObserver(inputWrapperRef, () => {
                   </template>
 
                   {{ isAiGenerating ? 'Re-generating...' : 'Re-generate' }}
-                </NcButton>
-              </NcTooltip>
+                </AtButton>
+              </AtTooltip>
             </div>
           </template>
           <template v-if="props.isAi">
             <div v-if="isEditColumn" class="flex-1"></div>
-            <NcButton class="mr-3" type="text" size="small" @click="isVisible = false">
+            <AtButton class="mr-3" type="text" size="small" @click="isVisible = false">
               <GeneralIcon icon="close" />
-            </NcButton>
+            </AtButton>
           </template>
         </div>
         <div
           v-if="props.isAi && props.aiMeta?.isStale && !readOnly"
           ref="aiWarningRef"
-          class="border-b-1 border-nc-border-gray-light"
+          class="border-b-1 border-atm-border-gray-light"
         >
-          <div class="flex items-center p-4 bg-nc-bg-purple-light gap-4">
-            <GeneralIcon icon="alertTriangleSolid" class="text-nc-content-purple-medium h-6 w-6 flex-none" />
+          <div class="flex items-center p-4 bg-atm-bg-purple-light gap-4">
+            <GeneralIcon icon="alertTriangleSolid" class="text-atm-content-purple-medium h-6 w-6 flex-none" />
             <div class="flex flex-col">
-              <div class="text-nc-content-gray-muted text-sm">
+              <div class="text-atm-content-gray-muted text-sm">
                 AI generated content may be outdated. The source data for this record has changed.
               </div>
             </div>
@@ -985,10 +985,10 @@ useResizeObserver(inputWrapperRef, () => {
           <a-textarea
             ref="inputRef"
             v-model:value="vModel"
-            class="nc-text-area-expanded !py-1 !px-3 !text-nc-content-gray-extreme !transition-none !cursor-text !min-h-[210px] !rounded-lg disabled:!bg-nc-bg-gray-extralight nc-longtext-scrollbar"
+            class="atm-text-area-expanded !py-1 !px-3 !text-atm-content-gray-extreme !transition-none !cursor-text !min-h-[210px] !rounded-lg disabled:!bg-atm-bg-gray-extralight atm-longtext-scrollbar"
             :class="{
-              '!focus:border-nc-border-brand': !props.isAi,
-              '!hover:border-nc-border-purple !focus:border-nc-border-purple': props.isAi,
+              '!focus:border-atm-border-brand': !props.isAi,
+              '!hover:border-atm-border-purple !focus:border-atm-border-purple': props.isAi,
             }"
             :placeholder="$t('activity.enterText')"
             :style="{
@@ -1034,14 +1034,14 @@ useResizeObserver(inputWrapperRef, () => {
 </template>
 
 <style lang="scss" scoped>
-.nc-inline-textarea {
+.atm-inline-textarea {
   &:disabled {
     @apply !bg-transparent;
   }
 
-  &.nc-inline-textarea-ai {
+  &.atm-inline-textarea-ai {
     &:not(:disabled) {
-      @apply dark:!bg-nc-bg-default;
+      @apply dark:!bg-atm-bg-default;
     }
   }
 }
@@ -1049,7 +1049,7 @@ useResizeObserver(inputWrapperRef, () => {
 textarea:focus {
   box-shadow: none;
 }
-.nc-text-area-expanded {
+.atm-text-area-expanded {
   @apply h-[min(795px,100vh_-_300px)] w-[min(1256px,100vw_-_124px)];
 
   max-height: min(795px, 100vh - 170px);
@@ -1061,16 +1061,16 @@ textarea:focus {
     @apply rounded-lg;
   }
 }
-.nc-longtext-scrollbar {
-  @apply nc-scrollbar-thin;
+.atm-longtext-scrollbar {
+  @apply atm-scrollbar-thin;
 }
 
-.nc-readonly-rich-text-wrapper {
-  &.nc-readonly-rich-text-grid {
+.atm-readonly-rich-text-wrapper {
+  &.atm-readonly-rich-text-grid {
     :deep(.ProseMirror) {
       @apply !pt-0;
     }
-    // &.nc-readonly-rich-text-sort-height {
+    // &.atm-readonly-rich-text-sort-height {
     //   @apply mt-1;
     // }
   }
@@ -1078,15 +1078,15 @@ textarea:focus {
 </style>
 
 <style lang="scss">
-.cell:hover .nc-text-area-expand-btn,
-.long-text-wrapper:hover .nc-text-area-expand-btn {
+.cell:hover .atm-text-area-expand-btn,
+.long-text-wrapper:hover .atm-text-area-expand-btn {
   @apply !flex cursor-pointer;
 }
-.long-text-wrapper .nc-text-area-expand-btn.active {
+.long-text-wrapper .atm-text-area-expand-btn.active {
   @apply !flex;
 }
 
-.nc-grid-cell {
+.atm-grid-cell {
   &.align-top {
     .long-text-wrapper {
       @apply items-start;
@@ -1098,22 +1098,22 @@ textarea:focus {
   }
 }
 
-.nc-data-cell {
-  &:has(.nc-cell-longtext-ai .nc-expanded-form-open) {
+.atm-data-cell {
+  &:has(.atm-cell-longtext-ai .atm-expanded-form-open) {
     @apply !border-none -mx-1 -my-1;
     box-shadow: none !important;
 
-    &:focus-within:not(.nc-readonly-div-data-cell):not(.nc-system-field) {
+    &:focus-within:not(.atm-readonly-div-data-cell):not(.atm-system-field) {
       box-shadow: none !important;
     }
 
-    .nc-text-area-expand-btn {
+    .atm-text-area-expand-btn {
       @apply top-2 right-1;
     }
   }
 }
 
-.nc-long-text-expanded-modal {
+.atm-long-text-expanded-modal {
   .ant-modal {
     @apply !w-full h-full !top-0 !mx-auto !my-0;
 
@@ -1135,12 +1135,12 @@ textarea:focus {
         min-width: min(1280px, 100vw - 32px);
       }
 
-      .nc-longtext-scrollbar {
-        @apply nc-scrollbar-thin;
+      .atm-longtext-scrollbar {
+        @apply atm-scrollbar-thin;
       }
 
       .expanded-cell-input-ai {
-        .nc-text-area-expanded {
+        .atm-text-area-expanded {
           max-height: min(783px - 76px, 100vh - 180px);
 
           @supports (height: 100dvh) {

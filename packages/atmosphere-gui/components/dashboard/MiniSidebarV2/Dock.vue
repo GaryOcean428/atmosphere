@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { extractBaseRoleFromWorkspaceRole } from 'nocodb-sdk'
+import { extractBaseRoleFromWorkspaceRole } from 'atmosphere-sdk'
 
 interface NavItem {
   key: string
@@ -62,13 +62,13 @@ onClickOutside(
   },
   {
     ignore: [
-      '.nc-bookmark-add-dropdown',
-      '.nc-bookmark-context-menu',
-      '.nc-bookmark-group-menu',
-      '.nc-bookmark-settings-menu',
-      '.nc-modal-wrapper',
-      '.nc-bookmark-bulk-more-dropdown-move-to',
-      '.nc-bookmark-bulk-more-dropdown',
+      '.atm-bookmark-add-dropdown',
+      '.atm-bookmark-context-menu',
+      '.atm-bookmark-group-menu',
+      '.atm-bookmark-settings-menu',
+      '.atm-modal-wrapper',
+      '.atm-bookmark-bulk-more-dropdown-move-to',
+      '.atm-bookmark-bulk-more-dropdown',
     ],
   },
 )
@@ -271,7 +271,7 @@ const onMouseLeave = () => {
 }
 
 useEventListener(document, 'keydown', async (e: KeyboardEvent) => {
-  const isBaseSearchInput = e.target instanceof HTMLInputElement && e.target.closest('.nc-base-search-input')
+  const isBaseSearchInput = e.target instanceof HTMLInputElement && e.target.closest('.atm-base-search-input')
 
   if (
     !e.altKey ||
@@ -324,13 +324,13 @@ const handleOpenBookmarkPanel = () => {
 </script>
 
 <template>
-  <nav ref="dockRef" class="nc-dock" data-testid="nc-mini-sidebar-v2-dock" @mousemove="onMouseMove" @mouseleave="onMouseLeave">
+  <nav ref="dockRef" class="atm-dock" data-testid="atm-mini-sidebar-v2-dock" @mousemove="onMouseMove" @mouseleave="onMouseLeave">
     <!-- Logo — hover shows back arrow, click navigates to workspace -->
 
     <DashboardMiniSidebarV2DockItem
       :ref="(el: any) => setItemRef('logo', el)"
-      class="nc-dock-logo nc-dock-logo-hover"
-      data-testid="nc-mini-sidebar-v2-logo"
+      class="atm-dock-logo atm-dock-logo-hover"
+      data-testid="atm-mini-sidebar-v2-logo"
       :data-workspace-title="activeWorkspace?.title"
       :label="`${$t('labels.backToWorkspace')} ${activeWorkspace?.title}`"
       :scale="getScale('logo')"
@@ -340,15 +340,15 @@ const handleOpenBookmarkPanel = () => {
         v-if="isWhiteLabelled && faviconUrl"
         :src="faviconUrl"
         :alt="productName"
-        class="!h-7 !w-7 nc-logo-icon object-contain"
+        class="!h-7 !w-7 atm-logo-icon object-contain"
       />
-      <GeneralNocodbLogo v-else class="!h-7 !w-7 nc-logo-icon" />
-      <div class="nc-back-icon">
-        <GeneralIcon icon="ncArrowLeft" class="!h-4.5 !w-4.5 text-nc-content-gray" />
+      <GeneralAtmosphereLogo v-else class="!h-7 !w-7 atm-logo-icon" />
+      <div class="atm-back-icon">
+        <GeneralIcon icon="ncArrowLeft" class="!h-4.5 !w-4.5 text-atm-content-gray" />
       </div>
     </DashboardMiniSidebarV2DockItem>
 
-    <NcDivider class="!w-8 !min-w-8 !mb-0 !border-nc-border-gray-medium !-mt-1.5" />
+    <AtDivider class="!w-8 !min-w-8 !mb-0 !border-atm-border-gray-medium !-mt-1.5" />
 
     <!-- Main nav items -->
     <DashboardMiniSidebarV2DockItem
@@ -371,13 +371,13 @@ const handleOpenBookmarkPanel = () => {
       v-e="['c:chat:toggle']"
       :label="$t('labels.chat')"
       panel-key="chat"
-      data-testid="nc-sidebar-chat-btn"
+      data-testid="atm-sidebar-chat-btn"
       :active="isChatPanelExpanded"
       :scale="getScale('chat')"
-      class="nc-dock-chat-item"
+      class="atm-dock-chat-item"
       @click="handleChatToggle"
     >
-      <GeneralIcon icon="ncAutoAwesome" class="nc-dock-item-icon !text-nc-content-brand" />
+      <GeneralIcon icon="ncAutoAwesome" class="atm-dock-item-icon !text-atm-content-brand" />
     </DashboardMiniSidebarV2DockItem>
 
     <!-- Settings -->
@@ -392,21 +392,21 @@ const handleOpenBookmarkPanel = () => {
     />
 
     <!-- Bottom group -->
-    <div class="nc-dock-bottom-group" :class="{ 'is-hovering': isHovering }">
+    <div class="atm-dock-bottom-group" :class="{ 'is-hovering': isHovering }">
       <!-- Help -->
-      <div :ref="(el: any) => setItemRef('help', el)" class="nc-dock-magnify-wrapper" :style="getMagnifyStyle('help')">
+      <div :ref="(el: any) => setItemRef('help', el)" class="atm-dock-magnify-wrapper" :style="getMagnifyStyle('help')">
         <DashboardMiniSidebarHelp>
           <DashboardMiniSidebarV2DockItem icon="ncHelp" :label="$t('general.help')" panel-key="help" :scale="1" />
         </DashboardMiniSidebarHelp>
       </div>
     </div>
 
-    <NcDivider class="!w-8 !min-w-8 !my-0 !border-nc-border-gray-medium" />
+    <AtDivider class="!w-8 !min-w-8 !my-0 !border-atm-border-gray-medium" />
 
     <div
       v-if="!isMobileMode"
       :ref="(el: any) => setItemRef('create', el)"
-      class="nc-dock-magnify-wrapper"
+      class="atm-dock-magnify-wrapper"
       :style="getMagnifyStyle('create')"
     >
       <DashboardMiniSidebarCreateNewActionMenu />
@@ -414,12 +414,12 @@ const handleOpenBookmarkPanel = () => {
 
     <!-- Bookmarks -->
     <div v-if="showEEFeatures" ref="bookmarksContainerRef" class="relative">
-      <div :ref="(el: any) => setItemRef('bookmarks', el)" class="nc-dock-magnify-wrapper" :style="getMagnifyStyle('bookmarks')">
+      <div :ref="(el: any) => setItemRef('bookmarks', el)" class="atm-dock-magnify-wrapper" :style="getMagnifyStyle('bookmarks')">
         <DashboardMiniSidebarV2DockItem
           icon="ncBookmark"
           :label="$t('labels.bookmarks')"
           :active="isBookmarksFlyoutOpen"
-          data-testid="nc-dock-bookmarks"
+          data-testid="atm-dock-bookmarks"
           :scale="getScale('bookmarks')"
           @click="handleOpenBookmarkPanel"
         />
@@ -429,7 +429,7 @@ const handleOpenBookmarkPanel = () => {
     </div>
 
     <!-- Activity / Notifications -->
-    <NcDropdown
+    <AtDropdown
       v-if="!isMobileMode"
       v-model:visible="isNotificationOpen"
       :placement="isRtl ? 'left' : 'right'"
@@ -439,13 +439,13 @@ const handleOpenBookmarkPanel = () => {
     >
       <div
         :ref="(el: any) => setItemRef('notification', el)"
-        class="nc-dock-magnify-wrapper"
+        class="atm-dock-magnify-wrapper"
         :style="getMagnifyStyle('notification')"
       >
         <DashboardMiniSidebarV2DockItem
           :label="isNotificationOpen ? undefined : $t('labels.activity')"
           panel-key="notification"
-          data-testid="nc-sidebar-notification-btn"
+          data-testid="atm-sidebar-notification-btn"
           :active="isNotificationOpen"
           :scale="1"
         >
@@ -455,17 +455,17 @@ const handleOpenBookmarkPanel = () => {
               class="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full border border-white dark:border-[#1a1a1a]"
               style="background: #e75a8d"
             />
-            <GeneralIcon icon="notification" class="nc-dock-item-icon" />
+            <GeneralIcon icon="notification" class="atm-dock-item-icon" />
           </div>
         </DashboardMiniSidebarV2DockItem>
       </div>
       <template #overlay>
         <NotificationCard @close="isNotificationOpen = false" />
       </template>
-    </NcDropdown>
+    </AtDropdown>
 
     <!-- User Avatar -->
-    <div :ref="(el: any) => setItemRef('user', el)" class="nc-dock-magnify-wrapper" :style="getMagnifyStyle('user')">
+    <div :ref="(el: any) => setItemRef('user', el)" class="atm-dock-magnify-wrapper" :style="getMagnifyStyle('user')">
       <DashboardSidebarUserInfo />
     </div>
 
@@ -474,14 +474,14 @@ const handleOpenBookmarkPanel = () => {
 </template>
 
 <style lang="scss" scoped>
-.nc-dock {
+.atm-dock {
   @apply flex flex-col items-center h-full w-full overflow-visible;
   gap: 6px;
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
 }
 
-.nc-dock-logo {
+.atm-dock-logo {
   @apply h-[var(--topbar-height)];
 
   opacity: 0.7;
@@ -498,18 +498,18 @@ const handleOpenBookmarkPanel = () => {
   }
 }
 
-.nc-dock-logo-hover {
-  .nc-logo-icon,
-  .nc-back-icon {
+.atm-dock-logo-hover {
+  .atm-logo-icon,
+  .atm-back-icon {
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
-  .nc-logo-icon {
+  .atm-logo-icon {
     opacity: 1;
     transform: scale(1);
   }
 
-  .nc-back-icon {
+  .atm-back-icon {
     @apply flex items-center justify-center;
     position: absolute;
     inset: 0;
@@ -519,30 +519,30 @@ const handleOpenBookmarkPanel = () => {
   }
 
   &:hover {
-    .nc-logo-icon {
+    .atm-logo-icon {
       opacity: 0;
       transform: scale(0.8);
     }
-    .nc-back-icon {
+    .atm-back-icon {
       opacity: 1;
       transform: scale(1);
     }
   }
 }
 
-.nc-dock-bottom-group {
+.atm-dock-bottom-group {
   @apply flex flex-col items-center w-full;
   margin-top: auto;
 }
 
-.nc-dock-magnify-wrapper {
+.atm-dock-magnify-wrapper {
   @apply flex items-center justify-center flex-shrink-0;
   will-change: transform, margin;
   transition: transform 0.16s ease-out, margin 0.16s ease-out;
 }
 
 // Remove sticky background from UserInfo in dock context
-:deep(.bg-nc-bg-gray-minisidebar) {
+:deep(.bg-atm-bg-gray-minisidebar) {
   background: transparent !important;
 }
 </style>

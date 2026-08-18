@@ -53,52 +53,52 @@ async function showNullAndEmptyInFilterOnChange(evt: boolean) {
 </script>
 
 <template>
-  <div data-testid="nc-settings-subtab-visibility" class="item-card flex flex-col w-full">
-    <div class="text-nc-content-gray-emphasis font-semibold text-lg">
+  <div data-testid="atm-settings-subtab-visibility" class="item-card flex flex-col w-full">
+    <div class="text-atm-content-gray-emphasis font-semibold text-lg">
       {{ $t('labels.visibilityAndDataHandling') }}
     </div>
 
-    <div class="text-nc-content-gray-subtle2 mt-2 leading-5">
+    <div class="text-atm-content-gray-subtle2 mt-2 leading-5">
       {{ $t('labels.visibilityConfigLabel') }}
     </div>
 
-    <div class="flex flex-col border-1 rounded-lg mt-6 border-nc-border-gray-medium">
+    <div class="flex flex-col border-1 rounded-lg mt-6 border-atm-border-gray-medium">
       <div class="flex w-full px-3 py-2 gap-2 flex-col">
         <div class="flex w-full gap-1 items-center">
-          <NcSwitch v-model:checked="includeM2M" v-e="['c:themes:show-m2m-tables']" class="nc-settings-meta-misc-m2m">
-            <span class="text-nc-content-gray font-semibold flex-1">
+          <AtSwitch v-model:checked="includeM2M" v-e="['c:themes:show-m2m-tables']" class="atm-settings-meta-misc-m2m">
+            <span class="text-atm-content-gray font-semibold flex-1">
               {{ $t('msg.info.showM2mTables') }}
             </span>
-          </NcSwitch>
+          </AtSwitch>
         </div>
-        <span class="text-nc-content-gray-muted pl-10">{{ $t('msg.info.showM2mTablesDesc') }}</span>
+        <span class="text-atm-content-gray-muted pl-10">{{ $t('msg.info.showM2mTablesDesc') }}</span>
       </div>
 
-      <div class="flex w-full px-3 border-t-1 border-nc-border-gray-medium py-2 gap-2 flex-col">
+      <div class="flex w-full px-3 border-t-1 border-atm-border-gray-medium py-2 gap-2 flex-col">
         <div class="flex w-full gap-1 items-center">
-          <NcSwitch v-model:checked="showNull" v-e="['c:settings:show-null']" class="nc-settings-show-null">
-            <span class="text-nc-content-gray font-semibold flex-1">
+          <AtSwitch v-model:checked="showNull" v-e="['c:settings:show-null']" class="atm-settings-show-null">
+            <span class="text-atm-content-gray font-semibold flex-1">
               {{ $t('msg.info.showNullInCells') }}
             </span>
-          </NcSwitch>
+          </AtSwitch>
         </div>
-        <span class="text-nc-content-gray-muted pl-10">{{ $t('msg.info.showNullInCellsDesc') }}</span>
+        <span class="text-atm-content-gray-muted pl-10">{{ $t('msg.info.showNullInCellsDesc') }}</span>
       </div>
 
-      <div class="flex w-full px-3 py-2 border-t-1 border-nc-border-gray-medium gap-2 flex-col">
+      <div class="flex w-full px-3 py-2 border-t-1 border-atm-border-gray-medium gap-2 flex-col">
         <div class="flex w-full gap-1 items-center">
-          <NcSwitch
+          <AtSwitch
             v-model:checked="showNullAndEmptyInFilter"
             v-e="['c:settings:show-null-and-empty-in-filter']"
-            class="nc-settings-show-null-and-empty-in-filter"
+            class="atm-settings-show-null-and-empty-in-filter"
             @change="showNullAndEmptyInFilterOnChange"
           >
-            <span class="text-nc-content-gray font-semibold flex-1">
+            <span class="text-atm-content-gray font-semibold flex-1">
               {{ $t('msg.info.showNullAndEmptyInFilter') }}
             </span>
-          </NcSwitch>
+          </AtSwitch>
         </div>
-        <span class="text-nc-content-gray-muted pl-10">{{ $t('msg.info.showNullAndEmptyInFilterDesc') }}</span>
+        <span class="text-atm-content-gray-muted pl-10">{{ $t('msg.info.showNullAndEmptyInFilterDesc') }}</span>
       </div>
     </div>
   </div>

@@ -50,14 +50,14 @@ watch(
 </script>
 
 <template>
-  <div class="nc-container flex flex-col h-full">
+  <div class="atm-container flex flex-col h-full">
     <LazySmartsheetToolbar show-full-screen-toggle />
     <LazySmartsheetGrid />
   </div>
 </template>
 
 <style scoped>
-.nc-container {
+.atm-container {
   height: 100%;
   flex: 1 1 100%;
 }

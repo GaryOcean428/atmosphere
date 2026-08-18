@@ -8,7 +8,7 @@ import type {
   SortType,
   TimelineType,
   ViewType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import {
   ProjectRoles,
   ViewSettingOverrideOptions,
@@ -16,7 +16,7 @@ import {
   WorkspaceUserRoles,
   ViewTypes as _ViewTypes,
   getFirstNonPersonalView,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useTitle } from '@vueuse/core'
 import type { ViewPageType } from '~/lib/types'
@@ -1340,7 +1340,7 @@ export const useViewsStore = defineStore('viewsStore', () => {
       console.error(e)
       const errorInfo = await extractSdkResponseErrorMsgv2(e)
 
-      if (errorInfo.error === NcErrorType.ERR_FEATURE_NOT_SUPPORTED) {
+      if (errorInfo.error === AtErrorType.ERR_FEATURE_NOT_SUPPORTED) {
         message.error(errorInfo.message)
       } else {
         message.error(t('objects.copyViewConfig.errorOccuredWhileCopyingViewConfiguration'), undefined, {

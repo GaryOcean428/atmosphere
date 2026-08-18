@@ -1,11 +1,11 @@
-import NocoCache from './cache/NocoCache';
+import AtmosphereCache from './cache/AtmosphereCache';
 import type { Condition } from '~/db/CustomKnex';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Source } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaService } from '~/meta/meta.service';
 import { MetaTable, RootScopes, RootScopeTables } from '~/utils/globals';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 
 const BATCH_SIZE = 500;
 
@@ -14,7 +14,7 @@ export default class Upgrader extends MetaService {
   protected _upgrader_queries: string[] = [];
 
   constructor() {
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
     super(ncMeta.config, ncMeta.knex);
   }
 
@@ -44,21 +44,21 @@ export default class Upgrader extends MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
@@ -67,7 +67,7 @@ export default class Upgrader extends MetaService {
       insertObj.fk_workspace_id = workspace_id;
 
       if (!base_id && base_id !== RootScopes.WORKSPACE) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -116,28 +116,28 @@ export default class Upgrader extends MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -189,28 +189,28 @@ export default class Upgrader extends MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -226,7 +226,7 @@ export default class Upgrader extends MetaService {
       query.whereIn('id', ids).update(updateObj);
     } else {
       if (![MetaTable.FILE_REFERENCES].includes(target as MetaTable)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'This table does not support conditional bulk update',
           sql: '',
         });
@@ -264,28 +264,28 @@ export default class Upgrader extends MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id && base_id !== RootScopes.WORKSPACE) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -336,28 +336,28 @@ export default class Upgrader extends MetaService {
 
     if (workspace_id === base_id) {
       if (!Object.values(RootScopes).includes(workspace_id as RootScopes)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Invalid scope',
           sql: '',
         });
       }
 
       if (!RootScopeTables[workspace_id].includes(target)) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Table not accessible from this scope',
           sql: '',
         });
       }
     } else {
       if (!workspace_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Workspace ID is required',
           sql: '',
         });
       }
 
       if (!base_id) {
-        NcError.metaError({
+        AtError.metaError({
           message: 'Base ID is required',
           sql: '',
         });
@@ -399,13 +399,13 @@ export default class Upgrader extends MetaService {
   }
 
   enableUpgraderMode() {
-    NocoCache.disableCache();
+    AtmosphereCache.disableCache();
     this._upgrader_mode = true;
   }
 
   async disableUpgraderMode() {
-    NocoCache.enableCache();
-    await NocoCache.destroy();
+    AtmosphereCache.enableCache();
+    await AtmosphereCache.destroy();
     this._upgrader_mode = false;
   }
 

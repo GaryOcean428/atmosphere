@@ -1,4 +1,4 @@
-import type { FilterType } from 'nocodb-sdk';
+import type { FilterType } from 'atmosphere-sdk';
 import { builderGenerator } from '~/utils/data-transformation.builder';
 
 export const filterBuilder = builderGenerator<

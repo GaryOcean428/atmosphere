@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ColumnType } from 'nocodb-sdk'
-import { isVirtualCol } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
+import { isVirtualCol } from 'atmosphere-sdk'
 
 defineProps<{
   column: ColumnType
@@ -17,7 +17,7 @@ provide(IsGroupByLabelInj, ref(true))
       <LazySmartsheetVirtualCell
         v-if="isVirtualCol(column)"
         :model-value="modelValue"
-        class="!text-nc-content-gray-subtle2"
+        class="!text-atm-content-gray-subtle2"
         :column="column"
         :read-only="true"
       />
@@ -25,7 +25,7 @@ provide(IsGroupByLabelInj, ref(true))
       <LazySmartsheetCell
         v-else
         :model-value="modelValue"
-        class="!text-nc-content-gray-subtle2"
+        class="!text-atm-content-gray-subtle2"
         :column="column"
         :edit-enabled="false"
         :read-only="true"

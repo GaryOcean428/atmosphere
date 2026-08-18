@@ -1,16 +1,16 @@
 import {
-  NcBaseError,
-  NcBaseErrorv2,
-  NcErrorBase,
-  NcErrorType,
-} from 'nocodb-sdk';
+  AtBaseError,
+  AtBaseErrorv2,
+  AtErrorBase,
+  AtErrorType,
+} from 'atmosphere-sdk';
 import type { ZodError } from 'zod';
 import type { ErrorObject } from 'ajv';
-import type { NcErrorArgs } from 'nocodb-sdk';
+import type { AtErrorArgs } from 'atmosphere-sdk';
 import { defaultLimitConfig } from '~/helpers/extractLimitAndOffset';
 import { generateReadablePermissionErr } from '~/utils/acl';
 
-export class AjvError extends NcBaseError {
+export class AjvError extends AtBaseError {
   humanReadableError: boolean;
   constructor(param: {
     message: string;
@@ -25,9 +25,9 @@ export class AjvError extends NcBaseError {
   errors: ErrorObject[];
 }
 
-export class NcZodError extends NcBaseErrorv2 {
+export class AtZodError extends AtBaseErrorv2 {
   constructor(param: { message: string; errors: ZodError | ZodError[] }) {
-    super(param.message, 400, NcErrorType.ERR_INVALID_REQUEST_BODY, {
+    super(param.message, 400, AtErrorType.ERR_INVALID_REQUEST_BODY, {
       details: param.errors,
     });
     this.errors = Array.isArray(param.errors) ? param.errors : [param.errors];
@@ -35,10 +35,10 @@ export class NcZodError extends NcBaseErrorv2 {
 
   errors: ZodError[];
 }
-export class NcErrorV1 extends NcErrorBase {
+export class AtErrorV1 extends AtErrorBase {
   constructor() {
     super();
-    this.errorCodex.setErrorCodex(NcErrorType.ERR_INVALID_LIMIT_VALUE, {
+    this.errorCodex.setErrorCodex(AtErrorType.ERR_INVALID_LIMIT_VALUE, {
       message: `Limit value should be between ${defaultLimitConfig.limitMin} and ${defaultLimitConfig.limitMax}`,
       code: 422,
     });
@@ -49,7 +49,7 @@ export class NcErrorV1 extends NcErrorBase {
     roles: Record<string, boolean>,
     extendedScopeRoles: any,
   ): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_PERMISSION_DENIED, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_PERMISSION_DENIED, {
       customMessage: generateReadablePermissionErr(
         permissionName,
         roles,
@@ -65,7 +65,7 @@ export class NcErrorV1 extends NcErrorBase {
 
   recordNotFound(
     id: string | string[] | Record<string, string> | Record<string, string>[],
-    args?: NcErrorArgs,
+    args?: AtErrorArgs,
   ): never {
     let formatedId: string | string[] = '';
     if (!id) {
@@ -104,7 +104,7 @@ export class NcErrorV1 extends NcErrorBase {
       }
     }
 
-    throw this.errorCodex.generateError(NcErrorType.ERR_RECORD_NOT_FOUND, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_RECORD_NOT_FOUND, {
       params: formatedId,
       ...args,
     });
@@ -119,7 +119,7 @@ export class NcErrorV1 extends NcErrorBase {
   }
 
   zodError(param: { message: string; errors: ZodError | ZodError[] }): never {
-    throw new NcZodError(param);
+    throw new AtZodError(param);
   }
 
   override invalidRequestBody(message: string): never {

@@ -1,4 +1,4 @@
-import { type ColumnType, UITypes, getDateFormat, parseProp, workerWithTimezone } from 'nocodb-sdk'
+import { type ColumnType, UITypes, getDateFormat, parseProp, workerWithTimezone } from 'atmosphere-sdk'
 import TemplateGenerator, { type ProgressMessageType } from './TemplateGenerator'
 import {
   extractMultiOrSingleSelectProps,

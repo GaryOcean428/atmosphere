@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { diff } from 'deep-object-diff'
-import type { ButtonType, ColumnType, FilterType, LinkToAnotherRecordType, SelectOptionsType, TableType } from 'nocodb-sdk'
+import type { ButtonType, ColumnType, FilterType, LinkToAnotherRecordType, SelectOptionsType, TableType } from 'atmosphere-sdk'
 import {
   ButtonActionsType,
   ColumnHelper,
@@ -12,7 +12,7 @@ import {
   isSystemColumn,
   partialUpdateAllowedTypes,
   readonlyMetaAllowedTypes,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import Draggable from 'vuedraggable'
 import { onKeyDown, useMagicKeys } from '@vueuse/core'
 import type { NavigationGuardNext, RouteLocationNormalizedLoadedGeneric } from 'vue-router'
@@ -98,7 +98,7 @@ const viewsStore = useViewsStore()
 
 const { openedViewsTab } = storeToRefs(viewsStore)
 
-const { isAiFeaturesEnabled, isAiBetaFeaturesEnabled, aiIntegrationAvailable, aiLoading, aiError } = useNocoAi()
+const { isAiFeaturesEnabled, isAiBetaFeaturesEnabled, aiIntegrationAvailable, aiLoading, aiError } = useAtmosphereAi()
 
 const localMetaColumns = ref<ColumnType[] | undefined>([])
 
@@ -1264,7 +1264,7 @@ onKeyDown('Backspace', () => {
 onKeyDown('ArrowRight', () => {
   if (document.activeElement?.tagName === 'TEXTAREA') return
   if (activeField.value) {
-    const input = document.querySelector('.nc-fields-input') as HTMLInputElement
+    const input = document.querySelector('.atm-fields-input') as HTMLInputElement
     if (input) {
       input.focus()
     }
@@ -1603,7 +1603,7 @@ const confirmUnsavedChangesBeforeLeaving = (from: RouteLocationNormalizedLoadedG
 
   const okProps = ref({ loading: false })
 
-  const { close } = useDialog(resolveComponent('NcModalConfirm'), {
+  const { close } = useDialog(resolveComponent('AtModalConfirm'), {
     'visible': isOpen,
     'title': t('msg.info.unsavedChanges'),
     'content': t('activity.doYouWantToSaveTheChanges'),
@@ -1654,7 +1654,7 @@ onBeforeRouteUpdate((_to, from, next) => {
 </script>
 
 <template>
-  <div class="nc-fields-wrapper w-full p-4">
+  <div class="atm-fields-wrapper w-full p-4">
     <div class="max-w-250 h-full w-full mx-auto flex flex-col gap-6">
       <div v-if="isViewColumnsLoading" class="flex flex-row justify-between mt-2">
         <a-skeleton-input class="!h-8 !w-68 !rounded !overflow-hidden" active size="small" />
@@ -1669,55 +1669,55 @@ onBeforeRouteUpdate((_to, from, next) => {
           <div class="flex gap-2">
             <a-input
               v-model:value="searchQuery"
-              data-testid="nc-field-search-input"
+              data-testid="atm-field-search-input"
               class="!h-8 !px-1 !rounded-lg !w-72"
               :placeholder="$t('placeholder.searchFields')"
             >
               <template #prefix>
                 <GeneralIcon
                   icon="search"
-                  class="mx-1 h-3.5 w-3.5 text-nc-content-inverted-secondary-disabled group-hover:text-nc-content-gray-extreme"
+                  class="mx-1 h-3.5 w-3.5 text-atm-content-inverted-secondary-disabled group-hover:text-atm-content-gray-extreme"
                 />
               </template>
               <template #suffix>
                 <GeneralIcon
                   v-if="searchQuery.length > 0"
                   icon="close"
-                  class="mx-1 h-3.5 w-3.5 text-nc-content-inverted-secondary-disabled group-hover:text-nc-content-gray-extreme"
-                  data-testid="nc-field-clear-search"
+                  class="mx-1 h-3.5 w-3.5 text-atm-content-inverted-secondary-disabled group-hover:text-atm-content-gray-extreme"
+                  data-testid="atm-field-clear-search"
                   @click="searchQuery = ''"
                 />
               </template>
             </a-input>
-            <NcDropdown v-if="!isLocked" :trigger="['hover']" placement="bottomRight">
-              <NcButton size="small" type="secondary" icon-only :shadow="false">
+            <AtDropdown v-if="!isLocked" :trigger="['hover']" placement="bottomRight">
+              <AtButton size="small" type="secondary" icon-only :shadow="false">
                 <template #icon>
                   <GeneralIcon icon="threeDotVertical" class="text-xs !text-current w-4 h-4" />
                 </template>
-              </NcButton>
+              </AtButton>
               <template #overlay>
-                <NcMenu variant="small">
-                  <NcMenuItem class="!children:w-full" @click="showOrHideAllFields(isAllFieldsVisible)">
+                <AtMenu variant="small">
+                  <AtMenuItem class="!children:w-full" @click="showOrHideAllFields(isAllFieldsVisible)">
                     {{ isAllFieldsVisible ? $t('general.hideAll') : $t('general.showAll') }}
                     {{ $t('objects.fields').toLowerCase() }}
-                  </NcMenuItem>
-                  <NcMenuItem class="!children:w-full" @click="showOrHideSystemFields = !showOrHideSystemFields">
+                  </AtMenuItem>
+                  <AtMenuItem class="!children:w-full" @click="showOrHideSystemFields = !showOrHideSystemFields">
                     {{ showOrHideSystemFields ? $t('title.hideSystemFields') : $t('activity.showSystemFields') }}
-                  </NcMenuItem>
-                </NcMenu>
+                  </AtMenuItem>
+                </AtMenu>
               </template>
-            </NcDropdown>
+            </AtDropdown>
           </div>
           <div class="flex gap-2">
             <template v-if="isAiFeaturesEnabled">
-              <div class="nc-fields-add-new-field-btn-wrapper rounded-lg shadow-nc-sm">
-                <NcTooltip>
+              <div class="atm-fields-add-new-field-btn-wrapper rounded-lg shadow-atm-sm">
+                <AtTooltip>
                   <template #title> {{ `${renderAltOrOptlKey()} + C` }} </template>
-                  <NcButton
-                    data-testid="nc-field-add-new"
+                  <AtButton
+                    data-testid="atm-field-add-new"
                     type="secondary"
                     size="small"
-                    class="nc-field-add-new !rounded-r-none !border-r-transparent"
+                    class="atm-field-add-new !rounded-r-none !border-r-transparent"
                     :disabled="loading"
                     :shadow="false"
                     @click="addField()"
@@ -1726,18 +1726,18 @@ onBeforeRouteUpdate((_to, from, next) => {
                       <GeneralIcon icon="plus" class="w-4" />
                       {{ $t('labels.multiField.newField') }}
                     </div>
-                  </NcButton>
-                </NcTooltip>
-                <NcTooltip :title="aiMode ? $t('labels.disableNocoAI') : ''" :disabled="!aiMode">
-                  <NcDropdown :trigger="['hover']" placement="bottomRight" overlay-class-name="!border-nc-purple-200">
-                    <NcButton
+                  </AtButton>
+                </AtTooltip>
+                <AtTooltip :title="aiMode ? $t('labels.disableAtmosphereAI') : ''" :disabled="!aiMode">
+                  <AtDropdown :trigger="['hover']" placement="bottomRight" overlay-class-name="!border-atm-purple-200">
+                    <AtButton
                       size="small"
                       :type="aiMode ? 'primary' : 'secondary'"
                       theme="ai"
-                      class="nc-field-ai-toggle-btn"
+                      class="atm-field-ai-toggle-btn"
                       :class="{
                         '!pointer-events-none !cursor-not-allowed': aiLoading,
-                        'nc-ai-mode': aiMode,
+                        'atm-ai-mode': aiMode,
                       }"
                       icon-only
                       :shadow="false"
@@ -1746,47 +1746,47 @@ onBeforeRouteUpdate((_to, from, next) => {
                       <template #icon>
                         <GeneralIcon icon="ncAutoAwesome" class="text-xs !text-current w-4 h-4" />
                       </template>
-                    </NcButton>
+                    </AtButton>
                     <template #overlay>
-                      <NcMenu variant="medium">
-                        <NcMenuItem
-                          class="!children:w-full !text-nc-content-purple-dark dark:!text-nc-content-purple-medium"
+                      <AtMenu variant="medium">
+                        <AtMenuItem
+                          class="!children:w-full !text-atm-content-purple-dark dark:!text-atm-content-purple-medium"
                           @click="toggleAiMode()"
                         >
                           <component :is="getUIDTIcon(UITypes.SingleLineText)" class="flex-none w-3.5 h-3.5" />
                           {{ $t('labels.autoSuggestFields') }}
-                        </NcMenuItem>
-                        <NcMenuItem
+                        </AtMenuItem>
+                        <AtMenuItem
                           v-show="!isForm"
-                          class="!children:w-full !text-nc-content-purple-dark dark:!text-nc-content-purple-medium"
+                          class="!children:w-full !text-atm-content-purple-dark dark:!text-atm-content-purple-medium"
                           @click="toggleAiMode('formula')"
                         >
                           <component :is="getUIDTIcon(UITypes.Formula)" class="flex-none w-3.5 h-3.5" />
                           {{ $t('labels.autoSuggestFormulas') }}
-                        </NcMenuItem>
-                        <NcMenuItem
+                        </AtMenuItem>
+                        <AtMenuItem
                           v-show="!isForm && isAiBetaFeaturesEnabled"
-                          class="!children:w-full !text-nc-content-purple-dark dark:!text-nc-content-purple-medium"
+                          class="!children:w-full !text-atm-content-purple-dark dark:!text-atm-content-purple-medium"
                           @click="toggleAiMode('button')"
                         >
                           <component :is="getUIDTIcon(UITypes.Button)" class="flex-none w-3.5 h-3.5" />
                           {{ $t('labels.autoSuggestActions') }}
-                        </NcMenuItem>
-                      </NcMenu>
+                        </AtMenuItem>
+                      </AtMenu>
                     </template>
-                  </NcDropdown>
-                </NcTooltip>
+                  </AtDropdown>
+                </AtTooltip>
               </div>
             </template>
             <template v-else>
-              <div class="nc-fields-add-new-field-btn-wrapper shadow-sm">
-                <NcTooltip>
+              <div class="atm-fields-add-new-field-btn-wrapper shadow-sm">
+                <AtTooltip>
                   <template #title> {{ `${renderAltOrOptlKey()} + C` }} </template>
-                  <NcButton
-                    data-testid="nc-field-add-new"
+                  <AtButton
+                    data-testid="atm-field-add-new"
                     type="secondary"
                     size="small"
-                    class="nc-field-add-new"
+                    class="atm-field-add-new"
                     :disabled="loading"
                     :shadow="false"
                     @click="addField()"
@@ -1795,24 +1795,24 @@ onBeforeRouteUpdate((_to, from, next) => {
                       <GeneralIcon icon="plus" class="w-3" />
                       {{ $t('labels.multiField.newField') }}
                     </div>
-                  </NcButton>
-                </NcTooltip>
+                  </AtButton>
+                </AtTooltip>
               </div>
             </template>
-            <NcButton
-              data-testid="nc-field-reset"
+            <AtButton
+              data-testid="atm-field-reset"
               type="secondary"
               size="small"
               :disabled="!loading && !hasUnsavedChanges"
               @click="clearChanges()"
             >
               {{ $t('general.reset') }}
-            </NcButton>
-            <NcTooltip>
+            </AtButton>
+            <AtTooltip>
               <template #title> {{ `${renderCmdOrCtrlKey()} + S` }}</template>
 
-              <NcButton
-                data-testid="nc-field-save-changes"
+              <AtButton
+                data-testid="atm-field-save-changes"
                 type="primary"
                 size="small"
                 :loading="loading"
@@ -1820,13 +1820,13 @@ onBeforeRouteUpdate((_to, from, next) => {
                 @click="saveChanges()"
               >
                 {{ $t('labels.multiField.saveChanges') }}
-              </NcButton>
-            </NcTooltip>
+              </AtButton>
+            </AtTooltip>
           </div>
         </div>
         <!-- Ai field wizard  -->
         <div
-          class="flex flex-row rounded-lg border-1 overflow-clip border-nc-border-gray-medium"
+          class="flex flex-row rounded-lg border-1 overflow-clip border-atm-border-gray-medium"
           :style="{
             height: `calc(100vh - (var(--topbar-height) * 3.6) - 24px)`,
           }"
@@ -1837,43 +1837,43 @@ onBeforeRouteUpdate((_to, from, next) => {
               width: rightPanelWidth ? `calc(100% - ${rightPanelWidth}px)` : undefined,
             }"
           >
-            <div v-if="aiMode" class="pt-3 bg-nc-bg-gray-extralight border-b-1 border-b-nc-border-gray-medium">
+            <div v-if="aiMode" class="pt-3 bg-atm-bg-gray-extralight border-b-1 border-b-atm-border-gray-medium">
               <!-- Ai field wizard  -->
               <AiWizardTabs v-model:active-tab="activeAiTab" show-close-btn @close="disableAiMode()">
                 <template #AutoSuggestedContent>
                   <div class="px-5 pt-4 pb-5">
                     <div v-if="!aiIntegrationAvailable" class="flex items-center">
                       <div class="flex-1 flex items-center gap-3">
-                        <GeneralIcon icon="alertTriangleSolid" class="!text-nc-content-orange-medium w-4 h-4" />
-                        <div class="text-sm text-nc-content-gray-subtle flex-1">{{ $t('title.noAiIntegrationAvailable') }}</div>
+                        <GeneralIcon icon="alertTriangleSolid" class="!text-atm-content-orange-medium w-4 h-4" />
+                        <div class="text-sm text-atm-content-gray-subtle flex-1">{{ $t('title.noAiIntegrationAvailable') }}</div>
                       </div>
-                      <NcButton type="text" size="small" @click.stop="handleNavigateToIntegrations">
+                      <AtButton type="text" size="small" @click.stop="handleNavigateToIntegrations">
                         <template #icon>
                           <GeneralIcon icon="plus" class="h-4 w-4" />
                         </template>
                         {{ $t('labels.addIntegration') }}
-                      </NcButton>
+                      </AtButton>
                     </div>
                     <div v-else-if="aiError" class="w-full flex items-center gap-3">
-                      <GeneralIcon icon="ncInfoSolid" class="flex-none !text-nc-content-red-dark w-4 h-4" />
+                      <GeneralIcon icon="ncInfoSolid" class="flex-none !text-atm-content-red-dark w-4 h-4" />
 
-                      <NcTooltip class="truncate flex-1 text-sm text-nc-content-gray-subtle" show-on-truncate-only>
+                      <AtTooltip class="truncate flex-1 text-sm text-atm-content-gray-subtle" show-on-truncate-only>
                         <template #title>
                           {{ aiError }}
                         </template>
                         {{ aiError }}
-                      </NcTooltip>
+                      </AtTooltip>
 
-                      <NcButton size="small" type="text" class="!text-nc-content-brand" @click.stop="handleRefreshOnError">
+                      <AtButton size="small" type="text" class="!text-atm-content-brand" @click.stop="handleRefreshOnError">
                         {{ $t('general.refresh') }}
-                      </NcButton>
+                      </AtButton>
                     </div>
 
                     <div v-else-if="aiModeStep === 'init'">
-                      <div class="text-nc-content-purple-light text-sm h-7 flex items-center gap-2">
-                        <GeneralLoader size="regular" class="!text-nc-content-purple-dark" />
+                      <div class="text-atm-content-purple-light text-sm h-7 flex items-center gap-2">
+                        <GeneralLoader size="regular" class="!text-atm-content-purple-dark" />
 
-                        <div class="nc-animate-dots">
+                        <div class="atm-animate-dots">
                           {{
                             $t('msg.autoSuggestingFieldsFor', {
                               type: isFormulaPredictionMode ? 'formula' : '',
@@ -1889,7 +1889,7 @@ onBeforeRouteUpdate((_to, from, next) => {
                         <div class="flex-1 flex gap-2 flex-wrap">
                           <template v-if="activeTabNonSelectedFields.length">
                             <template v-for="f of activeTabNonSelectedFields" :key="f.title">
-                              <NcTooltip :disabled="activeTabSelectedFields.length < maxSelectionCount || f.selected">
+                              <AtTooltip :disabled="activeTabSelectedFields.length < maxSelectionCount || f.selected">
                                 <template #title>
                                   <div class="w-[150px]">
                                     {{ $t('msg.info.maxFieldSelectionAtATime', { maxSelectionCount }) }}
@@ -1897,11 +1897,11 @@ onBeforeRouteUpdate((_to, from, next) => {
                                 </template>
 
                                 <a-tag
-                                  class="nc-ai-suggested-tag"
+                                  class="atm-ai-suggested-tag"
                                   :class="{
-                                    'nc-disabled':
+                                    'atm-disabled':
                                       loading || (!f.selected && activeTabSelectedFields.length >= maxSelectionCount),
-                                    'nc-selected': f.selected,
+                                    'atm-selected': f.selected,
                                   }"
                                   :disabled="activeTabSelectedFields.length >= maxSelectionCount"
                                   @click="onToggleTag(f)"
@@ -1920,16 +1920,16 @@ onBeforeRouteUpdate((_to, from, next) => {
                                     <div>{{ f.title }}</div>
                                   </div>
                                 </a-tag>
-                              </NcTooltip>
+                              </AtTooltip>
                             </template>
                           </template>
-                          <div v-else-if="activeTabSelectedFields.length" class="text-nc-content-purple-light">
+                          <div v-else-if="activeTabSelectedFields.length" class="text-atm-content-purple-light">
                             {{ $t('msg.generateMoreFieldSuggestions', { type: isFormulaPredictionMode ? 'formula' : '' }) }}
                           </div>
-                          <div v-else class="text-nc-content-gray-subtle2">{{ $t('labels.noData') }}</div>
+                          <div v-else class="text-atm-content-gray-subtle2">{{ $t('labels.noData') }}</div>
                         </div>
                         <div class="flex items-center gap-1">
-                          <NcTooltip
+                          <AtTooltip
                             v-if="
                               activeTabPredictHistory.length < activeTabSelectedFields.length
                                 ? activeTabPredictHistory.length + activeTabSelectedFields.length < 10
@@ -1938,7 +1938,7 @@ onBeforeRouteUpdate((_to, from, next) => {
                             :title="$t('tooltip.suggestMore')"
                             placement="top"
                           >
-                            <NcButton
+                            <AtButton
                               size="xs"
                               class="!px-1"
                               type="text"
@@ -1951,10 +1951,10 @@ onBeforeRouteUpdate((_to, from, next) => {
                               <template #icon>
                                 <GeneralIcon icon="ncPlusAi" class="!text-current" />
                               </template>
-                            </NcButton>
-                          </NcTooltip>
-                          <NcTooltip :title="$t('tooltip.reSuggest')" placement="top">
-                            <NcButton
+                            </AtButton>
+                          </AtTooltip>
+                          <AtTooltip :title="$t('tooltip.reSuggest')" placement="top">
+                            <AtButton
                               size="xs"
                               class="!px-1"
                               type="text"
@@ -1974,14 +1974,14 @@ onBeforeRouteUpdate((_to, from, next) => {
                                   'animate-infinite animate-spin': aiLoading && calledFunction === 'predictRefresh',
                                 }"
                               />
-                            </NcButton>
-                          </NcTooltip>
+                            </AtButton>
+                          </AtTooltip>
                         </div>
                       </div>
                       <div v-if="activeTabNonSelectedFields.length" class="-mx-5 -mb-5 pt-5">
                         <GeneralLockedViewFooter :show-unlock-button="false" class="!px-5">
                           <template #icon>
-                            <GeneralIcon icon="ncInfo" class="text-nc-content-gray-muted w-3.5 h-3.5" />
+                            <GeneralIcon icon="ncInfo" class="text-atm-content-gray-muted w-3.5 h-3.5" />
                           </template>
                           <template #title>
                             <span class="truncate"> {{ $t('msg.clickSuggestedFieldsToAdd') }} </span>
@@ -1995,15 +1995,15 @@ onBeforeRouteUpdate((_to, from, next) => {
                   <div class="px-5 pt-4 pb-5 flex flex-col gap-4">
                     <div v-if="!aiIntegrationAvailable" class="flex items-center">
                       <div class="flex-1 flex items-center gap-3">
-                        <GeneralIcon icon="alertTriangleSolid" class="!text-nc-content-orange-medium w-4 h-4" />
-                        <div class="text-sm text-nc-content-gray-subtle flex-1">{{ $t('title.noAiIntegrationAvailable') }}</div>
+                        <GeneralIcon icon="alertTriangleSolid" class="!text-atm-content-orange-medium w-4 h-4" />
+                        <div class="text-sm text-atm-content-gray-subtle flex-1">{{ $t('title.noAiIntegrationAvailable') }}</div>
                       </div>
-                      <NcButton type="text" size="small" @click.stop="handleNavigateToIntegrations">
+                      <AtButton type="text" size="small" @click.stop="handleNavigateToIntegrations">
                         <template #icon>
                           <GeneralIcon icon="plus" class="h-4 w-4" />
                         </template>
                         {{ $t('labels.addIntegration') }}
-                      </NcButton>
+                      </AtButton>
                     </div>
                     <template v-else>
                       <div class="relative">
@@ -2012,12 +2012,12 @@ onBeforeRouteUpdate((_to, from, next) => {
                           v-model:value="prompt"
                           :disabled="loading"
                           :placeholder="$t('placeholder.enterPromptForFieldSuggestions')"
-                          class="nc-ai-input nc-input-shadow !px-3 !pt-2 !pb-3 !text-sm !min-h-[68px] !rounded-lg"
+                          class="atm-ai-input atm-input-shadow !px-3 !pt-2 !pb-3 !text-sm !min-h-[68px] !rounded-lg"
                           @keydown.enter.stop
                         >
                         </a-textarea>
 
-                        <NcButton
+                        <AtButton
                           size="xs"
                           type="primary"
                           theme="ai"
@@ -2033,35 +2033,35 @@ onBeforeRouteUpdate((_to, from, next) => {
                           @click="predictFromPrompt"
                         >
                           <template #loadingIcon>
-                            <GeneralLoader class="!text-nc-content-purple-dark" size="medium" />
+                            <GeneralLoader class="!text-atm-content-purple-dark" size="medium" />
                           </template>
                           <template #icon>
                             <GeneralIcon icon="send" class="flex-none h-4 w-4" />
                           </template>
-                        </NcButton>
+                        </AtButton>
                       </div>
 
                       <div v-if="aiError" class="w-full flex items-center gap-3">
-                        <GeneralIcon icon="ncInfoSolid" class="flex-none !text-nc-content-red-dark w-4 h-4" />
+                        <GeneralIcon icon="ncInfoSolid" class="flex-none !text-atm-content-red-dark w-4 h-4" />
 
-                        <NcTooltip class="truncate flex-1 text-sm text-nc-content-gray-subtle" show-on-truncate-only>
+                        <AtTooltip class="truncate flex-1 text-sm text-atm-content-gray-subtle" show-on-truncate-only>
                           <template #title>
                             {{ aiError }}
                           </template>
                           {{ aiError }}
-                        </NcTooltip>
+                        </AtTooltip>
 
-                        <NcButton size="small" type="text" class="!text-nc-content-brand" @click.stop="handleRefreshOnError">
+                        <AtButton size="small" type="text" class="!text-atm-content-brand" @click.stop="handleRefreshOnError">
                           {{ $t('general.refresh') }}
-                        </NcButton>
+                        </AtButton>
                       </div>
 
                       <div v-else-if="isPromtAlreadyGenerated" class="flex flex-col gap-3">
-                        <div class="text-nc-content-purple-dark font-semibold text-xs">{{ $t('labels.generatedFields') }}</div>
+                        <div class="text-atm-content-purple-dark font-semibold text-xs">{{ $t('labels.generatedFields') }}</div>
                         <div class="flex gap-2 flex-wrap">
                           <template v-if="activeTabNonSelectedFields.length">
                             <template v-for="f of activeTabNonSelectedFields" :key="f.title">
-                              <NcTooltip :disabled="activeTabSelectedFields.length < maxSelectionCount || f.selected">
+                              <AtTooltip :disabled="activeTabSelectedFields.length < maxSelectionCount || f.selected">
                                 <template #title>
                                   <div class="w-[150px]">
                                     {{ $t('msg.info.maxFieldSelectionAtATime', { maxSelectionCount }) }}
@@ -2069,11 +2069,11 @@ onBeforeRouteUpdate((_to, from, next) => {
                                 </template>
 
                                 <a-tag
-                                  class="nc-ai-suggested-tag"
+                                  class="atm-ai-suggested-tag"
                                   :class="{
-                                    'nc-disabled':
+                                    'atm-disabled':
                                       loading || (!f.selected && activeTabSelectedFields.length >= maxSelectionCount),
-                                    'nc-selected': f.selected,
+                                    'atm-selected': f.selected,
                                   }"
                                   :disabled="activeTabSelectedFields.length >= maxSelectionCount"
                                   @click="onToggleTag(f)"
@@ -2092,13 +2092,13 @@ onBeforeRouteUpdate((_to, from, next) => {
                                     <div>{{ f.title }}</div>
                                   </div>
                                 </a-tag>
-                              </NcTooltip>
+                              </AtTooltip>
                             </template>
                           </template>
-                          <div v-else-if="activeTabSelectedFields.length" class="text-nc-content-purple-light">
+                          <div v-else-if="activeTabSelectedFields.length" class="text-atm-content-purple-light">
                             {{ $t('msg.noSuggestionsRemainingPromptAgain') }}
                           </div>
-                          <div v-else class="text-nc-content-gray-subtle2">{{ $t('labels.noData') }}</div>
+                          <div v-else class="text-atm-content-gray-subtle2">{{ $t('labels.noData') }}</div>
                         </div>
                       </div>
                     </template>
@@ -2106,71 +2106,71 @@ onBeforeRouteUpdate((_to, from, next) => {
                 </template>
               </AiWizardTabs>
             </div>
-            <div ref="fieldsListWrapperDomRef" class="flex-1 flex-grow-1 nc-scrollbar-md !overflow-auto">
+            <div ref="fieldsListWrapperDomRef" class="flex-1 flex-grow-1 atm-scrollbar-md !overflow-auto">
               <Draggable
                 v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 50 })"
                 :model-value="fields"
                 :disabled="isLocked"
                 item-key="id"
-                data-testid="nc-field-list-wrapper"
+                data-testid="atm-field-list-wrapper"
                 @change="onMove($event)"
               >
                 <template #item="{ element: field }">
                   <div
                     v-if="field.title.toLowerCase().includes(searchQuery.toLowerCase()) && !field.pv"
-                    class="flex px-2 border-b-1 border-nc-border-gray-medium pl-5 rtl:(pr-5 pl-2) group"
+                    class="flex px-2 border-b-1 border-atm-border-gray-medium pl-5 rtl:(pr-5 pl-2) group"
                     :class="{
                       'selected': compareCols(field, activeField),
                       'cursor-not-allowed': !isColumnUpdateAllowed(field),
-                      'hover:bg-nc-bg-gray-light': !isSystemColumn(field),
+                      'hover:bg-atm-bg-gray-light': !isSystemColumn(field),
                     }"
-                    :data-testid="`nc-field-item-${fieldState(field)?.title || field.title}`"
+                    :data-testid="`atm-field-item-${fieldState(field)?.title || field.title}`"
                     @click="changeField(field, $event)"
                   >
                     <div class="flex items-center flex-1 py-2.5 gap-1 w-2/6">
                       <component
                         :is="iconMap.drag"
-                        class="cursor-move !h-3.75 text-nc-content-gray-subtle2 mr-1 rtl:(ml-1 mr-0)"
+                        class="cursor-move !h-3.75 text-atm-content-gray-subtle2 mr-1 rtl:(ml-1 mr-0)"
                         :class="{
                           'opacity-0 !cursor-default': isLocked,
                         }"
                       />
-                      <NcTooltip v-if="field.id && viewFieldsMap[field.id]" :disabled="isLocked" class="flex">
+                      <AtTooltip v-if="field.id && viewFieldsMap[field.id]" :disabled="isLocked" class="flex">
                         <template #title>
                           {{ isFieldVisible(field) ? $t('tooltip.hideFieldInView') : $t('tooltip.showFieldInView') }}
                         </template>
                         <GeneralIcon
                           :icon="isFieldVisible(field) ? 'ncEye' : 'ncEyeOff'"
-                          class="nc-field-visibility-toggle flex-none !w-4 !h-4"
+                          class="atm-field-visibility-toggle flex-none !w-4 !h-4"
                           :class="[
-                            isFieldVisible(field) ? 'text-nc-content-brand' : 'text-nc-content-gray-disabled',
+                            isFieldVisible(field) ? 'text-atm-content-brand' : 'text-atm-content-gray-disabled',
                             isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
                           ]"
-                          data-testid="nc-field-visibility-checkbox"
+                          data-testid="atm-field-visibility-checkbox"
                           @click.stop="toggleFieldVisibility(field)"
                         />
-                      </NcTooltip>
+                      </AtTooltip>
                       <div v-else class="flex-none !w-4 !h-4" />
 
                       <SmartsheetHeaderIcon
                         :column="fieldState(field) || field"
-                        :color="compareCols(field, activeField) ? 'text-nc-content-brand' : 'text-nc-content-gray-subtle2'"
+                        :color="compareCols(field, activeField) ? 'text-atm-content-brand' : 'text-atm-content-gray-subtle2'"
                       />
 
-                      <NcTooltip
+                      <AtTooltip
                         :class="{
-                          'text-nc-content-brand': compareCols(field, activeField),
+                          'text-atm-content-brand': compareCols(field, activeField),
                         }"
                         class="truncate flex-1"
                         show-on-truncate-only
                       >
                         <template #title> {{ fieldState(field)?.title || field.title }} </template>
-                        <span data-testid="nc-field-title">
+                        <span data-testid="atm-field-title">
                           {{ fieldState(field)?.title || field.title }}
                         </span>
-                      </NcTooltip>
+                      </AtTooltip>
 
-                      <NcTooltip
+                      <AtTooltip
                         v-if="field.id && viewFieldsMap[field.id] && !isFieldVisible(field) && isHideBlockingRequired(field)"
                         placement="left"
                       >
@@ -2179,114 +2179,114 @@ onBeforeRouteUpdate((_to, from, next) => {
                         </template>
                         <GeneralIcon
                           icon="alertTriangleSolid"
-                          class="!w-3.5 !h-3.5 text-nc-content-yellow-dark"
-                          data-testid="nc-field-hidden-required-warning"
+                          class="!w-3.5 !h-3.5 text-atm-content-yellow-dark"
+                          data-testid="atm-field-hidden-required-warning"
                           @click.stop
                         />
-                      </NcTooltip>
+                      </AtTooltip>
                     </div>
                     <div class="flex items-center justify-end gap-1">
-                      <div class="nc-field-status-wrapper flex items-center">
-                        <NcBadge
+                      <div class="atm-field-status-wrapper flex items-center">
+                        <AtBadge
                           v-if="fieldStatus(field) === 'delete'"
                           color="red"
                           :border="false"
-                          class="bg-nc-bg-red-light text-nc-content-red-dark text-small leading-[18px]"
-                          data-testid="nc-field-status-deleted-field"
+                          class="bg-atm-bg-red-light text-atm-content-red-dark text-small leading-[18px]"
+                          data-testid="atm-field-status-deleted-field"
                         >
                           {{ $t('labels.multiField.deletedField') }}
-                        </NcBadge>
-                        <NcBadge
+                        </AtBadge>
+                        <AtBadge
                           v-else-if="isColumnValid(field) && fieldStatus(field) === 'add'"
                           :color="field?.is_ai_field ? 'purple' : 'green'"
                           :border="!!field?.is_ai_field"
                           class="text-small leading-[18px]"
                           :class="{
-                            '!bg-nc-bg-purple-light text-nc-content-purple-dark !border-nc-purple-100': field?.is_ai_field,
-                            'bg-nc-bg-green-light dark:bg-nc-green-20 text-nc-content-green-dark': !field?.is_ai_field,
+                            '!bg-atm-bg-purple-light text-atm-content-purple-dark !border-atm-purple-100': field?.is_ai_field,
+                            'bg-atm-bg-green-light dark:bg-atm-green-20 text-atm-content-green-dark': !field?.is_ai_field,
                           }"
-                          data-testid="nc-field-status-new-field"
+                          data-testid="atm-field-status-new-field"
                         >
                           <GeneralIcon v-if="field?.is_ai_field" icon="ncAutoAwesome" class="mr-1 h-4 w-4" />
                           {{ $t('labels.multiField.newField') }}
-                        </NcBadge>
+                        </AtBadge>
 
-                        <NcBadge
+                        <AtBadge
                           v-else-if="fieldStatus(field) === 'update'"
                           color="orange"
                           :border="false"
-                          class="bg-nc-bg-orange-light dark:bg-nc-orange-20 text-nc-content-orange-dark text-small leading-[18px]"
-                          data-testid="nc-field-status-updated-field"
+                          class="bg-atm-bg-orange-light dark:bg-atm-orange-20 text-atm-content-orange-dark text-small leading-[18px]"
+                          data-testid="atm-field-status-updated-field"
                         >
                           {{ $t('labels.multiField.updatedField') }}
-                        </NcBadge>
-                        <NcBadge
+                        </AtBadge>
+                        <AtBadge
                           v-if="!isColumnValid(field)"
                           color="yellow"
                           :border="false"
-                          class="ml-1 bg-nc-bg-yellow-light dark:bg-nc-yellow-20 text-nc-content-yellow-dark text-small leading-[18px]"
-                          data-testid="nc-field-status-incomplete-configuration"
+                          class="ml-1 bg-atm-bg-yellow-light dark:bg-atm-yellow-20 text-atm-content-yellow-dark text-small leading-[18px]"
+                          data-testid="atm-field-status-incomplete-configuration"
                         >
                           {{ $t('labels.multiField.incompleteConfiguration') }}
-                        </NcBadge>
-                        <NcTooltip v-if="!!fieldError(field)" class="cursor-pointer">
+                        </AtBadge>
+                        <AtTooltip v-if="!!fieldError(field)" class="cursor-pointer">
                           <template #title>
                             {{ fieldError(field) }}
                           </template>
 
-                          <NcBadge
+                          <AtBadge
                             color="red"
                             :border="false"
-                            class="ml-1 bg-nc-bg-red-light dark:bg-nc-red-20 text-nc-content-red-dark text-small leading-[18px]"
-                            data-testid="nc-field-status-error-configuration"
+                            class="ml-1 bg-atm-bg-red-light dark:bg-atm-red-20 text-atm-content-red-dark text-small leading-[18px]"
+                            data-testid="atm-field-status-error-configuration"
                           >
                             <GeneralIcon icon="info" class="!text-current" />
-                          </NcBadge>
-                        </NcTooltip>
+                          </AtBadge>
+                        </AtTooltip>
                       </div>
-                      <NcButton
+                      <AtButton
                         v-if="fieldStatus(field) === 'delete' || fieldStatus(field) === 'update'"
                         type="secondary"
                         size="small"
                         class="no-action mr-2"
                         :disabled="loading"
-                        data-testid="nc-field-restore-changes"
+                        data-testid="atm-field-restore-changes"
                         @click="recoverField(field)"
                       >
                         <div class="flex items-center text-xs gap-1">
                           <GeneralIcon icon="reload" />
                           {{ $t('general.restore') }}
                         </div>
-                      </NcButton>
-                      <NcDropdown
+                      </AtButton>
+                      <AtDropdown
                         v-else
                         :trigger="['click']"
-                        overlay-class-name="nc-field-item-action-dropdown nc-dropdown-table-explorer"
+                        overlay-class-name="atm-field-item-action-dropdown atm-dropdown-table-explorer"
                         @click.stop
                       >
-                        <NcButton
+                        <AtButton
                           size="xsmall"
                           type="text"
                           class="!opacity-0 !group-hover:(opacity-100)"
                           :class="{
-                            '!hover:(text-nc-brand-700 bg-nc-brand-100) !group-hover:(text-nc-content-brand)': compareCols(
+                            '!hover:(text-atm-brand-700 bg-atm-brand-100) !group-hover:(text-atm-content-brand)': compareCols(
                               field,
                               activeField,
                             ),
-                            '!hover:(text-nc-content-inverted-secondary bg-nc-bg-gray-medium) !group-hover:(text-nc-content-inverted-secondary-disabled)':
+                            '!hover:(text-atm-content-inverted-secondary bg-atm-bg-gray-medium) !group-hover:(text-atm-content-inverted-secondary-disabled)':
                               !compareCols(field, activeField),
                           }"
-                          data-testid="nc-field-item-action-button"
+                          data-testid="atm-field-item-action-button"
                         >
                           <GeneralIcon icon="threeDotVertical" class="no-action text-inherit" />
-                        </NcButton>
+                        </AtButton>
 
                         <template #overlay>
-                          <NcMenu variant="small" class="!mt-1 !min-w-55">
+                          <AtMenu variant="small" class="!mt-1 !min-w-55">
                             <template v-if="fieldStatus(field) !== 'add'">
-                              <NcMenuItemCopyId
+                              <AtMenuItemCopyId
                                 :id="field.id"
-                                data-testid="nc-field-item-action-copy-id"
+                                data-testid="atm-field-item-action-copy-id"
                                 :tooltip="$t('msg.clickToCopyFieldId')"
                                 :label="
                                   $t('labels.idColon', {
@@ -2294,53 +2294,53 @@ onBeforeRouteUpdate((_to, from, next) => {
                                   })
                                 "
                               />
-                              <NcDivider />
+                              <AtDivider />
                             </template>
 
-                            <NcMenuItem
+                            <AtMenuItem
                               key="table-explorer-duplicate"
-                              data-testid="nc-field-item-action-duplicate"
+                              data-testid="atm-field-item-action-duplicate"
                               :disabled="isSystemColumn(field) || isAutoGeneratedColumn(field)"
                               @click="duplicateField(field)"
                             >
                               <GeneralIcon icon="duplicate" />
                               <span> {{ $t('general.duplicate') }} {{ $t('objects.field').toLowerCase() }} </span>
-                            </NcMenuItem>
-                            <NcMenuItem
+                            </AtMenuItem>
+                            <AtMenuItem
                               v-if="!field.pv"
                               key="table-explorer-insert-above"
-                              data-testid="nc-field-item-action-insert-above"
+                              data-testid="atm-field-item-action-insert-above"
                               @click="addField(field, true)"
                             >
                               <GeneralIcon icon="ncArrowUp" />
                               <span>{{ $t('general.insertAbove') }}</span>
-                            </NcMenuItem>
-                            <NcMenuItem
+                            </AtMenuItem>
+                            <AtMenuItem
                               key="table-explorer-insert-below"
-                              data-testid="nc-field-item-action-insert-below"
+                              data-testid="atm-field-item-action-insert-below"
                               @click="addField(field)"
                             >
                               <GeneralIcon icon="ncArrowDown" />
                               <span>{{ $t('general.insertBelow') }}</span>
-                            </NcMenuItem>
+                            </AtMenuItem>
 
-                            <NcDivider />
+                            <AtDivider />
 
-                            <NcMenuItem
+                            <AtMenuItem
                               key="table-explorer-delete"
-                              data-testid="nc-field-item-action-delete"
+                              data-testid="atm-field-item-action-delete"
                               :disabled="isSystemColumn(field)"
                               danger
                               @click="onFieldDelete(field)"
                             >
                               <GeneralIcon icon="delete" />
                               {{ $t('general.delete') }} {{ $t('objects.field').toLowerCase() }}
-                            </NcMenuItem>
-                          </NcMenu>
+                            </AtMenuItem>
+                          </AtMenu>
                         </template>
-                      </NcDropdown>
+                      </AtDropdown>
                       <MdiChevronRight
-                        class="text-nc-content-brand opacity-0 rtl:rotate-180"
+                        class="text-atm-content-brand opacity-0 rtl:rotate-180"
                         :class="{
                           'opacity-100': compareCols(field, activeField),
                         }"
@@ -2355,112 +2355,112 @@ onBeforeRouteUpdate((_to, from, next) => {
                   #header
                 >
                   <div
-                    class="flex px-2 bg-nc-bg-default hover:bg-nc-bg-gray-light border-b-1 border-nc-border-gray-medium last:border-b-1 pl-5 rtl:(pr-5 pl-2) group"
+                    class="flex px-2 bg-atm-bg-default hover:bg-atm-bg-gray-light border-b-1 border-atm-border-gray-medium last:border-b-1 pl-5 rtl:(pr-5 pl-2) group"
                     :class="{
                       'selected': compareCols(displayColumn, activeField),
                       'first:rounded-tl-lg rtl:(first:rounded-tl-none first:rounded-tr-lg)': !aiMode,
                     }"
-                    :data-testid="`nc-field-item-${fieldState(displayColumn)?.title || displayColumn.title}`"
+                    :data-testid="`atm-field-item-${fieldState(displayColumn)?.title || displayColumn.title}`"
                     @click="changeField(displayColumn, $event)"
                   >
                     <div class="flex items-center flex-1 py-2.5 gap-1 w-2/6">
                       <component
                         :is="iconMap.drag"
-                        class="cursor-move !h-3.75 text-nc-gray-200 mr-1 rtl:(ml-1 mr-0)"
+                        class="cursor-move !h-3.75 text-atm-gray-200 mr-1 rtl:(ml-1 mr-0)"
                         :class="{
                           'opacity-0 !cursor-default': isLocked,
                         }"
                       />
                       <GeneralIcon
                         icon="ncEye"
-                        class="nc-field-visibility-toggle flex-none !w-4 !h-4 text-nc-content-brand opacity-50 cursor-not-allowed"
-                        data-testid="nc-field-visibility-checkbox"
+                        class="atm-field-visibility-toggle flex-none !w-4 !h-4 text-atm-content-brand opacity-50 cursor-not-allowed"
+                        data-testid="atm-field-visibility-checkbox"
                       />
 
                       <SmartsheetHeaderIcon
                         :column="fieldState(displayColumn) || displayColumn"
                         :color="
-                          compareCols(displayColumn, activeField) ? 'text-nc-content-brand' : 'text-nc-content-gray-subtle2'
+                          compareCols(displayColumn, activeField) ? 'text-atm-content-brand' : 'text-atm-content-gray-subtle2'
                         "
                       />
 
-                      <NcTooltip
+                      <AtTooltip
                         class="truncate flex-1"
                         :class="{
-                          'text-nc-content-brand': compareCols(displayColumn, activeField),
+                          'text-atm-content-brand': compareCols(displayColumn, activeField),
                         }"
                         show-on-truncate-only
                       >
                         <template #title> {{ fieldState(displayColumn)?.title || displayColumn.title }} </template>
-                        <span data-testid="nc-field-title">
+                        <span data-testid="atm-field-title">
                           {{ fieldState(displayColumn)?.title || displayColumn.title }}
                         </span>
-                      </NcTooltip>
+                      </AtTooltip>
                     </div>
                     <div class="flex items-center justify-end gap-1">
                       <div class="flex items-center">
-                        <NcBadge
+                        <AtBadge
                           v-if="fieldStatus(displayColumn) === 'delete'"
                           color="red"
                           :border="false"
-                          class="bg-nc-bg-red-light text-nc-content-red-dark text-small leading-[18px]"
-                          data-testid="nc-field-status-deleted-field"
+                          class="bg-atm-bg-red-light text-atm-content-red-dark text-small leading-[18px]"
+                          data-testid="atm-field-status-deleted-field"
                         >
                           {{ $t('labels.multiField.deletedField') }}
-                        </NcBadge>
+                        </AtBadge>
 
-                        <NcBadge
+                        <AtBadge
                           v-else-if="fieldStatus(displayColumn) === 'update'"
                           color="orange"
                           :border="false"
-                          class="bg-nc-bg-orange-light text-nc-content-orange-dark text-small leading-[18px]"
-                          data-testid="nc-field-status-updated-field"
+                          class="bg-atm-bg-orange-light text-atm-content-orange-dark text-small leading-[18px]"
+                          data-testid="atm-field-status-updated-field"
                         >
                           {{ $t('labels.multiField.updatedField') }}
-                        </NcBadge>
+                        </AtBadge>
                       </div>
-                      <NcButton
+                      <AtButton
                         v-if="fieldStatus(displayColumn) === 'delete' || fieldStatus(displayColumn) === 'update'"
                         type="secondary"
                         size="small"
                         class="no-action mr-2"
                         :disabled="loading"
-                        data-testid="nc-field-restore-changes"
+                        data-testid="atm-field-restore-changes"
                         @click="recoverField(displayColumn)"
                       >
                         <div class="flex items-center text-xs gap-1">
                           <GeneralIcon icon="reload" />
                           {{ $t('general.restore') }}
                         </div>
-                      </NcButton>
-                      <NcDropdown
+                      </AtButton>
+                      <AtDropdown
                         v-else
                         :trigger="['click']"
-                        overlay-class-name="nc-field-item-action-dropdown-display-column nc-dropdown-table-explorer-display-column"
+                        overlay-class-name="atm-field-item-action-dropdown-display-column atm-dropdown-table-explorer-display-column"
                         @click.stop
                       >
-                        <NcButton
+                        <AtButton
                           size="xsmall"
                           type="text"
                           class="!opacity-0 !group-hover:(opacity-100)"
                           :class="{
-                            '!hover:(text-nc-brand-700 bg-nc-brand-100) !group-hover:(text-nc-content-brand)': compareCols(
+                            '!hover:(text-atm-brand-700 bg-atm-brand-100) !group-hover:(text-atm-content-brand)': compareCols(
                               displayColumn,
                               activeField,
                             ),
-                            '!hover:(text-nc-content-inverted-secondary bg-nc-bg-gray-medium) !group-hover:(text-nc-content-inverted-secondary-disabled)':
+                            '!hover:(text-atm-content-inverted-secondary bg-atm-bg-gray-medium) !group-hover:(text-atm-content-inverted-secondary-disabled)':
                               !compareCols(displayColumn, activeField),
                           }"
-                          data-testid="nc-field-item-action-button"
+                          data-testid="atm-field-item-action-button"
                         >
                           <GeneralIcon icon="threeDotVertical" class="no-action text-inherit" />
-                        </NcButton>
+                        </AtButton>
 
                         <template #overlay>
-                          <NcMenu variant="small" class="!min-w-55">
-                            <NcMenuItemCopyId
+                          <AtMenu variant="small" class="!min-w-55">
+                            <AtMenuItemCopyId
                               :id="displayColumn.id"
-                              data-testid="nc-field-item-action-copy-id"
+                              data-testid="atm-field-item-action-copy-id"
                               :tooltip="$t('msg.clickToCopyFieldId')"
                               :label="
                                 $t('labels.idColon', {
@@ -2468,11 +2468,11 @@ onBeforeRouteUpdate((_to, from, next) => {
                                 })
                               "
                             />
-                          </NcMenu>
+                          </AtMenu>
                         </template>
-                      </NcDropdown>
+                      </AtDropdown>
                       <MdiChevronRight
-                        class="text-nc-content-brand opacity-0 transform rtl:rotate-180"
+                        class="text-atm-content-brand opacity-0 transform rtl:rotate-180"
                         :class="{
                           'opacity-100': compareCols(displayColumn, activeField),
                         }"
@@ -2487,7 +2487,7 @@ onBeforeRouteUpdate((_to, from, next) => {
             <div
               v-if="!changingField"
               ref="rightPanelRef"
-              class="flex-none border-nc-border-gray-medium border-l-1 rtl:(border-l-0 border-r-1) nc-scrollbar-md h-full !overflow-y-auto"
+              class="flex-none border-atm-border-gray-medium border-l-1 rtl:(border-l-0 border-r-1) atm-scrollbar-md h-full !overflow-y-auto"
               @keydown.up.stop
               @keydown.down.stop
             >
@@ -2525,10 +2525,10 @@ onBeforeRouteUpdate((_to, from, next) => {
 
               <div v-if="!activeField" class="w-[25rem] flex flex-col justify-center p-4 items-center">
                 <img src="~assets/img/placeholder/multi-field-editor.png" class="!w-[18rem]" />
-                <div class="text-2xl text-nc-content-gray-subtle2 font-bold text-center pt-6">
+                <div class="text-2xl text-atm-content-gray-subtle2 font-bold text-center pt-6">
                   {{ $t('labels.multiField.selectField') }}
                 </div>
-                <div class="text-center text-sm px-2 text-nc-content-inverted-secondary-disabled pt-6">
+                <div class="text-center text-sm px-2 text-atm-content-inverted-secondary-disabled pt-6">
                   {{ $t('labels.multiField.selectFieldLabel') }}
                 </div>
               </div>
@@ -2541,26 +2541,26 @@ onBeforeRouteUpdate((_to, from, next) => {
 </template>
 
 <style lang="scss">
-.nc-dropdown-table-explorer {
+.atm-dropdown-table-explorer {
   @apply !overflow-hidden;
 }
 
-.nc-dropdown-table-explorer > div > ul.ant-dropdown-menu.nc-menu {
+.atm-dropdown-table-explorer > div > ul.ant-dropdown-menu.atm-menu {
   @apply !pt-0;
 }
 
-.nc-dropdown-table-explorer-display-column {
+.atm-dropdown-table-explorer-display-column {
   @apply !overflow-hidden;
 }
 </style>
 
 <style lang="scss" scoped>
-:deep(ul.ant-dropdown-menu.nc-menu) {
+:deep(ul.ant-dropdown-menu.atm-menu) {
   @apply !pt-0;
 }
 
 .selected {
-  @apply bg-nc-bg-brand-inverted;
+  @apply bg-atm-bg-brand-inverted;
 }
 
 .slide-fade-enter-active {
@@ -2588,41 +2588,41 @@ onBeforeRouteUpdate((_to, from, next) => {
   opacity: 0;
 }
 
-.nc-fields-height {
+.atm-fields-height {
   height: calc(100vh - (var(--topbar-height) * 3.6));
 }
 
-.nc-fields-add-new-field-btn-wrapper {
+.atm-fields-add-new-field-btn-wrapper {
   @apply flex items-center;
 
-  .nc-field-add-new {
+  .atm-field-add-new {
     &.focused {
       @apply z-10;
     }
   }
 
-  .nc-field-ai-toggle-btn {
+  .atm-field-ai-toggle-btn {
     @apply rounded-l-none -ml-[1px];
 
-    &.nc-ai-mode {
+    &.atm-ai-mode {
       @apply bg-purple-600 hover:bg-purple-500;
     }
-    &:not(.nc-ai-mode) {
-      @apply !border-nc-purple-100;
+    &:not(.atm-ai-mode) {
+      @apply !border-atm-purple-100;
     }
   }
 }
 </style>
 
 <style lang="scss">
-.rtl .nc-fields-add-new-field-btn-wrapper {
-  .nc-field-add-new {
+.rtl .atm-fields-add-new-field-btn-wrapper {
+  .atm-field-add-new {
     border-radius: 0 8px 8px 0 !important;
-    border-right-color: var(--nc-border-gray-medium) !important;
+    border-right-color: var(--atm-border-gray-medium) !important;
     border-left-color: transparent !important;
   }
 
-  .nc-field-ai-toggle-btn {
+  .atm-field-ai-toggle-btn {
     border-radius: 8px 0 0 8px !important;
     margin-left: 0;
     margin-right: -1px;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { type ColumnType, type LinkToAnotherRecordType, RelationTypes, isBtLikeV2Junction, isMMOrMMLike } from 'nocodb-sdk'
-import { isCreatedOrLastModifiedByCol, isCreatedOrLastModifiedTimeCol } from 'nocodb-sdk'
+import { type ColumnType, type LinkToAnotherRecordType, RelationTypes, isBtLikeV2Junction, isMMOrMMLike } from 'atmosphere-sdk'
+import { isCreatedOrLastModifiedByCol, isCreatedOrLastModifiedTimeCol } from 'atmosphere-sdk'
 
 const props = defineProps<{
   column: ColumnType
@@ -67,13 +67,13 @@ const virtualCellType = computed(() => {
 })
 
 const virtualCellClassName = computed(() => {
-  let className = `nc-virtual-cell-${(column.value.uidt || 'default').toLowerCase()}`
+  let className = `atm-virtual-cell-${(column.value.uidt || 'default').toLowerCase()}`
 
   if (isGrid.value && !isForm.value && virtualCellType.value === 'rollup' && !isExpandedForm.value) {
     className += ' text-right justify-end'
   }
   if (isPrimaryCol.value && !isForm.value) {
-    className += ' nc-display-value-cell'
+    className += ' atm-display-value-cell'
   }
 
   return className
@@ -82,7 +82,7 @@ const virtualCellClassName = computed(() => {
 
 <template>
   <div
-    class="nc-virtual-cell w-full flex items-center"
+    class="atm-virtual-cell w-full flex items-center"
     :class="virtualCellClassName"
     @keydown.enter.exact="onNavigate(NavigateDir.NEXT, $event)"
     @keydown.shift.enter.exact="onNavigate(NavigateDir.PREV, $event)"
@@ -105,9 +105,9 @@ const virtualCellClassName = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.nc-virtual-cell {
-  &.nc-display-value-cell {
-    @apply !text-nc-content-brand;
+.atm-virtual-cell {
+  &.atm-display-value-cell {
+    @apply !text-atm-content-brand;
   }
 }
 </style>

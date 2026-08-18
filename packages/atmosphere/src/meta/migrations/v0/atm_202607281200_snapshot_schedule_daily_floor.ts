@@ -3,7 +3,7 @@ import { CronExpressionParser } from 'cron-parser';
 import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
-const logger = new Logger('nc_202607281200_snapshot_schedule_daily_floor');
+const logger = new Logger('atm_202607281200_snapshot_schedule_daily_floor');
 
 // Hour the converted schedules land on — the product default for a daily
 // snapshot (SNAPSHOT_SCHEDULE_DEFAULTS.config.time is '02:00').

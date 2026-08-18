@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type GridType, type ListType, ViewTypes } from 'nocodb-sdk'
+import { type GridType, type ListType, ViewTypes } from 'atmosphere-sdk'
 
 const rowHeightOptions: { icon: keyof typeof iconMap; heightClass: string }[] = [
   {
@@ -99,17 +99,17 @@ useMenuCloseOnEsc(open)
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="open"
     offset-y
     class=""
     :trigger="['click']"
-    overlay-class-name="nc-dropdown-height-menu overflow-hidden"
+    overlay-class-name="atm-dropdown-height-menu overflow-hidden"
   >
     <div>
-      <NcButton
+      <AtButton
         v-e="['c:row-height']"
-        class="nc-height-menu-btn nc-toolbar-btn !border-0 !h-7 !px-1.5 !min-w-7"
+        class="atm-height-menu-btn atm-toolbar-btn !border-0 !h-7 !px-1.5 !min-w-7"
         size="small"
         type="secondary"
         :show-as-disabled="isLocked"
@@ -118,24 +118,24 @@ useMenuCloseOnEsc(open)
           <component :is="iconMap.rowHeight" class="!h-3.75 !w-3.75" />
           <!-- <span v-if="!isMobileMode" class="!text-sm !font-medium">{{ $t('objects.rowHeight') }}</span> -->
         </div>
-      </NcButton>
+      </AtButton>
     </div>
     <template #overlay>
-      <div class="p-1.5 menu-filter-dropdown min-w-[160px]" data-testid="nc-height-menu">
+      <div class="p-1.5 menu-filter-dropdown min-w-[160px]" data-testid="atm-height-menu">
         <div class="flex flex-col w-full text-sm" @click.stop>
-          <div class="text-xs text-nc-content-gray-muted px-3 pt-2 pb-1 select-none">{{ $t('objects.rowHeight') }}</div>
+          <div class="text-xs text-atm-content-gray-muted px-3 pt-2 pb-1 select-none">{{ $t('objects.rowHeight') }}</div>
           <div
             v-for="(item, i) of rowHeightOptions"
             :key="i"
-            class="nc-row-height-option"
+            class="atm-row-height-option"
             :class="{
-              'hover:bg-nc-bg-gray-light cursor-pointer': !isLocked,
+              'hover:bg-atm-bg-gray-light cursor-pointer': !isLocked,
               'cursor-not-allowed': isLocked,
             }"
             @click="updateRowHeight(i)"
           >
             <div class="flex items-center gap-2">
-              <GeneralIcon :icon="item.icon" class="nc-row-height-icon" />
+              <GeneralIcon :icon="item.icon" class="atm-row-height-icon" />
               {{ $t(`objects.heightClass.${item.heightClass}`) }}
             </div>
             <component
@@ -146,14 +146,14 @@ useMenuCloseOnEsc(open)
           </div>
         </div>
         <!--        <template v-if="isList">
-          <div class="border-t border-nc-border-gray-medium">
+          <div class="border-t border-atm-border-gray-medium">
             <SmartsheetToolbarListLevelSelector v-if="_isListConfigured" class="py-2" />
             <div class="flex items-center px-2">
-              <NcSwitch v-model:checked="_wrapHeaders" size="small" class="nc-switch" :disabled="isLocked">
-                <div class="text-sm text-nc-content-gray">
+              <AtSwitch v-model:checked="_wrapHeaders" size="small" class="atm-switch" :disabled="isLocked">
+                <div class="text-sm text-atm-content-gray">
                   {{ $t('labels.wrapHeaders') || 'Wrap headers' }}
                 </div>
-              </NcSwitch>
+              </AtSwitch>
             </div>
           </div>
         </template> -->
@@ -161,15 +161,15 @@ useMenuCloseOnEsc(open)
         <GeneralLockedViewFooter v-if="isLocked" class="-mx-1.5 -mb-1.5" @on-open="open = false" />
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style scoped>
-.nc-row-height-option {
-  @apply flex items-center gap-2 p-2 justify-between rounded-md text-nc-content-gray-subtle2;
+.atm-row-height-option {
+  @apply flex items-center gap-2 p-2 justify-between rounded-md text-atm-content-gray-subtle2;
 }
 
-.nc-row-height-icon {
+.atm-row-height-icon {
   @apply text-base;
 }
 </style>

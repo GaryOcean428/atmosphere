@@ -1,13 +1,13 @@
-import { RelationTypes, UITypes } from 'nocodb-sdk';
-import { FormulaDataTypes } from 'nocodb-sdk';
+import { RelationTypes, UITypes } from 'atmosphere-sdk';
+import { FormulaDataTypes } from 'atmosphere-sdk';
 import type { SourcesMap } from '~/services/api-docs/types';
 import type { Column, LinkToAnotherRecordColumn, RollupColumn } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type LookupColumn from '~/models/LookupColumn';
-import type { DriverClient } from '~/utils/nc-config';
+import type { DriverClient } from '~/utils/atm-config';
 import { Base } from '~/models';
 import SwaggerTypes from '~/db/sql-mgr/code/routers/xc-ts/SwaggerTypes';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 const setAsAnyType = (field: SwaggerColumn, nullable = true) => {
   const result = field as any;
@@ -25,7 +25,7 @@ const setAsAnyType = (field: SwaggerColumn, nullable = true) => {
 // TODO: refactor and avoid duplication
 // Helper function to process a single column and return its swagger field definition
 async function processColumnToSwaggerField(
-  context: NcContext,
+  context: AtContext,
   {
     column,
     base,
@@ -39,7 +39,7 @@ async function processColumnToSwaggerField(
     isLookupHelper?: boolean;
     dbType: DriverClient;
   },
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<SwaggerColumn> {
   const field: SwaggerColumn = {
     title: column.title,
@@ -310,7 +310,7 @@ async function processColumnToSwaggerField(
 }
 
 export default async (
-  context: NcContext,
+  context: AtContext,
   {
     columns,
     base,
@@ -320,7 +320,7 @@ export default async (
     base: Base;
     sourcesMap: SourcesMap;
   },
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<SwaggerColumn[]> => {
   // Extract dbtype based on column source
   const dbType = await base.getSources().then((sources) => {

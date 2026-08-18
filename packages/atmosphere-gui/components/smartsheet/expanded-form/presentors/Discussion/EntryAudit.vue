@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AuditType } from 'nocodb-sdk'
+import type { AuditType } from 'atmosphere-sdk'
 
 /* interface */
 
@@ -59,12 +59,12 @@ const createdBy = computed(() => {
 </script>
 
 <template>
-  <div class="py-4 ml-15.8 rtl:(mr-15.8 ml-0 border-l-0 border-r) border-l border-nc-border-gray-dark">
+  <div class="py-4 ml-15.8 rtl:(mr-15.8 ml-0 border-l-0 border-r) border-l border-atm-border-gray-dark">
     <div class="flex items-center h-[32px] gap-2 mb-2">
       <div
-        class="w-[28px] h-[28px] bg-nc-bg-default flex items-center justify-center bg-nc-bg-default rounded-full border border-1 !border-nc-border-gray-medium shadow-sm -ml-3.5 rtl:(-mr-3.5 ml-0)"
+        class="w-[28px] h-[28px] bg-atm-bg-default flex items-center justify-center bg-atm-bg-default rounded-full border border-1 !border-atm-border-gray-medium shadow-sm -ml-3.5 rtl:(-mr-3.5 ml-0)"
       >
-        <GeneralIcon icon="ncPenLine" class="w-[16px] h-[16px] text-nc-content-gray-muted" />
+        <GeneralIcon icon="ncPenLine" class="w-[16px] h-[16px] text-atm-content-gray-muted" />
       </div>
       <GeneralUserIcon
         :user="{
@@ -80,34 +80,34 @@ const createdBy = computed(() => {
         <span class="font-weight-700 mr-1 rtl:(mr-0 ml-1)">
           {{ createdBy }}
         </span>
-        <span v-if="props.auditGroup.audit?.op_type === 'DATA_INSERT'" class="font-weight-500 text-nc-content-gray-subtle2">
+        <span v-if="props.auditGroup.audit?.op_type === 'DATA_INSERT'" class="font-weight-500 text-atm-content-gray-subtle2">
           {{ $t('activity.createdARecord') }}
         </span>
-        <span v-else-if="props.auditGroup.audit?.op_type === 'DATA_UPDATE'" class="font-weight-500 text-nc-content-gray-subtle2">
+        <span v-else-if="props.auditGroup.audit?.op_type === 'DATA_UPDATE'" class="font-weight-500 text-atm-content-gray-subtle2">
           {{ $t('activity.updatedFields', { fieldsChanged }) }}
         </span>
         <span
           v-else-if="props.auditGroup.audit?.op_type === 'DATA_CASCADE_UPDATE'"
-          class="font-weight-500 text-nc-content-gray-subtle2"
+          class="font-weight-500 text-atm-content-gray-subtle2"
         >
           {{ $t('labels.dateDependency.cascadeUpdateDescription') }}
         </span>
-        <span v-else-if="props.auditGroup.audit?.op_type === 'DATA_LINK'" class="font-weight-500 text-nc-content-gray-subtle2">
+        <span v-else-if="props.auditGroup.audit?.op_type === 'DATA_LINK'" class="font-weight-500 text-atm-content-gray-subtle2">
           {{ $t('activity.updatedOneField') }}
         </span>
       </p>
-      <div class="text-xs font-weight-500 text-nc-content-gray-muted">
-        <NcTooltip>
+      <div class="text-xs font-weight-500 text-atm-content-gray-muted">
+        <AtTooltip>
           <template #title>{{ parseStringDateTime(props.auditGroup.audit?.created_at) }}</template>
           {{ timeAgo(props.auditGroup.audit?.created_at) }}
-        </NcTooltip>
+        </AtTooltip>
       </div>
     </div>
     <template v-if="props.auditGroup.audit?.op_type === 'DATA_INSERT'">
       <div class="relative mb-2">
         <GeneralIcon
           icon="ncNode"
-          class="w-[16px] h-[16px] text-nc-content-gray-muted bg-nc-bg-default absolute top-1/2 left-0 rtl:(left-auto right-0 translate-x-1/2) transform -translate-y-1/2 -translate-x-1/2"
+          class="w-[16px] h-[16px] text-atm-content-gray-muted bg-atm-bg-default absolute top-1/2 left-0 rtl:(left-auto right-0 translate-x-1/2) transform -translate-y-1/2 -translate-x-1/2"
         />
         <p class="text-sm font-weight-500 mb-1 ml-6.5">{{ $t('activity.recordWasCreated') }}</p>
       </div>
@@ -119,12 +119,12 @@ const createdBy = computed(() => {
       <div class="relative mb-2">
         <GeneralIcon
           icon="ncNode"
-          class="w-[16px] h-[16px] text-nc-content-gray-muted bg-nc-bg-default absolute top-1/2 left-0 rtl:(left-auto right-0 translate-x-1/2) transform -translate-y-1/2 -translate-x-1/2"
+          class="w-[16px] h-[16px] text-atm-content-gray-muted bg-atm-bg-default absolute top-1/2 left-0 rtl:(left-auto right-0 translate-x-1/2) transform -translate-y-1/2 -translate-x-1/2"
         />
         <div class="text-sm ml-6.5 inline-flex items-center flex-wrap gap-1">
-          <span class="text-small1 text-nc-content-gray-subtle2 font-weight-500"> {{ $t('activity.changed') }} </span>
+          <span class="text-small1 text-atm-content-gray-subtle2 font-weight-500"> {{ $t('activity.changed') }} </span>
           <span
-            class="rounded-md px-1 !h-[20px] inline-flex items-center gap-1 text-nc-content-gray-emphasis border-1 border-nc-border-gray-medium"
+            class="rounded-md px-1 !h-[20px] inline-flex items-center gap-1 text-atm-content-gray-emphasis border-1 border-atm-border-gray-medium"
           >
             <SmartsheetHeaderVirtualCellIcon
               :column-meta="{ uidt: 'Links', colOptions: { type: getLinkColumnType(props.auditGroup.audit) } }"
@@ -139,12 +139,12 @@ const createdBy = computed(() => {
             class="flex gap-1 flex-wrap"
           >
             <span
-              class="!text-small p-0.5 font-weight-500 border-1 border-nc-red-200 rounded-md bg-nc-bg-red-light inline-flex items-center gap-1"
+              class="!text-small p-0.5 font-weight-500 border-1 border-atm-red-200 rounded-md bg-atm-bg-red-light inline-flex items-center gap-1"
             >
               <span
                 v-for="entry of safeGetFromAuditDetails(props.auditGroup.audit, 'consolidated_ref_display_values_unlinks')"
                 :key="entry.refRowId"
-                class="text-nc-content-brand font-weight-500 line-through px-1 bg-nc-bg-brand !rounded-md"
+                class="text-atm-content-brand font-weight-500 line-through px-1 bg-atm-bg-brand !rounded-md"
               >
                 {{ entry.value }}
               </span>
@@ -155,12 +155,12 @@ const createdBy = computed(() => {
             class="flex gap-1 flex-wrap"
           >
             <span
-              class="!text-small1 p-0.5 font-weight-500 border-1 border-nc-green-200 rounded-md bg-nc-bg-green-light inline-flex items-center gap-1"
+              class="!text-small1 p-0.5 font-weight-500 border-1 border-atm-green-200 rounded-md bg-atm-bg-green-light inline-flex items-center gap-1"
             >
               <span
                 v-for="entry of safeGetFromAuditDetails(props.auditGroup.audit, 'consolidated_ref_display_values_links')"
                 :key="entry.refRowId"
-                class="text-nc-content-brand font-weight-500 px-1 bg-nc-bg-brand !rounded-md"
+                class="text-atm-content-brand font-weight-500 px-1 bg-atm-bg-brand !rounded-md"
               >
                 {{ entry.value }}
               </span>

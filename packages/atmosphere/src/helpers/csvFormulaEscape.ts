@@ -1,4 +1,4 @@
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 
 // CWE-1236 (CSV / spreadsheet formula injection) guard for user-facing CSV exports.
 // A cell whose text starts with =, +, -, @, tab or CR is evaluated as a live formula
@@ -9,10 +9,10 @@ import { UITypes } from 'nocodb-sdk';
 // re-import CSVs, which read the value back verbatim) and ONLY to text-type cells —
 // numeric/temporal columns legitimately lead with - / + (negative or signed values), so
 // escaping them would corrupt the data.
-const NC_FORMULA_TRIGGER_RE = /^[=+\-@\t\r]/;
+const ATMOSPHERE_FORMULA_TRIGGER_RE = /^[=+\-@\t\r]/;
 
 // uidt values whose serialized output must NOT be escaped (would mangle real data).
-export const NC_FORMULA_ESCAPE_SKIP_UITYPES = new Set<string>([
+export const ATMOSPHERE_FORMULA_ESCAPE_SKIP_UITYPES = new Set<string>([
   UITypes.Number,
   UITypes.Decimal,
   UITypes.Currency,
@@ -30,7 +30,7 @@ export const NC_FORMULA_ESCAPE_SKIP_UITYPES = new Set<string>([
 
 // Prefix a formula-leading string value with a single quote; leave anything else as-is.
 export function escapeCsvFormulaValue(value: unknown): unknown {
-  return typeof value === 'string' && NC_FORMULA_TRIGGER_RE.test(value)
+  return typeof value === 'string' && ATMOSPHERE_FORMULA_TRIGGER_RE.test(value)
     ? `'${value}`
     : value;
 }
@@ -45,7 +45,7 @@ export function escapeFormulaHeader(
   titles: (string | null | undefined)[],
 ): string[] {
   return titles.map((t) =>
-    typeof t === 'string' && NC_FORMULA_TRIGGER_RE.test(t) ? `'${t}` : t ?? '',
+    typeof t === 'string' && ATMOSPHERE_FORMULA_TRIGGER_RE.test(t) ? `'${t}` : t ?? '',
   );
 }
 
@@ -60,7 +60,7 @@ export function escapeFormulaeInRows(
 
   const skipTitles = new Set(
     columns
-      .filter((c) => c.uidt && NC_FORMULA_ESCAPE_SKIP_UITYPES.has(c.uidt))
+      .filter((c) => c.uidt && ATMOSPHERE_FORMULA_ESCAPE_SKIP_UITYPES.has(c.uidt))
       .map((c) => c.title)
       .filter((t): t is string => !!t),
   );

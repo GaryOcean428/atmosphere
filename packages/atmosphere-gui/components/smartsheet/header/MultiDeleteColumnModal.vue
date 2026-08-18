@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnType, LinkToAnotherRecordType } from 'nocodb-sdk'
-import { RelationTypes, isLinkV2, isLinksOrLTAR, isSystemColumn } from 'nocodb-sdk'
+import type { ColumnType, LinkToAnotherRecordType } from 'atmosphere-sdk'
+import { RelationTypes, isLinkV2, isLinksOrLTAR, isSystemColumn } from 'atmosphere-sdk'
 
 // Bulk-delete confirmation modal listing each selected field. Mirrors the
 // single-column DeleteColumnModal but loops the columnDelete call over the
@@ -107,17 +107,17 @@ const onDelete = async () => {
     :disable-delete-btn="!deletableColumns.length"
   >
     <template #entity-preview>
-      <div class="mb-3 text-nc-content-gray">
+      <div class="mb-3 text-atm-content-gray">
         {{ t('msg.areYouSureDeleteNFields', { count: deletableColumns.length }) }}
       </div>
 
-      <div class="flex flex-col gap-1 max-h-60 overflow-y-auto nc-scrollbar-thin">
+      <div class="flex flex-col gap-1 max-h-60 overflow-y-auto atm-scrollbar-thin">
         <div
           v-for="col in deletableColumns"
           :key="col.id"
-          class="flex flex-row items-center py-1.5 px-3 bg-nc-bg-gray-extralight rounded-lg text-nc-content-gray-subtle2"
+          class="flex flex-row items-center py-1.5 px-3 bg-atm-bg-gray-extralight rounded-lg text-atm-content-gray-subtle2"
         >
-          <SmartsheetHeaderIcon :column="col" class="nc-view-icon" />
+          <SmartsheetHeaderIcon :column="col" class="atm-view-icon" />
 
           <div
             class="capitalize text-ellipsis overflow-hidden select-none w-full pl-1.5"
@@ -128,7 +128,7 @@ const onDelete = async () => {
         </div>
       </div>
 
-      <div v-if="skippedCount > 0" class="mt-2 text-caption text-nc-content-gray-subtle">
+      <div v-if="skippedCount > 0" class="mt-2 text-caption text-atm-content-gray-subtle">
         {{ t('msg.fieldsCannotBeDeletedSkipped', { count: skippedCount }) }}
       </div>
     </template>

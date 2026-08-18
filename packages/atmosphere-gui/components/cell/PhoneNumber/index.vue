@@ -71,7 +71,7 @@ watch(
     v-if="!readOnly && editEnabled"
     :ref="focus"
     v-model="vModel"
-    class="nc-cell-field w-full outline-none py-1"
+    class="atm-cell-field w-full outline-none py-1"
     @blur="editEnabled = false"
     @keydown.down.stop
     @keydown.left.stop
@@ -83,18 +83,18 @@ watch(
     @mousedown.stop
   />
 
-  <span v-else-if="vModel === null && showNull" class="nc-cell-field nc-null uppercase">{{ $t('general.null') }}</span>
+  <span v-else-if="vModel === null && showNull" class="atm-cell-field atm-null uppercase">{{ $t('general.null') }}</span>
 
   <a
     v-else-if="validPhoneNumber"
-    class="py-1 underline inline-block nc-cell-field-link"
+    class="py-1 underline inline-block atm-cell-field-link"
     :href="`tel:${vModel}`"
     target="_blank"
     rel="noopener noreferrer"
     :tabindex="readOnly ? -1 : 0"
   >
-    <LazyCellClampedText :value="vModel" :lines="rowHeight" class="nc-cell-field" />
+    <LazyCellClampedText :value="vModel" :lines="rowHeight" class="atm-cell-field" />
   </a>
 
-  <LazyCellClampedText v-else :value="vModel" :lines="rowHeight" class="nc-cell-field" />
+  <LazyCellClampedText v-else :value="vModel" :lines="rowHeight" class="atm-cell-field" />
 </template>

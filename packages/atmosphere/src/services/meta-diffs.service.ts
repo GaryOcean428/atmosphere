@@ -11,28 +11,28 @@ import {
   RelationTypes,
   SqlUiFactory,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { pluralize, singularize } from 'inflection';
-import type { UserType } from 'nocodb-sdk';
+import type { UserType } from 'atmosphere-sdk';
 import type { LinksColumn, LinkToAnotherRecordColumn } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { MetaDependencyEventHandler } from '~/services/meta-dependency/event-handler.service';
 import getColumnUiType from '~/helpers/getColumnUiType';
 import getTableNameAlias, { getColumnNameAlias } from '~/helpers/getTableName';
 import { getUniqueColumnAliasName } from '~/helpers/getUniqueName';
 import mapDefaultDisplayValue from '~/helpers/mapDefaultDisplayValue';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { getSourceIntrospectionSchema, normalizeDr } from '~/helpers/dbHelpers';
 import {
   detectColumnSchemaPropsChanged,
   resolvePkAfterSync,
 } from '~/services/meta-diffs/pk-preservation';
 import { formatLinkDbMapping } from '~/helpers/formatLinkDbMapping';
-import NcHelp from '~/utils/NcHelp';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import AtHelp from '~/utils/AtHelp';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheScope, MetaTable } from '~/utils/globals';
 import { Base, Column, Model, Source } from '~/models';
 
@@ -161,7 +161,7 @@ export class MetaDiffsService {
   ) {}
 
   async getMetaDiff(
-    context: NcContext,
+    context: AtContext,
     sqlClient,
     base: Base,
     source: Source,
@@ -216,7 +216,7 @@ export class MetaDiffsService {
     )?.data?.list;
 
     for (const table of tableList) {
-      if (table.tn === 'nc_evolutions') continue;
+      if (table.tn === 'atm_evolutions') continue;
 
       const oldMetaIdx = oldTableMetas.findIndex(
         (m) => m.table_name === table.tn,
@@ -303,7 +303,7 @@ export class MetaDiffsService {
             column: oldCol,
           });
         }
-        // Asymmetric on `pk` — preserve a user-set NocoDB PK across syncs.
+        // Asymmetric on `pk` — preserve a user-set Atmosphere PK across syncs.
         // See `~/services/meta-diffs/pk-preservation`.
         if (detectColumnSchemaPropsChanged(oldCol, column)) {
           tableProp.detectedChanges.push({
@@ -437,7 +437,7 @@ export class MetaDiffsService {
       // the next sync recreates the LTAR.
       //
       // Predict the post-sync pk state instead of reading only the stale
-      // NocoDB metadata. A column-prop-changed apply earlier in this same
+      // Atmosphere metadata. A column-prop-changed apply earlier in this same
       // sync may set `pk:true` from what the sqlClient reports — without
       // this prediction, the LTAR-removal flag would be raised in the same
       // pass that's about to restore the pk, and the removal would still
@@ -834,7 +834,7 @@ export class MetaDiffsService {
     return changes;
   }
 
-  async metaDiff(context: NcContext, param: { baseId: string }) {
+  async metaDiff(context: AtContext, param: { baseId: string }) {
     const base = await Base.getWithInfo(context, param.baseId);
     let changes = [];
     for (const source of base.sources) {
@@ -843,7 +843,7 @@ export class MetaDiffsService {
         if (source.isMeta()) continue;
 
         // @ts-ignore
-        const sqlClient = await NcConnectionMgrv2.getSqlClient(source);
+        const sqlClient = await AtConnectionMgrv2.getSqlClient(source);
         changes = changes.concat(
           await this.getMetaDiff(context, sqlClient, base, source),
         );
@@ -856,7 +856,7 @@ export class MetaDiffsService {
   }
 
   async baseMetaDiff(
-    context: NcContext,
+    context: AtContext,
     param: { baseId: string; sourceId: string; user: UserType },
   ) {
     const base = await Base.getWithInfo(context, param.baseId);
@@ -864,14 +864,14 @@ export class MetaDiffsService {
 
     let changes = [];
 
-    const sqlClient = await NcConnectionMgrv2.getSqlClient(source);
+    const sqlClient = await AtConnectionMgrv2.getSqlClient(source);
     changes = await this.getMetaDiff(context, sqlClient, base, source);
 
     return changes;
   }
 
   async syncBaseMeta(
-    context: NcContext,
+    context: AtContext,
     {
       base,
       source,
@@ -887,7 +887,7 @@ export class MetaDiffsService {
     },
   ) {
     if (source.isMeta()) {
-      if (throwOnFail) NcError.badRequest('Cannot sync meta source');
+      if (throwOnFail) AtError.badRequest('Cannot sync meta source');
       return;
     }
 
@@ -903,7 +903,7 @@ export class MetaDiffsService {
     logger?.(`Getting meta diff for ${source.alias}`);
 
     // @ts-ignore
-    const sqlClient = await NcConnectionMgrv2.getSqlClient(source);
+    const sqlClient = await AtConnectionMgrv2.getSqlClient(source);
     const sqlUi = SqlUiFactory.create({ client: source.type ?? ClientType.PG });
     const changes = await this.getMetaDiff(context, sqlClient, base, source);
 
@@ -1082,18 +1082,18 @@ export class MetaDiffsService {
               // update the LTAR column's stored dr in place — no column
               // recreation so filters/views/links keep referencing the
               // same colId.
-              await Noco.ncMeta.metaUpdate(
+              await Atmosphere.ncMeta.metaUpdate(
                 context.workspace_id,
                 context.base_id,
                 MetaTable.COL_RELATIONS,
                 { dr: change.dr },
                 { fk_column_id: change.colId },
               );
-              await NocoCache.del(
+              await AtmosphereCache.del(
                 context,
                 `${CacheScope.COL_RELATION}:${change.colId}`,
               );
-              await NocoCache.del(
+              await AtmosphereCache.del(
                 context,
                 `${CacheScope.COLUMN}:${change.colId}`,
               );
@@ -1239,7 +1239,7 @@ export class MetaDiffsService {
 
     // Run each per-target group sequentially so siblings inserting into the
     // same model see each other's columns when computing unique titles.
-    // Different groups still run in parallel (via NcHelp.executeOperations).
+    // Different groups still run in parallel (via AtHelp.executeOperations).
     const targetGroupRunners: Array<() => Promise<void>> = [];
     for (const fns of virtualColumnInsertByTarget.values()) {
       targetGroupRunners.push(async () => {
@@ -1248,7 +1248,7 @@ export class MetaDiffsService {
         }
       });
     }
-    await NcHelp.executeOperations(targetGroupRunners, source.type);
+    await AtHelp.executeOperations(targetGroupRunners, source.type);
 
     logger?.(`Virtual column changes applied`);
 
@@ -1264,7 +1264,7 @@ export class MetaDiffsService {
   }
 
   async metaDiffSync(
-    context: NcContext,
+    context: AtContext,
     param: { baseId: string; logger?: (message: string) => void; req: any },
   ) {
     const base = await Base.getWithInfo(context, param.baseId);
@@ -1287,7 +1287,7 @@ export class MetaDiffsService {
   }
 
   async baseMetaDiffSync(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       sourceId: string;
@@ -1317,7 +1317,7 @@ export class MetaDiffsService {
   }
 
   async isMMRelationExist(
-    context: NcContext,
+    context: AtContext,
     model: Model,
     assocModel: Model,
     belongsToCol: Column<LinkToAnotherRecordColumn>,
@@ -1347,7 +1347,7 @@ export class MetaDiffsService {
 
   // @ts-ignore
   async extractAndGenerateManyToManyRelations(
-    context: NcContext,
+    context: AtContext,
     modelsArr: Array<Model>,
   ) {
     for (const assocModel of modelsArr) {

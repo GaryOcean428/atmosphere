@@ -7,7 +7,7 @@ import {
   UITypesSearchTerms,
   isAIPromptCol,
   isSupportedDisplayValueColumn,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import {
   ButtonActionsType,
   UITypes,
@@ -18,7 +18,7 @@ import {
   isSystemColumn,
   isVirtualCol,
   readonlyMetaAllowedTypes,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { AiWizardTabsType, type PredictedFieldType, type UiTypesType } from '#imports'
 import MdiPlusIcon from '~icons/mdi/plus-circle-outline'
 import MdiMinusIcon from '~icons/mdi/minus-circle-outline'
@@ -75,7 +75,7 @@ if (props.preload?.colOptions) {
   formState.value.colOptions = { ...props.preload.colOptions }
 }
 
-const { isAiFeaturesEnabled, isAiBetaFeaturesEnabled, aiIntegrationAvailable, aiLoading, aiError } = useNocoAi()
+const { isAiFeaturesEnabled, isAiBetaFeaturesEnabled, aiIntegrationAvailable, aiLoading, aiError } = useAtmosphereAi()
 
 const {
   aiMode: aiAutoSuggestMode,
@@ -873,17 +873,17 @@ const unique = computed({
   <div
     v-if="!warningVisible"
     ref="editOrAddRef"
-    class="overflow-auto nc-scrollbar-md"
+    class="overflow-auto atm-scrollbar-md"
     :class="{
-      'bg-nc-bg-default max-h-[max(80vh,500px)]': !props.fromTableExplorer,
+      'bg-atm-bg-default max-h-[max(80vh,500px)]': !props.fromTableExplorer,
       'w-[416px]': !props.embedMode,
       '!w-[500px]': isLinksOrLTAR(formState.uidt),
       '!min-w-[560px]': lookupRollupFilterEnabled,
       'min-w-[500px] !w-full': isLinksOrLTAR(formState.uidt) || isLookupOrRollup,
-      'shadow-lg shadow-gray-300 dark:shadow-black/40 border-1 border-nc-border-gray-medium rounded-2xl p-5': !embedMode,
-      'nc-ai-mode': isAiMode,
+      'shadow-lg shadow-gray-300 dark:shadow-black/40 border-1 border-atm-border-gray-medium rounded-2xl p-5': !embedMode,
+      'atm-ai-mode': isAiMode,
       'h-full': props.fromTableExplorer,
-      '!bg-nc-bg-gray-extralight': aiAutoSuggestMode && formState.uidt && !props.fromTableExplorer,
+      '!bg-atm-bg-gray-extralight': aiAutoSuggestMode && formState.uidt && !props.fromTableExplorer,
       '!pb-0': !embedMode && !aiAutoSuggestMode && formState.uidt,
     }"
     @keydown="handleEscape"
@@ -904,11 +904,11 @@ const unique = computed({
         <div
           class="flex flex-col gap-4"
           :class="{
-            'bg-nc-bg-default -mx-5 -mt-5 px-5 pt-5': aiAutoSuggestMode,
+            'bg-atm-bg-default -mx-5 -mt-5 px-5 pt-5': aiAutoSuggestMode,
           }"
         >
           <div class="flex items-center gap-3">
-            <div class="flex-1 text-base font-bold text-nc-content-gray">{{ $t('general.new') }} {{ $t('objects.field') }}</div>
+            <div class="flex-1 text-base font-bold text-atm-content-gray">{{ $t('general.new') }} {{ $t('objects.field') }}</div>
 
             <AiToggleButton
               v-if="isAiFeaturesEnabled"
@@ -920,8 +920,8 @@ const unique = computed({
           </div>
           <template v-if="aiAutoSuggestMode">
             <div v-if="!aiIntegrationAvailable" class="flex items-center gap-3 py-2">
-              <GeneralIcon icon="alertTriangleSolid" class="!text-nc-content-orange-medium w-4 h-4" />
-              <div class="text-sm text-nc-content-gray-subtle flex-1">
+              <GeneralIcon icon="alertTriangleSolid" class="!text-atm-content-orange-medium w-4 h-4" />
+              <div class="text-sm text-atm-content-gray-subtle flex-1">
                 {{ $t('title.noAiIntegrationAvailable') }} {{ $t('objects.field') }}
               </div>
             </div>
@@ -930,49 +930,49 @@ const unique = computed({
               <template #AutoSuggestedContent>
                 <div class="px-5 pt-4 pb-2">
                   <div v-if="aiError" class="w-full flex items-center gap-3">
-                    <GeneralIcon icon="ncInfoSolid" class="flex-none !text-nc-content-red-dark w-4 h-4" />
+                    <GeneralIcon icon="ncInfoSolid" class="flex-none !text-atm-content-red-dark w-4 h-4" />
 
-                    <NcTooltip class="truncate flex-1 text-sm text-nc-content-gray-subtle" show-on-truncate-only>
+                    <AtTooltip class="truncate flex-1 text-sm text-atm-content-gray-subtle" show-on-truncate-only>
                       <template #title>
                         {{ aiError }}
                       </template>
                       {{ aiError }}
-                    </NcTooltip>
+                    </AtTooltip>
 
-                    <NcButton size="small" type="text" class="!text-nc-content-brand" @click.stop="handleRefreshOnError">
+                    <AtButton size="small" type="text" class="!text-atm-content-brand" @click.stop="handleRefreshOnError">
                       {{ $t('general.refresh') }}
-                    </NcButton>
+                    </AtButton>
                   </div>
 
                   <div v-else-if="aiAutoSuggestModeStep === 'init'">
-                    <div class="text-nc-content-purple-light text-sm h-7 flex items-center gap-2">
-                      <GeneralLoader size="regular" class="!text-nc-content-purple-dark" />
+                    <div class="text-atm-content-purple-light text-sm h-7 flex items-center gap-2">
+                      <GeneralLoader size="regular" class="!text-atm-content-purple-dark" />
 
                       <!-- Todo: add table name  -->
-                      <div class="nc-animate-dots">{{ $t('msg.autoSuggestingFieldsForTable', { table: meta?.title }) }}</div>
+                      <div class="atm-animate-dots">{{ $t('msg.autoSuggestingFieldsForTable', { table: meta?.title }) }}</div>
                     </div>
                   </div>
                   <div v-else-if="aiAutoSuggestModeStep === 'pick'" class="flex gap-3 items-start">
                     <div class="flex-1 flex gap-2 flex-wrap">
                       <template v-if="activeTabPredictedFields.length">
                         <template v-for="f of activeTabPredictedFields" :key="f.title">
-                          <NcTooltip :disabled="selected.length < maxSelectionCount || f.selected">
+                          <AtTooltip :disabled="selected.length < maxSelectionCount || f.selected">
                             <template #title>
                               <div class="w-[150px]">{{ $t('msg.info.maxFieldSelectionAtATime', { maxSelectionCount }) }}</div>
                             </template>
 
                             <a-tag
-                              class="nc-ai-suggested-tag"
+                              class="atm-ai-suggested-tag"
                               :class="{
-                                'nc-disabled': saving || (!f.selected && selected.length >= maxSelectionCount),
-                                'nc-selected': f.selected,
-                                'nc-bg-selected': activeSelectedField === f.ai_temp_id,
+                                'atm-disabled': saving || (!f.selected && selected.length >= maxSelectionCount),
+                                'atm-selected': f.selected,
+                                'atm-bg-selected': activeSelectedField === f.ai_temp_id,
                               }"
                               :disabled="selected.length >= maxSelectionCount"
                               @click="onToggleTag(f)"
                             >
                               <div class="flex flex-row items-center gap-2 py-[3px] text-small leading-[18px]">
-                                <NcCheckbox
+                                <AtCheckbox
                                   :checked="f.selected"
                                   theme="ai"
                                   class="!-mr-0.5"
@@ -992,13 +992,13 @@ const unique = computed({
                                 <div>{{ f.formState?.title || f.title }}</div>
                               </div>
                             </a-tag>
-                          </NcTooltip>
+                          </AtTooltip>
                         </template>
                       </template>
-                      <div v-else class="text-nc-content-gray-subtle2">{{ $t('labels.noData') }}</div>
+                      <div v-else class="text-atm-content-gray-subtle2">{{ $t('labels.noData') }}</div>
                     </div>
                     <div class="flex items-center gap-1">
-                      <NcTooltip
+                      <AtTooltip
                         v-if="
                           activeTabPredictHistory.length < activeTabSelectedFields.length
                             ? activeTabPredictHistory.length + activeTabSelectedFields.length < 10
@@ -1007,7 +1007,7 @@ const unique = computed({
                         :title="$t('tooltip.suggestMore')"
                         placement="top"
                       >
-                        <NcButton
+                        <AtButton
                           size="xs"
                           class="!px-1"
                           type="text"
@@ -1020,10 +1020,10 @@ const unique = computed({
                           <template #icon>
                             <GeneralIcon icon="ncPlusAi" class="!text-current" />
                           </template>
-                        </NcButton>
-                      </NcTooltip>
-                      <NcTooltip :title="$t('tooltip.clearAllAndResuggest')" placement="top">
-                        <NcButton
+                        </AtButton>
+                      </AtTooltip>
+                      <AtTooltip :title="$t('tooltip.clearAllAndResuggest')" placement="top">
+                        <AtButton
                           size="xs"
                           class="!px-1"
                           type="text"
@@ -1043,8 +1043,8 @@ const unique = computed({
                               'animate-infinite animate-spin': aiLoading && calledFunction === 'predictRefresh',
                             }"
                           />
-                        </NcButton>
-                      </NcTooltip>
+                        </AtButton>
+                      </AtTooltip>
                     </div>
                   </div>
                 </div>
@@ -1057,12 +1057,12 @@ const unique = computed({
                       v-model:value="prompt"
                       :disabled="saving"
                       :placeholder="$t('placeholder.enterPromptForFieldSuggestions')"
-                      class="nc-ai-input nc-input-shadow !px-3 !pt-2 !pb-3 !text-sm !min-h-[68px] !rounded-lg"
+                      class="atm-ai-input atm-input-shadow !px-3 !pt-2 !pb-3 !text-sm !min-h-[68px] !rounded-lg"
                       @keydown.enter.stop
                     >
                     </a-textarea>
 
-                    <NcButton
+                    <AtButton
                       size="xs"
                       type="primary"
                       theme="ai"
@@ -1078,51 +1078,51 @@ const unique = computed({
                       @click="predictFromPrompt(onSelectedTagClick)"
                     >
                       <template #loadingIcon>
-                        <GeneralLoader class="!text-nc-content-pink-dark" size="medium" />
+                        <GeneralLoader class="!text-atm-content-pink-dark" size="medium" />
                       </template>
                       <template #icon>
                         <GeneralIcon icon="send" class="flex-none h-4 w-4" />
                       </template>
-                    </NcButton>
+                    </AtButton>
                   </div>
 
                   <div v-if="aiError" class="w-full flex items-center gap-3">
-                    <GeneralIcon icon="ncInfoSolid" class="flex-none !text-nc-content-red-dark w-4 h-4" />
+                    <GeneralIcon icon="ncInfoSolid" class="flex-none !text-atm-content-red-dark w-4 h-4" />
 
-                    <NcTooltip class="truncate flex-1 text-sm text-nc-content-gray-subtle" show-on-truncate-only>
+                    <AtTooltip class="truncate flex-1 text-sm text-atm-content-gray-subtle" show-on-truncate-only>
                       <template #title>
                         {{ aiError }}
                       </template>
                       {{ aiError }}
-                    </NcTooltip>
+                    </AtTooltip>
 
-                    <NcButton size="small" type="text" class="!text-nc-content-brand" @click.stop="handleRefreshOnError">
+                    <AtButton size="small" type="text" class="!text-atm-content-brand" @click.stop="handleRefreshOnError">
                       {{ $t('general.refresh') }}
-                    </NcButton>
+                    </AtButton>
                   </div>
 
                   <div v-else-if="isPromtAlreadyGenerated" class="flex flex-col gap-3">
-                    <div class="text-nc-content-purple-dark font-semibold text-xs">{{ $t('labels.generatedFields') }}</div>
+                    <div class="text-atm-content-purple-dark font-semibold text-xs">{{ $t('labels.generatedFields') }}</div>
                     <div class="flex gap-2 flex-wrap">
                       <template v-if="activeTabPredictedFields.length">
                         <template v-for="f of activeTabPredictedFields" :key="f.title">
-                          <NcTooltip :disabled="selected.length < maxSelectionCount || f.selected">
+                          <AtTooltip :disabled="selected.length < maxSelectionCount || f.selected">
                             <template #title>
                               <div class="w-[150px]">{{ $t('msg.info.maxFieldSelectionAtATime', { maxSelectionCount }) }}</div>
                             </template>
 
                             <a-tag
-                              class="nc-ai-suggested-tag"
+                              class="atm-ai-suggested-tag"
                               :class="{
-                                'nc-disabled': saving || (!f.selected && selected.length >= maxSelectionCount),
-                                'nc-selected': f.selected,
-                                'nc-bg-selected': activeSelectedField === f.ai_temp_id,
+                                'atm-disabled': saving || (!f.selected && selected.length >= maxSelectionCount),
+                                'atm-selected': f.selected,
+                                'atm-bg-selected': activeSelectedField === f.ai_temp_id,
                               }"
                               :disabled="selected.length >= maxSelectionCount"
                               @click="onToggleTag(f)"
                             >
                               <div class="flex flex-row items-center gap-2 py-[3px] text-small leading-[18px]">
-                                <NcCheckbox
+                                <AtCheckbox
                                   :checked="f.selected"
                                   theme="ai"
                                   class="!-mr-0.5"
@@ -1142,10 +1142,10 @@ const unique = computed({
                                 <div>{{ f.formState?.title || f.title }}</div>
                               </div>
                             </a-tag>
-                          </NcTooltip>
+                          </AtTooltip>
                         </template>
                       </template>
-                      <div v-else class="text-nc-content-gray-subtle2">{{ $t('labels.noData') }}</div>
+                      <div v-else class="text-atm-content-gray-subtle2">{{ $t('labels.noData') }}</div>
                     </div>
                   </div>
                 </div>
@@ -1154,37 +1154,37 @@ const unique = computed({
 
             <div
               v-if="failedToSaveFields"
-              class="w-full p-4 flex items-start gap-4 border-1 border-nc-border-gray-medium rounded-lg"
+              class="w-full p-4 flex items-start gap-4 border-1 border-atm-border-gray-medium rounded-lg"
             >
-              <GeneralIcon icon="ncInfoSolid" class="flex-none text-nc-content-red-dark" />
+              <GeneralIcon icon="ncInfoSolid" class="flex-none text-atm-content-red-dark" />
               <div class="flex flex-col gap-1">
-                <div class="text-nc-content-gray text-base font-bold">{{ $t('msg.error.failedToAddFields') }}</div>
-                <div class="text-nc-content-gray-muted text-sm">
+                <div class="text-atm-content-gray text-base font-bold">{{ $t('msg.error.failedToAddFields') }}</div>
+                <div class="text-atm-content-gray-muted text-sm">
                   {{ $t('msg.error.unableToAddFields', { count: predicted.length }) }}
                 </div>
               </div>
-              <NcButton size="xsmall" type="text" class="!px-1" @click.stop="failedToSaveFields = false">
-                <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-              </NcButton>
+              <AtButton size="xsmall" type="text" class="!px-1" @click.stop="failedToSaveFields = false">
+                <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+              </AtButton>
             </div>
           </template>
         </div>
         <div
           v-if="aiAutoSuggestMode"
-          class="sticky -top-5 z-100 bg-nc-bg-default -mx-5 -mt-5 pt-5 px-5"
+          class="sticky -top-5 z-100 bg-atm-bg-default -mx-5 -mt-5 pt-5 px-5"
           :class="{
-            'pb-5 border-b-1 border-b-nc-border-gray-medium': formState.uidt,
+            'pb-5 border-b-1 border-b-atm-border-gray-medium': formState.uidt,
           }"
         >
           <a-form-item>
             <div class="flex gap-x-2 justify-end">
               <!-- Cancel -->
-              <NcButton size="small" html-type="button" type="secondary" :disabled="saving" @click="emit('cancel')">
+              <AtButton size="small" html-type="button" type="secondary" :disabled="saving" @click="emit('cancel')">
                 {{ $t('general.cancel') }}
-              </NcButton>
+              </AtButton>
 
               <!-- Save -->
-              <NcButton
+              <AtButton
                 v-if="aiIntegrationAvailable"
                 v-e="['a:column:ai:add']"
                 html-type="submit"
@@ -1195,7 +1195,7 @@ const unique = computed({
                 size="small"
                 :label="submitBtnLabel.label"
                 :loading-label="submitBtnLabel.loadingLabel"
-                data-testid="nc-field-modal-submit-btn"
+                data-testid="atm-field-modal-submit-btn"
                 @click.prevent="onSubmit"
               >
                 <template #icon>
@@ -1206,10 +1206,10 @@ const unique = computed({
                 <template #loading>
                   {{ submitBtnLabel.loadingLabel }}
                 </template>
-              </NcButton>
-              <NcButton v-else type="primary" size="small" @click="handleNavigateToIntegrations">
+              </AtButton>
+              <AtButton v-else type="primary" size="small" @click="handleNavigateToIntegrations">
                 {{ $t('labels.addAiIntegration') }}
-              </NcButton>
+              </AtButton>
             </div>
           </a-form-item>
         </div>
@@ -1217,9 +1217,9 @@ const unique = computed({
       <a-form-item v-if="isFieldsTab" v-bind="validateInfos.title" class="flex">
         <div
           :class="{
-            '!bg-nc-bg-gray-light text-nc-content-gray-disabled': isSyncedField,
+            '!bg-atm-bg-gray-light text-atm-content-gray-disabled': isSyncedField,
           }"
-          class="flex flex-grow px-2 py-1 items-center rounded-md bg-nc-bg-gray-light focus:bg-nc-bg-gray-light outline-none"
+          class="flex flex-grow px-2 py-1 items-center rounded-md bg-atm-bg-gray-light focus:bg-atm-bg-gray-light outline-none"
           style="outline-style: solid; outline-width: thin"
         >
           <input
@@ -1227,9 +1227,9 @@ const unique = computed({
             v-model="formState.title"
             :disabled="readOnly || !isFullUpdateAllowed || isSystem || isSyncedField"
             :placeholder="`${$t('objects.field')} ${$t('general.name').toLowerCase()} ${isEdit ? '' : $t('labels.optional')}`"
-            class="flex flex-grow nc-fields-input nc-input-shadow text-sm font-semibold outline-none bg-inherit min-h-6"
+            class="flex flex-grow atm-fields-input atm-input-shadow text-sm font-semibold outline-none bg-inherit min-h-6"
             :class="{
-              'nc-ai-input': isAiMode,
+              'atm-ai-input': isAiMode,
             }"
             :contenteditable="true"
             @change="debouncedOnPredictFieldType"
@@ -1243,23 +1243,23 @@ const unique = computed({
         :required="false"
         class="!mb-0"
       >
-        <NcTooltip :disabled="!isSyncedField" placement="right">
+        <AtTooltip :disabled="!isSyncedField" placement="right">
           <template #title>
             {{ $t('msg.info.updateTitleSyncedCol') }}
           </template>
           <a-input
             ref="antInput"
             v-model:value="formState.title"
-            class="nc-column-name-input nc-input-shadow !rounded-lg"
+            class="atm-column-name-input atm-input-shadow !rounded-lg"
             :class="{
-              'nc-ai-input': isAiMode,
+              'atm-ai-input': isAiMode,
             }"
             :placeholder="`${$t('objects.field')} ${$t('general.name').toLowerCase()} ${isEdit ? '' : $t('labels.optional')}`"
             :disabled="isKanban || readOnly || !isFullUpdateAllowed || isSystem || isSyncedField"
             @change="debouncedOnPredictFieldType"
             @input="onAlter(8)"
           />
-        </NcTooltip>
+        </AtTooltip>
       </a-form-item>
 
       <div class="flex items-center gap-1 empty:hidden">
@@ -1278,7 +1278,7 @@ const unique = computed({
           @keydown.up.stop="handleResetHoverEffect"
           @keydown.down.stop="handleResetHoverEffect"
         >
-          <NcTooltip placement="right" :disabled="!isSyncedField && !(!isEdit && formState.uidt && !!formState?.ai_temp_id)">
+          <AtTooltip placement="right" :disabled="!isSyncedField && !(!isEdit && formState.uidt && !!formState?.ai_temp_id)">
             <template #title>
               {{ isSyncedField ? $t('msg.info.updateTypeSyncedCol') : $t('msg.info.cannotEditAiGeneratedFieldType') }}
             </template>
@@ -1286,9 +1286,9 @@ const unique = computed({
               v-model:open="isColumnTypeOpen"
               v-model:value="columnUidt"
               show-search
-              class="nc-column-type-input nc-select-shadow !rounded-lg"
+              class="atm-column-type-input atm-select-shadow !rounded-lg"
               :class="{
-                'nc-ai-input': isAiMode,
+                'atm-ai-input': isAiMode,
                 '!pointer-events-none !cursor-not-allowed': !isEdit && formState.uidt && !!formState?.ai_temp_id,
               }"
               :disabled="
@@ -1300,14 +1300,14 @@ const unique = computed({
                 isSystem ||
                 isSyncedField
               "
-              dropdown-class-name="nc-dropdown-column-type border-1 !rounded-lg !border-nc-border-gray-medium"
+              dropdown-class-name="atm-dropdown-column-type border-1 !rounded-lg !border-atm-border-gray-medium"
               :filter-option="filterOption"
               @dropdown-visible-change="onDropdownChange"
               @change="onSelectType($event)"
               @dblclick="showDeprecated = !showDeprecated"
             >
               <template #suffixIcon>
-                <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+                <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
               </template>
               <a-select-option
                 v-for="opt of uiTypesOptions"
@@ -1317,11 +1317,11 @@ const unique = computed({
                 v-bind="validateInfos.uidt"
                 :class="{
                   'ant-select-item-option-active-selected': showHoverEffectOnSelectedType && formState.uidt === opt.name,
-                  '!text-nc-content-purple-dark': [AIPrompt, AIButton].includes(opt.name),
+                  '!text-atm-content-purple-dark': [AIPrompt, AIButton].includes(opt.name),
                 }"
                 @mouseover="handleResetHoverEffect"
               >
-                <NcTooltip
+                <AtTooltip
                   class="w-full flex gap-2 items-center justify-between"
                   placement="right"
                   :disabled="!opt?.tooltip"
@@ -1339,7 +1339,7 @@ const unique = computed({
                           ? iconMap.cellAi
                           : opt.icon
                       "
-                      class="nc-field-type-icon w-4 h-4 !opacity-90 text-current"
+                      class="atm-field-type-icon w-4 h-4 !opacity-90 text-current"
                     />
                     <div
                       class="flex items-center gap-1"
@@ -1348,7 +1348,7 @@ const unique = computed({
                       }"
                     >
                       <span class="truncate">{{ UITypesName[opt.name] }}</span>
-                      <NcTooltip
+                      <AtTooltip
                         v-if="
                           isEdit &&
                           column &&
@@ -1361,53 +1361,53 @@ const unique = computed({
                         :title="$t('labels.convertToNewLink')"
                       >
                         <span
-                          class="!text-xs !text-nc-content-brand-hover cursor-pointer hover:underline flex-none"
+                          class="!text-xs !text-atm-content-brand-hover cursor-pointer hover:underline flex-none"
                           @click.stop="isConvertLinkV2ModalOpen = true"
                           >{{ $t('labels.legacy') }}</span
                         >
-                      </NcTooltip>
+                      </AtTooltip>
                     </div>
 
                     <div v-if="searchBasisInfoMap[opt.name]" class="flex-1 flex">
-                      <NcTooltip :title="searchBasisInfoMap[opt.name]" class="flex cursor-help">
-                        <GeneralIcon icon="info" class="flex-none h-3.5 w-3.5 text-nc-content-gray-muted" />
-                      </NcTooltip>
+                      <AtTooltip :title="searchBasisInfoMap[opt.name]" class="flex cursor-help">
+                        <GeneralIcon icon="info" class="flex-none h-3.5 w-3.5 text-atm-content-gray-muted" />
+                      </AtTooltip>
                     </div>
 
-                    <span v-if="opt.deprecated" class="!text-xs !text-nc-content-brand-hover"
+                    <span v-if="opt.deprecated" class="!text-xs !text-atm-content-brand-hover"
                       >({{ $t('general.deprecated') }})</span
                     >
                     <span
                       v-if="opt.isNew || (isAiButtonSelectOption(opt.name) && !isColumnTypeOpen)"
-                      class="nc-new-field-badge text-sm text-nc-content-purple-dark bg-nc-bg-purple-light px-2 rounded-md font-normal"
+                      class="atm-new-field-badge text-sm text-atm-content-purple-dark bg-atm-bg-purple-light px-2 rounded-md font-normal"
                       >{{ $t('general.new') }}</span
                     >
                   </div>
                   <component
                     :is="iconMap.check"
                     v-if="formState.uidt === opt.name"
-                    id="nc-selected-item-icon"
+                    id="atm-selected-item-icon"
                     class="w-4 h-4"
                     :class="{
-                      'text-nc-content-brand': !isAiMode,
-                      'text-nc-content-purple-medium': isAiMode,
+                      'text-atm-content-brand': !isAiMode,
+                      'text-atm-content-purple-medium': isAiMode,
                     }"
                   />
-                </NcTooltip>
+                </AtTooltip>
               </a-select-option>
             </a-select>
-          </NcTooltip>
+          </AtTooltip>
         </a-form-item>
       </div>
       <a-form-item v-if="enableDescription && aiAutoSuggestMode">
-        <div class="flex gap-3 text-nc-content-gray h-7 mb-1 items-center justify-between">
+        <div class="flex gap-3 text-atm-content-gray h-7 mb-1 items-center justify-between">
           <span class="text-[13px]">
             {{ $t('labels.description') }}
           </span>
 
-          <NcButton type="text" class="!h-6 !w-5" size="xsmall" @click="removeDescription">
-            <GeneralIcon icon="delete" class="text-nc-content-gray-subtle w-3.5 h-3.5" />
-          </NcButton>
+          <AtButton type="text" class="!h-6 !w-5" size="xsmall" @click="removeDescription">
+            <GeneralIcon icon="delete" class="text-atm-content-gray-subtle w-3.5 h-3.5" />
+          </AtButton>
         </div>
 
         <a-textarea
@@ -1416,9 +1416,9 @@ const unique = computed({
           :class="{
             '!min-h-[200px]': props.fromTableExplorer,
             'h-[150px] !min-h-[100px]': !props.fromTableExplorer,
-            'nc-ai-input': isAiMode,
+            'atm-ai-input': isAiMode,
           }"
-          class="nc-input-sm nc-input-text-area nc-input-shadow !text-nc-content-gray px-3 !max-h-[300px]"
+          class="atm-input-sm atm-input-text-area atm-input-shadow !text-atm-content-gray px-3 !max-h-[300px]"
           hide-details
           data-testid="create-field-description-input"
           :placeholder="$t('msg.info.enterFieldDescription')"
@@ -1484,8 +1484,8 @@ const unique = computed({
       </template>
       <template v-if="formState.uidt">
         <div v-if="formState.meta && columnToValidate.includes(formState.uidt)" class="flex items-center gap-1">
-          <NcSwitch v-model:checked="formState.meta.validate" size="small" class="nc-switch">
-            <div class="text-sm text-nc-content-gray">
+          <AtSwitch v-model:checked="formState.meta.validate" size="small" class="atm-switch">
+            <div class="text-sm text-atm-content-gray">
               {{
                 `${$t('msg.acceptOnlyValid', {
                   type:
@@ -1495,11 +1495,11 @@ const unique = computed({
                 })}`
               }}
             </div>
-          </NcSwitch>
+          </AtSwitch>
         </div>
 
         <template v-if="!readOnly && isFullUpdateAllowed">
-          <div class="nc-column-options-wrapper flex flex-col gap-4">
+          <div class="atm-column-options-wrapper flex flex-col gap-4">
             <!-- Unique Constraint Toggle -->
             <div
               v-if="
@@ -1513,7 +1513,7 @@ const unique = computed({
               "
               class="flex"
             >
-              <NcTooltip
+              <AtTooltip
                 :disabled="
                   canEnableUniqueConstraint(formState, isXcdbBase(meta?.source_id)).canEnable || onMouseOverUniqueValuesInfoIcon
                 "
@@ -1525,15 +1525,15 @@ const unique = computed({
                     {{ canEnableUniqueConstraint(formState, isXcdbBase(meta?.source_id)).reason }}
                   </div>
                 </template>
-                <NcSwitch
+                <AtSwitch
                   v-model:checked="unique"
                   size="small"
-                  class="nc-switch"
+                  class="atm-switch"
                   :disabled="!canEnableUniqueConstraint(formState, isXcdbBase(meta?.source_id)).canEnable"
                 >
-                  <div class="text-sm text-nc-content-gray inline-flex items-center gap-1">
+                  <div class="text-sm text-atm-content-gray inline-flex items-center gap-1">
                     <span>{{ $t('labels.uniqueValuesOnly') }}</span>
-                    <NcTooltip placement="right">
+                    <AtTooltip placement="right">
                       <template #title>
                         <div class="max-w-xs">
                           {{ $t('msg.info.uniqueConstraintTooltip') }}
@@ -1541,11 +1541,11 @@ const unique = computed({
                       </template>
                       <GeneralIcon
                         icon="info"
-                        class="h-3.5 w-3.5 text-nc-content-gray-muted"
+                        class="h-3.5 w-3.5 text-atm-content-gray-muted"
                         @mouseover="onMouseOverUniqueValuesInfoIcon = true"
                         @mouseleave="onMouseOverUniqueValuesInfoIcon = false"
                       />
-                    </NcTooltip>
+                    </AtTooltip>
 
                     <PaymentUpgradeBadge
                       v-if="blockUnique && !unique"
@@ -1556,13 +1556,13 @@ const unique = computed({
                       class="!font-normal !text-bodyDefaultSm"
                     />
                   </div>
-                </NcSwitch>
-              </NcTooltip>
+                </AtSwitch>
+              </AtTooltip>
             </div>
 
             <!--
             Default Value for JSON & LongText is not supported in MySQL  -->
-            <NcTooltip
+            <AtTooltip
               v-if="isTextArea(formState) && formState.meta?.richMode && formState.unique"
               :title="$t('tooltip.cannotSetDefaultValueWithUnique')"
               placement="right"
@@ -1573,13 +1573,13 @@ const unique = computed({
                   v-model:is-visible-default-value-input="isVisibleDefaultValueInput"
                 />
               </div>
-            </NcTooltip>
+            </AtTooltip>
             <LazySmartsheetColumnRichLongTextDefaultValue
               v-else-if="isTextArea(formState) && formState.meta?.richMode"
               v-model:value="formState"
               v-model:is-visible-default-value-input="isVisibleDefaultValueInput"
             />
-            <NcTooltip
+            <AtTooltip
               v-else-if="
                 !isVirtualCol(formState) &&
                 !isAttachment(formState) &&
@@ -1599,7 +1599,7 @@ const unique = computed({
                   v-model:is-visible-default-value-input="isVisibleDefaultValueInput"
                 />
               </div>
-            </NcTooltip>
+            </AtTooltip>
             <LazySmartsheetColumnDefaultValue
               v-else-if="
                 !isVirtualCol(formState) &&
@@ -1623,10 +1623,10 @@ const unique = computed({
                 !(!appInfo.ee && isAttachment(formState)) &&
                 (!appInfo.ee || (appInfo.ee && !isXcdbBase(meta?.source_id) && formState.uidt === UITypes.SpecificDBType))
               "
-              class="text-xs text-nc-content-gray-disabled flex items-center justify-end"
+              class="text-xs text-atm-content-gray-disabled flex items-center justify-end"
             >
               <div
-                class="nc-more-options flex items-center gap-1 cursor-pointer select-none"
+                class="atm-more-options flex items-center gap-1 cursor-pointer select-none"
                 @click="advancedOptions = !advancedOptions"
               >
                 {{ advancedOptions ? $t('general.hideAll') : $t('general.showMore') }}
@@ -1654,14 +1654,14 @@ const unique = computed({
             '!pb-4': embedMode,
           }"
         >
-          <div class="flex gap-3 text-nc-content-gray h-7 mb-1 items-center justify-between">
+          <div class="flex gap-3 text-atm-content-gray h-7 mb-1 items-center justify-between">
             <span class="text-[13px]">
               {{ $t('labels.description') }}
             </span>
 
-            <NcButton type="text" class="!h-6 !w-5" size="xsmall" @click="removeDescription">
-              <GeneralIcon icon="delete" class="text-nc-content-gray-subtle w-3.5 h-3.5" />
-            </NcButton>
+            <AtButton type="text" class="!h-6 !w-5" size="xsmall" @click="removeDescription">
+              <GeneralIcon icon="delete" class="text-atm-content-gray-subtle w-3.5 h-3.5" />
+            </AtButton>
           </div>
 
           <a-textarea
@@ -1670,9 +1670,9 @@ const unique = computed({
             :class="{
               '!min-h-[200px]': props.fromTableExplorer,
               'h-[150px] !min-h-[100px]': !props.fromTableExplorer,
-              'nc-ai-input': isAiMode,
+              'atm-ai-input': isAiMode,
             }"
-            class="nc-input-sm nc-input-text-area nc-input-shadow !text-nc-content-gray px-3 !max-h-[300px]"
+            class="atm-input-sm atm-input-text-area atm-input-shadow !text-atm-content-gray px-3 !max-h-[300px]"
             hide-details
             data-testid="create-field-description-input"
             :placeholder="$t('msg.info.enterFieldDescription')"
@@ -1686,34 +1686,34 @@ const unique = computed({
               '!pb-4': embedMode,
             }"
           >
-            <NcButton v-if="!isSystem" size="small" type="text" @click.stop="triggerDescriptionEnable">
-              <div class="flex !text-nc-content-gray-subtle items-center gap-2">
+            <AtButton v-if="!isSystem" size="small" type="text" @click.stop="triggerDescriptionEnable">
+              <div class="flex !text-atm-content-gray-subtle items-center gap-2">
                 <GeneralIcon icon="plus" class="h-4 w-4" />
 
                 <span class="first-letter:capitalize">
                   {{ $t('labels.addDescription').toLowerCase() }}
                 </span>
               </div>
-            </NcButton>
+            </AtButton>
           </a-form-item>
         </template>
 
         <template v-else>
           <div
-            class="flex items-center justify-between gap-2 empty:hidden sticky bottom-0 z-10 bg-nc-bg-default px-5 pb-5 -mx-5"
+            class="flex items-center justify-between gap-2 empty:hidden sticky bottom-0 z-10 bg-atm-bg-default px-5 pb-5 -mx-5"
             :class="{
-              'border-t-1 border-nc-border-gray-medium pt-3': isScrollEnabled,
+              'border-t-1 border-atm-border-gray-medium pt-3': isScrollEnabled,
             }"
           >
-            <NcButton v-if="!enableDescription && !isSystem" size="small" type="text" @click.stop="triggerDescriptionEnable">
-              <div class="flex !text-nc-content-gray-subtle items-center gap-2">
+            <AtButton v-if="!enableDescription && !isSystem" size="small" type="text" @click.stop="triggerDescriptionEnable">
+              <div class="flex !text-atm-content-gray-subtle items-center gap-2">
                 <GeneralIcon icon="plus" class="h-4 w-4" />
 
                 <span class="first-letter:capitalize">
                   {{ $t('labels.addDescription').toLowerCase() }}
                 </span>
               </div>
-            </NcButton>
+            </AtButton>
             <div v-else-if="!aiAutoSuggestMode"></div>
 
             <a-form-item v-if="!aiAutoSuggestMode">
@@ -1724,12 +1724,12 @@ const unique = computed({
                 }"
               >
                 <!-- Cancel -->
-                <NcButton size="small" html-type="button" type="secondary" :disabled="saving" @click="emit('cancel')">
+                <AtButton size="small" html-type="button" type="secondary" :disabled="saving" @click="emit('cancel')">
                   {{ $t('general.cancel') }}
-                </NcButton>
+                </AtButton>
 
                 <!-- Save -->
-                <NcButton
+                <AtButton
                   html-type="submit"
                   type="primary"
                   :theme="isAiMode ? 'ai' : 'default'"
@@ -1738,14 +1738,14 @@ const unique = computed({
                   size="small"
                   :label="submitBtnLabel.label"
                   :loading-label="submitBtnLabel.loadingLabel"
-                  data-testid="nc-field-modal-submit-btn"
+                  data-testid="atm-field-modal-submit-btn"
                   @click.prevent="onSubmit"
                 >
                   {{ submitBtnLabel.label }}
                   <template #loading>
                     {{ submitBtnLabel.loadingLabel }}
                   </template>
-                </NcButton>
+                </AtButton>
               </div>
             </a-form-item>
           </div>
@@ -1760,7 +1760,7 @@ const unique = computed({
          is set, which is always true while editing). -->
     <div
       v-if="isEdit && !embedMode && (interfacePageDataApi || props.interfaceNote)"
-      class="nc-interface-field-edit-note -mx-5 mt-4 px-5 py-3 flex items-start gap-2 bg-nc-bg-gray-light rounded-b-2xl border-t border-nc-border-gray-medium text-bodySm text-nc-content-gray-subtle"
+      class="atm-interface-field-edit-note -mx-5 mt-4 px-5 py-3 flex items-start gap-2 bg-atm-bg-gray-light rounded-b-2xl border-t border-atm-border-gray-medium text-bodySm text-atm-content-gray-subtle"
     >
       <GeneralIcon icon="info" class="flex-none w-3.5 h-3.5 mt-0.5" />
       <div>
@@ -1772,47 +1772,47 @@ const unique = computed({
 </template>
 
 <style lang="scss">
-.nc-dropdown-column-type {
+.atm-dropdown-column-type {
   .ant-select-item-option-active-selected {
-    @apply !bg-nc-bg-gray-light;
+    @apply !bg-atm-bg-gray-light;
   }
 }
 
-.nc-edit-or-add-provider-wrapper .nc-ai-mode {
-  .nc-fields-input,
-  .nc-column-name-input {
+.atm-edit-or-add-provider-wrapper .atm-ai-mode {
+  .atm-fields-input,
+  .atm-column-name-input {
   }
 }
 </style>
 
 <style lang="scss" scoped>
-.nc-input-text-area {
-  @apply !text-nc-content-gray;
+.atm-input-text-area {
+  @apply !text-atm-content-gray;
   padding-block: 8px !important;
 }
 
-.nc-fields-input {
+.atm-fields-input {
   &::placeholder {
     @apply font-normal;
   }
 }
 
-:deep(.ant-select.nc-column-type-input) {
-  .nc-new-field-badge {
+:deep(.ant-select.atm-column-type-input) {
+  .atm-new-field-badge {
     @apply hidden;
   }
 }
 
-.nc-column-name-input,
-:deep(.nc-formula-input),
+.atm-column-name-input,
+:deep(.atm-formula-input),
 :deep(.ant-form-item-control-input-content > input.ant-input) {
   &:not(:hover):not(:focus) {
     box-shadow: 0px 0px 4px 0px rgba(var(--rgb-base), 0.08);
   }
 }
 
-:deep(.nc-color-picker-dropdown-trigger),
-:deep(.nc-default-value-wrapper) {
+:deep(.atm-color-picker-dropdown-trigger),
+:deep(.atm-default-value-wrapper) {
   @apply transition-all duration-0.3s;
 
   &:not(:hover):not(:focus-within):not(.shadow-selected) {
@@ -1832,7 +1832,7 @@ const unique = computed({
   }
 
   &.ant-radio-wrapper-disabled {
-    @apply pointer-events-none !bg-nc-bg-gray-light dark:!bg-nc-bg-gray-medium;
+    @apply pointer-events-none !bg-atm-bg-gray-light dark:!bg-atm-bg-gray-medium;
     box-shadow: none;
 
     &:hover {
@@ -1852,7 +1852,7 @@ const unique = computed({
 :deep(.ant-select) {
   &:not(.ant-select-borderless):not(.ant-select-disabled):not(:hover):not(.ant-select-focused) .ant-select-selector,
   &:not(.ant-select-borderless):not(.ant-select-disabled):hover.ant-select-disabled .ant-select-selector {
-    @apply !border-nc-border-gray-medium;
+    @apply !border-atm-border-gray-medium;
     box-shadow: 0px 0px 4px 0px rgba(var(--rgb-base), 0.08);
   }
 
@@ -1866,7 +1866,7 @@ const unique = computed({
 }
 
 :deep(.ant-form-item-label > label) {
-  @apply !text-small !leading-[18px] mb-2 text-nc-content-gray-subtle flex font-normal;
+  @apply !text-small !leading-[18px] mb-2 text-atm-content-gray-subtle flex font-normal;
 
   &.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
     @apply content-[''] m-0;
@@ -1874,7 +1874,7 @@ const unique = computed({
 }
 
 :deep(.ant-form-item-label) {
-  @apply !pb-0 text-small leading-[18px] text-nc-content-gray-subtle font-normal;
+  @apply !pb-0 text-small leading-[18px] text-atm-content-gray-subtle font-normal;
 }
 
 :deep(.ant-form-item-control-input) {
@@ -1905,11 +1905,11 @@ const unique = computed({
   @apply !rounded-lg !bg-transparent !border-none !p-0;
 
   .ant-alert-message {
-    @apply text-sm text-nc-content-gray font-weight-600;
+    @apply text-sm text-atm-content-gray font-weight-600;
   }
 
   .ant-alert-description {
-    @apply text-small text-nc-content-gray-muted font-weight-500;
+    @apply text-small text-atm-content-gray-muted font-weight-500;
   }
 }
 
@@ -1921,10 +1921,10 @@ const unique = computed({
 
 :deep(input::placeholder),
 :deep(textarea::placeholder) {
-  @apply text-nc-content-gray-muted;
+  @apply text-atm-content-gray-muted;
 }
 
-.nc-column-options-wrapper {
+.atm-column-options-wrapper {
   &:empty {
     @apply hidden;
   }

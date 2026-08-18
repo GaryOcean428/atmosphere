@@ -4,7 +4,7 @@ import { FormColumnsService } from '~/services/form-columns.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 class FormColumnUpdateReqType {}
 
@@ -19,11 +19,11 @@ export class FormColumnsController {
   ])
   @Acl('formViewUpdate')
   async columnUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('formViewColumnId') formViewColumnId: string,
     @Body() formViewColumnbody: FormColumnUpdateReqType,
 
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.formColumnsService.columnUpdate(context, {
       formViewColumnId,

@@ -3,7 +3,7 @@
 // import ses from '../../v1-legacy/plugins/ses';
 
 const up = async (knex) => {
-  await knex.schema.createTable('nc_projects', (table) => {
+  await knex.schema.createTable('atm_projects', (table) => {
     table.string('id', 128).primary();
     table.string('title');
     table.string('status');
@@ -13,7 +13,7 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex.schema.createTable('nc_roles', (table) => {
+  await knex.schema.createTable('atm_roles', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias').defaultTo('db');
@@ -23,7 +23,7 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex('nc_roles').insert([
+  await knex('atm_roles').insert([
     {
       db_alias: '',
       project_id: '',
@@ -70,7 +70,7 @@ const up = async (knex) => {
     // },
   ]);
 
-  await knex.schema.createTable('nc_hooks', (table) => {
+  await knex.schema.createTable('atm_hooks', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias').defaultTo('db');
@@ -99,12 +99,12 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex('nc_hooks').insert({
+  await knex('atm_hooks').insert({
     // url: 'http://localhost:4000/auth/hook',
     type: 'AUTH_MIDDLEWARE',
   });
 
-  await knex.schema.createTable('nc_store', (table) => {
+  await knex.schema.createTable('atm_store', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias').defaultTo('db');
@@ -116,27 +116,27 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex('nc_store').insert({
-    key: 'NC_DEBUG',
+  await knex('atm_store').insert({
+    key: 'ATMOSPHERE_DEBUG',
     value: JSON.stringify({
-      'nc:app': false,
-      'nc:api:rest': false,
-      'nc:api:source': false,
-      'nc:api:gql': false,
-      'nc:api:grpc': false,
-      'nc:migrator': false,
-      'nc:datamapper': false,
+      'atm:app': false,
+      'atm:api:rest': false,
+      'atm:api:source': false,
+      'atm:api:gql': false,
+      'atm:api:grpc': false,
+      'atm:migrator': false,
+      'atm:datamapper': false,
     }),
     db_alias: '',
   });
 
-  await knex('nc_store').insert({
-    key: 'NC_PROJECT_COUNT',
+  await knex('atm_store').insert({
+    key: 'ATMOSPHERE_PROJECT_COUNT',
     value: '0',
     db_alias: '',
   });
 
-  await knex.schema.createTable('nc_cron', (table) => {
+  await knex.schema.createTable('atm_cron', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias').defaultTo('db');
@@ -157,7 +157,7 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex.schema.createTable('nc_acl', (table) => {
+  await knex.schema.createTable('atm_acl', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias').defaultTo('db');
@@ -167,7 +167,7 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex.schema.createTable('nc_models', (table) => {
+  await knex.schema.createTable('atm_models', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias').defaultTo('db');
@@ -193,7 +193,7 @@ const up = async (knex) => {
     table.index(['db_alias', 'title']);
   });
 
-  await knex.schema.createTable('nc_relations', (table) => {
+  await knex.schema.createTable('atm_relations', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias');
@@ -215,7 +215,7 @@ const up = async (knex) => {
     table.index(['db_alias', 'tn']);
   });
 
-  await knex.schema.createTable('nc_routes', (table) => {
+  await knex.schema.createTable('atm_routes', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias').defaultTo('db');
@@ -237,7 +237,7 @@ const up = async (knex) => {
     table.index(['db_alias', 'title', 'tn']);
   });
 
-  await knex.schema.createTable('nc_resolvers', (table) => {
+  await knex.schema.createTable('atm_resolvers', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias').defaultTo('db');
@@ -251,7 +251,7 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex.schema.createTable('nc_loaders', (table) => {
+  await knex.schema.createTable('atm_loaders', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias').defaultTo('db');
@@ -264,7 +264,7 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex.schema.createTable('nc_rpc', (table) => {
+  await knex.schema.createTable('atm_rpc', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias').defaultTo('db');
@@ -284,8 +284,8 @@ const up = async (knex) => {
     // table.text('placeholder', 'text');
     table.timestamps();
   });
-  await knex.schema.createTable('nc_projects_users', (table) => {
-    table.string('project_id').index(); // .references('id').inTable('nc_projects')
+  await knex.schema.createTable('atm_projects_users', (table) => {
+    table.string('project_id').index(); // .references('id').inTable('atm_projects')
     // todo: foreign key
     table.integer('user_id').unsigned().index(); //.references('id').inTable('xc_users')
     table.text('roles');
@@ -293,7 +293,7 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex.schema.createTable('nc_shared_views', (table) => {
+  await knex.schema.createTable('atm_shared_views', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias');
@@ -307,7 +307,7 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex.schema.createTable('nc_disabled_models_for_role', (table) => {
+  await knex.schema.createTable('atm_disabled_models_for_role', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias', 45);
@@ -328,7 +328,7 @@ const up = async (knex) => {
     );
   });
 
-  await knex.schema.createTable('nc_plugins', (table) => {
+  await knex.schema.createTable('atm_plugins', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias');
@@ -352,7 +352,7 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  // await knex('nc_plugins').insert([
+  // await knex('atm_plugins').insert([
   //   googleAuth,
   //   ses,
   //   cache,
@@ -360,7 +360,7 @@ const up = async (knex) => {
   //   // brand,
   // ]);
 
-  await knex.schema.createTable('nc_audit', (table) => {
+  await knex.schema.createTable('atm_audit', (table) => {
     table.increments();
     table.string('user');
     table.string('ip');
@@ -376,13 +376,13 @@ const up = async (knex) => {
     table.text('details');
     table.index(
       ['db_alias', 'project_id', 'model_name', 'model_id'],
-      '`nc_audit_index`',
+      '`atm_audit_index`',
     );
 
     table.timestamps();
   });
 
-  await knex.schema.createTable('nc_migrations', (table) => {
+  await knex.schema.createTable('atm_migrations', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias');
@@ -399,7 +399,7 @@ const up = async (knex) => {
     table.timestamps();
   });
 
-  await knex.schema.createTable('nc_api_tokens', (table) => {
+  await knex.schema.createTable('atm_api_tokens', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias');
@@ -413,25 +413,25 @@ const up = async (knex) => {
 };
 
 const down = async (knex) => {
-  await knex.schema.dropTable('nc_plugins');
-  await knex.schema.dropTable('nc_disabled_models_for_role');
-  await knex.schema.dropTable('nc_shared_views');
-  await knex.schema.dropTable('nc_projects_users');
-  await knex.schema.dropTable('nc_projects');
-  await knex.schema.dropTable('nc_roles');
-  await knex.schema.dropTable('nc_hooks');
-  await knex.schema.dropTable('nc_store');
-  await knex.schema.dropTable('nc_cron');
-  await knex.schema.dropTable('nc_acl');
-  await knex.schema.dropTable('nc_models');
-  await knex.schema.dropTable('nc_relations');
-  await knex.schema.dropTable('nc_routes');
-  await knex.schema.dropTable('nc_resolvers');
-  await knex.schema.dropTable('nc_loaders');
-  await knex.schema.dropTable('nc_rpc');
-  await knex.schema.dropTable('nc_audit');
-  await knex.schema.dropTable('nc_migrations');
-  await knex.schema.dropTable('nc_api_tokens');
+  await knex.schema.dropTable('atm_plugins');
+  await knex.schema.dropTable('atm_disabled_models_for_role');
+  await knex.schema.dropTable('atm_shared_views');
+  await knex.schema.dropTable('atm_projects_users');
+  await knex.schema.dropTable('atm_projects');
+  await knex.schema.dropTable('atm_roles');
+  await knex.schema.dropTable('atm_hooks');
+  await knex.schema.dropTable('atm_store');
+  await knex.schema.dropTable('atm_cron');
+  await knex.schema.dropTable('atm_acl');
+  await knex.schema.dropTable('atm_models');
+  await knex.schema.dropTable('atm_relations');
+  await knex.schema.dropTable('atm_routes');
+  await knex.schema.dropTable('atm_resolvers');
+  await knex.schema.dropTable('atm_loaders');
+  await knex.schema.dropTable('atm_rpc');
+  await knex.schema.dropTable('atm_audit');
+  await knex.schema.dropTable('atm_migrations');
+  await knex.schema.dropTable('atm_api_tokens');
 };
 
 export { up, down };

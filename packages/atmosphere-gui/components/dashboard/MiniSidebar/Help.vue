@@ -27,9 +27,9 @@ const { isChatWootEnabled } = useProvideChatwoot()
 
 const { isModalVisible: isChatVisible } = useChatWoot()
 
-// White-label may override the help-menu support email (falls back to NocoDB
+// White-label may override the help-menu support email (falls back to Atmosphere
 // support when unset); the rest of the help menu is unchanged — enterprise
-// support/docs continue to route through NocoDB.
+// support/docs continue to route through Atmosphere.
 const { isWhiteLabelled, config } = useBranding()
 
 const visible = ref(false)
@@ -56,8 +56,8 @@ const helpItems = computed<CategoryItemType[]>(() => {
         {
           title: t('labels.documentation'),
           icon: 'file',
-          e: 'e:nocodb:docs-open',
-          link: 'https://nocodb.com/docs/product-docs',
+          e: 'e:atmosphere:docs-open',
+          link: 'https://atmosphere.dev/docs/product-docs',
         },
         {
           title: t('labels.apis'),
@@ -67,23 +67,23 @@ const helpItems = computed<CategoryItemType[]>(() => {
           subItems: [
             {
               title: t('labels.dataApiV3'),
-              e: 'c:nocodb:data-api-v3-open',
-              link: 'https://nocodb.com/apis/v3/data',
+              e: 'c:atmosphere:data-api-v3-open',
+              link: 'https://atmosphere.dev/apis/v3/data',
             },
             {
               title: t('labels.metaApiV3'),
-              e: 'c:nocodb:meta-api-v3-open',
-              link: 'https://nocodb.com/apis/v3/meta',
+              e: 'c:atmosphere:meta-api-v3-open',
+              link: 'https://atmosphere.dev/apis/v3/meta',
             },
             {
               title: t('labels.dataApiV2'),
-              e: 'c:nocodb:data-api-open',
-              link: 'https://nocodb.com/apis/v2/data',
+              e: 'c:atmosphere:data-api-open',
+              link: 'https://atmosphere.dev/apis/v2/data',
             },
             {
               title: t('labels.metaApiV2'),
-              e: 'c:nocodb:meta-api-open',
-              link: 'https://nocodb.com/apis/v2/meta',
+              e: 'c:atmosphere:meta-api-open',
+              link: 'https://atmosphere.dev/apis/v2/meta',
             },
           ],
         },
@@ -95,20 +95,20 @@ const helpItems = computed<CategoryItemType[]>(() => {
         {
           title: t('title.forum'),
           icon: 'ncDiscordForum',
-          e: 'c:nocodb:forum-open',
-          link: 'https://community.nocodb.com/',
+          e: 'c:atmosphere:forum-open',
+          link: 'https://community.atmosphere.dev/',
         },
         {
           title: t('general.youtube'),
           icon: 'ncYoutube',
-          e: 'c:nocodb:youtube-open',
-          link: 'https://www.youtube.com/@nocodb',
+          e: 'c:atmosphere:youtube-open',
+          link: 'https://www.youtube.com/@atmosphere',
         },
         {
           title: 'X',
           icon: 'ncLogoTwitter',
-          link: 'https://twitter.com/nocodb',
-          e: 'c:nocodb:twitter',
+          link: 'https://twitter.com/atmosphere',
+          e: 'c:atmosphere:twitter',
         },
       ],
     },
@@ -116,9 +116,9 @@ const helpItems = computed<CategoryItemType[]>(() => {
       category: t('general.contactSupport'),
       items: [
         {
-          title: t('labels.chatWithNocoDBSupport'),
+          title: t('labels.chatWithAtmosphereSupport'),
           icon: 'ncSupportAgent',
-          e: 'c:nocodb:chat-support',
+          e: 'c:atmosphere:chat-support',
           link: '',
           onClick: toggleChatSupport,
           // isChatWootEnabled is already false when white-labelled.
@@ -126,10 +126,10 @@ const helpItems = computed<CategoryItemType[]>(() => {
         },
         {
           // White-label may override the support contact; otherwise fall back to
-          // NocoDB support — enterprise support routes through NocoDB regardless.
-          title: isWl && supportEmail ? supportEmail : 'support@nocodb.com',
+          // Atmosphere support — enterprise support routes through Atmosphere regardless.
+          title: isWl && supportEmail ? supportEmail : 'support@atmosphere.dev',
           icon: 'ncMail',
-          e: 'c:nocodb:contact-us-mail-copy',
+          e: 'c:atmosphere:contact-us-mail-copy',
           link: '',
           copyBtn: true,
           tooltip: t('labels.clickToCopy'),
@@ -143,8 +143,8 @@ const helpItems = computed<CategoryItemType[]>(() => {
         {
           title: t('general.changelog'),
           icon: 'ncList',
-          e: 'c:nocodb:changelog-open',
-          link: 'https://nocodb.com/changelog',
+          e: 'c:atmosphere:changelog-open',
+          link: 'https://atmosphere.dev/changelog',
         },
       ],
       hidden: !!isMobileMode.value,
@@ -175,41 +175,41 @@ const openUrl = (item: ItemType) => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="visible"
     placement="rightBottom"
-    overlay-class-name="!min-w-55 nc-help-menu-dropdown"
+    overlay-class-name="!min-w-55 atm-help-menu-dropdown"
     :align="{ offset: [0, 3] }"
   >
     <slot />
 
     <template #overlay>
-      <NcMenu variant="small">
+      <AtMenu variant="small">
         <template v-for="(category, idx) of helpItems" :key="idx">
           <template v-if="!category.hidden">
-            <NcDivider v-if="idx !== 0" />
-            <NcMenuItemLabel>
+            <AtDivider v-if="idx !== 0" />
+            <AtMenuItemLabel>
               <span class="normal-case">
                 {{ category.category }}
               </span>
-            </NcMenuItemLabel>
+            </AtMenuItemLabel>
 
             <template v-for="(item, i) of category.items" :key="i">
               <template v-if="!item.hidden">
-                <NcSubMenu v-if="item.subItems" class="py-0" variant="small">
+                <AtSubMenu v-if="item.subItems" class="py-0" variant="small">
                   <template #title>
                     <GeneralIcon v-if="item.icon" :icon="item.icon" class="h-4 w-4" />
                     {{ item.title }}
                   </template>
                   <template v-for="(subItem, j) of item.subItems" :key="j">
-                    <NcMenuItem v-if="!subItem.hidden" @click="openUrl(subItem)">
+                    <AtMenuItem v-if="!subItem.hidden" @click="openUrl(subItem)">
                       <GeneralIcon v-if="subItem.icon" :icon="subItem.icon" class="h-4 w-4" />
                       {{ subItem.title }}
-                    </NcMenuItem>
+                    </AtMenuItem>
                   </template>
-                </NcSubMenu>
-                <NcTooltip v-else :title="item.tooltip" :disabled="!item.tooltip || isMobileMode" placement="top" hide-on-click>
-                  <NcMenuItem @click="openUrl(item)">
+                </AtSubMenu>
+                <AtTooltip v-else :title="item.tooltip" :disabled="!item.tooltip || isMobileMode" placement="top" hide-on-click>
+                  <AtMenuItem @click="openUrl(item)">
                     <GeneralIcon v-if="item.icon" :icon="item.icon" class="h-4 w-4" />
                     {{ item.title }}
 
@@ -220,19 +220,19 @@ const openUrl = (item: ItemType) => {
                       :content="item.title"
                       :show-toast="false"
                     />
-                  </NcMenuItem>
-                </NcTooltip>
+                  </AtMenuItem>
+                </AtTooltip>
               </template>
             </template>
           </template>
         </template>
-      </NcMenu>
+      </AtMenu>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style lang="scss">
-.nc-help-menu-dropdown.nc-help-menu-dropdown {
+.atm-help-menu-dropdown.atm-help-menu-dropdown {
   overflow: visible !important;
 
   &::before {
@@ -244,7 +244,7 @@ const openUrl = (item: ItemType) => {
     height: 0;
     border-top: 7px solid transparent;
     border-bottom: 7px solid transparent;
-    border-right: 7px solid var(--nc-border-gray-medium);
+    border-right: 7px solid var(--atm-border-gray-medium);
   }
 
   &::after {
@@ -256,7 +256,7 @@ const openUrl = (item: ItemType) => {
     height: 0;
     border-top: 6px solid transparent;
     border-bottom: 6px solid transparent;
-    border-right: 6px solid var(--nc-bg-default);
+    border-right: 6px solid var(--atm-bg-default);
   }
 }
 </style>

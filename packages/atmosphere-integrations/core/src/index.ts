@@ -5,7 +5,7 @@ export * from './utils/manifest';
 export * from './utils/axios';
 export * from './utils/externalDbSsrf';
 export * from './utils/dbSsl';
-export * from './nocodb';
+export * from './atmosphere';
 export * from './sync';
 export * from './auth';
 export * from './ai';

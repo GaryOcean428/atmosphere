@@ -12,9 +12,9 @@ const isOpen = ref(true)
       <slot name="title">
         <span>{{ title }}</span>
       </slot>
-      <NcButton size="xsmall" type="text" class="!w-7 !h-7" @click.stop="isOpen = !isOpen">
+      <AtButton size="xsmall" type="text" class="!w-7 !h-7" @click.stop="isOpen = !isOpen">
         <GeneralIcon :icon="isOpen ? 'ncChevronUp' : 'ncChevronDown'" class="w-4 h-4" />
-      </NcButton>
+      </AtButton>
     </header>
     <slot v-if="isOpen"></slot>
   </div>
@@ -22,7 +22,7 @@ const isOpen = ref(true)
 
 <style lang="scss" scoped>
 .grouped-settings {
-  @apply gap-4 py-4 px-5 border-b-1 border-nc-border-gray-medium;
+  @apply gap-4 py-4 px-5 border-b-1 border-atm-border-gray-medium;
   header > span {
     @apply text-[16px] font-700;
   }

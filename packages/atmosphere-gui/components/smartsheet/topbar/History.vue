@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PlanFeatureTypes } from 'nocodb-sdk'
+import { PlanFeatureTypes } from 'atmosphere-sdk'
 
 const route = useRoute()
 
@@ -59,92 +59,92 @@ function onTrashClick() {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-if="showHistoryTrigger"
     v-model:visible="visible"
     placement="bottomRight"
     overlay-class-name="!min-w-55"
     :align="{ offset: [0, 6] }"
   >
-    <NcTooltip placement="bottom" :disabled="visible">
+    <AtTooltip placement="bottom" :disabled="visible">
       <template #title>{{ $t('labels.history') }}</template>
-      <NcButton
+      <AtButton
         v-e="['c:topbar:history']"
         type="text"
         size="small"
-        class="nc-topbar-history-btn"
-        :class="{ '!bg-nc-bg-brand !text-nc-content-brand': visible }"
-        data-testid="nc-topbar-history-btn"
+        class="atm-topbar-history-btn"
+        :class="{ '!bg-atm-bg-brand !text-atm-content-brand': visible }"
+        data-testid="atm-topbar-history-btn"
       >
         <GeneralIcon icon="ncHistory" class="w-4 h-4 !stroke-transparent" />
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
 
     <template #overlay>
-      <NcMenu variant="small">
-        <NcMenuItemLabel>
+      <AtMenu variant="small">
+        <AtMenuItemLabel>
           <span class="normal-case">
             {{ $t('labels.history') }}
           </span>
-        </NcMenuItemLabel>
+        </AtMenuItemLabel>
 
-        <NcTooltip v-if="canSeeUndoRedo" placement="left" :disabled="!isDisabledByEnv">
+        <AtTooltip v-if="canSeeUndoRedo" placement="left" :disabled="!isDisabledByEnv">
           <template #title>{{ $t('labels.undoRedoDisabledByAdmin') }}</template>
-          <NcMenuItem
+          <AtMenuItem
             v-for="action in undoRedoActions"
             :key="action.direction"
-            :data-testid="`nc-topbar-history-menu-${action.direction}`"
+            :data-testid="`atm-topbar-history-menu-${action.direction}`"
             inner-class="w-full"
             :disabled="isDisabledByEnv || isUndoRedoInFlight"
             @click="action.handler"
           >
             <div v-e="[`c:topbar:history-menu:${action.direction}`]" class="flex gap-2 items-center w-full">
               <GeneralLoader v-if="inFlightDirection === action.direction" class="h-4 w-4" />
-              <GeneralIcon v-else :icon="action.icon" class="h-4 w-4 text-nc-content-gray-subtle2" />
+              <GeneralIcon v-else :icon="action.icon" class="h-4 w-4 text-atm-content-gray-subtle2" />
               <div class="flex-1">{{ $t(action.labelKey) }}</div>
-              <span class="nc-shortcut-hint">{{ action.shortcut }}</span>
+              <span class="atm-shortcut-hint">{{ action.shortcut }}</span>
             </div>
-          </NcMenuItem>
-        </NcTooltip>
+          </AtMenuItem>
+        </AtTooltip>
 
         <PaymentUpgradeBadgeProvider v-if="canSeeSnapshots" :feature="PlanFeatureTypes.FEATURE_EE_CORE">
           <template #default="{ click }">
-            <NcMenuItem
-              data-testid="nc-topbar-history-menu-snapshots"
+            <AtMenuItem
+              data-testid="atm-topbar-history-menu-snapshots"
               inner-class="w-full"
               @click="click(PlanFeatureTypes.FEATURE_EE_CORE, isEeUI ? openSnapshots : undefined)"
             >
               <div v-e="['c:topbar:history-menu:snapshots']" class="flex gap-2 items-center w-full">
-                <GeneralIcon icon="camera" class="h-4 w-4 text-nc-content-gray-subtle2" />
+                <GeneralIcon icon="camera" class="h-4 w-4 text-atm-content-gray-subtle2" />
                 <div class="flex-1">{{ $t('labels.snapshots') }}</div>
                 <LazyPaymentUpgradeBadge :feature="PlanFeatureTypes.FEATURE_EE_CORE" show-as-lock />
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
           </template>
         </PaymentUpgradeBadgeProvider>
 
         <PaymentUpgradeBadgeProvider v-if="canSeeBaseTrash" :feature="PlanFeatureTypes.FEATURE_EE_CORE">
           <template #default="{ click }">
-            <NcMenuItem
-              data-testid="nc-topbar-history-menu-trash"
+            <AtMenuItem
+              data-testid="atm-topbar-history-menu-trash"
               inner-class="w-full"
               @click="click(PlanFeatureTypes.FEATURE_EE_CORE, isEeUI ? onTrashClick : undefined)"
             >
               <div v-e="['c:topbar:history-menu:trash']" class="flex gap-2 items-center w-full">
-                <GeneralIcon icon="ncTrash2" class="h-4 w-4 text-nc-content-gray-subtle2" />
+                <GeneralIcon icon="ncTrash2" class="h-4 w-4 text-atm-content-gray-subtle2" />
                 <div class="flex-1">{{ $t('title.baseTrash') }}</div>
                 <LazyPaymentUpgradeBadge :feature="PlanFeatureTypes.FEATURE_EE_CORE" show-as-lock />
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
           </template>
         </PaymentUpgradeBadgeProvider>
-      </NcMenu>
+      </AtMenu>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style scoped lang="scss">
-.nc-shortcut-hint {
-  @apply text-nc-content-gray-muted text-bodySm tracking-wide;
+.atm-shortcut-hint {
+  @apply text-atm-content-gray-muted text-bodySm tracking-wide;
 }
 </style>

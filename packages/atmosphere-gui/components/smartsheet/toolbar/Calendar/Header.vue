@@ -122,13 +122,13 @@ const plainMonthParts = computed(() => {
 
 <template>
   <div class="flex gap-1">
-    <NcDropdown
+    <AtDropdown
       v-model:visible="calendarRangeDropdown"
       :auto-close="false"
       :trigger="['click']"
-      :overlay-class-name="props.plain ? 'nc-interface-calendar-header-overlay' : undefined"
+      :overlay-class-name="props.plain ? 'atm-interface-calendar-header-overlay' : undefined"
     >
-      <NcButton
+      <AtButton
         :class="[
           props.plain ? '!px-1' : 'prev-next-btn',
           props.plain
@@ -155,11 +155,11 @@ const plainMonthParts = computed(() => {
         <div class="flex w-full px-1 items-center justify-between gap-1">
           <span
             v-if="plainMonthParts"
-            class="inline-flex items-baseline gap-1.5 text-[16px] text-nc-content-gray whitespace-nowrap"
-            data-testid="nc-calendar-active-date"
+            class="inline-flex items-baseline gap-1.5 text-[16px] text-atm-content-gray whitespace-nowrap"
+            data-testid="atm-calendar-active-date"
           >
             <span class="font-bold">{{ plainMonthParts.month }}</span>
-            <span class="font-medium text-nc-content-gray-subtle">{{ plainMonthParts.year }}</span>
+            <span class="font-medium text-atm-content-gray-subtle">{{ plainMonthParts.year }}</span>
           </span>
           <span
             v-else
@@ -174,22 +174,22 @@ const plainMonthParts = computed(() => {
               'font-bold text-[13px]': !props.plain,
               '!text-[16px] font-bold': props.plain,
             }"
-            class="text-center text-nc-content-gray"
-            data-testid="nc-calendar-active-date"
+            class="text-center text-atm-content-gray"
+            data-testid="atm-calendar-active-date"
             >{{ headerText }}</span
           >
           <div class="flex-1" />
           <component
             :is="iconMap.arrowDown"
-            class="text-nc-content-gray-subtle"
+            class="text-atm-content-gray-subtle"
             :class="props.plain ? 'h-3.5 min-w-3.5 opacity-70' : 'h-4 min-w-4'"
           />
         </div>
-      </NcButton>
+      </AtButton>
 
       <template #overlay>
         <div v-if="calendarRangeDropdown" class="w-[287px] pb-2" @click.stop>
-          <NcDateWeekSelector
+          <AtDateWeekSelector
             v-if="activeCalendarView === ('day' as const)"
             v-model:active-dates="activeDates"
             v-model:page-date="pageDate"
@@ -198,7 +198,7 @@ const plainMonthParts = computed(() => {
             header="v2"
             size="medium"
           />
-          <NcDateWeekSelector
+          <AtDateWeekSelector
             v-else-if="isDayAnchoredMode"
             v-model:active-dates="activeDates"
             v-model:page-date="pageDate"
@@ -207,7 +207,7 @@ const plainMonthParts = computed(() => {
             header="v2"
             size="medium"
           />
-          <NcDateWeekSelector
+          <AtDateWeekSelector
             v-else-if="activeCalendarView === ('week' as const) || isMultiWeekRange"
             v-model:active-dates="activeDates"
             v-model:page-date="pageDate"
@@ -217,7 +217,7 @@ const plainMonthParts = computed(() => {
             header="v2"
             size="medium"
           />
-          <NcMonthYearSelector
+          <AtMonthYearSelector
             v-else-if="activeCalendarView === ('month' as const)"
             v-model:page-date="pageDate"
             v-model:selected-date="selectedMonth"
@@ -225,7 +225,7 @@ const plainMonthParts = computed(() => {
             header="v2"
             size="medium"
           />
-          <NcMonthYearSelector
+          <AtMonthYearSelector
             v-else-if="activeCalendarView === ('year' as const)"
             v-model:page-date="pageDate"
             v-model:selected-date="selectedDate"
@@ -236,16 +236,16 @@ const plainMonthParts = computed(() => {
           />
         </div>
       </template>
-    </NcDropdown>
+    </AtDropdown>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-cal-toolbar-header {
+.atm-cal-toolbar-header {
   @apply !h-6 !w-6;
 }
 
 .prev-next-btn {
-  @apply !hover:bg-nc-bg-gray-medium;
+  @apply !hover:bg-atm-bg-gray-medium;
 }
 </style>

@@ -291,7 +291,7 @@ const handleClose = (e: MouseEvent) => {
     isOpen.value &&
     aselect.value &&
     !aselect.value.$el.contains(e.target) &&
-    !document.querySelector('.nc-dropdown-multi-select-cell.active')?.contains(e.target as Node)
+    !document.querySelector('.atm-dropdown-multi-select-cell.active')?.contains(e.target as Node)
   ) {
     // loose focus when clicked outside
     isEditable.value = false
@@ -357,7 +357,7 @@ onMounted(() => {
 
 <template>
   <div
-    class="nc-cell-field nc-multi-select h-full w-full flex items-center"
+    class="atm-cell-field atm-multi-select h-full w-full flex items-center"
     :class="{ 'read-only': readOnly, 'max-w-full': isForm }"
     @click="toggleMenu"
   >
@@ -385,7 +385,7 @@ onMounted(() => {
       :open="isOpen && editAllowed"
       :disabled="readOnly || !editAllowed"
       :class="{ 'caret-transparent': !hasEditRoles }"
-      :dropdown-class-name="`nc-dropdown-multi-select-cell !min-w-156px ${isOpen ? 'active' : ''}`"
+      :dropdown-class-name="`atm-dropdown-multi-select-cell !min-w-156px ${isOpen ? 'active' : ''}`"
       :search-value="searchVal ?? ''"
       @search="search"
       @keydown="onKeyDown"
@@ -393,7 +393,7 @@ onMounted(() => {
       @blur="isOpen = false"
     >
       <template #suffixIcon>
-        <GeneralIcon icon="arrowDown" class="text-gray-700 nc-select-expand-btn" />
+        <GeneralIcon icon="arrowDown" class="text-gray-700 atm-select-expand-btn" />
       </template>
       <a-select-option
         v-for="op of options"
@@ -401,7 +401,7 @@ onMounted(() => {
         :value="op.title"
         class="gap-2"
         :data-testid="`select-option-${column.title}-${location === 'filter' ? 'filter' : rowIndex}`"
-        :class="`nc-select-option-${column.title}-${op.title}`"
+        :class="`atm-select-option-${column.title}-${op.title}`"
         @click.stop
       >
         <a-tag class="rounded-tag max-w-full" :color="op.bgColor">
@@ -411,7 +411,7 @@ onMounted(() => {
             }"
             :class="{ 'text-sm': isKanban, 'text-small': !isKanban }"
           >
-            <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+            <AtTooltip class="truncate max-w-full" show-on-truncate-only>
               <template #title>
                 {{ op.title }}
               </template>
@@ -425,7 +425,7 @@ onMounted(() => {
               >
                 {{ op.title }}
               </span>
-            </NcTooltip>
+            </AtTooltip>
           </span>
         </a-tag>
       </a-select-option>
@@ -435,7 +435,7 @@ onMounted(() => {
         :key="searchVal"
         :value="searchVal"
       >
-        <div class="flex gap-2 text-nc-content-gray-muted dark:text-nc-content-gray-subtle2 items-center h-full">
+        <div class="flex gap-2 text-atm-content-gray-muted dark:text-atm-content-gray-subtle2 items-center h-full">
           <component :is="iconMap.plusThick" class="min-w-4" />
           <div class="text-xs whitespace-normal">
             {{ $t('msg.selectOption.createNewOptionNamed') }} <strong>{{ searchVal }}</strong>
@@ -446,7 +446,7 @@ onMounted(() => {
       <template #tagRender="{ value: val, onClose }">
         <a-tag
           v-if="options.find((el) => el.title === val)"
-          class="rounded-tag nc-selected-option"
+          class="rounded-tag atm-selected-option"
           :class="{
             '!my-0': !rowHeight || rowHeight === 1,
           }"
@@ -519,7 +519,7 @@ onMounted(() => {
   @apply flex-nowrap overflow-hidden max-w-[fit-content];
 }
 
-.nc-multi-select:not(.read-only) {
+.atm-multi-select:not(.read-only) {
   :deep(.ant-select-selector),
   :deep(.ant-select-selector input) {
     @apply "!cursor-pointer";

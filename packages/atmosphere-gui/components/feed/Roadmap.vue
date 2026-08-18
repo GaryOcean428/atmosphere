@@ -19,7 +19,7 @@ const handleIframeLoad = () => {
     </div>
     <iframe
       ref="iFrame"
-      src="https://w21dqb1x.nocodb.com/#/nc/kanban/d719962a-1666-464f-8789-054a13a747f7?disableTopbar=true&disableToolbar=true"
+      src="https://w21dqb1x.atmosphere.dev/#/atm/kanban/d719962a-1666-464f-8789-054a13a747f7?disableTopbar=true&disableToolbar=true"
       width="100%"
       height="100%"
       style="border: none"
@@ -28,6 +28,6 @@ const handleIframeLoad = () => {
   </div>
 
   <div v-if="!isLoaded" class="flex items-center justify-center h-full">
-    <NcLoader />
+    <AtLoader />
   </div>
 </template>

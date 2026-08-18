@@ -86,7 +86,7 @@ watch(
       v-if="!readOnly && editEnabled"
       :ref="focus"
       v-model="vModel"
-      class="nc-cell-field outline-none w-full py-1 bg-transparent h-full"
+      class="atm-cell-field outline-none w-full py-1 bg-transparent h-full"
       @blur="editEnabled = false"
       @keydown.down.stop
       @keydown.left.stop
@@ -98,36 +98,36 @@ watch(
       @mousedown.stop
     />
 
-    <span v-else-if="vModel === null && showNull" class="nc-cell-field nc-null uppercase"> {{ $t('general.null') }}</span>
+    <span v-else-if="vModel === null && showNull" class="atm-cell-field atm-null uppercase"> {{ $t('general.null') }}</span>
 
     <nuxt-link
       v-else-if="isValid && !cellUrlOptions?.overlay"
       no-prefetch
       no-rel
-      class="py-1 z-3 underline nc-cell-field-link max-w-full"
+      class="py-1 z-3 underline atm-cell-field-link max-w-full"
       :to="url"
       :target="cellUrlOptions?.behavior === 'replace' ? undefined : '_blank'"
       :tabindex="readOnly ? -1 : 0"
       @click.prevent="confirmPageLeavingRedirect(url, cellUrlOptions?.behavior === 'replace' ? undefined : '_blank')"
     >
-      <LazyCellClampedText :value="value" :lines="rowHeight" class="nc-cell-field" />
+      <LazyCellClampedText :value="value" :lines="rowHeight" class="atm-cell-field" />
     </nuxt-link>
 
     <nuxt-link
       v-else-if="isValid && !disableOverlay && cellUrlOptions?.overlay"
       no-prefetch
       no-rel
-      class="py-1 z-3 w-full h-full text-center !no-underline nc-cell-field-link max-w-full"
+      class="py-1 z-3 w-full h-full text-center !no-underline atm-cell-field-link max-w-full"
       :to="url"
       :target="cellUrlOptions?.behavior === 'replace' ? undefined : '_blank'"
       :tabindex="readOnly ? -1 : 0"
       @click.prevent="confirmPageLeavingRedirect(url, cellUrlOptions?.behavior === 'replace' ? undefined : '_blank')"
     >
-      <LazyCellClampedText :value="cellUrlOptions.overlay" :lines="rowHeight" class="nc-cell-field" />
+      <LazyCellClampedText :value="cellUrlOptions.overlay" :lines="rowHeight" class="atm-cell-field" />
     </nuxt-link>
 
     <span v-else class="w-9/10 overflow-ellipsis overflow-hidden"
-      ><LazyCellClampedText :value="value" :lines="rowHeight" class="nc-cell-field"
+      ><LazyCellClampedText :value="value" :lines="rowHeight" class="atm-cell-field"
     /></span>
 
     <div v-if="column.meta?.validate && !isValid && value?.length && !editEnabled" class="mr-1 w-1/10">

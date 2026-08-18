@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { CalendarEventTheme } from 'nocodb-sdk'
+import { CalendarEventTheme } from 'atmosphere-sdk'
 import type { Row } from '~/lib/types'
 
 interface Props {
@@ -95,7 +95,7 @@ const cardShadow = computed(() => {
 <template>
   <div
     :class="[
-      `nc-cal-card nc-cal-card--${effectiveTheme}`,
+      `atm-cal-card atm-cal-card--${effectiveTheme}`,
       {
         'h-7': size === 'small' && !isFlat,
         'h-[22px]': size === 'small' && isFlat,
@@ -107,8 +107,8 @@ const cardShadow = computed(() => {
         'rounded-[4px] ml-0.8 mr-1': position === 'rounded' && !multiline,
         'rounded-lg ml-0.8 mr-1': position === 'rounded' && multiline,
         'rounded-none !border-x-0': position === 'none',
-        'nc-cal-card--hover': hover || dragging,
-        'nc-cal-card--uncolored': !colors.hasColor,
+        'atm-cal-card--hover': hover || dragging,
+        'atm-cal-card--uncolored': !colors.hasColor,
         'items-start': multiline,
         'items-center': !multiline,
       },
@@ -119,7 +119,7 @@ const cardShadow = computed(() => {
     }"
   >
     <!-- Minimal makes the bar its defining mark, so it runs the full card height (flush). -->
-    <div v-if="showLeftBar" class="nc-cal-leftbar self-stretch -my-px -ml-px"></div>
+    <div v-if="showLeftBar" class="atm-cal-leftbar self-stretch -my-px -ml-px"></div>
 
     <SmartsheetRecordPresenceBadge v-if="isEeUI && record" :row="record" class="absolute top-1 right-1 z-10" />
 
@@ -142,10 +142,10 @@ const cardShadow = computed(() => {
         class="flex items-center flex-none ml-1.5"
         :class="{ 'h-4.5': multiline }"
       >
-        <span class="nc-cal-dot"></span>
+        <span class="atm-cal-dot"></span>
       </span>
       <span v-if="position === 'rightRounded' || position === 'none'" class="ml-2 mb-0.6"> .... </span>
-      <span v-if="isPill && $slots.time" class="nc-cal-time-pill">
+      <span v-if="isPill && $slots.time" class="atm-cal-time-pill">
         <slot name="time" />
       </span>
       <slot v-else name="time" />
@@ -155,15 +155,15 @@ const cardShadow = computed(() => {
       >
         <!-- Multiline (all-day week): stacked fields; tooltip reveals the full
              labeled record, only when a field line is actually clipped. The
-             inner .nc-calendar-card-fields div is kept so its scoped no-bullet
+             inner .atm-calendar-card-fields div is kept so its scoped no-bullet
              styling applies (the body must render exactly as before). -->
-        <NcTooltip
+        <AtTooltip
           v-if="multiline"
           wrap-child="div"
           hide-on-click
           disable-in-mobile
           :disabled="selected || dragging || !!interfacePageDataApi || (!hasHiddenFields && !forceTooltip)"
-          overlay-class-name="nc-record-fields-tooltip"
+          overlay-class-name="atm-record-fields-tooltip"
           class="w-full overflow-hidden"
         >
           <template #title>
@@ -171,29 +171,29 @@ const cardShadow = computed(() => {
               <slot />
             </slot>
           </template>
-          <div class="nc-calendar-card-fields flex flex-col gap-0.5 w-full overflow-hidden">
+          <div class="atm-calendar-card-fields flex flex-col gap-0.5 w-full overflow-hidden">
             <slot />
           </div>
-        </NcTooltip>
+        </AtTooltip>
         <!-- Single-line: prod behaviour — tooltip only when the text is clipped. -->
-        <NcTooltip
+        <AtTooltip
           v-else
           hide-on-click
           disable-in-mobile
           :disabled="selected || dragging || !!interfacePageDataApi"
-          overlay-class-name="nc-record-fields-tooltip"
+          overlay-class-name="atm-record-fields-tooltip"
           :show-on-truncate-only="!forceTooltip"
           wrap-child="span"
           class="break-word whitespace-nowrap overflow-hidden pr-1"
           :class="{ 'text-ellipsis': ['leftRounded', 'rightRounded', 'rounded'].includes(position) }"
         >
-          <slot class="text-sm text-nowrap text-nc-content-gray leading-7" />
+          <slot class="text-sm text-nowrap text-atm-content-gray leading-7" />
           <template #title>
             <slot name="tooltip">
               <slot />
             </slot>
           </template>
-        </NcTooltip>
+        </AtTooltip>
       </div>
       <span v-if="position === 'leftRounded' || position === 'none'" class="absolute mb-0.6 z-10 right-5"> ... </span>
     </div>
@@ -203,7 +203,7 @@ const cardShadow = computed(() => {
          (the thumbnail's root is h-full/w-full, so the size lives on this box). -->
     <div
       v-if="labelAttachment"
-      class="nc-cal-card-image absolute right-0.5 top-0 bottom-0 my-auto w-5 h-5 rounded overflow-hidden"
+      class="atm-cal-card-image absolute right-0.5 top-0 bottom-0 my-auto w-5 h-5 rounded overflow-hidden"
     >
       <LazyCellAttachmentPreviewThumbnail
         :attachment="labelAttachment"
@@ -225,24 +225,24 @@ const cardShadow = computed(() => {
   cursor: ew-resize;
 }
 
-.nc-cal-card {
+.atm-cal-card {
   @apply relative transition-all flex-none flex gap-2 group overflow-hidden;
 }
 
 // Left colour bar (minimal theme).
-.nc-cal-leftbar {
+.atm-cal-leftbar {
   @apply w-1 flex-none;
   background: var(--cal-accent);
 }
 
 // Colour dot (dot theme).
-.nc-cal-dot {
+.atm-cal-dot {
   @apply w-2 h-2 rounded-full flex-none;
   background: var(--cal-accent);
 }
 
 // Time badge (pill theme).
-.nc-cal-time-pill {
+.atm-cal-time-pill {
   @apply inline-flex items-center px-1.5 rounded-full flex-none leading-4;
   background: var(--cal-accent);
 
@@ -253,7 +253,7 @@ const cardShadow = computed(() => {
 
 // --- Themes -----------------------------------------------------------------
 
-.nc-cal-card--bordered {
+.atm-cal-card--bordered {
   // No left colour bar on this theme — a small inset keeps the text off the border.
   @apply border-1 pl-1;
   // Derive the fill + border from the accent so the chip stays visibly distinct
@@ -264,23 +264,23 @@ const cardShadow = computed(() => {
 
   // Colour applied: deepen the accent tint on hover instead of washing it out
   // with neutral gray (which dropped the event colour entirely).
-  &.nc-cal-card--hover {
+  &.atm-cal-card--hover {
     background: color-mix(in srgb, var(--cal-accent) 24%, transparent);
   }
 }
 
 // Uncoloured events keep the classic white card (not the gray accent wash) so the
 // default look matches the pre-theme calendar; hover still goes light-gray.
-.nc-cal-card--bordered.nc-cal-card--uncolored {
-  background: var(--nc-bg-default);
-  border-color: var(--nc-border-gray-dark);
+.atm-cal-card--bordered.atm-cal-card--uncolored {
+  background: var(--atm-bg-default);
+  border-color: var(--atm-border-gray-dark);
 
-  &.nc-cal-card--hover {
-    @apply !bg-nc-bg-gray-light;
+  &.atm-cal-card--hover {
+    @apply !bg-atm-bg-gray-light;
   }
 }
 
-.nc-cal-card--solid {
+.atm-cal-card--solid {
   @apply px-2;
   background: var(--cal-accent);
 
@@ -288,37 +288,37 @@ const cardShadow = computed(() => {
   // the multiline "+N more" line (a div, so not covered by the selectors above).
   :deep(.plain-cell),
   :deep(.plain-cell .bold),
-  :deep(.nc-calendar-card-more),
+  :deep(.atm-calendar-card-more),
   :deep(span) {
     color: var(--cal-on-accent) !important;
   }
 
-  &.nc-cal-card--hover {
+  &.atm-cal-card--hover {
     @apply brightness-95;
   }
 }
 
 // Pill / dot text starts at the cell edge otherwise — give a small left inset
 // so the time badge / dot doesn't hug the day-cell border.
-.nc-cal-card--pill,
-.nc-cal-card--dot {
+.atm-cal-card--pill,
+.atm-cal-card--dot {
   @apply pl-1;
 }
 
-.nc-cal-card--dot,
-.nc-cal-card--minimal,
-.nc-cal-card--pill {
+.atm-cal-card--dot,
+.atm-cal-card--minimal,
+.atm-cal-card--pill {
   @apply bg-transparent;
 
-  &.nc-cal-card--hover {
-    @apply !bg-nc-bg-gray-light;
+  &.atm-cal-card--hover {
+    @apply !bg-atm-bg-gray-light;
   }
 }
 
 .plain-cell {
   line-height: 18px;
   .bold {
-    @apply !text-nc-content-gray font-bold;
+    @apply !text-atm-content-gray font-bold;
   }
 }
 
@@ -326,8 +326,8 @@ const cardShadow = computed(() => {
 // Drop the inline "•" separators (meant for the single-line layout), give the
 // lead field gentle emphasis and mute the rest — reads as a record card, not a
 // run-on of values.
-.nc-calendar-card-fields :deep(.plain-cell) {
-  @apply truncate w-full leading-5 text-bodySm text-nc-content-gray-subtle;
+.atm-calendar-card-fields :deep(.plain-cell) {
+  @apply truncate w-full leading-5 text-bodySm text-atm-content-gray-subtle;
 
   &::before {
     content: '' !important;
@@ -335,7 +335,7 @@ const cardShadow = computed(() => {
   }
 }
 
-.nc-calendar-card-fields :deep(.plain-cell:first-child) {
-  @apply text-nc-content-gray font-semibold;
+.atm-calendar-card-fields :deep(.plain-cell:first-child) {
+  @apply text-atm-content-gray font-semibold;
 }
 </style>

@@ -6,14 +6,14 @@ import {
   ncIsNull,
   ncIsObject,
   ncIsUndefined,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type {
   AggregateCtx,
   AggregationGeneratorParams,
   BulkAggregateCtx,
   DBQueryClient,
 } from '~/dbQueryClient/types';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Knex, XKnex } from '~/db/CustomKnex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
@@ -216,14 +216,14 @@ export abstract class GenericDBQueryClient implements DBQueryClient {
   }
 
   aggregate(
-    context: NcContext,
+    context: AtContext,
     ctx: AggregateCtx,
   ): Promise<Record<string, unknown>> {
     return aggregateOrchestration(this)(context, ctx);
   }
 
   bulkAggregate(
-    context: NcContext,
+    context: AtContext,
     ctx: BulkAggregateCtx,
   ): Promise<Record<string, Record<string, unknown>>> {
     return bulkAggregateOrchestration(this)(context, ctx);

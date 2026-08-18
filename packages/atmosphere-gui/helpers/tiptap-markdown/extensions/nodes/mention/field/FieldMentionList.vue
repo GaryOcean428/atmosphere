@@ -1,5 +1,5 @@
 <script>
-/** @typedef {import('nocodb-sdk').ColumnType} ColumnType */
+/** @typedef {import('atmosphere-sdk').ColumnType} ColumnType */
 
 export default {
   props: {
@@ -102,7 +102,7 @@ export default {
 
 <template>
   <div
-    class="w-64 bg-nc-bg-default scroll-smooth nc-mention-list nc-scrollbar-thin border-1 border-nc-border-gray-medium rounded-lg max-h-64 !py-2 px-2 shadow-lg"
+    class="w-64 bg-atm-bg-default scroll-smooth atm-mention-list atm-scrollbar-thin border-1 border-atm-border-gray-medium rounded-lg max-h-64 !py-2 px-2 shadow-lg"
     @mousedown.stop
   >
     <template v-if="items.length">
@@ -110,21 +110,21 @@ export default {
         v-for="(item, index) in items"
         :key="index"
         :class="{ 'is-selected': index === selectedIndex }"
-        class="py-2 flex hover:bg-nc-bg-gray-light rounded-md transition-all cursor-pointer items-center gap-2 text-nc-content-gray pl-4"
+        class="py-2 flex hover:bg-atm-bg-gray-light rounded-md transition-all cursor-pointer items-center gap-2 text-atm-content-gray pl-4"
         @click="selectItem(index, $event)"
       >
         <SmartsheetHeaderIcon
           v-if="item?.uidt"
           :column="item"
           class="flex-none w-3.5 h-3.5"
-          color="text-nc-content-gray-subtle2"
+          color="text-atm-content-gray-subtle2"
         />
-        <NcTooltip class="truncate" show-on-truncate-only :tooltip-style="{ zIndex: '10000' }">
+        <AtTooltip class="truncate" show-on-truncate-only :tooltip-style="{ zIndex: '10000' }">
           <template #title>
             {{ item?.title || '' }}
           </template>
           {{ item?.title || '' }}
-        </NcTooltip>
+        </AtTooltip>
       </div>
     </template>
     <div v-else class="px-4">No field available</div>
@@ -133,6 +133,6 @@ export default {
 
 <style lang="scss" scoped>
 .is-selected {
-  @apply bg-nc-bg-gray-light;
+  @apply bg-atm-bg-gray-light;
 }
 </style>

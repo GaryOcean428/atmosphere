@@ -1,6 +1,6 @@
-import { XcActionType, XcType } from 'nocodb-sdk';
+import { XcActionType, XcType } from 'atmosphere-sdk';
 import SESPlugin from './SESPlugin';
-import type { XcPluginConfig } from '~/types/nc-plugin';
+import type { XcPluginConfig } from '~/types/atm-plugin';
 
 const config: XcPluginConfig = {
   builder: SESPlugin,
@@ -8,7 +8,7 @@ const config: XcPluginConfig = {
   title: 'SES',
   version: '0.0.4',
   logo: 'plugins/aws.png',
-  icon: 'NcAmazonAws',
+  icon: 'AtAmazonAws',
   description:
     'Amazon Simple Email Service (SES) is a cost-effective, flexible, and scalable email service that enables developers to send mail from within any application.',
   price: 'Free',

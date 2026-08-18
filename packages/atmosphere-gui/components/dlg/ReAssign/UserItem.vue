@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { UserType } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
 
 const { user } = defineProps<{
   user: UserType
@@ -13,8 +13,8 @@ const displayName = computed(() => extractUserDisplayNameOrEmail(user))
     <GeneralUserIcon size="base" :user="user" />
     <div class="flex flex-col justify-center flex-grow">
       <div class="flex flex-col">
-        <span class="capitalize font-semibold text-nc-content-gray">{{ displayName }}</span>
-        <span class="text-xs text-nc-content-gray-subtle2">{{ user.email }}</span>
+        <span class="capitalize font-semibold text-atm-content-gray">{{ displayName }}</span>
+        <span class="text-xs text-atm-content-gray-subtle2">{{ user.email }}</span>
       </div>
     </div>
     <slot name="append"></slot>

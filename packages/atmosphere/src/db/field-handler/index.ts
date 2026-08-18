@@ -4,8 +4,8 @@ import {
   isRollup,
   ncIsUndefined,
   UITypes,
-} from 'nocodb-sdk';
-import { ClientType } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import { CurrencyGeneralHandler } from './handlers/currency/currency.general.handler';
 import { CurrencyPgHandler } from './handlers/currency/currency.pg.handler';
 import { CurrencyMysqlHandler } from './handlers/currency/currency.mysql.handler';
@@ -13,7 +13,7 @@ import { CurrencySqliteHandler } from './handlers/currency/currency.sqlite.handl
 import type { Logger } from '@nestjs/common';
 import type { MetaService } from '~/meta/meta.service';
 import type CustomKnex from '../CustomKnex';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from '../IBaseModelSqlV2';
 import type {
   FilterOperationResult,
@@ -25,7 +25,7 @@ import type {
 import type { Knex } from 'knex';
 import type { Filter } from '~/models';
 import type { FieldHandlerInterface } from '~/db/field-handler/field-handler.interface';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { JsonGeneralHandler } from '~/db/field-handler/handlers/json/json.general.handler';
 import { GenericFieldHandler } from '~/db/field-handler/handlers/generic';
 import { CheckboxGeneralHandler } from '~/db/field-handler/handlers/checkbox/checkbox.general.handler';
@@ -304,7 +304,7 @@ export class FieldHandler implements IFieldHandler {
     public readonly info: {
       baseModel: IBaseModelSqlV2;
       knex: CustomKnex;
-      context: NcContext;
+      context: AtContext;
     },
   ) {}
 
@@ -541,7 +541,7 @@ export class FieldHandler implements IFieldHandler {
   async verifyFilters(filters: Filter[], options: FilterOptions = {}) {
     const verificationResult = await this.verifyFiltersSafe(filters, options);
     if (!verificationResult.isValid) {
-      NcError.get(this.info.context).filterVerificationFailed(
+      AtError.get(this.info.context).filterVerificationFailed(
         verificationResult.errors,
       );
     }
@@ -570,7 +570,7 @@ export class FieldHandler implements IFieldHandler {
     );
   }
 
-  async getRelatedColumnById(context: NcContext, colId: string) {
+  async getRelatedColumnById(context: AtContext, colId: string) {
     // possibly to be enhanced into getting the model and basemodel too
     const column = await Column.get(context, { colId });
     return column;
@@ -582,7 +582,7 @@ export class FieldHandler implements IFieldHandler {
     oldData?: any;
     column: Column;
     options?: {
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       logger?: Logger;
       baseModel?: IBaseModelSqlV2;
@@ -613,7 +613,7 @@ export class FieldHandler implements IFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       logger?: Logger;
     };
@@ -645,7 +645,7 @@ export class FieldHandler implements IFieldHandler {
     options?: {
       additionalColumns?: Column[];
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       logger?: Logger;
     };

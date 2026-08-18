@@ -55,9 +55,9 @@ importers:
       ai:
         specifier: ^6.0.3
         version: 6.0.22(zod@3.25.76)
-      nocodb-sdk:
-        specifier: file:../../nocodb-sdk
-        version: file:../nocodb-sdk(vue@3.5.26(typescript@5.8.3))
+      atmosphere-sdk:
+        specifier: file:../../atmosphere-sdk
+        version: file:../atmosphere-sdk(vue@3.5.26(typescript@5.8.3))
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -1450,36 +1450,36 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  nc-jsep-plugin-arrow@1.7.5:
+  atm-jsep-plugin-arrow@1.7.5:
     resolution: {integrity: sha512-73Narl9BQQwGbksT5Ls5FZeQID+DoyqAameSsKKuzRRcWyOZG1L2qX2DVhT5ptmhIWFAdZfYs/z6UaA3JM8vGg==}
     engines: {node: '>= 20'}
     peerDependencies:
-      nc-jsep: 1.7.5
+      atm-jsep: 1.7.5
 
-  nc-jsep-plugin-object@1.7.5:
+  atm-jsep-plugin-object@1.7.5:
     resolution: {integrity: sha512-NCEDhcmE/Tc1IROg3zlnbo8YzhIJn2zcwI7py5fLTAPWqofZq5KrvNVWm6vn1a/nym05vwhj1iqK7SdDTANXtQ==}
     engines: {node: '>= 20'}
     peerDependencies:
-      nc-jsep: 1.7.5
+      atm-jsep: 1.7.5
 
-  nc-jsep-plugin-template@1.7.5:
+  atm-jsep-plugin-template@1.7.5:
     resolution: {integrity: sha512-E7T1xEuylE2ax96NFXVYF58GpIwmFmRwLHzrKz21fBDz1/IYLdXOmDrdUAzeKA4bdKXEw6BI2pZOX54P4HqhYg==}
     engines: {node: '>= 20'}
     peerDependencies:
-      nc-jsep: 1.7.5
+      atm-jsep: 1.7.5
 
-  nc-jsep-plugin-ternary@1.7.5:
+  atm-jsep-plugin-ternary@1.7.5:
     resolution: {integrity: sha512-JxZHfJ7O0SZMs4LLVFbKdBh060V+s4rSNX4Mv1AXiL+VeGXnHoUGxMOtZ3ZHTNQQhLAO3hwathhTpKVLU2rZRQ==}
     engines: {node: '>= 20'}
     peerDependencies:
-      nc-jsep: 1.7.5
+      atm-jsep: 1.7.5
 
-  nc-jsep@1.7.5:
+  atm-jsep@1.7.5:
     resolution: {integrity: sha512-2EfjyM8ITPNdumJvd2CFamPO4dvQdrMAPmw9sK0Ex4mMJ/NagdQTnvm/GVaSVshchISx38D0LG+Xqhl3mPKO2w==}
     engines: {node: '>= 20'}
 
-  nocodb-sdk@file:../nocodb-sdk:
-    resolution: {directory: ../nocodb-sdk, type: directory}
+  atmosphere-sdk@file:../atmosphere-sdk:
+    resolution: {directory: ../atmosphere-sdk, type: directory}
     engines: {node: '>=18'}
 
   node-fetch-native@1.6.6:
@@ -3495,27 +3495,27 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  nc-jsep-plugin-arrow@1.7.5(nc-jsep@1.7.5):
+  atm-jsep-plugin-arrow@1.7.5(atm-jsep@1.7.5):
     dependencies:
-      nc-jsep: 1.7.5
+      atm-jsep: 1.7.5
 
-  nc-jsep-plugin-object@1.7.5(nc-jsep@1.7.5):
+  atm-jsep-plugin-object@1.7.5(atm-jsep@1.7.5):
     dependencies:
-      nc-jsep: 1.7.5
+      atm-jsep: 1.7.5
 
-  nc-jsep-plugin-template@1.7.5(nc-jsep@1.7.5):
+  atm-jsep-plugin-template@1.7.5(atm-jsep@1.7.5):
     dependencies:
-      nc-jsep: 1.7.5
+      atm-jsep: 1.7.5
 
-  nc-jsep-plugin-ternary@1.7.5(nc-jsep@1.7.5):
+  atm-jsep-plugin-ternary@1.7.5(atm-jsep@1.7.5):
     dependencies:
-      nc-jsep: 1.7.5
+      atm-jsep: 1.7.5
 
-  nc-jsep@1.7.5:
+  atm-jsep@1.7.5:
     dependencies:
-      nc-jsep-plugin-ternary: 1.7.5(nc-jsep@1.7.5)
+      atm-jsep-plugin-ternary: 1.7.5(atm-jsep@1.7.5)
 
-  nocodb-sdk@file:../nocodb-sdk(vue@3.5.26(typescript@5.8.3)):
+  atmosphere-sdk@file:../atmosphere-sdk(vue@3.5.26(typescript@5.8.3)):
     dependencies:
       '@vue-flow/core': 1.48.1(vue@3.5.26(typescript@5.8.3))
       acorn-loose: 8.5.2
@@ -3524,11 +3524,11 @@ snapshots:
       chevrotain: 10.5.0
       dayjs: 1.11.19
       fast-deep-equal: 3.1.3
-      nc-jsep: 1.7.5
-      nc-jsep-plugin-arrow: 1.7.5(nc-jsep@1.7.5)
-      nc-jsep-plugin-object: 1.7.5(nc-jsep@1.7.5)
-      nc-jsep-plugin-template: 1.7.5(nc-jsep@1.7.5)
-      nc-jsep-plugin-ternary: 1.7.5(nc-jsep@1.7.5)
+      atm-jsep: 1.7.5
+      atm-jsep-plugin-arrow: 1.7.5(atm-jsep@1.7.5)
+      atm-jsep-plugin-object: 1.7.5(atm-jsep@1.7.5)
+      atm-jsep-plugin-template: 1.7.5(atm-jsep@1.7.5)
+      atm-jsep-plugin-ternary: 1.7.5(atm-jsep@1.7.5)
       rfdc: 1.4.1
       uuid: 11.1.1
       validator: 13.15.26

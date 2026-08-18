@@ -1,14 +1,14 @@
 {{- if .Values.worker.enabled -}}
-{{- include "nocodb.validateRedis" . -}}
+{{- include "atmosphere.validateRedis" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "nocodb.fullname" . }}-worker
+  name: {{ include "atmosphere.fullname" . }}-worker
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "nocodb.labels" . | nindent 4 }}
+    {{- include "atmosphere.labels" . | nindent 4 }}
     app.kubernetes.io/component: worker
-  {{- with include "nocodb.annotations" (dict "context" . "extraAnnotations" dict) }}
+  {{- with include "atmosphere.annotations" (dict "context" . "extraAnnotations" dict) }}
   annotations:
     {{- . | nindent 4 }}
   {{- end }}
@@ -18,34 +18,34 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "nocodb.selectorLabels" . | nindent 6 }}
+      {{- include "atmosphere.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: worker
   template:
     metadata:
       labels:
-        {{- include "nocodb.selectorLabels" . | nindent 8 }}
+        {{- include "atmosphere.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: worker
       annotations:
-        checksum/config: {{ toYaml (dict "nocodb" .Values.nocodb "smtp" .Values.smtp "sso" .Values.sso "ingress" .Values.ingress "externalDatabase" .Values.externalDatabase "externalRedis" .Values.externalRedis "auth" .Values.auth) | sha256sum }}
+        checksum/config: {{ toYaml (dict "atmosphere" .Values.atmosphere "smtp" .Values.smtp "sso" .Values.sso "ingress" .Values.ingress "externalDatabase" .Values.externalDatabase "externalRedis" .Values.externalRedis "auth" .Values.auth) | sha256sum }}
         {{- with .Values.worker.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- include "nocodb.imagePullSecrets" . | nindent 6 }}
-      serviceAccountName: {{ include "nocodb.serviceAccountName" . }}
+      {{- include "atmosphere.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ include "atmosphere.serviceAccountName" . }}
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       terminationGracePeriodSeconds: {{ .Values.worker.terminationGracePeriodSeconds | default .Values.terminationGracePeriodSeconds }}
       containers:
-        - name: nocodb-worker
-          image: {{ include "nocodb.image" . }}
+        - name: atmosphere-worker
+          image: {{ include "atmosphere.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           envFrom:
             - configMapRef:
-                name: {{ include "nocodb.fullname" . }}-env
+                name: {{ include "atmosphere.fullname" . }}-env
             {{- with .Values.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ . }}
@@ -55,13 +55,13 @@ spec:
                 name: {{ . }}
             {{- end }}
           env:
-            - name: NC_WORKER_CONTAINER
+            - name: ATMOSPHERE_WORKER_CONTAINER
               value: "true"
             {{- with .Values.worker.concurrency }}
-            - name: NC_WORKER_CONCURRENCY
+            - name: ATMOSPHERE_WORKER_CONCURRENCY
               value: {{ . | quote }}
             {{- end }}
-            {{- include "nocodb.secretEnv" . | nindent 12 }}
+            {{- include "atmosphere.secretEnv" . | nindent 12 }}
             {{- with .Values.extraEnvVars }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -95,7 +95,7 @@ spec:
               podAffinityTerm:
                 labelSelector:
                   matchLabels:
-                    {{- include "nocodb.selectorLabels" . | nindent 20 }}
+                    {{- include "atmosphere.selectorLabels" . | nindent 20 }}
                     app.kubernetes.io/component: worker
                 topologyKey: kubernetes.io/hostname
       {{- end }}

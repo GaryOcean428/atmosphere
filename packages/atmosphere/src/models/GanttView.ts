@@ -1,4 +1,4 @@
-import type { BoolType, GanttType, MetaType } from 'nocodb-sdk';
+import type { BoolType, GanttType, MetaType } from 'atmosphere-sdk';
 
 export default class GanttView implements GanttType {
   fk_view_id: string;

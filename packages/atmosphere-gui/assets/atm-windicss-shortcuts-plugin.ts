@@ -6,7 +6,7 @@ export default plugin(({ addUtilities }) => {
   // Helper to generate viewport-safe utilities with dvh/svh progressive enhancement
   const addScreenUtil = (name: string, prop: string, unit: string, dUnit: string, sUnit: string, value: number) => {
     const suffix = value === 100 ? '' : `-${value}`
-    utils[`.nc-${name}${suffix}`] = {
+    utils[`.atm-${name}${suffix}`] = {
       [prop]: `${value}${unit}`,
       [`@supports (${prop}: ${value}${dUnit})`]: {
         [prop]: `${value}${dUnit}`,
@@ -17,7 +17,7 @@ export default plugin(({ addUtilities }) => {
     }
   }
 
-  // Generate utilities for 0-100 (nc-h-screen = 100vh, nc-h-screen-80 = 80vh, etc.)
+  // Generate utilities for 0-100 (atm-h-screen = 100vh, atm-h-screen-80 = 80vh, etc.)
   for (let i = 0; i <= 100; i++) {
     addScreenUtil('h-screen', 'height', 'vh', 'dvh', 'svh', i)
     addScreenUtil('min-h-screen', 'min-height', 'vh', 'dvh', 'svh', i)
@@ -28,22 +28,22 @@ export default plugin(({ addUtilities }) => {
   }
 
   // Scroll fade masks — apply on scrollable containers
-  // nc-scroll-fade       → fade top & bottom
-  // nc-scroll-fade-top   → fade top only
-  // nc-scroll-fade-bottom → fade bottom only
+  // atm-scroll-fade       → fade top & bottom
+  // atm-scroll-fade-top   → fade top only
+  // atm-scroll-fade-bottom → fade bottom only
   const fadeSize = '34px'
 
-  utils['.nc-scroll-fade'] = {
+  utils['.atm-scroll-fade'] = {
     'mask-image': `linear-gradient(transparent 0%, black ${fadeSize}, black calc(100% - ${fadeSize}), transparent 100%)`,
     '-webkit-mask-image': `linear-gradient(transparent 0%, black ${fadeSize}, black calc(100% - ${fadeSize}), transparent 100%)`,
   }
 
-  utils['.nc-scroll-fade-top'] = {
+  utils['.atm-scroll-fade-top'] = {
     'mask-image': `linear-gradient(transparent 0%, black ${fadeSize}, black 100%)`,
     '-webkit-mask-image': `linear-gradient(transparent 0%, black ${fadeSize}, black 100%)`,
   }
 
-  utils['.nc-scroll-fade-bottom'] = {
+  utils['.atm-scroll-fade-bottom'] = {
     'mask-image': `linear-gradient(black 0%, black calc(100% - ${fadeSize}), transparent 100%)`,
     '-webkit-mask-image': `linear-gradient(black 0%, black calc(100% - ${fadeSize}), transparent 100%)`,
   }

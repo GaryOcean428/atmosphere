@@ -11,10 +11,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { NcRequest } from 'nocodb-sdk';
+import { AtRequest } from 'atmosphere-sdk';
 import { PublicApiLimiterGuard } from '~/guards/public-api-limiter.guard';
 import { OAuthClient } from '~/models';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { OauthAuthorizationService } from '~/modules/oauth/services/oauth-authorization.service';
@@ -36,7 +36,7 @@ export class OAuthController {
     const client = await OAuthClient.getByClientId(clientId);
 
     if (!client) {
-      NcError.notFound('Oauth Client');
+      AtError.notFound('Oauth Client');
     }
 
     return toPublicOAuthClient(client);
@@ -44,7 +44,7 @@ export class OAuthController {
 
   @Get('/api/v2/oauth/authorize')
   @UseGuards(MetaApiLimiterGuard)
-  async authorizeRedirect(@Req() req: NcRequest, @Res() res: Response) {
+  async authorizeRedirect(@Req() req: AtRequest, @Res() res: Response) {
     const queryParams = new URLSearchParams(req.query).toString();
     const redirectUrl = `${req.ncSiteUrl}/oauth/authorize${
       queryParams ? '?' + queryParams : ''
@@ -55,7 +55,7 @@ export class OAuthController {
 
   @Post('/api/v2/oauth/authorize')
   @UseGuards(MetaApiLimiterGuard, GlobalGuard)
-  async authorize(@Body() body, @Req() req: NcRequest) {
+  async authorize(@Body() body, @Req() req: AtRequest) {
     // GlobalGuard is authentication-OPTIONAL and this route has no @Acl, so
     // without this an anonymous caller reaches createAuthorizationCode with an
     // undefined user id. `isAuthorized` is set at runtime by the auth strategies
@@ -64,7 +64,7 @@ export class OAuthController {
       !(req.user as (typeof req.user & { isAuthorized?: boolean }) | undefined)
         ?.isAuthorized
     ) {
-      NcError.unauthorized('Invalid token');
+      AtError.unauthorized('Invalid token');
     }
 
     const {
@@ -81,7 +81,7 @@ export class OAuthController {
     } = body;
 
     if (!client_id || !redirect_uri) {
-      NcError.badRequest(
+      AtError.badRequest(
         'Missing required parameters: client_id, redirect_uri',
       );
     }

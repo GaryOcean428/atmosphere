@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type TableType, ViewLockType, type ViewType, type ViewTypes } from 'nocodb-sdk'
+import { type TableType, ViewLockType, type ViewType, type ViewTypes } from 'atmosphere-sdk'
 import type { WritableComputedRef } from '@vue/reactivity'
 import { LockType, isDefaultBase } from '#imports'
 
@@ -218,7 +218,7 @@ const onRenameMenuClick = () => {
 const onChangeIcon = () => {
   isDropdownOpen.value = false
   nextTick(() => {
-    emojiPickerRef.value?.querySelector<HTMLElement>('.nc-emoji')?.click()
+    emojiPickerRef.value?.querySelector<HTMLElement>('.atm-emoji')?.click()
   })
 }
 
@@ -324,12 +324,12 @@ watch(isDropdownOpen, async () => {
 
 <template>
   <div
-    class="nc-sidebar-node !min-h-7 !max-h-7 !my-0.5 select-none group text-nc-content-gray-subtle text-bodyDefaultSm !flex !items-center hover:(!bg-nc-bg-gray-medium !text-nc-content-gray) cursor-pointer"
+    class="atm-sidebar-node !min-h-7 !max-h-7 !my-0.5 select-none group text-atm-content-gray-subtle text-bodyDefaultSm !flex !items-center hover:(!bg-atm-bg-gray-medium !text-atm-content-gray) cursor-pointer"
     :style="indentStyle"
     :data-testid="`view-sidebar-view-${vModel.alias || vModel.title}`"
     @click.prevent="handleOnClick"
   >
-    <NcTooltip
+    <AtTooltip
       :tooltip-style="{ width: '240px', zIndex: '1049' }"
       :overlay-inner-style="{ width: '240px' }"
       :mouse-enter-delay="0.5"
@@ -341,7 +341,7 @@ watch(isDropdownOpen, async () => {
       <template #title>
         <div class="flex flex-col gap-3">
           <div>
-            <div class="text-[10px] leading-[14px] text-nc-content-brand-hover dark:text-nc-content-gray-muted uppercase mb-1">
+            <div class="text-[10px] leading-[14px] text-atm-content-brand-hover dark:text-atm-content-gray-muted uppercase mb-1">
               {{ $t('labels.viewName') }}
             </div>
             <div class="text-small leading-[18px]">{{ vModel.alias || vModel.title }}</div>
@@ -349,7 +349,7 @@ watch(isDropdownOpen, async () => {
           </div>
 
           <div v-if="vModel?.created_by && idUserMap[vModel?.created_by]">
-            <div class="text-[10px] leading-[14px] text-nc-content-brand-hover dark:text-nc-content-gray-muted uppercase mb-1">
+            <div class="text-[10px] leading-[14px] text-atm-content-brand-hover dark:text-atm-content-gray-muted uppercase mb-1">
               {{ $t('labels.createdBy') }}
             </div>
             <div class="text-xs">
@@ -361,7 +361,7 @@ watch(isDropdownOpen, async () => {
             </div>
           </div>
           <div>
-            <div class="text-[10px] leading-[14px] text-nc-content-brand-hover dark:text-nc-content-gray-muted uppercase mb-1">
+            <div class="text-[10px] leading-[14px] text-atm-content-brand-hover dark:text-atm-content-gray-muted uppercase mb-1">
               {{ $t('labels.viewMode') }}
             </div>
             <div class="text-xs flex items-start gap-2">
@@ -386,7 +386,7 @@ watch(isDropdownOpen, async () => {
           @mouseleave="showViewNodeTooltip = true"
         >
           <LazyGeneralEmojiPicker
-            class="nc-view-icon-parent"
+            class="atm-view-icon-parent"
             :emoji="props.view?.meta?.icon"
             size="small"
             :clearable="true"
@@ -394,7 +394,7 @@ watch(isDropdownOpen, async () => {
             @emoji-selected="emits('selectIcon', $event)"
           >
             <template #default>
-              <GeneralViewIcon :meta="props.view" class="nc-view-icon w-4 !text-[16px]"></GeneralViewIcon>
+              <GeneralViewIcon :meta="props.view" class="atm-view-icon w-4 !text-[16px]"></GeneralViewIcon>
             </template>
           </LazyGeneralEmojiPicker>
         </div>
@@ -405,7 +405,7 @@ watch(isDropdownOpen, async () => {
           v-model:value="_title"
           class="!bg-transparent !pr-1.5 !flex-1 mr-4 !rounded-md !h-6 animate-sidebar-node-input-padding"
           :class="{
-            '!font-medium !text-nc-content-brand-disabled': activeView?.id === vModel.id,
+            '!font-medium !text-atm-content-brand-disabled': activeView?.id === vModel.id,
           }"
           :style="{
             fontWeight: 'inherit',
@@ -413,9 +413,9 @@ watch(isDropdownOpen, async () => {
           @blur="onRename"
           @keydown.stop="onKeyDown($event)"
         />
-        <NcTooltip
+        <AtTooltip
           v-else
-          class="nc-sidebar-node-title text-ellipsis overflow-hidden select-none max-w-full"
+          class="atm-sidebar-node-title text-ellipsis overflow-hidden select-none max-w-full"
           :class="{
             'w-full': ![ViewLockType.Locked, ViewLockType.Personal].includes(vModel?.lock_type!)
           }"
@@ -426,14 +426,14 @@ watch(isDropdownOpen, async () => {
           <div
             data-testid="sidebar-view-title"
             :class="{
-              'font-medium text-nc-content-brand-disabled': activeView?.id === vModel.id,
+              'font-medium text-atm-content-brand-disabled': activeView?.id === vModel.id,
             }"
             :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap', display: 'inline' }"
             @dblclick.stop="onDblClick"
           >
             {{ vModel.alias || vModel.title }}
           </div>
-        </NcTooltip>
+        </AtTooltip>
         <div v-if="!isEditing && [LockType.Locked, ViewLockType.Personal].includes(vModel?.lock_type)" class="flex-1 flex mx-0.5">
           <div
             v-if="vModel.lock_type === ViewLockType.Personal && vModel.owned_by && idUserMap[vModel.owned_by]"
@@ -456,16 +456,16 @@ watch(isDropdownOpen, async () => {
             v-else
             class="ml-1 flex-none w-3.5 h-3.5"
             :class="{
-              'text-nc-brand-400': vModel?.lock_type === ViewLockType.Personal && isViewOwner,
-              'text-nc-content-gray-disabled': !(vModel?.lock_type === ViewLockType.Personal && isViewOwner),
+              'text-atm-brand-400': vModel?.lock_type === ViewLockType.Personal && isViewOwner,
+              'text-atm-content-gray-disabled': !(vModel?.lock_type === ViewLockType.Personal && isViewOwner),
             }"
           />
         </div>
 
         <template v-if="!isEditing && !isLocked">
-          <NcTooltip
+          <AtTooltip
             v-if="vModel.description?.length"
-            overlay-class-name="nc-tooltip-scrollable"
+            overlay-class-name="atm-tooltip-scrollable"
             placement="bottom"
             @mouseenter="showViewNodeTooltip = false"
             @mouseleave="showViewNodeTooltip = true"
@@ -473,19 +473,19 @@ watch(isDropdownOpen, async () => {
             <template #title>
               <div class="whitespace-pre-wrap break-words">{{ vModel.description }}</div>
             </template>
-            <NcButton type="text" class="!hover:bg-transparent" size="xsmall">
+            <AtButton type="text" class="!hover:bg-transparent" size="xsmall">
               <GeneralIcon
                 icon="info"
-                class="!w-3.5 !h-3.5 nc-info-icon group-hover:opacity-100 text-nc-content-gray-subtle2 opacity-0"
+                class="!w-3.5 !h-3.5 atm-info-icon group-hover:opacity-100 text-atm-content-gray-subtle2 opacity-0"
               />
-            </NcButton>
-          </NcTooltip>
-          <NcDropdown v-model:visible="isDropdownOpen" overlay-class-name="!rounded-lg">
-            <NcButton
+            </AtButton>
+          </AtTooltip>
+          <AtDropdown v-model:visible="isDropdownOpen" overlay-class-name="!rounded-lg">
+            <AtButton
               v-e="['c:view:option']"
               type="text"
               size="xxsmall"
-              class="nc-sidebar-node-btn invisible !group-hover:(visible opacity-100) nc-sidebar-view-node-context-btn"
+              class="atm-sidebar-node-btn invisible !group-hover:(visible opacity-100) atm-sidebar-view-node-context-btn"
               :class="{
                 '!visible !opacity-100': isDropdownOpen,
               }"
@@ -495,7 +495,7 @@ watch(isDropdownOpen, async () => {
               @mouseleave="showViewNodeTooltip = true"
             >
               <GeneralIcon icon="threeDotHorizontal" class="w-4 h-4" />
-            </NcButton>
+            </AtButton>
 
             <template #overlay>
               <SmartsheetToolbarViewActionMenu
@@ -510,9 +510,9 @@ watch(isDropdownOpen, async () => {
                 @description-update="openViewDescriptionDialog(vModel)"
               />
             </template>
-          </NcDropdown>
+          </AtDropdown>
         </template>
       </div>
-    </NcTooltip>
+    </AtTooltip>
   </div>
 </template>

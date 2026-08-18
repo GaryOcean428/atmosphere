@@ -1,10 +1,10 @@
-import type { BoolType, MetaType } from 'nocodb-sdk';
-import type { CalendarType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { BoolType, MetaType } from 'atmosphere-sdk';
+import type { CalendarType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import { extractProps } from '~/helpers/extractProps';
 import { prepareForDb, prepareForResponse } from '~/utils/modelUtils';
-import NocoCache from '~/cache/NocoCache';
-import Noco from '~/Noco';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import Atmosphere from '~/Atmosphere';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import CalendarRange from '~/models/CalendarRange';
 
@@ -29,13 +29,13 @@ export default class CalendarView implements CalendarType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let view =
       viewId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.CALENDAR_VIEW}:${viewId}`,
         CacheGetType.TYPE_OBJECT,
@@ -60,7 +60,7 @@ export default class CalendarView implements CalendarType {
       if (view && calendarRange) {
         view.calendar_range = calendarRange.ranges;
       }
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.CALENDAR_VIEW}:${viewId}`,
         view,
@@ -71,9 +71,9 @@ export default class CalendarView implements CalendarType {
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     view: Partial<CalendarView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = {
       base_id: view.base_id,
@@ -94,10 +94,10 @@ export default class CalendarView implements CalendarType {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     calendarId: string,
     body: Partial<CalendarView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, ['fk_cover_image_col_id', 'meta']);
 
@@ -111,7 +111,7 @@ export default class CalendarView implements CalendarType {
         },
       );
       // if calendar range is updated, delete cache
-      await NocoCache.del(context, `${CacheScope.CALENDAR_VIEW}:${calendarId}`);
+      await AtmosphereCache.del(context, `${CacheScope.CALENDAR_VIEW}:${calendarId}`);
       await CalendarRange.bulkInsert(
         context,
         body.calendar_range.map((range) => {
@@ -136,7 +136,7 @@ export default class CalendarView implements CalendarType {
     );
 
     // update cache
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.CALENDAR_VIEW}:${calendarId}`,
       prepareForResponse(updateObj),

@@ -836,7 +836,7 @@ export type FieldBaseCreate = FieldBase;
 export interface FieldOptionsLongText {
   /** Enable rich text formatting. */
   rich_text?: boolean;
-  /** Enable text generation for this field using NocoAI. */
+  /** Enable text generation for this field using AtmosphereAI. */
   generate_text_using_ai?: boolean;
 }
 
@@ -1847,7 +1847,7 @@ export interface TeamMemberV3Response {
   /**
    * User email address
    * @format email
-   * @example "user@nocodb.com"
+   * @example "user@atmosphere.dev"
    */
   user_email: string;
   /**
@@ -1988,7 +1988,7 @@ export class HttpClient<SecurityDataType = unknown> {
   }: ApiConfig<SecurityDataType> = {}) {
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || 'https://app.nocodb.com',
+      baseURL: axiosConfig.baseURL || 'https://app.atmosphere.dev',
     });
     this.secure = secure;
     this.format = format;
@@ -2102,10 +2102,10 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title NocoDB v3
- * @baseUrl https://app.nocodb.com
+ * @title Atmosphere v3
+ * @baseUrl https://app.atmosphere.dev
  *
- * NocoDB API Documentation
+ * Atmosphere API Documentation
  */
 export class InternalApi<
   SecurityDataType extends unknown,
@@ -2842,7 +2842,7 @@ export class InternalApi<
       }),
 
     /**
-     * @description This API endpoint allows you to retrieve records from a specified table. You can customize the response by applying various query parameters for filtering, sorting, and formatting. **Pagination**: The response is paginated by default, with the first page being returned initially. The response includes the following additional information in the `pageInfo` JSON block: - **next**: Contains the URL to retrieve the next page of records. For example, `"https://app.nocodb.com/api/v3/tables/medhonywr18cysz/records?page=2"` points to the next page of records. - If there are no more records available (you are on the last page), this attribute will be _null_. The `pageInfo` attribute is particularly valuable when working with large datasets divided into multiple pages. It provides the necessary URL to seamlessly fetch subsequent pages, enabling efficient navigation through the dataset.
+     * @description This API endpoint allows you to retrieve records from a specified table. You can customize the response by applying various query parameters for filtering, sorting, and formatting. **Pagination**: The response is paginated by default, with the first page being returned initially. The response includes the following additional information in the `pageInfo` JSON block: - **next**: Contains the URL to retrieve the next page of records. For example, `"https://app.atmosphere.dev/api/v3/tables/medhonywr18cysz/records?page=2"` points to the next page of records. - If there are no more records available (you are on the last page), this attribute will be _null_. The `pageInfo` attribute is particularly valuable when working with large datasets divided into multiple pages. It provides the necessary URL to seamlessly fetch subsequent pages, enabling efficient navigation through the dataset.
      *
      * @tags Table Records
      * @name DbDataTableRowList
@@ -2886,7 +2886,7 @@ export class InternalApi<
          *
          * If `viewId` query parameter is also included, then the filters included here will be applied over the filtering configuration defined in the view.
          *
-         * Please remember to maintain the specified format, for further information on this please see [the documentation](https://nocodb.com/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)
+         * Please remember to maintain the specified format, for further information on this please see [the documentation](https://atmosphere.dev/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)
          */
         where?: string;
         /**
@@ -3119,7 +3119,7 @@ export class InternalApi<
          *
          * If `viewId` query parameter is also included, then the filters included here will be applied over the filtering configuration defined in the view.
          *
-         * Please remember to maintain the specified format, for further information on this please see [the documentation](https://nocodb.com/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)
+         * Please remember to maintain the specified format, for further information on this please see [the documentation](https://atmosphere.dev/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)
          */
         where?: string;
       },
@@ -3186,7 +3186,7 @@ export class InternalApi<
          *
          * You can also use other comparison operators like 'neq' (not equal), 'gt' (greater than), 'lt' (less than), and more, to create complex filtering rules.
          *
-         * Please remember to maintain the specified format, for further information on this please see [the documentation](https://nocodb.com/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)
+         * Please remember to maintain the specified format, for further information on this please see [the documentation](https://atmosphere.dev/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)
          */
         where?: string;
         /**

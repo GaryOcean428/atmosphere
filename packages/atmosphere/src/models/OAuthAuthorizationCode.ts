@@ -6,10 +6,10 @@ import {
   MetaTable,
   RootScopes,
 } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
 import { prepareForDb, prepareForResponse } from '~/utils/modelUtils';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 
 export default class OAuthAuthorizationCode {
   code: string;
@@ -37,7 +37,7 @@ export default class OAuthAuthorizationCode {
 
   public static async insert(
     authCodeData: Partial<OAuthAuthorizationCode>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let insertData = extractProps(authCodeData, [
       'fk_client_id',
@@ -74,8 +74,8 @@ export default class OAuthAuthorizationCode {
     return await this.getByCode(insertData.code, ncMeta);
   }
 
-  static async getByCode(code: string, ncMeta = Noco.ncMeta) {
-    let data = await NocoCache.get(
+  static async getByCode(code: string, ncMeta = Atmosphere.ncMeta) {
+    let data = await AtmosphereCache.get(
       'root',
       `${CacheScope.OAUTH_AUTH_CODE}:${code}`,
       CacheGetType.TYPE_OBJECT,
@@ -89,7 +89,7 @@ export default class OAuthAuthorizationCode {
         { code },
       );
       if (data) {
-        await NocoCache.setExpiring(
+        await AtmosphereCache.setExpiring(
           'root',
           `${CacheScope.OAUTH_AUTH_CODE}:${code}`,
           data,
@@ -101,7 +101,7 @@ export default class OAuthAuthorizationCode {
     return data && this.castType(data);
   }
 
-  static async markAsUsed(code: string, ncMeta = Noco.ncMeta) {
+  static async markAsUsed(code: string, ncMeta = Atmosphere.ncMeta) {
     await ncMeta.metaUpdate(
       RootScopes.ROOT,
       RootScopes.ROOT,
@@ -110,7 +110,7 @@ export default class OAuthAuthorizationCode {
       { code }, // Using code as the primary key
     );
 
-    await NocoCache.update('root', `${CacheScope.OAUTH_AUTH_CODE}:${code}`, {
+    await AtmosphereCache.update('root', `${CacheScope.OAUTH_AUTH_CODE}:${code}`, {
       is_used: true,
     });
 
@@ -125,7 +125,7 @@ export default class OAuthAuthorizationCode {
    */
   static async claimByCode(
     code: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<boolean> {
     if (!code) return false;
     const updated = await ncMeta
@@ -134,16 +134,16 @@ export default class OAuthAuthorizationCode {
       .update({ is_used: true });
     if (!updated) return false;
 
-    await NocoCache.del('root', `${CacheScope.OAUTH_AUTH_CODE}:${code}`);
+    await AtmosphereCache.del('root', `${CacheScope.OAUTH_AUTH_CODE}:${code}`);
     return true;
   }
 
-  static async delete(code: string, ncMeta = Noco.ncMeta) {
+  static async delete(code: string, ncMeta = Atmosphere.ncMeta) {
     if (!code) {
       return false;
     }
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       'root',
       `${CacheScope.OAUTH_AUTH_CODE}:${code}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -157,7 +157,7 @@ export default class OAuthAuthorizationCode {
     );
   }
 
-  static async deleteAllByClient(clientId: string, ncMeta = Noco.ncMeta) {
+  static async deleteAllByClient(clientId: string, ncMeta = Atmosphere.ncMeta) {
     const BATCH_SIZE = 100;
     let deletedCount = 0;
 
@@ -179,7 +179,7 @@ export default class OAuthAuthorizationCode {
       }
 
       for (const code of codes) {
-        await NocoCache.deepDel(
+        await AtmosphereCache.deepDel(
           'root',
           `${CacheScope.OAUTH_AUTH_CODE}:${code.code}`,
           CacheDelDirection.CHILD_TO_PARENT,

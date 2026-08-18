@@ -1,23 +1,23 @@
 export const defaultLimitConfig = {
   limitDefault: Math.max(
     +(
-      process.env.NC_DB_QUERY_LIMIT_DEFAULT ||
+      process.env.ATMOSPHERE_DB_QUERY_LIMIT_DEFAULT ||
       process.env.DB_QUERY_LIMIT_DEFAULT
     ) || 25,
     1,
   ),
   limitMin: Math.max(
-    +(process.env.NC_DB_QUERY_LIMIT_MIN || process.env.DB_QUERY_LIMIT_MIN) || 1,
+    +(process.env.ATMOSPHERE_DB_QUERY_LIMIT_MIN || process.env.DB_QUERY_LIMIT_MIN) || 1,
     1,
   ),
   limitMax: Math.max(
-    +(process.env.NC_DB_QUERY_LIMIT_MAX || process.env.DB_QUERY_LIMIT_MAX) ||
+    +(process.env.ATMOSPHERE_DB_QUERY_LIMIT_MAX || process.env.DB_QUERY_LIMIT_MAX) ||
       1000,
     1,
   ),
   ltarV3Limit: Math.max(
     +(
-      process.env.NC_DB_QUERY_LIMIT_LTAR_V3_LIMIT ||
+      process.env.ATMOSPHERE_DB_QUERY_LIMIT_LTAR_V3_LIMIT ||
       process.env.DB_QUERY_LIMIT_LTAR_V3_LIMIT
     ) || 1000,
     1,
@@ -27,14 +27,14 @@ export const defaultLimitConfig = {
 export const defaultGroupByLimitConfig = {
   limitGroup: Math.max(
     +(
-      process.env.NC_DB_QUERY_LIMIT_GROUP_BY_GROUP ||
+      process.env.ATMOSPHERE_DB_QUERY_LIMIT_GROUP_BY_GROUP ||
       process.env.DB_QUERY_LIMIT_GROUP_BY_GROUP
     ) || 25,
     1,
   ),
   limitRecord: Math.max(
     +(
-      process.env.NC_DB_QUERY_LIMIT_GROUP_BY_RECORD ||
+      process.env.ATMOSPHERE_DB_QUERY_LIMIT_GROUP_BY_RECORD ||
       process.env.DB_QUERY_LIMIT_GROUP_BY_RECORD
     ) || 10,
     1,

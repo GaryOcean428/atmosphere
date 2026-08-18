@@ -6,9 +6,9 @@ import {
   type MetaEventHandler,
 } from './types';
 import type { OnModuleInit, Type } from '@nestjs/common';
-import type { MetaEventType, NcContext } from 'nocodb-sdk';
+import type { MetaEventType, AtContext } from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 @Injectable()
 export class MetaDependencyEventHandler implements OnModuleInit {
@@ -58,9 +58,9 @@ export class MetaDependencyEventHandler implements OnModuleInit {
   }
 
   async handleEvent(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // if suppressed, do not make further evaluation
     if (context.suppressDependencyEvaluation) {
@@ -70,7 +70,7 @@ export class MetaDependencyEventHandler implements OnModuleInit {
     const nextContext = {
       ...context,
       suppressDependencyEvaluation: true,
-    } as NcContext;
+    } as AtContext;
     let trxNcMeta: MetaService;
     try {
       for (const handler of this.metaEventHandlerMap[param.eventType] ?? []) {

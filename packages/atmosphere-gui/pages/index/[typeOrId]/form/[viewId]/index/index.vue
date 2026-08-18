@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnType } from 'nocodb-sdk'
-import { RelationTypes, UITypes, isVirtualCol } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
+import { RelationTypes, UITypes, isVirtualCol } from 'atmosphere-sdk'
 import { ref } from 'vue'
 import { StreamBarcodeReader } from 'vue-barcode-reader'
 
@@ -124,18 +124,18 @@ const { message: templatedMessage } = useTemplatedMessage(
     />
 
     <div
-      class="transition-all duration-300 ease-in relative flex flex-col justify-center gap-2 w-full my-6 bg-nc-bg-default rounded-3xl border-1 border-nc-border-gray-medium px-4 py-8 lg:p-12 md:(p-8)"
+      class="transition-all duration-300 ease-in relative flex flex-col justify-center gap-2 w-full my-6 bg-atm-bg-default rounded-3xl border-1 border-atm-border-gray-medium px-4 py-8 lg:p-12 md:(p-8)"
     >
       <template v-if="sharedFormView">
         <div>
-          <h1 class="text-2xl font-bold text-nc-content-gray-emphasis mb-4">
+          <h1 class="text-2xl font-bold text-atm-content-gray-emphasis mb-4">
             {{ sharedFormView.heading }}
           </h1>
 
           <div v-if="sharedFormView.subheading">
             <LazyCellRichText
               :value="sharedFormView.subheading"
-              class="font-medium text-base text-nc-content-gray-muted !h-auto mb-4 -ml-1"
+              class="font-medium text-base text-atm-content-gray-muted !h-auto mb-4 -ml-1"
               is-form-field
               read-only
               sync-value-change
@@ -148,7 +148,7 @@ const { message: templatedMessage } = useTemplatedMessage(
         <template v-else-if="submitted">
           <div class="flex justify-center">
             <div v-if="sharedFormView" class="w-full">
-              <a-alert class="nc-shared-form-success-msg !mt-2 !mb-4 !py-4 text-left !rounded-lg" type="success" outlined>
+              <a-alert class="atm-shared-form-success-msg !mt-2 !mb-4 !py-4 text-left !rounded-lg" type="success" outlined>
                 <template #message>
                   <LazyCellRichText
                     v-if="templatedMessage"
@@ -169,19 +169,19 @@ const { message: templatedMessage } = useTemplatedMessage(
                 "
                 class="mt-16 w-full flex justify-between items-center flex-wrap gap-3"
               >
-                <p v-if="sharedFormView?.show_blank_form" class="text-sm text-nc-content-gray-muted m-0">
+                <p v-if="sharedFormView?.show_blank_form" class="text-sm text-atm-content-gray-muted m-0">
                   {{ $t('labels.newFormLoaded') }} {{ secondsRemain }} {{ $t('general.seconds').toLowerCase() }}
                 </p>
 
                 <div class="flex-1 self-end flex justify-end">
-                  <NcButton
+                  <AtButton
                     v-if="sharedFormView?.submit_another_form"
                     type="secondary"
                     :size="isMobileMode ? 'medium' : 'small'"
                     @click="submitted = false"
                   >
                     {{ $t('activity.submitAnotherForm') }}
-                  </NcButton>
+                  </AtButton>
                 </div>
               </div>
             </div>
@@ -195,7 +195,7 @@ const { message: templatedMessage } = useTemplatedMessage(
             width="28rem"
             centered
             :footer="null"
-            wrap-class-name="nc-modal-generate-token"
+            wrap-class-name="atm-modal-generate-token"
             destroy-on-close
             @cancel="scannerIsReady = false"
           >
@@ -203,31 +203,31 @@ const { message: templatedMessage } = useTemplatedMessage(
               <StreamBarcodeReader v-show="scannerIsReady" @decode="onDecode" @loaded="onLoaded"> </StreamBarcodeReader>
             </div>
           </a-modal>
-          <GeneralOverlay class="bg-nc-bg-gray-extralight/75 rounded-3xl" :model-value="isLoading" inline transition>
+          <GeneralOverlay class="bg-atm-bg-gray-extralight/75 rounded-3xl" :model-value="isLoading" inline transition>
             <div class="w-full h-full flex items-center justify-center">
               <a-spin size="large" />
             </div>
           </GeneralOverlay>
 
-          <div class="nc-form-wrapper">
+          <div class="atm-form-wrapper">
             <a-form :model="formState">
-              <div class="nc-form h-full">
+              <div class="atm-form h-full">
                 <div class="flex flex-col gap-3 md:gap-6">
                   <div
                     v-for="(field, index) in formColumns"
                     :key="index"
                     class="flex flex-col gap-2"
-                    :data-testid="`nc-shared-form-item-${toSafeClassName(field.title)}`"
+                    :data-testid="`atm-shared-form-item-${toSafeClassName(field.title)}`"
                   >
-                    <div class="nc-form-column-label text-sm font-semibold text-nc-content-gray">
+                    <div class="atm-form-column-label text-sm font-semibold text-atm-content-gray">
                       <span>
                         {{ field.label || field.title }}
                       </span>
-                      <span v-if="isRequired(field, field.required)" class="text-nc-content-red-medium text-base leading-[18px]"
+                      <span v-if="isRequired(field, field.required)" class="text-atm-content-red-medium text-base leading-[18px]"
                         >&nbsp;*</span
                       >
                     </div>
-                    <div v-if="field?.description" class="nc-form-column-description text-nc-content-gray-muted text-sm">
+                    <div v-if="field?.description" class="atm-form-column-description text-atm-content-gray-muted text-sm">
                       <LazyCellRichText
                         :value="field?.description"
                         class="!h-auto -ml-1"
@@ -238,21 +238,21 @@ const { message: templatedMessage } = useTemplatedMessage(
                     </div>
 
                     <div>
-                      <NcTooltip :disabled="!field?.read_only">
+                      <AtTooltip :disabled="!field?.read_only">
                         <template #title> {{ $t('activity.preFilledFields.lockedFieldTooltip') }} </template>
                         <a-form-item
                           v-if="field.title && fieldMappings[field.title]"
                           :name="fieldMappings[field.title]"
-                          class="!my-0 nc-input-required-error"
+                          class="!my-0 atm-input-required-error"
                           v-bind="validateInfos[fieldMappings[field.title]]"
                         >
                           <LazySmartsheetDivDataCell class="flex relative">
                             <LazySmartsheetVirtualCell
                               v-if="isVirtualCol(field)"
                               :model-value="null"
-                              class="mt-0 nc-input nc-cell"
-                              :data-testid="`nc-form-input-cell-${field.label || field.title}`"
-                              :class="[`nc-form-input-${toSafeClassName(field.title)}`, { readonly: field?.read_only }]"
+                              class="mt-0 atm-input atm-cell"
+                              :data-testid="`atm-form-input-cell-${field.label || field.title}`"
+                              :class="[`atm-form-input-${toSafeClassName(field.title)}`, { readonly: field?.read_only }]"
                               :column="field"
                               :read-only="field?.read_only"
                             />
@@ -260,10 +260,10 @@ const { message: templatedMessage } = useTemplatedMessage(
                             <LazySmartsheetCell
                               v-else
                               v-model="formState[field.title]"
-                              class="nc-input truncate"
-                              :data-testid="`nc-form-input-cell-${field.label || field.title}`"
+                              class="atm-input truncate"
+                              :data-testid="`atm-form-input-cell-${field.label || field.title}`"
                               :class="[
-                                `nc-form-input-${toSafeClassName(field.title)}`,
+                                `atm-form-input-${toSafeClassName(field.title)}`,
                                 { 'layout-list': parseProp(field?.meta)?.isList, 'readonly': field?.read_only },
                               ]"
                               :column="field"
@@ -277,7 +277,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                             />
                             <a-button
                               v-if="field.enable_scanner"
-                              class="nc-btn-fill-form-column-by-scan nc-toolbar-btn"
+                              class="atm-btn-fill-form-column-by-scan atm-toolbar-btn"
                               :alt="$t('activity.fillByCodeScan')"
                               @click="showCodeScannerForFieldTitle(field.title)"
                             >
@@ -287,7 +287,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                             </a-button>
                           </LazySmartsheetDivDataCell>
                         </a-form-item>
-                      </NcTooltip>
+                      </AtTooltip>
                     </div>
                   </div>
                 </div>
@@ -295,16 +295,16 @@ const { message: templatedMessage } = useTemplatedMessage(
                 <div class="flex justify-between items-center mt-6">
                   <div></div>
 
-                  <NcButton
+                  <AtButton
                     :disabled="progress"
                     type="primary"
                     :size="isMobileMode ? 'medium' : 'small'"
-                    class="nc-shared-form-button shared-form-submit-button"
+                    class="atm-shared-form-button shared-form-submit-button"
                     data-testid="shared-form-submit-button"
                     @click="submitForm"
                   >
                     {{ $t('general.submit') }}
-                  </NcButton>
+                  </AtButton>
                 </div>
               </div>
             </a-form>
@@ -323,21 +323,21 @@ const { message: templatedMessage } = useTemplatedMessage(
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-cell .nc-action-icon) {
+:deep(.atm-cell .atm-action-icon) {
   @apply !p-1 !text-xs !w-7 !h-7 !flex !items-center !justify-center children:flex-none !cursor-pointer !transition;
 }
-.nc-btn-fill-form-column-by-scan {
+.atm-btn-fill-form-column-by-scan {
   @apply h-auto;
   @apply ml-1;
 }
 
-.nc-shared-form-button {
-  &.nc-button.ant-btn:focus {
+.atm-shared-form-button {
+  &.atm-button.ant-btn:focus {
     @apply shadow-focus;
   }
 }
 
-.nc-input-required-error {
+.atm-input-required-error {
   max-width: 100%;
   white-space: pre-line;
   :deep(.ant-form-item-explain-error) {
@@ -348,7 +348,7 @@ const { message: templatedMessage } = useTemplatedMessage(
 
   &:focus-within {
     :deep(.ant-form-item-explain-error) {
-      @apply text-nc-content-gray-disabled;
+      @apply text-atm-content-gray-disabled;
     }
   }
 }

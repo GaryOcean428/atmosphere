@@ -1,4 +1,4 @@
-import { OrderedOrgRoles, OrderedProjectRoles, OrderedWorkspaceRoles } from 'nocodb-sdk'
+import { OrderedOrgRoles, OrderedProjectRoles, OrderedWorkspaceRoles } from 'atmosphere-sdk'
 import dayjs from 'dayjs'
 import type { UsersSortType } from '~/lib/types'
 

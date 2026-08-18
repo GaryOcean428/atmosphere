@@ -2,8 +2,8 @@
 // - formula dependency list
 // - nested lookup/ rollup
 
-const Api = require('nocodb-sdk').Api;
-const { UITypes } = require('nocodb-sdk');
+const Api = require('atmosphere-sdk').Api;
+const { UITypes } = require('atmosphere-sdk');
 const jsonfile = require('jsonfile');
 
 let inputConfig = jsonfile.readFileSync(`config.json`)
@@ -70,8 +70,8 @@ function isLinkCreated(pId, cId) {
   return true;
 }
 
-// retrieve nc-view column ID from corresponding nc-column ID
-async function nc_getViewColumnId(viewId, viewType, ncColumnId) {
+// retrieve atm-view column ID from corresponding atm-column ID
+async function atm_getViewColumnId(viewId, viewType, ncColumnId) {
   // retrieve view Info
   let viewDetails;
 
@@ -287,7 +287,7 @@ async function configureGrid() {
         let ncColumnId = srcTbl.columns.find(
           a => a.title === gridList[gridCnt].columns[colCnt].title
         )?.id;
-        // let ncViewColumnId = await nc_getViewColumnId( viewCreated.id, "grid", ncColumnId )
+        // let ncViewColumnId = await atm_getViewColumnId( viewCreated.id, "grid", ncColumnId )
         let ncViewColumnId = viewDetails.find(
           x => x.fk_column_id === ncColumnId
         )?.id;
@@ -366,7 +366,7 @@ async function configureForm() {
         let ncColumnId = srcTbl.columns.find(
           a => a.title === formList[formCnt].columns[colCnt].title
         )?.id;
-        let ncViewColumnId = await nc_getViewColumnId(
+        let ncViewColumnId = await atm_getViewColumnId(
           viewCreated.id,
           'form',
           ncColumnId
@@ -398,7 +398,7 @@ async function restoreBaseData() {
 
     while (moreRecords) {
       let recList = await api.dbTableRow.list(
-        'nc',
+        'atm',
         ncConfig.srcProject,
         tblSchema.title,
         {},
@@ -411,7 +411,7 @@ async function restoreBaseData() {
 
       for (let recCnt = 0; recCnt < recList.list.length; recCnt++) {
         let record = await api.dbTableRow.read(
-          'nc',
+          'atm',
           ncConfig.srcProject,
           tblSchema.title,
           recList.list[recCnt][pk]
@@ -427,7 +427,7 @@ async function restoreBaseData() {
           if (dt === UITypes.Rollup) delete record[key];
         }
         await api.dbTableRow.create(
-          'nc',
+          'atm',
           ncConfig.baseName,
           tblSchema.title,
           record
@@ -448,7 +448,7 @@ async function restoreLinks() {
 
     while (moreRecords) {
       let recList = await api.dbTableRow.list(
-        'nc',
+        'atm',
         ncConfig.srcProject,
         rootLinks[i].linkSrcTbl.title,
         {},
@@ -461,7 +461,7 @@ async function restoreLinks() {
 
       for (let recCnt = 0; recCnt < recList.list.length; recCnt++) {
         let record = await api.dbTableRow.read(
-          'nc',
+          'atm',
           ncConfig.srcProject,
           rootLinks[i].linkSrcTbl.title,
           recList.list[recCnt][pk]
@@ -469,7 +469,7 @@ async function restoreLinks() {
         let linkField = record[rootLinks[i].linkColumn.title];
         if (linkField.length) {
           await api.dbTableRow.nestedAdd(
-            'nc',
+            'atm',
             ncConfig.baseName,
             rootLinks[i].linkSrcTbl.title,
             record[pk],

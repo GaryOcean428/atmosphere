@@ -1,8 +1,8 @@
-import type { BoolType, KanbanColumnType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { BoolType, KanbanColumnType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import View from '~/models/View';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 
@@ -23,13 +23,13 @@ export default class KanbanViewColumn implements KanbanColumnType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     kanbanViewColumnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let viewColumn =
       kanbanViewColumnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.KANBAN_VIEW_COLUMN}:${kanbanViewColumnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -42,7 +42,7 @@ export default class KanbanViewColumn implements KanbanColumnType {
         kanbanViewColumnId,
       );
       if (viewColumn) {
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.KANBAN_VIEW_COLUMN}:${kanbanViewColumnId}`,
           viewColumn,
@@ -52,9 +52,9 @@ export default class KanbanViewColumn implements KanbanColumnType {
     return viewColumn && new KanbanViewColumn(viewColumn);
   }
   static async insert(
-    context: NcContext,
+    context: AtContext,
     column: Partial<KanbanViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(column, [
       'fk_view_id',
@@ -89,7 +89,7 @@ export default class KanbanViewColumn implements KanbanColumnType {
     );
 
     return this.get(context, id, ncMeta).then(async (kanbanViewColumn) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.KANBAN_VIEW_COLUMN,
         [column.fk_view_id],
@@ -100,11 +100,11 @@ export default class KanbanViewColumn implements KanbanColumnType {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<KanbanViewColumn[]> {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.KANBAN_VIEW_COLUMN,
       [viewId],
@@ -125,7 +125,7 @@ export default class KanbanViewColumn implements KanbanColumnType {
           },
         },
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.KANBAN_VIEW_COLUMN,
         [viewId],
@@ -142,10 +142,10 @@ export default class KanbanViewColumn implements KanbanColumnType {
 
   // todo: update prop names
   static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     body: Partial<KanbanViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, ['order', 'show']);
 
@@ -160,7 +160,7 @@ export default class KanbanViewColumn implements KanbanColumnType {
 
     // get existing cache
     const key = `${CacheScope.KANBAN_VIEW_COLUMN}:${columnId}`;
-    await NocoCache.update(context, key, updateObj);
+    await AtmosphereCache.update(context, key, updateObj);
 
     // on view column update, delete any optimised single query cache
     {

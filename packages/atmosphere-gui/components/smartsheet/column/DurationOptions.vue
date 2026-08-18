@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, UITypes } from 'nocodb-sdk'
+import { ColumnHelper, UITypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -27,21 +27,21 @@ vModel.value.meta = {
   <a-row>
     <a-col :span="24">
       <a-form-item :label="$t('general.format')">
-        <a-select v-model:value="vModel.meta.duration" class="w-52" dropdown-class-name="nc-dropdown-duration-option">
-          <template #suffixIcon> <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" /> </template>
+        <a-select v-model:value="vModel.meta.duration" class="w-52" dropdown-class-name="atm-dropdown-duration-option">
+          <template #suffixIcon> <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" /> </template>
 
           <a-select-option v-for="(duration, i) of durationOptionList" :key="i" :value="duration.id">
             <div class="flex gap-2 w-full truncate items-center" :data-testid="duration.title">
-              <NcTooltip show-on-truncate-only class="flex-1 truncate">
+              <AtTooltip show-on-truncate-only class="flex-1 truncate">
                 <template #title> {{ duration.title }}</template>
                 {{ duration.title }}
-              </NcTooltip>
+              </AtTooltip>
 
               <component
                 :is="iconMap.check"
                 v-if="vModel.meta.duration === duration.id"
-                id="nc-selected-item-icon"
-                class="text-nc-content-brand w-4 h-4"
+                id="atm-selected-item-icon"
+                class="text-atm-content-brand w-4 h-4"
               />
             </div>
           </a-select-option>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttachmentReqType, PublicAttachmentScope } from 'nocodb-sdk'
+import type { AttachmentReqType, PublicAttachmentScope } from 'atmosphere-sdk'
 import type { UploadFile } from 'ant-design-vue'
 import { useProvideUploadState } from './UploadProviders/useUploadState'
 
@@ -50,7 +50,7 @@ const closeModalFn = () => {
 }
 
 const handleModalUpload = async (files: File[]) => {
-  const uploadPath = props.uploadPath || [NOCO, base.value?.id].filter(Boolean).join('/')
+  const uploadPath = props.uploadPath || [ATMOSPHERE, base.value?.id].filter(Boolean).join('/')
 
   const uploadResult = await batchUploadFiles([...files], uploadPath)
 
@@ -97,21 +97,21 @@ const handleAttachmentUpload = async (attachments: any[]) => {
 }
 
 // Provide upload state to modal and all providers
-const uploadPath = computed(() => props.uploadPath || [NOCO, base.value?.id].filter(Boolean).join('/'))
+const uploadPath = computed(() => props.uploadPath || [ATMOSPHERE, base.value?.id].filter(Boolean).join('/'))
 useProvideUploadState(handleModalUpload, handleAttachmentUpload, closeModalFn, uploadPath.value, props.uploadScope)
 </script>
 
 <template>
-  <div class="nc-file-upload flex flex-col gap-2">
+  <div class="atm-file-upload flex flex-col gap-2">
     <!-- Trigger slot - customizable button/trigger -->
     <div>
       <slot name="trigger" :open="openModal">
-        <NcButton size="small" :disabled="disabled" type="secondary" @click="openModal">
+        <AtButton size="small" :disabled="disabled" type="secondary" @click="openModal">
           <div class="flex gap-2 items-center">
             <GeneralIcon icon="upload" />
             Click to Upload
           </div>
-        </NcButton>
+        </AtButton>
       </slot>
     </div>
 
@@ -122,54 +122,54 @@ useProvideUploadState(handleModalUpload, handleAttachmentUpload, closeModalFn, u
         <div
           v-for="file in uploadedFiles"
           :key="file.uid"
-          class="border-1 border-nc-border-gray-medium bg-nc-bg-default flex items-center pl-1 py-2 pr-2 rounded-xl group"
+          class="border-1 border-atm-border-gray-medium bg-atm-bg-default flex items-center pl-1 py-2 pr-2 rounded-xl group"
         >
           <CellAttachmentIconView class="w-10 h-10" :item="{ title: file.name, mimetype: file.type }" />
           <div class="flex flex-col flex-1 min-w-0 px-2">
-            <div class="text-caption text-nc-content-gray">
-              <NcTooltip class="!max-w-[200px] truncate" show-on-truncate-only>
+            <div class="text-caption text-atm-content-gray">
+              <AtTooltip class="!max-w-[200px] truncate" show-on-truncate-only>
                 {{ file.name }}
                 <template #title>
                   {{ file.name }}
                 </template>
-              </NcTooltip>
+              </AtTooltip>
             </div>
-            <div class="text-caption text-nc-content-gray-muted">
+            <div class="text-caption text-atm-content-gray-muted">
               {{ formatBytes(file.size || 0) }}
             </div>
           </div>
-          <NcButton
+          <AtButton
             v-if="!disabled"
             type="text"
             size="xsmall"
             class="!opacity-0 group-hover:!opacity-100 transition-opacity"
             @click="handleRemove(file)"
           >
-            <GeneralIcon icon="delete" class="text-nc-content-red-medium" />
-          </NcButton>
+            <GeneralIcon icon="delete" class="text-atm-content-red-medium" />
+          </AtButton>
         </div>
       </slot>
 
       <!-- Add more button for multiple uploads -->
       <div v-if="multiple" @click="openModal">
         <slot name="add-more">
-          <NcButton size="small" :disabled="disabled" type="text">
+          <AtButton size="small" :disabled="disabled" type="text">
             <div class="flex gap-2 items-center">
               <GeneralIcon icon="plus" />
               Add More Files
             </div>
-          </NcButton>
+          </AtButton>
         </slot>
       </div>
     </div>
 
     <!-- Upload Modal -->
-    <NcFileUploadModal v-model:visible="showModal" :enabled-providers="enabledProviders" />
+    <AtFileUploadModal v-model:visible="showModal" :enabled-providers="enabledProviders" />
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-file-upload {
+.atm-file-upload {
   :deep(.ant-upload) {
     width: 100%;
   }

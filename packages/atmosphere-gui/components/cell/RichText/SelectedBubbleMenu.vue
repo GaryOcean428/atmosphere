@@ -113,7 +113,7 @@ const applyRecent = (entry: { type: 'text' | 'bg'; color: string }) => {
 
 const onDocClick = (e: MouseEvent) => {
   if (!showColorPicker.value) return
-  const hit = (e.target as HTMLElement)?.closest?.('.nc-color-picker-dropdown, .nc-highlight-btn')
+  const hit = (e.target as HTMLElement)?.closest?.('.atm-color-picker-dropdown, .atm-highlight-btn')
   if (!hit) showColorPicker.value = false
 }
 onMounted(() => document.addEventListener('mousedown', onDocClick))
@@ -192,7 +192,7 @@ const onToggleLink = () => {
     }
 
     setTimeout(() => {
-      const linkInput = document.querySelector('.nc-text-area-rich-link-option-input')
+      const linkInput = document.querySelector('.atm-text-area-rich-link-option-input')
       if (linkInput) {
         ;(linkInput as any).focus()
       }
@@ -434,8 +434,8 @@ const menuEntries = computed<MenuEntry[]>(() => {
   <div
     class="bubble-menu flex-row gap-x-1 rounded-lg"
     :class="{
-      'nc-form-field-bubble-menu inline-flex py-0': isFormField,
-      'flex bg-nc-bg-gray-light px-1 py-1': !isFormField,
+      'atm-form-field-bubble-menu inline-flex py-0': isFormField,
+      'flex bg-atm-bg-gray-light px-1 py-1': !isFormField,
       'embed-mode': embedMode,
       'full-mode': !embedMode,
       'edit-column-mode': isEditColumn,
@@ -443,14 +443,14 @@ const menuEntries = computed<MenuEntry[]>(() => {
   >
     <template v-for="entry in menuEntries" :key="entry.key">
       <!-- Standard button -->
-      <NcTooltip v-if="entry.type === 'button'" :placement="tooltipPlacement" :disabled="entry.disabled()">
+      <AtTooltip v-if="entry.type === 'button'" :placement="tooltipPlacement" :disabled="entry.disabled()">
         <template #title>
           <div class="flex flex-col items-center">
             <div>{{ entry.tooltip }}</div>
             <div v-if="entry.shortcut">{{ entry.shortcut }}</div>
           </div>
         </template>
-        <NcButton
+        <AtButton
           size="small"
           type="text"
           :class="{ 'is-active': entry.isActive() }"
@@ -459,43 +459,43 @@ const menuEntries = computed<MenuEntry[]>(() => {
           @click="entry.action"
         >
           <GeneralIcon :icon="entry.icon" />
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
 
       <!-- Divider -->
       <div v-else-if="entry.type === 'divider'" class="divider" />
 
       <!-- Color picker -->
       <template v-else-if="entry.type === 'colorPicker'">
-        <NcTooltip :disabled="editor.isActive('codeBlock') || showColorPicker">
+        <AtTooltip :disabled="editor.isActive('codeBlock') || showColorPicker">
           <template #title> {{ $t('general.color') }} </template>
-          <NcButton
+          <AtButton
             size="small"
             type="text"
-            class="nc-highlight-btn"
+            class="atm-highlight-btn"
             :class="{ 'is-active': activeHighlightColor || activeTextColor }"
             :disabled="editor.isActive('codeBlock')"
             @click="showColorPicker = !showColorPicker"
           >
             <span
-              class="nc-color-btn-preview"
+              class="atm-color-btn-preview"
               :style="{
-                color: activeTextColor || 'var(--nc-content-gray)',
+                color: activeTextColor || 'var(--atm-content-gray)',
                 backgroundColor: activeHighlightColor || 'transparent',
-                borderColor: activeHighlightColor || 'var(--nc-border-gray-medium)',
+                borderColor: activeHighlightColor || 'var(--atm-border-gray-medium)',
               }"
               >A</span
             >
-          </NcButton>
-        </NcTooltip>
-        <div v-if="showColorPicker" class="nc-color-picker-dropdown" @mousedown.prevent>
+          </AtButton>
+        </AtTooltip>
+        <div v-if="showColorPicker" class="atm-color-picker-dropdown" @mousedown.prevent>
           <template v-if="recentColors.length">
-            <div class="nc-color-picker-label">{{ $t('labels.recentlyUsed') }}</div>
-            <div class="nc-color-picker-grid">
+            <div class="atm-color-picker-label">{{ $t('labels.recentlyUsed') }}</div>
+            <div class="atm-color-picker-grid">
               <button
                 v-for="(r, idx) in recentColors"
                 :key="idx"
-                class="nc-color-swatch"
+                class="atm-color-swatch"
                 :class="{
                   'is-active': r.type === 'text' ? activeTextColor === r.color : activeHighlightColor === r.color,
                 }"
@@ -507,30 +507,30 @@ const menuEntries = computed<MenuEntry[]>(() => {
                 :title="r.type === 'text' ? $t('labels.textColor') : $t('labels.backgroundColor')"
                 @click="applyRecent(r)"
               >
-                <span v-if="r.type === 'text'" class="nc-color-swatch-letter" :style="{ color: r.color }">A</span>
+                <span v-if="r.type === 'text'" class="atm-color-swatch-letter" :style="{ color: r.color }">A</span>
               </button>
             </div>
           </template>
-          <div class="nc-color-picker-label">{{ $t('labels.textColor') }}</div>
-          <div class="nc-color-picker-grid">
+          <div class="atm-color-picker-label">{{ $t('labels.textColor') }}</div>
+          <div class="atm-color-picker-grid">
             <button
               v-for="tc in textColors"
               :key="tc.color"
-              class="nc-color-swatch"
+              class="atm-color-swatch"
               :class="{ 'is-active': tc.color !== '#1f2937' && activeTextColor === tc.color }"
               :style="{ borderColor: `color-mix(in srgb, ${tc.color} 30%, transparent)` }"
               :title="tc.name"
               @click="applyTextColor(tc.color)"
             >
-              <span class="nc-color-swatch-letter" :style="{ color: tc.color }">A</span>
+              <span class="atm-color-swatch-letter" :style="{ color: tc.color }">A</span>
             </button>
           </div>
-          <div class="nc-color-picker-label">{{ $t('labels.backgroundColor') }}</div>
-          <div class="nc-color-picker-grid">
+          <div class="atm-color-picker-label">{{ $t('labels.backgroundColor') }}</div>
+          <div class="atm-color-picker-grid">
             <button
               v-for="b in bgColors"
               :key="b.color || 'none'"
-              class="nc-color-swatch"
+              class="atm-color-swatch"
               :class="{ 'is-active': b.color && activeHighlightColor === b.color }"
               :style="b.color ? { backgroundColor: b.color, borderColor: b.color } : {}"
               :title="b.name"
@@ -541,9 +541,9 @@ const menuEntries = computed<MenuEntry[]>(() => {
       </template>
 
       <!-- Link -->
-      <NcTooltip v-else-if="entry.type === 'link'" :placement="tooltipPlacement" :disabled="editor.isActive('codeBlock')">
+      <AtTooltip v-else-if="entry.type === 'link'" :placement="tooltipPlacement" :disabled="editor.isActive('codeBlock')">
         <template #title> {{ $t('general.link') }}</template>
-        <NcButton
+        <AtButton
           size="small"
           type="text"
           :class="{ 'is-active': editor.isActive('link') }"
@@ -556,8 +556,8 @@ const menuEntries = computed<MenuEntry[]>(() => {
             <GeneralIcon icon="link2" />
             <div class="!text-xs !ml-1">{{ $t('general.link') }}</div>
           </div>
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
 
       <!-- Image -->
       <CellRichTextImageMenu
@@ -568,14 +568,14 @@ const menuEntries = computed<MenuEntry[]>(() => {
       />
 
       <!-- Mention -->
-      <NcTooltip v-else-if="entry.type === 'mention'">
+      <AtTooltip v-else-if="entry.type === 'mention'">
         <template #title>
           <div class="flex flex-col items-center">
             <div>{{ $t('labels.mention') }}</div>
             <div>@</div>
           </div>
         </template>
-        <NcButton
+        <AtButton
           size="small"
           type="text"
           :class="{ 'is-active': editor?.isActive('suggestions') }"
@@ -583,14 +583,14 @@ const menuEntries = computed<MenuEntry[]>(() => {
           @click="newMentionNode"
         >
           <GeneralIcon icon="atSign" />
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
 
       <!-- Close -->
-      <div v-else-if="entry.type === 'close'" class="!sticky right-0 pr-0.5 bg-nc-bg-default">
-        <NcButton type="text" size="small" @click="emits('close')">
+      <div v-else-if="entry.type === 'close'" class="!sticky right-0 pr-0.5 bg-atm-bg-default">
+        <AtButton type="text" size="small" @click="emits('close')">
           <GeneralIcon icon="close" />
-        </NcButton>
+        </AtButton>
       </div>
     </template>
   </div>
@@ -608,57 +608,57 @@ const menuEntries = computed<MenuEntry[]>(() => {
 }
 
 .bubble-text-format-button-icon {
-  @apply px-1.5 py-0 border-1 border-nc-border-gray-dark rounded-sm items-center justify-center;
+  @apply px-1.5 py-0 border-1 border-atm-border-gray-dark rounded-sm items-center justify-center;
   font-size: 0.8rem;
   font-weight: 600;
 }
 .bubble-text-format-button {
-  @apply rounded-md py-1 my-0 pl-2.5 pr-3 cursor-pointer items-center gap-x-2.5 hover:bg-nc-bg-gray-light;
+  @apply rounded-md py-1 my-0 pl-2.5 pr-3 cursor-pointer items-center gap-x-2.5 hover:bg-atm-bg-gray-light;
 }
 
 .bubble-menu.full-mode {
-  @apply border-nc-border-gray-light
+  @apply border-atm-border-gray-light
   box-shadow: 0px 0px 1.2rem 0 rgb(230, 230, 230) !important;
 }
 
-.bubble-menu.embed-mode:not(.nc-form-field-bubble-menu) {
+.bubble-menu.embed-mode:not(.atm-form-field-bubble-menu) {
   @apply border-transparent !shadow-none;
 }
 .bubble-menu.form-field-mode {
   @apply bg-transparent px-0;
 }
 
-.embed-mode.bubble-menu:not(.nc-form-field-bubble-menu) {
+.embed-mode.bubble-menu:not(.atm-form-field-bubble-menu) {
   @apply !py-0 !my-0 !border-0;
 
   .divider {
-    @apply my-0 !h-11 border-nc-border-gray-light;
+    @apply my-0 !h-11 border-atm-border-gray-light;
   }
 
-  .nc-button {
+  .atm-button {
     @apply !mt-1.65;
   }
 }
 
 .bubble-menu {
   // shadow
-  @apply bg-nc-bg-default;
+  @apply bg-atm-bg-default;
   position: relative;
   border-width: 1px;
 
-  &.nc-form-field-bubble-menu {
+  &.atm-form-field-bubble-menu {
     .divider {
-      @apply border-r-1 border-nc-border-gray-medium my-0;
+      @apply border-r-1 border-atm-border-gray-medium my-0;
     }
   }
 
-  .nc-button.is-active {
-    @apply !hover:outline-nc-gray-200 bg-nc-bg-gray-light text-nc-content-brand hover:text-nc-content-brand;
+  .atm-button.is-active {
+    @apply !hover:outline-atm-gray-200 bg-atm-bg-gray-light text-atm-content-brand hover:text-atm-content-brand;
     outline: 1px;
   }
-  &:not(.nc-form-field-bubble-menu) {
+  &:not(.atm-form-field-bubble-menu) {
     .divider {
-      @apply border-r-1 border-nc-border-gray-medium !h-6 !mx-0.5 my-1;
+      @apply border-r-1 border-atm-border-gray-medium !h-6 !mx-0.5 my-1;
     }
   }
   .ant-select-selector {
@@ -672,7 +672,7 @@ const menuEntries = computed<MenuEntry[]>(() => {
   }
 }
 
-.nc-color-btn-preview {
+.atm-color-btn-preview {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -687,12 +687,12 @@ const menuEntries = computed<MenuEntry[]>(() => {
 
 /* ── Color picker dropdown ─────────────────────────────── */
 
-.nc-color-picker-dropdown {
+.atm-color-picker-dropdown {
   position: absolute;
   bottom: 0;
   transform: translateY(calc(100% + 4px));
-  background: var(--nc-bg-default);
-  border: 1px solid var(--nc-border-gray-medium);
+  background: var(--atm-bg-default);
+  border: 1px solid var(--atm-border-gray-medium);
   border-radius: 8px;
   padding: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -700,10 +700,10 @@ const menuEntries = computed<MenuEntry[]>(() => {
   width: 196px;
 }
 
-.nc-color-picker-label {
+.atm-color-picker-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--nc-content-gray-subtle);
+  color: var(--atm-content-gray-subtle);
   margin-bottom: 6px;
   margin-top: 10px;
 
@@ -712,37 +712,37 @@ const menuEntries = computed<MenuEntry[]>(() => {
   }
 }
 
-.nc-color-picker-grid {
+.atm-color-picker-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 8px;
 }
 
-.nc-color-swatch {
+.atm-color-swatch {
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  border: 1.5px solid var(--nc-border-gray-medium);
+  border: 1.5px solid var(--atm-border-gray-medium);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--nc-bg-default);
+  background: var(--atm-bg-default);
   transition: border-color 0.1s, transform 0.1s;
   padding: 0;
 
   &:hover {
     transform: scale(1.08);
-    border-color: var(--nc-content-gray-subtle);
+    border-color: var(--atm-content-gray-subtle);
   }
 
   &.is-active {
-    border-color: var(--nc-content-gray);
+    border-color: var(--atm-content-gray);
     border-width: 2px;
   }
 }
 
-.nc-color-swatch-letter {
+.atm-color-swatch-letter {
   font-size: 14px;
   font-weight: 700;
   line-height: 1;

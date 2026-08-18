@@ -3,7 +3,7 @@ const color1 = ref('')
 </script>
 
 <template>
-  <div class="bg-nc-bg-gray-light">
+  <div class="bg-atm-bg-gray-light">
     <a-card>
       <h4>Simple</h4>
 
@@ -18,7 +18,7 @@ const color1 = ref('')
       <h4>
         As dropdown with custom button
         <GeneralAdvanceColorPickerDropdown v-model="color1">
-          <NcButton>Hello world</NcButton>
+          <AtButton>Hello world</AtButton>
         </GeneralAdvanceColorPickerDropdown>
       </h4>
     </a-card>

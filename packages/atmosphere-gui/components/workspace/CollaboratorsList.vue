@@ -8,7 +8,7 @@ import {
   PlanTitles,
   WorkspaceUserRoles,
   type WorkspaceUserType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 const props = defineProps<{
   workspaceId?: string
@@ -196,7 +196,7 @@ const updateCollaborator = async (collab: any, roles: WorkspaceUserRoles, overri
   } catch (e: any) {
     const errorInfo = await extractSdkResponseErrorMsgv2(e)
 
-    if (isPaymentEnabled.value && errorInfo.error === NcErrorType.ERR_PLAN_LIMIT_EXCEEDED) {
+    if (isPaymentEnabled.value && errorInfo.error === AtErrorType.ERR_PLAN_LIMIT_EXCEEDED) {
       const details = errorInfo.details as PlanLimitExceededDetailsType
 
       showUserPlanLimitExceededModal({
@@ -332,7 +332,7 @@ const orderBy = computed<Record<string, SordDirectionType>>({
   },
 })
 
-const columns = computed<NcTableColumnProps[]>(() => [
+const columns = computed<AtTableColumnProps[]>(() => [
   // // Enable this select row column once we introduce bulk action
   // {
   //   key: 'select',
@@ -364,7 +364,7 @@ const columns = computed<NcTableColumnProps[]>(() => [
           minWidth: showBillableLabel.value ? 110 : 150,
           dataIndex: 'billable',
           showOrderBy: true,
-        } as NcTableColumnProps,
+        } as AtTableColumnProps,
       ]
     : []),
   {
@@ -473,11 +473,11 @@ watch(inviteDlg, (newVal) => {
 
 <template>
   <div
-    class="nc-collaborator-table-container overflow-auto nc-scrollbar-thin relative"
+    class="atm-collaborator-table-container overflow-auto atm-scrollbar-thin relative"
     :class="{
-      'nc-is-admin-panel': isAdminPanel,
-      'nc-is-ws-members-list': !isAdminPanel,
-      'nc-is-settings-sidebar': isSettingsSidebar,
+      'atm-is-admin-panel': isAdminPanel,
+      'atm-is-ws-members-list': !isAdminPanel,
+      'atm-is-settings-sidebar': isSettingsSidebar,
     }"
     @scroll.passive="handleScroll"
   >
@@ -486,23 +486,23 @@ watch(inviteDlg, (newVal) => {
     </div>
 
     <div
-      class="nc-collaborator-table-wrapper h-full nc-content-max-w mx-auto pt-4 pb-4 md:pb-6 px-4 md:px-6 flex flex-col gap-6 sticky top-0"
+      class="atm-collaborator-table-wrapper h-full atm-content-max-w mx-auto pt-4 pb-4 md:pb-6 px-4 md:px-6 flex flex-col gap-6 sticky top-0"
     >
       <div class="w-full flex items-center justify-between gap-3">
         <a-input
           v-model:value="userSearchText"
           allow-clear
           :disabled="isCollaboratorsLoading"
-          class="nc-input-border-on-value !max-w-90 !h-8 !px-3 !py-1 !rounded-lg"
+          class="atm-input-border-on-value !max-w-90 !h-8 !px-3 !py-1 !rounded-lg"
           :placeholder="isTeamsEnabled && showEEFeatures ? $t('title.searchForMembersOrTeams') : $t('title.searchMembers')"
         >
           <template #prefix>
-            <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-nc-content-gray-muted group-hover:text-nc-content-gray-extreme" />
+            <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-atm-content-gray-muted group-hover:text-atm-content-gray-extreme" />
           </template>
         </a-input>
         <div class="flex items-center gap-4">
           <template v-if="!isMobileMode && (isPaymentEnabled || appInfo.isOnPrem) && paidUsersCount && showEEFeatures">
-            <NcTooltip
+            <AtTooltip
               v-if="activePlanTitle === PlanTitles.FREE && !appInfo.isOnPrem"
               :tooltip-style="{ width: '230px' }"
               :overlay-inner-style="{ width: '230px' }"
@@ -512,37 +512,37 @@ watch(inviteDlg, (newVal) => {
                 })
               "
             >
-              <div class="flex items-center text-nc-content-gray-default text-sm whitespace-nowrap">
+              <div class="flex items-center text-atm-content-gray-default text-sm whitespace-nowrap">
                 <GeneralIcon icon="ncCrown" class="flex-none h-4 w-4 mr-1" />
 
                 {{ paidUsersCount }} {{ paidUsersCount === 1 ? $t('labels.editorSeat') : $t('labels.editorSeats') }}
               </div>
-            </NcTooltip>
+            </AtTooltip>
             <div
               v-else-if="appInfo.isOnPrem && !appInfo.ee"
-              class="flex items-center text-nc-content-gray-default text-sm whitespace-nowrap"
+              class="flex items-center text-atm-content-gray-default text-sm whitespace-nowrap"
             >
               <GeneralIcon icon="ncCrown" class="flex-none h-4 w-4 mr-1" />
 
               {{ paidUsersCount }} {{ paidUsersCount === 1 ? $t('labels.editorSeat') : $t('labels.editorSeats') }}
             </div>
-            <div v-else class="flex items-center text-nc-content-gray-default text-sm whitespace-nowrap">
+            <div v-else class="flex items-center text-atm-content-gray-default text-sm whitespace-nowrap">
               <GeneralIcon icon="ncCrown" class="flex-none h-4 w-4 mr-1" />
 
               {{ paidUsersCount }} {{ $t('general.paid') }}
               {{ paidUsersCount === 1 ? $t('general.seat').toLowerCase() : $t('general.seats').toLowerCase() }}
             </div>
-            <div class="self-stretch border-r-1 border-nc-border-gray-medium"></div>
+            <div class="self-stretch border-r-1 border-atm-border-gray-medium"></div>
           </template>
 
           <div class="flex items-center gap-2">
-            <NcButton
+            <AtButton
               v-if="isTeamsEnabled && showEEFeatures"
               v-e="['c:workspace:team-add']"
               size="small"
               type="secondary"
               :disabled="isCollaboratorsLoading"
-              data-testid="nc-add-teams-btn"
+              data-testid="atm-add-teams-btn"
               text-color="primary"
               @click="
                 showUpgradeToUseTeams({
@@ -558,13 +558,13 @@ watch(inviteDlg, (newVal) => {
                 <GeneralIcon icon="ncBuilding" />
                 <span class="hidden sm:inline">{{ $t('labels.addTeams') }}</span>
               </div>
-            </NcButton>
+            </AtButton>
 
-            <NcButton
+            <AtButton
               size="small"
               type="primary"
               :disabled="isCollaboratorsLoading"
-              data-testid="nc-add-member-btn"
+              data-testid="atm-add-member-btn"
               @click="
                 blockWorkspaceMembers
                   ? showUpgradeToManageWorkspaceMembers({ triggerSource: 'collaborators-members' })
@@ -576,12 +576,12 @@ watch(inviteDlg, (newVal) => {
                 <span class="hidden sm:inline">{{ $t('activity.addMembers') }}</span>
                 <LazyPaymentUpgradeBadge :feature-enabled-callback="() => !blockWorkspaceMembers" remove-click />
               </div>
-            </NcButton>
+            </AtButton>
           </div>
         </div>
       </div>
 
-      <NcAlert
+      <AtAlert
         v-if="showUpgradeAlert"
         ref="tableHeaderSectionRef"
         type="warning"
@@ -597,10 +597,10 @@ watch(inviteDlg, (newVal) => {
         "
       >
         <template #action>
-          <NcButton
+          <AtButton
             type="text"
             size="small"
-            class="!text-nc-content-brand !font-700"
+            class="!text-atm-content-brand !font-700"
             @click="
               navigateToPricing({
                 limitOrFeature:
@@ -611,19 +611,19 @@ watch(inviteDlg, (newVal) => {
             "
           >
             {{ isWsOwner ? 'Upgrade' : $t('general.requestUpgrade') }}
-          </NcButton>
+          </AtButton>
         </template>
-      </NcAlert>
+      </AtAlert>
 
       <div class="flex" :style="{ height: tableHeight }">
-        <NcTable
+        <AtTable
           v-model:order-by="orderBy"
           :columns="columns"
           :data="sortedCollaborators"
           :is-data-loading="isCollaboratorsLoading"
           :custom-row="customRow"
           :bordered="false"
-          class="flex-1 nc-collaborators-list"
+          class="flex-1 atm-collaborators-list"
           :pagination="true"
           :pagination-offset="25"
         >
@@ -633,7 +633,7 @@ watch(inviteDlg, (newVal) => {
 
           <template #headerCell="{ column }">
             <template v-if="column.key === 'select'">
-              <NcCheckbox v-model:checked="selectAll" :disabled="!sortedCollaborators.length" />
+              <AtCheckbox v-model:checked="selectAll" :disabled="!sortedCollaborators.length" />
             </template>
             <template v-else>
               {{ column.title }}
@@ -642,53 +642,53 @@ watch(inviteDlg, (newVal) => {
 
           <template #bodyCell="{ column, record, recordIndex }">
             <template v-if="column.key === 'select'">
-              <NcCheckbox v-model:checked="selected[recordIndex]" />
+              <AtCheckbox v-model:checked="selected[recordIndex]" />
             </template>
 
             <template v-if="column.key === 'email' && record.isTeam">
               <GeneralTeamInfo :team="transformToTeamObject(record, teamsMap[record.id])" />
-              <NcBadge
+              <AtBadge
                 v-if="teamsMap[record.id]?.scope === 'org'"
                 :border="false"
                 color="blue"
                 class="text-[10px] leading-[14px] !h-[18px] font-semibold flex-none"
               >
                 {{ $t('general.orgBadge') }}
-              </NcBadge>
+              </AtBadge>
             </template>
 
             <div v-else-if="column.key === 'email'" class="w-full flex gap-3 items-center">
               <GeneralUserIcon size="base" :user="record" class="flex-none" />
               <div class="flex flex-col flex-1 max-w-[calc(100%_-_44px)]">
                 <div class="flex items-center gap-1">
-                  <NcTooltip class="truncate max-w-full text-nc-content-gray capitalize font-semibold" show-on-truncate-only>
+                  <AtTooltip class="truncate max-w-full text-atm-content-gray capitalize font-semibold" show-on-truncate-only>
                     <template #title>
                       {{ extractUserDisplayNameOrEmail(record) }}
                     </template>
                     {{ extractUserDisplayNameOrEmail(record) }}
-                  </NcTooltip>
-                  <NcTooltip
+                  </AtTooltip>
+                  <AtTooltip
                     v-if="isScimManaged(record)"
                     :title="$t('labels.scimManagedUserTooltip')"
                     class="flex items-center"
                     :tooltip-style="{ width: '230px' }"
                     :overlay-inner-style="{ width: '230px' }"
                   >
-                    <NcBadge
+                    <AtBadge
                       :border="false"
                       color="blue"
-                      class="text-nc-content-blue-dark dark:!bg-nc-bg-blue-light text-[10px] leading-[14px] !h-[18px] font-semibold"
+                      class="text-atm-content-blue-dark dark:!bg-atm-bg-blue-light text-[10px] leading-[14px] !h-[18px] font-semibold"
                     >
                       {{ $t('labels.scimManaged') }}
-                    </NcBadge>
-                  </NcTooltip>
+                    </AtBadge>
+                  </AtTooltip>
                 </div>
-                <NcTooltip class="truncate max-w-full text-xs text-nc-content-gray-subtle2" show-on-truncate-only>
+                <AtTooltip class="truncate max-w-full text-xs text-atm-content-gray-subtle2" show-on-truncate-only>
                   <template #title>
                     {{ record.email }}
                   </template>
                   {{ record.email }}
-                </NcTooltip>
+                </AtTooltip>
               </div>
             </div>
             <div v-if="column.key === 'role'">
@@ -703,7 +703,7 @@ watch(inviteDlg, (newVal) => {
                     :effective-role="record.effective_role"
                     class="cursor-pointer"
                   />
-                  <NcTooltip v-if="record.role_source?.length" placement="bottom">
+                  <AtTooltip v-if="record.role_source?.length" placement="bottom">
                     <template #title>
                       <div class="text-xs">
                         <div v-for="src in record.role_source" :key="src.team_id">
@@ -712,17 +712,17 @@ watch(inviteDlg, (newVal) => {
                         </div>
                       </div>
                     </template>
-                    <div class="flex items-center gap-1 text-xs text-nc-content-gray-muted cursor-help">
+                    <div class="flex items-center gap-1 text-xs text-atm-content-gray-muted cursor-help">
                       <GeneralIcon icon="ncBuilding" class="h-3 w-3 flex-none" />
                       <span>{{ $t('tooltip.roleInheritedFromTeam') }}</span>
                     </div>
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
               </template>
               <template v-else>
                 <div class="flex flex-col gap-1">
                   <RolesBadge :border="false" :role="record.effective_role || record.roles" class="cursor-default" />
-                  <NcTooltip v-if="record.role_source?.length" placement="bottom">
+                  <AtTooltip v-if="record.role_source?.length" placement="bottom">
                     <template #title>
                       <div class="text-xs">
                         <div v-for="src in record.role_source" :key="src.team_id">
@@ -731,16 +731,16 @@ watch(inviteDlg, (newVal) => {
                         </div>
                       </div>
                     </template>
-                    <div class="flex items-center gap-1 text-xs text-nc-content-gray-muted cursor-help">
+                    <div class="flex items-center gap-1 text-xs text-atm-content-gray-muted cursor-help">
                       <GeneralIcon icon="ncBuilding" class="h-3 w-3 flex-none" />
                       <span>{{ $t('tooltip.roleInheritedFromTeam') }}</span>
                     </div>
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
               </template>
             </div>
             <div v-if="column.key === 'billable'" class="flex items-center">
-              <NcTooltip
+              <AtTooltip
                 v-if="record.billable"
                 :title="
                   canOpenSeatDetail && !record.isTeam
@@ -754,44 +754,44 @@ watch(inviteDlg, (newVal) => {
                 <component
                   :is="canOpenSeatDetail && !record.isTeam ? 'button' : 'div'"
                   v-e="['c:workspace:member:billable-detail']"
-                  class="nc-billable-badge flex items-center border-none p-0 bg-transparent"
+                  class="atm-billable-badge flex items-center border-none p-0 bg-transparent"
                   :class="{ 'cursor-pointer': canOpenSeatDetail && !record.isTeam }"
-                  data-testid="nc-billable-badge"
+                  data-testid="atm-billable-badge"
                   @click="openSeatDetail(record)"
                 >
-                  <div v-if="activePlanTitle === PlanTitles.FREE && !appInfo.isOnPrem" class="text-nc-content-gray-default">
+                  <div v-if="activePlanTitle === PlanTitles.FREE && !appInfo.isOnPrem" class="text-atm-content-gray-default">
                     <GeneralIcon icon="ncCrown" class="flex-none mb-0.5" />
                   </div>
-                  <NcBadge
+                  <AtBadge
                     v-else
                     :border="false"
                     color="green"
-                    class="text-nc-content-green-dark dark:!bg-nc-bg-green-light text-[10px] leading-[14px] !h-[18px] font-semibold"
+                    class="text-atm-content-green-dark dark:!bg-atm-bg-green-light text-[10px] leading-[14px] !h-[18px] font-semibold"
                   >
                     <GeneralIcon icon="ncCrown" class="flex-none mb-0.5" />
-                  </NcBadge>
+                  </AtBadge>
                 </component>
-              </NcTooltip>
+              </AtTooltip>
             </div>
             <div v-if="column.key === 'created_at'">
-              <NcTooltip class="max-w-full">
+              <AtTooltip class="max-w-full">
                 <template #title>
                   {{ parseStringDateTime(record.created_at) }}
                 </template>
                 <span>
                   {{ timeAgo(record.created_at) }}
                 </span>
-              </NcTooltip>
+              </AtTooltip>
             </div>
 
             <div v-if="column.key === 'action'">
-              <NcDropdown placement="bottomRight">
-                <NcButton size="small" type="secondary">
+              <AtDropdown placement="bottomRight">
+                <AtButton size="small" type="secondary">
                   <component :is="iconMap.ncMoreVertical" />
-                </NcButton>
+                </AtButton>
                 <template #overlay>
-                  <NcMenu variant="small">
-                    <NcMenuItemCopyId
+                  <AtMenu variant="small">
+                    <AtMenuItemCopyId
                       :id="record.id"
                       :tooltip="record.isTeam ? $t(`labels.clickToCopyTeamID`) : $t(`labels.clickToCopyUserID`)"
                       :label="
@@ -807,28 +807,28 @@ watch(inviteDlg, (newVal) => {
                         (isOwnerOrCreator || record.id === user?.id || (record.isTeam && teamsMap[record.id]?.is_member))
                       "
                     >
-                      <NcDivider />
+                      <AtDivider />
 
-                      <NcMenuItem v-if="record.isTeam && teamsMap[record.id]?.is_member" @click="handleEditTeam(record)">
+                      <AtMenuItem v-if="record.isTeam && teamsMap[record.id]?.is_member" @click="handleEditTeam(record)">
                         <GeneralIcon icon="ncEdit" class="h-4 w-4" />
                         {{ $t('general.edit') }}
-                      </NcMenuItem>
+                      </AtMenuItem>
                       <template v-if="isAdminPanel && !record.isTeam">
-                        <NcMenuItem data-testid="nc-admin-org-user-delete">
+                        <AtMenuItem data-testid="atm-admin-org-user-delete">
                           <GeneralIcon icon="signout" />
                           <span>{{ $t('labels.signOutUser') }}</span>
-                        </NcMenuItem>
+                        </AtMenuItem>
 
-                        <NcDivider />
+                        <AtDivider />
                       </template>
 
-                      <NcTooltip
+                      <AtTooltip
                         :disabled="(!isOnlyOneOwner || record.roles !== WorkspaceUserRoles.OWNER) && !isScimManaged(record)"
                       >
                         <template #title>
                           {{ isScimManaged(record) ? $t('labels.scimManagedRemovalTooltip') : $t('tooltip.leaveWorkspace') }}
                         </template>
-                        <NcMenuItem
+                        <AtMenuItem
                           :disabled="!isDeleteAllowed(record) || (record.isTeam && !isOwnerOrCreator)"
                           danger
                           @click="removeCollaborator(record.id, currentWorkspace?.id, record)"
@@ -844,27 +844,27 @@ watch(inviteDlg, (newVal) => {
                               ? t('activity.leaveWorkspace')
                               : t('activity.removeMember')
                           }}
-                        </NcMenuItem>
-                      </NcTooltip>
+                        </AtMenuItem>
+                      </AtTooltip>
                     </template>
-                  </NcMenu>
+                  </AtMenu>
                 </template>
-              </NcDropdown>
+              </AtDropdown>
             </div>
           </template>
 
           <template #extraRow>
             <div v-if="collaborators?.length === 1" class="w-full pt-12 pb-4 px-2 flex flex-col items-center gap-6 text-center">
-              <div class="text-2xl text-nc-content-gray font-bold">
+              <div class="text-2xl text-atm-content-gray font-bold">
                 {{ $t('placeholder.inviteYourTeam') }}
               </div>
-              <div class="text-sm text-nc-content-gray-subtle">
+              <div class="text-sm text-atm-content-gray-subtle">
                 {{ $t('placeholder.inviteYourTeamLabel') }}
               </div>
               <img src="~assets/img/placeholder/invite-team.png" :alt="$t('activity.inviteTeam')" class="!w-[30rem] flex-none" />
             </div>
           </template>
-        </NcTable>
+        </AtTable>
       </div>
       <DlgInviteDlg
         v-if="currentWorkspace"
@@ -886,7 +886,7 @@ watch(inviteDlg, (newVal) => {
         :user="seatDetailUser"
       />
 
-      <NcModalConfirm
+      <AtModalConfirm
         v-if="currentWorkspace"
         v-model:visible="userRoleUpdateInfo.showConfirmationModal"
         ok-class="capitalize"
@@ -907,15 +907,15 @@ watch(inviteDlg, (newVal) => {
           </div>
         </template>
         <template #extraContent>
-          <div class="flex flex-col gap-5 text-caption text-nc-content-gray">
-            <NcAlert
+          <div class="flex flex-col gap-5 text-caption text-atm-content-gray">
+            <AtAlert
               type="info"
               :show-icon="false"
-              class="!p-3 bg-nc-bg-yellow-light dark:bg-nc-yellow-20 !border-nc-fill-yellow-light"
+              class="!p-3 bg-atm-bg-yellow-light dark:bg-atm-yellow-20 !border-atm-fill-yellow-light"
               description-class="!line-clamp-none"
             >
               <template #description>
-                <div class="text-nc-content-yellow-dark">
+                <div class="text-atm-content-yellow-dark">
                   <b>{{ $t('general.notice') }}:</b>
                   {{
                     userRoleUpdateInfo.collab?.isTeam
@@ -924,22 +924,22 @@ watch(inviteDlg, (newVal) => {
                   }}
                 </div>
               </template>
-            </NcAlert>
+            </AtAlert>
             <div v-if="showOverrideBaseRoleCheckbox" class="flex items-start gap-3">
               <div class="flex items-center h-5">
-                <NcCheckbox v-model:checked="userRoleUpdateInfo.overrideBaseRole" />
+                <AtCheckbox v-model:checked="userRoleUpdateInfo.overrideBaseRole" />
               </div>
 
               <div class="flex flex-col gap-2">
                 <div class="font-semibold">Apply to all bases</div>
-                <div class="text-nc-content-gray-subtle">
+                <div class="text-atm-content-gray-subtle">
                   This will override explicit base roles and apply the workspace role to all bases.
                 </div>
               </div>
             </div>
           </div>
         </template>
-      </NcModalConfirm>
+      </AtModalConfirm>
     </div>
   </div>
 </template>
@@ -949,8 +949,8 @@ watch(inviteDlg, (newVal) => {
   @apply text-[14px] pt-1 text-center;
 }
 
-.nc-collaborator-table-container {
-  &.nc-is-admin-panel {
+.atm-collaborator-table-container {
+  &.atm-is-admin-panel {
     @apply h-[calc(100vh-144px)];
 
     @supports (height: 100dvh) {
@@ -960,7 +960,7 @@ watch(inviteDlg, (newVal) => {
 
   // Workspace home: Members is not an Admin route, so no sub-tab bar is on screen
   // and there is nothing to subtract beyond the topbar.
-  &.nc-is-ws-members-list {
+  &.atm-is-ws-members-list {
     @apply h-[calc(100vh-var(--topbar-height))];
 
     @supports (height: 100dvh) {
@@ -969,7 +969,7 @@ watch(inviteDlg, (newVal) => {
   }
 
   // Admin sidebar mode: tab bar is hidden, so no 44px subtraction
-  &.nc-is-settings-sidebar {
+  &.atm-is-settings-sidebar {
     @apply h-[calc(100vh-var(--topbar-height))];
 
     @supports (height: 100dvh) {

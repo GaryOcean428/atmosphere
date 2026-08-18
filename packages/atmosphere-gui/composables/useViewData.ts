@@ -1,6 +1,6 @@
-import { PermissionEntity, PermissionKey, ViewTypes } from 'nocodb-sdk'
+import { PermissionEntity, PermissionKey, ViewTypes } from 'atmosphere-sdk'
 import axios from 'axios'
-import type { Api, ColumnType, FormColumnType, FormType, GalleryType, PaginatedType, TableType, ViewType } from 'nocodb-sdk'
+import type { Api, ColumnType, FormColumnType, FormType, GalleryType, PaginatedType, TableType, ViewType } from 'atmosphere-sdk'
 import type { ComputedRef, Ref } from 'vue'
 import { NavigateDir } from '#imports'
 
@@ -112,7 +112,7 @@ export function useViewData(
 
   async function syncCount() {
     const { count } = await $api.dbViewRow.count(
-      NOCO,
+      ATMOSPHERE,
       meta?.value?.base_id ?? (base?.value?.id as string),
       metaId.value as string,
       viewMeta?.value?.id as string,
@@ -196,7 +196,7 @@ export function useViewData(
     try {
       const response = !isPublic.value
         ? await api.dbViewRow.list(
-            'noco',
+            'atmosphere',
             base.value.id!,
             metaId.value!,
             viewMeta.value!.id!,
@@ -260,7 +260,7 @@ export function useViewData(
     try {
       response = !isPublic.value
         ? await api.dbViewRow.list(
-            'noco',
+            'atmosphere',
             base.value.id!,
             metaId.value!,
             viewMeta.value!.id!,
@@ -440,7 +440,7 @@ export function useViewData(
       // view's data has finished (re)loading — at that point `viewMeta` already points
       // at the new view while `view` still holds the previous form's data. Keying off
       // the data's own `fk_view_id` stops one form's heading/subheading from
-      // overwriting another's. See nocodb/nocodb#14153.
+      // overwriting another's. See atmosphere/atmosphere#14153.
       await updateViewMeta(fkViewId ?? viewMeta.value.id, ViewTypes.FORM, body)
     } catch (e: any) {
       return message.error(`${t('msg.error.formViewUpdateFailed')}: ${await extractSdkResponseErrorMsg(e)}`)

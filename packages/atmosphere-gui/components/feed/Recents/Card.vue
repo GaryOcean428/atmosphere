@@ -29,14 +29,14 @@ const { $e } = useNuxtApp()
 
 const expand = () => {
   truncate.value = false
-  $e('c:nocodb:feed:recents:expand', {
+  $e('c:atmosphere:feed:recents:expand', {
     title: Title,
     type: source,
   })
 }
 
 const watchVideo = () => {
-  $e('c:nocodb:feed:recents:watch', {
+  $e('c:atmosphere:feed:recents:watch', {
     title: Title,
     description: Description,
     url: Url,
@@ -69,15 +69,15 @@ const handleOpenUrl = (url: string) => {
 </script>
 
 <template>
-  <div class="bg-nc-bg-default recent-card border-nc-border-gray-medium border-1 rounded-2xl max-w-[540px] xl:max-w-[640px]">
+  <div class="bg-atm-bg-default recent-card border-atm-border-gray-medium border-1 rounded-2xl max-w-[540px] xl:max-w-[640px]">
     <div class="flex items-center justify-between px-5 py-4">
       <div class="flex items-center gap-3">
         <component :is="feedIcon[source]" class="w-4 h-4 stroke-transparent" />
-        <span class="font-weight-medium text-nc-content-gray leading-5 cursor-pointer" @click="handleOpenUrl(Url)">
+        <span class="font-weight-medium text-atm-content-gray leading-5 cursor-pointer" @click="handleOpenUrl(Url)">
           {{ source }}
         </span>
       </div>
-      <div class="text-sm text-nc-content-gray-muted leading-5">
+      <div class="text-sm text-atm-content-gray-muted leading-5">
         {{ timeAgo(CreatedAt) }}
       </div>
     </div>
@@ -86,12 +86,12 @@ const handleOpenUrl = (url: string) => {
         <img v-if="Image" :src="Image" class="cursor-pointer" @click="handleOpenUrl(Url)" />
         <div class="prose px-5 mt-5" v-html="renderedText"></div>
 
-        <NcButton v-if="truncate" size="small" class="w-29 mx-5" type="text" @click="expand">
+        <AtButton v-if="truncate" size="small" class="w-29 mx-5" type="text" @click="expand">
           <div class="gap-2 flex items-center">
             {{ $t('general.showMore') }}
             <GeneralIcon icon="arrowDown" />
           </div>
-        </NcButton>
+        </AtButton>
       </div>
     </template>
     <template v-else-if="source === 'Youtube'">
@@ -103,7 +103,7 @@ const handleOpenUrl = (url: string) => {
         :autoplay="0"
         @played="watchVideo"
       />
-      <div class="p-5 flex flex-col text-nc-content-gray-emphasis gap-4">
+      <div class="p-5 flex flex-col text-atm-content-gray-emphasis gap-4">
         <div class="text-2xl font-semibold truncate">
           {{ Title }}
         </div>
@@ -121,28 +121,28 @@ const handleOpenUrl = (url: string) => {
   box-shadow: 0px 4px 8px -2px rgba(0, 0, 0, 0.08), 0px 2px 4px -2px rgba(0, 0, 0, 0.04);
   :deep(.prose) {
     a {
-      @apply text-nc-content-gray-emphasis;
+      @apply text-atm-content-gray-emphasis;
     }
     h1 {
-      @apply text-3xl text-nc-content-gray-emphasis truncate leading-9 mb-0;
+      @apply text-3xl text-atm-content-gray-emphasis truncate leading-9 mb-0;
       font-weight: 700;
     }
 
     h2 {
-      @apply text-nc-content-gray-emphasis text-xl leading-6 !mb-0;
+      @apply text-atm-content-gray-emphasis text-xl leading-6 !mb-0;
     }
     p {
-      @apply text-nc-content-gray-emphasis leading-6;
+      @apply text-atm-content-gray-emphasis leading-6;
       font-size: 14px !important;
     }
 
     li {
-      @apply text-nc-content-gray-emphasis leading-6;
+      @apply text-atm-content-gray-emphasis leading-6;
       font-size: 14px !important;
     }
 
     h3 {
-      @apply text-nc-content-gray-emphasis text-lg leading-6 mb-0;
+      @apply text-atm-content-gray-emphasis text-lg leading-6 mb-0;
     }
   }
 }

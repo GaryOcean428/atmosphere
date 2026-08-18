@@ -30,7 +30,7 @@ const feeds = computed(() => {
     :style="{
       height: 'calc(100dvh - var(--toolbar-height) - 3rem)',
     }"
-    class="overflow-y-auto nc-scrollbar-md mx-auto w-full"
+    class="overflow-y-auto atm-scrollbar-md mx-auto w-full"
   >
     <div
       v-if="(props.type === 'github' ? isErrorOccurred.github : isErrorOccurred.cloud) && !feeds.length"

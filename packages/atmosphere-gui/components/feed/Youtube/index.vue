@@ -22,7 +22,7 @@ const { isLoading } = useInfiniteScroll(
     :style="{
       height: 'calc(100dvh - var(--toolbar-height) - 3rem)',
     }"
-    class="overflow-y-auto nc-scrollbar-md mx-auto w-full"
+    class="overflow-y-auto atm-scrollbar-md mx-auto w-full"
   >
     <div v-if="isErrorOccurred?.youtube && !youtubeFeed.length" class="h-full flex justify-center items-center">
       <FeedError page="youtube" />

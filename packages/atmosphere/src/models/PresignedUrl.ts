@@ -1,12 +1,12 @@
 import { nanoid } from 'nanoid';
 import contentDisposition from 'content-disposition';
 import slash from 'slash';
-import { IconType, ncIsObject } from 'nocodb-sdk';
+import { IconType, ncIsObject } from 'atmosphere-sdk';
 import { Logger } from '@nestjs/common';
-import type { MetaType } from 'nocodb-sdk';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import type { MetaType } from 'atmosphere-sdk';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheGetType, CacheScope } from '~/utils/globals';
 import { getPathFromUrl, isPreviewAllowed } from '~/helpers/attachmentHelpers';
 import { parseMetaProp } from '~/utils/modelUtils';
@@ -19,10 +19,10 @@ function roundExpiry(date) {
 const logger = new Logger('Presigned URL');
 
 const DEFAULT_EXPIRE_SECONDS = isNaN(
-  parseInt(process.env.NC_ATTACHMENT_EXPIRE_SECONDS),
+  parseInt(process.env.ATMOSPHERE_ATTACHMENT_EXPIRE_SECONDS),
 )
   ? 2 * 60 * 60
-  : parseInt(process.env.NC_ATTACHMENT_EXPIRE_SECONDS);
+  : parseInt(process.env.ATMOSPHERE_ATTACHMENT_EXPIRE_SECONDS);
 
 export default class PresignedUrl {
   path: string;
@@ -45,7 +45,7 @@ export default class PresignedUrl {
       expires_at,
       expiresInSeconds = DEFAULT_EXPIRE_SECONDS,
     } = param;
-    await NocoCache.setExpiring(
+    await AtmosphereCache.setExpiring(
       'root',
       `${CacheScope.PRESIGNED_URL}:path:${slash(path)}`,
       {
@@ -55,7 +55,7 @@ export default class PresignedUrl {
       },
       expiresInSeconds,
     );
-    await NocoCache.setExpiring(
+    await AtmosphereCache.setExpiring(
       'root',
       `${CacheScope.PRESIGNED_URL}:url:${slash(decodeURIComponent(url))}`,
       {
@@ -69,20 +69,20 @@ export default class PresignedUrl {
 
   private static async delete(param: { path: string; url: string }) {
     const { path, url } = param;
-    await NocoCache.del(
+    await AtmosphereCache.del(
       'root',
       `${CacheScope.PRESIGNED_URL}:path:${slash(path)}`,
     );
-    await NocoCache.del(
+    await AtmosphereCache.del(
       'root',
       `${CacheScope.PRESIGNED_URL}:url:${slash(url)}`,
     );
   }
 
-  public static async getPath(url: string, _ncMeta = Noco.ncMeta) {
+  public static async getPath(url: string, _ncMeta = Atmosphere.ncMeta) {
     const urlData =
       url &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         'root',
         `${CacheScope.PRESIGNED_URL}:url:${slash(url)}`,
         CacheGetType.TYPE_OBJECT,
@@ -120,7 +120,7 @@ export default class PresignedUrl {
        */
       isLocalPath?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const isUrl = /^https?:\/\//i.test(param.pathOrUrl);
 
@@ -193,7 +193,7 @@ export default class PresignedUrl {
       pathParameters,
     ).toString()}`;
 
-    const url = await NocoCache.get(
+    const url = await AtmosphereCache.get(
       'root',
       `${CacheScope.PRESIGNED_URL}:path:${slash(cachePath)}`,
       CacheGetType.TYPE_OBJECT,
@@ -210,7 +210,7 @@ export default class PresignedUrl {
       }
     }
 
-    const storageAdapter = await NcPluginMgrv2.storageAdapter(ncMeta);
+    const storageAdapter = await AtPluginMgrv2.storageAdapter(ncMeta);
 
     if (
       !param.isLocalPath &&
@@ -264,7 +264,7 @@ export default class PresignedUrl {
       // allow writing to nested property instead of root (used for thumbnails)
       nestedKeys?: string[];
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const {
       nestedKeys = [],

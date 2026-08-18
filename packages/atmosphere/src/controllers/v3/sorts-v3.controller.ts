@@ -10,12 +10,12 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { SortCreateV3Type, SortUpdateV3Type } from 'nocodb-sdk';
+import { SortCreateV3Type, SortUpdateV3Type } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 import { SortsV3Service } from '~/services/v3/sorts-v3.service';
 import { PREFIX_APIV3_METABASE } from '~/constants/controllers';
 
@@ -30,7 +30,7 @@ export class SortsV3Controller {
   ])
   @Acl('sortList')
   async sortList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
   ) {
     return {
@@ -47,10 +47,10 @@ export class SortsV3Controller {
   @HttpCode(200)
   @Acl('sortCreate')
   async sortCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Body() body: SortCreateV3Type,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const sort = await this.sortsV3Service.sortCreate(context, {
       sort: body,
@@ -66,10 +66,10 @@ export class SortsV3Controller {
   ])
   @Acl('sortUpdate')
   async sortUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Body() body: SortUpdateV3Type,
     @Param('viewId') viewId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const sort = await this.sortsV3Service.sortUpdate(context, {
       sortId: body.id,
@@ -86,9 +86,9 @@ export class SortsV3Controller {
   ])
   @Acl('sortDelete')
   async sortDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Body() body: { id: string },
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
   ) {
     await this.sortsV3Service.sortDelete(context, {

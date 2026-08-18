@@ -1,13 +1,13 @@
-import { EnterpriseOrgUserRoles } from 'nocodb-sdk';
+import { EnterpriseOrgUserRoles } from 'atmosphere-sdk';
 import { Logger } from '@nestjs/common';
 import {
   MetaTable,
-  NC_DEFAULT_ORG_ID,
-  NC_STORE_DEFAULT_ORG_ID_KEY,
+  ATMOSPHERE_DEFAULT_ORG_ID,
+  ATMOSPHERE_STORE_DEFAULT_ORG_ID_KEY,
   RootScopes,
 } from '~/utils/globals';
 import { isOnPrem } from '~/utils';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 const logger = new Logger('verifyDefaultOrg');
 
@@ -29,37 +29,37 @@ export function isDuplicateKeyError(e: any): boolean {
  *
  * Follows the same pattern as verifyDefaultWorkspace().
  */
-export const verifyDefaultOrg = async (ncMeta = Noco.ncMeta) => {
+export const verifyDefaultOrg = async (ncMeta = Atmosphere.ncMeta) => {
   // Only create default org on licensed on-prem
   // Cloud manages orgs explicitly, CE/unlicensed don't need it
-  if (!isOnPrem || !Noco.isEE()) {
+  if (!isOnPrem || !Atmosphere.isEE()) {
     return;
   }
 
   // Already cached
-  if (Noco.ncDefaultOrgId) {
+  if (Atmosphere.ncDefaultOrgId) {
     return;
   }
 
-  // Check nc_store for persisted org ID
+  // Check atm_store for persisted org ID
   const storedOrgId = await ncMeta.metaGet(
     RootScopes.ROOT,
     RootScopes.ROOT,
     MetaTable.STORE,
     {
-      key: NC_STORE_DEFAULT_ORG_ID_KEY,
+      key: ATMOSPHERE_STORE_DEFAULT_ORG_ID_KEY,
     },
   );
 
   if (storedOrgId?.value) {
-    Noco.ncDefaultOrgId = storedOrgId.value;
+    Atmosphere.ncDefaultOrgId = storedOrgId.value;
     return;
   }
 
   // Check if org already exists in DB (e.g., created by migration)
   const existingOrg = await ncMeta
     .knexConnection(MetaTable.ORG)
-    .where('id', NC_DEFAULT_ORG_ID)
+    .where('id', ATMOSPHERE_DEFAULT_ORG_ID)
     .first();
 
   if (existingOrg) {
@@ -69,12 +69,12 @@ export const verifyDefaultOrg = async (ncMeta = Noco.ncMeta) => {
       RootScopes.ROOT,
       MetaTable.STORE,
       {
-        key: NC_STORE_DEFAULT_ORG_ID_KEY,
+        key: ATMOSPHERE_STORE_DEFAULT_ORG_ID_KEY,
         value: existingOrg.id,
       },
       true,
     );
-    Noco.ncDefaultOrgId = existingOrg.id;
+    Atmosphere.ncDefaultOrgId = existingOrg.id;
     return;
   }
 
@@ -93,7 +93,7 @@ export const verifyDefaultOrg = async (ncMeta = Noco.ncMeta) => {
   // Check-then-insert handles race condition on multi-process boot
   const orgExists = await ncMeta
     .knexConnection(MetaTable.ORG)
-    .where('id', NC_DEFAULT_ORG_ID)
+    .where('id', ATMOSPHERE_DEFAULT_ORG_ID)
     .first();
 
   // Only do full setup when org is newly created (not on every boot)
@@ -102,7 +102,7 @@ export const verifyDefaultOrg = async (ncMeta = Noco.ncMeta) => {
   if (isNewOrg) {
     try {
       await ncMeta.knexConnection(MetaTable.ORG).insert({
-        id: NC_DEFAULT_ORG_ID,
+        id: ATMOSPHERE_DEFAULT_ORG_ID,
         title: 'Default Organization',
         fk_user_id: superUser.id,
         deleted: false,
@@ -119,7 +119,7 @@ export const verifyDefaultOrg = async (ncMeta = Noco.ncMeta) => {
     // Add super user as org admin (idempotent — skip if already exists)
     try {
       await ncMeta.knexConnection(MetaTable.ORG_USERS).insert({
-        fk_org_id: NC_DEFAULT_ORG_ID,
+        fk_org_id: ATMOSPHERE_DEFAULT_ORG_ID,
         fk_user_id: superUser.id,
         roles: EnterpriseOrgUserRoles.ADMIN,
       });
@@ -135,13 +135,13 @@ export const verifyDefaultOrg = async (ncMeta = Noco.ncMeta) => {
     await ncMeta
       .knexConnection(MetaTable.WORKSPACE)
       .whereNull('fk_org_id')
-      .update({ fk_org_id: NC_DEFAULT_ORG_ID });
+      .update({ fk_org_id: ATMOSPHERE_DEFAULT_ORG_ID });
 
     // Backfill existing workspace users (for free→licensed transition)
     // Get existing org users first to avoid duplicates
     const existingOrgUsers = await ncMeta
       .knexConnection(MetaTable.ORG_USERS)
-      .where('fk_org_id', NC_DEFAULT_ORG_ID)
+      .where('fk_org_id', ATMOSPHERE_DEFAULT_ORG_ID)
       .select('fk_user_id');
 
     const existingSet = new Set(existingOrgUsers.map((u) => u.fk_user_id));
@@ -166,7 +166,7 @@ export const verifyDefaultOrg = async (ncMeta = Noco.ncMeta) => {
         const batch = newUserIds.slice(i, i + BATCH_SIZE);
         const placeholders = batch.map(() => '(?, ?, ?)').join(',');
         const bindings = batch.flatMap((uid) => [
-          NC_DEFAULT_ORG_ID,
+          ATMOSPHERE_DEFAULT_ORG_ID,
           uid,
           EnterpriseOrgUserRoles.VIEWER,
         ]);
@@ -195,7 +195,7 @@ export const verifyDefaultOrg = async (ncMeta = Noco.ncMeta) => {
   await ncMeta
     .knexConnection(MetaTable.WORKSPACE)
     .whereNull('fk_org_id')
-    .update({ fk_org_id: NC_DEFAULT_ORG_ID });
+    .update({ fk_org_id: ATMOSPHERE_DEFAULT_ORG_ID });
 
   // Persist to store
   await ncMeta.metaInsert2(
@@ -203,13 +203,13 @@ export const verifyDefaultOrg = async (ncMeta = Noco.ncMeta) => {
     RootScopes.ROOT,
     MetaTable.STORE,
     {
-      key: NC_STORE_DEFAULT_ORG_ID_KEY,
-      value: NC_DEFAULT_ORG_ID,
+      key: ATMOSPHERE_STORE_DEFAULT_ORG_ID_KEY,
+      value: ATMOSPHERE_DEFAULT_ORG_ID,
     },
     true,
   );
 
-  Noco.ncDefaultOrgId = NC_DEFAULT_ORG_ID;
+  Atmosphere.ncDefaultOrgId = ATMOSPHERE_DEFAULT_ORG_ID;
 
   logger.log('Default organization created');
 };
@@ -221,20 +221,20 @@ export const verifyDefaultOrg = async (ncMeta = Noco.ncMeta) => {
 export const ensureUserInDefaultOrg = async (
   userId: string,
   role: EnterpriseOrgUserRoles = EnterpriseOrgUserRoles.VIEWER,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ) => {
   // Only on licensed on-prem
-  if (!isOnPrem || !Noco.isEE()) return;
+  if (!isOnPrem || !Atmosphere.isEE()) return;
 
-  if (!Noco.ncDefaultOrgId) {
+  if (!Atmosphere.ncDefaultOrgId) {
     await verifyDefaultOrg(ncMeta);
   }
-  if (!Noco.ncDefaultOrgId) return;
+  if (!Atmosphere.ncDefaultOrgId) return;
 
   // Check if already exists
   const existing = await ncMeta
     .knexConnection(MetaTable.ORG_USERS)
-    .where('fk_org_id', Noco.ncDefaultOrgId)
+    .where('fk_org_id', Atmosphere.ncDefaultOrgId)
     .where('fk_user_id', userId)
     .first();
 
@@ -243,7 +243,7 @@ export const ensureUserInDefaultOrg = async (
   await ncMeta
     .knexConnection(MetaTable.ORG_USERS)
     .insert({
-      fk_org_id: Noco.ncDefaultOrgId,
+      fk_org_id: Atmosphere.ncDefaultOrgId,
       fk_user_id: userId,
       roles: role,
     })

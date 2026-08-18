@@ -1,4 +1,4 @@
-import { type ColumnType, UITypes, UNIQUE_CONSTRAINT_SUPPORTED_TYPES, isUniqueConstraintSupportedType } from 'nocodb-sdk'
+import { type ColumnType, UITypes, UNIQUE_CONSTRAINT_SUPPORTED_TYPES, isUniqueConstraintSupportedType } from 'atmosphere-sdk'
 
 // Re-export from SDK
 export { isUniqueConstraintSupportedType, UNIQUE_CONSTRAINT_SUPPORTED_TYPES }

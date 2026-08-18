@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Form } from 'ant-design-vue'
-import { type IntegrationType, IntegrationsType, validateAndExtractSSLProp } from 'nocodb-sdk'
+import { type IntegrationType, IntegrationsType, validateAndExtractSSLProp } from 'atmosphere-sdk'
 import {
   ClientType,
   type DatabricksConnection,
@@ -31,7 +31,7 @@ const _projectId = inject(ProjectIdInj, undefined)
 const baseId = computed(() => _projectId?.value ?? base.value?.id)
 
 const filteredIntegrations = computed(() =>
-  integrations.value.filter((i) => i.sub_type !== SyncDataType.NOCODB && i.type === IntegrationsType.Database),
+  integrations.value.filter((i) => i.sub_type !== SyncDataType.ATMOSPHERE && i.type === IntegrationsType.Database),
 )
 
 const useForm = Form.useForm
@@ -415,7 +415,7 @@ onBeforeUnmount(() => {
 const handleUpdateAdvancedOptionsExpansionPanel = (open: boolean) => {
   if (open) {
     advancedOptionsExpansionPanel.value = ['1']
-    handleAutoScroll(true, 'nc-source-advanced-options')
+    handleAutoScroll(true, 'atm-source-advanced-options')
   } else {
     advancedOptionsExpansionPanel.value = []
   }
@@ -441,7 +441,7 @@ function handleAutoScroll(scroll: boolean, className: string) {
 }
 
 const filterIntegrationCategory = (c: IntegrationCategoryItemType) => [IntegrationCategoryType.DATABASE].includes(c.value)
-const filterIntegration = (i: IntegrationItemType) => i.sub_type !== SyncDataType.NOCODB && i.isAvailable
+const filterIntegration = (i: IntegrationItemType) => i.sub_type !== SyncDataType.ATMOSPHERE && i.isAvailable
 
 const isIntgrationDisabled = (integration: IntegrationType = {}) => {
   switch (integration.sub_type) {
@@ -461,34 +461,34 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="vOpen"
     :closable="false"
     :mask-closable="!creatingSource"
     :keyboard="!creatingSource"
     centered
     size="large"
-    wrap-class-name="nc-modal-create-source"
+    wrap-class-name="atm-modal-create-source"
     @keydown.esc="vOpen = false"
   >
     <div class="flex-1 flex flex-col max-h-full">
-      <div class="px-4 py-3 w-full flex items-center gap-3 border-b-1 border-nc-border-gray-medium">
+      <div class="px-4 py-3 w-full flex items-center gap-3 border-b-1 border-atm-border-gray-medium">
         <div class="h-6 self-start flex items-center">
-          <GeneralIcon icon="server1" class="!text-nc-content-green-dark !h-4 !w-4" />
+          <GeneralIcon icon="server1" class="!text-atm-content-green-dark !h-4 !w-4" />
         </div>
         <div class="flex-1 text-base font-weight-700">Add Data Source</div>
 
         <div class="flex items-center gap-3">
           <div class="w-[15px] h-[15px] cursor-pointer" @dblclick="onEasterEgg"></div>
-          <NcTooltip :disabled="!testConnectionError">
+          <AtTooltip :disabled="!testConnectionError">
             <template #title>
               {{ testConnectionError }}
             </template>
 
-            <NcButton
+            <AtButton
               type="secondary"
               size="small"
-              class="nc-extdb-btn-test-connection"
+              class="atm-extdb-btn-test-connection"
               :class="{ 'pointer-events-none': testSuccess }"
               :disabled="!selectedIntegration || isLoading"
               :loading="testingConnection"
@@ -503,27 +503,27 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
               <span>
                 {{ testSuccess ? 'Test successful' : 'Test connection' }}
               </span>
-            </NcButton>
-          </NcTooltip>
+            </AtButton>
+          </AtTooltip>
 
-          <NcButton
+          <AtButton
             size="small"
             type="primary"
             :disabled="!testSuccess || !selectedIntegration || isLoading"
             :loading="creatingSource"
-            class="nc-extdb-btn-submit"
+            class="atm-extdb-btn-submit"
             @click="createSource"
           >
             Add Source
-          </NcButton>
-          <NcButton :disabled="creatingSource" size="small" type="text" @click="vOpen = false">
-            <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-          </NcButton>
+          </AtButton>
+          <AtButton :disabled="creatingSource" size="small" type="text" @click="vOpen = false">
+            <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+          </AtButton>
         </div>
       </div>
       <div class="h-[calc(100%_-_58px)] flex">
-        <div class="nc-add-source-left-panel nc-scrollbar-thin relative">
-          <div class="create-source bg-nc-bg-default relative flex flex-col gap-2 w-full max-w-[768px]">
+        <div class="atm-add-source-left-panel atm-scrollbar-thin relative">
+          <div class="create-source bg-atm-bg-default relative flex flex-col gap-2 w-full max-w-[768px]">
             <a-form
               ref="form"
               :model="formState"
@@ -533,8 +533,8 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
               no-style
               class="flex flex-col gap-5.5"
             >
-              <div class="nc-form-section">
-                <div class="nc-form-section-body">
+              <div class="atm-form-section">
+                <div class="atm-form-section-body">
                   <a-row :gutter="24">
                     <a-col :span="12">
                       <a-form-item label="Data Source Name" v-bind="validateInfos.title">
@@ -545,10 +545,10 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                   <a-row :gutter="24">
                     <a-col :span="12">
                       <a-form-item label="Select connection" v-bind="validateInfos.fk_integration_id">
-                        <NcSelect
+                        <AtSelect
                           v-model:value="formState.fk_integration_id"
-                          class="nc-extdb-db-type nc-select-shadow"
-                          dropdown-class-name="nc-dropdown-ext-db-type"
+                          class="atm-extdb-db-type atm-select-shadow"
+                          dropdown-class-name="atm-dropdown-ext-db-type"
                           placeholder="Select connection"
                           allow-clear
                           show-search
@@ -571,7 +571,7 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                                     : undefined,
                                 }"
                               />
-                              <NcTooltip
+                              <AtTooltip
                                 class="flex-1 truncate"
                                 :show-on-truncate-only="!isIntgrationDisabled(integration).isDisabled"
                               >
@@ -583,11 +583,11 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                                   }}
                                 </template>
                                 {{ integration.title }}
-                              </NcTooltip>
+                              </AtTooltip>
                               <component
                                 :is="iconMap.check"
                                 v-if="formState.fk_integration_id === integration.id"
-                                id="nc-selected-item-icon"
+                                id="atm-selected-item-icon"
                                 class="text-primary w-4 h-4"
                               />
                             </div>
@@ -597,17 +597,17 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                             <component :is="menu" />
                             <a-divider style="margin: 4px 0" />
                             <div
-                              class="px-1.5 flex items-center text-nc-content-brand text-sm cursor-pointer"
+                              class="px-1.5 flex items-center text-atm-content-brand text-sm cursor-pointer"
                               @mousedown.prevent
                               @click="handleAddNewConnection"
                             >
-                              <div class="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-nc-bg-gray-light">
+                              <div class="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-atm-bg-gray-light">
                                 <GeneralIcon icon="plus" class="flex-none" />
                                 {{ $t('general.new') }} {{ $t('general.connection').toLowerCase() }}
                               </div>
                             </div>
                           </template>
-                        </NcSelect>
+                        </AtSelect>
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -615,8 +615,8 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
               </div>
 
               <template v-if="selectedIntegration">
-                <div class="nc-form-section">
-                  <div class="nc-form-section-body">
+                <div class="atm-form-section">
+                  <div class="atm-form-section-body">
                     <!-- SQLite File -->
                     <template v-if="formState.dataSource.client === ClientType.SQLITE"> </template>
                     <template v-else-if="formState.dataSource.client === ClientType.SNOWFLAKE">
@@ -626,7 +626,7 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                           <a-form-item :label="$t('labels.database')" v-bind="validateInfos['dataSource.connection.database']">
                             <a-input
                               v-model:value="(formState.dataSource.connection as SnowflakeConnection).database"
-                              class="nc-extdb-host-database"
+                              class="atm-extdb-host-database"
                             />
                           </a-form-item>
                         </a-col>
@@ -635,7 +635,7 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                           <a-form-item :label="$t('labels.schema')" v-bind="validateInfos['dataSource.connection.schema']">
                             <a-input
                               v-model:value="(formState.dataSource.connection as SnowflakeConnection).schema"
-                              class="nc-extdb-host-database"
+                              class="atm-extdb-host-database"
                             />
                           </a-form-item>
                         </a-col>
@@ -648,7 +648,7 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                           <a-form-item :label="$t('labels.database')" v-bind="validateInfos['dataSource.connection.database']">
                             <a-input
                               v-model:value="(formState.dataSource.connection as DatabricksConnection).database"
-                              class="nc-extdb-host-database"
+                              class="atm-extdb-host-database"
                             />
                           </a-form-item>
                         </a-col>
@@ -656,7 +656,7 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                           <a-form-item :label="$t('labels.schema')" v-bind="validateInfos['dataSource.connection.schema']">
                             <a-input
                               v-model:value="(formState.dataSource.connection as DatabricksConnection).schema"
-                              class="nc-extdb-host-schema"
+                              class="atm-extdb-host-schema"
                             />
                           </a-form-item>
                         </a-col>
@@ -671,7 +671,7 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                             <a-input
                               v-model:value="formState.dataSource.connection.database"
                               :placeholder="$t('labels.dbCreateIfNotExists')"
-                              class="nc-extdb-host-database"
+                              class="atm-extdb-host-database"
                             />
                           </a-form-item>
                         </a-col>
@@ -688,7 +688,7 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                           >
                             <a-input
                               v-model:value="formState.dataSource.searchPath[0]"
-                              data-testid="nc-extdb-schema-name"
+                              data-testid="atm-extdb-schema-name"
                               :placeholder="selectedIntegrationSchema && `${selectedIntegrationSchema} (default)`"
                             />
                           </a-form-item>
@@ -698,9 +698,9 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                   </div>
                 </div>
 
-                <div class="nc-form-section">
-                  <div class="nc-form-section-title">{{ $t('general.permissions') }}</div>
-                  <div class="nc-form-section-body">
+                <div class="atm-form-section">
+                  <div class="atm-form-section-title">{{ $t('general.permissions') }}</div>
+                  <div class="atm-form-section-body">
                     <DashboardSettingsDataSourcesSourceRestrictions
                       v-model:allow-meta-write="allowMetaWrite"
                       v-model:allow-data-write="allowDataWrite"
@@ -711,22 +711,22 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                 <template
                   v-if="![ClientType.SQLITE, ClientType.SNOWFLAKE, ClientType.DATABRICKS].includes(formState.dataSource.client)"
                 >
-                  <a-collapse v-model:active-key="advancedOptionsExpansionPanel" ghost class="nc-source-advanced-options !mt-4">
+                  <a-collapse v-model:active-key="advancedOptionsExpansionPanel" ghost class="atm-source-advanced-options !mt-4">
                     <template #expandIcon="{ isActive }">
-                      <NcButton
+                      <AtButton
                         type="text"
                         size="small"
                         class="!-ml-1.5"
                         @click="handleUpdateAdvancedOptionsExpansionPanel(!advancedOptionsExpansionPanel.length)"
                       >
-                        <div class="nc-form-section-title">Advanced options</div>
+                        <div class="atm-form-section-title">Advanced options</div>
 
                         <GeneralIcon
                           icon="chevronDown"
                           class="ml-2 flex-none cursor-pointer transform transition-transform duration-500"
                           :class="{ '!rotate-180': isActive }"
                         />
-                      </NcButton>
+                      </AtButton>
                     </template>
                     <a-collapse-panel key="1" collapsible="disabled">
                       <template #header>
@@ -738,24 +738,24 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
                           <a-row :gutter="24">
                             <a-col :span="12">
                               <a-form-item :label="$t('labels.inflection.tableName')">
-                                <NcSelect
+                                <AtSelect
                                   v-model:value="formState.inflection.inflectionTable"
-                                  class="nc-select-shadow"
-                                  dropdown-class-name="nc-dropdown-inflection-table-name"
+                                  class="atm-select-shadow"
+                                  dropdown-class-name="atm-dropdown-inflection-table-name"
                                 >
                                   <a-select-option v-for="tp in inflectionTypes" :key="tp" :value="tp">{{ tp }}</a-select-option>
-                                </NcSelect>
+                                </AtSelect>
                               </a-form-item>
                             </a-col>
                             <a-col :span="12">
                               <a-form-item :label="$t('labels.inflection.columnName')">
-                                <NcSelect
+                                <AtSelect
                                   v-model:value="formState.inflection.inflectionColumn"
-                                  class="nc-select-shadow"
-                                  dropdown-class-name="nc-dropdown-inflection-column-name"
+                                  class="atm-select-shadow"
+                                  dropdown-class-name="atm-dropdown-inflection-column-name"
                                 >
                                   <a-select-option v-for="tp in inflectionTypes" :key="tp" :value="tp">{{ tp }}</a-select-option>
-                                </NcSelect>
+                                </AtSelect>
                               </a-form-item>
                             </a-col>
                           </a-row>
@@ -778,26 +778,26 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
             <WorkspaceIntegrationsEditOrAdd load-datasource-info :base-id="baseId" />
           </div>
           <general-overlay :model-value="isLoading" inline transition class="!bg-opacity-15">
-            <div class="flex items-center justify-center h-full w-full !bg-nc-bg-default !bg-opacity-85 z-1000">
+            <div class="flex items-center justify-center h-full w-full !bg-atm-bg-default !bg-opacity-85 z-1000">
               <a-spin size="large" />
             </div>
           </general-overlay>
         </div>
-        <div class="nc-add-source-right-panel">
+        <div class="atm-add-source-right-panel">
           <DashboardSettingsDataSourcesSupportedDocs />
-          <NcDivider />
+          <AtDivider />
         </div>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss" scoped>
-.nc-add-source-left-panel {
+.atm-add-source-left-panel {
   @apply p-6 flex-1 flex justify-center;
 }
-.nc-add-source-right-panel {
-  @apply p-4 w-[320px] border-l-1 border-nc-border-gray-medium flex flex-col gap-4 bg-nc-bg-gray-extralight rounded-br-2xl;
+.atm-add-source-right-panel {
+  @apply p-4 w-[320px] border-l-1 border-atm-border-gray-medium flex flex-col gap-4 bg-atm-bg-gray-extralight rounded-br-2xl;
 }
 :deep(.ant-collapse-header) {
   @apply !-mt-4 !p-0 flex items-center !cursor-default children:first:flex;
@@ -843,23 +843,23 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
     }
   }
 
-  .nc-connection-json-editor {
+  .atm-connection-json-editor {
     @apply min-h-[300px] max-h-[600px];
     resize: vertical;
     overflow-y: auto;
   }
 
   :deep(.ant-form-item-label > label.ant-form-item-required:after) {
-    @apply content-['*'] inline-block text-inherit text-nc-content-red-medium ml-1;
+    @apply content-['*'] inline-block text-inherit text-atm-content-red-medium ml-1;
   }
 
-  .nc-form-extra-connectin-parameters {
+  .atm-form-extra-connectin-parameters {
     :deep(.ant-input) {
       &:not(:hover):not(:focus):not(:disabled) {
-        @apply !shadow-default !border-nc-border-gray-medium;
+        @apply !shadow-default !border-atm-border-gray-medium;
       }
       &:hover:not(:focus):not(:disabled) {
-        @apply !border-nc-border-gray-medium !shadow-hover;
+        @apply !border-atm-border-gray-medium !shadow-hover;
       }
       &:focus {
         @apply !shadow-selected !ring-0;
@@ -897,10 +897,10 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
     &:not(.ant-form-item-has-error) {
       &:not(:has(.ant-input-password)) .ant-input {
         &:not(:hover):not(:focus):not(:disabled) {
-          @apply shadow-default border-nc-border-gray-medium;
+          @apply shadow-default border-atm-border-gray-medium;
         }
         &:hover:not(:focus):not(:disabled) {
-          @apply border-nc-border-gray-medium shadow-hover;
+          @apply border-atm-border-gray-medium shadow-hover;
         }
         &:focus {
           @apply shadow-selected ring-0;
@@ -909,10 +909,10 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
       .ant-input-number,
       .ant-input-affix-wrapper.ant-input-password {
         &:not(:hover):not(:focus-within):not(:disabled) {
-          @apply shadow-default border-nc-border-gray-medium;
+          @apply shadow-default border-atm-border-gray-medium;
         }
         &:hover:not(:focus-within):not(:disabled) {
-          @apply border-nc-border-gray-medium shadow-hover;
+          @apply border-atm-border-gray-medium shadow-hover;
         }
         &:focus-within {
           @apply shadow-selected ring-0;
@@ -931,15 +931,15 @@ const isIntgrationDisabled = (integration: IntegrationType = {}) => {
 </style>
 
 <style lang="scss">
-.nc-modal-create-source {
-  .nc-modal {
+.atm-modal-create-source {
+  .atm-modal {
     @apply !p-0;
     height: min(calc(100vh - 100px), 1024px);
     max-height: min(calc(100vh - 100px), 1024px) !important;
   }
 }
 
-.nc-dropdown-ext-db-type {
+.atm-dropdown-ext-db-type {
   @apply !z-1000;
 }
 </style>

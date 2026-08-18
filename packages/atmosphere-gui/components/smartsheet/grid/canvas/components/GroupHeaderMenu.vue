@@ -29,24 +29,24 @@ const collapseAllGroup = () => {
 </script>
 
 <template>
-  <NcMenu variant="small">
-    <NcMenuItem v-if="group?.isExpanded" @click="toggleExpand(group)">
+  <AtMenu variant="small">
+    <AtMenuItem v-if="group?.isExpanded" @click="toggleExpand(group)">
       <GeneralIcon icon="minimize" />
       {{ $t('labels.collapseGroup') }}
-    </NcMenuItem>
-    <NcMenuItem v-else @click="toggleExpand(group)">
+    </AtMenuItem>
+    <AtMenuItem v-else @click="toggleExpand(group)">
       <GeneralIcon icon="maximize" />
       {{ $t('labels.expandGroup') }}
-    </NcMenuItem>
-    <NcMenuItem @click="expandAllGroup">
+    </AtMenuItem>
+    <AtMenuItem @click="expandAllGroup">
       <GeneralIcon icon="maximizeAll" />
       {{ $t('labels.expandAll') }}
-    </NcMenuItem>
-    <NcMenuItem @click="collapseAllGroup">
+    </AtMenuItem>
+    <AtMenuItem @click="collapseAllGroup">
       <GeneralIcon icon="minimizeAll" />
       {{ $t('labels.collapseAll') }}
-    </NcMenuItem>
-  </NcMenu>
+    </AtMenuItem>
+  </AtMenu>
 </template>
 
 <style scoped lang="scss"></style>

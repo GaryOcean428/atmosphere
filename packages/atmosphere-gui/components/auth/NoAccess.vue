@@ -22,33 +22,33 @@ const handleRetry = () => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center nc-min-h-screen bg-nc-bg-gray-extralight">
-    <div class="w-full max-w-md p-8 space-y-8 bg-nc-bg-default rounded-lg shadow">
+  <div class="flex flex-col items-center justify-center atm-min-h-screen bg-atm-bg-gray-extralight">
+    <div class="w-full max-w-md p-8 space-y-8 bg-atm-bg-default rounded-lg shadow">
       <div class="text-center">
-        <h1 class="text-2xl font-bold text-nc-content-gray-emphasis" data-testid="nc-sso-error-title">
+        <h1 class="text-2xl font-bold text-atm-content-gray-emphasis" data-testid="atm-sso-error-title">
           {{ title || t('msg.noAccess') }}
         </h1>
-        <p class="mt-2 text-sm text-nc-content-gray-subtle2" data-testid="nc-sso-error-message">
+        <p class="mt-2 text-sm text-atm-content-gray-subtle2" data-testid="atm-sso-error-message">
           {{ message || t('msg.noAccessDescription') }}
         </p>
 
         <div v-if="supportCode" class="mt-6 text-left">
-          <p class="text-bodySm text-nc-content-gray-subtle2">
+          <p class="text-bodySm text-atm-content-gray-subtle2">
             {{ t('msg.sso.shareCode') }}
           </p>
           <div
-            class="mt-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-nc-bg-gray-light border-1 border-nc-border-gray-medium"
+            class="mt-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-atm-bg-gray-light border-1 border-atm-border-gray-medium"
           >
-            <span class="flex-1 font-mono text-bodySm text-nc-content-gray break-all" data-testid="nc-sso-error-code">
+            <span class="flex-1 font-mono text-bodySm text-atm-content-gray break-all" data-testid="atm-sso-error-code">
               {{ supportCode }}
             </span>
-            <GeneralCopyButton :content="supportCode" data-testid="nc-sso-error-copy" />
+            <GeneralCopyButton :content="supportCode" data-testid="atm-sso-error-copy" />
           </div>
         </div>
 
-        <NcButton class="mt-4" type="primary" size="medium" data-testid="nc-sso-error-retry" @click="handleRetry">
+        <AtButton class="mt-4" type="primary" size="medium" data-testid="atm-sso-error-retry" @click="handleRetry">
           {{ t('msg.tryAgain') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
   </div>

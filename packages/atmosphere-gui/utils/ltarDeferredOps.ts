@@ -1,11 +1,11 @@
 // Brought in from the upstream OSS fix for the same feature:
-//   nocodb/nocodb#14058 — "fix(gui): defer relation field updates until save in
+//   atmosphere/atmosphere#14058 — "fix(gui): defer relation field updates until save in
 //   expanded form" by Aakash Gautam (@aakashgautam-git).
 // Pure, framework-agnostic helpers for the expanded form's deferred relation
 // (LTAR) editing — kept side-effect free so they can be unit tested in isolation
 // (see test/ltar-deferred-ops.test.ts).
 
-import type { RelationTypes } from 'nocodb-sdk'
+import type { RelationTypes } from 'atmosphere-sdk'
 
 /**
  * A single link/unlink operation queued by the expanded form while editing an

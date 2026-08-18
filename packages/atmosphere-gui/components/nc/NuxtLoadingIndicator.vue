@@ -10,8 +10,8 @@ const { showOnboardingFlow } = useOnboardingFlow()
 const { brandColor } = useBranding()
 
 // NuxtLoadingIndicator reads `color` as a JS prop (a canvas-like fill), so it
-// can't pick up the --nc-brand-accent CSS var — bind the brand seed directly,
-// falling back to the default NocoDB blue when not white-labelled.
+// can't pick up the --atm-brand-accent CSS var — bind the brand seed directly,
+// falling back to the default Atmosphere blue when not white-labelled.
 const loaderColor = computed(() => brandColor.value || '#3366FF')
 
 const stopLoadingIndicator = () => {
@@ -35,7 +35,7 @@ const stopLoadingIndicator = () => {
  * We watch both `viewTitle` and `slugs` params. Once either is present, we know we're on a deeply nested route,
  * and we manually call `.finish()` on the indicator to forcefully hide it.
  *
- * Reference path: packages/nc-gui/pages/index/[typeOrId]/[baseId]/index/index/[viewId]/[[viewTitle]]/[...slugs].vue
+ * Reference path: packages/atmosphere-gui/pages/index/[typeOrId]/[baseId]/index/index/[viewId]/[[viewTitle]]/[...slugs].vue
  */
 watch(
   [() => route.value.params.viewTitle, () => route.value.params.slugs, () => route.value.query, () => showOnboardingFlow.value],

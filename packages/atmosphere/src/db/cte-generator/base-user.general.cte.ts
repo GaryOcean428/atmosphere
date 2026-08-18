@@ -1,5 +1,5 @@
 import type { Knex } from 'knex';
-import type { ClientType, NcContext } from 'nocodb-sdk';
+import type { ClientType, AtContext } from 'atmosphere-sdk';
 import type { ICteBlock, ICTEGenerator } from './types';
 import { buildBaseUserCteSelect } from '~/db/cte-generator/base-user.cte.utils';
 import { BaseUser } from '~/models';
@@ -11,12 +11,12 @@ export class BaseUserGeneralCte {
       context,
       include_ws_deleted = true,
     }: {
-      context: NcContext;
+      context: AtContext;
       include_ws_deleted?: boolean;
     },
     cteGen: ICTEGenerator,
   ) {
-    const alias = `nc_base_user_${context.base_id}`;
+    const alias = `atm_base_user_${context.base_id}`;
     const existingAlias = cteGen.getExistingAlias(alias);
     if (existingAlias) {
       return existingAlias;

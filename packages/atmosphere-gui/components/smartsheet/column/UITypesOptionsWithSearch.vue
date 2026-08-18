@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { UITypes, UITypesName, UITypesSearchTerms, readonlyMetaAllowedTypes } from 'nocodb-sdk'
+import { UITypes, UITypesName, UITypesSearchTerms, readonlyMetaAllowedTypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   options: typeof uiTypes
@@ -79,7 +79,7 @@ const onClick = (uidt: UITypes) => {
 }
 
 const handleAutoScrollOption = () => {
-  const option = document.querySelector('.nc-column-list-option-active')
+  const option = document.querySelector('.atm-column-list-option-active')
 
   if (option) {
     setTimeout(() => {
@@ -116,8 +116,8 @@ const { isSystem } = useColumnCreateStoreOrThrow()
 
 <template>
   <div
-    class="flex-1 border-1 border-nc-border-gray-medium rounded-lg flex flex-col pb-2"
-    data-testid="nc-column-uitypes-options-list-wrapper"
+    class="flex-1 border-1 border-atm-border-gray-medium rounded-lg flex flex-col pb-2"
+    data-testid="atm-column-uitypes-options-list-wrapper"
     @keydown.arrow-down.prevent="onArrowDown"
     @keydown.arrow-up.prevent="onArrowUp"
     @keydown.enter.prevent="onClick(filteredOptions[activeFieldIndex].name)"
@@ -127,18 +127,18 @@ const { isSystem } = useColumnCreateStoreOrThrow()
         ref="inputRef"
         v-model:value="searchQuery"
         :placeholder="`${$t('general.search')} ${$t('labels.columnType').toLowerCase()}`"
-        class="nc-column-type-search-input nc-toolbar-dropdown-search-field-input !border-none !shadow-none !py-2 !rounded-t-lg"
+        class="atm-column-type-search-input atm-toolbar-dropdown-search-field-input !border-none !shadow-none !py-2 !rounded-t-lg"
         :disabled="isSystem"
         @keydown.enter.stop="handleKeydownEnter"
         @change="activeFieldIndex = 0"
       >
-        <template #prefix> <GeneralIcon icon="search" class="nc-search-icon h-4 w-4 mr-1" /> </template>
+        <template #prefix> <GeneralIcon icon="search" class="atm-search-icon h-4 w-4 mr-1" /> </template>
       </a-input>
     </div>
     <div
-      class="nc-column-list-wrapper flex-col w-full max-h-[290px] nc-scrollbar-thin !overflow-y-auto px-2 focus-visible:(shadow-none outline-none ring-0)"
+      class="atm-column-list-wrapper flex-col w-full max-h-[290px] atm-scrollbar-thin !overflow-y-auto px-2 focus-visible:(shadow-none outline-none ring-0)"
     >
-      <div v-if="!filteredOptions.length" class="px-2 py-6 text-nc-content-gray-muted flex flex-col items-center gap-6">
+      <div v-if="!filteredOptions.length" class="px-2 py-6 text-atm-content-gray-muted flex flex-col items-center gap-6">
         <img
           src="~assets/img/placeholder/no-search-result-found.png"
           class="!w-[164px] flex-none"
@@ -156,12 +156,12 @@ const { isSystem } = useColumnCreateStoreOrThrow()
         <div
           class="flex w-full py-2 items-center justify-between px-2 rounded-md"
           :class="[
-            `nc-column-list-option-${index}`,
+            `atm-column-list-option-${index}`,
             {
-              'hover:bg-nc-bg-gray-light cursor-pointer': !isDisabledUIType(option.name),
-              'bg-nc-bg-gray-light nc-column-list-option-active': activeFieldIndex === index && !isDisabledUIType(option.name),
-              '!text-nc-content-gray-disabled cursor-not-allowed': isDisabledUIType(option.name),
-              '!text-nc-content-purple-dark': [AIButton, AIPrompt].includes(option.name),
+              'hover:bg-atm-bg-gray-light cursor-pointer': !isDisabledUIType(option.name),
+              'bg-atm-bg-gray-light atm-column-list-option-active': activeFieldIndex === index && !isDisabledUIType(option.name),
+              '!text-atm-content-gray-disabled cursor-not-allowed': isDisabledUIType(option.name),
+              '!text-atm-content-purple-dark': [AIButton, AIPrompt].includes(option.name),
             },
           ]"
           :data-testid="option.name"
@@ -171,10 +171,10 @@ const { isSystem } = useColumnCreateStoreOrThrow()
             <component
               :is="option.icon"
               class="w-4 h-4"
-              :class="isDisabledUIType(option.name) ? '!text-nc-content-gray-disabled' : 'text-nc-content-gray-subtle'"
+              :class="isDisabledUIType(option.name) ? '!text-atm-content-gray-disabled' : 'text-atm-content-gray-subtle'"
             />
             <div
-              class="text-sm !text-nc-content-gray-subtle"
+              class="text-sm !text-atm-content-gray-subtle"
               :class="{
                 'flex-1': !searchBasisInfoMap[option.name],
               }"
@@ -182,19 +182,19 @@ const { isSystem } = useColumnCreateStoreOrThrow()
               {{ UITypesName[option.name] }}
             </div>
             <div v-if="searchBasisInfoMap[option.name]" class="flex-1 flex">
-              <NcTooltip :title="searchBasisInfoMap[option.name]" class="flex cursor-help">
-                <GeneralIcon icon="info" class="flex-none h-3.5 w-3.5 text-nc-content-gray-muted" />
-              </NcTooltip>
+              <AtTooltip :title="searchBasisInfoMap[option.name]" class="flex cursor-help">
+                <GeneralIcon icon="info" class="flex-none h-3.5 w-3.5 text-atm-content-gray-muted" />
+              </AtTooltip>
             </div>
 
-            <span v-if="option.deprecated" class="!text-xs !text-nc-content-brand-hover">({{ $t('general.deprecated') }})</span>
-            <span v-if="option.isNew" class="text-sm text-nc-content-purple-dark bg-nc-bg-purple-light px-2 rounded-md">{{
+            <span v-if="option.deprecated" class="!text-xs !text-atm-content-brand-hover">({{ $t('general.deprecated') }})</span>
+            <span v-if="option.isNew" class="text-sm text-atm-content-purple-dark bg-atm-bg-purple-light px-2 rounded-md">{{
               $t('general.new')
             }}</span>
           </div>
           <GeneralIcon
             v-if="extraIcons && extraIcons[option.name]"
-            class="!text-nc-content-gray-muted"
+            class="!text-atm-content-gray-muted"
             :icon="extraIcons[option.name]"
           />
         </div>

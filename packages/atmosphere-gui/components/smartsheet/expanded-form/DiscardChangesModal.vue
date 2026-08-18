@@ -27,27 +27,27 @@ const onCancel = () => {
 </script>
 
 <template>
-  <NcModal :visible="modelValue" size="xs" height="auto" @update:visible="onVisibleChange">
+  <AtModal :visible="modelValue" size="xs" height="auto" @update:visible="onVisibleChange">
     <div>
       <div class="flex flex-row items-center justify-between gap-x-2">
         <div class="text-base font-bold">
           {{ $t('labels.saveChanges') }}
         </div>
-        <NcButton type="text" size="xsmall" data-testid="nc-discard-changes-modal-close" @click="onCancel">
-          <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-        </NcButton>
+        <AtButton type="text" size="xsmall" data-testid="atm-discard-changes-modal-close" @click="onCancel">
+          <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+        </AtButton>
       </div>
       <div class="flex font-medium mt-2">
         {{ $t('activity.doYouWantToSaveTheChanges') }}
       </div>
       <div class="flex flex-row justify-end gap-x-2 mt-5">
-        <NcButton type="secondary" size="small" @click="emits('discard')">
+        <AtButton type="secondary" size="small" @click="emits('discard')">
           {{ $t('labels.discard') }}
-        </NcButton>
-        <NcButton type="primary" size="small" :loading="loading" @click="emits('save-and-continue')">
+        </AtButton>
+        <AtButton type="primary" size="small" :loading="loading" @click="emits('save-and-continue')">
           {{ $t('labels.saveChanges') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>

@@ -1,7 +1,7 @@
-import type { NcErrorType, SsoFailureCode } from 'nocodb-sdk'
+import type { AtErrorType, SsoFailureCode } from 'atmosphere-sdk'
 
 export interface SsoError {
-  type: NcErrorType | SsoFailureCode
+  type: AtErrorType | SsoFailureCode
   message: string
   /** Log correlation id — set when the backend redirected here after a failed sign-in. */
   ref?: string

@@ -29,7 +29,7 @@ const { tooltipText } = storeToRefs(store)
 }
 
 .tooltip-light {
-  @apply bg-nc-bg-gray-medium text-nc-content-gray;
+  @apply bg-atm-bg-gray-medium text-atm-content-gray;
 }
 
 .tooltip-enter-active,

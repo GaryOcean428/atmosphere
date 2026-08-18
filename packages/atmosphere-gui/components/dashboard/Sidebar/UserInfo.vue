@@ -29,19 +29,19 @@ onMounted(() => {
 
 <template>
   <div
-    class="flex w-full flex-col border-nc-border-gray-medium gap-y-1"
+    class="flex w-full flex-col border-atm-border-gray-medium gap-y-1"
     :class="{
-      'sticky bottom-0 bg-nc-bg-gray-minisidebar': isMiniSidebar,
+      'sticky bottom-0 bg-atm-bg-gray-minisidebar': isMiniSidebar,
     }"
   >
     <div class="flex items-center justify-center h-13">
-      <NcDropdown
+      <AtDropdown
         v-model:visible="isMenuOpen"
         placement="rightBottom"
-        overlay-class-name="!min-w-44 md:!min-w-64 nc-user-menu-dropdown"
+        overlay-class-name="!min-w-44 md:!min-w-64 atm-user-menu-dropdown"
         :align="{ offset: [12, 3] }"
       >
-        <NcTooltip :disabled="isMobileMode" placement="right" hide-on-click :arrow="false">
+        <AtTooltip :disabled="isMobileMode" placement="right" hide-on-click :arrow="false">
           <template #title>
             <div>
               <div v-if="name">{{ name }}</div>
@@ -53,16 +53,16 @@ onMounted(() => {
           <div
             class="flex"
             :class="{
-              'nc-mini-sidebar-ws-item flex-none': isMiniSidebar,
+              'atm-mini-sidebar-ws-item flex-none': isMiniSidebar,
             }"
-            data-testid="nc-sidebar-userinfo"
+            data-testid="atm-sidebar-userinfo"
             :data-email="user?.email"
           >
             <div
               v-if="isMiniSidebar"
-              class="nc-user-icon-wrapper border-1 w-7.5 h-7.5 flex-none rounded-full overflow-hidden transition-all duration-300"
+              class="atm-user-icon-wrapper border-1 w-7.5 h-7.5 flex-none rounded-full overflow-hidden transition-all duration-300"
               :class="{
-                'border-nc-border-gray-medium ring-2 ring-nc-border-gray-medium/40': !isMenuOpen,
+                'border-atm-border-gray-medium ring-2 ring-atm-border-gray-medium/40': !isMenuOpen,
                 'active border-primary shadow-selected ring-2 ring-primary/30': isMenuOpen,
               }"
             >
@@ -72,28 +72,28 @@ onMounted(() => {
             <template v-else>
               <GeneralUserIcon :user="user" size="medium" />
 
-              <NcTooltip class="max-w-32 truncate" show-on-truncate-only>
+              <AtTooltip class="max-w-32 truncate" show-on-truncate-only>
                 <template #title>
                   {{ name ? name : user?.email }}
                 </template>
 
                 {{ name ? name : user?.email }}
-              </NcTooltip>
+              </AtTooltip>
 
-              <GeneralIcon icon="chevronDown" class="flex-none !min-w-5 transform rotate-180 !text-nc-content-gray-muted" />
+              <GeneralIcon icon="chevronDown" class="flex-none !min-w-5 transform rotate-180 !text-atm-content-gray-muted" />
             </template>
           </div>
-        </NcTooltip>
+        </AtTooltip>
         <template #overlay>
           <DashboardSidebarUserInfoMenu @close-menu="isMenuOpen = false" />
         </template>
-      </NcDropdown>
+      </AtDropdown>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-user-icon-wrapper {
+.atm-user-icon-wrapper {
   &:not(.active):hover {
     box-shadow: 0px 12px 16px -4px rgba(0, 0, 0, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.06);
   }
@@ -104,7 +104,7 @@ onMounted(() => {
 </style>
 
 <style lang="scss">
-.nc-user-menu-dropdown.nc-user-menu-dropdown {
+.atm-user-menu-dropdown.atm-user-menu-dropdown {
   overflow: visible !important;
 
   &::before {
@@ -116,7 +116,7 @@ onMounted(() => {
     height: 0;
     border-top: 7px solid transparent;
     border-bottom: 7px solid transparent;
-    border-right: 7px solid var(--nc-border-gray-medium);
+    border-right: 7px solid var(--atm-border-gray-medium);
   }
 
   &::after {
@@ -128,17 +128,17 @@ onMounted(() => {
     height: 0;
     border-top: 6px solid transparent;
     border-bottom: 6px solid transparent;
-    border-right: 6px solid var(--nc-bg-default);
+    border-right: 6px solid var(--atm-bg-default);
   }
 }
 
-.nc-lang-menu-overlay {
+.atm-lang-menu-overlay {
   .ant-popover-arrow-content {
-    @apply dark:(border-1 border-nc-border-gray-medium);
+    @apply dark:(border-1 border-atm-border-gray-medium);
   }
 
   .ant-popover-inner {
-    @apply dark:(border-1 border-nc-border-gray-medium) !rounded-lg;
+    @apply dark:(border-1 border-atm-border-gray-medium) !rounded-lg;
   }
 
   .ant-popover-inner-content {

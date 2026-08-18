@@ -1,9 +1,9 @@
-import type { NcContext } from 'nocodb-sdk';
-import Noco from '~/Noco';
+import type { AtContext } from 'atmosphere-sdk';
+import Atmosphere from '~/Atmosphere';
 
 export async function getBaseSchema(
-  _context: NcContext,
-  _ncMeta = Noco.ncMeta,
+  _context: AtContext,
+  _ncMeta = Atmosphere.ncMeta,
 ) {
   // Not Implemented
 }

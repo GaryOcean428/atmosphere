@@ -1,4 +1,4 @@
-import { UITypes, TARGET_TABLES } from 'nocodb-sdk';
+import { UITypes, TARGET_TABLES } from 'atmosphere-sdk';
 import { SyncSchema, SyncRecord, SyncValue } from './types';
 
 export interface TicketingTicketRecord extends SyncRecord {

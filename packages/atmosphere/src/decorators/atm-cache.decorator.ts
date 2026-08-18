@@ -1,9 +1,9 @@
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 
 /**
  * Type-safe cache options that can infer function parameter types
  */
-export interface NcCacheOptions<TArgs extends any[] = any[]> {
+export interface AtCacheOptions<TArgs extends any[] = any[]> {
   /**
    * Cache key - can be a string or a function that generates the key
    * Function receives typed arguments from the decorated method
@@ -21,11 +21,11 @@ export interface NcCacheOptions<TArgs extends any[] = any[]> {
   keyPrefix?: string;
   /**
    * Optional function to extract context from function arguments
-   * If not provided, defaults to first argument if it looks like a valid NcContext
+   * If not provided, defaults to first argument if it looks like a valid AtContext
    * (has base_id or workspace_id property)
    * Function receives typed arguments from the decorated method
    */
-  contextExtraction?: (args: TArgs, thisArg: this) => NcContext | undefined;
+  contextExtraction?: (args: TArgs, thisArg: this) => AtContext | undefined;
   /**
    * Optional callback that runs only when the result is retrieved from cache
    * Function receives typed arguments, the cached result, and the this context
@@ -49,7 +49,7 @@ export interface NcCacheOptions<TArgs extends any[] = any[]> {
 /**
  * Non-generic version for backward compatibility and when types can't be inferred
  */
-export interface NcCacheOptionsAny {
+export interface AtCacheOptionsAny {
   /**
    * Cache key - can be a string or a function that generates the key
    * Function receives: (args: any[], target: any, propertyKey: string | symbol) => string
@@ -67,11 +67,11 @@ export interface NcCacheOptionsAny {
   keyPrefix?: string;
   /**
    * Optional function to extract context from function arguments
-   * If not provided, defaults to first argument if it looks like a valid NcContext
+   * If not provided, defaults to first argument if it looks like a valid AtContext
    * (has base_id or workspace_id property)
-   * Function receives: (args: any[]) => NcContext | undefined
+   * Function receives: (args: any[]) => AtContext | undefined
    */
-  contextExtraction?: (args: any[]) => NcContext | undefined;
+  contextExtraction?: (args: any[]) => AtContext | undefined;
   /**
    * Optional callback that runs only when the result is retrieved from cache
    * Function receives arguments, the cached result, and the this context
@@ -87,10 +87,10 @@ export interface NcCacheOptionsAny {
 }
 
 /**
- * NcCache decorator - placeholder implementation
+ * AtCache decorator - placeholder implementation
  */
-export function NcCache<TArgs extends any[] = any[]>(
-  _options: NcCacheOptions<TArgs> | NcCacheOptionsAny,
+export function AtCache<TArgs extends any[] = any[]>(
+  _options: AtCacheOptions<TArgs> | AtCacheOptionsAny,
 ): MethodDecorator {
   return (
     _target: any,

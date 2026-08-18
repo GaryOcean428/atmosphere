@@ -4,9 +4,9 @@
     "id": "qiz1rcfqd2jy6"
   },
   "info": {
-    "title": "NocoDB v3",
+    "title": "Atmosphere v3",
     "version": "",
-    "description": "NocoDB API Documentation"
+    "description": "Atmosphere API Documentation"
   },
   "x-tagGroups": [
     {
@@ -36,7 +36,7 @@
   ],
   "servers": [
     {
-      "url": "https://app.nocodb.com"
+      "url": "https://app.atmosphere.dev"
     }
   ],
   "paths": {
@@ -1044,7 +1044,7 @@
                       {
                         "title": "Email",
                         "type": "Email",
-                        "default_value": "user@nocodb.com",
+                        "default_value": "user@atmosphere.dev",
                         "options": {
                           "validation": true
                         }
@@ -1052,7 +1052,7 @@
                       {
                         "title": "URL",
                         "type": "URL",
-                        "default_value": "https://nocodb.com",
+                        "default_value": "https://atmosphere.dev",
                         "options": {
                           "validation": true
                         }
@@ -1253,7 +1253,7 @@
                           "id": "cnl62kaut6jp5rg",
                           "title": "Email",
                           "type": "Email",
-                          "default_value": "user@nocodb.com",
+                          "default_value": "user@atmosphere.dev",
                           "options": {
                             "validation": true
                           }
@@ -1262,7 +1262,7 @@
                           "id": "cx4mpq7zm4offr8",
                           "title": "URL",
                           "type": "URL",
-                          "default_value": "https://nocodb.com",
+                          "default_value": "https://atmosphere.dev",
                           "options": {
                             "validation": true
                           }
@@ -1543,7 +1543,7 @@
                           "id": "cnl62kaut6jp5rg",
                           "title": "Email",
                           "type": "Email",
-                          "default_value": "user@nocodb.com",
+                          "default_value": "user@atmosphere.dev",
                           "options": {
                             "validation": true
                           }
@@ -1552,7 +1552,7 @@
                           "id": "cx4mpq7zm4offr8",
                           "title": "URL",
                           "type": "URL",
-                          "default_value": "https://nocodb.com",
+                          "default_value": "https://atmosphere.dev",
                           "options": {
                             "validation": true
                           }
@@ -2202,7 +2202,7 @@
                   "value": {
                     "title": "New Field",
                     "type": "Email",
-                    "default_value": "user@nocodb.com",
+                    "default_value": "user@atmosphere.dev",
                     "description": "Sample Description",
                     "options": {
                       "validation": true
@@ -2358,7 +2358,7 @@
                   "value": {
                     "title": "New Field",
                     "type": "Email",
-                    "default_value": "user@nocodb.com",
+                    "default_value": "user@atmosphere.dev",
                     "description": "Sample Description",
                     "options": {
                       "validation": true
@@ -3842,7 +3842,7 @@
                       "individual_members": {
                         "base_members": [
                           {
-                            "email": "user@nocodb.com",
+                            "email": "user@atmosphere.dev",
                             "user_id": "usobpjptvj3m5nu3",
                             "created_at": "2025-08-12 11:17:47+00:00",
                             "updated_at": "2025-08-12 11:17:47+00:00",
@@ -3855,7 +3855,7 @@
                             "user_id": "ussbqtx9b2qjejht",
                             "created_at": "2025-08-12 11:18:27+00:00",
                             "updated_at": "2025-08-12 11:18:27+00:00",
-                            "email": "editor@nocodb.com",
+                            "email": "editor@atmosphere.dev",
                             "display_name": "",
                             "workspace_role": "workspace-level-editor"
                           }
@@ -5026,7 +5026,7 @@
       "get": {
         "summary": "List Table Records",
         "operationId": "db-data-table-row-list",
-        "description": "This API endpoint allows you to retrieve records from a specified table. You can customize the response by applying various query parameters for filtering, sorting, and formatting.\n\n**Pagination**: The response is paginated by default, with the first page being returned initially. The response includes the following pagination fields as top-level properties alongside `records`:\n\n- **next**: URL to retrieve the next page of records. For example, `\"https://app.nocodb.com/api/v3/tables/medhonywr18cysz/records?page=2\"`. Returns `null` when on the last page.\n- **prev**: URL to retrieve the previous page of records. Returns `null` when on the first page.\n- **nestedNext**: URL to retrieve the current page of records with the next set of nested (linked record) data. Returns `null` when there are no more nested pages.\n- **nestedPrev**: URL to retrieve the current page of records with the previous set of nested data. Returns `null` when on the first nested page.\n\nThese pagination fields are particularly valuable when working with large datasets divided into multiple pages. They provide the necessary URLs to seamlessly navigate forward and backward through the dataset.",
+        "description": "This API endpoint allows you to retrieve records from a specified table. You can customize the response by applying various query parameters for filtering, sorting, and formatting.\n\n**Pagination**: The response is paginated by default, with the first page being returned initially. The response includes the following pagination fields as top-level properties alongside `records`:\n\n- **next**: URL to retrieve the next page of records. For example, `\"https://app.atmosphere.dev/api/v3/tables/medhonywr18cysz/records?page=2\"`. Returns `null` when on the last page.\n- **prev**: URL to retrieve the previous page of records. Returns `null` when on the first page.\n- **nestedNext**: URL to retrieve the current page of records with the next set of nested (linked record) data. Returns `null` when there are no more nested pages.\n- **nestedPrev**: URL to retrieve the current page of records with the previous set of nested data. Returns `null` when on the first nested page.\n\nThese pagination fields are particularly valuable when working with large datasets divided into multiple pages. They provide the necessary URLs to seamlessly navigate forward and backward through the dataset.",
         "tags": [
           "Table Records"
         ],
@@ -5105,7 +5105,7 @@
             },
             "in": "query",
             "name": "where",
-            "description": "Enables you to define specific conditions for filtering records in your API response. Multiple conditions can be combined using logical operators such as 'and' and 'or'. Each condition consists of three parts: a field name, a comparison operator, and a value.\n\nExample: `where=(field1,eq,value1)~and(field2,eq,value2)` will filter records where 'field1' is equal to 'value1' AND 'field2' is equal to 'value2'. \n\nYou can also use other comparison operators like 'neq' (not equal), 'gt' (greater than), 'lt' (less than), and more, to create complex filtering rules.\n\nIf `viewId` query parameter is also included, then the filters included here will be applied over the filtering configuration defined in the view. \n\nPlease remember to maintain the specified format, for further information on this please see [the documentation](https://nocodb.com/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)"
+            "description": "Enables you to define specific conditions for filtering records in your API response. Multiple conditions can be combined using logical operators such as 'and' and 'or'. Each condition consists of three parts: a field name, a comparison operator, and a value.\n\nExample: `where=(field1,eq,value1)~and(field2,eq,value2)` will filter records where 'field1' is equal to 'value1' AND 'field2' is equal to 'value2'. \n\nYou can also use other comparison operators like 'neq' (not equal), 'gt' (greater than), 'lt' (less than), and more, to create complex filtering rules.\n\nIf `viewId` query parameter is also included, then the filters included here will be applied over the filtering configuration defined in the view. \n\nPlease remember to maintain the specified format, for further information on this please see [the documentation](https://atmosphere.dev/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)"
           },
           {
             "schema": {
@@ -5175,7 +5175,7 @@
                           "fields": {
                             "SingleLineText": "record #1",
                             "MultiLineText": "sample long text",
-                            "Email": "user@nocodb.com",
+                            "Email": "user@atmosphere.dev",
                             "PhoneNumber": "1234567890",
                             "URL": "www.google.com",
                             "Number": 1234,
@@ -5212,7 +5212,7 @@
                           }
                         }
                       ],
-                      "next": "https://app.nocodb.com/api/v3/data/baseId/tableId/records?page=2"
+                      "next": "https://app.atmosphere.dev/api/v3/data/baseId/tableId/records?page=2"
                     }
                   }
                 }
@@ -5298,7 +5298,7 @@
                         "Time": "20:20:00",
                         "SingleLineText": "record #1",
                         "MultiLineText": "sample text",
-                        "Email": "user@nocodb.com",
+                        "Email": "user@atmosphere.dev",
                         "PhoneNumber": "1234567890",
                         "URL": "www.google.com",
                         "SingleSelect": "jan",
@@ -5310,7 +5310,7 @@
                         },
                         "User": [
                           {
-                            "email": "raju@nocodb.com"
+                            "email": "raju@atmosphere.dev"
                           }
                         ],
                         "MultiSelect": [
@@ -5404,7 +5404,7 @@
                       "fields": {
                         "Number": 101,
                         "SingleLineText": "Updated record #1",
-                        "Email": "updated@nocodb.com"
+                        "Email": "updated@atmosphere.dev"
                       }
                     },
                     {
@@ -5638,7 +5638,7 @@
                       "fields": {
                         "SingleLineText": "record #1",
                         "MultiLineText": "sample long text",
-                        "Email": "user@nocodb.com",
+                        "Email": "user@atmosphere.dev",
                         "PhoneNumber": "1234567890",
                         "URL": "www.google.com",
                         "Number": 1234,
@@ -5788,7 +5788,7 @@
                       "fields": {
                         "SingleLineText": "record #1",
                         "MultiLineText": "sample long text",
-                        "Email": "user@nocodb.com",
+                        "Email": "user@atmosphere.dev",
                         "PhoneNumber": "1234567890",
                         "URL": "www.google.com",
                         "Number": 1234,
@@ -5878,7 +5878,7 @@
             },
             "in": "query",
             "name": "where",
-            "description": "Enables you to define specific conditions for filtering record count in your API response. Multiple conditions can be combined using logical operators such as 'and' and 'or'. Each condition consists of three parts: a field name, a comparison operator, and a value.\n\nExample: `where=(field1,eq,value1)~and(field2,eq,value2)` will filter records where 'field1' is equal to 'value1' AND 'field2' is equal to 'value2'. \n\nYou can also use other comparison operators like 'neq' (not equal), 'gt' (greater than), 'lt' (less than), and more, to create complex filtering rules.\n\nIf `viewId` query parameter is also included, then the filters included here will be applied over the filtering configuration defined in the view. \n\nPlease remember to maintain the specified format, for further information on this please see [the documentation](https://nocodb.com/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)"
+            "description": "Enables you to define specific conditions for filtering record count in your API response. Multiple conditions can be combined using logical operators such as 'and' and 'or'. Each condition consists of three parts: a field name, a comparison operator, and a value.\n\nExample: `where=(field1,eq,value1)~and(field2,eq,value2)` will filter records where 'field1' is equal to 'value1' AND 'field2' is equal to 'value2'. \n\nYou can also use other comparison operators like 'neq' (not equal), 'gt' (greater than), 'lt' (less than), and more, to create complex filtering rules.\n\nIf `viewId` query parameter is also included, then the filters included here will be applied over the filtering configuration defined in the view. \n\nPlease remember to maintain the specified format, for further information on this please see [the documentation](https://atmosphere.dev/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)"
           },
           {
             "$ref": "#/components/parameters/xc-token"
@@ -6025,7 +6025,7 @@
             },
             "in": "query",
             "name": "where",
-            "description": "Enables you to define specific conditions for filtering linked records in your API response. Multiple conditions can be combined using logical operators such as 'and' and 'or'. Each condition consists of three parts: a field name, a comparison operator, and a value.\n\nExample: `where=(field1,eq,value1)~and(field2,eq,value2)` will filter linked records where 'field1' is equal to 'value1' AND 'field2' is equal to 'value2'. \n\nYou can also use other comparison operators like 'neq' (not equal), 'gt' (greater than), 'lt' (less than), and more, to create complex filtering rules.\n\nPlease remember to maintain the specified format, for further information on this please see [the documentation](https://nocodb.com/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)"
+            "description": "Enables you to define specific conditions for filtering linked records in your API response. Multiple conditions can be combined using logical operators such as 'and' and 'or'. Each condition consists of three parts: a field name, a comparison operator, and a value.\n\nExample: `where=(field1,eq,value1)~and(field2,eq,value2)` will filter linked records where 'field1' is equal to 'value1' AND 'field2' is equal to 'value2'. \n\nYou can also use other comparison operators like 'neq' (not equal), 'gt' (greater than), 'lt' (less than), and more, to create complex filtering rules.\n\nPlease remember to maintain the specified format, for further information on this please see [the documentation](https://atmosphere.dev/docs/product-docs/developer-resources/rest-apis#v3-where-query-parameter)"
           },
           {
             "schema": {
@@ -6067,7 +6067,7 @@
                           "fields": {
                             "SingleLineText": "record #1",
                             "MultiLineText": "sample long text",
-                            "Email": "user@nocodb.com",
+                            "Email": "user@atmosphere.dev",
                             "PhoneNumber": "1234567890",
                             "URL": "www.google.com",
                             "Number": 1234,
@@ -6104,7 +6104,7 @@
                           }
                         }
                       ],
-                      "next": "https://app.nocodb.com/api/v3/data/baseId/tableId/records?page=2"
+                      "next": "https://app.atmosphere.dev/api/v3/data/baseId/tableId/records?page=2"
                     }
                   }
                 }
@@ -11629,7 +11629,7 @@
           },
           "generate_text_using_ai": {
             "type": "boolean",
-            "description": "Enable text generation for this field using NocoAI."
+            "description": "Enable text generation for this field using AtmosphereAI."
           }
         },
         "additionalProperties": false
@@ -14213,7 +14213,7 @@
             "type": "string",
             "format": "email",
             "description": "User email address",
-            "example": "user@nocodb.com"
+            "example": "user@atmosphere.dev"
           },
           "user_id": {
             "type": "string",
@@ -16030,7 +16030,7 @@
         "required": ["title", "config"]
       },
       "WorkflowNode": {
-        "description": "A node in the workflow graph representing a trigger, action, or flow control operation. Node type IDs follow the pattern '{provider}.{category}.{name}' (e.g. 'nocodb.trigger.after_insert', 'core.flow.if', 'slack.send_message').",
+        "description": "A node in the workflow graph representing a trigger, action, or flow control operation. Node type IDs follow the pattern '{provider}.{category}.{name}' (e.g. 'atmosphere.trigger.after_insert', 'core.flow.if', 'slack.send_message').",
         "type": "object",
         "properties": {
           "id": {
@@ -16039,14 +16039,14 @@
           },
           "type": {
             "type": "string",
-            "description": "Node type identifier determining behavior and available configuration. Categories: trigger (start events), action (operations), flow (control flow). Examples: 'nocodb.trigger.after_insert', 'core.action.http', 'core.flow.if', 'core.flow.iterate', 'core.flow.delay', 'slack.send_message', 'ai.action.generate-text'",
+            "description": "Node type identifier determining behavior and available configuration. Categories: trigger (start events), action (operations), flow (control flow). Examples: 'atmosphere.trigger.after_insert', 'core.action.http', 'core.flow.if', 'core.flow.iterate', 'core.flow.delay', 'slack.send_message', 'ai.action.generate-text'",
             "examples": [
-              "nocodb.trigger.after_insert",
-              "nocodb.trigger.after_update",
-              "nocodb.trigger.after_delete",
-              "nocodb.trigger.form_submitted",
-              "nocodb.trigger.record_enters_view",
-              "nocodb.trigger.record_matches_condition",
+              "atmosphere.trigger.after_insert",
+              "atmosphere.trigger.after_update",
+              "atmosphere.trigger.after_delete",
+              "atmosphere.trigger.form_submitted",
+              "atmosphere.trigger.record_enters_view",
+              "atmosphere.trigger.record_matches_condition",
               "core.trigger.webhook",
               "core.trigger.manual",
               "core.trigger.cron",
@@ -16056,12 +16056,12 @@
               "core.flow.wait-until",
               "core.action.http",
               "core.action.send-email",
-              "nocodb.create_record",
-              "nocodb.update_record",
-              "nocodb.find_record",
-              "nocodb.list_records",
-              "nocodb.delete_record",
-              "nocodb.run_script",
+              "atmosphere.create_record",
+              "atmosphere.update_record",
+              "atmosphere.find_record",
+              "atmosphere.list_records",
+              "atmosphere.delete_record",
+              "atmosphere.run_script",
               "ai.action.generate-text",
               "ai.action.generate-structured",
               "slack.send_message",
@@ -16958,7 +16958,7 @@
         "name": "Auth Token ",
         "type": "apiKey",
         "in": "header",
-        "description": "Auth Token is a JWT Token generated based on the logged-in user. By default, the token is only valid for 10 hours. However, you can change the value by defining it using environment variable `NC_JWT_EXPIRES_IN`."
+        "description": "Auth Token is a JWT Token generated based on the logged-in user. By default, the token is only valid for 10 hours. However, you can change the value by defining it using environment variable `ATMOSPHERE_JWT_EXPIRES_IN`."
       },
       "bearerAuth": {
         "name": "Authorization",
@@ -16987,7 +16987,7 @@
         "schema": {
           "type": "string"
         },
-        "description": "API Token. Refer [here](https://docs.nocodb.com/account-settings/api-tokens/) to know more"
+        "description": "API Token. Refer [here](https://docs.atmosphere.dev/account-settings/api-tokens/) to know more"
       }
     }
   }

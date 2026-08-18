@@ -194,7 +194,7 @@ async function retryImport() {
 }
 
 function goToBase() {
-  const workspaceId = activeWorkspace.value?.id ?? 'nc'
+  const workspaceId = activeWorkspace.value?.id ?? 'atm'
 
   // newBase / workspaceMode create base(s) elsewhere — land on the workspace
   // dashboard. Otherwise go to the base that received the migration.
@@ -230,51 +230,51 @@ onUnmounted(() => {
     :keyboard="step !== 2"
     :mask-closable="step !== 2"
     width="448px"
-    wrap-class-name="nc-modal-nocodb-import"
+    wrap-class-name="atm-modal-atmosphere-import"
     hide
     @keydown.esc="dialogShow = false"
   >
     <div class="text-base font-weight-bold flex items-center gap-4 mb-6">
-      <GeneralIcon icon="nocodb1" class="w-6 h-6" @dblclick="advancedOptionsCounter++" />
+      <GeneralIcon icon="atmosphere1" class="w-6 h-6" @dblclick="advancedOptionsCounter++" />
 
       <span v-if="step === 1">
-        {{ $t('title.quickImportNocoDB') }}
+        {{ $t('title.quickImportAtmosphere') }}
       </span>
-      <span v-else-if="isInProgress"> {{ `${$t('labels.importingFromNocoDB')}...` }} </span>
-      <span v-else> {{ $t('labels.nocoDBBaseImported') }} </span>
+      <span v-else-if="isInProgress"> {{ `${$t('labels.importingFromAtmosphere')}...` }} </span>
+      <span v-else> {{ $t('labels.atmosphereBaseImported') }} </span>
 
       <a
         v-if="step === 1"
-        href="https://docs.nocodb.com/bases/import-base-from-nocodb#get-nocodb-credentials"
-        class="!text-nc-content-gray-muted prose-sm ml-auto"
+        href="https://docs.atmosphere.dev/bases/import-base-from-atmosphere#get-atmosphere-credentials"
+        class="!text-atm-content-gray-muted prose-sm ml-auto"
         target="_blank"
         rel="noopener"
       >
         {{ $t('title.docs') }}
       </a>
-      <NcButton v-else-if="step === 2" type="text" size="xs" class="ml-auto" @click="detailsIsShown = !detailsIsShown">
+      <AtButton v-else-if="step === 2" type="text" size="xs" class="ml-auto" @click="detailsIsShown = !detailsIsShown">
         {{ detailsIsShown ? 'Hide' : 'Show' }} Details
         <GeneralIcon icon="chevronDown" class="ml-2 transition-all transform" :class="{ 'rotate-180': detailsIsShown }" />
-      </NcButton>
+      </AtButton>
     </div>
 
     <div v-if="step === 1">
-      <div class="text-nc-content-gray-subtle2 text-sm px-2">
+      <div class="text-atm-content-gray-subtle2 text-sm px-2">
         <p class="mb-2">Easily migrate your base with the following steps:</p>
         <ol class="list-decimal list-inside mt-2 pl-1">
-          <li>{{ $t('general.open') }} <strong>settings</strong> in your NocoDB base</li>
+          <li>{{ $t('general.open') }} <strong>settings</strong> in your Atmosphere base</li>
           <li>Navigate to <strong>Migrate</strong> tab</li>
           <li>Paste the <strong>URL</strong></li>
           <li>Click <strong>Migrate</strong></li>
         </ol>
       </div>
 
-      <a-form ref="form" :model="syncOptions" name="quick-import-nocodb-form" layout="horizontal" class="!m-0 w-full">
+      <a-form ref="form" :model="syncOptions" name="quick-import-atmosphere-form" layout="horizontal" class="!m-0 w-full">
         <a-form-item v-if="listeningImport" class="!mt-0 !pb-2 !mb-0">
-          <LazyGeneralCopyInput :model-value="migrationUrl" class="!rounded-lg !mt-2 nc-input-shared-base" />
+          <LazyGeneralCopyInput :model-value="migrationUrl" class="!rounded-lg !mt-2 atm-input-shared-base" />
         </a-form-item>
 
-        <NcButton
+        <AtButton
           v-if="advancedOptionsEnabled && !listeningImport"
           class="!mt-2"
           type="text"
@@ -287,9 +287,9 @@ onUnmounted(() => {
             class="ml-2 !transition-all !transform"
             :class="{ '!rotate-180': collapseKey === 'advanced-settings' }"
           />
-        </NcButton>
+        </AtButton>
 
-        <a-collapse v-if="!listeningImport" v-model:active-key="collapseKey" ghost class="nc-import-collapse">
+        <a-collapse v-if="!listeningImport" v-model:active-key="collapseKey" ghost class="atm-import-collapse">
           <a-collapse-panel key="advanced-settings">
             <div class="mb-2">
               <a-checkbox v-model:checked="syncOptions.newBase"> {{ $t('title.newProj') }} </a-checkbox>
@@ -321,16 +321,16 @@ onUnmounted(() => {
           </span>
         </template>
         <template v-else-if="lastProgress?.status === JobStatus.FAILED">
-          <a-alert class="!rounded-lg !bg-transparent !border-nc-border-gray-medium !p-3 !w-full">
+          <a-alert class="!rounded-lg !bg-transparent !border-atm-border-gray-medium !p-3 !w-full">
             >
             <template #message>
               <div class="flex flex-row items-center gap-2 mb-2">
-                <GeneralIcon icon="ncAlertCircleFilled" class="text-nc-content-red-medium w-4 h-4" />
+                <GeneralIcon icon="ncAlertCircleFilled" class="text-atm-content-red-medium w-4 h-4" />
                 <span class="font-weight-700 text-[14px]">{{ $t('msg.error.importError') }}</span>
               </div>
             </template>
             <template #description>
-              <div class="text-nc-content-gray-muted text-[13px] leading-5 ml-6">
+              <div class="text-atm-content-gray-muted text-[13px] leading-5 ml-6">
                 {{ lastProgress?.msg ?? '---' }}
               </div>
             </template>
@@ -338,21 +338,21 @@ onUnmounted(() => {
         </template>
         <div v-else class="flex items-start gap-3">
           <GeneralIcon icon="checkFill" class="text-white w-4 h-4 mt-0.75" />
-          <span> {{ $t('msg.nocoDBImportSuccess') }} </span>
+          <span> {{ $t('msg.atmosphereImportSuccess') }} </span>
         </div>
       </div>
 
       <div v-if="!isInProgress" class="text-right mt-4">
-        <NcButton v-if="lastProgress?.status === JobStatus.FAILED" size="small" @click="retryImport"> Retry import </NcButton>
-        <NcButton v-else size="small" @click="goToBase">
+        <AtButton v-if="lastProgress?.status === JobStatus.FAILED" size="small" @click="retryImport"> Retry import </AtButton>
+        <AtButton v-else size="small" @click="goToBase">
           {{ syncOptions.workspaceMode || syncOptions.newBase ? 'Go To Dashboard' : 'Go To Base' }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
 
     <template #footer>
       <div v-if="step === 1" class="flex justify-between mt-2">
-        <NcButton
+        <AtButton
           v-if="!listeningImport"
           key="back"
           type="text"
@@ -367,40 +367,40 @@ onUnmounted(() => {
           <GeneralIcon v-if="showBackBtn" icon="chevronLeft" class="mr-1" />
 
           {{ showBackBtn ? $t('general.back') : $t('general.cancel') }}
-        </NcButton>
-        <NcButton v-else key="abort" type="danger" size="small" @click="abortListening">
+        </AtButton>
+        <AtButton v-else key="abort" type="danger" size="small" @click="abortListening">
           {{ $t('general.abort') }}
-        </NcButton>
+        </AtButton>
 
-        <NcButton
+        <AtButton
           v-if="listeningImport"
           type="ghost"
-          class="nc-btn-nocodb-import"
+          class="atm-btn-atmosphere-import"
           size="small"
           :loading="listeningImport"
           @click="startListening"
         >
           Listening
-        </NcButton>
-        <NcButton v-else type="primary" class="nc-btn-nocodb-import" size="small" @click="startListening">
+        </AtButton>
+        <AtButton v-else type="primary" class="atm-btn-atmosphere-import" size="small" @click="startListening">
           Generate & Copy URL
-        </NcButton>
+        </AtButton>
       </div>
     </template>
   </a-modal>
 </template>
 
 <style lang="scss" scoped>
-.nc-import-collapse :deep(.ant-collapse-header) {
+.atm-import-collapse :deep(.ant-collapse-header) {
   display: none !important;
 }
 </style>
 
 <style>
-.nc-modal-nocodb-import .ant-modal-footer {
+.atm-modal-atmosphere-import .ant-modal-footer {
   @apply !border-none p-0;
 }
-.nc-modal-nocodb-import .ant-collapse-content-box {
+.atm-modal-atmosphere-import .ant-collapse-content-box {
   padding-left: 6px;
 }
 </style>

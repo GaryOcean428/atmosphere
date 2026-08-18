@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CommentType } from 'nocodb-sdk'
+import type { CommentType } from 'atmosphere-sdk'
 
 const { activeThread, parsedHtmlComments, replyToActive, closeActive } = useImageAnnotations()!
 
@@ -74,12 +74,12 @@ watch(
 
 <template>
   <div
-    class="nc-annotation-comment-view w-80 rounded-xl bg-nc-bg-default shadow-lg border-1 border-nc-border-gray-medium text-left flex flex-col max-h-[360px]"
-    data-testid="nc-annotation-comment-view"
+    class="atm-annotation-comment-view w-80 rounded-xl bg-atm-bg-default shadow-lg border-1 border-atm-border-gray-medium text-left flex flex-col max-h-[360px]"
+    data-testid="atm-annotation-comment-view"
     @mousedown.stop
     @click.stop
   >
-    <div ref="threadRef" class="flex flex-col gap-3 p-3 overflow-y-auto nc-scrollbar-thin">
+    <div ref="threadRef" class="flex flex-col gap-3 p-3 overflow-y-auto atm-scrollbar-thin">
       <div v-for="comment in activeThread" :key="comment.id" class="flex flex-col gap-1">
         <div class="flex items-center gap-2">
           <GeneralUserIcon
@@ -90,23 +90,23 @@ watch(
             }"
             size="small"
           />
-          <span class="text-small font-medium text-nc-content-gray truncate max-w-[140px]">{{ createdBy(comment) }}</span>
-          <span class="text-xs text-nc-content-gray-muted flex-none">{{ timeAgo(comment.created_at!) }}</span>
+          <span class="text-small font-medium text-atm-content-gray truncate max-w-[140px]">{{ createdBy(comment) }}</span>
+          <span class="text-xs text-atm-content-gray-muted flex-none">{{ timeAgo(comment.created_at!) }}</span>
         </div>
         <div
           v-dompurify-html="parsedHtmlComments[comment.id!]"
-          class="nc-rich-text-content !text-small !leading-18px !text-nc-content-gray pl-7"
+          class="atm-rich-text-content !text-small !leading-18px !text-atm-content-gray pl-7"
         ></div>
       </div>
     </div>
 
-    <div class="p-2 border-t-1 border-nc-border-gray-medium">
+    <div class="p-2 border-t-1 border-atm-border-gray-medium">
       <SmartsheetExpandedFormRichComment
         ref="replyInputRef"
         v-model:value="reply"
         :hide-options="false"
         :placeholder="t('general.leaveComment')"
-        class="nc-annotation-reply-input !py-2 !px-2 cursor-text border-1 rounded-lg w-full bg-transparent !text-nc-content-gray !text-small !leading-18px !max-h-[160px]"
+        class="atm-annotation-reply-input !py-2 !px-2 cursor-text border-1 rounded-lg w-full bg-transparent !text-atm-content-gray !text-small !leading-18px !max-h-[160px]"
         @save="onReply"
         @keydown.enter.exact.prevent="onReply"
         @keydown.esc.stop.prevent="onClose"
@@ -116,7 +116,7 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-annotation-reply-input) {
+:deep(.atm-annotation-reply-input) {
   @apply min-h-8 text-left;
   box-shadow: none;
   &::placeholder {
@@ -129,14 +129,14 @@ watch(
   }
 }
 
-.nc-rich-text-content {
+.atm-rich-text-content {
   p {
     @apply !m-0 !leading-5;
   }
 }
 
 // Smaller, lighter initials inside the comment avatars (scoped to this popup).
-:deep(.nc-user-avatar .font-semibold) {
+:deep(.atm-user-avatar .font-semibold) {
   font-size: 9px;
   font-weight: 500 !important;
   line-height: 1;

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 
 interface Props {
   baseId?: string
@@ -124,8 +124,8 @@ defineExpose({
 <template>
   <a-form-item
     name="tableId"
-    class="!mb-0 nc-table-selector"
-    :class="`nc-force-layout-${forceLayout}`"
+    class="!mb-0 atm-table-selector"
+    :class="`atm-force-layout-${forceLayout}`"
     :validate-status="selectedTable?.ncItemDisabled ? 'error' : ''"
     :help="selectedTable?.ncItemDisabled ? [selectedTable.ncItemTooltip] : []"
     @click.stop
@@ -136,7 +136,7 @@ defineExpose({
         <slot name="label">{{ t('objects.table') }}</slot>
       </div>
     </template>
-    <NcListDropdown
+    <AtListDropdown
       v-model:is-open="isOpenTableSelectDropdown"
       :disabled="disabled"
       :has-error="!!selectedTable?.ncItemDisabled"
@@ -146,20 +146,20 @@ defineExpose({
     >
       <div class="flex-1 flex items-center gap-2 min-w-0">
         <div v-if="selectedTable" class="min-w-5 flex items-center justify-center">
-          <NcIconTable :table="selectedTable || { title: '', table_name: '' }" class="text-nc-content-muted" />
+          <AtIconTable :table="selectedTable || { title: '', table_name: '' }" class="text-atm-content-muted" />
         </div>
-        <NcTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
+        <AtTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
           <span
             v-if="selectedTable"
             :key="selectedTable?.value"
             class="text-sm flex-1 truncate"
-            :class="{ 'text-nc-content-gray-muted': !selectedTable }"
+            :class="{ 'text-atm-content-gray-muted': !selectedTable }"
           >
             {{ selectedTable?.label }}
           </span>
           <template v-else>
             <slot name="placeholder">
-              <span class="text-sm flex-1 truncate text-nc-content-gray-muted">-- Select table --</span>
+              <span class="text-sm flex-1 truncate text-atm-content-gray-muted">-- Select table --</span>
             </slot>
           </template>
 
@@ -169,7 +169,7 @@ defineExpose({
             </template>
             <slot v-else name="placeholderTooltip"> Select table </slot>
           </template>
-        </NcTooltip>
+        </AtTooltip>
 
         <GeneralIcon
           icon="ncChevronDown"
@@ -178,7 +178,7 @@ defineExpose({
         />
       </div>
       <template #overlay="{ onEsc }">
-        <NcList
+        <AtList
           v-model:open="isOpenTableSelectDropdown"
           :value="modelValue || selectedTable?.value || ''"
           :list="tableList"
@@ -190,7 +190,7 @@ defineExpose({
         >
           <template #listItemExtraLeft="{ option }">
             <div class="min-w-5 flex items-center justify-center">
-              <NcIconTable :table="option as TableType" class="text-nc-content-muted" />
+              <AtIconTable :table="option as TableType" class="text-atm-content-muted" />
             </div>
           </template>
           <template v-if="$slots.listHeader" #listHeader>
@@ -199,8 +199,8 @@ defineExpose({
           <template v-if="$slots.emptyState" #emptyState>
             <slot name="emptyState" :length="tableList.length" />
           </template>
-        </NcList>
+        </AtList>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </a-form-item>
 </template>

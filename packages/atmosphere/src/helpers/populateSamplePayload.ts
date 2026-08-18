@@ -1,17 +1,17 @@
-import { ncIsString, RelationTypes, UITypes } from 'nocodb-sdk';
+import { ncIsString, RelationTypes, UITypes } from 'atmosphere-sdk';
 import { v4 as uuidv4 } from 'uuid';
 import type {
   LinkToAnotherRecordColumn,
   LookupColumn,
   SelectOption,
 } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import { Column, Model, View } from '~/models';
 import { sanitizeUserForHook } from '~/helpers/webhookHelpers';
 import { isEE } from '~/utils';
 
 export async function populateSamplePayload(
-  context: NcContext,
+  context: AtContext,
   viewOrModel: View | Model,
   includeNested = false,
   operation = 'insert',
@@ -57,7 +57,7 @@ export interface SampleUser {
 }
 
 export async function populateSamplePayloadView(
-  context: NcContext,
+  context: AtContext,
   param: {
     viewOrModel: View | Model;
     operation: string;
@@ -120,7 +120,7 @@ export async function populateSamplePayloadView(
 }
 
 export async function populateSamplePayloadV2(
-  context: NcContext,
+  context: AtContext,
   viewOrModel: View | Model,
   includeNested = false,
   operation = 'insert',
@@ -205,7 +205,7 @@ export async function populateSamplePayloadV2(
 }
 
 async function getSampleColumnValue(
-  context: NcContext,
+  context: AtContext,
   column: Column,
 ): Promise<any> {
   switch (column.uidt) {
@@ -266,7 +266,7 @@ async function getSampleColumnValue(
       {
         return [
           {
-            url: 'https://nocodb.com/dummy.png',
+            url: 'https://atmosphere.dev/dummy.png',
             title: 'image.png',
             mimetype: 'image/png',
             size: 0,
@@ -319,12 +319,12 @@ async function getSampleColumnValue(
       break;
     case UITypes.Email:
       {
-        return 'test@nocodb.com';
+        return 'test@atmosphere.dev';
       }
       break;
     case UITypes.URL:
       {
-        return 'https://nocodb.com';
+        return 'https://atmosphere.dev';
       }
       break;
     case UITypes.Number:
@@ -445,7 +445,7 @@ async function getSampleColumnValue(
 // WebhookInvoker.constructCommentWebHookData so the modal preview and the
 // "Test Webhook" output match a real delivery.
 export async function populateSampleCommentPayload(
-  context: NcContext,
+  context: AtContext,
   model: Model,
   operation = 'insert',
   version = 'v3',

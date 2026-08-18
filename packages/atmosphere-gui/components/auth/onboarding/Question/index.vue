@@ -43,21 +43,21 @@ const isOptionSelected = (option: OnboardingOptionType) => {
 
 <template>
   <div
-    data-testid="nc-onboarding-flow-question"
+    data-testid="atm-onboarding-flow-question"
     class="flex flex-col gap-6"
     :class="[
-      `nc-active-question-index-${questionIndex}`,
+      `atm-active-question-index-${questionIndex}`,
       {
-        'nc-first-question': isFirst,
-        'nc-last-question': isLast,
-        'nc-single-select-question': question.inputType === 'singleSelect',
-        'nc-multi-select-question': question.inputType === 'multiSelect',
+        'atm-first-question': isFirst,
+        'atm-last-question': isLast,
+        'atm-single-select-question': question.inputType === 'singleSelect',
+        'atm-multi-select-question': question.inputType === 'multiSelect',
       },
     ]"
   >
     <div class="flex flex-col gap-3">
-      <h3 class="my-0 text-heading3 text-nc-content-gray-emphasis">{{ question.question }}</h3>
-      <p v-if="question.description" class="my-0 text-body text-nc-content-gray-subtle2">
+      <h3 class="my-0 text-heading3 text-atm-content-gray-emphasis">{{ question.question }}</h3>
+      <p v-if="question.description" class="my-0 text-body text-atm-content-gray-subtle2">
         {{ question.description }}
       </p>
     </div>
@@ -77,8 +77,8 @@ const isOptionSelected = (option: OnboardingOptionType) => {
           :icon-size="question.iconSize"
           :class="{
             '!justify-center': !anyOptionHasIcon,
-            'nc-selected': isOptionSelected(option),
-            'nc-has-icon-bg-color': anyOptionHasBgColor,
+            'atm-selected': isOptionSelected(option),
+            'atm-has-icon-bg-color': anyOptionHasBgColor,
           }"
           @click="onSelectOption(option, question, questionIndex)"
         />

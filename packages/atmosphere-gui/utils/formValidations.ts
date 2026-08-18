@@ -1,10 +1,10 @@
 import type { RuleObject } from 'ant-design-vue/es/form'
 import isMobilePhone from 'validator/lib/isMobilePhone'
-import { StringValidationType, UITypes } from 'nocodb-sdk'
-import type { ColumnType, Validation } from 'nocodb-sdk'
+import { StringValidationType, UITypes } from 'atmosphere-sdk'
+import type { ColumnType, Validation } from 'atmosphere-sdk'
 import { getI18n } from '../plugins/a.i18n'
 
-export const NC_MAX_TEXT_LENGTH_DEFAULT = 100000
+export const ATMOSPHERE_MAX_TEXT_LENGTH_DEFAULT = 100000
 
 export const formMaxTextLengthValidator = (maxLength: number) => ({
   validator: (_rule: RuleObject, value: any) => {
@@ -117,7 +117,7 @@ export const isEmptyValidatorValue = (v: Validation) => {
 export const extractFieldValidator = (
   _validators: Validation[],
   element: ColumnType,
-  maxTextLength = NC_MAX_TEXT_LENGTH_DEFAULT,
+  maxTextLength = ATMOSPHERE_MAX_TEXT_LENGTH_DEFAULT,
 ) => {
   const rules: RuleObject[] = []
 

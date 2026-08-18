@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import Source from '~/models/Source';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 
 /**
  * Grandfather existing EXTERNAL PG/MSSQL sources to their current schema.
@@ -77,7 +77,7 @@ export class PgSourceSearchPathBackfillMigration {
   static readonly BATCH_SIZE = 500;
 
   async job() {
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
 
     // Snapshot the start time and only grandfather sources that already exist.
     // Unlike the previous single snapshot-`select`, the keyset walk can reach a
@@ -207,7 +207,7 @@ export class PgSourceSearchPathBackfillMigration {
           // fires. resetSource() deletes the local ref then bumps, so this
           // instance rebuilds against the pinned schema on the next connection
           // and every other instance invalidates via the version bump.
-          await NcConnectionMgrv2.resetSource(source);
+          await AtConnectionMgrv2.resetSource(source);
           pinned++;
 
           // Per-pin audit line — this migration mutates source config, so

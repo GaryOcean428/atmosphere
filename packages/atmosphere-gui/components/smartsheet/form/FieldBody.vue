@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { isVirtualCol } from 'nocodb-sdk'
+import { isVirtualCol } from 'atmosphere-sdk'
 
 interface Props {
   field: Record<string, any>
@@ -12,7 +12,7 @@ const { formState, validateInfos, fieldMappings } = useFormViewStoreOrThrow()
 const { row } = useSmartsheetRowStoreOrThrow()
 
 // True when an attachment cell currently holds files — drives a static
-// `nc-input-has-attachments` class that replaces a costly `:has()` CSS selector.
+// `atm-input-has-attachments` class that replaces a costly `:has()` CSS selector.
 function isAttachmentCellWithFiles(col: Record<string, any>) {
   if (!isAttachment(col)) return false
   const val = formState.value?.[col.title]
@@ -22,12 +22,12 @@ function isAttachmentCellWithFiles(col: Record<string, any>) {
 </script>
 
 <template>
-  <div class="nc-form-field-body">
+  <div class="atm-form-field-body">
     <div class="mt-2">
       <a-form-item
         v-if="fieldMappings[field.title]"
         :name="fieldMappings[field.title]"
-        class="!my-0 nc-input-required-error nc-form-input-item"
+        class="!my-0 atm-input-required-error atm-form-input-item"
         v-bind="validateInfos[fieldMappings[field.title]]"
       >
         <LazySmartsheetDivDataCell class="relative" @click.stop>
@@ -35,23 +35,23 @@ function isAttachmentCellWithFiles(col: Record<string, any>) {
             v-if="isVirtualCol(field)"
             v-model="formState[field.title]"
             :row="row"
-            class="nc-input"
-            :class="`nc-form-input-${toSafeClassName(field.title)}`"
-            :data-testid="`nc-form-input-${toSafeClassName(field.title)}`"
+            class="atm-input"
+            :class="`atm-form-input-${toSafeClassName(field.title)}`"
+            :data-testid="`atm-form-input-${toSafeClassName(field.title)}`"
             :column="field"
           />
           <LazySmartsheetCell
             v-else
             v-model="formState[field.title]"
-            class="nc-input truncate"
+            class="atm-input truncate"
             :class="[
-              `nc-form-input-${toSafeClassName(field.title)}`,
+              `atm-form-input-${toSafeClassName(field.title)}`,
               {
                 'layout-list': field.meta.isList,
-                'nc-input-has-attachments': isAttachmentCellWithFiles(field),
+                'atm-input-has-attachments': isAttachmentCellWithFiles(field),
               },
             ]"
-            :data-testid="`nc-form-input-${toSafeClassName(field.title)}`"
+            :data-testid="`atm-form-input-${toSafeClassName(field.title)}`"
             :column="field"
             :edit-enabled="true"
           />
@@ -66,29 +66,29 @@ function isAttachmentCellWithFiles(col: Record<string, any>) {
 </template>
 
 <style scoped lang="scss">
-.nc-input {
+.atm-input {
   @apply appearance-none w-full;
   // Bordered-input style for all non-list cells except attachment cells that have
   // files (their attachment display has its own chrome). Uses a static class
-  // (`nc-input-has-attachments`) instead of `:has(...)` — the relational selector
-  // forced Blink to re-scan every `.nc-input` subtree on ANY in-form style change
+  // (`atm-input-has-attachments`) instead of `:has(...)` — the relational selector
+  // forced Blink to re-scan every `.atm-input` subtree on ANY in-form style change
   // (e.g. the activeRow class toggle), which was the dominant RecalcStyle cost on
   // large forms. A direct class is O(1) invalidation.
-  &:not(.layout-list):not(.nc-input-has-attachments) {
-    @apply !bg-nc-bg-default rounded-lg border-solid border-1 border-nc-border-gray-medium !focus-within:border-nc-border-brand;
+  &:not(.layout-list):not(.atm-input-has-attachments) {
+    @apply !bg-atm-bg-default rounded-lg border-solid border-1 border-atm-border-gray-medium !focus-within:border-atm-border-brand;
   }
   &.layout-list {
     @apply h-auto !p-0;
   }
 
-  &.nc-cell-geodata {
+  &.atm-cell-geodata {
     @apply !py-1;
   }
-  &.nc-cell-currency {
+  &.atm-cell-currency {
     @apply !py-0 !pl-0 flex items-stretch;
   }
 
-  &:not(.nc-cell-datetime) {
+  &:not(.atm-cell-datetime) {
     :deep(input) {
       &:not(.ant-select-selection-search-input) {
         @apply !px-1;
@@ -96,27 +96,27 @@ function isAttachmentCellWithFiles(col: Record<string, any>) {
     }
   }
 
-  &.nc-cell-longtext {
+  &.atm-cell-longtext {
     @apply p-0 h-auto;
   }
-  &.nc-cell:not(.nc-cell-longtext) {
+  &.atm-cell:not(.atm-cell-longtext) {
     @apply p-2;
   }
 
-  :deep(&.nc-cell:not(.nc-cell-longtext)) {
-    &.nc-cell-phonenumber,
-    &.nc-cell-email,
-    &.nc-cell-url {
-      .nc-cell-field.nc-cell-link-preview {
+  :deep(&.atm-cell:not(.atm-cell-longtext)) {
+    &.atm-cell-phonenumber,
+    &.atm-cell-email,
+    &.atm-cell-url {
+      .atm-cell-field.atm-cell-link-preview {
         @apply px-3;
       }
     }
   }
-  &.nc-virtual-cell {
+  &.atm-virtual-cell {
     @apply px-2 py-1 min-h-10;
   }
 
-  &.nc-cell-json {
+  &.atm-cell-json {
     @apply min-h-[38px] h-auto;
     & > div {
       @apply w-full;
@@ -126,12 +126,12 @@ function isAttachmentCellWithFiles(col: Record<string, any>) {
   :deep(.ant-picker) {
     @apply !py-0;
   }
-  :deep(input.nc-cell-field) {
+  :deep(input.atm-cell-field) {
     @apply !py-0;
   }
 }
 
-.nc-input-required-error {
+.atm-input-required-error {
   max-width: 100%;
   white-space: pre-line;
   :deep(.ant-form-item-explain-error) {
@@ -141,7 +141,7 @@ function isAttachmentCellWithFiles(col: Record<string, any>) {
   }
   &:focus-within {
     :deep(.ant-form-item-explain-error) {
-      @apply text-nc-content-gray-disabled;
+      @apply text-atm-content-gray-disabled;
     }
   }
 }
@@ -153,23 +153,23 @@ function isAttachmentCellWithFiles(col: Record<string, any>) {
   border: none !important;
 }
 
-:deep(.nc-cell-attachment) {
+:deep(.atm-cell-attachment) {
   @apply p-0;
 
-  .nc-attachment-cell {
+  .atm-attachment-cell {
     @apply px-4 min-h-[75px] w-full h-full;
 
-    .nc-attachment {
+    .atm-attachment {
       @apply md: (w-[50px] h-[50px]) lg:(w-[75px] h-[75px]) min-h-[50px] min-w-[50px];
     }
 
-    .nc-attachment-cell-dropzone {
-      @apply rounded bg-nc-bg-gray-extradark/75;
+    .atm-attachment-cell-dropzone {
+      @apply rounded bg-atm-bg-gray-extradark/75;
     }
   }
 }
 
-.nc-form-input-item .nc-data-cell {
+.atm-form-input-item .atm-data-cell {
   @apply !border-none rounded-none;
 
   &:focus-within {
@@ -177,8 +177,8 @@ function isAttachmentCellWithFiles(col: Record<string, any>) {
   }
 }
 
-.nc-form-field-body {
-  :deep(.nc-cell) {
+.atm-form-field-body {
+  :deep(.atm-cell) {
     @apply my-0;
   }
 }

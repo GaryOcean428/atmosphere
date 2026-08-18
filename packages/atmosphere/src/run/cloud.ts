@@ -1,6 +1,6 @@
 // todo: move to env
 // defining at the top to override the default value in app.config.ts
-process.env.NC_DASHBOARD_URL = process.env.NC_DASHBOARD_URL ?? '/';
+process.env.ATMOSPHERE_DASHBOARD_URL = process.env.ATMOSPHERE_DASHBOARD_URL ?? '/';
 
 import dns from 'node:dns';
 import cluster from 'node:cluster';
@@ -9,7 +9,7 @@ import http from 'node:http';
 import path from 'node:path';
 import express from 'express';
 import cors from 'cors';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { handleUncaughtErrors } from '~/utils';
 
 handleUncaughtErrors(process);
@@ -18,16 +18,16 @@ handleUncaughtErrors(process);
 dns.setDefaultResultOrder('ipv4first');
 
 // Environment variables for cluster configuration
-const NC_CLUSTER_ENABLED = process.env.NC_CLUSTER_ENABLED === 'true';
-const NC_CLUSTER_WORKERS = parseInt(process.env.NC_CLUSTER_WORKERS || '0');
-const NC_CLUSTER_HEALTH_CHECK_TIMEOUT =
-  parseInt(process.env.NC_CLUSTER_HEALTH_CHECK_TIMEOUT) || 300000;
+const ATMOSPHERE_CLUSTER_ENABLED = process.env.ATMOSPHERE_CLUSTER_ENABLED === 'true';
+const ATMOSPHERE_CLUSTER_WORKERS = parseInt(process.env.ATMOSPHERE_CLUSTER_WORKERS || '0');
+const ATMOSPHERE_CLUSTER_HEALTH_CHECK_TIMEOUT =
+  parseInt(process.env.ATMOSPHERE_CLUSTER_HEALTH_CHECK_TIMEOUT) || 300000;
 const PORT = parseInt(process.env.PORT) || 8080;
 
 // Determine number of workers
 const numCPUs = os.cpus().length;
-const shouldUseCluster = NC_CLUSTER_ENABLED && numCPUs > 1;
-const workerCount = NC_CLUSTER_WORKERS > 0 ? NC_CLUSTER_WORKERS : numCPUs;
+const shouldUseCluster = ATMOSPHERE_CLUSTER_ENABLED && numCPUs > 1;
+const workerCount = ATMOSPHERE_CLUSTER_WORKERS > 0 ? ATMOSPHERE_CLUSTER_WORKERS : numCPUs;
 
 // Signal handling state
 let isShuttingDown = false;
@@ -39,19 +39,19 @@ async function createServer(isMaster: boolean): Promise<http.Server> {
   server.use(cors());
 
   // Add static file serving for the dashboard
-  const ncGuiPath = path.join(__dirname, 'nc-gui');
-  process.env.NC_GUI_DIST_PATH = process.env.NC_GUI_DIST_PATH ?? ncGuiPath;
-  server.use(process.env.NC_DASHBOARD_URL ?? '/', express.static(ncGuiPath));
+  const ncGuiPath = path.join(__dirname, 'atmosphere-gui');
+  process.env.ATMOSPHERE_GUI_DIST_PATH = process.env.ATMOSPHERE_GUI_DIST_PATH ?? ncGuiPath;
+  server.use(process.env.ATMOSPHERE_DASHBOARD_URL ?? '/', express.static(ncGuiPath));
 
-  // if NC_DASHBOARD_URL is not set to /dashboard, then redirect '/dashboard'
-  // to the path set in NC_DASHBOARD_URL
-  if (!/^\/?dashboard\/?$/.test(process.env.NC_DASHBOARD_URL)) {
+  // if ATMOSPHERE_DASHBOARD_URL is not set to /dashboard, then redirect '/dashboard'
+  // to the path set in ATMOSPHERE_DASHBOARD_URL
+  if (!/^\/?dashboard\/?$/.test(process.env.ATMOSPHERE_DASHBOARD_URL)) {
     server.use('/dashboard', (req, res) => {
       // Extract the original query parameters
       const originalQueryParams = new URLSearchParams(req.query as any);
 
       // Build the redirect URL without including the host
-      const redirectUrl = `${process.env.NC_DASHBOARD_URL}${
+      const redirectUrl = `${process.env.ATMOSPHERE_DASHBOARD_URL}${
         originalQueryParams.toString()
           ? '?' + originalQueryParams.toString()
           : ''
@@ -71,7 +71,7 @@ async function createServer(isMaster: boolean): Promise<http.Server> {
           console.log(`Worker ${process.pid} listening on port ${PORT}`);
         }
 
-        server.use(await Noco.init({}, serverInstance, server));
+        server.use(await Atmosphere.init({}, serverInstance, server));
 
         if (!isMaster) {
           console.log(`Worker ${process.pid} initialized successfully`);
@@ -249,7 +249,7 @@ async function waitForMasterHealth(
 
 if (shouldUseCluster) {
   if (cluster.isPrimary) {
-    console.log(`Starting NocoDB in cluster mode with ${workerCount} workers`);
+    console.log(`Starting Atmosphere in cluster mode with ${workerCount} workers`);
     console.log(`Primary process ${process.pid} is running`);
 
     // Setup signal handlers for primary process
@@ -280,7 +280,7 @@ if (shouldUseCluster) {
         console.log('Waiting for master worker health check...');
         const isHealthy = await waitForMasterHealth(
           PORT,
-          NC_CLUSTER_HEALTH_CHECK_TIMEOUT,
+          ATMOSPHERE_CLUSTER_HEALTH_CHECK_TIMEOUT,
         );
 
         if (isHealthy) {
@@ -363,7 +363,7 @@ if (shouldUseCluster) {
   (async () => {
     try {
       await createServer(true);
-      console.log(`App started successfully.\nVisit -> ${Noco.dashboardUrl}`);
+      console.log(`App started successfully.\nVisit -> ${Atmosphere.dashboardUrl}`);
     } catch (error) {
       console.error('Failed to start server:', error);
       process.exit(1);

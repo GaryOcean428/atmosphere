@@ -1,18 +1,18 @@
 import SqlMgrv2 from './SqlMgrv2';
 import SqlMgrv2Trans from './SqlMgrv2Trans';
 import type { MetaService } from '~/meta/meta.service';
-// import type NcMetaIO from '~/meta/NcMetaIO';
+// import type AtMetaIO from '~/meta/AtMetaIO';
 import type Source from '~/models/Source';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import { LRUMap } from '~/utils/LRUMap';
 
-const SQL_MGR_CACHE_MAX_SIZE = +(process.env.NC_SQL_MGR_CACHE_MAX_SIZE || 500);
+const SQL_MGR_CACHE_MAX_SIZE = +(process.env.ATMOSPHERE_SQL_MGR_CACHE_MAX_SIZE || 500);
 
 export default class ProjectMgrv2 {
   private static sqlMgrMap = new LRUMap<SqlMgrv2>(SQL_MGR_CACHE_MAX_SIZE);
 
   public static getSqlMgr(
-    context: NcContext,
+    context: AtContext,
     base: { id: string },
     ncMeta: MetaService = null,
   ): SqlMgrv2 {
@@ -27,7 +27,7 @@ export default class ProjectMgrv2 {
   }
 
   public static async getSqlMgrTrans(
-    context: NcContext,
+    context: AtContext,
     base: { id: string },
     // todo: tobe changed
     ncMeta: any,

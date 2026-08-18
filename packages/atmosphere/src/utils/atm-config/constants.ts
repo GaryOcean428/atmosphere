@@ -18,7 +18,7 @@ export const defaultClientPortMapping = {
 
 export const defaultConnectionConfig: any = {
   // https://github.com/knex/knex/issues/97
-  // timezone: process.env.NC_TIMEZONE || 'UTC',
+  // timezone: process.env.ATMOSPHERE_TIMEZONE || 'UTC',
   dateStrings: true,
 };
 
@@ -26,7 +26,7 @@ export const defaultConnectionConfig: any = {
 export const defaultConnectionOptions = {
   pool: {
     min: 0,
-    max: +process.env.NC_DB_POOL_MAX || 10,
+    max: +process.env.ATMOSPHERE_DB_POOL_MAX || 10,
   },
 };
 
@@ -89,27 +89,27 @@ export enum DriverClient {
 
 export const CHATWOOT_IDENTITY_KEY = process.env.CHATWOOT_IDENTITY_KEY;
 
-export const NC_DISABLE_SUPPORT_CHAT =
-  process.env.NC_DISABLE_SUPPORT_CHAT === 'true';
+export const ATMOSPHERE_DISABLE_SUPPORT_CHAT =
+  process.env.ATMOSPHERE_DISABLE_SUPPORT_CHAT === 'true';
 
-export const NC_IFRAME_WHITELIST_DOMAINS =
-  process.env.NC_IFRAME_ALLOWED_DOMAINS ||
-  process.env.NC_IFRAME_WHITELIST_DOMAINS ||
+export const ATMOSPHERE_IFRAME_WHITELIST_DOMAINS =
+  process.env.ATMOSPHERE_IFRAME_ALLOWED_DOMAINS ||
+  process.env.ATMOSPHERE_IFRAME_WHITELIST_DOMAINS ||
   '';
 
-export const NC_DISABLE_GROUP_BY_LIMIT =
-  process.env.NC_DISABLE_GROUP_BY_LIMIT === 'true' || false;
+export const ATMOSPHERE_DISABLE_GROUP_BY_LIMIT =
+  process.env.ATMOSPHERE_DISABLE_GROUP_BY_LIMIT === 'true' || false;
 
-export const NC_DISABLE_GROUP_BY_AGG =
-  process.env.NC_DISABLE_GROUP_BY_AGG === 'true' || false;
+export const ATMOSPHERE_DISABLE_GROUP_BY_AGG =
+  process.env.ATMOSPHERE_DISABLE_GROUP_BY_AGG === 'true' || false;
 
-export const NC_DISABLE_UNDO_REDO =
-  process.env.NC_DISABLE_UNDO_REDO === 'true' || false;
+export const ATMOSPHERE_DISABLE_UNDO_REDO =
+  process.env.ATMOSPHERE_DISABLE_UNDO_REDO === 'true' || false;
 
 const DEFAULT_THUMBNAIL_MAX_SIZE = 3 * 1024 * 1024;
 
 export const getThumbnailMaxSize = () => {
-  const envValue = process.env.NC_THUMBNAIL_MAX_SIZE;
+  const envValue = process.env.ATMOSPHERE_THUMBNAIL_MAX_SIZE;
   if (envValue) {
     const parsed = parseInt(envValue, 10);
     if (!isNaN(parsed) && parsed > 0) {
@@ -123,11 +123,11 @@ export const getThumbnailMaxSize = () => {
 // it, axios buffers the entire response into a native Buffer (default
 // maxContentLength is -1 = unlimited); a flood of webhook jobs each holding an
 // unbounded body OOM-killed the worker (std::bad_alloc). 10 MB is generous for
-// typical acknowledgement responses; operators can raise NC_WEBHOOK_MAX_BODY_SIZE.
+// typical acknowledgement responses; operators can raise ATMOSPHERE_WEBHOOK_MAX_BODY_SIZE.
 const DEFAULT_WEBHOOK_MAX_BODY_SIZE = 10 * 1024 * 1024;
 
 export const getWebhookMaxBodySize = () => {
-  const envValue = process.env.NC_WEBHOOK_MAX_BODY_SIZE;
+  const envValue = process.env.ATMOSPHERE_WEBHOOK_MAX_BODY_SIZE;
   if (envValue) {
     const parsed = parseInt(envValue, 10);
     if (!isNaN(parsed) && parsed > 0) {

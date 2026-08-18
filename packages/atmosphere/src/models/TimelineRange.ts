@@ -1,4 +1,4 @@
-import type { TimelineRangeType } from 'nocodb-sdk';
+import type { TimelineRangeType } from 'atmosphere-sdk';
 
 export default class TimelineRange implements TimelineRangeType {
   id?: string;

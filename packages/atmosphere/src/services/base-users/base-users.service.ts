@@ -8,19 +8,19 @@ import {
   ProjectRoles,
   WorkspaceRolesToProjectRoles,
   WorkspaceUserRoles,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { v4 as uuidv4 } from 'uuid';
 import validator from 'validator';
 import type {
   ProjectUserReqType,
   ProjectUserUpdateReqType,
   UserType,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { validatePayload } from '~/helpers';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { randomTokenString } from '~/helpers/stringHelpers';
 import { Base, BaseUser, PresignedUrl, User } from '~/models';
@@ -42,7 +42,7 @@ export class BaseUsersService {
   ) {}
 
   async userList(
-    context: NcContext,
+    context: AtContext,
     param: { baseId: string; mode?: 'full' | 'viewer' },
   ) {
     const baseUsers = await BaseUser.getUsersList(context, {
@@ -58,14 +58,14 @@ export class BaseUsersService {
   }
 
   async userInvite(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       baseUser: ProjectUserReqType;
-      req: NcRequest;
+      req: AtRequest;
       workspaceInvited?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<any> {
     validatePayload(
       'swagger.json#/components/schemas/ProjectUserReq',
@@ -77,7 +77,7 @@ export class BaseUsersService {
         base_roles: extractRolesObj(param.baseUser.roles),
       }) > getProjectRolePower(param.req.user)
     ) {
-      NcError.forbidden(`Insufficient privilege to invite with this role`);
+      AtError.forbidden(`Insufficient privilege to invite with this role`);
     }
 
     if (
@@ -91,7 +91,7 @@ export class BaseUsersService {
         ProjectRoles.NO_ACCESS,
       ].includes(param.baseUser.roles as ProjectRoles)
     ) {
-      NcError.baseUserError('Invalid role');
+      AtError.baseUserError('Invalid role');
     }
 
     const emails = (param.baseUser.email || '')
@@ -103,10 +103,10 @@ export class BaseUsersService {
     // check for invalid emails
     const invalidEmails = emails.filter((v) => !validator.isEmail(v));
     if (!emails.length) {
-      return NcError.baseUserError('Invalid email address');
+      return AtError.baseUserError('Invalid email address');
     }
     if (invalidEmails.length) {
-      NcError.baseUserError(
+      AtError.baseUserError(
         'Invalid email address : ' + invalidEmails.join(', '),
       );
     }
@@ -120,7 +120,7 @@ export class BaseUsersService {
 
     // Check if current user has sufficient privilege to assign this role
     if (newRolePower > getProjectRolePower(param.req.user)) {
-      NcError.forbidden(`Insufficient privilege to assign this role`);
+      AtError.forbidden(`Insufficient privilege to assign this role`);
     }
 
     for (const email of emails) {
@@ -131,7 +131,7 @@ export class BaseUsersService {
       const base = await Base.get(context, param.baseId, ncMeta);
 
       if (!base) {
-        return NcError.baseNotFound(param.baseId);
+        return AtError.baseNotFound(param.baseId);
       }
 
       if (user) {
@@ -180,7 +180,7 @@ export class BaseUsersService {
 
         // if already exists and has a role then throw error
         if (baseUser?.is_mapped && baseUser?.roles) {
-          NcError.baseUserError(
+          AtError.baseUserError(
             `${user.email} with role ${baseUser.roles} already exists in this base`,
           );
         }
@@ -345,7 +345,7 @@ export class BaseUsersService {
         } catch (e) {
           this.logger.error(e.message, e.stack);
           if (emails.length === 1) {
-            NcError.get(context).baseUserError('Bad Request');
+            AtError.get(context).baseUserError('Bad Request');
           } else {
             error.push({ email, error: e.message });
           }
@@ -386,14 +386,14 @@ export class BaseUsersService {
   }
 
   async baseUserUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       userId: string;
       baseUser: ProjectUserUpdateReqType;
-      req: NcRequest;
+      req: AtRequest;
       baseId: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<any> {
     validatePayload(
       'swagger.json#/components/schemas/ProjectUserUpdateReq',
@@ -401,13 +401,13 @@ export class BaseUsersService {
     );
 
     if (!param.baseId) {
-      NcError.baseUserError('Missing base id');
+      AtError.baseUserError('Missing base id');
     }
 
     const base = await Base.get(context, param.baseId, ncMeta);
 
     if (!base) {
-      return NcError.baseNotFound(param.baseId);
+      return AtError.baseNotFound(param.baseId);
     }
 
     if (
@@ -421,13 +421,13 @@ export class BaseUsersService {
         ProjectRoles.NO_ACCESS,
       ].includes(param.baseUser.roles as ProjectRoles)
     ) {
-      NcError.baseUserError('Invalid role');
+      AtError.baseUserError('Invalid role');
     }
 
     const user = await User.get(param.userId, ncMeta);
 
     if (!user) {
-      NcError.baseUserError(`User with id '${param.userId}' doesn't exist`);
+      AtError.baseUserError(`User with id '${param.userId}' doesn't exist`);
     }
 
     const targetUser = await User.getWithRoles(
@@ -441,7 +441,7 @@ export class BaseUsersService {
     );
 
     if (!targetUser) {
-      NcError.baseUserError(
+      AtError.baseUserError(
         `User with id '${param.userId}' doesn't exist in this base`,
       );
     }
@@ -474,11 +474,11 @@ export class BaseUsersService {
 
     // Check if current user has sufficient privilege to assign this role
     if (newRolePower > getProjectRolePower(param.req.user)) {
-      NcError.forbidden(`Insufficient privilege to assign this role`);
+      AtError.forbidden(`Insufficient privilege to assign this role`);
     }
 
     if (getProjectRolePower(targetUser) > getProjectRolePower(param.req.user)) {
-      NcError.forbidden(`Insufficient privilege to update user`);
+      AtError.forbidden(`Insufficient privilege to update user`);
     }
 
     const oldBaseUser = await BaseUser.get(
@@ -610,7 +610,7 @@ export class BaseUsersService {
 
     // Throw error if no valid owner is found.
     if (ownersCount <= 1) {
-      NcError.baseUserError('At least one owner is required');
+      AtError.baseUserError('At least one owner is required');
     }
   }
 
@@ -631,10 +631,10 @@ export class BaseUsersService {
       baseUsers: (Partial<User> & BaseUser)[];
       ignoreUserId: string;
       baseId: string;
-      req: NcRequest;
+      req: AtRequest;
       base?: Base;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const base = _base || (await Base.get(context, baseId, ncMeta));
 
@@ -696,19 +696,19 @@ export class BaseUsersService {
   }
 
   async baseUserDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       userId: string;
       // todo: refactor
       req: any;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<any> {
     const base_id = param.baseId;
 
     if (param.req.user?.id === param.userId) {
-      NcError.baseUserError("Admin can't delete themselves!");
+      AtError.baseUserError("Admin can't delete themselves!");
     }
 
     const user = await User.get(param.userId, ncMeta);
@@ -716,12 +716,12 @@ export class BaseUsersService {
     const base = await Base.get(context, base_id, ncMeta);
 
     if (!user) {
-      NcError.userNotFound(param.userId);
+      AtError.userNotFound(param.userId);
     }
 
     if (!param.req.user?.base_roles?.owner) {
       if (user.roles?.split(',').includes('super'))
-        NcError.forbidden(
+        AtError.forbidden(
           'Insufficient privilege to delete a super admin user.',
         );
     }
@@ -742,7 +742,7 @@ export class BaseUsersService {
       getProjectRolePower(baseUser.base_roles) >
       getProjectRolePower(param.req.user)
     ) {
-      NcError.forbidden('Insufficient privilege to delete user');
+      AtError.forbidden('Insufficient privilege to delete user');
     }
 
     // if old role is owner and there is only one owner then restrict to delete
@@ -772,7 +772,7 @@ export class BaseUsersService {
       param.req.user.id === param.userId &&
       param.req.user.roles.includes('owner')
     ) {
-      NcError.badRequest("Admin can't delete themselves!");
+      AtError.badRequest("Admin can't delete themselves!");
     }
 
     await BaseUser.delete(context, base_id, param.userId, ncMeta);
@@ -787,7 +787,7 @@ export class BaseUsersService {
   }
 
   async baseUserInviteResend(
-    context: NcContext,
+    context: AtContext,
     param: {
       userId: string;
       baseUser: ProjectUserReqType;
@@ -799,13 +799,13 @@ export class BaseUsersService {
     const user = await User.get(param.userId);
 
     if (!user) {
-      NcError.baseUserError(`User with id '${param.userId}' not found`);
+      AtError.baseUserError(`User with id '${param.userId}' not found`);
     }
 
     const base = await Base.get(context, param.baseId);
 
     if (!base) {
-      return NcError.baseNotFound(param.baseId);
+      return AtError.baseNotFound(param.baseId);
     }
 
     const invite_token = uuidv4();
@@ -817,7 +817,7 @@ export class BaseUsersService {
 
     const baseUser = await BaseUser.get(context, param.baseId, user.id);
 
-    const pluginData = await Noco.ncMeta.metaGet2(
+    const pluginData = await Atmosphere.ncMeta.metaGet2(
       context.workspace_id,
       context.base_id,
       MetaTable.PLUGIN,
@@ -828,7 +828,7 @@ export class BaseUsersService {
     );
 
     if (!pluginData) {
-      NcError.baseUserError(
+      AtError.baseUserError(
         `No Email Plugin is found. Please go to App Store to configure first or copy the invitation URL to users instead.`,
       );
     }
@@ -856,12 +856,12 @@ export class BaseUsersService {
   }
 
   async baseUserMetaUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       body: any;
       baseId: string;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     // update base user data
@@ -918,7 +918,7 @@ export class BaseUsersService {
 
   protected isUserManagementRestricted(_params: {
     base: Base;
-    req: NcRequest;
+    req: AtRequest;
   }) {
     // placeholder for future logic
   }

@@ -13,15 +13,15 @@ export class GuiMiddleware implements NestMiddleware {
   private indexHtml: string | null = null;
 
   constructor() {
-    // In split-frontend mode (NC_DASHBOARD_URL is a full URL pointing to
+    // In split-frontend mode (ATMOSPHERE_DASHBOARD_URL is a full URL pointing to
     // a separate frontend server, e.g. http://localhost:3000), the backend
     // should not serve frontend files at all.
-    const dashboardUrl = process.env.NC_DASHBOARD_URL || '/';
+    const dashboardUrl = process.env.ATMOSPHERE_DASHBOARD_URL || '/';
     if (dashboardUrl.startsWith('http')) return;
 
-    // NC_GUI_DIST_PATH is set by entry points (Docker, cloud, executables)
+    // ATMOSPHERE_GUI_DIST_PATH is set by entry points (Docker, cloud, executables)
     // to point to the built frontend dist directory.
-    const distPath = process.env.NC_GUI_DIST_PATH;
+    const distPath = process.env.ATMOSPHERE_GUI_DIST_PATH;
     if (!distPath) return;
 
     try {
@@ -60,7 +60,7 @@ export class GuiMiddleware implements NestMiddleware {
     // Browser navigation (incl. the root `/`): serve the index shell. White-
     // label instances get their brand injected into <head> so crawlers / link
     // unfurlers — which never run our JS — see the configured brand instead of
-    // the build-time NocoDB defaults. CE / non-white-label is a no-op passthru.
+    // the build-time Atmosphere defaults. CE / non-white-label is a no-op passthru.
     // Any injection error falls back to the unmodified shell.
     let html = this.indexHtml;
     try {

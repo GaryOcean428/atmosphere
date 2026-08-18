@@ -25,8 +25,8 @@ export interface CalendarEventColors {
 const NEUTRAL: CalendarEventColors = {
   hasColor: false,
   accent: 'rgb(var(--rgb-color-gray-500))',
-  tint: 'var(--nc-bg-default)',
-  border: 'var(--nc-border-gray-dark)',
+  tint: 'var(--atm-bg-default)',
+  border: 'var(--atm-border-gray-dark)',
   onAccent: '#ffffff',
 }
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { UITypes } from 'nocodb-sdk'
-import type { ClientType } from 'nocodb-sdk'
+import { UITypes } from 'atmosphere-sdk'
+import type { ClientType } from 'atmosphere-sdk'
 import type { RowHandler } from './types'
 
 interface Props {
@@ -436,17 +436,17 @@ const onChangeToDynamic = async () => {
 
 <template>
   <div
-    class="flex flex-row gap-x-0 w-full nc-filter-wrapper bg-nc-bg-default"
-    :class="[`nc-filter-wrapper-${vModel.fk_column_id}`, { 'nc-filter-disabled-row': isEeUI && !effectiveEnabled }]"
+    class="flex flex-row gap-x-0 w-full atm-filter-wrapper bg-atm-bg-default"
+    :class="[`atm-filter-wrapper-${vModel.fk_column_id}`, { 'atm-filter-disabled-row': isEeUI && !effectiveEnabled }]"
     v-bind="containerProps"
   >
     <!-- #region enabled checkbox (EE only) -->
     <div v-if="appInfo.ee && isAllowFilterEnableToggle" class="flex items-center pl-2 pr-1">
-      <NcCheckbox
+      <AtCheckbox
         :checked="isFilterEnabled"
         size="default"
         :disabled="isDisabled || parentEnabled === false"
-        class="nc-filter-enabled-checkbox"
+        class="atm-filter-enabled-checkbox"
         @change="onToggleFilterChange"
       />
     </div>
@@ -455,7 +455,7 @@ const onChangeToDynamic = async () => {
     <!-- #region logical op -->
     <template v-if="index === 0">
       <div
-        class="flex items-center !min-w-18 !max-w-18 nc-filter-where-label"
+        class="flex items-center !min-w-18 !max-w-18 atm-filter-where-label"
         :class="appInfo.ee && isAllowFilterEnableToggle ? 'pl-1' : 'pl-3'"
         v-bind="logicalOpsProps"
       >
@@ -463,7 +463,7 @@ const onChangeToDynamic = async () => {
       </div>
     </template>
     <template v-else>
-      <NcSelect
+      <AtSelect
         v-e="['c:filter:logical-op:select', { link: !!link, webHook: !!webHook, widget: !!widget }]"
         v-bind="logicalOpsProps"
         :value="vModel.logical_op"
@@ -471,9 +471,9 @@ const onChangeToDynamic = async () => {
         class="h-full !max-w-18 !min-w-18 capitalize"
         hide-details
         :disabled="isDisabled || (index > 1 && !isLogicalOpChangeAllowed)"
-        dropdown-class-name="nc-dropdown-filter-logical-op"
+        dropdown-class-name="atm-dropdown-filter-logical-op"
         :class="{
-          'nc-disabled-logical-op': isDisabled || (index > 1 && !isLogicalOpChangeAllowed),
+          'atm-disabled-logical-op': isDisabled || (index > 1 && !isLogicalOpChangeAllowed),
         }"
         @change="onLogicalOpChange($event)"
         @click.stop
@@ -484,12 +484,12 @@ const onChangeToDynamic = async () => {
             <component
               :is="iconMap.check"
               v-if="vModel.logical_op === op.value"
-              id="nc-selected-item-icon"
+              id="atm-selected-item-icon"
               class="text-primary w-4 h-4"
             />
           </div>
         </a-select-option>
-      </NcSelect>
+      </AtSelect>
     </template>
     <!-- #endregion logical op -->
 
@@ -499,7 +499,7 @@ const onChangeToDynamic = async () => {
         :value="vModel.fk_column_id"
         :disable-smartsheet="!!widget"
         v-bind="columnSelectProps"
-        class="nc-filter-field-select min-w-32 max-h-8"
+        class="atm-filter-field-select min-w-32 max-h-8"
         :class="{
           'max-w-32': !webHook,
           '!w-full': webHook,
@@ -510,13 +510,13 @@ const onChangeToDynamic = async () => {
         @click.stop
         @change="onColumnChange($event)"
       />
-      <NcSelect
+      <AtSelect
         v-if="comparisonOps && comparisonOps.length > 0"
         v-e="['c:filter:comparison-op:select', { link: !!link, webHook: !!webHook, widget: !!widget }]"
         v-bind="comparisonOpsProps"
         :value="vModel.comparison_op"
         :dropdown-match-select-width="false"
-        class="caption nc-filter-operation-select !min-w-26.75 max-h-8"
+        class="caption atm-filter-operation-select !min-w-26.75 max-h-8"
         :placeholder="$t('labels.operation')"
         :class="{
           '!max-w-26.75': !webHook,
@@ -526,7 +526,7 @@ const onChangeToDynamic = async () => {
         variant="solo"
         :disabled="isDisabled"
         hide-details
-        dropdown-class-name="nc-dropdown-filter-comp-op !max-w-80"
+        dropdown-class-name="atm-dropdown-filter-comp-op !max-w-80"
         @change="onComparisonOpChange($event)"
       >
         <template v-for="compOp of comparisonOps" :key="compOp.value">
@@ -536,25 +536,25 @@ const onChangeToDynamic = async () => {
               <component
                 :is="iconMap.check"
                 v-if="vModel.comparison_op === compOp.value"
-                id="nc-selected-item-icon"
+                id="atm-selected-item-icon"
                 class="text-primary w-4 h-4"
               />
             </div>
           </a-select-option>
         </template>
-      </NcSelect>
+      </AtSelect>
 
       <template v-if="['blank', 'notblank'].includes(vModel.comparison_op)">
         <div class="flex flex-grow"></div>
       </template>
       <template v-else>
         <template v-if="comparisonSubOps && comparisonSubOps.length > 0">
-          <NcSelect
+          <AtSelect
             v-e="['c:filter:sub-comparison-op:select', { link: !!link, webHook: !!webHook, widget: !!widget }]"
             :value="vModel.comparison_sub_op"
             v-bind="comparisonSubOpsProps"
             :dropdown-match-select-width="false"
-            class="caption nc-filter-sub_operation-select min-w-28"
+            class="caption atm-filter-sub_operation-select min-w-28"
             :class="{
               'flex-grow w-full': !showFilterInput,
               'max-w-28': showFilterInput && !webHook,
@@ -564,26 +564,26 @@ const onChangeToDynamic = async () => {
             variant="solo"
             :disabled="isDisabled"
             hide-details
-            dropdown-class-name="nc-dropdown-filter-comp-sub-op"
+            dropdown-class-name="atm-dropdown-filter-comp-sub-op"
             @change="onComparisonSubOpChange($event)"
           >
             <template v-for="compSubOp of comparisonSubOps" :key="compSubOp.value">
               <a-select-option :value="compSubOp.value">
                 <div class="flex items-center w-full justify-between w-full gap-2 max-w-40">
-                  <NcTooltip show-on-truncate-only class="truncate flex-1">
+                  <AtTooltip show-on-truncate-only class="truncate flex-1">
                     <template #title>{{ getFilterOpLabel(compSubOp.i18nKey, compSubOp.text) }}</template>
                     {{ getFilterOpLabel(compSubOp.i18nKey, compSubOp.text) }}
-                  </NcTooltip>
+                  </AtTooltip>
                   <component
                     :is="iconMap.check"
                     v-if="vModel.comparison_sub_op === compSubOp.value"
-                    id="nc-selected-item-icon"
+                    id="atm-selected-item-icon"
                     class="text-primary w-4 h-4"
                   />
                 </div>
               </a-select-option>
             </template>
-          </NcSelect>
+          </AtSelect>
         </template>
         <div class="flex items-center flex-grow">
           <template v-if="showFilterInput">
@@ -592,7 +592,7 @@ const onChangeToDynamic = async () => {
                 v-if="showFilterInput"
                 v-model="vModel.fk_value_col_id"
                 :disable-smartsheet="widget"
-                class="nc-filter-field-select min-w-32 w-full max-h-8"
+                class="atm-filter-field-select min-w-32 w-full max-h-8"
                 :columns="dynamicColumns"
                 :meta="meta"
                 @change="onFkValueColIdChanged($event)"
@@ -602,7 +602,7 @@ const onChangeToDynamic = async () => {
             <SmartsheetToolbarFilterInputLite
               v-else
               v-bind="inputValueProps"
-              class="nc-filter-value-select rounded-md min-w-34"
+              class="atm-filter-value-select rounded-md min-w-34"
               :class="{
                 '!w-full': webHook,
               }"
@@ -614,24 +614,24 @@ const onChangeToDynamic = async () => {
               @click.stop
             />
             <template v-if="link">
-              <NcDropdown
-                class="nc-settings-dropdown h-full flex items-center min-w-0 rounded-lg"
+              <AtDropdown
+                class="atm-settings-dropdown h-full flex items-center min-w-0 rounded-lg"
                 :trigger="['click']"
                 placement="bottom"
                 :disabled="isLockedView"
               >
-                <NcButton type="text" size="small">
+                <AtButton type="text" size="small">
                   <GeneralIcon icon="settings" />
-                </NcButton>
+                </AtButton>
 
                 <template #overlay>
                   <div class="relative overflow-visible min-h-17 w-10">
                     <div
-                      class="absolute -top-21 flex flex-col min-h-34.5 w-70 p-1.5 bg-nc-bg-default rounded-lg border-1 border-nc-border-gray-medium justify-start overflow-hidden"
+                      class="absolute -top-21 flex flex-col min-h-34.5 w-70 p-1.5 bg-atm-bg-default rounded-lg border-1 border-atm-border-gray-medium justify-start overflow-hidden"
                       style="box-shadow: 0px 4px 6px -2px rgba(0, 0, 0, 0.06), 0px -12px 16px -4px rgba(0, 0, 0, 0.1)"
                     >
                       <div
-                        class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer rounded-md hover:bg-nc-bg-gray-light text-nc-content-gray-subtle2 nc-new-record-with-grid group"
+                        class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer rounded-md hover:bg-atm-bg-gray-light text-atm-content-gray-subtle2 atm-new-record-with-grid group"
                         @click="onResetDynamicField()"
                       >
                         <div class="flex flex-row items-center justify-between w-full">
@@ -642,13 +642,13 @@ const onChangeToDynamic = async () => {
                             class="w-4 h-4 text-primary"
                           />
                         </div>
-                        <div class="flex flex-row text-xs text-nc-content-gray-disabled">
+                        <div class="flex flex-row text-xs text-atm-content-gray-disabled">
                           {{ $t('labels.filterBasedOnStaticValue') }}
                         </div>
                       </div>
                       <div
                         v-e="['c:filter:dynamic-filter']"
-                        class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer rounded-md hover:bg-nc-bg-gray-light text-nc-content-gray-subtle2 nc-new-record-with-form group"
+                        class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer rounded-md hover:bg-atm-bg-gray-light text-atm-content-gray-subtle2 atm-new-record-with-form group"
                         :class="
                           isDynamicFilterAllowed(vModel, column, dbClientType) && showFilterInput
                             ? 'cursor-pointer'
@@ -666,14 +666,14 @@ const onChangeToDynamic = async () => {
                             class="w-4 h-4 text-primary"
                           />
                         </div>
-                        <div class="flex flex-row text-xs text-nc-content-gray-disabled">
+                        <div class="flex flex-row text-xs text-atm-content-gray-disabled">
                           {{ $t('labels.filterBasedOnDynamicValue') }}
                         </div>
                       </div>
                     </div>
                   </div>
                 </template>
-              </NcDropdown>
+              </AtDropdown>
             </template>
           </template>
           <div v-else class="flex-grow"></div>
@@ -682,62 +682,62 @@ const onChangeToDynamic = async () => {
       </template>
       <div v-if="!vModel.readOnly && !disabled" :class="{ 'cursor-wait': isLoadingFilter }">
         <!-- if locked view, do not hide the button -->
-        <NcButton
+        <AtButton
           v-e="['c:filter:delete', { link: !!link, webHook: !!webHook, widget: !!widget }]"
           v-bind="deleteButtonProps"
           type="text"
           size="small"
           :disabled="isLockedView"
-          class="nc-filter-item-remove-btn self-center"
+          class="atm-filter-item-remove-btn self-center"
           :class="{ 'pointer-events-none': isLoadingFilter }"
           @click.stop="onDelete()"
         >
           <component :is="iconMap.deleteListItem" />
-        </NcButton>
+        </AtButton>
       </div>
       <div v-if="!vModel.readOnly && !disabled && appInfo.ee" :class="{ 'cursor-wait': isLoadingFilter }">
-        <NcButton
+        <AtButton
           :key="index"
           v-e="['c:filter:copy', { link: !!link, webHook: !!webHook, widget: !!widget }]"
           type="text"
           size="small"
           :disabled="isLockedView"
-          class="nc-filter-item-copy-btn cursor-pointer"
+          class="atm-filter-item-copy-btn cursor-pointer"
           :class="{ 'pointer-events-none': isLoadingFilter }"
           @click.stop="onCopy()"
         >
           <GeneralIcon icon="copy" />
-        </NcButton>
+        </AtButton>
       </div>
       <div v-if="!isDisabled" :class="{ 'cursor-wait': isLoadingFilter }">
-        <NcButton
+        <AtButton
           v-e="['c:filter:reorder', { link: !!link, webHook: !!webHook, widget: !!widget }]"
           type="text"
           size="small"
-          class="nc-filter-item-reorder-btn nc-filter-group-row-drag-handler self-center"
+          class="atm-filter-item-reorder-btn atm-filter-group-row-drag-handler self-center"
           :class="{ 'pointer-events-none': isLoadingFilter }"
           :shadow="false"
           :disabled="!visibleFilterCount || visibleFilterCount <= 1"
         >
           <GeneralIcon icon="drag" class="flex-none h-4 w-4" />
-        </NcButton>
+        </AtButton>
       </div>
     </template>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-filter-where-label {
-  @apply text-nc-content-gray-disabled;
+.atm-filter-where-label {
+  @apply text-atm-content-gray-disabled;
 }
 
-.nc-filter-item-remove-btn,
-.nc-filter-item-reorder-btn,
-.nc-filter-item-copy-btn {
-  @apply text-nc-content-gray-subtle2 hover:text-nc-content-gray;
+.atm-filter-item-remove-btn,
+.atm-filter-item-reorder-btn,
+.atm-filter-item-copy-btn {
+  @apply text-atm-content-gray-subtle2 hover:text-atm-content-gray;
 }
 
-.nc-filter-grid {
+.atm-filter-grid {
   @apply items-center w-full;
 }
 
@@ -749,26 +749,26 @@ const onChangeToDynamic = async () => {
   @apply !min-h-8;
 }
 
-.nc-disabled-logical-op :deep(.ant-select-arrow) {
+.atm-disabled-logical-op :deep(.ant-select-arrow) {
   @apply hidden;
 }
 
-.nc-filter-wrapper {
-  @apply bg-nc-bg-default !rounded-lg border-1px border-nc-border-gray-medium;
+.atm-filter-wrapper {
+  @apply bg-atm-bg-default !rounded-lg border-1px border-atm-border-gray-medium;
 
   & > *,
-  .nc-filter-value-select {
+  .atm-filter-value-select {
     @apply !border-none;
   }
 
   & > div > :deep(.ant-select-selector),
-  :deep(.nc-filter-field-select) > div {
+  :deep(.atm-filter-field-select) > div {
     border: none !important;
     box-shadow: none !important;
   }
 
   & > :not(:last-child):not(:empty) {
-    border-right: 1px solid var(--nc-border-gray-medium) !important;
+    border-right: 1px solid var(--atm-border-gray-medium) !important;
     border-bottom-right-radius: 0 !important;
     border-top-right-radius: 0 !important;
 
@@ -778,8 +778,8 @@ const onChangeToDynamic = async () => {
     }
   }
 
-  .nc-settings-dropdown {
-    border-left: 1px solid var(--nc-border-gray-medium) !important;
+  .atm-settings-dropdown {
+    border-left: 1px solid var(--atm-border-gray-medium) !important;
     border-radius: 0 !important;
   }
 
@@ -797,7 +797,7 @@ const onChangeToDynamic = async () => {
     @apply relative;
     &::after {
       content: '';
-      @apply absolute h-full w-1px bg-[var(--nc-bg-gray-medium)] -left-1px top-0;
+      @apply absolute h-full w-1px bg-[var(--atm-bg-gray-medium)] -left-1px top-0;
     }
   }
 
@@ -813,76 +813,76 @@ const onChangeToDynamic = async () => {
     @apply text-sm;
   }
 
-  :deep(.nc-select:not(.nc-disabled-logical-op):not(.ant-select-disabled):hover) {
+  :deep(.atm-select:not(.atm-disabled-logical-op):not(.ant-select-disabled):hover) {
     &,
     .ant-select-selector {
-      @apply bg-nc-bg-gray-extralight;
+      @apply bg-atm-bg-gray-extralight;
     }
   }
 }
 
-.nc-filter-nested-level-0 {
-  @apply bg-nc-bg-gray-extralight;
+.atm-filter-nested-level-0 {
+  @apply bg-atm-bg-gray-extralight;
 }
 
-.nc-filter-nested-level-1,
-.nc-filter-nested-level-3 {
-  @apply bg-nc-bg-gray-light;
+.atm-filter-nested-level-1,
+.atm-filter-nested-level-3 {
+  @apply bg-atm-bg-gray-light;
 }
 
-.nc-filter-nested-level-2,
-.nc-filter-nested-level-4 {
-  @apply bg-nc-bg-gray-medium;
+.atm-filter-nested-level-2,
+.atm-filter-nested-level-4 {
+  @apply bg-atm-bg-gray-medium;
 }
 
-.nc-filter-logical-op-level-3,
-.nc-filter-logical-op-level-5 {
-  :deep(.nc-select.ant-select .ant-select-selector) {
+.atm-filter-logical-op-level-3,
+.atm-filter-logical-op-level-5 {
+  :deep(.atm-select.ant-select .ant-select-selector) {
     @apply border-[#d9d9d9];
   }
 }
 
-.nc-filter-where-label {
-  @apply text-nc-content-gray-disabled;
+.atm-filter-where-label {
+  @apply text-atm-content-gray-disabled;
 }
 
 :deep(.ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
-  @apply bg-transparent text-nc-content-gray-disabled;
+  @apply bg-transparent text-atm-content-gray-disabled;
 }
 
-:deep(.nc-filter-logical-op .nc-select.ant-select .ant-select-selector) {
+:deep(.atm-filter-logical-op .atm-select.ant-select .ant-select-selector) {
   @apply shadow-none;
 }
 
-:deep(.nc-select-expand-btn) {
-  @apply text-nc-content-gray-muted;
+:deep(.atm-select-expand-btn) {
+  @apply text-atm-content-gray-muted;
 }
 
 .menu-filter-dropdown {
   input:not(:disabled),
   select:not(:disabled),
   .ant-select:not(.ant-select-disabled) {
-    @apply text-nc-content-gray-subtle2;
+    @apply text-atm-content-gray-subtle2;
   }
 }
 
-.nc-filter-input-wrapper :deep(input) {
+.atm-filter-input-wrapper :deep(input) {
   &:not(.ant-select-selection-search-input) {
     @apply !px-2;
   }
 }
 
-.nc-btn-focus:focus {
-  @apply !text-nc-content-brand !shadow-none;
+.atm-btn-focus:focus {
+  @apply !text-atm-content-brand !shadow-none;
 }
 
-.nc-filter-disabled-row {
-  & > *:not(.nc-filter-enabled-checkbox):not(:first-child) {
+.atm-filter-disabled-row {
+  & > *:not(.atm-filter-enabled-checkbox):not(:first-child) {
     @apply opacity-40 pointer-events-none;
   }
 }
 
-.nc-filter-enabled-checkbox {
+.atm-filter-enabled-checkbox {
   @apply flex-shrink-0;
 }
 </style>

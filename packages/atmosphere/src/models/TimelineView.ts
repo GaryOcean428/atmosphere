@@ -1,4 +1,4 @@
-import type { BoolType, MetaType, TimelineType } from 'nocodb-sdk';
+import type { BoolType, MetaType, TimelineType } from 'atmosphere-sdk';
 
 export default class TimelineView implements TimelineType {
   fk_view_id: string;

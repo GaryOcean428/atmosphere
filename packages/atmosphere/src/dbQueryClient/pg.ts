@@ -1,4 +1,4 @@
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import type { DBQueryClient } from '~/dbQueryClient/types';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Knex } from '~/db/CustomKnex';
@@ -53,7 +53,7 @@ export class PGDBQueryClient
     const mapUnion = params.stack
       .map((row) =>
         knex
-          .raw(`select ? as nc_p_key, ? as nc_p_value`, [row.key, row.value])
+          .raw(`select ? as atm_p_key, ? as atm_p_value`, [row.key, row.value])
           .toQuery(),
       )
       .join(' UNION ALL ');
@@ -65,7 +65,7 @@ export class PGDBQueryClient
     // silently corrupting User/CreatedBy sort & filter results.
     const needleAsRows = knex
       .raw(
-        `select ?? as nc_raw_needle, trim(nc_t_arr.nc_p_needle) as nc_p_needle, nc_t_arr.nc_p_ord as nc_p_ord from unnest(string_to_array(??, '${delimiter}')) with ordinality as nc_t_arr(nc_p_needle, nc_p_ord)`,
+        `select ?? as atm_raw_needle, trim(atm_t_arr.atm_p_needle) as atm_p_needle, atm_t_arr.atm_p_ord as atm_p_ord from unnest(string_to_array(??, '${delimiter}')) with ordinality as atm_t_arr(atm_p_needle, atm_p_ord)`,
         [params.needleColumn, params.needleColumn],
       )
       .toQuery();
@@ -73,13 +73,13 @@ export class PGDBQueryClient
     return knex
       .raw(
         [
-          `select nc_p_result from (`,
-          `  select nc_t_needle.nc_raw_needle, string_agg(coalesce(nc_t_stack.nc_p_value, nc_t_stack.nc_p_key), '${delimiter}' order by nc_t_needle.nc_p_ord) as nc_p_result`,
-          `  from (${needleAsRows}) nc_t_needle`,
-          `  left join (${mapUnion}) nc_t_stack`,
-          `    on nc_t_needle.nc_p_needle = nc_t_stack.nc_p_key`,
-          `  group by nc_t_needle.nc_raw_needle`,
-          `) nc_subquery`,
+          `select atm_p_result from (`,
+          `  select atm_t_needle.atm_raw_needle, string_agg(coalesce(atm_t_stack.atm_p_value, atm_t_stack.atm_p_key), '${delimiter}' order by atm_t_needle.atm_p_ord) as atm_p_result`,
+          `  from (${needleAsRows}) atm_t_needle`,
+          `  left join (${mapUnion}) atm_t_stack`,
+          `    on atm_t_needle.atm_p_needle = atm_t_stack.atm_p_key`,
+          `  group by atm_t_needle.atm_raw_needle`,
+          `) atm_subquery`,
         ].join(' '),
       )
       .toQuery();

@@ -28,7 +28,7 @@ const onChange = (e: Event) => {
 <template>
   <a-checkbox
     v-model:checked="checked"
-    class="nc-checkbox"
+    class="atm-checkbox"
     :class="`theme-${props.theme}`"
     :disabled="props.disabled"
     :indeterminate="props.indeterminate"
@@ -40,8 +40,8 @@ const onChange = (e: Event) => {
 </template>
 
 <style lang="scss">
-.nc-checkbox {
-  @apply flex flex-row !items-center text-nc-content-gray;
+.atm-checkbox {
+  @apply flex flex-row !items-center text-atm-content-gray;
 
   &.theme-ai {
     .ant-checkbox-input:focus + .ant-checkbox-inner,
@@ -61,16 +61,16 @@ const onChange = (e: Event) => {
     @apply cursor-not-allowed;
   }
 }
-.nc-checkbox > .ant-checkbox {
-  @apply flex !border-0 !p-0 !h-4 !w-4 !rounded !-mt-1.5 mr-0.75 shadow-sm shadow-nc-bg-gray-light;
+.atm-checkbox > .ant-checkbox {
+  @apply flex !border-0 !p-0 !h-4 !w-4 !rounded !-mt-1.5 mr-0.75 shadow-sm shadow-atm-bg-gray-light;
 }
-.nc-checkbox > .ant-checkbox > .ant-checkbox-input {
+.atm-checkbox > .ant-checkbox > .ant-checkbox-input {
   @apply !p-0 !h-4 !w-4 !border-0;
 }
-.nc-checkbox > .ant-checkbox::after {
+.atm-checkbox > .ant-checkbox::after {
   @apply !border-0 !h-4 !w-4 !rounded;
 }
-.nc-checkbox > .ant-checkbox > .ant-checkbox-inner {
+.atm-checkbox > .ant-checkbox > .ant-checkbox-inner {
   @apply !h-4 !w-4 !rounded;
 }
 </style>

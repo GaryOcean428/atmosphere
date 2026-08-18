@@ -2,9 +2,9 @@ import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
 /**
- * Backfill: delete orphan rows in nc_base_users_v2 that inflated the
+ * Backfill: delete orphan rows in atm_base_users_v2 that inflated the
  * on-prem seat count. Targets two cases:
- *  1. fk_user_id no longer exists in nc_users
+ *  1. fk_user_id no longer exists in atm_users
  *  2. workspace_user is soft-deleted with no active sibling row
  *     (rows with null fk_workspace_id are skipped on purpose, to avoid
  *     collateral damage to legacy base-only assignments).

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BaseVersion } from 'nocodb-sdk'
+import { BaseVersion } from 'atmosphere-sdk'
 
 const { isUIAllowed } = useRoles()
 
@@ -84,7 +84,7 @@ watch(
 </script>
 
 <template>
-  <div class="w-full flex p-6 nc-base-settings overflow-auto nc-scrollbar-thin gap-8">
+  <div class="w-full flex p-6 atm-base-settings overflow-auto atm-scrollbar-thin gap-8">
     <!-- Left Pane -->
     <div class="flex flex-col">
       <div class="h-full flex flex-col gap-1 w-60">
@@ -94,7 +94,7 @@ watch(
           :class="{
             'active-menu': activeMenu === 'baseType',
           }"
-          class="gap-3 hover:bg-nc-bg-gray-light transition-all text-nc-content-gray flex rounded-lg items-center cursor-pointer py-1.5 px-3"
+          class="gap-3 hover:bg-atm-bg-gray-light transition-all text-atm-content-gray flex rounded-lg items-center cursor-pointer py-1.5 px-3"
           @click="selectMenu('baseType')"
         >
           <GeneralIcon icon="ncUsers" />
@@ -109,7 +109,7 @@ watch(
           :class="{
             'active-menu': activeMenu === 'visibility',
           }"
-          class="gap-3 hover:bg-nc-bg-gray-light transition-all text-nc-content-gray flex rounded-lg items-center cursor-pointer py-1.5 px-3"
+          class="gap-3 hover:bg-atm-bg-gray-light transition-all text-atm-content-gray flex rounded-lg items-center cursor-pointer py-1.5 px-3"
           data-testid="visibility-tab"
           @click="selectMenu('visibility')"
         >
@@ -123,7 +123,7 @@ watch(
           :class="{
             'active-menu': activeMenu === 'migrateToV3',
           }"
-          class="gap-3 hover:bg-nc-bg-gray-light transition-all text-nc-content-gray flex rounded-lg items-center cursor-pointer py-1.5 px-3"
+          class="gap-3 hover:bg-atm-bg-gray-light transition-all text-atm-content-gray flex rounded-lg items-center cursor-pointer py-1.5 px-3"
           data-testid="migrate-to-v3-tab"
           @click="selectMenu('migrateToV3')"
         >
@@ -137,7 +137,7 @@ watch(
           :class="{
             'active-menu': activeMenu === 'migrate',
           }"
-          class="gap-3 hover:bg-nc-bg-gray-light transition-all text-nc-content-gray flex rounded-lg items-center cursor-pointer py-1.5 px-3"
+          class="gap-3 hover:bg-atm-bg-gray-light transition-all text-atm-content-gray flex rounded-lg items-center cursor-pointer py-1.5 px-3"
           data-testid="migrate-tab"
           @click="selectMenu('migrate')"
         >
@@ -159,6 +159,6 @@ watch(
 
 <style lang="scss" scoped>
 .active-menu {
-  @apply !bg-nc-bg-brand dark:!bg-nc-bg-gray-medium font-semibold !text-nc-content-brand-disabled;
+  @apply !bg-atm-bg-brand dark:!bg-atm-bg-gray-medium font-semibold !text-atm-content-brand-disabled;
 }
 </style>

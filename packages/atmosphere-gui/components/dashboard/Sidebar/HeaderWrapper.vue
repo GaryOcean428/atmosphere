@@ -33,9 +33,9 @@ const showSidebarBtn = computed(() => {
 </script>
 
 <template>
-  <div class="nc-sidebar-header nc-active-project" :data-workspace-title="activeWorkspace?.title">
+  <div class="atm-sidebar-header atm-active-project" :data-workspace-title="activeWorkspace?.title">
     <template v-if="!isWorkspacesLoading && !isLoading">
-      <div class="nc-sidebar-header-content text-subHeading2 truncate">
+      <div class="atm-sidebar-header-content text-subHeading2 truncate">
         <slot> {{ $t('objects.projects') }} </slot>
       </div>
 
@@ -43,22 +43,22 @@ const showSidebarBtn = computed(() => {
         <DashboardSidebarViewOptions
           v-if="isEeUI && appInfo.ee && !isMobileMode && !isSharedBase && activeSidebarTab === 'data'"
         />
-        <NcTooltip v-if="!isMobileMode && !isSharedBase" class="flex" placement="bottom" hide-on-click>
+        <AtTooltip v-if="!isMobileMode && !isSharedBase" class="flex" placement="bottom" hide-on-click>
           <template #title>
             <div class="flex items-center gap-1">{{ $t('labels.quickSearch') }} {{ renderCmdOrCtrlKey(true) }} K</div>
           </template>
-          <NcButton
+          <AtButton
             v-e="['c:quick-actions']"
             type="text"
             size="small"
-            class="!text-nc-content-gray-muted !md:(hover:bg-nc-bg-gray-medium) !rounded-md"
-            data-testid="nc-sidebar-search-btn"
+            class="!text-atm-content-gray-muted !md:(hover:bg-atm-bg-gray-medium) !rounded-md"
+            data-testid="atm-sidebar-search-btn"
             @click="openCommandPalette"
           >
             <GeneralIcon icon="search" class="!text-current" />
-          </NcButton>
-        </NcTooltip>
-        <NcTooltip
+          </AtButton>
+        </AtTooltip>
+        <AtTooltip
           v-if="showSidebarBtn"
           class="flex"
           :class="{
@@ -71,11 +71,11 @@ const showSidebarBtn = computed(() => {
           <template #title>
             {{ isLeftSidebarOpen ? `${$t('title.hideSidebar')}` : `${$t('title.showSidebar')}` }}
           </template>
-          <NcButton
+          <AtButton
             v-e="['c:leftSidebar:hideToggle']"
             :type="isMobileMode ? 'secondary' : 'text'"
             :size="isMobileMode ? 'medium' : 'small'"
-            class="nc-sidebar-left-toggle-icon !text-nc-content-gray-subtle !hover:text-nc-content-gray !xs:(h-10.5 max-h-10.5 max-w-10.5) !md:(hover:bg-nc-bg-gray-medium) !rounded-md"
+            class="atm-sidebar-left-toggle-icon !text-atm-content-gray-subtle !hover:text-atm-content-gray !xs:(h-10.5 max-h-10.5 max-w-10.5) !md:(hover:bg-atm-bg-gray-medium) !rounded-md"
             @click="isLeftSidebarOpen = !isLeftSidebarOpen"
           >
             <div class="flex items-center text-inherit">
@@ -83,14 +83,14 @@ const showSidebarBtn = computed(() => {
               <GeneralIcon
                 v-else
                 icon="doubleLeftArrow"
-                class="duration-150 transition-all !text-lg -mt-0.5 !text-nc-content-gray-muted bg-opacity-50 transform rtl:rotate-180"
+                class="duration-150 transition-all !text-lg -mt-0.5 !text-atm-content-gray-muted bg-opacity-50 transform rtl:rotate-180"
                 :class="{
                   'rotate-180 rtl:rotate-0': !isLeftSidebarOpen,
                 }"
               />
             </div>
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
       </div>
     </template>
     <template v-else>
@@ -101,10 +101,10 @@ const showSidebarBtn = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.nc-sidebar-header {
+.atm-sidebar-header {
   @apply w-full px-2 py-1.5 flex items-center justify-between gap-2 h-[var(--topbar-height)];
 
-  .nc-sidebar-header-content {
+  .atm-sidebar-header-content {
     @apply xs:flex-1;
 
     &:has(input) {
@@ -113,7 +113,7 @@ const showSidebarBtn = computed(() => {
   }
 }
 
-:deep(.nc-sidebar-node-btn) {
-  @apply !hover:bg-nc-bg-gray-medium !rounded-md text-nc-content-gray-subtle;
+:deep(.atm-sidebar-node-btn) {
+  @apply !hover:bg-atm-bg-gray-medium !rounded-md text-atm-content-gray-subtle;
 }
 </style>

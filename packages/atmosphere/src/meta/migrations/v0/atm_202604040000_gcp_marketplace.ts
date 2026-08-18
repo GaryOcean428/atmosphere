@@ -2,7 +2,7 @@ import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
 const up = async (knex: Knex) => {
-  // GCP Marketplace accounts — maps GCP procurement accounts to NocoDB users
+  // GCP Marketplace accounts — maps GCP procurement accounts to Atmosphere users
   await knex.schema.createTable(MetaTable.GCP_MARKETPLACE_ACCOUNTS, (table) => {
     table.string('id', 20).primary().notNullable();
     table.string('procurement_account_id', 255).notNullable().unique();
@@ -14,8 +14,8 @@ const up = async (knex: Knex) => {
 
     table.timestamps(true, true);
 
-    table.index(['fk_user_id'], 'nc_gcp_mp_accounts_user_idx');
-    table.index(['link_token'], 'nc_gcp_mp_accounts_link_token_idx');
+    table.index(['fk_user_id'], 'atm_gcp_mp_accounts_user_idx');
+    table.index(['link_token'], 'atm_gcp_mp_accounts_link_token_idx');
   });
 
   // GCP Marketplace entitlements — maps GCP entitlements to installations (licenses)
@@ -32,8 +32,8 @@ const up = async (knex: Knex) => {
 
       table.timestamps(true, true);
 
-      table.index(['fk_gcp_account_id'], 'nc_gcp_mp_ent_account_idx');
-      table.index(['fk_installation_id'], 'nc_gcp_mp_ent_install_idx');
+      table.index(['fk_gcp_account_id'], 'atm_gcp_mp_ent_account_idx');
+      table.index(['fk_installation_id'], 'atm_gcp_mp_ent_install_idx');
     },
   );
 };

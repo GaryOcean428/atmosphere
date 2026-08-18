@@ -4,7 +4,7 @@ import {
   getSeparatorChars,
   resolveColumnSeparator,
   roundUpToPrecision,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { renderSingleLineText, renderTagLabel } from '../utils/canvas'
 
 export const DecimalCellRenderer: CellRenderer = {

@@ -1,4 +1,4 @@
-import type { ColumnType, SortType, ViewType } from 'nocodb-sdk'
+import type { ColumnType, SortType, ViewType } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import type { EventHook } from '@vueuse/core'
 

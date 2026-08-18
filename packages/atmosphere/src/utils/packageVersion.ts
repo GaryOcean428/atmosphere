@@ -6,7 +6,7 @@ let packageInfo: Record<string, any> = {};
 try {
   packageInfo = JSON.parse(
     fs.readFileSync(
-      path.join(process.cwd(), 'node_modules', 'nocodb', 'package.json'),
+      path.join(process.cwd(), 'node_modules', 'atmosphere', 'package.json'),
       'utf8',
     ),
   );
@@ -18,7 +18,7 @@ try {
         path.join(
           path.dirname(process['pkg']?.['defaultEntrypoint']),
           'node_modules',
-          'nocodb',
+          'atmosphere',
           'package.json',
         ),
         'utf8',

@@ -394,9 +394,9 @@ const up = async (knex: Knex) => {
   );
 
   console.time(
-    `Removed foreign keys and created index for columns in '${MetaTable.SYNC_SOURCE}'`,
+    `Removed foreign keys and created index for columns in '${MetaTable.SYATMOSPHERE_SOURCE}'`,
   );
-  await knex.schema.alterTable(MetaTable.SYNC_SOURCE, (table) => {
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_SOURCE, (table) => {
     table.dropForeign('project_id');
     table.index('project_id');
 
@@ -404,7 +404,7 @@ const up = async (knex: Knex) => {
     table.index('base_id');
   });
   console.timeEnd(
-    `Removed foreign keys and created index for columns in '${MetaTable.SYNC_SOURCE}'`,
+    `Removed foreign keys and created index for columns in '${MetaTable.SYATMOSPHERE_SOURCE}'`,
   );
 
   console.time(
@@ -580,7 +580,7 @@ const down = async (knex: Knex) => {
     table.foreign('fk_view_id').references(`${MetaTable.VIEWS}.id`);
   });
 
-  await knex.schema.alterTable(MetaTable.SYNC_SOURCE, (table) => {
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_SOURCE, (table) => {
     table.foreign('project_id').references(`${MetaTableOldV2.PROJECT}.id`);
   });
 

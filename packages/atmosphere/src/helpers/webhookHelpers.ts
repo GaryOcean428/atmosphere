@@ -11,16 +11,16 @@ import {
   HookOperationCode,
   isDateMonthFormat,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type {
   ColumnType,
   FormColumnType,
   HookType,
   TableType,
   UpdatePayload,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { AxiosResponse } from 'axios';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { Column, FormView, Hook, Model, Source, View } from '~/models';
 import { Filter } from '~/models';
 import { populateUpdatePayloadDiff } from '~/utils';
@@ -64,7 +64,7 @@ export function parseBody(
 }
 
 export async function validateCondition(
-  context: NcContext,
+  context: AtContext,
   filters: Filter[],
   data: any = {},
   {
@@ -451,7 +451,7 @@ export async function handleHttpWebHook({
 }
 
 export async function invokeWebhook(
-  context: NcContext,
+  context: AtContext,
   param: {
     hook: Hook;
     model: Model;
@@ -602,7 +602,7 @@ export function compareOperationCode(param: {
 }
 
 export async function getAffectedColumns(
-  context: NcContext,
+  context: AtContext,
   {
     hookName,
     prevData,

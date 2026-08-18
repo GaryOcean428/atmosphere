@@ -1,5 +1,5 @@
-import { type NcContext, parseProp } from 'nocodb-sdk';
-import { NcError } from 'src/helpers/catchError';
+import { type AtContext, parseProp } from 'atmosphere-sdk';
+import { AtError } from 'src/helpers/catchError';
 import { DecimalGeneralHandler } from '../decimal/decimal.general.handler';
 import type { Knex } from 'knex';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
@@ -15,7 +15,7 @@ export class RatingGeneralHandler extends DecimalGeneralHandler {
     column: Column;
     options?: {
       baseModel: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
@@ -23,7 +23,7 @@ export class RatingGeneralHandler extends DecimalGeneralHandler {
     if (typeof value === 'number') {
       const max = parseFloat(parseProp(params.column.meta)?.max);
       if (value < 0 || value > max) {
-        NcError.invalidValueForField({
+        AtError.invalidValueForField({
           value: value.toString(),
           column: params.column.title,
           type: params.column.uidt,

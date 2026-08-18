@@ -1,5 +1,5 @@
-import type { OAuthClient } from 'nocodb-sdk'
-import { NO_SCOPE } from 'nocodb-sdk'
+import type { OAuthClient } from 'atmosphere-sdk'
+import { NO_SCOPE } from 'atmosphere-sdk'
 
 export const useOAuthClients = defineStore('oauthClientsStore', () => {
   const { $api, $e } = useNuxtApp()

@@ -17,9 +17,9 @@ mkdir -p certs
 cp /path/to/cert.pem certs/cert.pem
 cp /path/to/key.pem certs/key.pem
 
-# Edit docker.env: set NC_REDIS_URL
-# Edit nocodb/db.json: set your database host and credentials
-# Edit docker-compose.yml: replace nocodb.example.com with your domain
+# Edit docker.env: set ATMOSPHERE_REDIS_URL
+# Edit atmosphere/db.json: set your database host and credentials
+# Edit docker-compose.yml: replace atmosphere.example.com with your domain
 docker compose up -d
 ```
 
@@ -45,7 +45,7 @@ tls:
 
 ## Scaling
 
-With external backing services, scale NocoDB horizontally:
+With external backing services, scale Atmosphere horizontally:
 
 ```yaml
 deploy:

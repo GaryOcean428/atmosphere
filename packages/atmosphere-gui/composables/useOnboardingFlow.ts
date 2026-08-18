@@ -146,7 +146,7 @@ export const useOnboardingFlow = createSharedComposable(() => {
     const list: OnboardingQuestionType[] = [
       {
         id: 1,
-        question: 'Hey! What do you plan on using NocoDB for?',
+        question: 'Hey! What do you plan on using Atmosphere for?',
         inputType: 'singleSelect',
         options: [
           {
@@ -517,7 +517,7 @@ export const useOnboardingFlow = createSharedComposable(() => {
         id: 7,
         key: 'ai',
         question: 'Choose AI Tools That You Are Familiar With',
-        description: 'Unlocks Free Access To NocoAI 🎉 ',
+        description: 'Unlocks Free Access To AtmosphereAI 🎉 ',
         inputType: 'multiSelect',
         options: [
           {
@@ -740,7 +740,7 @@ export const useOnboardingFlow = createSharedComposable(() => {
           // },
           {
             value: 'Import Data',
-            description: 'Bring your existing spreadsheets or databases into NocoDB.',
+            description: 'Bring your existing spreadsheets or databases into Atmosphere.',
             icons: [
               {
                 icon: 'ncDownload',

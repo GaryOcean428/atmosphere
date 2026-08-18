@@ -12,7 +12,7 @@ const onClick = () => {
 
 <template>
   <div v-if="isMobileMode || !isLeftSidebarOpen" v-e="['c:leftSidebar:hideToggle']">
-    <NcTooltip
+    <AtTooltip
       placement="topLeft"
       hide-on-click
       class="transition-all duration-150"
@@ -25,10 +25,10 @@ const onClick = () => {
       <template #title>
         {{ isLeftSidebarOpen ? `${$t('title.hideSidebar')}` : `${$t('title.showSidebar')}` }}
       </template>
-      <NcButton
+      <AtButton
         :type="isMobileMode ? 'secondary' : 'text'"
         :size="isMobileMode ? 'medium' : 'small'"
-        class="nc-sidebar-left-toggle-icon !text-nc-content-gray-subtle2 !hover:text-nc-content-gray w-8"
+        class="atm-sidebar-left-toggle-icon !text-atm-content-gray-subtle2 !hover:text-atm-content-gray w-8"
         @click="onClick"
       >
         <div class="flex items-center text-inherit">
@@ -36,10 +36,10 @@ const onClick = () => {
           <GeneralIcon
             v-else
             icon="doubleRightArrow"
-            class="duration-150 transition-all !text-lg -mt-0.25 !text-nc-content-gray-subtle2 bg-opacity-50 rtl:transform rtl:rotate-180"
+            class="duration-150 transition-all !text-lg -mt-0.25 !text-atm-content-gray-subtle2 bg-opacity-50 rtl:transform rtl:rotate-180"
           />
         </div>
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
   </div>
 </template>

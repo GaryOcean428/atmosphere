@@ -16,4 +16,4 @@ export {
   isLink,
   isReadOnlyVirtualCell,
   isReadonlyVirtualColumn,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'

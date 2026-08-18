@@ -24,7 +24,7 @@ export class UserLocalStorageInfoManager {
   }
 
   constructor() {
-    this.storage = useStorage<UserLocalStorageInfo>('nc-user-local-storage-info', {})
+    this.storage = useStorage<UserLocalStorageInfo>('atm-user-local-storage-info', {})
     this.cleanExpired()
   }
 

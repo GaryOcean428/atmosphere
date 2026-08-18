@@ -1,5 +1,5 @@
-import type { BaseType, SourceType, TableType } from 'nocodb-sdk'
-import { SqlUiFactory } from 'nocodb-sdk'
+import type { BaseType, SourceType, TableType } from 'atmosphere-sdk'
+import { SqlUiFactory } from 'atmosphere-sdk'
 import { isString } from '@vue/shared'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 
@@ -52,7 +52,7 @@ export const useBase = defineStore('baseStore', () => {
   const openedProject = computed(() => basesStore.bases.get(baseId.value))
 
   // todo: new-layout
-  const base = computed<NcProject>(() => basesStore.bases.get(baseId.value) || sharedProject.value || {})
+  const base = computed<AtProject>(() => basesStore.bases.get(baseId.value) || sharedProject.value || {})
   const tables = computed<TableType[]>(() => tablesStore.baseTables.get(baseId.value) || [])
 
   const baseLoadedHook = createEventHook<BaseType>()
@@ -278,7 +278,7 @@ export const useBase = defineStore('baseStore', () => {
       return `/${typeOrId}/${baseId}`
     }
 
-    const basUrl = `/nc/${id}`
+    const basUrl = `/atm/${id}`
 
     if (projectPage) {
       return `${basUrl}/settings/${baseSettingsTabToSlug[projectPage] || projectPage}`

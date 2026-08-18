@@ -8,5 +8,5 @@ defineProps<Props>()
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

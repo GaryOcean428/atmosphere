@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { VNodeRef } from '@vue/runtime-core'
 import type { InputPassword } from 'ant-design-vue'
-import { ViewTypes } from 'nocodb-sdk'
+import { ViewTypes } from 'atmosphere-sdk'
 import gridImage from '~/assets/img/views/grid.png'
 import galleryImage from '~/assets/img/views/gallery.png'
 import kanbanImage from '~/assets/img/views/kanban.png'
@@ -34,7 +34,7 @@ const onFinish = async () => {
     const error = await extractSdkResponseErrorMsgv2(e)
     console.error(error.message)
 
-    if (error.error === NcErrorType.ERR_INVALID_SHARED_VIEW_PASSWORD) {
+    if (error.error === AtErrorType.ERR_INVALID_SHARED_VIEW_PASSWORD) {
       passwordError.value = error.message
     } else {
       message.error(error.message)
@@ -63,7 +63,7 @@ const bgImageName = computed(() => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="vModel"
     c
     size="small"
@@ -75,7 +75,7 @@ const bgImageName = computed(() => {
     }"
   >
     <div class="flex flex-col gap-5">
-      <div class="flex flex-row items-center gap-x-2 text-base font-weight-700 text-nc-content-gray">
+      <div class="flex flex-row items-center gap-x-2 text-base font-weight-700 text-atm-content-gray">
         <GeneralIcon icon="ncKey" class="!text-base w-5 h-5" />
         {{ $t('msg.thisSharedViewIsProtected') }}
       </div>
@@ -95,26 +95,26 @@ const bgImageName = computed(() => {
             @input="passwordError = null"
           />
           <Transition name="layout">
-            <div v-if="passwordError" class="mb-2 text-sm text-nc-content-red-medium">{{ passwordError }}</div>
+            <div v-if="passwordError" class="mb-2 text-sm text-atm-content-red-medium">{{ passwordError }}</div>
           </Transition>
         </a-form-item>
       </a-form>
       <div class="flex flex-row justify-end gap-x-2">
-        <NcButton
+        <AtButton
           :disabled="!formState.password"
           type="primary"
           size="small"
           html-type="submit"
           class="!px-2"
-          data-testid="nc-shared-view-password-submit-btn"
+          data-testid="atm-shared-view-password-submit-btn"
           @click="onFinish"
         >
           {{ $t('objects.view') }}
           <template #loading> {{ $t('msg.verifyingPassword') }}</template>
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 
   <img alt="view image" :src="bgImageName" class="fixed inset-0 w-full h-full" :class="{ 'bg-view-image--dark': isDark }" />
 </template>

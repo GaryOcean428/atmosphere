@@ -1,18 +1,18 @@
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import type { XKnex } from '~/db/CustomKnex';
 import type { Knex } from 'knex';
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
 // import type { XKnex } from '~/db/sql-data-mapper';
-import type { SourceType } from 'nocodb-sdk';
+import type { SourceType } from 'atmosphere-sdk';
 import { throwTimeoutError } from '~/version-upgrader/ncUpgradeErrors';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import Model from '~/models/Model';
 import Source from '~/models/Source';
 import { MetaTable } from '~/utils/globals';
 
 // before 0.103.0, an attachment object was like
 // [{
-//   "url": "http://localhost:8080/download/noco/xcdb/Sheet-1/title5/39A410.jpeg",
+//   "url": "http://localhost:8080/download/atmosphere/xcdb/Sheet-1/title5/39A410.jpeg",
 //   "title": "foo.jpeg",
 //   "mimetype": "image/jpeg",
 //   "size": 6494
@@ -20,8 +20,8 @@ import { MetaTable } from '~/utils/globals';
 // in this way, if the base url is changed, the url will be broken
 // this upgrader is to convert the existing local attachment object to the following format
 // [{
-//   "url": "http://localhost:8080/download/noco/xcdb/Sheet-1/title5/39A410.jpeg",
-//   "path": "download/noco/xcdb/Sheet-1/title5/39A410.jpeg",
+//   "url": "http://localhost:8080/download/atmosphere/xcdb/Sheet-1/title5/39A410.jpeg",
+//   "path": "download/atmosphere/xcdb/Sheet-1/title5/39A410.jpeg",
 //   "title": "foo.jpeg",
 //   "mimetype": "image/jpeg",
 //   "size": 6494
@@ -42,7 +42,7 @@ function getTnPath(knex: XKnex, tb: Model) {
   }
 }
 
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   const sources: SourceType[] = await ncMeta.knexConnection(MetaTable.SOURCES);
 
   for (const _base of sources) {
@@ -76,7 +76,7 @@ export default async function ({ ncMeta }: NcUpgraderCtx) {
 
     const knex: Knex = source.is_meta
       ? ncMeta.knexConnection
-      : await NcConnectionMgrv2.get(source);
+      : await AtConnectionMgrv2.get(source);
     const models = await source.getModels(context, ncMeta);
 
     // used in timeout error message
@@ -155,9 +155,9 @@ export default async function ({ ncMeta }: NcUpgraderCtx) {
                 if ('url' in attachment && typeof attachment.url === 'string') {
                   const match = attachment.url.match(/^(.*)\/download\/(.*)$/);
                   if (match) {
-                    // e.g. http://localhost:8080/download/noco/xcdb/Sheet-1/title5/ee2G8p_nute_gunray.png
+                    // e.g. http://localhost:8080/download/atmosphere/xcdb/Sheet-1/title5/ee2G8p_nute_gunray.png
                     // match[1] = http://localhost:8080
-                    // match[2] = download/noco/xcdb/Sheet-1/title5/ee2G8p_nute_gunray.png
+                    // match[2] = download/atmosphere/xcdb/Sheet-1/title5/ee2G8p_nute_gunray.png
                     const path = `download/${match[2]}`;
 
                     newAttachmentMeta.push({

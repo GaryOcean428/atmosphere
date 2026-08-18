@@ -2,14 +2,14 @@ import type {
   BaseType,
   CommentType,
   FormType,
-  NcRequest,
+  AtRequest,
   OrgUserRoles,
   ProjectRoles,
   TableType,
   UITypes,
   UserType,
-} from 'nocodb-sdk';
-import type { XcEmailAttachment } from '~/types/nc-plugin';
+} from 'atmosphere-sdk';
+import type { XcEmailAttachment } from '~/types/atm-plugin';
 
 enum MailEvent {
   COMMENT_CREATE = 'COMMENT_CREATE',
@@ -56,7 +56,7 @@ enum MailEvent {
   NUDGE_INVITE_TEAM = 'NUDGE_INVITE_TEAM',
   NUDGE_SEAT_LIMIT = 'NUDGE_SEAT_LIMIT',
   // On-prem self-serve billing (cloud-issued license, subscription in
-  // `nc_subscriptions` with no workspace/org). Fired from OnPremLicenseService
+  // `atm_subscriptions` with no workspace/org). Fired from OnPremLicenseService
   // webhook handlers, routed through the same deferred outbox as cloud billing.
   ON_PREM_LICENSE_ISSUED = 'ON_PREM_LICENSE_ISSUED',
   ON_PREM_PAYMENT_FAILED = 'ON_PREM_PAYMENT_FAILED',
@@ -71,13 +71,13 @@ interface CommentPayload {
   user: UserType;
   comment: CommentType;
   rowId: string;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 interface BaseRoleUpdatePayload {
   base: BaseType;
   user: UserType;
-  req: NcRequest;
+  req: AtRequest;
   oldRole: ProjectRoles;
   newRole: ProjectRoles;
 }
@@ -85,35 +85,35 @@ interface BaseRoleUpdatePayload {
 interface BaseInvitePayload {
   base: BaseType;
   user: UserType;
-  req: NcRequest;
+  req: AtRequest;
   role: ProjectRoles;
   token?: string;
 }
 
 interface ResetPasswordPayload {
-  req: NcRequest;
+  req: AtRequest;
   user: UserType;
 }
 
 interface VerifyEmailPayload {
-  req: NcRequest;
+  req: AtRequest;
   user: UserType;
 }
 
 interface WelcomePayload {
-  req: NcRequest;
+  req: AtRequest;
   user: UserType;
 }
 
 interface OrganizationInvitePayload {
   user: UserType;
-  req: NcRequest;
+  req: AtRequest;
   token?: string;
 }
 
 interface OrganizationRoleUpdatePayload {
   user: UserType;
-  req: NcRequest;
+  req: AtRequest;
   oldRole: OrgUserRoles;
   newRole: OrgUserRoles;
 }
@@ -144,7 +144,7 @@ interface SendRecordPayload {
     uidt: UITypes | string;
   }[];
   rowId: string;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 type MailParams =
@@ -200,7 +200,7 @@ interface RawMailParams {
 }
 
 /**
- * MailEvents excluded from the `nc_mail_sends` audit table.
+ * MailEvents excluded from the `atm_mail_sends` audit table.
  *
  * These are user-content sends where recipients + payload come from user data
  * (form responders, record-share targets). Logging them would create PII

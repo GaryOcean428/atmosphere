@@ -1,7 +1,7 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   // avoid non-embeddable paths within an iframe
   if (self !== top) {
-    // A legacy hash-fragment embed (`/dashboard/#/nc/view/<uuid>`) arrives with
+    // A legacy hash-fragment embed (`/dashboard/#/atm/view/<uuid>`) arrives with
     // the share route in the fragment, so `to.path` is still the bare shell.
     // plugins/hashRedirect.client.ts rewrites those, but it races this guard —
     // whichever wins, the destination is the same share route, so resolve it

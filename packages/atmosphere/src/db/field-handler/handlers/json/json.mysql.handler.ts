@@ -5,7 +5,7 @@ import type { FilterOptions } from '~/db/field-handler/field-handler.interface';
 import type { Column, Filter } from '~/models';
 import { ncIsStringHasValue } from '~/db/field-handler/utils/handlerUtils';
 import { sanitize } from '~/helpers/sqlSanitize';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 export class JsonMySqlHandler extends JsonGeneralHandler {
   override async filter(
@@ -141,7 +141,7 @@ export class JsonMySqlHandler extends JsonGeneralHandler {
             break;
 
           default:
-            NcError._.unsupportedFilterOperation(filter.comparison_op);
+            AtError._.unsupportedFilterOperation(filter.comparison_op);
         }
       },
     };

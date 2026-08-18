@@ -1,10 +1,10 @@
 import { Font, Tailwind } from '@react-email/components';
 import * as React from 'react';
 import tinycolor from 'tinycolor2';
-import type { WhiteLabelConfig } from 'nocodb-sdk';
+import type { WhiteLabelConfig } from 'atmosphere-sdk';
 
 // CTA buttons use `bg-brand-500`; when white-labelled, swap the 500 shade for
-// the configured brand colour (falls back to NocoDB blue otherwise). Only 500
+// the configured brand colour (falls back to Atmosphere blue otherwise). Only 500
 // is overridden — it's the only brand shade the email templates use.
 const resolveBrand500 = (branding?: WhiteLabelConfig | null): string => {
   const seed = branding?.enabled ? branding.brandColor : null;

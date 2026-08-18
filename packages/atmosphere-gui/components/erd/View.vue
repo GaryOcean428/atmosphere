@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { LinkToAnotherRecordType, SourceType, TableType } from 'nocodb-sdk'
-import { isLinksOrLTAR } from 'nocodb-sdk'
+import type { LinkToAnotherRecordType, SourceType, TableType } from 'atmosphere-sdk'
+import { isLinksOrLTAR } from 'atmosphere-sdk'
 import type { ERDConfig } from './utils'
 
 const props = defineProps({
@@ -156,17 +156,17 @@ onMounted(async () => {
 
 <template>
   <div
-    class="w-full bg-nc-bg-default border-1 border-nc-border-gray-light rounded-t-xl rounded-b-2xl"
+    class="w-full bg-atm-bg-default border-1 border-atm-border-gray-light rounded-t-xl rounded-b-2xl"
     :class="{
-      'z-100 nc-h-screen nc-w-screen fixed top-0 left-0 right-0 bottom-0': config.isFullScreen,
-      'nc-erd-vue-flow-single-table': config.singleTableMode,
-      'nc-erd-vue-flow': !config.singleTableMode,
+      'z-100 atm-h-screen atm-w-screen fixed top-0 left-0 right-0 bottom-0': config.isFullScreen,
+      'atm-erd-vue-flow-single-table': config.singleTableMode,
+      'atm-erd-vue-flow': !config.singleTableMode,
     }"
     :style="!config.isFullScreen ? 'height: inherit' : ''"
   >
     <div class="relative h-full">
       <LazyErdFlow :tables="filteredTables" :config="config">
-        <GeneralOverlay v-model="isLoading" inline class="bg-nc-bg-gray-dark/50 dark:bg-nc-gray-800/50 rounded-xl">
+        <GeneralOverlay v-model="isLoading" inline class="bg-atm-bg-gray-dark/50 dark:bg-atm-gray-800/50 rounded-xl">
           <div class="h-full w-full flex flex-col justify-center items-center">
             <a-spin size="large" />
           </div>

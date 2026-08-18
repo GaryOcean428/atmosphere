@@ -2,17 +2,17 @@ import { BaseType, SourceType } from '../Api';
 import {
   BadRequestV2,
   MetaError,
-  NcErrorArgs,
+  AtErrorArgs,
   NotAllowed,
   NotFound,
   OptionsNotExistsError,
   SsoError,
   TestConnectionError,
   UnprocessableEntity,
-} from '../error/nc-base.error';
+} from '../error/atm-base.error';
 import {
   CreditsExhaustedDetailsType,
-  NcErrorType,
+  AtErrorType,
   PlanLimitExceededDetailsType,
 } from '../globals';
 import {
@@ -22,104 +22,104 @@ import {
   PlanFeatureUpgradeMessages,
 } from '../payment';
 import UITypes from '../UITypes';
-import { NcErrorCodexManager } from './nc-error-codex-manager';
+import { AtErrorCodexManager } from './atm-error-codex-manager';
 
-export class NcErrorBase {
+export class AtErrorBase {
   constructor() {
-    this._errorCodex = new NcErrorCodexManager();
+    this._errorCodex = new AtErrorCodexManager();
   }
-  protected _errorCodex: NcErrorCodexManager;
+  protected _errorCodex: AtErrorCodexManager;
   get errorCodex() {
     return this._errorCodex;
   }
 
-  authenticationRequired(args?: NcErrorArgs): never {
+  authenticationRequired(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_AUTHENTICATION_REQUIRED,
+      AtErrorType.ERR_AUTHENTICATION_REQUIRED,
       args
     );
   }
 
-  apiTokenNotAllowed(args?: NcErrorArgs): never {
+  apiTokenNotAllowed(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_API_TOKEN_NOT_ALLOWED,
+      AtErrorType.ERR_API_TOKEN_NOT_ALLOWED,
       args
     );
   }
 
-  workspaceNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_WORKSPACE_NOT_FOUND, {
+  workspaceNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_WORKSPACE_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  orgNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_ORG_NOT_FOUND, {
+  orgNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_ORG_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  columnAssociatedWithLink(_id: string, args: NcErrorArgs): never {
+  columnAssociatedWithLink(_id: string, args: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_COLUMN_ASSOCIATED_WITH_LINK,
+      AtErrorType.ERR_COLUMN_ASSOCIATED_WITH_LINK,
       args
     );
   }
 
-  tableAssociatedWithLink(_id: string, args: NcErrorArgs): never {
+  tableAssociatedWithLink(_id: string, args: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_TABLE_ASSOCIATED_WITH_LINK,
+      AtErrorType.ERR_TABLE_ASSOCIATED_WITH_LINK,
       args
     );
   }
 
-  viewColumnNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_VIEW_COLUMN_NOT_FOUND, {
+  viewColumnNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_VIEW_COLUMN_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  baseNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_BASE_NOT_FOUND, {
+  baseNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_BASE_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  trashNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_TRASH_NOT_FOUND, {
+  trashNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_TRASH_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  parentInTrash(parentType: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_PARENT_IN_TRASH, {
+  parentInTrash(parentType: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_PARENT_IN_TRASH, {
       params: parentType,
       ...args,
     });
   }
 
-  dashboardNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_DASHBOARD_NOT_FOUND, {
+  dashboardNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_DASHBOARD_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  interfaceNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_INTERFACE_NOT_FOUND, {
+  interfaceNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_INTERFACE_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  interfacePageNotFound(id: string, args?: NcErrorArgs): never {
+  interfacePageNotFound(id: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INTERFACE_PAGE_NOT_FOUND,
+      AtErrorType.ERR_INTERFACE_PAGE_NOT_FOUND,
       {
         params: id,
         ...args,
@@ -132,28 +132,18 @@ export class NcErrorBase {
    * dedicated type lets the UI tell "you are previewing" apart from a real
    * permission denial.
    */
-  interfacePreviewWriteBlocked(args?: NcErrorArgs): never {
+  interfacePreviewWriteBlocked(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INTERFACE_PREVIEW_WRITE_BLOCKED,
+      AtErrorType.ERR_INTERFACE_PREVIEW_WRITE_BLOCKED,
       {
         ...args,
       }
     );
   }
 
-  chatSessionNotFound(id: string, args?: NcErrorArgs): never {
+  chatSessionNotFound(id: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_CHAT_SESSION_NOT_FOUND,
-      {
-        params: id,
-        ...args,
-      }
-    );
-  }
-
-  chatMessageNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(
-      NcErrorType.ERR_CHAT_MESSAGE_NOT_FOUND,
+      AtErrorType.ERR_CHAT_SESSION_NOT_FOUND,
       {
         params: id,
         ...args,
@@ -161,23 +151,9 @@ export class NcErrorBase {
     );
   }
 
-  workflowNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_WORKFLOW_NOT_FOUND, {
-      params: id,
-      ...args,
-    });
-  }
-
-  widgetNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_WIDGET_NOT_FOUND, {
-      params: id,
-      ...args,
-    });
-  }
-
-  viewSectionNotFound(id: string, args?: NcErrorArgs): never {
+  chatMessageNotFound(id: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_VIEW_SECTION_NOT_FOUND,
+      AtErrorType.ERR_CHAT_MESSAGE_NOT_FOUND,
       {
         params: id,
         ...args,
@@ -185,9 +161,23 @@ export class NcErrorBase {
     );
   }
 
-  baseSectionNotFound(id: string, args?: NcErrorArgs): never {
+  workflowNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_WORKFLOW_NOT_FOUND, {
+      params: id,
+      ...args,
+    });
+  }
+
+  widgetNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_WIDGET_NOT_FOUND, {
+      params: id,
+      ...args,
+    });
+  }
+
+  viewSectionNotFound(id: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_BASE_SECTION_NOT_FOUND,
+      AtErrorType.ERR_VIEW_SECTION_NOT_FOUND,
       {
         params: id,
         ...args,
@@ -195,78 +185,88 @@ export class NcErrorBase {
     );
   }
 
-  apiClientNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_API_CLIENT_NOT_FOUND, {
+  baseSectionNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(
+      AtErrorType.ERR_BASE_SECTION_NOT_FOUND,
+      {
+        params: id,
+        ...args,
+      }
+    );
+  }
+
+  apiClientNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_API_CLIENT_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  sourceNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_SOURCE_NOT_FOUND, {
+  sourceNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_SOURCE_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
-  noSourcesFound(args?: NcErrorArgs): never {
+  noSourcesFound(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_DATA_SOURCES_NOT_FOUND,
+      AtErrorType.ERR_DATA_SOURCES_NOT_FOUND,
       args
     );
   }
 
-  tableNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_TABLE_NOT_FOUND, {
+  tableNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_TABLE_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  userNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_USER_NOT_FOUND, {
+  userNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_USER_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  teamNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_TEAM_NOT_FOUND, {
+  teamNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_TEAM_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  viewNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_VIEW_NOT_FOUND, {
+  viewNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_VIEW_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  filterNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_FILTER_NOT_FOUND, {
+  filterNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_FILTER_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  hookNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_HOOK_NOT_FOUND, {
+  hookNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_HOOK_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  genericNotFound(resource: string, id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_GENERIC_NOT_FOUND, {
+  genericNotFound(resource: string, id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_GENERIC_NOT_FOUND, {
       params: [resource, id],
       ...args,
     });
   }
 
-  requiredFieldMissing(field: string, args?: NcErrorArgs): never {
+  requiredFieldMissing(field: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_REQUIRED_FIELD_MISSING,
+      AtErrorType.ERR_REQUIRED_FIELD_MISSING,
       {
         params: field,
         ...args,
@@ -274,8 +274,8 @@ export class NcErrorBase {
     );
   }
 
-  duplicateRecord(id: string | string[], args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_DUPLICATE_RECORD, {
+  duplicateRecord(id: string | string[], args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_DUPLICATE_RECORD, {
       params: id,
       ...args,
     });
@@ -290,7 +290,7 @@ export class NcErrorBase {
         }
       | null
       | undefined,
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
     let message = '';
     if (typeof param === 'string') {
@@ -301,47 +301,47 @@ export class NcErrorBase {
     } else {
       message = `'unknown'`;
     }
-    throw this.errorCodex.generateError(NcErrorType.ERR_FIELD_NOT_FOUND, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_FIELD_NOT_FOUND, {
       params: message,
       ...args,
     });
   }
 
-  extensionNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_EXTENSION_NOT_FOUND, {
+  extensionNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_EXTENSION_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  invalidOffsetValue(offset: string | number, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_INVALID_OFFSET_VALUE, {
+  invalidOffsetValue(offset: string | number, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_INVALID_OFFSET_VALUE, {
       params: `${offset}`,
       ...args,
     });
   }
-  invalidPageValue(page: string | number, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_INVALID_PAGE_VALUE, {
+  invalidPageValue(page: string | number, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_INVALID_PAGE_VALUE, {
       params: `${page}`,
       ...args,
     });
   }
 
-  invalidPrimaryKey(value: any, pkColumn: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_INVALID_PK_VALUE, {
+  invalidPrimaryKey(value: any, pkColumn: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_INVALID_PK_VALUE, {
       params: [value, pkColumn],
       ...args,
     });
   }
 
-  invalidLimitValue(args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_INVALID_LIMIT_VALUE, {
+  invalidLimitValue(args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_INVALID_LIMIT_VALUE, {
       ...args,
     });
   }
 
-  invalidFilter(filter: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_INVALID_FILTER, {
+  invalidFilter(filter: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_INVALID_FILTER, {
       params: filter,
       ...args,
     });
@@ -351,14 +351,14 @@ export class NcErrorBase {
     payload:
       | string
       | { value: string; column: string; type: UITypes; reason?: string },
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
     const withReason =
       typeof payload === 'object' && payload.reason
         ? `, reason: ${payload.reason}`
         : ``;
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INVALID_VALUE_FOR_FIELD,
+      AtErrorType.ERR_INVALID_VALUE_FOR_FIELD,
       {
         params:
           typeof payload === 'string'
@@ -369,9 +369,9 @@ export class NcErrorBase {
     );
   }
 
-  unsupportedFilterOperation(operation: string, args?: NcErrorArgs): never {
+  unsupportedFilterOperation(operation: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_UNSUPPORTED_FILTER_OPERATION,
+      AtErrorType.ERR_UNSUPPORTED_FILTER_OPERATION,
       {
         params: operation,
         ...args,
@@ -386,10 +386,10 @@ export class NcErrorBase {
       length: number;
       maxLength: number;
     },
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INVALID_VALUE_FOR_FIELD,
+      AtErrorType.ERR_INVALID_VALUE_FOR_FIELD,
       {
         params: `Value length '${payload.length}' is exceeding allowed limit '${payload.maxLength}' for type '${payload.type}' on column '${payload.column}'`,
         ...args,
@@ -397,36 +397,36 @@ export class NcErrorBase {
     );
   }
 
-  invalidSharedViewPassword(args?: NcErrorArgs): never {
+  invalidSharedViewPassword(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INVALID_SHARED_VIEW_PASSWORD,
+      AtErrorType.ERR_INVALID_SHARED_VIEW_PASSWORD,
       {
         ...args,
       }
     );
   }
 
-  invalidSharedDashboardPassword(args?: NcErrorArgs): never {
+  invalidSharedDashboardPassword(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_SHARED_DASHBOARD_PASSWORD_INVALID,
+      AtErrorType.ERR_SHARED_DASHBOARD_PASSWORD_INVALID,
       {
         ...args,
       }
     );
   }
 
-  invalidSharedInterfacePagePassword(args?: NcErrorArgs): never {
+  invalidSharedInterfacePagePassword(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_SHARED_INTERFACE_PAGE_PASSWORD_INVALID,
+      AtErrorType.ERR_SHARED_INTERFACE_PAGE_PASSWORD_INVALID,
       {
         ...args,
       }
     );
   }
 
-  invalidAttachmentJson(payload: string, args?: NcErrorArgs): never {
+  invalidAttachmentJson(payload: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INVALID_ATTACHMENT_JSON,
+      AtErrorType.ERR_INVALID_ATTACHMENT_JSON,
       {
         params: payload,
         ...args,
@@ -434,37 +434,37 @@ export class NcErrorBase {
     );
   }
 
-  notImplemented(feature: string = 'Feature', args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_NOT_IMPLEMENTED, {
+  notImplemented(feature: string = 'Feature', args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_NOT_IMPLEMENTED, {
       params: feature,
       ...args,
     });
   }
 
-  internalServerError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_INTERNAL_SERVER, {
+  internalServerError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_INTERNAL_SERVER, {
       params: message,
       ...args,
     });
   }
 
-  systemMisconfigured(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_SYSTEM_MISCONFIGURED, {
+  systemMisconfigured(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_SYSTEM_MISCONFIGURED, {
       params: message,
       ...args,
     });
   }
 
-  formulaError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_FORMULA, {
+  formulaError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_FORMULA, {
       params: message,
       ...args,
     });
   }
 
-  formulaCircularRefError(message?: string, args?: NcErrorArgs): never {
+  formulaCircularRefError(message?: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_CIRCULAR_REF_IN_FORMULA,
+      AtErrorType.ERR_CIRCULAR_REF_IN_FORMULA,
       {
         params: message ?? 'Circular reference detected in formula',
         ...args,
@@ -472,9 +472,9 @@ export class NcErrorBase {
     );
   }
 
-  unauthorized(message: string, args?: NcErrorArgs): never {
+  unauthorized(message: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_AUTHENTICATION_REQUIRED,
+      AtErrorType.ERR_AUTHENTICATION_REQUIRED,
       {
         params: message,
         ...args,
@@ -482,16 +482,16 @@ export class NcErrorBase {
     );
   }
 
-  forbidden(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_FORBIDDEN, {
+  forbidden(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_FORBIDDEN, {
       params: message,
       ...args,
     });
   }
 
-  insufficientPrivilege(message: string, args?: NcErrorArgs): never {
+  insufficientPrivilege(message: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INSUFFICIENT_PRIVILEGE,
+      AtErrorType.ERR_INSUFFICIENT_PRIVILEGE,
       {
         params: message,
         ...args,
@@ -509,20 +509,20 @@ export class NcErrorBase {
 
   systemFieldNonModifiable(): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_SYSTEM_FIELD_NON_MODIFIABLE,
+      AtErrorType.ERR_SYSTEM_FIELD_NON_MODIFIABLE,
       {}
     );
   }
 
-  integrationNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_INTEGRATION_NOT_FOUND, {
+  integrationNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_INTEGRATION_NOT_FOUND, {
       params: id,
       ...(args || {}),
     });
   }
 
-  syncConfigNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_SYNC_CONFIG_NOT_FOUND, {
+  syncConfigNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_SYATMOSPHERE_CONFIG_NOT_FOUND, {
       params: id,
       ...(args || {}),
     });
@@ -530,22 +530,22 @@ export class NcErrorBase {
 
   cannotCalculateIntermediateOrderError(): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_CANNOT_CALCULATE_INTERMEDIATE_ORDER,
+      AtErrorType.ERR_CANNOT_CALCULATE_INTERMEDIATE_ORDER,
       {}
     );
   }
 
   reorderFailed(): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_REORDER_FAILED, {});
+    throw this.errorCodex.generateError(AtErrorType.ERR_REORDER_FAILED, {});
   }
 
   integrationLinkedWithMultiple(
     bases: BaseType[],
     sources: SourceType[],
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INTEGRATION_LINKED_WITH_BASES,
+      AtErrorType.ERR_INTEGRATION_LINKED_WITH_BASES,
       {
         params: bases.map((s) => s.title).join(', '),
         details: {
@@ -568,22 +568,22 @@ export class NcErrorBase {
     );
   }
 
-  invalidAttachmentUploadScope(args?: NcErrorArgs): never {
+  invalidAttachmentUploadScope(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INVALID_ATTACHMENT_UPLOAD_SCOPE,
+      AtErrorType.ERR_INVALID_ATTACHMENT_UPLOAD_SCOPE,
       args
     );
   }
 
-  webhookError(message?: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_WEBHOOK_ERROR, {
+  webhookError(message?: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_WEBHOOK_ERROR, {
       params: message,
       ...args,
     });
   }
 
-  invalidWebhookUrl(url: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_WEBHOOK_URL_INVALID, {
+  invalidWebhookUrl(url: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_WEBHOOK_URL_INVALID, {
       ...args,
       params: `Invalid URl ${url || ''}`,
     });
@@ -592,9 +592,9 @@ export class NcErrorBase {
   planLimitExceeded(
     message: string,
     details: Omit<PlanLimitExceededDetailsType, 'higherPlan'>,
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_PLAN_LIMIT_EXCEEDED, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_PLAN_LIMIT_EXCEEDED, {
       params: message,
       ...args,
       details: {
@@ -604,8 +604,8 @@ export class NcErrorBase {
     });
   }
 
-  creditPackNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_CREDIT_PACK_NOT_FOUND, {
+  creditPackNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_CREDIT_PACK_NOT_FOUND, {
       params: id,
       ...args,
     });
@@ -613,9 +613,9 @@ export class NcErrorBase {
 
   creditsExhausted(
     details?: CreditsExhaustedDetailsType,
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_CREDITS_EXHAUSTED, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_CREDITS_EXHAUSTED, {
       ...args,
       details,
     });
@@ -629,7 +629,7 @@ export class NcErrorBase {
       label?: string;
       additionalTrace?: Record<string, string>;
     },
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
     const stackTrace = [
       ...Object.keys(param.additionalTrace ?? {}).map(
@@ -637,7 +637,7 @@ export class NcErrorBase {
       ),
       `base '${param.base}'`,
     ].join(', ');
-    throw this.errorCodex.generateError(NcErrorType.ERR_DUPLICATE_IN_ALIAS, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_DUPLICATE_IN_ALIAS, {
       params: `Duplicate ${param.type} ${param.label ?? 'alias'} '${
         param.alias
       }' at ${stackTrace}`,
@@ -646,86 +646,86 @@ export class NcErrorBase {
   }
 
   allowedOnlySSOAccess(ncWorkspaceId: string): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_SSO_LOGIN_REQUIRED, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_SSO_LOGIN_REQUIRED, {
       params: ncWorkspaceId,
     });
   }
   allowedOnlySSOGeneratedToken(ncWorkspaceId: string): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_SSO_GENERATED_TOKEN_REQUIRED,
+      AtErrorType.ERR_SSO_GENERATED_TOKEN_REQUIRED,
       {
         params: ncWorkspaceId,
       }
     );
   }
   mfaSetupRequired(ncWorkspaceId: string): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_MFA_SETUP_REQUIRED, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_MFA_SETUP_REQUIRED, {
       params: ncWorkspaceId,
     });
   }
-  maxPayloadLimitExceeded(limit: number, args?: NcErrorArgs): never {
+  maxPayloadLimitExceeded(limit: number, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_MAX_PAYLOAD_LIMIT_EXCEEDED,
+      AtErrorType.ERR_MAX_PAYLOAD_LIMIT_EXCEEDED,
       {
         params: limit.toString(),
         ...args,
       }
     );
   }
-  baseUserError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_BASE_COLLABORATION, {
+  baseUserError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_BASE_COLLABORATION, {
       params: message,
       ...args,
     });
   }
 
-  orgUserError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_ORG_USER, {
+  orgUserError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_ORG_USER, {
       params: message,
       ...args,
     });
   }
 
-  tableError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_TABLE_OP_FAILED, {
+  tableError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_TABLE_OP_FAILED, {
       params: message,
       ...args,
     });
   }
 
-  columnError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_COLUMN_OP_FAILED, {
+  columnError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_COLUMN_OP_FAILED, {
       params: message,
       ...args,
     });
   }
 
-  baseError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_BASE_OP_FAILED, {
+  baseError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_BASE_OP_FAILED, {
       params: message,
       ...args,
     });
   }
 
-  maxWorkspaceLimitReached(args?: NcErrorArgs): never {
+  maxWorkspaceLimitReached(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_MAX_WORKSPACE_LIMIT_REACHED,
+      AtErrorType.ERR_MAX_WORKSPACE_LIMIT_REACHED,
       {
         ...args,
       }
     );
   }
 
-  pluginTestError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_TEST_PLUGIN_FAILED, {
+  pluginTestError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_TEST_PLUGIN_FAILED, {
       params: message,
       ...args,
     });
   }
 
-  relationFieldNotFound(id: string, args?: NcErrorArgs): never {
+  relationFieldNotFound(id: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_RELATION_FIELD_NOT_FOUND,
+      AtErrorType.ERR_RELATION_FIELD_NOT_FOUND,
       {
         params: id,
         ...args,
@@ -733,16 +733,16 @@ export class NcErrorBase {
     );
   }
 
-  unSupportedRelation(relation: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_UNSUPPORTED_RELATION, {
+  unSupportedRelation(relation: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_UNSUPPORTED_RELATION, {
       params: `Relation ${relation} is not supported`,
       ...args,
     });
   }
 
-  // for nc-sql-executor, the error returned is possible to be an Error object
+  // for atm-sql-executor, the error returned is possible to be an Error object
   // thus `error.message` is needed to access it
-  externalError(error: string | Error, args?: NcErrorArgs): never {
+  externalError(error: string | Error, args?: AtErrorArgs): never {
     let message: string = '';
     if (['string'].includes(typeof error)) {
       message = `${error}`;
@@ -752,7 +752,7 @@ export class NcErrorBase {
       } else {
         // we log the error if we don't know the schema yet
         console.log(
-          `Unknown error schema from nc-sql-executor: ${JSON.stringify(error)}`
+          `Unknown error schema from atm-sql-executor: ${JSON.stringify(error)}`
         );
       }
     }
@@ -761,7 +761,7 @@ export class NcErrorBase {
       message = 'Error when executing query in external data source';
     }
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_IN_EXTERNAL_DATA_SOURCE,
+      AtErrorType.ERR_IN_EXTERNAL_DATA_SOURCE,
       {
         params: message,
         ...args,
@@ -769,9 +769,9 @@ export class NcErrorBase {
     );
   }
 
-  externalTimeOut(message?: string, args?: NcErrorArgs): never {
+  externalTimeOut(message?: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_EXTERNAL_DATA_SOURCE_TIMEOUT,
+      AtErrorType.ERR_EXTERNAL_DATA_SOURCE_TIMEOUT,
       {
         params: message,
         ...args,
@@ -783,7 +783,7 @@ export class NcErrorBase {
       modelName: string;
       operation: 'insert' | 'update' | 'delete' | 'create_form_view';
     },
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
     let message = '';
     switch (param.operation) {
@@ -797,7 +797,7 @@ export class NcErrorBase {
         break;
     }
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_SYNC_TABLE_OPERATION_PROHIBITED,
+      AtErrorType.ERR_SYATMOSPHERE_TABLE_OPERATION_PROHIBITED,
       {
         params: message,
         ...args,
@@ -809,14 +809,14 @@ export class NcErrorBase {
       feature: PlanFeatureTypes;
       isOnPrem?: boolean;
     },
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ) {
     // Add-on-only: no plan tier grants it, so skip the upgrade prefix entirely.
     // On-prem entitlement is signed into the license key, hence sales-assisted.
     const addonMessage = PlanFeatureAddonMessages[props.feature];
     if (addonMessage) {
       throw this.errorCodex.generateError(
-        NcErrorType.ERR_FEATURE_NOT_SUPPORTED,
+        AtErrorType.ERR_FEATURE_NOT_SUPPORTED,
         {
           params: props.isOnPrem
             ? `${addonMessage} Contact sales to add it to your license.`
@@ -828,7 +828,7 @@ export class NcErrorBase {
 
     if (props.isOnPrem) {
       throw this.errorCodex.generateError(
-        NcErrorType.ERR_FEATURE_NOT_SUPPORTED,
+        AtErrorType.ERR_FEATURE_NOT_SUPPORTED,
         {
           params: `Please upgrade your license ${
             PlanFeatureUpgradeMessages[props.feature] ?? 'to use this feature.'
@@ -838,7 +838,7 @@ export class NcErrorBase {
       );
     }
 
-    throw this.errorCodex.generateError(NcErrorType.ERR_FEATURE_NOT_SUPPORTED, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_FEATURE_NOT_SUPPORTED, {
       params: `Upgrade to a higher plan ${
         PlanFeatureUpgradeMessages[props.feature] ?? 'to use this feature.'
       }`,
@@ -847,7 +847,7 @@ export class NcErrorBase {
   }
 
   invalidRequestBody(message: string): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_INVALID_REQUEST_BODY, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_INVALID_REQUEST_BODY, {
       params: message,
     });
   }
@@ -882,8 +882,8 @@ export class NcErrorBase {
     throw new BadRequestV2(message);
   }
 
-  tooManyRequests(message?: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_TOO_MANY_REQUESTS, {
+  tooManyRequests(message?: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_TOO_MANY_REQUESTS, {
       customMessage: message,
       ...args,
     });
@@ -898,52 +898,52 @@ export class NcErrorBase {
   }
 
   outOfSync(message: string): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_OUT_OF_SYNC, {
+    throw this.errorCodex.generateError(AtErrorType.ERR_OUT_OF_SYNC, {
       params: message,
     });
   }
 
   filterVerificationFailed(errors: string[]): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_FILTER_VERIFICATION_FAILED,
+      AtErrorType.ERR_FILTER_VERIFICATION_FAILED,
       {
         params: errors.join(', '),
       }
     );
   }
-  storageFileCreateError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_STORAGE_FILE_CREATE, {
+  storageFileCreateError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_STORAGE_FILE_CREATE, {
       params: message,
       ...args,
     });
   }
 
-  storageFileReadError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_STORAGE_FILE_READ, {
+  storageFileReadError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_STORAGE_FILE_READ, {
       params: message,
       ...args,
     });
   }
 
-  storageFileDeleteError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_STORAGE_FILE_DELETE, {
+  storageFileDeleteError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_STORAGE_FILE_DELETE, {
       params: message,
       ...args,
     });
   }
 
-  storageFileStreamError(message: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_STORAGE_FILE_STREAM, {
+  storageFileStreamError(message: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_STORAGE_FILE_STREAM, {
       params: message,
       ...args,
     });
   }
   subscriptionAlreadyExists(
     workspaceOrOrgId: string,
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_SUBSCRIPTION_ALREADY_EXISTS,
+      AtErrorType.ERR_SUBSCRIPTION_ALREADY_EXISTS,
       {
         params: workspaceOrOrgId,
         ...args,
@@ -951,9 +951,9 @@ export class NcErrorBase {
     );
   }
 
-  subscriptionNotFound(workspaceOrOrgId: string, args?: NcErrorArgs): never {
+  subscriptionNotFound(workspaceOrOrgId: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_SUBSCRIPTION_NOT_FOUND,
+      AtErrorType.ERR_SUBSCRIPTION_NOT_FOUND,
       {
         params: workspaceOrOrgId,
         ...args,
@@ -961,23 +961,23 @@ export class NcErrorBase {
     );
   }
 
-  planNotAvailable(args?: NcErrorArgs): never {
+  planNotAvailable(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_PLAN_NOT_AVAILABLE,
+      AtErrorType.ERR_PLAN_NOT_AVAILABLE,
       args
     );
   }
 
-  seatCountMismatch(args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_SEAT_COUNT_MISMATCH, {
+  seatCountMismatch(args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_SEAT_COUNT_MISMATCH, {
       params: 'There was a mismatch in the seat count, please try again',
       ...args,
     });
   }
 
-  invalidPaymentPayload(args?: NcErrorArgs): never {
+  invalidPaymentPayload(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INVALID_PAYMENT_PAYLOAD,
+      AtErrorType.ERR_INVALID_PAYMENT_PAYLOAD,
       {
         params: 'Invalid payment payload',
         ...args,
@@ -985,9 +985,9 @@ export class NcErrorBase {
     );
   }
 
-  stripeCustomerNotFound(customerId: string, args?: NcErrorArgs): never {
+  stripeCustomerNotFound(customerId: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_STRIPE_CUSTOMER_NOT_FOUND,
+      AtErrorType.ERR_STRIPE_CUSTOMER_NOT_FOUND,
       {
         params: customerId,
         ...args,
@@ -997,10 +997,10 @@ export class NcErrorBase {
 
   stripeSubscriptionNotFound(
     subscriptionId: string,
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_STRIPE_SUBSCRIPTION_NOT_FOUND,
+      AtErrorType.ERR_STRIPE_SUBSCRIPTION_NOT_FOUND,
       {
         params: subscriptionId,
         ...args,
@@ -1010,10 +1010,10 @@ export class NcErrorBase {
 
   subscriptionOwnershipMismatch(
     entity: 'workspace' | 'org',
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_SUBSCRIPTION_OWNERSHIP_MISMATCH,
+      AtErrorType.ERR_SUBSCRIPTION_OWNERSHIP_MISMATCH,
       {
         params: `Subscription does not belong to the ${entity}`,
         ...args,
@@ -1021,9 +1021,9 @@ export class NcErrorBase {
     );
   }
 
-  internalCustomerNotSupported(args?: NcErrorArgs): never {
+  internalCustomerNotSupported(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_INTERNAL_CUSTOMER_NOT_SUPPORTED,
+      AtErrorType.ERR_INTERNAL_CUSTOMER_NOT_SUPPORTED,
       {
         params: 'Internal customer not supported',
         ...args,
@@ -1031,9 +1031,9 @@ export class NcErrorBase {
     );
   }
 
-  subscriptionCreateFailed(message: string, args?: NcErrorArgs): never {
+  subscriptionCreateFailed(message: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_SUBSCRIPTION_CREATE_FAILED,
+      AtErrorType.ERR_SUBSCRIPTION_CREATE_FAILED,
       {
         params: message,
         ...args,
@@ -1041,31 +1041,31 @@ export class NcErrorBase {
     );
   }
 
-  stripeWebhookVerificationFailed(args?: NcErrorArgs): never {
+  stripeWebhookVerificationFailed(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_STRIPE_WEBHOOK_VERIFICATION_FAILED,
+      AtErrorType.ERR_STRIPE_WEBHOOK_VERIFICATION_FAILED,
       {
         params: 'Webhook signature verification failed',
         ...args,
       }
     );
   }
-  planAlreadyExists(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_PLAN_ALREADY_EXISTS, {
+  planAlreadyExists(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_PLAN_ALREADY_EXISTS, {
       params: id,
       ...args,
     });
   }
 
-  workflowEmptyNode(args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_WORKFLOW_EMPTY_NODE, {
+  workflowEmptyNode(args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_WORKFLOW_EMPTY_NODE, {
       ...args,
     });
   }
 
-  workflowTriggerNodeNotFound(args?: NcErrorArgs): never {
+  workflowTriggerNodeNotFound(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_WORKFLOW_TRIGGER_NODE_NOT_FOUND,
+      AtErrorType.ERR_WORKFLOW_TRIGGER_NODE_NOT_FOUND,
       {
         ...args,
       }
@@ -1075,10 +1075,10 @@ export class NcErrorBase {
   workflowNodeExecutionFailed(
     nodeTitle: string,
     error: string,
-    args?: NcErrorArgs
+    args?: AtErrorArgs
   ): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_WORKFLOW_NODE_EXECUTION_FAILED,
+      AtErrorType.ERR_WORKFLOW_NODE_EXECUTION_FAILED,
       {
         params: `Node "${nodeTitle}" failed: ${error}`,
         ...args,
@@ -1086,9 +1086,9 @@ export class NcErrorBase {
     );
   }
 
-  workflowWaitingExecutions(count: number, args?: NcErrorArgs): never {
+  workflowWaitingExecutions(count: number, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_WORKFLOW_WAITING_EXECUTIONS,
+      AtErrorType.ERR_WORKFLOW_WAITING_EXECUTIONS,
       {
         params: count.toString(),
         ...args,
@@ -1096,18 +1096,18 @@ export class NcErrorBase {
     );
   }
 
-  workflowMaxIterationsExceeded(args?: NcErrorArgs): never {
+  workflowMaxIterationsExceeded(args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_WORKFLOW_MAX_ITERATIONS_EXCEEDED,
+      AtErrorType.ERR_WORKFLOW_MAX_ITERATIONS_EXCEEDED,
       {
         ...args,
       }
     );
   }
 
-  workflowNodeNotFound(nodeTitle: string, args?: NcErrorArgs): never {
+  workflowNodeNotFound(nodeTitle: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_WORKFLOW_NODE_NOT_FOUND,
+      AtErrorType.ERR_WORKFLOW_NODE_NOT_FOUND,
       {
         params: `Node "${nodeTitle}" not found`,
         ...args,
@@ -1115,30 +1115,30 @@ export class NcErrorBase {
     );
   }
 
-  scriptNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_SCRIPT_NOT_FOUND, {
+  scriptNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_SCRIPT_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  rlsPolicyNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_RLS_POLICY_NOT_FOUND, {
+  rlsPolicyNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_RLS_POLICY_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  tableSyncNotFound(id: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_TABLE_SYNC_NOT_FOUND, {
+  tableSyncNotFound(id: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_TABLE_SYATMOSPHERE_NOT_FOUND, {
       params: id,
       ...args,
     });
   }
 
-  tableTrashNotSupported(tableTitle: string, args?: NcErrorArgs): never {
+  tableTrashNotSupported(tableTitle: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_TABLE_TRASH_NOT_SUPPORTED,
+      AtErrorType.ERR_TABLE_TRASH_NOT_SUPPORTED,
       {
         params: tableTitle,
         ...args,
@@ -1146,9 +1146,9 @@ export class NcErrorBase {
     );
   }
 
-  recordRestoreConflict(details: string, args?: NcErrorArgs): never {
+  recordRestoreConflict(details: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_RECORD_RESTORE_CONFLICT,
+      AtErrorType.ERR_RECORD_RESTORE_CONFLICT,
       {
         params: details,
         ...args,
@@ -1156,15 +1156,15 @@ export class NcErrorBase {
     );
   }
 
-  recordNotTrashed(args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_RECORD_NOT_TRASHED, {
+  recordNotTrashed(args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_RECORD_NOT_TRASHED, {
       ...args,
     });
   }
 
-  trashBatchLimitExceeded(limit: number, args?: NcErrorArgs): never {
+  trashBatchLimitExceeded(limit: number, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_TRASH_BATCH_LIMIT_EXCEEDED,
+      AtErrorType.ERR_TRASH_BATCH_LIMIT_EXCEEDED,
       {
         params: limit.toString(),
         ...args,
@@ -1172,36 +1172,36 @@ export class NcErrorBase {
     );
   }
 
-  methodNotAllowed(method: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_METHOD_NOT_ALLOWED, {
+  methodNotAllowed(method: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_METHOD_NOT_ALLOWED, {
       params: `${method} method not allowed`,
       ...args,
     });
   }
 
-  licenseRequired(feature?: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_LICENSE_REQUIRED, {
+  licenseRequired(feature?: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_LICENSE_REQUIRED, {
       params: feature || '',
       ...args,
     });
   }
 
-  licenseSuspended(args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_LICENSE_SUSPENDED, {
+  licenseSuspended(args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_LICENSE_SUSPENDED, {
       ...args,
     });
   }
 
-  sandboxBlocked(message?: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_SANDBOX_BLOCKED, {
+  sandboxBlocked(message?: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_SANDBOX_BLOCKED, {
       params: message || '',
       ...args,
     });
   }
 
-  sandboxProductionBlocked(message?: string, args?: NcErrorArgs): never {
+  sandboxProductionBlocked(message?: string, args?: AtErrorArgs): never {
     throw this.errorCodex.generateError(
-      NcErrorType.ERR_SANDBOX_PRODUCTION_BLOCKED,
+      AtErrorType.ERR_SANDBOX_PRODUCTION_BLOCKED,
       {
         params: message || '',
         ...args,
@@ -1209,8 +1209,8 @@ export class NcErrorBase {
     );
   }
 
-  snapshotBlocked(message?: string, args?: NcErrorArgs): never {
-    throw this.errorCodex.generateError(NcErrorType.ERR_SNAPSHOT_BLOCKED, {
+  snapshotBlocked(message?: string, args?: AtErrorArgs): never {
+    throw this.errorCodex.generateError(AtErrorType.ERR_SNAPSHOT_BLOCKED, {
       params: message || '',
       ...args,
     });

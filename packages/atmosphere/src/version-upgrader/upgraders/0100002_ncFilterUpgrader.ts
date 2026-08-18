@@ -1,4 +1,4 @@
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
 import { MetaTable } from '~/utils/globals';
 import View from '~/models/View';
 import Hook from '~/models/Hook';
@@ -8,7 +8,7 @@ import Column from '~/models/Column';
 // a filter is created without specifying the column
 // this upgrader is to retrieve the correct base id from either view, hook, or column
 // and update the base id
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   const filters = await ncMeta.knexConnection(MetaTable.FILTER_EXP);
   for (const filter of filters) {
     const context = {

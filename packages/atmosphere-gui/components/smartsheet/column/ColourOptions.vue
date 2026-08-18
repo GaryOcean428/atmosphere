@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, UITypes } from 'nocodb-sdk'
+import { ColumnHelper, UITypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -32,9 +32,9 @@ const swatchStyleOptions = [
 <template>
   <div class="flex flex-col gap-4">
     <a-form-item :label="$t('labels.displayFormat')">
-      <a-select v-model:value="vModel.meta.displayFormat" class="w-full" dropdown-class-name="nc-dropdown-colour-display-format">
+      <a-select v-model:value="vModel.meta.displayFormat" class="w-full" dropdown-class-name="atm-dropdown-colour-display-format">
         <template #suffixIcon>
-          <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+          <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
         </template>
 
         <a-select-option v-for="option of displayFormatOptions" :key="option.value" :value="option.value">
@@ -43,8 +43,8 @@ const swatchStyleOptions = [
             <component
               :is="iconMap.check"
               v-if="vModel.meta.displayFormat === option.value"
-              id="nc-selected-item-icon"
-              class="text-nc-content-brand w-4 h-4"
+              id="atm-selected-item-icon"
+              class="text-atm-content-brand w-4 h-4"
             />
           </div>
         </a-select-option>
@@ -52,9 +52,9 @@ const swatchStyleOptions = [
     </a-form-item>
 
     <a-form-item :label="$t('labels.swatchStyle')">
-      <a-select v-model:value="vModel.meta.swatchStyle" class="w-full" dropdown-class-name="nc-dropdown-colour-swatch-style">
+      <a-select v-model:value="vModel.meta.swatchStyle" class="w-full" dropdown-class-name="atm-dropdown-colour-swatch-style">
         <template #suffixIcon>
-          <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+          <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
         </template>
 
         <a-select-option v-for="option of swatchStyleOptions" :key="option.value" :value="option.value">
@@ -63,8 +63,8 @@ const swatchStyleOptions = [
             <component
               :is="iconMap.check"
               v-if="vModel.meta.swatchStyle === option.value"
-              id="nc-selected-item-icon"
-              class="text-nc-content-brand w-4 h-4"
+              id="atm-selected-item-icon"
+              class="text-atm-content-brand w-4 h-4"
             />
           </div>
         </a-select-option>

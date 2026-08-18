@@ -1,13 +1,13 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "NocoDB v3",
+    "title": "Atmosphere v3",
     "version": "3.0",
-    "description": "NocoDB API Documentation"
+    "description": "Atmosphere API Documentation"
   },
   "servers": [
     {
-      "url": "https://app.nocodb.com"
+      "url": "https://app.atmosphere.dev"
     }
   ],
   "paths": {},

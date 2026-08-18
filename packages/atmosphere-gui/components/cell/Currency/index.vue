@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { VNodeRef } from '@vue/runtime-core'
-import { ColumnHelper, UITypes, roundUpToPrecision } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, roundUpToPrecision } from 'atmosphere-sdk'
 
 interface Props {
   modelValue: number | null | undefined
@@ -142,7 +142,7 @@ const showInputField = computed(
 <template>
   <div
     v-if="isForm && !isEditColumn && editEnabled && !hidePrefix"
-    class="nc-currency-code h-full !bg-nc-bg-gray-light border-r border-nc-border-gray-medium px-3 mr-1 flex items-center"
+    class="atm-currency-code h-full !bg-atm-bg-gray-light border-r border-atm-border-gray-medium px-3 mr-1 flex items-center"
   >
     <span>
       {{ currencyMeta.currency_code }}
@@ -154,7 +154,7 @@ const showInputField = computed(
     :ref="focus"
     v-model="vModel"
     type="number"
-    class="nc-cell-field h-full border-none rounded-md py-1 outline-none focus:outline-none focus:ring-0"
+    class="atm-cell-field h-full border-none rounded-md py-1 outline-none focus:outline-none focus:ring-0"
     :class="isForm && !isEditColumn && !hidePrefix ? 'flex flex-1' : 'w-full'"
     :placeholder="placeholder"
     :disabled="readOnly"
@@ -176,7 +176,7 @@ const showInputField = computed(
     :ref="focus"
     :value="currency"
     type="text"
-    class="nc-cell-field h-full border-none rounded-md py-1 outline-none focus:outline-none focus:ring-0"
+    class="atm-cell-field h-full border-none rounded-md py-1 outline-none focus:outline-none focus:ring-0"
     :class="isForm && !isEditColumn && !hidePrefix ? 'flex flex-1' : 'w-full'"
     :placeholder="placeholder"
     :disabled="readOnly"
@@ -193,10 +193,10 @@ const showInputField = computed(
     @contextmenu.stop
   />
 
-  <span v-else-if="vModel === null && showNull" class="nc-cell-field nc-null uppercase">{{ $t('general.null') }}</span>
+  <span v-else-if="vModel === null && showNull" class="atm-cell-field atm-null uppercase">{{ $t('general.null') }}</span>
 
   <!-- only show the numeric value as previously string value was accepted -->
-  <span v-else-if="!isNaN(vModel)" class="nc-cell-field">{{ currency }}</span>
+  <span v-else-if="!isNaN(vModel)" class="atm-cell-field">{{ currency }}</span>
 
   <!-- possibly unexpected string / null with showNull == false  -->
   <span v-else />

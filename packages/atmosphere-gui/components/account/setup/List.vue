@@ -55,14 +55,14 @@ const closeResetModal = () => {
 </script>
 
 <template>
-  <div class="flex flex-col" data-testid="nc-setup-list">
-    <NcPageHeader>
+  <div class="flex flex-col" data-testid="atm-setup-list">
+    <AtPageHeader>
       <template #title>
         <span data-rec="true">
           {{ category }}
         </span>
       </template>
-    </NcPageHeader>
+    </AtPageHeader>
     <div class="h-[calc(100%_-_58px)] flex">
       <div class="w-full">
         <div class="w-950px px-4 mt-3 mx-auto text-lg font-weight-bold">{{ category }} Services</div>
@@ -71,7 +71,7 @@ const closeResetModal = () => {
             v-for="app in apps"
             :key="app.title"
             class="item group"
-            :data-testid="`nc-setup-list-item-${app.title}`"
+            :data-testid="`atm-setup-list-item-${app.title}`"
             @click="selectApp(app)"
           >
             <AccountSetupAppIcon :app="app" class="icon" />
@@ -83,23 +83,23 @@ const closeResetModal = () => {
               icon="delete"
               class="text-error min-w-6 h-6 !hidden !group-hover:!inline cursor-pointer"
             />
-            <GeneralIcon v-if="app === configuredApp" icon="circleCheckSolid" class="text-success min-w-5 h-5 nc-configured" />
+            <GeneralIcon v-if="app === configuredApp" icon="circleCheckSolid" class="text-success min-w-5 h-5 atm-configured" />
 
-            <NcDropdown :trigger="['click']" overlay-class-name="!rounded-md" @click.stop>
+            <AtDropdown :trigger="['click']" overlay-class-name="!rounded-md" @click.stop>
               <GeneralIcon
                 v-if="app.active"
                 icon="threeDotVertical"
-                class="min-w-5 h-5 text-nc-content-gray-muted hover:text-current nc-setup-plugin-menu"
+                class="min-w-5 h-5 text-atm-content-gray-muted hover:text-current atm-setup-plugin-menu"
               />
 
               <template #overlay>
-                <NcMenu class="min-w-20" variant="small">
-                  <NcMenuItem data-testid="nc-config-reset" @click.stop="showResetPluginModal(app)">
+                <AtMenu class="min-w-20" variant="small">
+                  <AtMenuItem data-testid="atm-config-reset" @click.stop="showResetPluginModal(app)">
                     <span> {{ $t('general.reset') }} </span>
-                  </NcMenuItem>
-                </NcMenu>
+                  </AtMenuItem>
+                </AtMenu>
               </template>
-            </NcDropdown>
+            </AtDropdown>
           </div>
         </div>
       </div>
@@ -111,7 +111,7 @@ const closeResetModal = () => {
       width="448px"
       centered
       :footer="null"
-      wrap-class-name="nc-modal-plugin-reset-conform"
+      wrap-class-name="atm-modal-plugin-reset-conform"
     >
       <div class="flex flex-col h-full">
         <div v-if="showResetActiveAppMsg" class="text-base font-weight-bold">
@@ -126,10 +126,10 @@ const closeResetModal = () => {
           <template v-else>Resetting will erase your current configuration.</template>
         </div>
         <div class="flex mt-6 justify-end space-x-2">
-          <NcButton size="small" type="secondary" @click="closeResetModal"> {{ $t('general.cancel') }}</NcButton>
-          <NcButton size="small" type="danger" data-testid="nc-reset-confirm-btn" @click="resetPlugin">
+          <AtButton size="small" type="secondary" @click="closeResetModal"> {{ $t('general.cancel') }}</AtButton>
+          <AtButton size="small" type="danger" data-testid="atm-reset-confirm-btn" @click="resetPlugin">
             {{ showResetActiveAppMsg ? `${$t('general.reset')} & ${$t('general.switch')}` : $t('general.reset') }}
-          </NcButton>
+          </AtButton>
         </div>
       </div>
     </a-modal>
@@ -141,7 +141,7 @@ const closeResetModal = () => {
   @apply p-4 w-950px gap-5 mx-auto my-2 grid grid-cols-3;
 
   .item {
-    @apply text-base w-296px max-w-296px flex gap-3 border-1 border-nc-border-gray-medium py-4 px-5 rounded-xl items-center cursor-pointer hover:(shadow bg-nc-bg-gray-extralight);
+    @apply text-base w-296px max-w-296px flex gap-3 border-1 border-atm-border-gray-medium py-4 px-5 rounded-xl items-center cursor-pointer hover:(shadow bg-atm-bg-gray-extralight);
 
     .icon {
       @apply !w-8 !h-8 object-contain;

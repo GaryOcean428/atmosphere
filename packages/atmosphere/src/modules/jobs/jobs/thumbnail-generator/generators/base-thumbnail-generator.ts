@@ -2,8 +2,8 @@ import path from 'path';
 import { Readable } from 'stream';
 import { Logger } from '@nestjs/common';
 import slash from 'slash';
-import type { IStorageAdapterV2 } from '~/types/nc-plugin';
-import Noco from '~/Noco';
+import type { IStorageAdapterV2 } from '~/types/atm-plugin';
+import Atmosphere from '~/Atmosphere';
 
 // Cap on input pixels (width * height) for thumbnail generation, to stop a huge
 // or decompression-bomb image from OOM-killing the (<1 GB) worker — which, with
@@ -23,10 +23,10 @@ import Noco from '~/Noco';
 const SHRINK_ON_LOAD_FORMATS = new Set(['jpeg', 'jpg', 'webp']);
 
 const MAX_INPUT_PIXELS_SHRINKABLE =
-  +process.env.NC_THUMBNAIL_MAX_INPUT_PIXELS_SHRINKABLE || 100 * 1000 * 1000;
+  +process.env.ATMOSPHERE_THUMBNAIL_MAX_INPUT_PIXELS_SHRINKABLE || 100 * 1000 * 1000;
 
 const MAX_INPUT_PIXELS_FULL_DECODE =
-  +process.env.NC_THUMBNAIL_MAX_INPUT_PIXELS || 24 * 1000 * 1000;
+  +process.env.ATMOSPHERE_THUMBNAIL_MAX_INPUT_PIXELS || 24 * 1000 * 1000;
 
 export abstract class BaseThumbnailGenerator {
   protected logger = new Logger(this.constructor.name);
@@ -48,17 +48,17 @@ export abstract class BaseThumbnailGenerator {
       // Get the thumbnail buffer from the subclass
       const thumbnailBuffer = await this.generateThumbnailBuffer(file);
 
-      const sharp = Noco.sharp;
+      const sharp = Atmosphere.sharp;
 
       const thumbnailPaths = {
         card_cover: path.join(
-          'nc',
+          'atm',
           'thumbnails',
           relativePath,
           'card_cover.jpg',
         ),
-        small: path.join('nc', 'thumbnails', relativePath, 'small.jpg'),
-        tiny: path.join('nc', 'thumbnails', relativePath, 'tiny.jpg'),
+        small: path.join('atm', 'thumbnails', relativePath, 'small.jpg'),
+        tiny: path.join('atm', 'thumbnails', relativePath, 'tiny.jpg'),
       };
 
       // Reject oversized images up front. `metadata()` only parses the header
@@ -98,7 +98,7 @@ export abstract class BaseThumbnailGenerator {
       // `.rotate()` with no arguments auto-applies the EXIF orientation and drops
       // the tag, baking the rotation into the pixels. sharp does not auto-orient
       // and strips metadata from output by default, so without this thumbnails of
-      // photos carrying an EXIF orientation render rotated. See nocodb/nocodb#10289.
+      // photos carrying an EXIF orientation render rotated. See atmosphere/atmosphere#10289.
       // Only invoke it for a non-identity orientation: orientation 1 (or absent)
       // needs no rotation, so skipping the call keeps the pipeline minimal and
       // avoids any chance of `useExifOrientation` disabling shrink-on-load for the

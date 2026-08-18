@@ -9,7 +9,7 @@ import {
   Text,
 } from '@react-email/components';
 import * as React from 'react';
-import type { WhiteLabelConfig } from 'nocodb-sdk';
+import type { WhiteLabelConfig } from 'atmosphere-sdk';
 import {
   ContentWrapper,
   Footer,
@@ -57,7 +57,7 @@ export const VerifyYourEmail = ({
 
 VerifyYourEmail.PreviewProps = {
   email: 'janedoe@gmail.com',
-  link: 'https://nocodb.com',
+  link: 'https://atmosphere.dev',
 };
 
 export default VerifyYourEmail;

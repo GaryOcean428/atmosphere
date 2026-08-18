@@ -2,7 +2,7 @@ import type { Knex } from 'knex';
 import {
   up as createChatMessages,
   down as dropChatMessages,
-} from '~/meta/migrations/chat-messages/nc_001_init';
+} from '~/meta/migrations/chat-messages/atm_001_init';
 import { MetaTable } from '~/utils/globals';
 
 const up = async (knex: Knex) => {
@@ -19,7 +19,7 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
 
     table.primary(['fk_workspace_id', 'id']);
-    table.index('fk_user_id', 'nc_chat_sessions_user_idx');
+    table.index('fk_user_id', 'atm_chat_sessions_user_idx');
   });
 
   // Chat messages — delegated to canonical migration (shared with satellite DB)

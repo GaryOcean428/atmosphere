@@ -3,11 +3,11 @@ import PQueue from 'p-queue';
 import { Injectable } from '@nestjs/common';
 import moment from 'moment';
 import type { Job } from 'bull';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 
 @Injectable()
 export class DataExportCleanUpProcessor {
-  private readonly debugLog = debug('nc:jobs:data-export-clean-up');
+  private readonly debugLog = debug('atm:jobs:data-export-clean-up');
 
   async job(job: Job) {
     this.debugLog(`Job started for ${job.id}`);
@@ -15,14 +15,14 @@ export class DataExportCleanUpProcessor {
     const queue = new PQueue({ concurrency: 1 });
 
     try {
-      const storageAdapter = await NcPluginMgrv2.storageAdapter();
+      const storageAdapter = await AtPluginMgrv2.storageAdapter();
       const cutoffDate = moment().subtract(4, 'hours');
 
       // Convert cutoff date to YYYY-MM-DD format to match folder structure
       const cutoffDateFormatted = cutoffDate.format('YYYY-MM-DD');
 
       // The pattern will match all files in data-export folders that are older than the cutoff date
-      const globPattern = `nc/uploads/data-export/**`;
+      const globPattern = `atm/uploads/data-export/**`;
 
       const fileStream = await storageAdapter.scanFiles(globPattern);
 
@@ -48,12 +48,12 @@ export class DataExportCleanUpProcessor {
                 if (
                   !filePath ||
                   typeof filePath !== 'string' ||
-                  !filePath.startsWith('nc/uploads/data-export')
+                  !filePath.startsWith('atm/uploads/data-export')
                 ) {
                   return;
                 }
 
-                // Extract date from file path (format: nc/uploads/data-export/YYYY-MM-DD/HH/...)
+                // Extract date from file path (format: atm/uploads/data-export/YYYY-MM-DD/HH/...)
                 const pathParts = filePath.split('/');
                 const dateIndex = pathParts.indexOf('data-export') + 1;
 

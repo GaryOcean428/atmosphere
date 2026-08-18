@@ -1,7 +1,7 @@
-import { NO_SCOPE as SDK_NO_SCOPE } from 'nocodb-sdk'
+import { NO_SCOPE as SDK_NO_SCOPE } from 'atmosphere-sdk'
 import tinycolor from 'tinycolor2'
 
-export const NOCO = 'noco'
+export const ATMOSPHERE = 'atmosphere'
 
 export const SYSTEM_COLUMNS = ['id', 'title', 'created_at', 'updated_at']
 
@@ -12,7 +12,7 @@ export const EMPTY_TITLE_PLACEHOLDER_DOCS = 'Untitled'
  * Used by both WindiCSS screens config and useBreakpoints() in JS.
  * `xs` is excluded — it's the default (< sm) and a max-width alias in WindiCSS.
  */
-export const NC_BREAKPOINTS = {
+export const ATMOSPHERE_BREAKPOINTS = {
   'sm': 480,
   'md': 820,
   'lg': 1024,
@@ -23,24 +23,24 @@ export const NC_BREAKPOINTS = {
   '5xl': 3200,
 } as const
 
-export const MAX_WIDTH_FOR_MOBILE_MODE = NC_BREAKPOINTS.sm
+export const MAX_WIDTH_FOR_MOBILE_MODE = ATMOSPHERE_BREAKPOINTS.sm
 
-export type NcBreakpoint = 'xs' | keyof typeof NC_BREAKPOINTS
+export type AtBreakpoint = 'xs' | keyof typeof ATMOSPHERE_BREAKPOINTS
 
 /**
- * WindiCSS screen definitions derived from NC_BREAKPOINTS.
+ * WindiCSS screen definitions derived from ATMOSPHERE_BREAKPOINTS.
  * `xs` is max-width (mobile-only), all others are min-width.
  */
-export const NC_SCREEN_BREAKPOINTS = {
-  'xs': { max: `${NC_BREAKPOINTS.sm}px` },
-  'sm': { min: `${NC_BREAKPOINTS.sm}px` },
-  'md': { min: `${NC_BREAKPOINTS.md}px` },
-  'lg': { min: `${NC_BREAKPOINTS.lg}px` },
-  'xl': { min: `${NC_BREAKPOINTS.xl}px` },
-  '2xl': { min: `${NC_BREAKPOINTS['2xl']}px` },
-  '3xl': { min: `${NC_BREAKPOINTS['3xl']}px` },
-  '4xl': { min: `${NC_BREAKPOINTS['4xl']}px` },
-  '5xl': { min: `${NC_BREAKPOINTS['5xl']}px` },
+export const ATMOSPHERE_SCREEN_BREAKPOINTS = {
+  'xs': { max: `${ATMOSPHERE_BREAKPOINTS.sm}px` },
+  'sm': { min: `${ATMOSPHERE_BREAKPOINTS.sm}px` },
+  'md': { min: `${ATMOSPHERE_BREAKPOINTS.md}px` },
+  'lg': { min: `${ATMOSPHERE_BREAKPOINTS.lg}px` },
+  'xl': { min: `${ATMOSPHERE_BREAKPOINTS.xl}px` },
+  '2xl': { min: `${ATMOSPHERE_BREAKPOINTS['2xl']}px` },
+  '3xl': { min: `${ATMOSPHERE_BREAKPOINTS['3xl']}px` },
+  '4xl': { min: `${ATMOSPHERE_BREAKPOINTS['4xl']}px` },
+  '5xl': { min: `${ATMOSPHERE_BREAKPOINTS['5xl']}px` },
 }
 
 export const BASE_FALLBACK_URL = process.env.NODE_ENV === 'production' ? '/' : 'http://localhost:8080'
@@ -75,7 +75,7 @@ export const MINI_SIDEBAR_WIDTH = 48
 
 export const NEW_MINI_SIDEBAR_WIDTH = 64
 
-export const NC_CLOUD_URL = 'https://app.nocodb.com'
+export const ATMOSPHERE_CLOUD_URL = 'https://app.atmosphere.dev'
 
 export const clientMousePositionDefaultValue = { clientX: 0, clientY: 0 }
 

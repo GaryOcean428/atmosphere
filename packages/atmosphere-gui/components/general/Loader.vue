@@ -33,7 +33,7 @@ const indicator = h(LoadingOutlined, {
 </script>
 
 <template>
-  <a-spin class="nc-loader !flex flex-row items-center" :indicator="indicator" />
+  <a-spin class="atm-loader !flex flex-row items-center" :indicator="indicator" />
 </template>
 
 <style lang="scss" scoped>

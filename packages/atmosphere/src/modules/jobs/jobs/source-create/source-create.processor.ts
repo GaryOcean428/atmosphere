@@ -7,7 +7,7 @@ import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 
 @Injectable()
 export class SourceCreateProcessor {
-  private readonly debugLog = debug('nc:jobs:source-create');
+  private readonly debugLog = debug('atm:jobs:source-create');
 
   constructor(
     private readonly sourcesService: SourcesService,

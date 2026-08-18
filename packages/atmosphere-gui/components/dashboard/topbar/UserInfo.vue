@@ -54,51 +54,51 @@ const accountUrl = computed(() => '/account/profile')
 </script>
 
 <template>
-  <div class="flex flex-col border-nc-border-gray-medium gap-y-1">
+  <div class="flex flex-col border-atm-border-gray-medium gap-y-1">
     <div class="flex items-center justify-between">
-      <NcDropdown v-model:visible="isMenuOpen" placement="topLeft" overlay-class-name="!min-w-64">
+      <AtDropdown v-model:visible="isMenuOpen" placement="topLeft" overlay-class-name="!min-w-64">
         <div
-          class="nc-user-icon-wrapper border-1 w-8 h-8 flex-none rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
+          class="atm-user-icon-wrapper border-1 w-8 h-8 flex-none rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
           :class="{
-            'border-nc-gray-medium': !isMenuOpen,
+            'border-atm-gray-medium': !isMenuOpen,
             'active border-primary shadow-selected': isMenuOpen,
           }"
-          data-testid="nc-sidebar-userinfo"
+          data-testid="atm-sidebar-userinfo"
           :data-email="user?.email"
         >
           <GeneralUserIcon :user="user" size="medium" class="!w-full !h-full !min-w-full cursor-pointer" />
         </div>
         <template #overlay>
-          <NcMenu variant="small">
+          <AtMenu variant="small">
             <div
               class="flex flex-col justify-center py-1 px-3 gap-x-2 text-gray-700 rounded-lg min-h-8 text-small leading-[18px]"
             >
-              <div v-if="name?.trim()" class="capitalize text-nc-content-gray font-bold">
+              <div v-if="name?.trim()" class="capitalize text-atm-content-gray font-bold">
                 {{ name }}
               </div>
               <div
                 :class="{
-                  'text-xs text-nc-content-gray-muted': name?.trim(),
-                  'text-nc-content-gray font-semibold': !name?.trim(),
+                  'text-xs text-atm-content-gray-muted': name?.trim(),
+                  'text-atm-content-gray font-semibold': !name?.trim(),
                 }"
               >
                 {{ user?.email }}
               </div>
             </div>
-            <NcDivider />
+            <AtDivider />
             <nuxt-link v-e="['c:user:settings']" class="!no-underline" :to="accountUrl" @click="auditsStore.handleReset">
-              <NcMenuItem> <GeneralIcon icon="ncSettings" class="menu-icon" /> {{ $t('title.accountSettings') }} </NcMenuItem>
+              <AtMenuItem> <GeneralIcon icon="ncSettings" class="menu-icon" /> {{ $t('title.accountSettings') }} </AtMenuItem>
             </nuxt-link>
-            <NcMenuItem data-testid="nc-sidebar-user-logout" @click="logout">
+            <AtMenuItem data-testid="atm-sidebar-user-logout" @click="logout">
               <div v-e="['c:user:logout']" class="flex gap-2 items-center">
                 <GeneralLoader v-if="isLoggingOut" class="!ml-0.5 !mr-0.5 !max-h-4.5 !-mt-0.5" />
                 <GeneralIcon v-else icon="signout" class="menu-icon" />
                 <span class="menu-btn"> {{ $t('general.logout') }}</span>
               </div>
-            </NcMenuItem>
-          </NcMenu>
+            </AtMenuItem>
+          </AtMenu>
         </template>
-      </NcDropdown>
+      </AtDropdown>
     </div>
   </div>
 </template>
@@ -124,7 +124,7 @@ const accountUrl = computed(() => '/account/profile')
 }
 
 .social-icon-wrapper {
-  .nc-icon {
+  .atm-icon {
     @apply mr-0.15;
   }
 
@@ -135,7 +135,7 @@ const accountUrl = computed(() => '/account/profile')
   }
 }
 
-.nc-user-icon-wrapper {
+.atm-user-icon-wrapper {
   &:not(.active):hover {
     box-shadow: 0px 12px 16px -4px rgba(0, 0, 0, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.06);
   }
@@ -146,7 +146,7 @@ const accountUrl = computed(() => '/account/profile')
 </style>
 
 <style lang="scss">
-.nc-lang-menu-overlay {
+.atm-lang-menu-overlay {
   .ant-popover-inner {
     @apply !rounded-lg;
   }

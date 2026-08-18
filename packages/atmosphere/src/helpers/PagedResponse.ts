@@ -1,6 +1,6 @@
 import { extractLimitAndOffset } from '.';
-import type { NcContext, PaginatedType, PaginatedV3Type } from 'nocodb-sdk';
-import { NcError } from '~/helpers/catchError';
+import type { AtContext, PaginatedType, PaginatedV3Type } from 'atmosphere-sdk';
+import { AtError } from '~/helpers/catchError';
 import { extractProps } from '~/helpers/extractProps';
 
 type SearchParamValue = string | number | boolean | null | undefined;
@@ -83,7 +83,7 @@ export class PagedResponseImpl<T> {
       }
 
       if (offset && offset >= +count) {
-        NcError.invalidOffsetValue(offset);
+        AtError.invalidOffsetValue(offset);
       }
     }
 
@@ -111,7 +111,7 @@ export class PagedResponseV3Impl<T> {
       nestedPrevPageAvail,
       queryParams = {},
     }: {
-      context: NcContext;
+      context: AtContext;
       baseUrl?: string;
       tableId: string;
       nestedNextPageAvail?: boolean;

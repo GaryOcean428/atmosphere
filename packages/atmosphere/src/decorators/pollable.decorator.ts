@@ -1,7 +1,7 @@
 import { Inject, Logger } from '@nestjs/common';
 import { customAlphabet } from 'nanoid';
 import { JobTypes } from '~/interface/Jobs';
-import { NocoJobsService } from '~/services/noco-jobs.service';
+import { AtmosphereJobsService } from '~/services/atmosphere-jobs.service';
 import { serializeWorkerArgs } from '~/helpers/serialize-worker-args';
 
 const nanoidv2 = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 14);
@@ -23,21 +23,21 @@ const logger = new Logger('Pollable');
  * The processor calls __original to bypass the decorator.
  */
 export function Pollable(): MethodDecorator {
-  const injectNocoJobsService = Inject(NocoJobsService);
+  const injectAtmosphereJobsService = Inject(AtmosphereJobsService);
 
   return (target, key, descriptor: PropertyDescriptor) => {
-    injectNocoJobsService(target, '_nocoJobsService');
+    injectAtmosphereJobsService(target, '_atmosphereJobsService');
 
     const service = target.constructor.name;
     const method = key.toString();
     const originalMethod = descriptor.value;
 
     const wrappedFn = async function (...args: any[]) {
-      const nocoJobsService: NocoJobsService = this._nocoJobsService;
+      const atmosphereJobsService: AtmosphereJobsService = this._atmosphereJobsService;
 
-      if (!nocoJobsService) {
+      if (!atmosphereJobsService) {
         logger.warn(
-          `NocoJobsService not available for ${service}.${method} — executing synchronously (this should not happen in production)`,
+          `AtmosphereJobsService not available for ${service}.${method} — executing synchronously (this should not happen in production)`,
         );
         return originalMethod.apply(this, args);
       }
@@ -46,7 +46,7 @@ export function Pollable(): MethodDecorator {
 
       const jobId = `job${nanoidv2()}`;
 
-      const job = await nocoJobsService.add(
+      const job = await atmosphereJobsService.add(
         JobTypes.UseWorker,
         { service, method, args: serializedArgs },
         { jobId },

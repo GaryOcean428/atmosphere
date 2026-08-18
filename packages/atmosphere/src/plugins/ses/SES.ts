@@ -1,10 +1,10 @@
 import nodemailer from 'nodemailer';
 
 import { SendEmailCommand, SESv2Client } from '@aws-sdk/client-sesv2';
-import type { IEmailAdapter } from '~/types/nc-plugin';
+import type { IEmailAdapter } from '~/types/atm-plugin';
 import type Mail from 'nodemailer/lib/mailer';
 import type { XcEmail } from '~/interface/IEmailAdapter';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { emailAddressOnly } from '~/helpers/emailFrom';
 
 export default class SES implements IEmailAdapter {
@@ -59,7 +59,7 @@ export default class SES implements IEmailAdapter {
       } as any);
       return true;
     } catch (e) {
-      NcError.pluginTestError(e?.message);
+      AtError.pluginTestError(e?.message);
     }
   }
 }

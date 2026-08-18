@@ -1,4 +1,4 @@
-import type { SortType } from 'nocodb-sdk';
+import type { SortType } from 'atmosphere-sdk';
 import { builderGenerator } from '~/utils/data-transformation.builder';
 
 export const sortBuilder = builderGenerator<SortType[], Partial<SortType>>({

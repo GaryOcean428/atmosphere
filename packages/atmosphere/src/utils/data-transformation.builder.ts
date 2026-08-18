@@ -5,8 +5,8 @@ import {
   getCurrencySymbol,
   ratingIconList,
   UITypes,
-} from 'nocodb-sdk';
-import type { ColumnType } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import type { ColumnType } from 'atmosphere-sdk';
 import type { Column } from '~/models';
 
 const convertToSnakeCase = (str: string) => {

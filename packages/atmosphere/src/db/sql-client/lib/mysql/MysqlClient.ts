@@ -69,10 +69,10 @@ class MysqlClient extends KnexClient {
 
     try {
       if (!args.schema) {
-        args.schema = `nc${nanoid(8)}`;
+        args.schema = `atm${nanoid(8)}`;
       }
       if (!args.user) {
-        args.user = `nc${nanoid(8)}`;
+        args.user = `atm${nanoid(8)}`;
       }
       if (!args.password) {
         args.password = nanoid(16);
@@ -677,7 +677,7 @@ class MysqlClient extends KnexClient {
             column.cdf = response[0][i].cdf;
           }
 
-          // Reference: https://github.com/nocodb/nocodb/issues/4625
+          // Reference: https://github.com/GaryOcean428/atmosphere/issues/4625
           // There is an information_schema difference on MariaDB and MySQL
           // while MySQL keeps NULL as default value if no value provided
           // MariaDB keeps NULL as string (if you provide a string NULL it is wrapped by single-quotes)

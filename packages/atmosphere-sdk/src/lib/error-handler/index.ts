@@ -1,3 +1,3 @@
-export * from './nc-error-base';
-export * from './nc-error-codex-manager';
+export * from './atm-error-base';
+export * from './atm-error-codex-manager';
 export * from './preset-error-codex-map';

@@ -1,4 +1,4 @@
-import { NC_ERROR_SENTINEL } from 'nocodb-sdk'
+import { ATMOSPHERE_ERROR_SENTINEL } from 'atmosphere-sdk'
 import { isBoxHovered, renderCellError, renderMultiLineText } from '../utils/canvas'
 
 export const QRCodeCellRenderer: CellRenderer = {
@@ -12,8 +12,8 @@ export const QRCodeCellRenderer: CellRenderer = {
       renderCellError(ctx, { x, y, width, height, padding, getColor })
       return
     }
-    if (!value || value === NC_ERROR_SENTINEL) {
-      if (value === NC_ERROR_SENTINEL) {
+    if (!value || value === ATMOSPHERE_ERROR_SENTINEL) {
+      if (value === ATMOSPHERE_ERROR_SENTINEL) {
         renderCellError(ctx, { x, y, width, height, padding, getColor })
       }
       return

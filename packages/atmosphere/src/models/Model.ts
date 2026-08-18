@@ -3,32 +3,32 @@ import {
   isLinksOrLTAR,
   isVirtualCol,
   ModelTypes,
-  NcApiVersion,
+  AtApiVersion,
   UITypes,
   ViewTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import dayjs from 'dayjs';
 import { Logger } from '@nestjs/common';
 import hash from 'object-hash';
-import type { NcRequest } from 'nocodb-sdk';
+import type { AtRequest } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type {
   BoolType,
   DateDependencyType,
   TableReqType,
   TableType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type PQueue from 'p-queue';
 import type { XKnex } from '~/db/CustomKnex';
 import type { LinksColumn, LinkToAnotherRecordColumn } from '~/models/index';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import Hook from '~/models/Hook';
 import View from '~/models/View';
 import Comment from '~/models/Comment';
 import Column from '~/models/Column';
 import { extractProps } from '~/helpers/extractProps';
 import { sanitize } from '~/helpers/sqlSanitize';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { getReplay } from '~/helpers/replayScope';
 import {
   CacheDelDirection,
@@ -36,8 +36,8 @@ import {
   CacheScope,
   MetaTable,
 } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
-import Noco from '~/Noco';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import Atmosphere from '~/Atmosphere';
 import { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
 import { FileReference } from '~/models';
 import { cleanCommandPaletteCache } from '~/helpers/commandPaletteHelpers';
@@ -51,7 +51,7 @@ import { cleanBaseSchemaCacheForBase } from '~/helpers/scriptHelper';
 import { clearSingleQueryCacheForReferencingModels } from '~/helpers/singleQueryCacheInvalidator';
 import { dataWrapper } from '~/helpers/dbHelpers';
 import { isEE } from '~/utils';
-import { NcCache } from '~/decorators/nc-cache.decorator';
+import { AtCache } from '~/decorators/atm-cache.decorator';
 import {
   modelOrViewNotDeletedXcCondition,
   modelOrViewXcCondition,
@@ -122,7 +122,7 @@ export default class Model implements TableType {
     return false;
   }
 
-  async isTrashEnabledForWorkspace(_context: NcContext): Promise<boolean> {
+  async isTrashEnabledForWorkspace(_context: AtContext): Promise<boolean> {
     return this.isTrashEnabled;
   }
 
@@ -143,8 +143,8 @@ export default class Model implements TableType {
   }
 
   public async getColumns(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
     defaultViewId = undefined,
     updateColumns = true,
     includeDeleted = false,
@@ -172,8 +172,8 @@ export default class Model implements TableType {
   }
 
   public async getColumnsHash(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<string> {
     const columns = await this.getColumns(context, ncMeta, undefined, false);
 
@@ -190,8 +190,8 @@ export default class Model implements TableType {
 
   // get columns cached under the instance or fetch from db/redis cache
   public async getCachedColumns(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column[]> {
     if (this.columns) return this.columns;
     return this.getColumns(context, ncMeta);
@@ -199,10 +199,10 @@ export default class Model implements TableType {
 
   // @ts-ignore
   public async getViews(
-    context: NcContext,
+    context: AtContext,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     force = false,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<View[]> {
     this.views = await View.listWithInfo(context, this.id, ncMeta);
     return this.views;
@@ -241,7 +241,7 @@ export default class Model implements TableType {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     baseId,
     sourceId,
     model: Partial<TableReqType> & {
@@ -250,7 +250,7 @@ export default class Model implements TableType {
       source_id?: string;
       user_id: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(model, [
       'table_name',
@@ -336,7 +336,7 @@ export default class Model implements TableType {
         model: {
           getColumns: async () => insertedColumns,
         },
-        req: { user: {} } as unknown as NcRequest,
+        req: { user: {} } as unknown as AtRequest,
       },
       ncMeta,
     );
@@ -345,7 +345,7 @@ export default class Model implements TableType {
 
     // append to model list since model list cache will be there already
     if (sourceId) {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.MODEL,
         [baseId, sourceId],
@@ -354,7 +354,7 @@ export default class Model implements TableType {
     }
     // cater cases where sourceId is not required
     // e.g. xcVisibilityMetaGet
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       context,
       CacheScope.MODEL,
       [baseId],
@@ -373,7 +373,7 @@ export default class Model implements TableType {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     {
       base_id,
       source_id,
@@ -383,9 +383,9 @@ export default class Model implements TableType {
       source_id?: string;
       includeDeleted?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model[]> {
-    const cachedList = await NocoCache.getList(context, CacheScope.MODEL, [
+    const cachedList = await AtmosphereCache.getList(context, CacheScope.MODEL, [
       base_id,
       ...(source_id ? [source_id] : []),
     ]);
@@ -413,14 +413,14 @@ export default class Model implements TableType {
 
       // set cache based on source_id presence
       if (source_id) {
-        await NocoCache.setList(
+        await AtmosphereCache.setList(
           context,
           CacheScope.MODEL,
           [base_id, source_id],
           modelList,
         );
       } else {
-        await NocoCache.setList(
+        await AtmosphereCache.setList(
           context,
           CacheScope.MODEL,
           [base_id],
@@ -442,18 +442,18 @@ export default class Model implements TableType {
     return modelList.map((m) => this.castType(m));
   }
 
-  @NcCache({
+  @AtCache({
     key: (args) => `${args[1]}:${args[2] ? 'd' : ''}`,
   })
   public static async get(
-    context: NcContext,
+    context: AtContext,
     id: string,
     includeDeleted = false,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model> {
     let modelData =
       id &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.MODEL}:${id}`,
         CacheGetType.TYPE_OBJECT,
@@ -470,7 +470,7 @@ export default class Model implements TableType {
 
       if (modelData) {
         modelData.meta = parseMetaProp(modelData);
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.MODEL}:${modelData.id}`,
           modelData,
@@ -485,7 +485,7 @@ export default class Model implements TableType {
     return this.castType(modelData);
   }
 
-  @NcCache({
+  @AtCache({
     key: (args) =>
       `${
         args[1].id ||
@@ -493,7 +493,7 @@ export default class Model implements TableType {
       }:${args[1].includeDeleted ? 'd' : ''}`,
   })
   public static async getByIdOrName(
-    context: NcContext,
+    context: AtContext,
     args:
       | {
           base_id: string;
@@ -505,7 +505,7 @@ export default class Model implements TableType {
           id?: string;
           includeDeleted?: boolean;
         },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model> {
     if ('id' in args && args?.id) {
       return this.get(context, args.id, args.includeDeleted, ncMeta);
@@ -514,7 +514,7 @@ export default class Model implements TableType {
     const k = 'id' in args ? args?.id : args;
     let modelData =
       k &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.MODEL}:${k}`,
         CacheGetType.TYPE_OBJECT,
@@ -536,7 +536,7 @@ export default class Model implements TableType {
     }
     if (modelData) {
       modelData.meta = parseMetaProp(modelData);
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.MODEL}:${modelData.id}`,
         modelData,
@@ -547,7 +547,7 @@ export default class Model implements TableType {
   }
 
   public static async getWithInfo(
-    context: NcContext,
+    context: AtContext,
     {
       table_name,
       id,
@@ -555,11 +555,11 @@ export default class Model implements TableType {
       table_name?: string;
       id?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model> {
     let modelData =
       id &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.MODEL}:${id}`,
         CacheGetType.TYPE_OBJECT,
@@ -577,7 +577,7 @@ export default class Model implements TableType {
       );
       if (modelData) {
         modelData.meta = parseMetaProp(modelData);
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.MODEL}:${modelData.id}`,
           modelData,
@@ -609,7 +609,7 @@ export default class Model implements TableType {
   /**
    * Creates a BaseModelSqlv2 instance with optional transaction support.
    *
-   * @param context - The NocoDB context
+   * @param context - The Atmosphere context
    * @param args - Configuration arguments
    * @param args.dbDriver - The base database driver
    * @param args.transaction - Optional transaction instance to use for operations
@@ -617,11 +617,11 @@ export default class Model implements TableType {
    * @param args.extractFirstCollaborativeView - Whether to extract the first collaborative grid view if viewId not provided
    * @param args.viewId - The view ID (optional)
    * @param args.source - The data source (optional, will be fetched if not provided)
-   * @param ncMeta - The NocoDB metadata instance
+   * @param ncMeta - The Atmosphere metadata instance
    * @returns A configured BaseModelSqlv2 instance
    */
   public static async getBaseModelSQL(
-    context: NcContext,
+    context: AtContext,
     args: {
       id?: string;
       viewId?: string;
@@ -632,13 +632,13 @@ export default class Model implements TableType {
       source?: Source;
       queryQueue?: PQueue;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<BaseModelSqlv2> {
     const model =
       args?.model || (await this.get(context, args.id, false, ncMeta));
 
     if (!model) {
-      NcError.get(context).tableNotFound(args.id);
+      AtError.get(context).tableNotFound(args.id);
     }
 
     const source =
@@ -676,10 +676,10 @@ export default class Model implements TableType {
   }
 
   static async softDelete(
-    context: NcContext,
+    context: AtContext,
     modelId: string,
     deleted: boolean,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaUpdate(
       context.workspace_id,
@@ -688,15 +688,15 @@ export default class Model implements TableType {
       { deleted },
       modelId,
     );
-    await NocoCache.update(context, `${CacheScope.MODEL}:${modelId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.MODEL}:${modelId}`, {
       deleted,
     });
     cleanCommandPaletteCache(context.workspace_id).catch(() => {});
   }
 
   async delete(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
     force = false,
   ): Promise<boolean> {
     await Comment.deleteModelComments(context, this.id, ncMeta);
@@ -758,7 +758,7 @@ export default class Model implements TableType {
             fk_column_id: col.id,
           },
         );
-        await NocoCache.deepDel(
+        await AtmosphereCache.deepDel(
           context,
           `${cacheScopeName}:${col.id}`,
           CacheDelDirection.CHILD_TO_PARENT,
@@ -779,7 +779,7 @@ export default class Model implements TableType {
       );
 
       for (const col of leftOverColumns) {
-        await NocoCache.deepDel(
+        await AtmosphereCache.deepDel(
           context,
           `${CacheScope.COL_RELATION}:${col.fk_column_id}`,
           CacheDelDirection.CHILD_TO_PARENT,
@@ -808,7 +808,7 @@ export default class Model implements TableType {
       );
 
       for (const col of leftOverMmColumns) {
-        await NocoCache.deepDel(
+        await AtmosphereCache.deepDel(
           context,
           `${CacheScope.COL_RELATION}:${col.fk_column_id}`,
           CacheDelDirection.CHILD_TO_PARENT,
@@ -825,7 +825,7 @@ export default class Model implements TableType {
       );
     }
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.COLUMN}:${this.id}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -842,7 +842,7 @@ export default class Model implements TableType {
     // Delete FileReference
     await FileReference.bulkDelete(context, { fk_model_id: this.id }, ncMeta);
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.MODEL}:${this.id}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -855,7 +855,7 @@ export default class Model implements TableType {
     );
 
     // delete alias cache
-    await NocoCache.del(context, [
+    await AtmosphereCache.del(context, [
       `${CacheScope.MODEL_ALIAS}:${this.base_id}:${this.id}`,
       `${CacheScope.MODEL_ALIAS}:${this.base_id}:${this.source_id}:${this.id}`,
       `${CacheScope.MODEL_ALIAS}:${this.base_id}:${this.title}`,
@@ -874,7 +874,7 @@ export default class Model implements TableType {
   }
 
   async mapAliasToColumn(
-    context: NcContext,
+    context: AtContext,
     data,
     clientMeta = {
       isMySQL: false,
@@ -895,7 +895,7 @@ export default class Model implements TableType {
           val = JSON.stringify(val);
         }
         if (
-          context.api_version !== NcApiVersion.V3 &&
+          context.api_version !== AtApiVersion.V3 &&
           col.uidt === UITypes.DateTime &&
           dayjs(val).isValid()
         ) {
@@ -929,7 +929,7 @@ export default class Model implements TableType {
               );
           } else if (isMssql) {
             // T-SQL `datetime`/`datetime2` reject the `+00:00` offset
-            // suffix that the other dialects accept. NocoDB stores UTC
+            // suffix that the other dialects accept. Atmosphere stores UTC
             // wall-clock without TZ on mssql — strip the offset after
             // computing the UTC instant (matches
             // `DateTimeMssqlHandler.parseUserInput`).
@@ -983,7 +983,7 @@ export default class Model implements TableType {
     return insertObj;
   }
 
-  async mapColumnToAlias(context: NcContext, data, columns?: Column[]) {
+  async mapColumnToAlias(context: AtContext, data, columns?: Column[]) {
     const res = {};
     const dbDataWrapper = dataWrapper(data);
     for (const col of columns || (await this.getColumns(context))) {
@@ -1000,17 +1000,17 @@ export default class Model implements TableType {
   }
 
   static async updateAliasAndTableName(
-    context: NcContext,
+    context: AtContext,
     tableId,
     title: string,
     table_name: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (!title) {
-      NcError.badRequest("Missing 'title' property in body");
+      AtError.badRequest("Missing 'title' property in body");
     }
     if (!table_name) {
-      NcError.badRequest("Missing 'table_name' property in body");
+      AtError.badRequest("Missing 'table_name' property in body");
     }
 
     const oldModel = await this.get(context, tableId, false, ncMeta);
@@ -1027,13 +1027,13 @@ export default class Model implements TableType {
       tableId,
     );
 
-    await NocoCache.update(context, `${CacheScope.MODEL}:${tableId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.MODEL}:${tableId}`, {
       title,
       table_name,
     });
 
     // delete alias cache
-    await NocoCache.del(context, [
+    await AtmosphereCache.del(context, [
       `${CacheScope.MODEL_ALIAS}:${oldModel.base_id}:${oldModel.id}`,
       `${CacheScope.MODEL_ALIAS}:${oldModel.base_id}:${oldModel.source_id}:${oldModel.id}`,
       `${CacheScope.MODEL_ALIAS}:${oldModel.base_id}:${oldModel.title}`,
@@ -1059,10 +1059,10 @@ export default class Model implements TableType {
   }
 
   static async markAsMmTable(
-    context: NcContext,
+    context: AtContext,
     tableId,
     isMm = true,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // set meta
     const res = await ncMeta.metaUpdate(
@@ -1075,14 +1075,14 @@ export default class Model implements TableType {
       tableId,
     );
 
-    await NocoCache.update(context, `${CacheScope.MODEL}:${tableId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.MODEL}:${tableId}`, {
       mm: isMm,
     });
 
     return res;
   }
 
-  async getAliasColMapping(context: NcContext) {
+  async getAliasColMapping(context: AtContext) {
     return (await this.getColumns(context)).reduce((o, c) => {
       if (c.column_name) {
         o[c.title] = c.column_name;
@@ -1091,7 +1091,7 @@ export default class Model implements TableType {
     }, {});
   }
 
-  async getColAliasMapping(context: NcContext) {
+  async getColAliasMapping(context: AtContext) {
     return (await this.getColumns(context)).reduce((o, c) => {
       if (c.column_name) {
         o[c.column_name] = c.title;
@@ -1101,7 +1101,7 @@ export default class Model implements TableType {
   }
 
   static async updateOrder(
-    context: NcContext,
+    context: AtContext,
     tableId: string,
     // `undefined` = keep the current order (membership-only move).
     order?: number,
@@ -1109,7 +1109,7 @@ export default class Model implements TableType {
     // leaves membership untouched — CE never passes it. Same shape as the
     // `fk_view_section_id` handling in View.update.
     fkSectionId?: string | null,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj: Record<string, any> = {};
 
@@ -1132,7 +1132,7 @@ export default class Model implements TableType {
       tableId,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.MODEL}:${tableId}`,
       updateObj,
@@ -1142,15 +1142,15 @@ export default class Model implements TableType {
   }
 
   static async updatePrimaryColumn(
-    context: NcContext,
+    context: AtContext,
     tableId: string,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const model = await this.getWithInfo(context, { id: tableId }, ncMeta);
     const newPvCol = model.columnsById[columnId];
 
-    if (!newPvCol) NcError.fieldNotFound(columnId);
+    if (!newPvCol) AtError.fieldNotFound(columnId);
 
     // drop existing primary column/s
     for (const col of model.columns?.filter((c) => c.pv) || []) {
@@ -1165,7 +1165,7 @@ export default class Model implements TableType {
         col.id,
       );
 
-      await NocoCache.update(context, `${CacheScope.COLUMN}:${col.id}`, {
+      await AtmosphereCache.update(context, `${CacheScope.COLUMN}:${col.id}`, {
         pv: false,
       });
     }
@@ -1181,7 +1181,7 @@ export default class Model implements TableType {
       newPvCol.id,
     );
 
-    await NocoCache.update(context, `${CacheScope.COLUMN}:${newPvCol.id}`, {
+    await AtmosphereCache.update(context, `${CacheScope.COLUMN}:${newPvCol.id}`, {
       pv: true,
     });
 
@@ -1223,7 +1223,7 @@ export default class Model implements TableType {
     return true;
   }
 
-  static async setAsMm(context: NcContext, id: any, ncMeta = Noco.ncMeta) {
+  static async setAsMm(context: AtContext, id: any, ncMeta = Atmosphere.ncMeta) {
     // set meta
     await ncMeta.metaUpdate(
       context.workspace_id,
@@ -1235,17 +1235,17 @@ export default class Model implements TableType {
       id,
     );
 
-    await NocoCache.update(context, `${CacheScope.MODEL}:${id}`, {
+    await AtmosphereCache.update(context, `${CacheScope.MODEL}:${id}`, {
       mm: true,
     });
   }
 
-  @NcCache({
+  @AtCache({
     key: (args) =>
       `${args[1].base_id}:${args[1].source_id}:${args[1].aliasOrId}`,
   })
   static async getByAliasOrId(
-    context: NcContext,
+    context: AtContext,
     {
       base_id,
       source_id,
@@ -1255,7 +1255,7 @@ export default class Model implements TableType {
       source_id?: string;
       aliasOrId: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const cacheKey = source_id
       ? `${CacheScope.MODEL_ALIAS}:${base_id}:${source_id}:${aliasOrId}`
@@ -1263,7 +1263,7 @@ export default class Model implements TableType {
     const modelId =
       base_id &&
       aliasOrId &&
-      (await NocoCache.get(context, cacheKey, CacheGetType.TYPE_STRING));
+      (await AtmosphereCache.get(context, cacheKey, CacheGetType.TYPE_STRING));
     if (!modelId) {
       const model = source_id
         ? await ncMeta.metaGet2(
@@ -1319,8 +1319,8 @@ export default class Model implements TableType {
             },
           );
       if (model) {
-        await NocoCache.set(context, cacheKey, model.id);
-        await NocoCache.set(context, `${CacheScope.MODEL}:${model.id}`, model);
+        await AtmosphereCache.set(context, cacheKey, model.id);
+        await AtmosphereCache.set(context, `${CacheScope.MODEL}:${model.id}`, model);
       }
       return this.castType(model);
     }
@@ -1328,13 +1328,13 @@ export default class Model implements TableType {
   }
 
   static async checkTitleAvailable(
-    context: NcContext,
+    context: AtContext,
     {
       table_name,
       source_id,
       exclude_id,
     }: { table_name; base_id; source_id; exclude_id? },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return !(await ncMeta.metaGet2(
       context.workspace_id,
@@ -1355,13 +1355,13 @@ export default class Model implements TableType {
   }
 
   static async checkAliasAvailable(
-    context: NcContext,
+    context: AtContext,
     {
       title,
       source_id,
       exclude_id,
     }: { title; base_id; source_id; exclude_id? },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return !(await ncMeta.metaGet2(
       context.workspace_id,
@@ -1381,7 +1381,7 @@ export default class Model implements TableType {
     ));
   }
 
-  async getAliasColObjMap(context: NcContext, columns?: Column[]) {
+  async getAliasColObjMap(context: AtContext, columns?: Column[]) {
     const mapColumns = columns || (await this.getColumns(context));
     const idReduce = mapColumns.reduce(
       (sortAgg, c) => ({ ...sortAgg, [c.id]: c }),
@@ -1397,10 +1397,10 @@ export default class Model implements TableType {
   }
 
   static async updateSynced(
-    context: NcContext,
+    context: AtContext,
     modelId: string,
     synced: boolean,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaUpdate(
       context.workspace_id,
@@ -1410,19 +1410,19 @@ export default class Model implements TableType {
       modelId,
     );
 
-    await NocoCache.update(context, `${CacheScope.MODEL}:${modelId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.MODEL}:${modelId}`, {
       synced,
     });
   }
 
   static async updateTrashSettings(
-    context: NcContext,
+    context: AtContext,
     modelId: string,
     settings: {
       trash_disabled?: boolean | null;
       trash_retention_days?: number | null;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(settings, [
       'trash_disabled',
@@ -1437,7 +1437,7 @@ export default class Model implements TableType {
       modelId,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.MODEL}:${modelId}`,
       updateObj,
@@ -1446,10 +1446,10 @@ export default class Model implements TableType {
 
   // For updating table meta
   static async updateMeta(
-    context: NcContext,
+    context: AtContext,
     tableId: string,
     model: Pick<TableReqType, 'meta' | 'description'>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(model, ['description', 'meta']);
 
@@ -1463,7 +1463,7 @@ export default class Model implements TableType {
       modelOrViewXcCondition,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.MODEL}:${tableId}`,
       prepareForResponse(updateObj),

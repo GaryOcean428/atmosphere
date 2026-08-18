@@ -1,9 +1,9 @@
 import { v7 as uuidv7 } from 'uuid';
 import { Injectable, Logger } from '@nestjs/common';
-import { AuditOperationTypes } from 'nocodb-sdk';
+import { AuditOperationTypes } from 'atmosphere-sdk';
 import { MetaTable } from '~/utils/globals';
-import Noco from '~/Noco';
-import { DriverClient } from '~/utils/nc-config';
+import Atmosphere from '~/Atmosphere';
+import { DriverClient } from '~/utils/atm-config';
 
 @Injectable()
 export class AuditMigration {
@@ -13,7 +13,7 @@ export class AuditMigration {
     try {
       this.logger.log('Starting audit migration job');
 
-      const ncMeta = Noco.ncMeta;
+      const ncMeta = Atmosphere.ncMeta;
       // Use smaller batch size for SQLite due to "too many terms in compound SELECT" issue
       // ref: https://www.sqlite.org/limits.html#max_compound_select
       const batchSize =

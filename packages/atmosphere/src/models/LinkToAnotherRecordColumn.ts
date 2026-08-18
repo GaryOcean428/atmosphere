@@ -1,25 +1,25 @@
-import { isMMOrMMLike, RelationTypes } from 'nocodb-sdk';
-import type { BoolType } from 'nocodb-sdk';
+import { isMMOrMMLike, RelationTypes } from 'atmosphere-sdk';
+import type { BoolType } from 'atmosphere-sdk';
 import type Filter from '~/models/Filter';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import Model from '~/models/Model';
 import Column from '~/models/Column';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import { View } from '~/models/index';
 
 export default class LinkToAnotherRecordColumn {
   protected _context: {
-    refContext: NcContext;
-    mmContext: NcContext;
+    refContext: AtContext;
+    mmContext: AtContext;
   };
   protected _parentChildContext: {
-    parentContext: NcContext;
-    childContext: NcContext;
-    refContext: NcContext;
-    mmContext: NcContext;
+    parentContext: AtContext;
+    childContext: AtContext;
+    refContext: AtContext;
+    mmContext: AtContext;
   };
 
   id: string;
@@ -77,8 +77,8 @@ export default class LinkToAnotherRecordColumn {
   }
 
   public async getChildColumn(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column> {
     const { childContext } = await this.getParentChildContext({
       ...context,
@@ -94,8 +94,8 @@ export default class LinkToAnotherRecordColumn {
   }
 
   public async getMMChildColumn(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column> {
     const { mmContext } = this.getRelContext({
       ...context,
@@ -113,8 +113,8 @@ export default class LinkToAnotherRecordColumn {
 
   // The junction Order column grouped by the child FK (orders parents per child).
   public async getMMChildOrderColumn(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column | null> {
     if (!this.fk_mm_child_order_column_id) return null;
     const { mmContext } = this.getRelContext({
@@ -130,8 +130,8 @@ export default class LinkToAnotherRecordColumn {
 
   // The junction Order column grouped by the parent FK (orders children per parent).
   public async getMMParentOrderColumn(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column | null> {
     if (!this.fk_mm_parent_order_column_id) return null;
     const { mmContext } = this.getRelContext({
@@ -146,8 +146,8 @@ export default class LinkToAnotherRecordColumn {
   }
 
   public async getParentColumn(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column> {
     const { parentContext } = await this.getParentChildContext({
       ...context,
@@ -164,8 +164,8 @@ export default class LinkToAnotherRecordColumn {
   }
 
   public async getMMParentColumn(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column> {
     const { mmContext } = this.getRelContext({
       ...context,
@@ -181,8 +181,8 @@ export default class LinkToAnotherRecordColumn {
   }
 
   public async getMMModel(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model> {
     // Resolve mmContext relative to THIS link's own base (like getRelatedTable /
     // getMMChildColumn), not the caller's context. Otherwise a caller passing a
@@ -203,8 +203,8 @@ export default class LinkToAnotherRecordColumn {
   }
 
   public async getRelatedTable(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model> {
     const { refContext } = this.getRelContext({
       ...context,
@@ -220,9 +220,9 @@ export default class LinkToAnotherRecordColumn {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     data: Partial<LinkToAnotherRecordColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(data, [
       'fk_column_id',
@@ -258,9 +258,9 @@ export default class LinkToAnotherRecordColumn {
   }
 
   async getChildView(
-    context: NcContext,
+    context: AtContext,
     table: Model = undefined,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (this.fk_target_view_id) {
       return View.get(context, this.fk_target_view_id, false, ncMeta);
@@ -273,13 +273,13 @@ export default class LinkToAnotherRecordColumn {
   }
 
   public static async read(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let colData =
       columnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.COL_RELATION}:${columnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -291,7 +291,7 @@ export default class LinkToAnotherRecordColumn {
         MetaTable.COL_RELATIONS,
         { fk_column_id: columnId },
       );
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.COL_RELATION}:${columnId}`,
         colData,
@@ -301,7 +301,7 @@ export default class LinkToAnotherRecordColumn {
   }
 
   static async update(
-    _context: NcContext,
+    _context: AtContext,
     _fk_column_id: string,
     _param: {
       fk_target_view_id?: string | null;
@@ -311,7 +311,7 @@ export default class LinkToAnotherRecordColumn {
     // placeholder method
   }
 
-  getRelContext(context: NcContext) {
+  getRelContext(context: AtContext) {
     if (this._context) {
       return this._context;
     }
@@ -360,9 +360,9 @@ export default class LinkToAnotherRecordColumn {
   }
 
   async getParentChildContext(
-    context: NcContext,
+    context: AtContext,
     column?: Column,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (this._parentChildContext) {
       return this._parentChildContext;

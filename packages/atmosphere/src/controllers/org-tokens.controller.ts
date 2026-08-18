@@ -9,14 +9,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTokenReqType } from 'nocodb-sdk';
+import { ApiTokenReqType } from 'atmosphere-sdk';
 import { AuthGuard } from '@nestjs/passport';
 import { getConditionalHandler } from '~/helpers/getHandler';
 import { OrgTokensEeService } from '~/services/org-tokens-ee.service';
 import { OrgTokensService } from '~/services/org-tokens.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
-import { NcRequest } from '~/interface/config';
+import { AtRequest } from '~/interface/config';
 
 @UseGuards(MetaApiLimiterGuard, AuthGuard('jwt'))
 @Controller()
@@ -32,7 +32,7 @@ export class OrgTokensController {
     blockApiTokenAccess: true,
     blockOAuthTokenAccess: true,
   })
-  async apiTokenList(@Req() req: NcRequest) {
+  async apiTokenList(@Req() req: AtRequest) {
     return await getConditionalHandler(
       this.orgTokensService.apiTokenList,
       this.orgTokensEeService.apiTokenListEE,
@@ -50,7 +50,7 @@ export class OrgTokensController {
     blockApiTokenAccess: true,
     blockOAuthTokenAccess: true,
   })
-  async apiTokenCreate(@Req() req: NcRequest, @Body() body: ApiTokenReqType) {
+  async apiTokenCreate(@Req() req: AtRequest, @Body() body: ApiTokenReqType) {
     return await this.orgTokensService.apiTokenCreate({
       apiToken: body,
       user: req['user'],
@@ -66,7 +66,7 @@ export class OrgTokensController {
     blockOAuthTokenAccess: true,
   })
   async apiTokenDelete(
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('tokenId') tokenId: string,
   ) {
     await this.orgTokensService.apiTokenDelete({

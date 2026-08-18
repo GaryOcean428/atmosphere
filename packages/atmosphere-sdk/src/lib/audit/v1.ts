@@ -1388,7 +1388,7 @@ export interface InterfacePageConfigChange {
 
 /**
  * The DELTA of a page's builder config — never the config itself, which is
- * the whole page and would be rewritten into `nc_audit` on every save.
+ * the whole page and would be rewritten into `atm_audit` on every save.
  *
  * Computed against the layout's zod schema, so entity arrays match by id
  * (reordering a visualization doesn't rewrite every index) and id-valued

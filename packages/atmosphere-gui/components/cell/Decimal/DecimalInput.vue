@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { composeNewDecimalValue, formatNumberWithSeparator, ncIsNaN } from 'nocodb-sdk'
+import { composeNewDecimalValue, formatNumberWithSeparator, ncIsNaN } from 'atmosphere-sdk'
 import type { StyleValue } from 'vue'
 
 interface Props {
@@ -368,7 +368,7 @@ watch(vModel, (newValue) => {
   <!-- eslint-disable vue/use-v-on-exact -->
   <input
     ref="input-ref"
-    class="nc-cell-field outline-none rounded-md w-full"
+    class="atm-cell-field outline-none rounded-md w-full"
     :placeholder="placeholder"
     style="letter-spacing: 0.06rem; height: 24px !important"
     :style="inputStyle"

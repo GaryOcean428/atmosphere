@@ -1,4 +1,4 @@
-import { type ColumnType, isLinksOrLTAR } from 'nocodb-sdk'
+import { type ColumnType, isLinksOrLTAR } from 'atmosphere-sdk'
 
 const stringifyValue = (value: unknown): string => {
   if (value == null) return ''

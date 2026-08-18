@@ -46,7 +46,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <GeneralModal v-model:visible="visible" class="nc-attachment-rename-modal" size="small">
+  <GeneralModal v-model:visible="visible" class="atm-attachment-rename-modal" size="small">
     <div class="flex flex-col items-center justify-center h-full p-4 md:p-6">
       <div class="text-lg font-semibold self-start mb-5">{{ $t('title.renameFile') }}</div>
 
@@ -55,13 +55,13 @@ onMounted(() => {
           <a-input
             ref="inputEl"
             v-model:value="form.title"
-            class="w-full nc-input-sm nc-input-shadow"
+            class="w-full atm-input-sm atm-input-shadow"
             :placeholder="$t('general.rename')"
           />
         </a-form-item>
         <div class="flex flex-row gap-x-2 mt-2.5 pt-2.5 justify-end">
-          <NcButton key="back" html-type="back" size="small" type="secondary">{{ $t('general.cancel') }}</NcButton>
-          <NcButton key="submit" html-type="submit" size="small" type="primary">{{ $t('general.confirm') }}</NcButton>
+          <AtButton key="back" html-type="back" size="small" type="secondary">{{ $t('general.cancel') }}</AtButton>
+          <AtButton key="submit" html-type="submit" size="small" type="primary">{{ $t('general.confirm') }}</AtButton>
         </div>
       </a-form>
     </div>

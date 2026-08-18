@@ -10,12 +10,12 @@ import { Request } from 'express';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { SyncSource } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { JobTypes } from '~/interface/Jobs';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -30,12 +30,12 @@ export class AtImportController {
   ])
   @Acl('airtableImport')
   @HttpCode(200)
-  async triggerSync(@TenantContext() context: NcContext, @Req() req: Request) {
+  async triggerSync(@TenantContext() context: AtContext, @Req() req: Request) {
     const jobs = await this.jobsService.jobList();
     const fnd = jobs.find((j) => j.data.syncId === req.params.syncId);
 
     if (fnd) {
-      NcError.badRequest('Sync already in progress');
+      AtError.badRequest('Sync already in progress');
     }
 
     const syncSource = await SyncSource.get(context, req.params.syncId);
@@ -47,7 +47,7 @@ export class AtImportController {
 
     // if environment value avail use it
     // or if it's docker construct using `PORT`
-    if (process.env.NC_DOCKER) {
+    if (process.env.ATMOSPHERE_DOCKER) {
       baseURL = `http://localhost:${process.env.PORT || 8080}`;
     }
 

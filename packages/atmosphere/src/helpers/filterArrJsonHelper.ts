@@ -1,6 +1,6 @@
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type Filter from '~/models/Filter';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 // `filterArrJson` arrives either as a JSON string (API/query-param callers) or
 // an already-parsed Filter[] (internal callers pass it pre-parsed). A malformed
@@ -10,7 +10,7 @@ import { NcError } from '~/helpers/ncError';
 // that parses to a non-array is rejected too. Note `[null]` is a valid array,
 // so it passes here — conditionV2 tolerates/drops null entries downstream.
 export function parseFilterArrJson(
-  context: NcContext,
+  context: AtContext,
   raw: string | Filter[] | undefined,
   label?: string,
 ): Filter[] | undefined {
@@ -24,13 +24,13 @@ export function parseFilterArrJson(
   try {
     parsed = JSON.parse(trimmed);
   } catch {
-    NcError.get(context).badRequest(
+    AtError.get(context).badRequest(
       `Invalid filterArrJson${label ? ` for ${label}` : ''}`,
     );
   }
 
   if (!Array.isArray(parsed)) {
-    NcError.get(context).badRequest(
+    AtError.get(context).badRequest(
       `Invalid filterArrJson${label ? ` for ${label}` : ''}`,
     );
   }

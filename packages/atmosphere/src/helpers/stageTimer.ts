@@ -5,7 +5,7 @@ const perfLogger = new Logger('Perf');
 /**
  * Per-stage wall-clock timer for hot read/write paths.
  *
- * Enable with `NC_PERF_LOG=true` (also honoured: any `ENABLE_PROFILER` value,
+ * Enable with `ATMOSPHERE_PERF_LOG=true` (also honoured: any `ENABLE_PROFILER` value,
  * for parity with {@link Profiler}). When disabled, {@link StageTimer.start}
  * returns `null` so every `timer?.mark()` / `timer?.end()` collapses to a cheap
  * null check — effectively zero overhead in production.
@@ -19,7 +19,7 @@ const perfLogger = new Logger('Perf');
  * block so the split is visible client-side without trawling server logs.
  */
 export const PERF_LOG_ENABLED =
-  process.env.NC_PERF_LOG === 'true' || !!process.env.ENABLE_PROFILER;
+  process.env.ATMOSPHERE_PERF_LOG === 'true' || !!process.env.ENABLE_PROFILER;
 
 export class StageTimer {
   private readonly t0 = process.hrtime.bigint();
@@ -75,7 +75,7 @@ export class StageTimer {
     const meta = Object.entries(this.meta)
       .map(([k, v]) => `${k}=${v}`)
       .join(' ');
-    // info level: NC_PERF_LOG is an explicit opt-in, so the breakdown should
+    // info level: ATMOSPHERE_PERF_LOG is an explicit opt-in, so the breakdown should
     // surface regardless of the global (pino) debug level being off.
     logger.log(
       `${this.label} total=${total}ms ${stages}${meta ? ` | ${meta}` : ''}`,

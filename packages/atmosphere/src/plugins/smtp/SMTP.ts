@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
-import type { IEmailAdapter } from '~/types/nc-plugin';
+import type { IEmailAdapter } from '~/types/atm-plugin';
 import type Mail from 'nodemailer/lib/mailer';
 import type { XcEmail } from '~/interface/IEmailAdapter';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { emailAddressOnly } from '~/helpers/emailFrom';
 
 export default class SMTP implements IEmailAdapter {
@@ -67,7 +67,7 @@ export default class SMTP implements IEmailAdapter {
       return true;
     } catch (e) {
       console.log('SMTP test error :: ', e);
-      NcError.pluginTestError(e?.message);
+      AtError.pluginTestError(e?.message);
     }
   }
 }

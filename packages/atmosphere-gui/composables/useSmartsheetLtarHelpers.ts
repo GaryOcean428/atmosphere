@@ -1,5 +1,5 @@
-import { RelationTypes, isBtLikeV2Junction, isLinksOrLTAR, isMMOrMMLike } from 'nocodb-sdk'
-import type { ColumnType, LinkToAnotherRecordType, TableType } from 'nocodb-sdk'
+import { RelationTypes, isBtLikeV2Junction, isLinksOrLTAR, isMMOrMMLike } from 'atmosphere-sdk'
+import type { ColumnType, LinkToAnotherRecordType, TableType } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import type { InterfacePageDataApi } from '~/lib/interfaceData'
 
@@ -28,7 +28,7 @@ const [useProvideSmartsheetLtarHelpers, useSmartsheetLtarHelpers] = useInjection
         await interfaceDataApi.nestedUnlink({ rowId, columnId: column.id as string, refRowIds: [refRowId] })
       } else {
         await $api.dbTableRow.nestedRemove(
-          NOCO,
+          ATMOSPHERE,
           meta.value?.base_id ?? (base.value.id as string),
           meta.value?.id as string,
           encodeURIComponent(rowId),
@@ -140,7 +140,7 @@ const [useProvideSmartsheetLtarHelpers, useSmartsheetLtarHelpers] = useInjection
 
     const loadRow = async (row: Row) => {
       const record = await $api.dbTableRow.read(
-        NOCO,
+        ATMOSPHERE,
         meta.value?.base_id ?? (base.value?.id as string),
         meta.value?.title as string,
         encodeURIComponent(extractPkFromRow(row.row, meta.value?.columns as ColumnType[])),

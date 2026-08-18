@@ -1,7 +1,7 @@
 services:
 
-  nocodb:
-    image: nocodb/nocodb:latest
+  atmosphere:
+    image: atmosphere/atmosphere:latest
     env_file: docker.env
     deploy:
       mode: replicated
@@ -13,10 +13,10 @@ services:
         condition: service_healthy
     restart: unless-stopped
     volumes:
-      - nocodb_data:/usr/app/data
-      - ./nocodb/db.json:/usr/app/data/db.json
+      - atmosphere_data:/usr/app/data
+      - ./atmosphere/db.json:/usr/app/data/db.json
     networks:
-      - nocodb-network
+      - atmosphere-network
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --tries=1 --spider http://localhost:8080/api/v1/health || exit 1']
       interval: 30s
@@ -25,41 +25,41 @@ services:
       start_period: 30s
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.nocodb.rule=Host(`demo.example.com`)'
-      - 'traefik.http.routers.nocodb.entrypoints=websecure'
-      - 'traefik.http.routers.nocodb.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.atmosphere.rule=Host(`demo.example.com`)'
+      - 'traefik.http.routers.atmosphere.entrypoints=websecure'
+      - 'traefik.http.routers.atmosphere.tls.certresolver=letsencrypt'
 
   worker:
-    image: nocodb/nocodb:latest
+    image: atmosphere/atmosphere:latest
     env_file: docker.env
     environment:
-      NC_WORKER_CONTAINER: 'true'
+      ATMOSPHERE_WORKER_CONTAINER: 'true'
     depends_on:
-      nocodb:
+      atmosphere:
         condition: service_healthy
     restart: unless-stopped
     volumes:
-      - nocodb_data:/usr/app/data
-      - ./nocodb/db.json:/usr/app/data/db.json
+      - atmosphere_data:/usr/app/data
+      - ./atmosphere/db.json:/usr/app/data/db.json
     networks:
-      - nocodb-network
+      - atmosphere-network
 
   db:
     image: postgres:17.10
     environment:
-      POSTGRES_USER: nocodb
+      POSTGRES_USER: atmosphere
       POSTGRES_PASSWORD: __PASSWORD__
-      POSTGRES_DB: nocodb
+      POSTGRES_DB: atmosphere
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U nocodb -d nocodb']
+      test: ['CMD-SHELL', 'pg_isready -U atmosphere -d atmosphere']
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - nocodb-network
+      - atmosphere-network
 
   redis:
     image: redis:7
@@ -72,7 +72,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - nocodb-network
+      - atmosphere-network
 
   traefik:
     image: traefik:v3.6
@@ -84,7 +84,7 @@ services:
       - '--entryPoints.web.http.redirections.entryPoint.to=websecure'
       - '--entryPoints.web.http.redirections.entryPoint.scheme=https'
       - '--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web'
-      - '--certificatesresolvers.letsencrypt.acme.email=ssl@nocodb.com'
+      - '--certificatesresolvers.letsencrypt.acme.email=ssl@atmosphere.dev'
       - '--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json'
     ports:
       - '80:80'
@@ -94,13 +94,13 @@ services:
       - ./letsencrypt:/letsencrypt
     restart: unless-stopped
     networks:
-      - nocodb-network
+      - atmosphere-network
 
 networks:
-  nocodb-network:
+  atmosphere-network:
     driver: bridge
 
 volumes:
-  nocodb_data:
+  atmosphere_data:
   postgres_data:
   redis_data:

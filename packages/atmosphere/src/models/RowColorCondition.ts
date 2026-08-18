@@ -1,10 +1,10 @@
 import { Logger } from '@nestjs/common';
-import { NcBaseError } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import { NcError } from '~/helpers/ncError';
+import { AtBaseError } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import { AtError } from '~/helpers/ncError';
 import { MetaTable } from '~/cli';
 import { extractProps } from '~/helpers/extractProps';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { isReplay } from '~/helpers/replayScope';
 
 export interface IRowColorCondition {
@@ -13,7 +13,7 @@ export interface IRowColorCondition {
   fk_workspace_id?: string;
   base_id?: string;
   color: string;
-  nc_order: number;
+  atm_order: number;
   is_set_as_background: boolean;
   type: string;
   fk_target_column_id?: string;
@@ -25,7 +25,7 @@ export default class RowColorCondition implements IRowColorCondition {
   fk_workspace_id?: string;
   base_id?: string;
   color: string;
-  nc_order: number;
+  atm_order: number;
   is_set_as_background: boolean;
   type: string;
   fk_target_column_id?: string;
@@ -35,16 +35,16 @@ export default class RowColorCondition implements IRowColorCondition {
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     condition: Partial<IRowColorCondition>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(condition, [
       'fk_view_id',
       'fk_workspace_id',
       'base_id',
       'color',
-      'nc_order',
+      'atm_order',
       'is_set_as_background',
       'type',
       'fk_target_column_id',
@@ -65,7 +65,7 @@ export default class RowColorCondition implements IRowColorCondition {
     return new RowColorCondition(row);
   }
 
-  static async getById(context: NcContext, id: string, ncMeta = Noco.ncMeta) {
+  static async getById(context: AtContext, id: string, ncMeta = Atmosphere.ncMeta) {
     const condition = await ncMeta.metaGet(
       context.workspace_id,
       context.base_id,
@@ -80,9 +80,9 @@ export default class RowColorCondition implements IRowColorCondition {
   }
 
   static async getByViewId(
-    context: NcContext,
+    context: AtContext,
     fk_view_id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return (
       await ncMeta.metaList2(
@@ -98,7 +98,7 @@ export default class RowColorCondition implements IRowColorCondition {
     ).map((row) => new RowColorCondition(row));
   }
 
-  static async delete(context: NcContext, id: string, ncMeta = Noco.ncMeta) {
+  static async delete(context: AtContext, id: string, ncMeta = Atmosphere.ncMeta) {
     const ncMetaTrans = await ncMeta.startTransaction();
 
     try {
@@ -122,9 +122,9 @@ export default class RowColorCondition implements IRowColorCondition {
       await ncMetaTrans.commit();
     } catch (ex) {
       await ncMetaTrans.rollback();
-      if (ex instanceof NcError || ex instanceof NcBaseError) throw ex;
+      if (ex instanceof AtError || ex instanceof AtBaseError) throw ex;
       logger.error('Failed to remove Row Colouring', ex);
-      NcError.get(context).internalServerError(
+      AtError.get(context).internalServerError(
         'Failed to remove Row Colouring',
       );
     }

@@ -3,7 +3,7 @@ import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
 const log = (message: string) => {
-  console.log(`nc_054_id_length: ${message}`);
+  console.log(`atm_054_id_length: ${message}`);
 };
 
 let hrTime = process.hrtime();
@@ -99,8 +99,8 @@ export const replaceLongBaseIds = async (knex: Knex) => {
       MetaTable.MODELS,
       MetaTable.SORT,
       MetaTable.SOURCES_OLD,
-      MetaTable.SYNC_LOGS,
-      MetaTable.SYNC_SOURCE,
+      MetaTable.SYATMOSPHERE_LOGS,
+      MetaTable.SYATMOSPHERE_SOURCE,
       MetaTable.USER_COMMENTS_NOTIFICATIONS_PREFERENCE,
       MetaTable.VIEWS,
     ];
@@ -139,8 +139,8 @@ const tablesToAlterBaseId = [
   MetaTable.MODELS,
   MetaTable.SORT,
   MetaTable.SOURCES_OLD,
-  MetaTable.SYNC_LOGS,
-  MetaTable.SYNC_SOURCE,
+  MetaTable.SYATMOSPHERE_LOGS,
+  MetaTable.SYATMOSPHERE_SOURCE,
   MetaTable.USER_COMMENTS_NOTIFICATIONS_PREFERENCE,
   MetaTable.VIEWS,
 ];

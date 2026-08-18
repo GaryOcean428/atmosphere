@@ -12,18 +12,18 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import isDocker from 'is-docker';
-import { ProjectReqType } from 'nocodb-sdk';
-import type { BaseType } from 'nocodb-sdk';
+import { ProjectReqType } from 'atmosphere-sdk';
+import type { BaseType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { packageVersion } from '~/utils/packageVersion';
 import { BasesService } from '~/services/bases.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { Filter } from '~/models';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
 @Controller()
@@ -35,9 +35,9 @@ export class BasesController {
   })
   @Get(['/api/v1/db/meta/projects/', '/api/v2/meta/bases/'])
   async list(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Query() queryParams: Record<string, any>,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const bases = await this.projectsService.baseList(context, {
       user: req.user,
@@ -61,7 +61,7 @@ export class BasesController {
       Arch: process.arch,
       Platform: process.platform,
       Docker: isDocker(),
-      RootDB: Noco.getConfig()?.meta?.db?.client,
+      RootDB: Atmosphere.getConfig()?.meta?.db?.client,
       PackageVersion: packageVersion,
     };
   }
@@ -69,7 +69,7 @@ export class BasesController {
   @Acl('baseGet')
   @Get(['/api/v1/db/meta/projects/:baseId', '/api/v2/meta/bases/:baseId'])
   async baseGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
   ) {
     const base = await this.projectsService.getProjectWithInfo(context, {
@@ -84,10 +84,10 @@ export class BasesController {
   @Acl('baseUpdate')
   @Patch(['/api/v1/db/meta/projects/:baseId', '/api/v2/meta/bases/:baseId'])
   async baseUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Body() body: Record<string, any>,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const base = await this.projectsService.baseUpdate(context, {
       baseId,
@@ -102,9 +102,9 @@ export class BasesController {
   @Acl('baseDelete')
   @Delete(['/api/v1/db/meta/projects/:baseId', '/api/v2/meta/bases/:baseId'])
   async baseDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const deleted = await this.projectsService.baseSoftDelete(context, {
       baseId,
@@ -121,9 +121,9 @@ export class BasesController {
   @Post(['/api/v1/db/meta/projects', '/api/v2/meta/bases'])
   @HttpCode(200)
   async baseCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Body() baseBody: ProjectReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const base = await this.projectsService.baseCreate({
       base: baseBody,
@@ -140,7 +140,7 @@ export class BasesController {
     '/api/v2/meta/bases/:baseId/has-empty-or-null-filters',
   ])
   async hasEmptyOrNullFilters(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
   ) {
     return await Filter.hasEmptyOrNullFilters(context, baseId);

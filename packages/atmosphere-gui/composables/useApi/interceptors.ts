@@ -1,4 +1,4 @@
-import type { Api } from 'nocodb-sdk'
+import type { Api } from 'atmosphere-sdk'
 
 const DbNotFoundMsg = 'Database config not found'
 
@@ -18,7 +18,7 @@ export function addAxiosInterceptors(api: Api<any>, skipSocket = false) {
     config.headers['xc-socket-id'] = skipSocket ? null : $ncSocket.id() || null
 
     const tabId = getTabId()
-    if (tabId) config.headers['x-nc-tab-id'] = tabId
+    if (tabId) config.headers['x-atm-tab-id'] = tabId
 
     if (state.token.value && !config.headers['xc-short-token']) {
       config.headers['xc-auth'] = state.token.value

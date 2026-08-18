@@ -1,4 +1,4 @@
-import { ButtonActionsType, type ColumnType, FieldNameFromUITypes, UITypes, UITypesName } from 'nocodb-sdk'
+import { ButtonActionsType, type ColumnType, FieldNameFromUITypes, UITypes, UITypesName } from 'atmosphere-sdk'
 import isURL from 'validator/lib/isURL'
 import { pluralize } from 'inflection'
 
@@ -253,7 +253,7 @@ export const getFormattedViewTabTitle = ({
   isSharedView?: boolean
 }) => {
   if (isSharedView) {
-    return viewName || 'NocoDB'
+    return viewName || 'Atmosphere'
   }
 
   let title = `${viewName} | ${tableName} | ${baseName}`

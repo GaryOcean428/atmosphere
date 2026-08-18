@@ -124,7 +124,7 @@ const up = async (knex) => {
   //     .notNullable();
   // })
   /*
-  await knex.schema.createTable('nc_col_props_v2', table => {
+  await knex.schema.createTable('atm_col_props_v2', table => {
     table
       .string('id', 20)
       .primary()
@@ -793,7 +793,7 @@ const up = async (knex) => {
     table.timestamps(true, true);
   });
 
-  // await knex('nc_plugins').insert([
+  // await knex('atm_plugins').insert([
   //   googleAuth,
   //   ses,
   //   cache

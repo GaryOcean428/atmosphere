@@ -1,10 +1,10 @@
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import type { XKnex } from '~/db/CustomKnex';
 import type { Knex } from 'knex';
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
-import type { SourceType } from 'nocodb-sdk';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
+import type { SourceType } from 'atmosphere-sdk';
 import { throwTimeoutError } from '~/version-upgrader/ncUpgradeErrors';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import Model from '~/models/Model';
 import Source from '~/models/Source';
 import { MetaTable } from '~/utils/globals';
@@ -13,9 +13,9 @@ import { MetaTable } from '~/utils/globals';
 // (1) switching views after updating a singleSelect field
 // since `url` will be enriched the attachment cell, and `saveOrUpdateRecords` in Grid.vue will be triggered
 // in this way, the attachment value will be corrupted like
-// {"{\"path\":\"download/noco/xcdb2/attachment2/a/JRubxMQgPlcumdm3jL.jpeg\",\"title\":\"haha.jpeg\",\"mimetype\":\"image/jpeg\",\"size\":6494,\"url\":\"http://localhost:8080/download/noco/xcdb2/attachment2/a/JRubxMQgPlcumdm3jL.jpeg\"}"}
+// {"{\"path\":\"download/atmosphere/xcdb2/attachment2/a/JRubxMQgPlcumdm3jL.jpeg\",\"title\":\"haha.jpeg\",\"mimetype\":\"image/jpeg\",\"size\":6494,\"url\":\"http://localhost:8080/download/atmosphere/xcdb2/attachment2/a/JRubxMQgPlcumdm3jL.jpeg\"}"}
 // while the expected one is
-// [{"path":"download/noco/xcdb2/attachment2/a/JRubxMQgPlcumdm3jL.jpeg","title":"haha.jpeg","mimetype":"image/jpeg","size":6494}]
+// [{"path":"download/atmosphere/xcdb2/attachment2/a/JRubxMQgPlcumdm3jL.jpeg","title":"haha.jpeg","mimetype":"image/jpeg","size":6494}]
 // (2) or reordering attachments
 // since the incoming value is not string, the value will be broken
 // hence, this upgrader is to revert back these corrupted values
@@ -33,7 +33,7 @@ function getTnPath(knex: XKnex, tb: Model) {
   }
 }
 
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   const sources: SourceType[] = await ncMeta.knexConnection(MetaTable.SOURCES);
 
   for (const _base of sources) {
@@ -67,7 +67,7 @@ export default async function ({ ncMeta }: NcUpgraderCtx) {
 
     const knex: Knex = source.is_meta
       ? ncMeta.knexConnection
-      : await NcConnectionMgrv2.get(source);
+      : await AtConnectionMgrv2.get(source);
     const models = await source.getModels(context, ncMeta);
 
     // used in timeout error message

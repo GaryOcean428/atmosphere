@@ -1,11 +1,11 @@
 import type {
   BaseVariableType,
   DependencyTableType,
-  NcContext,
-  NcRequest,
+  AtContext,
+  AtRequest,
   ProseMirrorDoc,
   RowColoringInfo,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { PagedResponseImpl } from '~/helpers/PagedResponse';
 import type { OPERATION_SCOPES } from '~/controllers/internal/operationScopes';
 import type { Dashboard, Workflow } from '~/models';
@@ -150,13 +150,13 @@ export interface InternalApiModule<
    */
   publicBaseBlockedOperations?: (keyof typeof OPERATION_SCOPES)[];
   handle(
-    context: NcContext,
+    context: AtContext,
     param: {
       workspaceId: string;
       baseId: string;
       operation: keyof typeof OPERATION_SCOPES;
       payload?: any;
-      req: NcRequest;
+      req: AtRequest;
     },
   ): T;
 }

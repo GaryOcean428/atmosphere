@@ -12,8 +12,8 @@ const up = async (knex: Knex) => {
 
     table.unique(['fk_integration_id', 'base_id']);
 
-    table.index(['fk_workspace_id', 'base_id'], 'nc_il_ws_base_idx');
-    table.index(['fk_integration_id'], 'nc_il_integration_idx');
+    table.index(['fk_workspace_id', 'base_id'], 'atm_il_ws_base_idx');
+    table.index(['fk_integration_id'], 'atm_il_integration_idx');
   });
 
   // Add is_restricted column to integrations table

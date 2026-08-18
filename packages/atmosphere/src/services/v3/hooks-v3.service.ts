@@ -3,8 +3,8 @@ import type {
   HookReqType,
   HookV3CreateV3Type,
   HookV3UpdateV3Type,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { Hook } from '~/models';
 import { validatePayload } from '~/helpers';
 import { HooksService } from '~/services/hooks.service';
@@ -80,24 +80,24 @@ export class HooksV3Service {
 
   constructor(protected readonly hooksService: HooksService) {}
 
-  async hookList(context: NcContext, param: { tableId: string }) {
+  async hookList(context: AtContext, param: { tableId: string }) {
     const list = await Hook.list(context, { fk_model_id: param.tableId });
 
     return this.builder().build(list);
   }
 
-  async hookGet(context: NcContext, param: { hookId: string }) {
+  async hookGet(context: AtContext, param: { hookId: string }) {
     const hook = await Hook.get(context, param.hookId);
 
     return this.builder().build(hook);
   }
 
   async hookCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       hook: HookV3CreateV3Type;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload(
@@ -119,11 +119,11 @@ export class HooksV3Service {
   }
 
   async hookUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       hookId: string;
       hook: HookV3UpdateV3Type;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload(
@@ -145,8 +145,8 @@ export class HooksV3Service {
   }
 
   async hookDelete(
-    context: NcContext,
-    param: { hookId: string; req: NcRequest },
+    context: AtContext,
+    param: { hookId: string; req: AtRequest },
   ) {
     return await this.hooksService.hookDelete(context, param);
   }

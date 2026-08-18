@@ -16,7 +16,7 @@ const { width } = useWindowSize()
 const { $e } = useNuxtApp()
 
 const watchVideo = () => {
-  $e('c:nocodb:feed:youtube:watch', {
+  $e('c:atmosphere:feed:youtube:watch', {
     title: Title,
     description: Description,
     url: Url,
@@ -25,7 +25,7 @@ const watchVideo = () => {
 </script>
 
 <template>
-  <div class="mt-6 border-1 !bg-nc-bg-default recent-card !rounded-2xl border-nc-border-gray-medium">
+  <div class="mt-6 border-1 !bg-atm-bg-default recent-card !rounded-2xl border-atm-border-gray-medium">
     <YoutubeVue3
       :videoid="extractYoutubeVideoId(Url)"
       class="!rounded-t-xl"
@@ -36,7 +36,7 @@ const watchVideo = () => {
       @played="watchVideo"
     />
 
-    <div class="text-nc-content-gray-emphasis flex flex-col p-5 gap-4">
+    <div class="text-atm-content-gray-emphasis flex flex-col p-5 gap-4">
       <div class="font-bold leading-9 text-2xl">
         {{ Title }}
       </div>

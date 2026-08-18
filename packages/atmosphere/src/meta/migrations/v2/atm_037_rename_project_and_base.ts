@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import type { Knex } from 'knex';
 import { MetaTable, MetaTableOldV2 } from '~/utils/globals';
 
-const logger = new Logger('nc_036_rename_project_and_base');
+const logger = new Logger('atm_036_rename_project_and_base');
 
 const up = async (knex: Knex) => {
   logger.log('Renaming base table');
@@ -152,18 +152,18 @@ const up = async (knex: Knex) => {
     });
 
   logger.log(
-    `Renaming 'base_id' column to 'source_id' in '${MetaTable.SYNC_LOGS}' table`,
+    `Renaming 'base_id' column to 'source_id' in '${MetaTable.SYATMOSPHERE_LOGS}' table`,
   );
-  if (await knex.schema.hasColumn(MetaTable.SYNC_SOURCE, 'base_id'))
-    await knex.schema.alterTable(MetaTable.SYNC_SOURCE, (table) => {
+  if (await knex.schema.hasColumn(MetaTable.SYATMOSPHERE_SOURCE, 'base_id'))
+    await knex.schema.alterTable(MetaTable.SYATMOSPHERE_SOURCE, (table) => {
       table.renameColumn('base_id', 'source_id');
     });
 
   logger.log(
-    `Renaming 'fk_sync_base_id' column to 'fk_sync_source_id' in '${MetaTable.SYNC_LOGS}' table`,
+    `Renaming 'fk_sync_base_id' column to 'fk_sync_source_id' in '${MetaTable.SYATMOSPHERE_LOGS}' table`,
   );
-  if (await knex.schema.hasColumn(MetaTable.SYNC_LOGS, 'fk_sync_base_id'))
-    await knex.schema.alterTable(MetaTable.SYNC_LOGS, (table) => {
+  if (await knex.schema.hasColumn(MetaTable.SYATMOSPHERE_LOGS, 'fk_sync_base_id'))
+    await knex.schema.alterTable(MetaTable.SYATMOSPHERE_LOGS, (table) => {
       table.renameColumn('fk_sync_base_id', 'fk_sync_source_id');
     });
 
@@ -318,18 +318,18 @@ const up = async (knex: Knex) => {
     });
 
   logger.log(
-    `Renaming 'project_id' column to 'base_id' in '${MetaTable.SYNC_LOGS}' table`,
+    `Renaming 'project_id' column to 'base_id' in '${MetaTable.SYATMOSPHERE_LOGS}' table`,
   );
-  if (await knex.schema.hasColumn(MetaTable.SYNC_LOGS, 'project_id'))
-    await knex.schema.alterTable(MetaTable.SYNC_SOURCE, (table) => {
+  if (await knex.schema.hasColumn(MetaTable.SYATMOSPHERE_LOGS, 'project_id'))
+    await knex.schema.alterTable(MetaTable.SYATMOSPHERE_SOURCE, (table) => {
       table.renameColumn('project_id', 'base_id');
     });
 
   logger.log(
-    `Renaming 'project_id' column to 'base_id' in '${MetaTable.SYNC_LOGS}' table`,
+    `Renaming 'project_id' column to 'base_id' in '${MetaTable.SYATMOSPHERE_LOGS}' table`,
   );
-  if (await knex.schema.hasColumn(MetaTable.SYNC_LOGS, 'project_id'))
-    await knex.schema.alterTable(MetaTable.SYNC_LOGS, (table) => {
+  if (await knex.schema.hasColumn(MetaTable.SYATMOSPHERE_LOGS, 'project_id'))
+    await knex.schema.alterTable(MetaTable.SYATMOSPHERE_LOGS, (table) => {
       table.renameColumn('project_id', 'base_id');
     });
 

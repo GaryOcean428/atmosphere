@@ -23,7 +23,7 @@ const isOpen = ref<boolean>(false)
  * 3. Navigates to the selected project's URL.
  * 4. If the project data isn't populated, it loads the project tables.
  */
-const handleNavigateToProject = async (base: NcProject) => {
+const handleNavigateToProject = async (base: AtProject) => {
   if (!base?.id) return
 
   const isProjectPopulated = basesStore.isProjectPopulated(base.id!)
@@ -43,7 +43,7 @@ const handleNavigateToProject = async (base: NcProject) => {
 </script>
 
 <template>
-  <NcDropdown v-model:visible="isOpen" overlay-class-name="max-w-64">
+  <AtDropdown v-model:visible="isOpen" overlay-class-name="max-w-64">
     <slot name="default" :is-open="isOpen"></slot>
     <template #overlay>
       <LazyNcList
@@ -71,20 +71,20 @@ const handleNavigateToProject = async (base: NcProject) => {
             readonly
           >
           </GeneralBaseIconColorPicker>
-          <NcTooltip class="truncate flex-1" show-on-truncate-only>
+          <AtTooltip class="truncate flex-1" show-on-truncate-only>
             <template #title>
               {{ option?.title }}
             </template>
             {{ option?.title }}
-          </NcTooltip>
+          </AtTooltip>
           <GeneralIcon
             v-if="option.id === activeBase.id"
-            id="nc-selected-item-icon"
+            id="atm-selected-item-icon"
             icon="check"
             class="flex-none text-primary w-4 h-4"
           />
         </template>
       </LazyNcList>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

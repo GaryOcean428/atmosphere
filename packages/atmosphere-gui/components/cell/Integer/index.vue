@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { VNodeRef } from '@vue/runtime-core'
-import { SeparatorType, formatNumberWithSeparator, getSeparatorChars, resolveColumnSeparator } from 'nocodb-sdk'
+import { SeparatorType, formatNumberWithSeparator, getSeparatorChars, resolveColumnSeparator } from 'atmosphere-sdk'
 
 interface Props {
   // when we set a number, then it is number type
@@ -128,7 +128,7 @@ const onPaste = (e: ClipboardEvent) => {
     v-if="!readOnly && editEnabled"
     :ref="focus"
     v-model="vModel"
-    class="nc-cell-field outline-none py-1 border-none w-full h-full"
+    class="atm-cell-field outline-none py-1 border-none w-full h-full"
     :type="inputType"
     style="letter-spacing: 0.06rem"
     @blur="editEnabled = false"
@@ -143,8 +143,8 @@ const onPaste = (e: ClipboardEvent) => {
     @selectstart.capture.stop
     @mousedown.stop
   />
-  <span v-else-if="vModel === null && showNull" class="nc-cell-field nc-null uppercase">{{ $t('general.null') }}</span>
-  <span v-else class="nc-cell-field">{{ displayValue }}</span>
+  <span v-else-if="vModel === null && showNull" class="atm-cell-field atm-null uppercase">{{ $t('general.null') }}</span>
+  <span v-else class="atm-cell-field">{{ displayValue }}</span>
 </template>
 
 <style scoped lang="scss">

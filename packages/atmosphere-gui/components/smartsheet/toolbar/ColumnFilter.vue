@@ -11,8 +11,8 @@ import {
   isHiddenCol,
   isSystemColumn,
   isVirtualCol,
-} from 'nocodb-sdk'
-import { PlanLimitTypes, UITypes } from 'nocodb-sdk'
+} from 'atmosphere-sdk'
+import { PlanLimitTypes, UITypes } from 'atmosphere-sdk'
 import Draggable from 'vuedraggable'
 
 interface Props {
@@ -710,7 +710,7 @@ const eventBusHandler = async (event) => {
   }
 }
 
-// `dynamic` is not a column on nc_filter_exp, so a saved placeholder comes back
+// `dynamic` is not a column on atm_filter_exp, so a saved placeholder comes back
 // with the flag cleared and would render as raw `{currentUser.x}` text. The value
 // is self-describing, so re-derive the flag from it instead.
 watch(
@@ -769,13 +769,13 @@ watch(
 
     scrollToBottom()
 
-    const filterWrapper = document.querySelectorAll(`.nc-filter-wrapper-${draftFilter.value.fk_column_id}`)
+    const filterWrapper = document.querySelectorAll(`.atm-filter-wrapper-${draftFilter.value.fk_column_id}`)
 
     draftFilter.value = {}
     if (!filterWrapper.length) return
 
     const filterInputElement =
-      filterWrapper[filterWrapper.length - 1]?.querySelector<HTMLInputElement>('.nc-filter-value-select input')
+      filterWrapper[filterWrapper.length - 1]?.querySelector<HTMLInputElement>('.atm-filter-value-select input')
     if (filterInputElement) {
       setTimeout(() => {
         filterInputElement?.focus?.()
@@ -1190,7 +1190,7 @@ defineExpose({
 
 <template>
   <div
-    data-testid="nc-filter"
+    data-testid="atm-filter"
     class="menu-filter-dropdown"
     :class="{
       'w-min': !isMobileMode,
@@ -1205,50 +1205,50 @@ defineExpose({
     }"
   >
     <div v-if="nested" class="flex min-w-full w-min items-center gap-1 mb-2">
-      <div class="flex items-center gap-2" :class="[`nc-filter-logical-op-level-${nestedLevel}`]">
+      <div class="flex items-center gap-2" :class="[`atm-filter-logical-op-level-${nestedLevel}`]">
         <slot name="start"></slot>
       </div>
       <div class="flex-grow"></div>
-      <NcDropdown
+      <AtDropdown
         :trigger="['hover']"
-        overlay-class-name="nc-dropdown-filter-group-sub-menu"
+        overlay-class-name="atm-dropdown-filter-group-sub-menu"
         :disabled="disableAddNewFilter || isLockedView || readOnly"
       >
-        <NcButton size="xs" type="text" :disabled="disableAddNewFilter || isLockedView || readOnly">
+        <AtButton size="xs" type="text" :disabled="disableAddNewFilter || isLockedView || readOnly">
           <GeneralIcon icon="plus" class="cursor-pointer" data-testid="filter-add-icon" />
-        </NcButton>
+        </AtButton>
 
         <template #overlay>
-          <NcMenu>
+          <AtMenu>
             <template v-if="!isEeUI && !isPublic">
               <template v-if="filtersCount < getPlanLimit(PlanLimitTypes.LIMIT_FILTER_PER_VIEW)">
-                <NcMenuItem data-testid="add-filter-menu" @click.stop="addFilter">
+                <AtMenuItem data-testid="add-filter-menu" @click.stop="addFilter">
                   <div class="flex items-center gap-1">
                     <component :is="iconMap.plus" data-testid="filter-add-icon" />
                     <!-- Add Filter -->
                     {{ isForm && !webHook ? $t('activity.addCondition') : $t('activity.addFilter') }}
                   </div>
-                </NcMenuItem>
+                </AtMenuItem>
 
-                <NcMenuItem v-if="nestedLevel < 5" data-testid="add-filter-group-menu" @click.stop="() => addFilterGroup()">
+                <AtMenuItem v-if="nestedLevel < 5" data-testid="add-filter-group-menu" @click.stop="() => addFilterGroup()">
                   <div class="flex items-center gap-1">
                     <!-- Add Filter Group -->
                     <component :is="iconMap.plusSquare" />
                     {{ isForm && !webHook ? $t('activity.addConditionGroup') : $t('activity.addFilterGroup') }}
                   </div>
-                </NcMenuItem>
+                </AtMenuItem>
               </template>
             </template>
             <template v-else>
-              <NcMenuItem data-testid="add-filter-menu" @click.stop="addFilter">
+              <AtMenuItem data-testid="add-filter-menu" @click.stop="addFilter">
                 <div class="flex items-center gap-1">
                   <component :is="iconMap.plus" data-testid="filter-add-icon" />
                   <!-- Add Filter -->
                   {{ isForm && !webHook ? $t('activity.addCondition') : $t('activity.addFilter') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
 
-              <NcMenuItem
+              <AtMenuItem
                 v-if="!webHook && nestedLevel < 5"
                 data-testid="add-filter-group-menu"
                 @click.stop="() => addFilterGroup()"
@@ -1258,11 +1258,11 @@ defineExpose({
                   <component :is="iconMap.plusSquare" />
                   {{ isForm && !webHook ? $t('activity.addConditionGroup') : $t('activity.addFilterGroup') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
             </template>
-          </NcMenu>
+          </AtMenu>
         </template>
-      </NcDropdown>
+      </AtDropdown>
       <div>
         <slot name="end"></slot>
       </div>
@@ -1274,13 +1274,13 @@ defineExpose({
       v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 100 })"
       :list="visibleFilters"
       :disabled="!isReorderEnabled"
-      group="nc-column-filters"
-      ghost-class="bg-nc-bg-gray-extralight"
-      draggable=".nc-column-filter-item"
-      handle=".nc-column-filter-drag-handler"
-      class="flex flex-col gap-y-1.5 nc-filter-grid min-w-full w-min"
+      group="atm-column-filters"
+      ghost-class="bg-atm-bg-gray-extralight"
+      draggable=".atm-column-filter-item"
+      handle=".atm-column-filter-drag-handler"
+      class="flex flex-col gap-y-1.5 atm-filter-grid min-w-full w-min"
       :class="{
-        'nc-scrollbar-thin nc-filter-top-wrapper pr-4 mt-1 mb-2 py-1': !nested,
+        'atm-scrollbar-thin atm-filter-top-wrapper pr-4 mt-1 mb-2 py-1': !nested,
         'xs:(max-h-full) max-h-420px': !nested && !link,
         'xs:(max-h-full) max-h-320px': !nested && link,
         '!pr-0': (webHook || widget) && !nested,
@@ -1290,15 +1290,15 @@ defineExpose({
       @click.stop
     >
       <template #item="{ element: filter, index: i }">
-        <div v-if="filter.status !== 'delete'" :key="i" class="nc-column-filter-item min-w-full w-min max-w-full">
+        <div v-if="filter.status !== 'delete'" :key="i" class="atm-column-filter-item min-w-full w-min max-w-full">
           <template v-if="filter.is_group">
             <div
               class="flex flex-col min-w-full w-min max-w-full gap-y-2"
-              :class="{ 'nc-filter-disabled-group': isEeUI && filter.enabled === false }"
+              :class="{ 'atm-filter-disabled-group': isEeUI && filter.enabled === false }"
             >
               <div
                 class="flex rounded-lg p-2 min-w-full w-min max-w-full border-1"
-                :class="[`nc-filter-nested-level-${nestedLevel}`]"
+                :class="[`atm-filter-nested-level-${nestedLevel}`]"
               >
                 <LazySmartsheetToolbarColumnFilter
                   v-if="filter.id || filter.children || !autoSave"
@@ -1336,28 +1336,28 @@ defineExpose({
                   </template>
 
                   <template #start>
-                    <NcCheckbox
+                    <AtCheckbox
                       v-if="appInfo.ee && !hideCheckbox"
                       :checked="filter.enabled !== false"
                       size="default"
                       :disabled="isLockedView || readOnly"
-                      class="nc-filter-enabled-checkbox"
+                      class="atm-filter-enabled-checkbox"
                       @change="onToggleFilterChange(filter, getFilterIndex(filter))"
                     />
-                    <span v-if="!visibleFilters.indexOf(filter)" class="flex items-center nc-filter-where-label ml-1">{{
+                    <span v-if="!visibleFilters.indexOf(filter)" class="flex items-center atm-filter-where-label ml-1">{{
                       $t('labels.where')
                     }}</span>
-                    <div v-else :key="`${i}nested`" class="flex nc-filter-logical-op">
-                      <NcSelect
+                    <div v-else :key="`${i}nested`" class="flex atm-filter-logical-op">
+                      <AtSelect
                         v-model:value="filter.logical_op"
                         v-e="['c:filter:logical-op:select']"
                         :dropdown-match-select-width="false"
                         class="min-w-18 capitalize"
                         :placeholder="$t('placeholder.groupOp')"
-                        dropdown-class-name="nc-dropdown-filter-logical-op-group"
+                        dropdown-class-name="atm-dropdown-filter-logical-op-group"
                         :disabled="(i > 1 && !isLogicalOpChangeAllowed) || isLockedView || readOnly"
                         :class="{
-                          'nc-disabled-logical-op': filter.readOnly || (i > 1 && !isLogicalOpChangeAllowed),
+                          'atm-disabled-logical-op': filter.readOnly || (i > 1 && !isLogicalOpChangeAllowed),
                           '!max-w-18': !webHook,
                           '!w-full': webHook,
                         }"
@@ -1370,12 +1370,12 @@ defineExpose({
                             <component
                               :is="iconMap.check"
                               v-if="filter.logical_op === op.value"
-                              id="nc-selected-item-icon"
+                              id="atm-selected-item-icon"
                               class="text-primary w-4 h-4"
                             />
                           </div>
                         </a-select-option>
-                      </NcSelect>
+                      </AtSelect>
                     </div>
                   </template>
                   <template #end>
@@ -1387,40 +1387,40 @@ defineExpose({
                     </template>
 
                     <template v-else>
-                      <NcButton
+                      <AtButton
                         v-if="!filter.readOnly && !readOnly"
                         :key="i"
                         v-e="['c:filter:delete', { link: !!link, webHook: !!webHook }]"
                         type="text"
                         size="small"
                         :disabled="isLockedView"
-                        class="nc-filter-item-remove-btn cursor-pointer"
+                        class="atm-filter-item-remove-btn cursor-pointer"
                         @click.stop="deleteFilter(filter, getFilterIndex(filter))"
                       >
                         <GeneralIcon icon="deleteListItem" />
-                      </NcButton>
-                      <NcButton
+                      </AtButton>
+                      <AtButton
                         v-if="!filter.readOnly && !readOnly && appInfo.ee"
                         v-e="['c:filter:copy', { link: !!link, webHook: !!webHook }]"
                         type="text"
                         size="small"
                         :disabled="isLockedView"
-                        class="nc-filter-item-copy-btn"
+                        class="atm-filter-item-copy-btn"
                         @click.stop="copyFilter(filter, true)"
                       >
                         <GeneralIcon icon="copy" />
-                      </NcButton>
-                      <NcButton
+                      </AtButton>
+                      <AtButton
                         v-if="!filter.readOnly && !readOnly && isReorderEnabled"
                         v-e="['c:filter:reorder', { link: !!link, webHook: !!webHook }]"
                         type="text"
                         size="small"
-                        class="nc-filter-item-reorder-btn nc-column-filter-drag-handler self-center"
+                        class="atm-filter-item-reorder-btn atm-column-filter-drag-handler self-center"
                         :shadow="false"
                         :disabled="visibleFilters.length === 1"
                       >
                         <GeneralIcon icon="drag" class="flex-none h-4 w-4" />
-                      </NcButton>
+                      </AtButton>
                     </template>
                   </template>
                 </LazySmartsheetToolbarColumnFilter>
@@ -1429,30 +1429,30 @@ defineExpose({
           </template>
 
           <div v-else class="flex xs:(items-start) items-center gap-2 w-full">
-            <NcCheckbox
+            <AtCheckbox
               v-if="appInfo.ee && !hideCheckbox"
               :checked="filter.enabled !== false"
               size="default"
               :disabled="isLockedView || readOnly"
-              class="nc-filter-enabled-checkbox xs:(flex min-h-8)"
+              class="atm-filter-enabled-checkbox xs:(flex min-h-8)"
               @change="onToggleFilterChange(filter, getFilterIndex(filter))"
             />
             <div
               class="flex flex-col gap-y-2 sm:gap-y-0 sm:flex-row gap-x-0 flex-1"
               :class="[
-                `nc-filter-wrapper-${filter.fk_column_id}`,
-                { 'nc-filter-disabled-row': isEeUI && filter.enabled === false, 'nc-filter-wrapper': !isMobileMode },
+                `atm-filter-wrapper-${filter.fk_column_id}`,
+                { 'atm-filter-disabled-row': isEeUI && filter.enabled === false, 'atm-filter-wrapper': !isMobileMode },
               ]"
             >
-              <NcWrap :wrap="!!isMobileMode" class="grid grid-cols-12 gap-x-0 flex-1 nc-filter-wrapper">
+              <AtWrap :wrap="!!isMobileMode" class="grid grid-cols-12 gap-x-0 flex-1 atm-filter-wrapper">
                 <div
                   v-if="!visibleFilters.indexOf(filter)"
-                  class="xs:col-span-3 flex items-center sm:(!min-w-18 !max-w-18) pl-3 nc-filter-where-label"
+                  class="xs:col-span-3 flex items-center sm:(!min-w-18 !max-w-18) pl-3 atm-filter-where-label"
                 >
                   {{ $t('labels.where') }}
                 </div>
 
-                <NcSelect
+                <AtSelect
                   v-else
                   v-model:value="filter.logical_op"
                   v-e="['c:filter:logical-op:select', { link: !!link, webHook: !!webHook }]"
@@ -1465,9 +1465,9 @@ defineExpose({
                     isLockedView ||
                     readOnly
                   "
-                  dropdown-class-name="nc-dropdown-filter-logical-op"
+                  dropdown-class-name="atm-dropdown-filter-logical-op"
                   :class="{
-                    'nc-disabled-logical-op':
+                    'atm-disabled-logical-op':
                       filter.readOnly || (visibleFilters.indexOf(filter) > 1 && !isLogicalOpChangeAllowed) || readOnly,
                   }"
                   @change="onLogicalOpUpdate(filter, getFilterIndex(filter))"
@@ -1479,33 +1479,33 @@ defineExpose({
                       <component
                         :is="iconMap.check"
                         v-if="filter.logical_op === op.value"
-                        id="nc-selected-item-icon"
+                        id="atm-selected-item-icon"
                         class="text-primary w-4 h-4"
                       />
                     </div>
                   </a-select-option>
-                </NcSelect>
+                </AtSelect>
 
-                <NcTooltip
+                <AtTooltip
                   v-if="isFormFieldInaccessible(filter)"
-                  class="xs:col-span-9 flex-1 flex items-center gap-2 px-2 !text-nc-content-red-medium cursor-pointer"
+                  class="xs:col-span-9 flex-1 flex items-center gap-2 px-2 !text-atm-content-red-medium cursor-pointer"
                   :disabled="!filter.fk_column_id || !visibilityError[filter.fk_column_id]"
                 >
                   <template #title> {{ visibilityError[filter.fk_column_id!] ?? '' }}</template>
                   <GeneralIcon icon="alertTriangle" class="flex-none" />
                   {{ $t('title.fieldInaccessible') }}
-                </NcTooltip>
+                </AtTooltip>
 
-                <NcTooltip
+                <AtTooltip
                   v-if="isFilterFieldOrphaned(filter)"
-                  class="xs:col-span-9 flex-1 flex items-center gap-2 px-2 !text-nc-content-gray-muted cursor-default"
+                  class="xs:col-span-9 flex-1 flex items-center gap-2 px-2 !text-atm-content-gray-muted cursor-default"
                 >
                   <template #title>{{ $t('msg.info.interfaceFilterFieldOrphaned') }}</template>
-                  <span class="flex items-center gap-2 min-w-0" data-testid="nc-filter-orphan-field">
+                  <span class="flex items-center gap-2 min-w-0" data-testid="atm-filter-orphan-field">
                     <GeneralIcon icon="alertTriangle" class="flex-none opacity-70" />
                     <span class="truncate">{{ $t('labels.multiField.deletedField') }}</span>
                   </span>
-                </NcTooltip>
+                </AtTooltip>
 
                 <SmartsheetToolbarFieldListAutoCompleteDropdown
                   v-if="!isFormFieldInaccessible(filter) && !isFilterFieldOrphaned(filter)"
@@ -1514,7 +1514,7 @@ defineExpose({
                   :class="{
                     'xs:(!max-w-none) !max-w-32': !webHook,
                   }"
-                  class="xs:(col-span-6 min-w-0) nc-filter-field-select min-w-32 max-h-8"
+                  class="xs:(col-span-6 min-w-0) atm-filter-field-select min-w-32 max-h-8"
                   :columns="fieldsToFilter"
                   :disable-smartsheet="!!widget || !!workflow || !!rlsPolicyId"
                   :disabled="filter.readOnly || isLockedView || readOnly"
@@ -1524,12 +1524,12 @@ defineExpose({
                   @change="selectFilterField(filter, getFilterIndex(filter))"
                 />
 
-                <NcSelect
+                <AtSelect
                   v-if="!isFormFieldInaccessible(filter) && !isFilterFieldOrphaned(filter)"
                   v-model:value="filter.comparison_op"
                   v-e="['c:filter:comparison-op:select', { link: !!link, webHook: !!webHook }]"
                   :dropdown-match-select-width="false"
-                  class="xs:(col-span-3 !min-w-0) caption nc-filter-operation-select !min-w-26.75 max-h-8"
+                  class="xs:(col-span-3 !min-w-0) caption atm-filter-operation-select !min-w-26.75 max-h-8"
                   :placeholder="$t('labels.operation')"
                   :class="{
                     '!max-w-26.75': !webHook,
@@ -1538,7 +1538,7 @@ defineExpose({
                   variant="solo"
                   :disabled="filter.readOnly || isLockedView || readOnly"
                   hide-details
-                  dropdown-class-name="nc-dropdown-filter-comp-op !max-w-80"
+                  dropdown-class-name="atm-dropdown-filter-comp-op !max-w-80"
                   @change="filterUpdateCondition(filter, getFilterIndex(filter))"
                 >
                   <template
@@ -1551,16 +1551,16 @@ defineExpose({
                         <component
                           :is="iconMap.check"
                           v-if="filter.comparison_op === compOp.value"
-                          id="nc-selected-item-icon"
+                          id="atm-selected-item-icon"
                           class="text-primary w-4 h-4"
                         />
                       </div>
                     </a-select-option>
                   </template>
-                </NcSelect>
-              </NcWrap>
+                </AtSelect>
+              </AtWrap>
 
-              <NcWrap :wrap="!!isMobileMode" class="grid grid-cols-12 gap-x-0 flex-1 min-h-8 nc-filter-wrapper">
+              <AtWrap :wrap="!!isMobileMode" class="grid grid-cols-12 gap-x-0 flex-1 min-h-8 atm-filter-wrapper">
                 <div
                   v-if="
                     !isFormFieldInaccessible(filter) &&
@@ -1570,14 +1570,14 @@ defineExpose({
                   class="xs:col-span-3 sm:(flex flex-grow)"
                 ></div>
 
-                <NcSelect
+                <AtSelect
                   v-else-if="
                     !isFormFieldInaccessible(filter) && !isFilterFieldOrphaned(filter) && isDateType(types[filter.fk_column_id])
                   "
                   v-model:value="filter.comparison_sub_op"
                   v-e="['c:filter:sub-comparison-op:select', { link: !!link, webHook: !!webHook }]"
                   :dropdown-match-select-width="false"
-                  class="xs:(col-span-3 !min-w-0) caption nc-filter-sub_operation-select !min-w-28"
+                  class="xs:(col-span-3 !min-w-0) caption atm-filter-sub_operation-select !min-w-28"
                   :class="{
                     'flex-grow w-full': !showFilterInput(filter),
                     'max-w-28': showFilterInput(filter) && !webHook,
@@ -1587,7 +1587,7 @@ defineExpose({
                   variant="solo"
                   :disabled="filter.readOnly || isLockedView || readOnly"
                   hide-details
-                  dropdown-class-name="nc-dropdown-filter-comp-sub-op"
+                  dropdown-class-name="atm-dropdown-filter-comp-sub-op"
                   @change="filterUpdateCondition(filter, getFilterIndex(filter))"
                 >
                   <template
@@ -1596,20 +1596,20 @@ defineExpose({
                   >
                     <a-select-option v-if="isComparisonSubOpAllowed(filter, compSubOp)" :value="compSubOp.value">
                       <div class="flex items-center w-full justify-between w-full gap-2 max-w-40">
-                        <NcTooltip show-on-truncate-only class="truncate flex-1">
+                        <AtTooltip show-on-truncate-only class="truncate flex-1">
                           <template #title>{{ getFilterOpLabel(compSubOp.i18nKey, compSubOp.text) }}</template>
                           {{ getFilterOpLabel(compSubOp.i18nKey, compSubOp.text) }}
-                        </NcTooltip>
+                        </AtTooltip>
                         <component
                           :is="iconMap.check"
                           v-if="filter.comparison_sub_op === compSubOp.value"
-                          id="nc-selected-item-icon"
+                          id="atm-selected-item-icon"
                           class="text-primary w-4 h-4"
                         />
                       </div>
                     </a-select-option>
                   </template>
-                </NcSelect>
+                </AtSelect>
                 <div
                   v-if="!isFilterFieldOrphaned(filter)"
                   class="flex items-center flex-grow min-w-0 empty:!hidden"
@@ -1630,7 +1630,7 @@ defineExpose({
                       v-if="showFilterInput(filter)"
                       v-model="filter.fk_value_col_id"
                       :disable-smartsheet="!!widget"
-                      class="nc-filter-field-select min-w-32 w-full max-h-8"
+                      class="atm-filter-field-select min-w-32 w-full max-h-8"
                       :columns="dynamicColumns(filter)"
                       :meta="rootMeta"
                       @change="saveOrUpdate(filter, getFilterIndex(filter))"
@@ -1655,7 +1655,7 @@ defineExpose({
 
                     <SmartsheetToolbarFilterInput
                       v-if="showFilterInput(filter) && (isViewFilter ? isOpen : true)"
-                      class="nc-filter-value-select rounded-md min-w-34"
+                      class="atm-filter-value-select rounded-md min-w-34"
                       :class="{
                         '!w-full': webHook,
                       }"
@@ -1669,23 +1669,23 @@ defineExpose({
                     <div v-else-if="!isDateType(types[filter.fk_column_id])" class="flex-grow"></div>
                   </template>
                   <template v-if="(workflow || dynamicValue) && showDynamicCondition && hasDynamicValueOptions(filter)">
-                    <NcDropdown
-                      class="nc-settings-dropdown h-full flex items-center min-w-0 rounded-lg"
+                    <AtDropdown
+                      class="atm-settings-dropdown h-full flex items-center min-w-0 rounded-lg"
                       :trigger="['click']"
                       placement="left"
                     >
-                      <NcButton type="text" size="small">
+                      <AtButton type="text" size="small">
                         <GeneralIcon icon="settings" />
-                      </NcButton>
+                      </AtButton>
 
                       <template #overlay>
                         <div class="relative overflow-visible min-h-17 w-10">
                           <div
-                            class="absolute -top-21 flex flex-col min-h-34.5 w-70 p-1.5 bg-nc-bg-default rounded-lg border-1 border-nc-border-gray-medium justify-start overflow-hidden"
+                            class="absolute -top-21 flex flex-col min-h-34.5 w-70 p-1.5 bg-atm-bg-default rounded-lg border-1 border-atm-border-gray-medium justify-start overflow-hidden"
                             style="box-shadow: 0px 4px 6px -2px rgba(0, 0, 0, 0.06), 0px -12px 16px -4px rgba(0, 0, 0, 0.1)"
                           >
                             <div
-                              class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer rounded-md hover:bg-nc-bg-gray-light text-nc-content-gray-subtle2 nc-new-record-with-grid group"
+                              class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer rounded-md hover:bg-atm-bg-gray-light text-atm-content-gray-subtle2 atm-new-record-with-grid group"
                               @click="resetDynamicField(filter, getFilterIndex(filter))"
                             >
                               <div class="flex flex-row items-center justify-between w-full">
@@ -1698,13 +1698,13 @@ defineExpose({
                                   class="w-4 h-4 text-primary"
                                 />
                               </div>
-                              <div class="flex flex-row text-xs text-nc-content-gray-disabled">
+                              <div class="flex flex-row text-xs text-atm-content-gray-disabled">
                                 {{ $t('labels.filterBasedOnStaticValue') }}
                               </div>
                             </div>
                             <div
                               v-e="['c:filter:dynamic-filter']"
-                              class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer cursor-pointer rounded-md hover:bg-nc-bg-gray-light text-nc-content-gray-subtle2 nc-new-record-with-form group"
+                              class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer cursor-pointer rounded-md hover:bg-atm-bg-gray-light text-atm-content-gray-subtle2 atm-new-record-with-form group"
                               @click="changeToDynamic(filter, getFilterIndex(filter))"
                             >
                               <div class="flex flex-row items-center justify-between w-full">
@@ -1717,34 +1717,34 @@ defineExpose({
                                   class="w-4 h-4 text-primary"
                                 />
                               </div>
-                              <div class="flex flex-row text-xs text-nc-content-gray-disabled">
+                              <div class="flex flex-row text-xs text-atm-content-gray-disabled">
                                 {{ $t('labels.filterBasedOnDynamicValue') }}
                               </div>
                             </div>
                           </div>
                         </div>
                       </template>
-                    </NcDropdown>
+                    </AtDropdown>
                   </template>
                   <template v-if="link && showDynamicCondition">
-                    <NcDropdown
-                      class="nc-settings-dropdown h-full flex items-center min-w-0 rounded-lg"
+                    <AtDropdown
+                      class="atm-settings-dropdown h-full flex items-center min-w-0 rounded-lg"
                       :trigger="['click']"
                       placement="bottom"
                       :disabled="isLockedView"
                     >
-                      <NcButton type="text" size="small">
+                      <AtButton type="text" size="small">
                         <GeneralIcon icon="settings" />
-                      </NcButton>
+                      </AtButton>
 
                       <template #overlay>
                         <div class="relative overflow-visible min-h-17 w-10">
                           <div
-                            class="absolute -top-21 flex flex-col min-h-34.5 w-70 p-1.5 bg-nc-bg-default rounded-lg border-1 border-nc-border-gray-medium justify-start overflow-hidden"
+                            class="absolute -top-21 flex flex-col min-h-34.5 w-70 p-1.5 bg-atm-bg-default rounded-lg border-1 border-atm-border-gray-medium justify-start overflow-hidden"
                             style="box-shadow: 0px 4px 6px -2px rgba(0, 0, 0, 0.06), 0px -12px 16px -4px rgba(0, 0, 0, 0.1)"
                           >
                             <div
-                              class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer rounded-md hover:bg-nc-bg-gray-light text-nc-content-gray-subtle2 nc-new-record-with-grid group"
+                              class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer rounded-md hover:bg-atm-bg-gray-light text-atm-content-gray-subtle2 atm-new-record-with-grid group"
                               @click="resetDynamicField(filter, getFilterIndex(filter))"
                             >
                               <div class="flex flex-row items-center justify-between w-full">
@@ -1757,13 +1757,13 @@ defineExpose({
                                   class="w-4 h-4 text-primary"
                                 />
                               </div>
-                              <div class="flex flex-row text-xs text-nc-content-gray-disabled">
+                              <div class="flex flex-row text-xs text-atm-content-gray-disabled">
                                 {{ $t('labels.filterBasedOnStaticValue') }}
                               </div>
                             </div>
                             <div
                               v-e="['c:filter:dynamic-filter']"
-                              class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer rounded-md hover:bg-nc-bg-gray-light text-nc-content-gray-subtle2 nc-new-record-with-form group"
+                              class="px-4 py-3 flex flex-col select-none gap-y-2 cursor-pointer rounded-md hover:bg-atm-bg-gray-light text-atm-content-gray-subtle2 atm-new-record-with-form group"
                               :class="
                                 isDynamicFilterAllowed(filter) && showFilterInput(filter)
                                   ? 'cursor-pointer'
@@ -1781,14 +1781,14 @@ defineExpose({
                                   class="w-4 h-4 text-primary"
                                 />
                               </div>
-                              <div class="flex flex-row text-xs text-nc-content-gray-disabled">
+                              <div class="flex flex-row text-xs text-atm-content-gray-disabled">
                                 {{ $t('labels.filterBasedOnDynamicValue') }}
                               </div>
                             </div>
                           </div>
                         </div>
                       </template>
-                    </NcDropdown>
+                    </AtDropdown>
                   </template>
                 </div>
                 <SmartsheetToolbarFilterTimezoneAbbreviation
@@ -1797,33 +1797,33 @@ defineExpose({
                   :filter="filter"
                   class="xs:(rounded-r-lg col-span-3)"
                 />
-              </NcWrap>
+              </AtWrap>
 
               <template v-if="!isMobileMode">
-                <NcButton
+                <AtButton
                   v-if="!filter.readOnly && !readOnly"
                   v-e="['c:filter:delete', { link: !!link, webHook: !!webHook }]"
                   type="text"
                   size="small"
                   :disabled="isLockedView"
-                  class="nc-filter-item-remove-btn self-center"
+                  class="atm-filter-item-remove-btn self-center"
                   @click.stop="deleteFilter(filter, getFilterIndex(filter))"
                 >
                   <GeneralIcon icon="deleteListItem" />
-                </NcButton>
-                <NcButton
+                </AtButton>
+                <AtButton
                   v-if="!filter.readOnly && !readOnly && appInfo.ee"
                   v-e="['c:filter:copy', { link: !!link, webHook: !!webHook }]"
                   type="text"
                   size="small"
                   :disabled="isLockedView"
-                  class="nc-filter-item-copy-btn self-center"
+                  class="atm-filter-item-copy-btn self-center"
                   @click.stop="copyFilter(filter)"
                 >
                   <GeneralIcon icon="copy" />
-                </NcButton>
+                </AtButton>
 
-                <NcTooltip
+                <AtTooltip
                   v-if="
                     !filter.readOnly &&
                     !readOnly &&
@@ -1840,13 +1840,13 @@ defineExpose({
                   <template #title>
                     {{ getPinTooltip(filter) }}
                   </template>
-                  <NcButton
+                  <AtButton
                     v-if="showEEFeatures"
                     v-e="['c:filter:pin']"
                     type="text"
                     size="small"
                     :disabled="!canPinFilter(filter) || isLockedView"
-                    class="nc-filter-item-pin-btn self-center"
+                    class="atm-filter-item-pin-btn self-center"
                     @click.stop="
                       blockPinnedFilter
                         ? showUpgradeToUsePinnedFilter({ triggerSource: 'toolbar-pinned-filter' })
@@ -1858,26 +1858,26 @@ defineExpose({
                       class="h-3.5 w-3.5"
                       :class="
                         (!canPinFilter(filter) && !parseProp(filter.meta)?.pinned) || isLockedView
-                          ? 'text-nc-content-gray-muted'
+                          ? 'text-atm-content-gray-muted'
                           : parseProp(filter.meta)?.pinned
                           ? 'text-primary'
-                          : 'text-nc-content-gray-subtle2'
+                          : 'text-atm-content-gray-subtle2'
                       "
                     />
-                  </NcButton>
-                </NcTooltip>
+                  </AtButton>
+                </AtTooltip>
 
-                <NcButton
+                <AtButton
                   v-if="!filter.readOnly && !readOnly && isReorderEnabled"
                   v-e="['c:filter:reorder', { link: !!link, webHook: !!webHook }]"
                   type="text"
                   size="small"
-                  class="nc-filter-item-reorder-btn nc-column-filter-drag-handler self-center"
+                  class="atm-filter-item-reorder-btn atm-column-filter-drag-handler self-center"
                   :shadow="false"
                   :disabled="visibleFilters.length === 1"
                 >
                   <GeneralIcon icon="drag" class="flex-none h-4 w-4" />
-                </NcButton>
+                </AtButton>
               </template>
             </div>
             <div v-if="isMobileMode && mobileActionMenuItems(filter).length" class="h-8 flex items-center">
@@ -1898,13 +1898,13 @@ defineExpose({
               'mt-1 mb-2': filters.length,
             }"
           >
-            <NcWrap :wrap="!!isMobileMode" class="flex flex-col items-start gap-y-2">
-              <NcButton
+            <AtWrap :wrap="!!isMobileMode" class="flex flex-col items-start gap-y-2">
+              <AtButton
                 v-if="!hiddenAddNewFilter"
                 size="small"
                 :type="actionBtnType"
                 :disabled="disableAddNewFilter || isLockedView || readOnly"
-                class="nc-btn-focus"
+                class="atm-btn-focus"
                 data-testid="add-filter"
                 @click.stop="addFilter()"
               >
@@ -1913,11 +1913,11 @@ defineExpose({
                   <!-- Add Filter -->
                   {{ isForm && !webHook ? $t('activity.addCondition') : $t('activity.addFilter') }}
                 </div>
-              </NcButton>
+              </AtButton>
 
-              <NcButton
+              <AtButton
                 v-if="nestedLevel < 5 && !readOnly"
-                class="nc-btn-focus"
+                class="atm-btn-focus"
                 :disabled="disableAddNewFilter || isLockedView"
                 :type="actionBtnType"
                 size="small"
@@ -1929,8 +1929,8 @@ defineExpose({
                   <component :is="iconMap.plus" />
                   {{ isForm && !webHook ? $t('activity.addConditionGroup') : $t('activity.addFilterGroup') }}
                 </div>
-              </NcButton>
-            </NcWrap>
+              </AtButton>
+            </AtWrap>
 
             <LazyGeneralCopyFromAnotherViewActionBtn
               v-if="activeView && isViewFilter"
@@ -1949,8 +1949,8 @@ defineExpose({
               'mt-1 mb-2': filters.length,
             }"
           >
-            <NcButton
-              class="nc-btn-focus"
+            <AtButton
+              class="atm-btn-focus"
               size="small"
               :type="actionBtnType"
               data-testid="add-filter"
@@ -1962,11 +1962,11 @@ defineExpose({
                 <!-- Add Filter -->
                 {{ isForm && !webHook ? $t('activity.addCondition') : $t('activity.addFilter') }}
               </div>
-            </NcButton>
+            </AtButton>
 
-            <NcButton
+            <AtButton
               v-if="!link && !webHook && nestedLevel < 5"
-              class="nc-btn-focus"
+              class="atm-btn-focus"
               :type="actionBtnType"
               size="small"
               :disabled="isLockedView"
@@ -1978,20 +1978,20 @@ defineExpose({
                 <component :is="iconMap.plus" />
                 {{ isForm && !webHook ? $t('activity.addConditionGroup') : $t('activity.addFilterGroup') }}
               </div>
-            </NcButton>
+            </AtButton>
           </div>
         </template>
       </div>
     </template>
     <div
       v-if="!visibleFilters || !visibleFilters.length"
-      class="flex flex-row text-nc-content-gray-disabled mt-2"
+      class="flex flex-row text-atm-content-gray-disabled mt-2"
       :class="{
         'ml-1': nested,
         'ml-0.5': !nested,
       }"
     >
-      {{ isForm && !webHook ? $t('title.noConditionsAdded') : $t('title.noFiltersAdded') }}
+      {{ isForm && !webHook ? $t('title.atmospherenditionsAdded') : $t('title.noFiltersAdded') }}
     </div>
 
     <slot />
@@ -2008,14 +2008,14 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
-.nc-filter-item-remove-btn,
-.nc-filter-item-reorder-btn,
-.nc-filter-item-copy-btn,
-.nc-filter-item-pin-btn {
-  @apply text-nc-content-gray-subtle2 hover:text-nc-content-gray;
+.atm-filter-item-remove-btn,
+.atm-filter-item-reorder-btn,
+.atm-filter-item-copy-btn,
+.atm-filter-item-pin-btn {
+  @apply text-atm-content-gray-subtle2 hover:text-atm-content-gray;
 }
 
-.nc-filter-grid {
+.atm-filter-grid {
   @apply items-center w-full;
 }
 
@@ -2027,32 +2027,32 @@ defineExpose({
   @apply !min-h-8;
 }
 
-.nc-disabled-logical-op :deep(.ant-select-arrow) {
+.atm-disabled-logical-op :deep(.ant-select-arrow) {
   @apply hidden;
 }
 
-.nc-filter-wrapper {
-  @apply bg-nc-bg-default !rounded-lg border-1px border-nc-border-gray-medium;
+.atm-filter-wrapper {
+  @apply bg-atm-bg-default !rounded-lg border-1px border-atm-border-gray-medium;
 
   & > *,
-  .nc-filter-value-select {
+  .atm-filter-value-select {
     @apply !border-none;
   }
 
   & > div > :deep(.ant-select-selector),
-  :deep(.nc-filter-field-select) > div {
+  :deep(.atm-filter-field-select) > div {
     border: none !important;
     box-shadow: none !important;
   }
 
   & > :not(:last-child):not(:empty) {
-    border-right: 1px solid var(--nc-border-gray-medium) !important;
+    border-right: 1px solid var(--atm-border-gray-medium) !important;
     border-bottom-right-radius: 0 !important;
     border-top-right-radius: 0 !important;
   }
 
-  .nc-settings-dropdown {
-    border-left: 1px solid var(--nc-border-gray-medium) !important;
+  .atm-settings-dropdown {
+    border-left: 1px solid var(--atm-border-gray-medium) !important;
     border-radius: 0 !important;
   }
 
@@ -2062,7 +2062,7 @@ defineExpose({
   }
 
   & > :last-child {
-    @apply relative sm:(after:(content-[''] absolute h-full w-1px bg-[var(--nc-bg-gray-medium)] -left-1px top-0));
+    @apply relative sm:(after:(content-[''] absolute h-full w-1px bg-[var(--atm-bg-gray-medium)] -left-1px top-0));
   }
 
   :deep(::placeholder) {
@@ -2077,97 +2077,97 @@ defineExpose({
     @apply text-sm;
   }
 
-  :deep(.nc-select:not(.nc-disabled-logical-op):not(.ant-select-disabled):hover) {
+  :deep(.atm-select:not(.atm-disabled-logical-op):not(.ant-select-disabled):hover) {
     &,
     .ant-select-selector {
-      @apply bg-nc-bg-gray-extralight;
+      @apply bg-atm-bg-gray-extralight;
     }
   }
 }
-.nc-filter-nested-level-0 {
-  @apply bg-nc-bg-gray-extralight;
+.atm-filter-nested-level-0 {
+  @apply bg-atm-bg-gray-extralight;
 }
 
-.nc-filter-nested-level-1,
-.nc-filter-nested-level-3 {
-  @apply bg-nc-bg-gray-light;
+.atm-filter-nested-level-1,
+.atm-filter-nested-level-3 {
+  @apply bg-atm-bg-gray-light;
 }
 
-.nc-filter-nested-level-2,
-.nc-filter-nested-level-4 {
-  @apply bg-nc-bg-gray-medium;
+.atm-filter-nested-level-2,
+.atm-filter-nested-level-4 {
+  @apply bg-atm-bg-gray-medium;
 }
 
-.nc-filter-logical-op-level-3,
-.nc-filter-logical-op-level-5 {
-  :deep(.nc-select.ant-select .ant-select-selector) {
+.atm-filter-logical-op-level-3,
+.atm-filter-logical-op-level-5 {
+  :deep(.atm-select.ant-select .ant-select-selector) {
     @apply border-[#d9d9d9];
   }
 }
 
-.nc-filter-where-label {
-  @apply text-nc-content-gray-disabled;
+.atm-filter-where-label {
+  @apply text-atm-content-gray-disabled;
 }
 
 :deep(.ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
-  @apply bg-transparent text-nc-content-gray-disabled;
+  @apply bg-transparent text-atm-content-gray-disabled;
 }
 
-:deep(.nc-filter-logical-op .nc-select.ant-select .ant-select-selector) {
+:deep(.atm-filter-logical-op .atm-select.ant-select .ant-select-selector) {
   @apply shadow-none;
 }
 
-:deep(.nc-select-expand-btn) {
-  @apply text-nc-content-gray-muted;
+:deep(.atm-select-expand-btn) {
+  @apply text-atm-content-gray-muted;
 }
 
 .menu-filter-dropdown {
   input:not(:disabled),
   select:not(:disabled),
   .ant-select:not(.ant-select-disabled) {
-    @apply text-nc-content-gray-subtle2;
+    @apply text-atm-content-gray-subtle2;
   }
 }
 
-.nc-filter-input-wrapper :deep(input) {
+.atm-filter-input-wrapper :deep(input) {
   &:not(.ant-select-selection-search-input) {
     @apply !px-2;
   }
 }
 
-.nc-btn-focus:focus {
-  @apply !text-nc-content-brand !shadow-none;
+.atm-btn-focus:focus {
+  @apply !text-atm-content-brand !shadow-none;
 }
 
-.nc-filter-disabled-row {
+.atm-filter-disabled-row {
   @apply opacity-40;
 
   // keep action buttons (delete, copy, reorder) fully interactive
-  .nc-filter-item-remove-btn,
-  .nc-filter-item-copy-btn,
-  .nc-filter-item-reorder-btn {
+  .atm-filter-item-remove-btn,
+  .atm-filter-item-copy-btn,
+  .atm-filter-item-reorder-btn {
     @apply opacity-100 pointer-events-auto;
   }
 }
 
 // group disabled state — dim the entire group container but keep action buttons and checkbox interactive
-.nc-filter-disabled-group {
+.atm-filter-disabled-group {
   & > * {
     @apply opacity-40;
   }
-  :deep(.nc-filter-enabled-checkbox) {
+  :deep(.atm-filter-enabled-checkbox) {
     @apply opacity-100 pointer-events-auto;
   }
-  :deep(.nc-filter-item-remove-btn),
-  :deep(.nc-filter-item-copy-btn),
-  :deep(.nc-filter-item-reorder-btn) {
+  :deep(.atm-filter-item-remove-btn),
+  :deep(.atm-filter-item-copy-btn),
+  :deep(.atm-filter-item-reorder-btn) {
     @apply opacity-100 pointer-events-auto;
   }
 }
 </style>
 
 <style lang="scss">
-.nc-filter-field-select {
+.atm-filter-field-select {
   .ant-select-selector {
     .field-selection-tooltip-wrapper {
       @apply !max-w-20;

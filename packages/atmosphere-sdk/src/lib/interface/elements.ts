@@ -14,7 +14,7 @@ import type { InterfaceVisualizationConfig } from './pageConfigs';
  *
  * Shape mirrors the ad-hoc `filterArrJson` Filter tree the data layer already
  * accepts (`conditionV2`), so backends can apply config filters at query time
- * without persisting `nc_filter_exp` rows (filters must live inside the
+ * without persisting `atm_filter_exp` rows (filters must live inside the
  * draft/published config snapshot).
  */
 export interface InterfaceFilterLeaf {

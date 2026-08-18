@@ -15,7 +15,7 @@ import { DatasService } from '~/services/datas.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { DataApiLimiterGuard } from '~/guards/data-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(DataApiLimiterGuard, GlobalGuard)
@@ -25,8 +25,8 @@ export class DatasController {
   @Get('/data/:viewId/')
   @Acl('dataList')
   async dataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
   ) {
     return await this.datasService.dataListByViewId(context, {
@@ -43,8 +43,8 @@ export class DatasController {
   ])
   @Acl('mmList')
   async mmList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('colId') colId: string,
     @Param('rowId') rowId: string,
@@ -64,8 +64,8 @@ export class DatasController {
   ])
   @Acl('mmExcludedList')
   async mmExcludedList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('colId') colId: string,
     @Param('rowId') rowId: string,
@@ -81,8 +81,8 @@ export class DatasController {
   @Get('/data/:viewId/:rowId/oo/:colId/exclude')
   @Acl('ooExcludedList')
   async ooExcludedList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('colId') colId: string,
     @Param('rowId') rowId: string,
@@ -98,8 +98,8 @@ export class DatasController {
   @Get('/data/:viewId/:rowId/hm/:colId/exclude')
   @Acl('hmExcludedList')
   async hmExcludedList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('colId') colId: string,
     @Param('rowId') rowId: string,
@@ -115,8 +115,8 @@ export class DatasController {
   @Get('/data/:viewId/:rowId/bt/:colId/exclude')
   @Acl('btExcludedList')
   async btExcludedList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('colId') colId: string,
     @Param('rowId') rowId: string,
@@ -132,8 +132,8 @@ export class DatasController {
   @Get('/data/:viewId/:rowId/hm/:colId')
   @Acl('hmList')
   async hmList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('colId') colId: string,
     @Param('rowId') rowId: string,
@@ -149,8 +149,8 @@ export class DatasController {
   @Get('/data/:viewId/:rowId')
   @Acl('dataRead')
   async dataRead(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('rowId') rowId: string,
   ) {
@@ -165,8 +165,8 @@ export class DatasController {
   @HttpCode(200)
   @Acl('dataInsert')
   async dataInsert(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Body() body: any,
   ) {
@@ -180,8 +180,8 @@ export class DatasController {
   @Patch('/data/:viewId/:rowId')
   @Acl('dataUpdate')
   async dataUpdate(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('rowId') rowId: string,
     @Body() body: any,
@@ -197,8 +197,8 @@ export class DatasController {
   @Delete('/data/:viewId/:rowId')
   @Acl('dataDelete')
   async dataDelete(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('rowId') rowId: string,
   ) {
@@ -212,8 +212,8 @@ export class DatasController {
   @Delete('/data/:viewId/:rowId/:relationType/:colId/:childId')
   @Acl('relationDataDelete')
   async relationDataDelete(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('rowId') rowId: string,
     @Param('relationType') relationType: string,
@@ -235,8 +235,8 @@ export class DatasController {
   @HttpCode(200)
   @Acl('relationDataAdd')
   async relationDataAdd(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('rowId') rowId: string,
     @Param('relationType') relationType: string,

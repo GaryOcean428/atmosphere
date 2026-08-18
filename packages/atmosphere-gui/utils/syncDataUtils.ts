@@ -1,4 +1,4 @@
-import type { FormDefinition, IntegrationsType, SyncCategory } from 'nocodb-sdk'
+import type { FormDefinition, IntegrationsType, SyncCategory } from 'atmosphere-sdk'
 import type { VNode } from '@vue/runtime-dom'
 import type { CSSProperties, FunctionalComponent, SVGAttributes } from 'nuxt/dist/app/compat/capi'
 import { ClientType, IntegrationCategoryType, SyncDataType } from '#imports'
@@ -109,9 +109,9 @@ export const integrationCategories: IntegrationCategoryItemType[] = [
 export const allIntegrations: IntegrationItemType[] = [
   // Database
   {
-    title: 'objects.syncData.nocodb',
-    sub_type: SyncDataType.NOCODB,
-    icon: iconMap.nocodbPg,
+    title: 'objects.syncData.atmosphere',
+    sub_type: SyncDataType.ATMOSPHERE,
+    icon: iconMap.atmospherePg,
     type: IntegrationCategoryType.DATABASE,
     isAvailable: true,
     iconStyle: {

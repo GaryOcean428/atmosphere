@@ -1,4 +1,4 @@
-import type { ListType } from 'nocodb-sdk';
+import type { ListType } from 'atmosphere-sdk';
 
 export default class ListView implements ListType {
   fk_view_id: string;

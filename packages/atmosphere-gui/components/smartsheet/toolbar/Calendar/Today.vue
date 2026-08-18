@@ -31,7 +31,7 @@ const goToToday = () => {
         end: timezoneDayjs.dayjsTz().endOf('week'),
       }
 
-  document?.querySelector('.nc-calendar-today')?.scrollIntoView({
+  document?.querySelector('.atm-calendar-today')?.scrollIntoView({
     behavior: 'smooth',
     block: 'center',
   })
@@ -39,9 +39,9 @@ const goToToday = () => {
 </script>
 
 <template>
-  <NcButton class="today-btn !h-7" data-testid="nc-calendar-today-btn" size="small" type="secondary" @click="goToToday">
-    <span class="text-nc-content-gray-subtle font-bold !text-[13px]">
+  <AtButton class="today-btn !h-7" data-testid="atm-calendar-today-btn" size="small" type="secondary" @click="goToToday">
+    <span class="text-atm-content-gray-subtle font-bold !text-[13px]">
       {{ $t('labels.today') }}
     </span>
-  </NcButton>
+  </AtButton>
 </template>

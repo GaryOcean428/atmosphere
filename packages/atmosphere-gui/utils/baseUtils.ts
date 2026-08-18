@@ -1,4 +1,4 @@
-import type { SourceType } from 'nocodb-sdk'
+import type { SourceType } from 'atmosphere-sdk'
 
 const isDefaultBase = (source: SourceType) => source.is_meta
 

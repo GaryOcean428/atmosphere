@@ -7,7 +7,7 @@ export default async function (app) {
   const nestApp = await NestFactory.create(AppModule);
   await nestApp.init();
 
-  const dashboardPath = process.env.NC_DASHBOARD_URL ?? '/';
+  const dashboardPath = process.env.ATMOSPHERE_DASHBOARD_URL ?? '/';
   if (dashboardPath !== '/') {
     app.get('/', (_req, res) => res.redirect(dashboardPath));
   }

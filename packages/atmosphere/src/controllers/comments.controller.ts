@@ -17,7 +17,7 @@ import { CommentsService } from '~/services/comments.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -32,7 +32,7 @@ export class CommentsController {
   // Adding the gate would 403 `loadComments` and break the feature.
   @Get(['/api/v1/db/meta/comments', '/api/v2/meta/comments'])
   @Acl('commentList')
-  async commentList(@TenantContext() context: NcContext, @Req() req: any) {
+  async commentList(@TenantContext() context: AtContext, @Req() req: any) {
     return new PagedResponseImpl(
       await this.commentsService.commentList(context, { query: req.query }),
     );
@@ -42,8 +42,8 @@ export class CommentsController {
   @HttpCode(200)
   @Acl('commentRow')
   async commentRow(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Body() body: any,
   ) {
     return await this.commentsService.commentRow(context, {
@@ -59,8 +59,8 @@ export class CommentsController {
   ])
   @Acl('commentDelete')
   async commentDelete(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('commentId') commentId: string,
   ) {
     return await this.commentsService.commentDelete(context, {
@@ -76,7 +76,7 @@ export class CommentsController {
   ])
   @Acl('commentUpdate')
   async commentUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('commentId') commentId: string,
     @Req() req: any,
     @Body() body: any,
@@ -93,7 +93,7 @@ export class CommentsController {
   @Get(['/api/v1/db/meta/comments/count', '/api/v2/meta/comments/count'])
   @Acl('commentCount')
   async commentsCount(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Query('fk_model_id') fk_model_id: string,
     @Query('ids') ids: string[],
   ) {

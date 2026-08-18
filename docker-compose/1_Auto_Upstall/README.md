@@ -1,17 +1,17 @@
-# NocoDB Auto-Upstall
+# Atmosphere Auto-Upstall
 
-Interactive installer for NocoDB on a Linux server. Auto-installs Docker if missing, asks three or four questions, and generates a working docker-compose stack with optional Traefik plus Let's Encrypt SSL.
+Interactive installer for Atmosphere on a Linux server. Auto-installs Docker if missing, asks three or four questions, and generates a working docker-compose stack with optional Traefik plus Let's Encrypt SSL.
 
 ## Run it
 
 ```bash
-bash <(curl -sSL https://install.nocodb.com/noco.sh)
+bash <(curl -sSL https://install.atmosphere.dev/atmosphere.sh)
 ```
 
 Or, if you've cloned the repo:
 
 ```bash
-cd nocodb/docker-compose && ./setup.sh
+cd atmosphere/docker-compose && ./setup.sh
 ```
 
 ## Quick install
@@ -19,14 +19,14 @@ cd nocodb/docker-compose && ./setup.sh
 No questions asked, bundled Postgres and Redis, local port 8080:
 
 ```bash
-bash <(curl -sSL https://install.nocodb.com/noco.sh) --quick
+bash <(curl -sSL https://install.atmosphere.dev/atmosphere.sh) --quick
 ```
 
 With HTTPS on your own domain:
 
 ```bash
-bash <(curl -sSL https://install.nocodb.com/noco.sh) --quick \
-  --domain=nocodb.example.com --acme-email=ops@example.com
+bash <(curl -sSL https://install.atmosphere.dev/atmosphere.sh) --quick \
+  --domain=atmosphere.example.com --acme-email=ops@example.com
 ```
 
 ## What it asks
@@ -41,36 +41,36 @@ bash <(curl -sSL https://install.nocodb.com/noco.sh) --quick \
 ## What it generates
 
 ```
-./nocodb/
-├── docker-compose.yml      # nocodb + worker + (bundled db/redis) + (optional traefik)
-├── docker.env              # NC_DB_JSON_FILE, NC_REDIS_URL, NC_SECURE_ATTACHMENTS, ...
-├── nocodb/db.json          # knex-format DB connection, supports custom CA inline
+./atmosphere/
+├── docker-compose.yml      # atmosphere + worker + (bundled db/redis) + (optional traefik)
+├── docker.env              # ATMOSPHERE_DB_JSON_FILE, ATMOSPHERE_REDIS_URL, ATMOSPHERE_SECURE_ATTACHMENTS, ...
+├── atmosphere/db.json          # knex-format DB connection, supports custom CA inline
 ├── update.sh               # docker compose pull && up -d && image prune
 └── .gitignore              # excludes secrets and runtime data
 ```
 
-Postgres, Redis, and NocoDB application data live in Docker-managed named volumes (`nocodb_data`, `postgres_data`, `redis_data`), not in this directory. The generated `nocodb/db.json` is bind-mounted into the container on top of the `nocodb_data` volume so config and data stay separate.
+Postgres, Redis, and Atmosphere application data live in Docker-managed named volumes (`atmosphere_data`, `postgres_data`, `redis_data`), not in this directory. The generated `atmosphere/db.json` is bind-mounted into the container on top of the `atmosphere_data` volume so config and data stay separate.
 
-The script chmods `docker.env` and `nocodb/db.json` to `600`. It detects SELinux Enforcing on RHEL-family hosts and applies the `:Z` suffix to bind mounts. A healthcheck on `GET /api/v1/health` is wired into the nocodb service so the worker waits for it to become healthy.
+The script chmods `docker.env` and `atmosphere/db.json` to `600`. It detects SELinux Enforcing on RHEL-family hosts and applies the `:Z` suffix to bind mounts. A healthcheck on `GET /api/v1/health` is wired into the atmosphere service so the worker waits for it to become healthy.
 
 ## Non-interactive mode
 
 ```bash
-bash <(curl -sSL https://install.nocodb.com/noco.sh) \
+bash <(curl -sSL https://install.atmosphere.dev/atmosphere.sh) \
   --non-interactive \
-  --domain=nocodb.example.com \
+  --domain=atmosphere.example.com \
   --acme-email=ops@example.com \
   --pg=bundled --redis=bundled
 ```
 
-Run `bash noco.sh --help` for the full flag list. Missing required flags fail fast instead of hanging on a prompt. `--non-interactive` is implied by `--domain=`.
+Run `bash atmosphere.sh --help` for the full flag list. Missing required flags fail fast instead of hanging on a prompt. `--non-interactive` is implied by `--domain=`.
 
 ## Pin the image tag
 
-The generated compose uses `nocodb/nocodb:latest`. For production, pin a tag:
+The generated compose uses `atmosphere/atmosphere:latest`. For production, pin a tag:
 
 ```bash
-bash <(curl -sSL https://install.nocodb.com/noco.sh) --image-tag=0.264.6 ...
+bash <(curl -sSL https://install.atmosphere.dev/atmosphere.sh) --image-tag=0.264.6 ...
 ```
 
 You can also edit `docker-compose.yml` after the install.

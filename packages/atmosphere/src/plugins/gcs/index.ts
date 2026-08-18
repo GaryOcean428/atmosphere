@@ -1,6 +1,6 @@
-import { XcActionType, XcType } from 'nocodb-sdk';
+import { XcActionType, XcType } from 'atmosphere-sdk';
 import GcsPlugin from './GcsPlugin';
-import type { XcPluginConfig } from '~/types/nc-plugin';
+import type { XcPluginConfig } from '~/types/atm-plugin';
 
 const config: XcPluginConfig = {
   builder: GcsPlugin,

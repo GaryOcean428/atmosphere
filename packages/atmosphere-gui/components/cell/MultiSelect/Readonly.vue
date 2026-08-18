@@ -55,7 +55,7 @@ const selectedOptsListLayout = computed(() => selectedOpts.value.map((item) => i
 </script>
 
 <template>
-  <div class="nc-cell-field nc-multi-select h-full w-full flex items-center read-only" :class="{ 'max-w-full': isForm }">
+  <div class="atm-cell-field atm-multi-select h-full w-full flex items-center read-only" :class="{ 'max-w-full': isForm }">
     <div v-if="isForm && parseProp(column.meta)?.isList" class="w-full max-w-full">
       <CellMultiSelectLayoutList
         :options="options"
@@ -99,7 +99,7 @@ const selectedOptsListLayout = computed(() => selectedOpts.value.map((item) => i
             }"
             :class="{ 'text-sm': isKanban, 'text-small': !isKanban }"
           >
-            <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+            <AtTooltip class="truncate max-w-full" show-on-truncate-only>
               <template #title>
                 {{ selectedOpt.title }}
               </template>
@@ -113,7 +113,7 @@ const selectedOptsListLayout = computed(() => selectedOpts.value.map((item) => i
               >
                 {{ selectedOpt.title }}
               </span>
-            </NcTooltip>
+            </AtTooltip>
           </span>
         </a-tag>
       </template>

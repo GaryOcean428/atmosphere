@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { isDeletedCol, UITypes } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import { isDeletedCol, UITypes } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Column } from '~/models';
 import { Source } from '~/models';
 import { normalizeValueForUniqueCheck } from '~/helpers/uniqueConstraintHelpers';
-import { NcError } from '~/helpers/catchError';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import { AtError } from '~/helpers/catchError';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 
 @Injectable()
 export class DuplicateDetectionService {
@@ -14,8 +14,8 @@ export class DuplicateDetectionService {
    * Applies soft-delete filter to exclude trashed records from the query.
    */
   private async applySoftDeleteFilter(
-    context: NcContext,
-    model: { getColumns: (ctx: NcContext) => Promise<Column[]> },
+    context: AtContext,
+    model: { getColumns: (ctx: AtContext) => Promise<Column[]> },
     source: Source,
     qb: any,
   ): Promise<void> {
@@ -33,19 +33,19 @@ export class DuplicateDetectionService {
 
   /**
    * Checks for duplicate non-empty values in a column
-   * @param context - NocoDB context
+   * @param context - Atmosphere context
    * @param column - Column to check
    * @param excludeRowId - Row ID to exclude from duplicate check (for updates)
    * @returns object with hasDuplicates flag and count
    */
   async checkForDuplicates(
-    context: NcContext,
+    context: AtContext,
     column: Column,
     excludeRowId?: string | number,
   ): Promise<{ hasDuplicates: boolean; count: number }> {
     const model = await column.getModel(context);
     const source = await Source.get(context, model.source_id);
-    const knex: CustomKnex = await NcConnectionMgrv2.get(source);
+    const knex: CustomKnex = await AtConnectionMgrv2.get(source);
 
     // Get schema-qualified table name
     let tableName = model.table_name;
@@ -79,7 +79,7 @@ export class DuplicateDetectionService {
 
     // If excludeRowId is provided but no primary key exists, we can't exclude a specific row
     if (excludeRowId && !primaryKey) {
-      throw NcError.get(context).internalServerError(
+      throw AtError.get(context).internalServerError(
         'Cannot exclude row: Primary key not found. Tables without primary keys cannot use row exclusion in duplicate checks.',
       );
     }
@@ -162,14 +162,14 @@ export class DuplicateDetectionService {
   // keeping this function for future reference(bulk op or non-pg dbs), at the moment it's not used anywhere
   /**
    * Validates that a value doesn't violate unique constraint
-   * @param context - NocoDB context
+   * @param context - Atmosphere context
    * @param column - Column with unique constraint
    * @param value - Value to validate
    * @param excludeRowId - Row ID to exclude from duplicate check (for updates)
    * @returns true if value is unique
    */
   async validateUniqueValue(
-    context: NcContext,
+    context: AtContext,
     column: Column,
     value: any,
     excludeRowId?: string | number,
@@ -181,7 +181,7 @@ export class DuplicateDetectionService {
 
     const model = await column.getModel(context);
     const source = await Source.get(context, model.source_id);
-    const knex: CustomKnex = await NcConnectionMgrv2.get(source);
+    const knex: CustomKnex = await AtConnectionMgrv2.get(source);
 
     // Get schema-qualified table name
     let tableName = model.table_name;
@@ -215,7 +215,7 @@ export class DuplicateDetectionService {
 
     // If excludeRowId is provided but no primary key exists, we can't exclude a specific row
     if (excludeRowId && !primaryKey) {
-      throw NcError.get(context).internalServerError(
+      throw AtError.get(context).internalServerError(
         'Cannot exclude row: Primary key not found. Tables without primary keys cannot use row exclusion in unique value validation.',
       );
     }
@@ -260,19 +260,19 @@ export class DuplicateDetectionService {
 
   /**
    * Gets list of duplicate values for a column (useful for error reporting)
-   * @param context - NocoDB context
+   * @param context - Atmosphere context
    * @param column - Column to check
    * @param limit - Maximum number of duplicate examples to return
    * @returns array of duplicate values
    */
   async getDuplicateValues(
-    context: NcContext,
+    context: AtContext,
     column: Column,
     limit: number = 10,
   ): Promise<Array<{ value: any; count: number }>> {
     const model = await column.getModel(context);
     const source = await Source.get(context, model.source_id);
-    const knex: CustomKnex = await NcConnectionMgrv2.get(source);
+    const knex: CustomKnex = await AtConnectionMgrv2.get(source);
 
     // Get schema-qualified table name
     let tableName = model.table_name;

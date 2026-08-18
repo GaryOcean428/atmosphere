@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { PlanFeatureTypes, PlanTitles, type TableType, ViewTypes, viewTypeAlias } from 'nocodb-sdk'
-import type { NcDropdownPlacement } from '#imports'
+import { PlanFeatureTypes, PlanTitles, type TableType, ViewTypes, viewTypeAlias } from 'atmosphere-sdk'
+import type { AtDropdownPlacement } from '#imports'
 
 const props = defineProps<{
   // Prop used to align the dropdown to the left in sidebar
   alignLeftLevel: number | undefined
   source: Source
-  placement?: NcDropdownPlacement
+  placement?: AtDropdownPlacement
 }>()
 
 const { $e } = useNuxtApp()
@@ -18,7 +18,7 @@ const { loadViews, onOpenViewCreateModal } = viewsStore
 const { isListViewEnabled } = storeToRefs(viewsStore)
 const { showUpgradeToUseListView } = viewsStore
 
-const { isAiFeaturesEnabled } = useNocoAi()
+const { isAiFeaturesEnabled } = useAtmosphereAi()
 
 const {
   blockListView,
@@ -44,11 +44,11 @@ const isSyncedTable = computed(() => (table.value as TableType)?.synced)
 const isPgSource = computed(() => props.source?.type === 'pg')
 
 const overlayClassName = computed(() => {
-  if (alignLeftLevel.value === 1) return 'nc-view-create-dropdown nc-view-create-dropdown-left-1'
+  if (alignLeftLevel.value === 1) return 'atm-view-create-dropdown atm-view-create-dropdown-left-1'
 
-  if (alignLeftLevel.value === 2) return 'nc-view-create-dropdown nc-view-create-dropdown-left-2'
+  if (alignLeftLevel.value === 2) return 'atm-view-create-dropdown atm-view-create-dropdown-left-2'
 
-  return 'nc-view-create-dropdown'
+  return 'atm-view-create-dropdown'
 })
 
 /**
@@ -69,7 +69,7 @@ const overlayClassName = computed(() => {
  * It handles the dialog state, view creation, and navigation to the newly created view.
  * After creating a view, it refreshes the command palette and reloads the views.
  *
- * @see {@link packages/nc-gui/components/smartsheet/topbar/ViewListDropdown.vue} for a similar implementation of view creation dialog.
+ * @see {@link packages/atmosphere-gui/components/smartsheet/topbar/ViewListDropdown.vue} for a similar implementation of view creation dialog.
  * If this function is updated, consider updating the other implementations as well.
  */
 async function onOpenModal({
@@ -120,7 +120,7 @@ async function onOpenModal({
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="isOpen"
     :overlay-class-name="overlayClassName"
     :placement="placement || 'bottomLeft'"
@@ -129,8 +129,8 @@ async function onOpenModal({
   >
     <slot />
     <template #overlay>
-      <NcMenu class="max-w-fit" variant="small">
-        <NcMenuItem inner-class="w-full" @click.stop="onOpenModal({ type: ViewTypes.GRID })">
+      <AtMenu class="max-w-fit" variant="small">
+        <AtMenuItem inner-class="w-full" @click.stop="onOpenModal({ type: ViewTypes.GRID })">
           <div class="item" data-testid="sidebar-view-create-grid">
             <div class="item-inner">
               <GeneralViewIcon :meta="{ type: ViewTypes.GRID }" />
@@ -139,14 +139,14 @@ async function onOpenModal({
 
             <GeneralLoader v-if="toBeCreateType === ViewTypes.GRID && isViewListLoading" />
           </div>
-        </NcMenuItem>
+        </AtMenuItem>
 
-        <NcTooltip
+        <AtTooltip
           :title="isSyncedTable ? $t('tooltip.formViewCreationNotSupportedForSyncedTable') : $t('tooltip.sourceDataIsReadonly')"
           :disabled="!source.is_data_readonly && !isSqlView && !isSyncedTable"
           class="w-full"
         >
-          <NcMenuItem
+          <AtMenuItem
             :disabled="!!source.is_data_readonly || isSqlView || isSyncedTable"
             inner-class="w-full"
             @click="onOpenModal({ type: ViewTypes.FORM })"
@@ -164,9 +164,9 @@ async function onOpenModal({
 
               <GeneralLoader v-if="toBeCreateType === ViewTypes.FORM && isViewListLoading" />
             </div>
-          </NcMenuItem>
-        </NcTooltip>
-        <NcMenuItem inner-class="w-full" @click="onOpenModal({ type: ViewTypes.GALLERY })">
+          </AtMenuItem>
+        </AtTooltip>
+        <AtMenuItem inner-class="w-full" @click="onOpenModal({ type: ViewTypes.GALLERY })">
           <div class="item" data-testid="sidebar-view-create-gallery">
             <div class="item-inner">
               <GeneralViewIcon :meta="{ type: ViewTypes.GALLERY }" />
@@ -175,8 +175,8 @@ async function onOpenModal({
 
             <GeneralLoader v-if="toBeCreateType === ViewTypes.GALLERY && isViewListLoading" />
           </div>
-        </NcMenuItem>
-        <NcMenuItem
+        </AtMenuItem>
+        <AtMenuItem
           inner-class="w-full"
           data-testid="sidebar-view-create-kanban"
           @click="onOpenModal({ type: ViewTypes.KANBAN })"
@@ -189,8 +189,8 @@ async function onOpenModal({
 
             <GeneralLoader v-if="toBeCreateType === ViewTypes.KANBAN && isViewListLoading" />
           </div>
-        </NcMenuItem>
-        <NcMenuItem
+        </AtMenuItem>
+        <AtMenuItem
           inner-class="w-full"
           data-testid="sidebar-view-create-calendar"
           @click="onOpenModal({ type: ViewTypes.CALENDAR })"
@@ -203,8 +203,8 @@ async function onOpenModal({
 
             <GeneralLoader v-if="toBeCreateType === ViewTypes.CALENDAR && isViewListLoading" />
           </div>
-        </NcMenuItem>
-        <NcMenuItem
+        </AtMenuItem>
+        <AtMenuItem
           v-if="isEeUI"
           inner-class="w-full"
           data-testid="sidebar-view-create-map"
@@ -223,15 +223,15 @@ async function onOpenModal({
 
             <GeneralLoader v-if="toBeCreateType === ViewTypes.MAP && isViewListLoading" />
           </div>
-        </NcMenuItem>
-        <NcTooltip
+        </AtMenuItem>
+        <AtTooltip
           v-if="isListViewEnabled"
           :title="$t('tooltip.listViewOnlyPg')"
           :disabled="isPgSource"
           placement="right"
           class="w-full"
         >
-          <NcMenuItem
+          <AtMenuItem
             :disabled="!isPgSource"
             inner-class="w-full"
             data-testid="sidebar-view-create-list"
@@ -263,9 +263,9 @@ async function onOpenModal({
                 <GeneralLoader v-if="toBeCreateType === ViewTypes.LIST && isViewListLoading" />
               </template>
             </div>
-          </NcMenuItem>
-        </NcTooltip>
-        <NcMenuItem
+          </AtMenuItem>
+        </AtTooltip>
+        <AtMenuItem
           v-if="showEEFeatures"
           inner-class="w-full"
           data-testid="sidebar-view-create-timeline"
@@ -299,8 +299,8 @@ async function onOpenModal({
               <GeneralLoader v-if="toBeCreateType === ViewTypes.TIMELINE && isViewListLoading" />
             </template>
           </div>
-        </NcMenuItem>
-        <NcMenuItem
+        </AtMenuItem>
+        <AtMenuItem
           v-if="showEEFeatures"
           inner-class="w-full"
           data-testid="sidebar-view-create-gantt"
@@ -334,35 +334,35 @@ async function onOpenModal({
               <GeneralLoader v-if="toBeCreateType === ViewTypes.GANTT && isViewListLoading" />
             </template>
           </div>
-        </NcMenuItem>
+        </AtMenuItem>
 
         <template v-if="showEEFeatures">
           <!-- Section -->
-          <NcDivider />
+          <AtDivider />
 
           <DashboardTreeViewCreateViewBtnSectionMenu @close="isOpen = false" />
         </template>
 
         <template v-if="isAiFeaturesEnabled">
-          <NcDivider />
-          <NcTooltip :title="`Auto suggest views for ${table?.title || 'the current table'}`" placement="right" class="w-full">
-            <NcMenuItem data-testid="sidebar-view-create-ai" @click="onOpenModal({ type: 'AI' })">
+          <AtDivider />
+          <AtTooltip :title="`Auto suggest views for ${table?.title || 'the current table'}`" placement="right" class="w-full">
+            <AtMenuItem data-testid="sidebar-view-create-ai" @click="onOpenModal({ type: 'AI' })">
               <div class="item">
                 <div class="item-inner">
-                  <GeneralIcon icon="ncAutoAwesome" class="!w-4 !h-4 text-nc-fill-purple-dark" />
-                  <div>{{ $t('labels.useNocoAI') }}</div>
+                  <GeneralIcon icon="ncAutoAwesome" class="!w-4 !h-4 text-atm-fill-purple-dark" />
+                  <div>{{ $t('labels.useAtmosphereAI') }}</div>
                 </div>
               </div>
-            </NcMenuItem>
-          </NcTooltip>
+            </AtMenuItem>
+          </AtTooltip>
         </template>
-      </NcMenu>
+      </AtMenu>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style lang="scss">
-.nc-view-create-dropdown {
+.atm-view-create-dropdown {
   @apply !min-w-43;
   .item {
     @apply flex flex-row items-center w-full justify-between gap-x-1.75;
@@ -373,11 +373,11 @@ async function onOpenModal({
   }
 }
 
-.nc-view-create-dropdown-left-1 {
+.atm-view-create-dropdown-left-1 {
   @apply !left-18;
 }
 
-.nc-view-create-dropdown-left-2 {
+.atm-view-create-dropdown-left-2 {
   @apply !left-23.5;
 }
 </style>

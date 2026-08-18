@@ -18,7 +18,7 @@ const up = async (knex: Knex) => {
 
     table.timestamps(true, true);
 
-    table.index(['base_id', 'fk_workspace_id'], 'nc_dashboards_context');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_dashboards_context');
   });
 
   await knex.schema.createTable(MetaTable.WIDGETS, (table) => {
@@ -41,8 +41,8 @@ const up = async (knex: Knex) => {
 
     table.timestamps(true, true);
 
-    table.index(['base_id', 'fk_workspace_id'], 'nc_widgets_context');
-    table.index('fk_dashboard_id', 'nc_widgets_dashboard_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_widgets_context');
+    table.index('fk_dashboard_id', 'atm_widgets_dashboard_idx');
   });
 
   if (!(await knex.schema.hasColumn(MetaTable.FILTER_EXP, 'fk_widget_id'))) {

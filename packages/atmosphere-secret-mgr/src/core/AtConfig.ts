@@ -6,16 +6,16 @@ const {
   getToolDir,
   metaUrlToDbConfig,
   prepareEnv,
-} = require('../nocodb/cli');
+} = require('../atmosphere/cli');
 
-export class NcConfig {
+export class AtConfig {
   meta: {
     db: any;
   } = {
     db: {
       client: DriverClient.SQLITE,
       connection: {
-        filename: 'noco.db',
+        filename: 'atmosphere.db',
       },
     },
   };
@@ -35,10 +35,10 @@ export class NcConfig {
       databaseUrl?: string;
     };
     secret?: string;
-  }): Promise<NcConfig> {
+  }): Promise<AtConfig> {
     const { meta } = param;
 
-    const ncConfig = new NcConfig();
+    const ncConfig = new AtConfig();
 
     if (ncConfig.meta?.db?.connection?.filename) {
       ncConfig.meta.db.connection.filename = path.join(
@@ -53,7 +53,7 @@ export class NcConfig {
       ncConfig.meta.db = JSON.parse(meta.metaJson);
     } else if (meta?.metaJsonFile) {
       if (!(await promisify(fs.exists)(meta.metaJsonFile))) {
-        throw new Error(`NC_DB_JSON_FILE not found: ${meta.metaJsonFile}`);
+        throw new Error(`ATMOSPHERE_DB_JSON_FILE not found: ${meta.metaJsonFile}`);
       }
       const fileContent = await promisify(fs.readFile)(meta.metaJsonFile, {
         encoding: 'utf8',
@@ -64,19 +64,19 @@ export class NcConfig {
     return ncConfig;
   }
 
-  public static async createByEnv(): Promise<NcConfig> {
-    return NcConfig.create({
+  public static async createByEnv(): Promise<AtConfig> {
+    return AtConfig.create({
       meta: {
-        metaUrl: process.env.NC_DB,
-        metaJson: process.env.NC_DB_JSON,
-        metaJsonFile: process.env.NC_DB_JSON_FILE,
+        metaUrl: process.env.ATMOSPHERE_DB,
+        metaJson: process.env.ATMOSPHERE_DB_JSON,
+        metaJsonFile: process.env.ATMOSPHERE_DB_JSON_FILE,
       },
-      secret: process.env.NC_AUTH_JWT_SECRET,
+      secret: process.env.ATMOSPHERE_AUTH_JWT_SECRET,
     });
   }
 }
 
-export const getNocoConfig = async (
+export const getAtmosphereConfig = async (
   options: {
     ncDb?: string;
     ncDbJson?: string;
@@ -89,20 +89,20 @@ export const getNocoConfig = async (
   await prepareEnv({
     databaseUrl:
       options.databaseUrl ||
-      process.env.NC_DATABASE_URL ||
+      process.env.ATMOSPHERE_DATABASE_URL ||
       process.env.DATABASE_URL,
     databaseUrlFile:
       options.databaseUrlFile ||
-      process.env.NC_DATABASE_URL_FILE ||
+      process.env.ATMOSPHERE_DATABASE_URL_FILE ||
       process.env.DATABASE_URL_FILE,
   });
 
-  // create NocoConfig using utility method which works similar to NocoDB NcConfig with only meta db config
-  return NcConfig.create({
+  // create AtmosphereConfig using utility method which works similar to Atmosphere AtConfig with only meta db config
+  return AtConfig.create({
     meta: {
-      metaUrl: process.env.NC_DB || options.ncDb,
-      metaJson: process.env.NC_DB_JSON || options.ncDbJson,
-      metaJsonFile: process.env.NC_DB_JSON_FILE || options.ncDbJsonFile,
+      metaUrl: process.env.ATMOSPHERE_DB || options.ncDb,
+      metaJson: process.env.ATMOSPHERE_DB_JSON || options.ncDbJson,
+      metaJsonFile: process.env.ATMOSPHERE_DB_JSON_FILE || options.ncDbJsonFile,
     },
   });
 };

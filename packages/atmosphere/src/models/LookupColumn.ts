@@ -1,8 +1,8 @@
-import type { LookupType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { LookupType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import Column from '~/models/Column';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 
@@ -16,22 +16,22 @@ export default class LookupColumn implements LookupType {
     Object.assign(this, data);
   }
 
-  public async getRelationColumn(context: NcContext): Promise<Column> {
+  public async getRelationColumn(context: AtContext): Promise<Column> {
     return await Column.get(context, {
       colId: this.fk_relation_column_id,
     });
   }
 
-  public async getLookupColumn(context: NcContext): Promise<Column> {
+  public async getLookupColumn(context: AtContext): Promise<Column> {
     return await Column.get(context, {
       colId: this.fk_lookup_column_id,
     });
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     data: Partial<LookupColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(data, [
       'fk_column_id',
@@ -49,14 +49,14 @@ export default class LookupColumn implements LookupType {
 
     return this.read(context, data.fk_column_id, ncMeta).then(
       async (lookupColumn) => {
-        await NocoCache.appendToList(
+        await AtmosphereCache.appendToList(
           context,
           CacheScope.COL_LOOKUP,
           [data.fk_lookup_column_id],
           `${CacheScope.COL_LOOKUP}:${data.fk_column_id}`,
         );
 
-        await NocoCache.appendToList(
+        await AtmosphereCache.appendToList(
           context,
           CacheScope.COL_LOOKUP,
           [data.fk_relation_column_id],
@@ -69,13 +69,13 @@ export default class LookupColumn implements LookupType {
   }
 
   public static async read(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let colData =
       columnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.COL_LOOKUP}:${columnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -87,7 +87,7 @@ export default class LookupColumn implements LookupType {
         MetaTable.COL_LOOKUP,
         { fk_column_id: columnId },
       );
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.COL_LOOKUP}:${columnId}`,
         colData,
@@ -99,10 +99,10 @@ export default class LookupColumn implements LookupType {
   id: string;
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     data: Partial<LookupColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(data, [
       'fk_column_id',
@@ -121,7 +121,7 @@ export default class LookupColumn implements LookupType {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.COL_LOOKUP}:${columnId}`,
       updateObj,

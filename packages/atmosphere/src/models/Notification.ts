@@ -1,6 +1,6 @@
-import type { AppEvents } from 'nocodb-sdk';
+import type { AppEvents } from 'atmosphere-sdk';
 import { extractProps } from '~/helpers/extractProps';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable, RootScopes } from '~/utils/globals';
 import { prepareForDb, prepareForResponse } from '~/utils/modelUtils';
 
@@ -20,7 +20,7 @@ export default class Notification {
 
   public static async insert(
     notification: Partial<Notification>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertData = extractProps(notification, [
       'body',
@@ -43,7 +43,7 @@ export default class Notification {
       fk_user_id: string;
       id: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const condition = extractProps(params, ['id', 'fk_user_id']);
 
@@ -63,7 +63,7 @@ export default class Notification {
       is_read?: boolean;
       is_deleted?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const { limit = 10, offset = 0 } = params;
 
@@ -99,7 +99,7 @@ export default class Notification {
       is_read?: boolean;
       is_deleted?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const condition = extractProps(params, [
       'is_read',
@@ -121,7 +121,7 @@ export default class Notification {
   public static async update(
     id,
     notification: Partial<Notification>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateData = extractProps(notification, [
       'body',
@@ -140,7 +140,7 @@ export default class Notification {
     );
   }
 
-  public static async markAllAsRead(fk_user_id: string, ncMeta = Noco.ncMeta) {
+  public static async markAllAsRead(fk_user_id: string, ncMeta = Atmosphere.ncMeta) {
     return ncMeta.metaUpdate(
       RootScopes.ROOT,
       RootScopes.ROOT,

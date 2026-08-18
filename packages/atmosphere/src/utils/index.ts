@@ -2,7 +2,7 @@ export * from './constants';
 export * from './dataUtils';
 export * from './sanitiseUserObj';
 export * from './emailUtils';
-export * from './nocoExecute';
+export * from './atmosphereExecute';
 export { Tele as T } from './tele';
 export * from './packageVersion';
 export * from './encryptDecrypt';

@@ -1,9 +1,9 @@
-import type { GridType, MetaType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { GridType, MetaType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import GridViewColumn from '~/models/GridViewColumn';
 import View from '~/models/View';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import { prepareForDb, prepareForResponse } from '~/utils/modelUtils';
@@ -21,18 +21,18 @@ export default class GridView implements GridType {
     Object.assign(this, data);
   }
 
-  async getColumns(context: NcContext): Promise<GridViewColumn[]> {
+  async getColumns(context: AtContext): Promise<GridViewColumn[]> {
     return (this.columns = await GridViewColumn.list(context, this.fk_view_id));
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let view =
       viewId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.GRID_VIEW}:${viewId}`,
         CacheGetType.TYPE_OBJECT,
@@ -46,16 +46,16 @@ export default class GridView implements GridType {
           fk_view_id: viewId,
         },
       );
-      await NocoCache.set(context, `${CacheScope.GRID_VIEW}:${viewId}`, view);
+      await AtmosphereCache.set(context, `${CacheScope.GRID_VIEW}:${viewId}`, view);
     }
 
     return view && new GridView(view);
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     view: Partial<GridView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(view, [
       'fk_view_id',
@@ -88,19 +88,19 @@ export default class GridView implements GridType {
   }
 
   static async getWithInfo(
-    context: NcContext,
+    context: AtContext,
     id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const view = await this.get(context, id, ncMeta);
     return view;
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
     body: Partial<GridView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, ['row_height', 'meta']);
 
@@ -115,7 +115,7 @@ export default class GridView implements GridType {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.GRID_VIEW}:${viewId}`,
       prepareForResponse(updateObj),

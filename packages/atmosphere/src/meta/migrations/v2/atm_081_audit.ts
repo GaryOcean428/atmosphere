@@ -44,12 +44,12 @@ const up = async (knex: Knex) => {
 
   // Step 3: Add indexes for better performance
   await knex.schema.alterTable(MetaTable.AUDIT, (table) => {
-    table.primary(['id'], 'nc_audit_v2_pkx');
-    table.index(['fk_workspace_id'], 'nc_audit_v2_fk_workspace_idx');
-    table.index(['base_id', 'fk_workspace_id'], 'nc_audit_v2_tenant_idx');
+    table.primary(['id'], 'atm_audit_v2_pkx');
+    table.index(['fk_workspace_id'], 'atm_audit_v2_fk_workspace_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_audit_v2_tenant_idx');
     table.index(
       ['base_id', 'fk_model_id', 'row_id', 'fk_workspace_id'],
-      'nc_record_audit_v2_tenant_idx',
+      'atm_record_audit_v2_tenant_idx',
     );
     table.index('old_id'); // Add index on old_id for faster lookups
   });

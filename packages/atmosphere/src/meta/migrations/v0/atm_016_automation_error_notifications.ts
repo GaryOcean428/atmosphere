@@ -8,7 +8,7 @@ const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.AUTOMATION_EXECUTIONS, (table) => {
     table.index(
       ['status', 'error_notified_at'],
-      'nc_automation_executions_error_notify_idx',
+      'atm_automation_executions_error_notify_idx',
     );
   });
 
@@ -31,11 +31,11 @@ const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.AUTOMATION_SUBSCRIBERS, (table) => {
     table.index(
       ['fk_automation_id'],
-      'nc_automation_subscribers_automation_idx',
+      'atm_automation_subscribers_automation_idx',
     );
-    table.index(['fk_user_id'], 'nc_automation_subscribers_user_idx');
+    table.index(['fk_user_id'], 'atm_automation_subscribers_user_idx');
     table.unique(['fk_automation_id', 'fk_user_id'], {
-      indexName: 'nc_automation_subscribers_unique_idx',
+      indexName: 'atm_automation_subscribers_unique_idx',
     });
   });
 };
@@ -46,7 +46,7 @@ const down = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.AUTOMATION_EXECUTIONS, (table) => {
     table.dropIndex(
       ['status', 'error_notified_at'],
-      'nc_automation_executions_error_notify_idx',
+      'atm_automation_executions_error_notify_idx',
     );
   });
   await knex.schema.alterTable(MetaTable.AUTOMATION_EXECUTIONS, (table) => {

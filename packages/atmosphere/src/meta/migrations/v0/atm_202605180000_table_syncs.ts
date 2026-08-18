@@ -30,10 +30,10 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
 
     table.primary(['base_id', 'id']);
-    table.index(['fk_workspace_id', 'base_id'], 'nc_ts_ws_base_idx');
+    table.index(['fk_workspace_id', 'base_id'], 'atm_ts_ws_base_idx');
   });
 
-  await knex.schema.createTable(MetaTable.TABLE_SYNC_MAPPINGS, (table) => {
+  await knex.schema.createTable(MetaTable.TABLE_SYATMOSPHERE_MAPPINGS, (table) => {
     table.string('id', 20);
     table.string('base_id', 20);
     table.string('fk_workspace_id', 20);
@@ -57,16 +57,16 @@ const up = async (knex: Knex) => {
     table.primary(['base_id', 'id']);
     table.index(
       ['source_workspace_id', 'source_base_id', 'source_table_id'],
-      'nc_tsm_source_idx',
+      'atm_tsm_source_idx',
     );
 
-    table.index(['source_uuid'], 'nc_tsm_source_uuid_idx');
-    table.index(['fk_table_sync_id'], 'nc_tsm_table_sync_idx');
+    table.index(['source_uuid'], 'atm_tsm_source_uuid_idx');
+    table.index(['fk_table_sync_id'], 'atm_tsm_table_sync_idx');
   });
 };
 
 const down = async (knex: Knex) => {
-  await knex.schema.dropTable(MetaTable.TABLE_SYNC_MAPPINGS);
+  await knex.schema.dropTable(MetaTable.TABLE_SYATMOSPHERE_MAPPINGS);
   await knex.schema.dropTable(MetaTable.TABLE_SYNCS);
 
   await knex.schema.alterTable(MetaTable.VIEWS, (table) => {

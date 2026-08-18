@@ -1,5 +1,5 @@
 import { existsSync } from 'fs';
-import { NcError } from './NcError';
+import { AtError } from './AtError';
 import * as logger from './logger';
 
 const {
@@ -7,7 +7,7 @@ const {
   MetaTable,
   decryptPropIfRequired,
   encryptPropIfRequired,
-} = require('../nocodb/cli');
+} = require('../atmosphere/cli');
 
 export class SecretManager {
   private sqlClient;
@@ -25,7 +25,7 @@ export class SecretManager {
     // if sqlite then check the file exist in provided path
     if (this.config.meta.db.client === 'sqlite3') {
       if (!existsSync(this.config.meta.db.connection.filename)) {
-        throw new NcError(
+        throw new AtError(
           'SQLite database file not found at path: ' +
             this.config.meta.db.connection.filename,
         );
@@ -35,7 +35,7 @@ export class SecretManager {
     // use the sqlClientFactory to create a new sql client and then use testConnection to test the connection
     const isValid = await this.sqlClient.testConnection();
     if (!isValid) {
-      throw new NcError(
+      throw new AtError(
         'Invalid database configuration. Please verify your database settings and ensure the database is reachable.',
       );
     }
@@ -44,11 +44,11 @@ export class SecretManager {
   async validateAndExtract() {
     // check if tables are present in the database
     if (!(await this.sqlClient.knex.schema.hasTable(MetaTable.SOURCES))) {
-      throw new NcError('Sources table not found');
+      throw new AtError('Sources table not found');
     }
 
     if (!(await this.sqlClient.knex.schema.hasTable(MetaTable.INTEGRATIONS))) {
-      throw new NcError('Integrations table not found');
+      throw new AtError('Integrations table not found');
     }
 
     // if is_encrypted column is not present in the sources table then throw an error
@@ -62,8 +62,8 @@ export class SecretManager {
         'is_encrypted',
       ))
     ) {
-      throw new NcError(
-        'Looks like you are using an older version of NocoDB. Please upgrade to the latest version and try again.',
+      throw new AtError(
+        'Looks like you are using an older version of Atmosphere. Please upgrade to the latest version and try again.',
       );
     }
 
@@ -107,7 +107,7 @@ export class SecretManager {
 
     // If all decryptions have failed, then throw an error
     if (!isValid) {
-      throw new NcError('Invalid old secret or no sources/integrations found');
+      throw new AtError('Invalid old secret or no sources/integrations found');
     }
 
     return { sourcesToUpdate, integrationsToUpdate };

@@ -5,10 +5,10 @@ name: Check DCO
 on:
   pull_request:
     paths:
-      - "packages/nocodb-sdk/**"
-      - "packages/nc-gui/**"
-      - "packages/nc-lib-gui/**"
-      - "packages/nocodb/**"
+      - "packages/atmosphere-sdk/**"
+      - "packages/atmosphere-gui/**"
+      - "packages/atmosphere-lib-gui/**"
+      - "packages/atmosphere/**"
 
 jobs:
   commits_check_job:

@@ -1,27 +1,27 @@
 import { Logger } from '@nestjs/common';
 import {
   hasInputCalls,
-  NOCO_SERVICE_USERS,
+  ATMOSPHERE_SERVICE_USERS,
   OperationSource,
   ServiceUserType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import { ncIsNullOrUndefined } from 'nocodb-sdk';
+import { ncIsNullOrUndefined } from 'atmosphere-sdk';
 import type { AxiosResponse } from 'axios';
 import type {
   HookLogType,
   HookType,
-  NcContext,
+  AtContext,
   TableType,
   UserType,
   ViewType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Filter } from '~/models';
 import { getFilteredAgents } from '~/utils/ssrf';
 import { parseMetaProp } from '~/utils/modelUtils';
-import { getWebhookMaxBodySize } from '~/utils/nc-config/constants';
-import { NcError } from '~/helpers/ncError';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import { getWebhookMaxBodySize } from '~/utils/atm-config/constants';
+import { AtError } from '~/helpers/ncError';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import {
   handleHttpWebHook,
   parseBody,
@@ -38,14 +38,14 @@ import {
   Source,
   type View,
 } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { genJwt } from '~/services/users/helpers';
 import { addDummyRootAndNest } from '~/services/v3/filters-v3.helper';
 import { isEE, isOnPrem } from '~/utils';
 import { filterBuilder } from '~/utils/api-v3-data-transformation.builder';
 
 const webhookLogLevel =
-  process.env.NC_WEBHOOK_LOG_LEVEL || process.env.NC_AUTOMATION_LOG_LEVEL;
+  process.env.ATMOSPHERE_WEBHOOK_LOG_LEVEL || process.env.ATMOSPHERE_AUTOMATION_LOG_LEVEL;
 
 interface WebhookResponseLog {
   status: number;
@@ -296,17 +296,17 @@ export class WebhookInvoker {
           // view_name: view?.title,
           ...(prevData && {
             previous_rows: Array.isArray(prevData)
-              ? prevData.map((prev) => ({ ...prev, nc_order: undefined }))
-              : [{ ...prevData, nc_order: undefined }],
+              ? prevData.map((prev) => ({ ...prev, atm_order: undefined }))
+              : [{ ...prevData, atm_order: undefined }],
           }),
           ...(!isBulkInsert &&
             newData && {
               rows: Array.isArray(newData)
                 ? newData.map((each) => ({
                     ...each,
-                    nc_order: undefined,
+                    atm_order: undefined,
                   }))
-                : [{ ...newData, nc_order: undefined }],
+                : [{ ...newData, atm_order: undefined }],
             }),
           ...(isBulkInsert && {
             rows_inserted: Array.isArray(newData)
@@ -324,7 +324,7 @@ export class WebhookInvoker {
   }
 
   public async invoke(
-    context: NcContext,
+    context: AtContext,
     param: {
       hook: Hook;
       model: Model;
@@ -494,7 +494,7 @@ export class WebhookInvoker {
               html: parseBody(notification?.payload?.body, webhookData, vars),
             };
             const res = await (
-              await NcPluginMgrv2.emailAdapter(false)
+              await AtPluginMgrv2.emailAdapter(false)
             )?.mailSend(parsedPayload);
             if (webhookLogLevel === 'ALL' || (isEE && !webhookLogLevel)) {
               hookLog = {
@@ -575,7 +575,7 @@ export class WebhookInvoker {
             );
 
             if (!script.script || hasInputCalls(script.script)) {
-              NcError.get(context).notImplemented(
+              AtError.get(context).notImplemented(
                 'Script with input calls is not supported',
               );
             }
@@ -585,12 +585,12 @@ export class WebhookInvoker {
                 ...notification?.payload,
                 headers: [
                   {
-                    name: 'nc-script-id',
+                    name: 'atm-script-id',
                     value: script.id,
                     enabled: true,
                   },
                   {
-                    name: 'nc-script-title',
+                    name: 'atm-script-title',
                     value: script.title,
                     enabled: true,
                   },
@@ -622,11 +622,11 @@ export class WebhookInvoker {
                 conditions: JSON.stringify(filters),
               },
               req: {
-                user: NOCO_SERVICE_USERS[ServiceUserType.AUTOMATION_USER],
+                user: ATMOSPHERE_SERVICE_USERS[ServiceUserType.AUTOMATION_USER],
                 headers: {
                   'xc-auth': genJwt(
                     {
-                      ...NOCO_SERVICE_USERS[ServiceUserType.AUTOMATION_USER],
+                      ...ATMOSPHERE_SERVICE_USERS[ServiceUserType.AUTOMATION_USER],
                       extra: {
                         context: {
                           ...context,
@@ -634,7 +634,7 @@ export class WebhookInvoker {
                         },
                       },
                     },
-                    Noco.getConfig(),
+                    Atmosphere.getConfig(),
                     {
                       expiresIn: '10m',
                     },
@@ -656,7 +656,7 @@ export class WebhookInvoker {
             });
 
             const res = await (
-              await NcPluginMgrv2.webhookNotificationAdapters(notification.type)
+              await AtPluginMgrv2.webhookNotificationAdapters(notification.type)
             ).sendMessage(
               parseBody(notification?.payload?.body, webhookData, vars),
               JSON.parse(
@@ -746,7 +746,7 @@ export class WebhookInvoker {
           ) {
             errorMessage = `Connection to a private network IP is blocked for security reasons.`;
             if (!isEE || isOnPrem) {
-              errorMessage += ` If this is intentional, set NC_ALLOW_LOCAL_HOOKS=true to allow local network webhooks.`;
+              errorMessage += ` If this is intentional, set ATMOSPHERE_ALLOW_LOCAL_HOOKS=true to allow local network webhooks.`;
             }
             throw new Error(errorMessage);
           }

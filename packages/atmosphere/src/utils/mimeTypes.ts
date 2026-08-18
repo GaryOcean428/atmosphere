@@ -419,7 +419,7 @@ export default {
   ngdat: 'application/vnd.nokia.n-gage.data',
   'n-gage': 'application/vnd.nokia.n-gage.symbian.install',
   ncx: 'application/x-dtbncx+xml',
-  nc: 'application/x-netcdf',
+  atm: 'application/x-netcdf',
   nlu: 'application/vnd.neurolanguage.nlu',
   dna: 'application/vnd.dna',
   nnd: 'application/vnd.noblenet-directory',

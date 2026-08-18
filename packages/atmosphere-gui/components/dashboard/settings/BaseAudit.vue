@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Tooltip as ATooltip, Empty } from 'ant-design-vue'
-import type { AuditType } from 'nocodb-sdk'
-import { timeAgo } from 'nocodb-sdk'
+import type { AuditType } from 'atmosphere-sdk'
+import { timeAgo } from 'atmosphere-sdk'
 
 interface Props {
   sourceId: string
@@ -104,23 +104,23 @@ const columns = [
 
 <template>
   <div class="h-full flex flex-col gap-4 w-full">
-    <div v-if="!appInfo.auditEnabled" class="text-nc-content-red-medium">
+    <div v-if="!appInfo.auditEnabled" class="text-atm-content-red-medium">
       Audit logs are currently disabled by administrators.
     </div>
     <div class="flex flex-row justify-between items-center">
       <h6 class="mb-4 first-letter:capital font-bold">Audit : {{ base.title }}</h6>
       <a-button class="self-start !rounded-md" @click="loadAudits">
         <!-- Reload -->
-        <div class="flex items-center gap-2 text-nc-content-gray-subtle2 font-light">
+        <div class="flex items-center gap-2 text-atm-content-gray-subtle2 font-light">
           <component :is="iconMap.reload" :class="{ 'animate-infinite animate-spin !text-success': isLoading }" />
           {{ $t('general.reload') }}
         </div>
       </a-button>
     </div>
 
-    <div class="h-[calc(100%_-_102px)] overflow-y-auto nc-scrollbar-thin">
+    <div class="h-[calc(100%_-_102px)] overflow-y-auto atm-scrollbar-thin">
       <a-table
-        class="nc-audit-table w-full"
+        class="atm-audit-table w-full"
         size="small"
         :data-source="audits ?? []"
         :columns="columns"
@@ -149,7 +149,7 @@ const columns = [
 </template>
 
 <style lang="scss" scoped>
-.nc-audit-table pre {
+.atm-audit-table pre {
   display: table;
   table-layout: fixed;
   width: 100%;
@@ -160,7 +160,7 @@ const columns = [
 
 .pagination {
   .ant-select-dropdown {
-    @apply !border-1 !border-nc-border-gray-medium;
+    @apply !border-1 !border-atm-border-gray-medium;
   }
 }
 </style>

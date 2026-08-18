@@ -1,9 +1,9 @@
-import { UITypes } from 'nocodb-sdk';
-import type { BoolType, KanbanType, MetaType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import { UITypes } from 'atmosphere-sdk';
+import type { BoolType, KanbanType, MetaType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import View from '~/models/View';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import {
@@ -37,13 +37,13 @@ export default class KanbanView implements KanbanType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let view =
       viewId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.KANBAN_VIEW}:${viewId}`,
         CacheGetType.TYPE_OBJECT,
@@ -60,16 +60,16 @@ export default class KanbanView implements KanbanType {
 
       view = prepareForResponse(view);
 
-      await NocoCache.set(context, `${CacheScope.KANBAN_VIEW}:${viewId}`, view);
+      await AtmosphereCache.set(context, `${CacheScope.KANBAN_VIEW}:${viewId}`, view);
     }
 
     return view && new KanbanView(view);
   }
 
   public static async getViewsByGroupingColId(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return await ncMeta.metaList2(
       context.workspace_id,
@@ -84,9 +84,9 @@ export default class KanbanView implements KanbanType {
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     view: Partial<KanbanView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const columns = await View.get(context, view.fk_view_id, false, ncMeta)
       .then((v) => v?.getModel(context, ncMeta))
@@ -135,10 +135,10 @@ export default class KanbanView implements KanbanType {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     kanbanId: string,
     body: Partial<KanbanView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, [
       'fk_cover_image_col_id',
@@ -157,7 +157,7 @@ export default class KanbanView implements KanbanType {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.KANBAN_VIEW}:${kanbanId}`,
       prepareForResponse(updateObj),

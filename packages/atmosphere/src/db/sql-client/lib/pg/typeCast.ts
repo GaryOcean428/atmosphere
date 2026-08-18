@@ -1,5 +1,5 @@
-import { UITypes } from 'nocodb-sdk';
-import { NcError } from '~/helpers/ncError';
+import { UITypes } from 'atmosphere-sdk';
+import { AtError } from '~/helpers/ncError';
 import { DATE_FORMATS, TIME_FORMATS } from '~/db/sql-client/lib/pg/constants';
 
 /*
@@ -66,7 +66,7 @@ function generateBooleanCastQuery(columnName: string): string {
  */
 function generateDateTimeCastQuery(source: string, dateFormat: string) {
   if (!(dateFormat in DATE_FORMATS)) {
-    NcError.badRequest(`Invalid date format: ${dateFormat}`);
+    AtError.badRequest(`Invalid date format: ${dateFormat}`);
   }
 
   const timeFormats =

@@ -1,10 +1,10 @@
 import { promisify } from 'util';
 import { Injectable } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { genJwt } from '~/services/users/helpers';
 import { UsersService } from '~/services/users/users.service';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 export class CreateUserDto {
   readonly username: string;
@@ -29,7 +29,7 @@ export class AuthService {
       // 1. If the user is invited and yet to set password
       // 2. If the user is created via non email-password auth (OAuth)
       if (!user.salt) {
-        return NcError.badRequest(
+        return AtError.badRequest(
           'If invited, sign up via the email link; otherwise, use forgot password or contact the super admin.',
         );
       }
@@ -50,7 +50,7 @@ export class AuthService {
     delete user.salt;
     const payload = user;
     return {
-      token: genJwt(payload, Noco.getConfig()),
+      token: genJwt(payload, Atmosphere.getConfig()),
     };
   }
 }

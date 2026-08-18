@@ -1,8 +1,8 @@
-import type { BoolType, MetaType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { BoolType, MetaType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import View from '~/models/View';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { deserializeJSON } from '~/utils/serialize';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
@@ -26,13 +26,13 @@ export default class CalendarViewColumn {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     calendarViewColumnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let viewColumn =
       calendarViewColumnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.CALENDAR_VIEW_COLUMN}:${calendarViewColumnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -50,7 +50,7 @@ export default class CalendarViewColumn {
             ? JSON.parse(viewColumn.meta)
             : viewColumn.meta;
 
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.CALENDAR_VIEW_COLUMN}:${calendarViewColumnId}`,
           viewColumn,
@@ -62,9 +62,9 @@ export default class CalendarViewColumn {
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     column: Partial<CalendarViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(column, [
       'fk_view_id',
@@ -114,7 +114,7 @@ export default class CalendarViewColumn {
     }
 
     return this.get(context, id, ncMeta).then(async (viewColumn) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.CALENDAR_VIEW_COLUMN,
         [column.fk_view_id],
@@ -125,11 +125,11 @@ export default class CalendarViewColumn {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<CalendarViewColumn[]> {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.CALENDAR_VIEW_COLUMN,
       [viewId],
@@ -155,7 +155,7 @@ export default class CalendarViewColumn {
         viewColumn.meta = deserializeJSON(viewColumn.meta);
       }
 
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.CALENDAR_VIEW_COLUMN,
         [viewId],
@@ -171,10 +171,10 @@ export default class CalendarViewColumn {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     body: Partial<CalendarViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, [
       'show',
@@ -193,7 +193,7 @@ export default class CalendarViewColumn {
       columnId,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.CALENDAR_VIEW_COLUMN}:${columnId}`,
       updateObj,

@@ -8,19 +8,19 @@ import type { GeneralLoaderProps } from '../general/Loader.vue'
  * Button component
  *
  * @example
- * <NcButton type="primary" size="medium" :loading="loading" @click="onClick">
+ * <AtButton type="primary" size="medium" :loading="loading" @click="onClick">
  *  Save
  *  <template #loading> {{ $t('general.saving') }} </template>
- * </NcButton>
+ * </AtButton>
  */
 
-export interface NcButtonProps {
+export interface AtButtonProps {
   loading?: boolean
   disabled?: boolean
   showAsDisabled?: boolean
   type?: ButtonType | 'danger' | 'secondary' | undefined
-  size?: NcButtonSize
-  mobileSize?: NcButtonSize
+  size?: AtButtonSize
+  mobileSize?: AtButtonSize
   loaderSize?: GeneralLoaderProps['size']
   centered?: boolean
   fullWidth?: boolean
@@ -34,7 +34,7 @@ export interface NcButtonProps {
   hideFocus?: boolean
 }
 
-const props = withDefaults(defineProps<NcButtonProps>(), {
+const props = withDefaults(defineProps<AtButtonProps>(), {
   disabled: false,
   showAsDisabled: false,
   size: 'medium',
@@ -56,7 +56,7 @@ const slots = useSlots()
 
 const { isMobileMode } = useGlobal()
 
-const NcButton = ref<HTMLElement | null>(null)
+const AtButton = ref<HTMLElement | null>(null)
 
 const { size, mobileSize, loaderSize, type, theme, bordered } = toRefs(props)
 
@@ -91,14 +91,14 @@ const onBlur = () => {
   isClicked.value = false
 }
 
-useEventListener(NcButton, 'mousedown', () => {
+useEventListener(AtButton, 'mousedown', () => {
   isClicked.value = true
 })
 </script>
 
 <template>
   <a-button
-    ref="NcButton"
+    ref="AtButton"
     :class="{
       'small': buttonSize === 'small',
       'medium': buttonSize === 'medium',
@@ -110,15 +110,15 @@ useEventListener(NcButton, 'mousedown', () => {
       'theme-ai': theme === 'ai',
       'theme-orange': theme === 'orange',
       'bordered': bordered,
-      'nc-btn-shadow': shadow,
-      'nc-show-as-disabled': props.showAsDisabled,
-      'nc-text-primary': textColor === 'primary',
+      'atm-btn-shadow': shadow,
+      'atm-show-as-disabled': props.showAsDisabled,
+      'atm-text-primary': textColor === 'primary',
     }"
     :disabled="props.disabled"
     :loading="loading"
     :tabindex="props.disabled ? -1 : 0"
     :type="type"
-    class="nc-button"
+    class="atm-button"
     @blur="onBlur"
     @focus="onFocus"
   >
@@ -130,7 +130,7 @@ useEventListener(NcButton, 'mousedown', () => {
         },
         innerClass,
       ]"
-      class="flex flex-row gap-x-2.5 nc-btn-inner w-full"
+      class="flex flex-row gap-x-2.5 atm-btn-inner w-full"
     >
       <template v-if="iconPosition === 'left'">
         <slot v-if="loading" name="loadingIcon">
@@ -167,9 +167,9 @@ useEventListener(NcButton, 'mousedown', () => {
   display: none !important;
 }
 
-.nc-button {
+.atm-button {
   // Not Icon
-  :not(.nc-icon):not(.material-symbols) {
+  :not(.atm-icon):not(.material-symbols) {
     line-height: 0.95;
   }
   > .ant-btn-loading-icon {
@@ -177,119 +177,119 @@ useEventListener(NcButton, 'mousedown', () => {
   }
 }
 
-.nc-button {
+.atm-button {
   @apply !xs:(outline-none);
 
-  &.nc-btn-shadow {
+  &.atm-btn-shadow {
     box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.06), 0px 5px 3px -2px rgba(0, 0, 0, 0.02);
   }
   outline: none;
 }
 
 .desktop {
-  .nc-button.ant-btn.focused {
+  .atm-button.ant-btn.focused {
     &.theme-default {
-      box-shadow: 0px 0px 0px 2px var(--nc-bg-default), 0px 0px 0px 4px var(--nc-brand-accent);
+      box-shadow: 0px 0px 0px 2px var(--atm-bg-default), 0px 0px 0px 4px var(--atm-brand-accent);
     }
 
     &.theme-ai {
-      box-shadow: 0px 0px 0px 2px var(--nc-bg-default), 0px 0px 0px 4px #7d26cd;
+      box-shadow: 0px 0px 0px 2px var(--atm-bg-default), 0px 0px 0px 4px #7d26cd;
     }
   }
 
-  .nc-button.ant-btn-text.focused {
+  .atm-button.ant-btn-text.focused {
     &.theme-default {
-      @apply text-nc-content-brand;
+      @apply text-atm-content-brand;
     }
 
     &.theme-ai {
-      @apply text-nc-content-purple-dark;
+      @apply text-atm-content-purple-dark;
     }
   }
 }
 
-.nc-button.ant-btn {
+.atm-button.ant-btn {
   @apply rounded-lg font-medium;
 }
 
-.nc-button.ant-btn.small {
+.atm-button.ant-btn.small {
   @apply py-1 px-1.75 h-8 min-w-8;
 }
 
-.nc-button.ant-btn.medium {
+.atm-button.ant-btn.medium {
   @apply py-2 px-4 h-10 min-w-10 xs:(h-10.5 max-h-10.5 min-w-10.5 !px-3);
 }
 
-.nc-button.ant-btn.size-xs {
+.atm-button.ant-btn.size-xs {
   @apply px-2 py-0 h-7 min-w-7 rounded-lg text-small leading-[18px];
 
   & > div {
     @apply gap-x-2;
   }
 }
-.nc-button.ant-btn.xsmall {
+.atm-button.ant-btn.xsmall {
   @apply p-0.25 h-6.25 min-w-6.25 rounded-md;
 }
 
-.nc-button.ant-btn.xxsmall {
+.atm-button.ant-btn.xxsmall {
   @apply p-0 h-5.75 min-w-5.75 rounded-md;
 }
 
-.nc-button.ant-btn[disabled],
-.ant-btn-text.nc-button.ant-btn[disabled] {
+.atm-button.ant-btn[disabled],
+.ant-btn-text.atm-button.ant-btn[disabled] {
   box-shadow: none !important;
 
   @apply border-0 !cursor-not-allowed;
 
   &.theme-default {
-    @apply bg-nc-bg-gray-extralight text-nc-content-brand-hover md:(hover:bg-nc-bg-gray-extralight);
+    @apply bg-atm-bg-gray-extralight text-atm-content-brand-hover md:(hover:bg-atm-bg-gray-extralight);
   }
 
   &.theme-ai {
-    @apply bg-nc-bg-purple-light text-nc-content-purple-light md:(hover:bg-nc-bg-purple-light);
+    @apply bg-atm-bg-purple-light text-atm-content-purple-light md:(hover:bg-atm-bg-purple-light);
   }
 
   &.theme-orange {
-    @apply bg-nc-bg-orange-light text-nc-content-orange-light md:(hover:bg-nc-bg-orange-light);
+    @apply bg-atm-bg-orange-light text-atm-content-orange-light md:(hover:bg-atm-bg-orange-light);
   }
 }
 
-.nc-button.ant-btn.nc-show-as-disabled,
-.ant-btn-text.nc-button.ant-btn.nc-show-as-disabled {
+.atm-button.ant-btn.atm-show-as-disabled,
+.ant-btn-text.atm-button.ant-btn.atm-show-as-disabled {
   box-shadow: none !important;
 
   @apply border-0;
 
   &.theme-default {
-    @apply bg-nc-bg-gray-extralight text-nc-content-brand-hover md:(hover:bg-nc-bg-gray-extralight);
+    @apply bg-atm-bg-gray-extralight text-atm-content-brand-hover md:(hover:bg-atm-bg-gray-extralight);
   }
 
   &.theme-ai {
-    @apply bg-nc-bg-purple-light text-nc-content-purple-light md:(hover:bg-nc-bg-purple-light);
+    @apply bg-atm-bg-purple-light text-atm-content-purple-light md:(hover:bg-atm-bg-purple-light);
   }
 
   &.theme-orange {
-    @apply bg-nc-bg-orange-light text-nc-content-orange-light md:(hover:bg-nc-bg-orange-light);
+    @apply bg-atm-bg-orange-light text-atm-content-orange-light md:(hover:bg-atm-bg-orange-light);
   }
 }
-.nc-button.ant-btn.nc-text-primary {
-  &:not(.nc-show-as-disabled):not(:disabled) {
+.atm-button.ant-btn.atm-text-primary {
+  &:not(.atm-show-as-disabled):not(:disabled) {
     &.theme-default {
-      @apply text-nc-content-brand md:(hover:text-nc-content-brand);
+      @apply text-atm-content-brand md:(hover:text-atm-content-brand);
     }
   }
 }
 
-.nc-button.ant-btn-text.ant-btn[disabled],
-.nc-button.ant-btn-text.ant-btn.nc-show-as-disabled {
+.atm-button.ant-btn-text.ant-btn[disabled],
+.atm-button.ant-btn-text.ant-btn.atm-show-as-disabled {
   &.theme-default,
   &.theme-ai {
     @apply bg-transparent hover:bg-transparent;
   }
 }
 
-.nc-button.ant-btn-secondary[disabled],
-.nc-button.ant-btn-secondary.nc-show-as-disabled {
+.atm-button.ant-btn-secondary[disabled],
+.atm-button.ant-btn-secondary.atm-show-as-disabled {
   @apply border-1;
 
   &:not(.bordered) {
@@ -297,23 +297,23 @@ useEventListener(NcButton, 'mousedown', () => {
   }
 
   &.theme-default {
-    @apply bg-nc-bg-default hover:bg-nc-bg-default border-nc-border-gray-light text-nc-content-brand-hover;
+    @apply bg-atm-bg-default hover:bg-atm-bg-default border-atm-border-gray-light text-atm-content-brand-hover;
 
     &.bordered {
-      @apply border-nc-border-gray-light;
+      @apply border-atm-border-gray-light;
     }
   }
 
   &.theme-ai {
-    @apply bg-nc-bg-purple-light hover:bg-nc-bg-purple-light text-nc-content-purple-light;
+    @apply bg-atm-bg-purple-light hover:bg-atm-bg-purple-light text-atm-content-purple-light;
 
     &.bordered {
-      @apply border-nc-border-purple-light;
+      @apply border-atm-border-purple-light;
     }
   }
 }
 
-.nc-button.ant-btn-primary {
+.atm-button.ant-btn-primary {
   @apply border-0 xs:(hover:border-0) text-white !text-shadow-none;
 
   &.theme-default {
@@ -327,7 +327,7 @@ useEventListener(NcButton, 'mousedown', () => {
   // Orange CTA accent (base #f97316 / hover #e25e0e). Solid fill, no shadow,
   // theme-independent by design (same in light/dark). Hover/active only when
   // interactive — disabled state is handled by the [disabled]/show-as-disabled blocks.
-  &.theme-orange:not(:disabled):not(.nc-show-as-disabled) {
+  &.theme-orange:not(:disabled):not(.atm-show-as-disabled) {
     background: #f97316;
     box-shadow: none;
 
@@ -338,7 +338,7 @@ useEventListener(NcButton, 'mousedown', () => {
   }
 }
 
-.nc-button.ant-btn-secondary {
+.atm-button.ant-btn-secondary {
   @apply border-1;
 
   &:not(.bordered) {
@@ -346,37 +346,37 @@ useEventListener(NcButton, 'mousedown', () => {
   }
 
   &.theme-default {
-    @apply bg-nc-bg-default text-nc-content-inverted-secondary md:(hover:bg-nc-bg-gray-light);
+    @apply bg-atm-bg-default text-atm-content-inverted-secondary md:(hover:bg-atm-bg-gray-light);
 
     &.bordered {
-      @apply border-nc-border-gray-medium;
+      @apply border-atm-border-gray-medium;
     }
   }
 
   &.theme-ai {
-    @apply bg-nc-bg-purple-light text-nc-content-purple-dark md:(hover:bg-nc-bg-purple-dark);
+    @apply bg-atm-bg-purple-light text-atm-content-purple-dark md:(hover:bg-atm-bg-purple-dark);
 
     &.bordered {
-      @apply border-nc-border-purple-medium;
+      @apply border-atm-border-purple-medium;
     }
   }
 }
 
-.nc-button.ant-btn-danger {
+.atm-button.ant-btn-danger {
   @apply bg-red-500 border-0 hover:border-0 md:(hover:bg-red-600);
 }
 
-.nc-button.ant-btn-text {
+.atm-button.ant-btn-text {
   box-shadow: none;
 
   @apply bg-transparent border-0;
 
   &.theme-default {
-    @apply text-nc-content-inverted-secondary hover:text-nc-content-gray-emphasis hover:bg-nc-bg-gray-light;
+    @apply text-atm-content-inverted-secondary hover:text-atm-content-gray-emphasis hover:bg-atm-bg-gray-light;
   }
 
   &.theme-ai {
-    @apply text-nc-content-purple-dark hover:text-nc-content-purple-dark hover:bg-nc-bg-purple-dark;
+    @apply text-atm-content-purple-dark hover:text-atm-content-purple-dark hover:bg-atm-bg-purple-dark;
   }
 
   &:focus {
@@ -384,11 +384,11 @@ useEventListener(NcButton, 'mousedown', () => {
   }
 }
 
-.nc-button.ant-btn-link {
+.atm-button.ant-btn-link {
   box-shadow: none;
 }
 
 .ant-btn-ghost {
-  @apply border-nc-border-gray-medium text-nc-content-inverted-secondary;
+  @apply border-atm-border-gray-medium text-atm-content-inverted-secondary;
 }
 </style>

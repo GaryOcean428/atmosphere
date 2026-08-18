@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { isDateMonthFormat, isSystemColumn, parseDateWithFormat } from 'nocodb-sdk'
+import { isDateMonthFormat, isSystemColumn, parseDateWithFormat } from 'atmosphere-sdk'
 import { parseFlexibleDate } from '~/utils/datetimeUtils'
 
 interface Props {
@@ -139,7 +139,7 @@ const handleUpdateValue = (e: Event, save = false, valueToSave?: dayjs.Dayjs) =>
 const randomClass = `picker_${Math.floor(Math.random() * 99999)}`
 
 onClickOutside(datePickerRef, (e) => {
-  if ((e.target as HTMLElement)?.closest(`.${randomClass}, .nc-${randomClass}`)) return
+  if ((e.target as HTMLElement)?.closest(`.${randomClass}, .atm-${randomClass}`)) return
 
   datePickerRef.value?.blur?.()
   open.value = false
@@ -153,8 +153,8 @@ const onBlur = (e) => {
   }
 
   if (
-    (e?.relatedTarget as HTMLElement)?.closest(`.${randomClass}, .nc-${randomClass}`) ||
-    (e?.target as HTMLElement)?.closest(`.${randomClass}, .nc-${randomClass}`)
+    (e?.relatedTarget as HTMLElement)?.closest(`.${randomClass}, .atm-${randomClass}`) ||
+    (e?.target as HTMLElement)?.closest(`.${randomClass}, .atm-${randomClass}`)
   ) {
     return
   }
@@ -174,7 +174,7 @@ watch(
       datePickerRef.value?.focus?.()
 
       onClickOutside(document.querySelector(`.${randomClass}`)! as HTMLDivElement, (e) => {
-        if ((e?.target as HTMLElement)?.closest(`.nc-${randomClass}`)) {
+        if ((e?.target as HTMLElement)?.closest(`.atm-${randomClass}`)) {
           return
         }
         open.value = false
@@ -332,18 +332,18 @@ const currentDate = ($event) => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     :visible="isOpen"
     :auto-close="false"
     :trigger="['click']"
-    class="nc-cell-field"
-    :class="[`nc-${randomClass}`, { 'nc-null': modelValue === null && showNull }]"
-    :overlay-class-name="`${randomClass} nc-picker-date ${open ? 'active' : ''} !min-w-[260px]`"
+    class="atm-cell-field"
+    :class="[`atm-${randomClass}`, { 'atm-null': modelValue === null && showNull }]"
+    :overlay-class-name="`${randomClass} atm-picker-date ${open ? 'active' : ''} !min-w-[260px]`"
   >
     <div
       v-bind="$attrs"
       :title="localState?.format(dateFormat)"
-      class="nc-date-picker h-full flex items-center justify-between ant-picker-input relative"
+      class="atm-date-picker h-full flex items-center justify-between ant-picker-input relative"
     >
       <input
         v-if="!rawReadOnly"
@@ -351,7 +351,7 @@ const currentDate = ($event) => {
         type="text"
         :value="localState?.format(dateFormat) ?? ''"
         :placeholder="placeholder"
-        class="nc-date-input border-none outline-none !text-current bg-transparent !focus:(border-none outline-none ring-transparent)"
+        class="atm-date-input border-none outline-none !text-current bg-transparent !focus:(border-none outline-none ring-transparent)"
         :readonly="readOnly"
         @blur="onBlur"
         @focus="onFocus"
@@ -368,14 +368,14 @@ const currentDate = ($event) => {
       <GeneralIcon
         v-if="localState && !readOnly"
         icon="closeCircle"
-        class="nc-clear-date-icon nc-action-icon absolute right-0 top-[50%] transform -translate-y-1/2 invisible cursor-pointer"
+        class="atm-clear-date-icon atm-action-icon absolute right-0 top-[50%] transform -translate-y-1/2 invisible cursor-pointer"
         @click.stop="handleSelectDate()"
       />
     </div>
 
     <template #overlay>
       <div class="w-[256px]">
-        <NcDatePicker
+        <AtDatePicker
           v-if="picker === 'month'"
           v-model:page-date="tempDate"
           v-model:selected-date="localState"
@@ -385,7 +385,7 @@ const currentDate = ($event) => {
           :show-current-date-option="showCurrentDateOption"
           @current-date="currentDate"
         />
-        <NcDatePicker
+        <AtDatePicker
           v-else
           v-model:page-date="tempDate"
           :is-open="isOpen"
@@ -398,13 +398,13 @@ const currentDate = ($event) => {
         />
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
   <div v-if="!active && isGrid" class="absolute inset-0 z-90 cursor-pointer"></div>
 </template>
 
 <style scoped lang="scss">
-.nc-cell-field {
-  &:hover .nc-clear-date-icon {
+.atm-cell-field {
+  &:hover .atm-clear-date-icon {
     @apply visible;
   }
 }

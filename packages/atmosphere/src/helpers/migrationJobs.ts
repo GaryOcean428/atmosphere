@@ -1,7 +1,7 @@
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable, RootScopes } from '~/utils/globals';
 
-export const MIGRATION_JOBS_STORE_KEY = 'NC_MIGRATION_JOBS';
+export const MIGRATION_JOBS_STORE_KEY = 'ATMOSPHERE_MIGRATION_JOBS';
 
 const initState = {
   version: '0',
@@ -15,7 +15,7 @@ export const getMigrationJobsState = async (): Promise<{
   locked: boolean;
   instance?: string;
 }> => {
-  const ncMeta = Noco.ncMeta;
+  const ncMeta = Atmosphere.ncMeta;
 
   const qb = await ncMeta.metaGet(
     RootScopes.ROOT,
@@ -69,7 +69,7 @@ export const updateMigrationJobsState = async (
     instance?: string;
   },
 ) => {
-  const ncMeta = Noco.ncMeta;
+  const ncMeta = Atmosphere.ncMeta;
 
   const migrationJobsState = oldState || (await getMigrationJobsState());
 

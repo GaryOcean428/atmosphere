@@ -1,4 +1,4 @@
-import type { BaseVariableReqType, BaseVariableType } from 'nocodb-sdk'
+import type { BaseVariableReqType, BaseVariableType } from 'atmosphere-sdk'
 
 export const useBaseVariables = createSharedComposable(() => {
   const variables = ref<BaseVariableType[]>([])

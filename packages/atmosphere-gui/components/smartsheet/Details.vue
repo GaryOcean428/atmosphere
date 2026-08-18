@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PlanFeatureTypes } from 'nocodb-sdk'
+import { PlanFeatureTypes } from 'atmosphere-sdk'
 import { LoadingOutlined } from '@ant-design/icons-vue'
 
 const { openedViewsTab } = storeToRefs(useViewsStore())
@@ -82,15 +82,15 @@ watch(
 <template>
   <div
     class="flex flex-col h-full w-full"
-    data-testid="nc-details-wrapper"
+    data-testid="atm-details-wrapper"
     :class="{
-      'nc-details-tab-left-sidebar-close': !isLeftSidebarOpen,
+      'atm-details-tab-left-sidebar-close': !isLeftSidebarOpen,
     }"
   >
-    <NcTabs v-model:active-key="openedSubTab" centered class="nc-details-tab">
+    <AtTabs v-model:active-key="openedSubTab" centered class="atm-details-tab">
       <a-tab-pane v-if="shouldShowTab.field" key="field">
         <template #tab>
-          <div class="tab" data-testid="nc-fields-tab">
+          <div class="tab" data-testid="atm-fields-tab">
             <GeneralIcon icon="ncList" class="tab-icon" :class="{}" />
             <div>{{ $t('objects.fields') }}</div>
           </div>
@@ -99,7 +99,7 @@ watch(
       </a-tab-pane>
       <a-tab-pane v-if="shouldShowTab.permissions" key="permissions">
         <template #tab>
-          <div class="tab" data-testid="nc-permissions-tab">
+          <div class="tab" data-testid="atm-permissions-tab">
             <GeneralIcon icon="ncLock" class="tab-icon" :class="{}" />
             <div>{{ $t('general.permissions') }}</div>
             <LazyPaymentUpgradeBadge
@@ -122,7 +122,7 @@ watch(
       </a-tab-pane>
       <a-tab-pane key="relation">
         <template #tab>
-          <div class="tab" data-testid="nc-relations-tab">
+          <div class="tab" data-testid="atm-relations-tab">
             <GeneralIcon icon="ncErd" class="tab-icon" :class="{}" />
             <div>{{ $t('title.relations') }}</div>
           </div>
@@ -132,7 +132,7 @@ watch(
 
       <a-tab-pane key="api">
         <template #tab>
-          <div class="tab" data-testid="nc-apis-tab">
+          <div class="tab" data-testid="atm-apis-tab">
             <GeneralIcon icon="ncCode" class="tab-icon" :class="{}" />
             <div>{{ $t('labels.apiSnippet') }}</div>
           </div>
@@ -145,15 +145,15 @@ watch(
 
       <a-tab-pane v-if="shouldShowTab.webhook" key="webhook">
         <template #tab>
-          <div class="tab" data-testid="nc-webhooks-tab">
+          <div class="tab" data-testid="atm-webhooks-tab">
             <GeneralIcon icon="ncWebhook" class="tab-icon" />
             <div>{{ $t('objects.webhooks') }}</div>
-            <GeneralIcon v-if="hasV2Webhooks" icon="alertTriangleSolid" class="text-nc-content-orange-medium h-4 w-4" />
+            <GeneralIcon v-if="hasV2Webhooks" icon="alertTriangleSolid" class="text-atm-content-orange-medium h-4 w-4" />
           </div>
         </template>
         <LazySmartsheetDetailsWebhooks />
       </a-tab-pane>
-    </NcTabs>
+    </AtTabs>
   </div>
 </template>
 
@@ -162,7 +162,7 @@ watch(
   @apply flex flex-row items-center gap-x-1.5 pr-0.5;
 }
 
-:deep(.nc-details-tab > .ant-tabs-nav:first-of-type) {
+:deep(.atm-details-tab > .ant-tabs-nav:first-of-type) {
   min-height: calc(var(--toolbar-height) - 1px);
 
   .ant-tabs-tab {
@@ -172,7 +172,7 @@ watch(
 </style>
 
 <style lang="scss">
-.nc-details-tab.nc-tabs.centered {
+.atm-details-tab.atm-tabs.centered {
   > .ant-tabs-nav {
     @apply px-3;
     .ant-tabs-nav-wrap {
@@ -181,7 +181,7 @@ watch(
   }
 }
 
-.nc-details-tab-left-sidebar-close > .nc-details-tab.nc-tabs.centered {
+.atm-details-tab-left-sidebar-close > .atm-details-tab.atm-tabs.centered {
   > .ant-tabs-nav {
     @apply px-3;
     .ant-tabs-nav-wrap {

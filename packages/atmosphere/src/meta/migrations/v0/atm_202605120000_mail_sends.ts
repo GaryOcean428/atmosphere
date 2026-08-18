@@ -18,9 +18,9 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
     table.dateTime('sent_at').nullable();
 
-    table.index(['status', 'scheduled_for'], 'nc_mail_sends_dispatch_idx');
-    table.index(['fk_user_id', 'created_at'], 'nc_mail_sends_user_idx');
-    table.index('ses_message_id', 'nc_mail_sends_message_idx');
+    table.index(['status', 'scheduled_for'], 'atm_mail_sends_dispatch_idx');
+    table.index(['fk_user_id', 'created_at'], 'atm_mail_sends_user_idx');
+    table.index('ses_message_id', 'atm_mail_sends_message_idx');
   });
 
   // Partial unique index on (event, dedupe_key) for idempotency on deferred
@@ -31,7 +31,7 @@ const up = async (knex: Knex) => {
   const client = (knex.client.config.client as string) ?? '';
   if (client === 'pg') {
     await knex.raw(
-      `CREATE UNIQUE INDEX nc_mail_sends_dedupe_uq ON ?? (event, dedupe_key) WHERE dedupe_key IS NOT NULL`,
+      `CREATE UNIQUE INDEX atm_mail_sends_dedupe_uq ON ?? (event, dedupe_key) WHERE dedupe_key IS NOT NULL`,
       [MetaTable.MAIL_SENDS],
     );
   }
@@ -44,13 +44,13 @@ const up = async (knex: Knex) => {
     t.dateTime('last_active_at').nullable();
   });
   await knex.schema.alterTable(MetaTable.USERS, (t) => {
-    t.index(['last_active_at'], 'nc_users_v2_last_active_at_idx');
+    t.index(['last_active_at'], 'atm_users_v2_last_active_at_idx');
   });
 };
 
 const down = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.USERS, (t) => {
-    t.dropIndex(['last_active_at'], 'nc_users_v2_last_active_at_idx');
+    t.dropIndex(['last_active_at'], 'atm_users_v2_last_active_at_idx');
   });
   await knex.schema.alterTable(MetaTable.USERS, (t) => {
     t.dropColumn('last_active_at');

@@ -1,4 +1,4 @@
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 
 /**
  * Wraps a field-hide action with a warning modal when the column is a

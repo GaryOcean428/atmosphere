@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, UITypes, roundUpToPrecision } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, roundUpToPrecision } from 'atmosphere-sdk'
 
 interface Props {
   modelValue: number | null | undefined
@@ -39,7 +39,7 @@ const currency = computed(() => {
 
 <template>
   <!-- only show the numeric value as previously string value was accepted -->
-  <div v-if="!isNaN(props.modelValue)" class="nc-cell-field truncate">{{ currency }}</div>
+  <div v-if="!isNaN(props.modelValue)" class="atm-cell-field truncate">{{ currency }}</div>
 
   <!-- possibly unexpected string / null with showNull == false  -->
   <span v-else />

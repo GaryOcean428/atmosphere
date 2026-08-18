@@ -39,14 +39,14 @@ const onKeydown = (e: KeyboardEvent) => {
     ref="inputRef"
     v-model:value="vModel"
     type="text"
-    class="nc-base-search-input nc-input-border-on-value nc-input-shadow !h-8 !px-2.5 !py-1 !rounded-lg"
+    class="atm-base-search-input atm-input-border-on-value atm-input-shadow !h-8 !px-2.5 !py-1 !rounded-lg"
     :placeholder="placeholder"
     allow-clear
     :readonly="isLoading"
     @keydown="onKeydown"
   >
     <template #prefix>
-      <GeneralIcon icon="search" class="mr-1 h-4 w-4 text-nc-content-gray-muted group-hover:text-nc-content-gray-extreme" />
+      <GeneralIcon icon="search" class="mr-1 h-4 w-4 text-atm-content-gray-muted group-hover:text-atm-content-gray-extreme" />
     </template>
   </a-input>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { VNodeRef } from '@vue/runtime-core'
-import { ColumnHelper, UITypes, roundUpToPrecision } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, roundUpToPrecision } from 'atmosphere-sdk'
 
 interface Props {
   modelValue: number | null | undefined
@@ -135,7 +135,7 @@ onMounted(() => {
 <template>
   <div
     v-if="isForm && !isEditColumn && editEnabled && !hidePrefix"
-    class="nc-currency-code h-full !bg-nc-bg-gray-light border-r border-nc-border-gray-medium px-3 mr-1 flex items-center"
+    class="atm-currency-code h-full !bg-atm-bg-gray-light border-r border-atm-border-gray-medium px-3 mr-1 flex items-center"
   >
     <span>
       {{ currencyMeta.currency_code }}
@@ -147,7 +147,7 @@ onMounted(() => {
     :ref="focus"
     v-model="vModel"
     type="number"
-    class="nc-cell-field h-full border-none rounded-md py-1 outline-none focus:outline-none focus:ring-0"
+    class="atm-cell-field h-full border-none rounded-md py-1 outline-none focus:outline-none focus:ring-0"
     :class="isForm && !isEditColumn && !hidePrefix ? 'flex flex-1' : 'w-full'"
     :placeholder="placeholder"
     :disabled="readOnly"
@@ -169,7 +169,7 @@ onMounted(() => {
     :ref="focus"
     :value="currency"
     type="text"
-    class="nc-cell-field h-full border-none rounded-md py-1 outline-none focus:outline-none focus:ring-0"
+    class="atm-cell-field h-full border-none rounded-md py-1 outline-none focus:outline-none focus:ring-0"
     :class="isForm && !isEditColumn && !hidePrefix ? 'flex flex-1' : 'w-full'"
     :placeholder="placeholder"
     :disabled="readOnly"

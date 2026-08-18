@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { OrgUserReqType } from 'nocodb-sdk'
-import { EnterpriseOrgUserRoles, NC_DEFAULT_ORG_ID, OrgUserRoles } from 'nocodb-sdk'
+import type { OrgUserReqType } from 'atmosphere-sdk'
+import { EnterpriseOrgUserRoles, ATMOSPHERE_DEFAULT_ORG_ID, OrgUserRoles } from 'atmosphere-sdk'
 interface Props {
   show: boolean
   selectedUser?: User
@@ -124,7 +124,7 @@ const submitInvite = async (payloadEmails: string[]) => {
   $e('a:org-user:invite', { role: inviteData.role })
 
   try {
-    const orgId = hasOrgRoles.value ? appInfo.value.defaultOrgId || NC_DEFAULT_ORG_ID : undefined
+    const orgId = hasOrgRoles.value ? appInfo.value.defaultOrgId || ATMOSPHERE_DEFAULT_ORG_ID : undefined
 
     const results: { email: string; token: string }[] = []
 
@@ -214,11 +214,11 @@ const clickInviteMore = () => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     :visible="show"
     :show-separator="false"
     size="medium"
-    class="nc-modal-invite-user"
+    class="atm-modal-invite-user"
     @update:visible="
       (val) => {
         if (!val) emit('closed')
@@ -237,7 +237,7 @@ const clickInviteMore = () => {
           <div class="flex flex-col gap-3 pb-4">
             <!-- Single user: show invite URL inline -->
             <template v-if="isSingleInvite">
-              <NcAlert
+              <AtAlert
                 type="success"
                 :message="singleInviteUrl"
                 message-class="!text-green-700 !text-bodyDefaultSm"
@@ -246,14 +246,14 @@ const clickInviteMore = () => {
                 :copy-text-toast-message="$t('msg.toast.inviteUrlCopy')"
                 class="!p-3"
               />
-              <div class="text-xs text-nc-content-gray-muted ml-1">
+              <div class="text-xs text-atm-content-gray-muted ml-1">
                 {{ $t('msg.info.userInviteNoSMTP') }}
               </div>
             </template>
 
             <!-- Multiple users: note to use actions menu -->
             <template v-else>
-              <NcAlert
+              <AtAlert
                 type="warning"
                 :message="$t('msg.info.userInviteNoSMTPBulk')"
                 message-class="!text-bodyDefaultSm"
@@ -262,9 +262,9 @@ const clickInviteMore = () => {
             </template>
 
             <div class="flex justify-end">
-              <NcButton size="small" type="secondary" @click="clickInviteMore">
+              <AtButton size="small" type="secondary" @click="clickInviteMore">
                 {{ $t('activity.inviteMore') }}
-              </NcButton>
+              </AtButton>
             </div>
           </div>
         </template>
@@ -277,7 +277,7 @@ const clickInviteMore = () => {
                 'border-primary/100 shadow-selected': isDivFocused,
                 'p-1': emailBadges.length > 0,
               }"
-              class="flex items-center flex-wrap border-1 gap-1 w-full overflow-x-scroll nc-scrollbar-x-md min-h-10 rounded-lg md:!min-w-96"
+              class="flex items-center flex-wrap border-1 gap-1 w-full overflow-x-scroll atm-scrollbar-x-md min-h-10 rounded-lg md:!min-w-96"
               tabindex="0"
               @blur="isDivFocused = false"
               @click="focusOnDiv"
@@ -285,12 +285,12 @@ const clickInviteMore = () => {
               <span
                 v-for="(email, index) in emailBadges"
                 :key="email"
-                class="border-1 text-nc-content-gray bg-nc-bg-gray-light rounded-md flex items-center px-1 whitespace-nowrap"
+                class="border-1 text-atm-content-gray bg-atm-bg-gray-light rounded-md flex items-center px-1 whitespace-nowrap"
               >
                 {{ email }}
                 <component
                   :is="iconMap.close"
-                  class="ml-0.5 hover:(cursor-pointer text-nc-content-gray-subtle) mt-0.5 w-4 h-4 text-nc-content-gray-subtle2"
+                  class="ml-0.5 hover:(cursor-pointer text-atm-content-gray-subtle) mt-0.5 w-4 h-4 text-atm-content-gray-subtle2"
                   @click="removeEmail(index)"
                 />
               </span>
@@ -300,7 +300,7 @@ const clickInviteMore = () => {
                 inputmode="email"
                 :disabled="isLoading"
                 :placeholder="$t('labels.email')"
-                data-testid="nc-invite-email-input"
+                data-testid="atm-invite-email-input"
                 class="flex-1 md:min-w-36 outline-none px-2"
                 @blur="isDivFocused = false"
                 @keyup.enter="handleEnter"
@@ -315,7 +315,7 @@ const clickInviteMore = () => {
                   :on-role-change="onRoleChange"
                   :role="inviteData.role"
                   :roles="allowedRoles"
-                  class="!min-w-[152px] nc-invite-role-selector"
+                  class="!min-w-[152px] atm-invite-role-selector"
                   size="lg"
                   placement="bottomRight"
                 />
@@ -328,13 +328,13 @@ const clickInviteMore = () => {
 
     <div v-if="!hasInviteResults" class="flex mt-8 justify-end">
       <div class="flex gap-2">
-        <NcButton type="secondary" @click="emit('closed')">
+        <AtButton type="secondary" @click="emit('closed')">
           {{ $t('labels.cancel') }}
-        </NcButton>
-        <NcButton :disabled="isInviteDisabled || isLoading" :loading="isLoading" size="medium" type="primary" @click="saveUser">
+        </AtButton>
+        <AtButton :disabled="isInviteDisabled || isLoading" :loading="isLoading" size="medium" type="primary" @click="saveUser">
           {{ $t('activity.invite') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>

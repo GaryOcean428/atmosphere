@@ -11,7 +11,7 @@ defineProps<{
 <template>
   <div
     role="button"
-    class="nc-base-view-all-table-btn"
+    class="atm-base-view-all-table-btn"
     :class="{
       disabled,
       'loading cursor-wait': isLoading,
@@ -29,9 +29,9 @@ defineProps<{
         <a-skeleton v-if="isLoading" active :title="false" :paragraph="{ rows: 1 }" />
 
         <slot v-else name="label">
-          <NcTooltip :title="label" show-on-truncate-only class="min-w-0 truncate">
+          <AtTooltip :title="label" show-on-truncate-only class="min-w-0 truncate">
             {{ label }}
-          </NcTooltip>
+          </AtTooltip>
         </slot>
       </div>
       <div v-if="$slots.subtext || subtext || isLoading" class="subtext">
@@ -46,15 +46,15 @@ defineProps<{
 </template>
 
 <style lang="scss" scoped>
-.nc-base-view-all-table-btn {
-  @apply flex-none flex flex-col gap-y-3 p-4 bg-nc-bg-gray-extralight rounded-xl border-1 border-nc-border-gray-light min-w-[230px] max-w-[245px] text-nc-content-gray transition-all duration-300;
+.atm-base-view-all-table-btn {
+  @apply flex-none flex flex-col gap-y-3 p-4 bg-atm-bg-gray-extralight rounded-xl border-1 border-atm-border-gray-light min-w-[230px] max-w-[245px] text-atm-content-gray transition-all duration-300;
 
   &.disabled {
-    @apply bg-nc-bg-gray-extralight text-nc-content-gray-disabled hover:bg-nc-bg-gray-extralight cursor-not-allowed;
+    @apply bg-atm-bg-gray-extralight text-atm-content-gray-disabled hover:bg-atm-bg-gray-extralight cursor-not-allowed;
   }
 
   &:hover:not(.loading) {
-    @apply bg-nc-bg-gray-light border-nc-border-gray-medium;
+    @apply bg-atm-bg-gray-light border-atm-border-gray-medium;
     box-shadow: 0px 0px 4px 0px rgba(var(--rgb-base), 0.08);
   }
 
@@ -62,16 +62,16 @@ defineProps<{
     @apply w-8 h-8 flex items-center;
   }
 
-  .nc-icon {
+  .atm-icon {
     @apply flex-none h-10 w-10;
   }
 
   .label {
-    @apply text-base font-bold whitespace-nowrap text-nc-content-gray;
+    @apply text-base font-bold whitespace-nowrap text-atm-content-gray;
   }
 
   .subtext {
-    @apply text-xs text-nc-content-gray-subtle2;
+    @apply text-xs text-atm-content-gray-subtle2;
   }
 
   :deep(.ant-skeleton-title) {

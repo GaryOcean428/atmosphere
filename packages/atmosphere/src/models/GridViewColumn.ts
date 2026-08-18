@@ -2,13 +2,13 @@ import {
   type BoolType,
   type GridColumnType,
   VIEW_GRID_DEFAULT_WIDTH,
-} from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import type Upgrader from '~/Upgrader';
 import View from '~/models/View';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 
 export default class GridViewColumn implements GridColumnType {
@@ -35,11 +35,11 @@ export default class GridViewColumn implements GridColumnType {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<GridViewColumn[]> {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.GRID_VIEW_COLUMN,
       [viewId],
@@ -60,7 +60,7 @@ export default class GridViewColumn implements GridColumnType {
           },
         },
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.GRID_VIEW_COLUMN,
         [viewId],
@@ -76,13 +76,13 @@ export default class GridViewColumn implements GridColumnType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     gridViewColumnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let viewColumn =
       gridViewColumnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.GRID_VIEW_COLUMN}:${gridViewColumnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -95,7 +95,7 @@ export default class GridViewColumn implements GridColumnType {
         gridViewColumnId,
       );
       if (viewColumn) {
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.GRID_VIEW_COLUMN}:${gridViewColumnId}`,
           viewColumn,
@@ -106,9 +106,9 @@ export default class GridViewColumn implements GridColumnType {
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     column: Partial<GridViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(column, [
       'fk_view_id',
@@ -168,7 +168,7 @@ export default class GridViewColumn implements GridColumnType {
     }
 
     return this.get(context, id, ncMeta).then(async (viewColumn) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.GRID_VIEW_COLUMN,
         [column.fk_view_id],
@@ -179,10 +179,10 @@ export default class GridViewColumn implements GridColumnType {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     body: Partial<GridViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, [
       'order',
@@ -204,7 +204,7 @@ export default class GridViewColumn implements GridColumnType {
       columnId,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.GRID_VIEW_COLUMN}:${columnId}`,
       updateObj,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import tinycolor from 'tinycolor2'
-import { type BaseType, ProjectRoles, WorkspaceUserRoles } from 'nocodb-sdk'
+import { type BaseType, ProjectRoles, WorkspaceUserRoles } from 'atmosphere-sdk'
 
 const props = defineProps<{
   modelValue: boolean
@@ -229,10 +229,10 @@ onKeyStroke('Enter', () => {
     :mask-closable="!isLoading"
     :keyboard="!isLoading"
     class="!w-[30rem]"
-    wrap-class-name="nc-modal-base-duplicate"
+    wrap-class-name="atm-modal-base-duplicate"
   >
     <div>
-      <div class="text-base text-nc-content-gray-emphasis leading-6 font-bold self-center" @dblclick="isEaster = !isEaster">
+      <div class="text-base text-atm-content-gray-emphasis leading-6 font-bold self-center" @dblclick="isEaster = !isEaster">
         <template v-if="['pending', 'loading'].includes(status)">
           {{ $t('labels.duplicateBaseBaseTitle', { baseTitle: base.title }) }}
         </template>
@@ -240,7 +240,7 @@ onKeyStroke('Enter', () => {
         <template v-else-if="status === 'success'">
           <div class="flex items-center gap-2">
             <GeneralIcon class="text-white w-6 h-6" icon="checkFill" />
-            <div class="text-nc-content-gray-emphasis font-semibold">
+            <div class="text-atm-content-gray-emphasis font-semibold">
               {{ $t('labels.duplicateBaseSuccessfull') }}
             </div>
           </div>
@@ -248,7 +248,7 @@ onKeyStroke('Enter', () => {
         <template v-else-if="status === 'error'">
           <div class="flex items-center gap-2">
             <GeneralIcon icon="ncInfoSolid" class="flex-none !text-red-700 w-6 h-6" />
-            <div class="text-nc-content-gray-emphasis font-semibold">
+            <div class="text-atm-content-gray-emphasis font-semibold">
               {{ $t('labels.duplicateBaseFailed') }}
             </div>
           </div>
@@ -258,80 +258,80 @@ onKeyStroke('Enter', () => {
       <template v-if="['pending', 'loading'].includes(status)">
         <div class="mt-5 flex gap-3 flex-col">
           <div
-            class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+            class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
             @click="options.includeData = !options.includeData"
           >
-            <NcSwitch :checked="options.includeData" />
+            <AtSwitch :checked="options.includeData" />
             {{ $t('labels.includeRecords') }}
           </div>
           <template v-if="isEaster">
             <div
-              class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+              class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
               @click="options.includeViews = !options.includeViews"
             >
-              <NcSwitch :checked="options.includeViews" />
+              <AtSwitch :checked="options.includeViews" />
               {{ $t('labels.includeView') }}
             </div>
 
             <div
-              class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+              class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
               @click="options.includeHooks = !options.includeHooks"
             >
-              <NcSwitch :checked="options.includeHooks" />
+              <AtSwitch :checked="options.includeHooks" />
               {{ $t('labels.includeWebhook') }}
             </div>
           </template>
 
           <div
-            class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+            class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
             @click="options.includeComments = !options.includeComments"
           >
-            <NcSwitch :checked="options.includeComments" />
+            <AtSwitch :checked="options.includeComments" />
             {{ $t('labels.includeComments') }}
           </div>
 
           <div
             v-if="isEeActive"
-            class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+            class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
             @click="options.includeScripts = !options.includeScripts"
           >
-            <NcSwitch :checked="options.includeScripts" />
+            <AtSwitch :checked="options.includeScripts" />
             {{ $t('labels.includeScripts') }}
           </div>
 
           <div
             v-if="isEeActive"
-            class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+            class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
             @click="options.includeDashboards = !options.includeDashboards"
           >
-            <NcSwitch :checked="options.includeDashboards" />
+            <AtSwitch :checked="options.includeDashboards" />
             {{ $t('labels.includeDashboards') }}
           </div>
 
           <div
             v-if="isEeActive"
-            class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+            class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
             @click="options.includeInterfaces = !options.includeInterfaces"
           >
-            <NcSwitch :checked="options.includeInterfaces" />
+            <AtSwitch :checked="options.includeInterfaces" />
             {{ $t('labels.includeInterfaces') }}
           </div>
 
           <div
             v-if="isEeActive"
-            class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+            class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
             @click="options.includeWorkflows = !options.includeWorkflows"
           >
-            <NcSwitch :checked="options.includeWorkflows" />
+            <AtSwitch :checked="options.includeWorkflows" />
             {{ $t('labels.includeWorkflows') }}
           </div>
 
           <div
             v-if="isEeActive"
-            class="flex gap-3 cursor-pointer leading-5 text-nc-content-gray font-medium items-center"
+            class="flex gap-3 cursor-pointer leading-5 text-atm-content-gray font-medium items-center"
             @click="options.includeDocuments = !options.includeDocuments"
           >
-            <NcSwitch :checked="options.includeDocuments" />
+            <AtSwitch :checked="options.includeDocuments" />
             {{ $t('labels.includeDocuments') }}
           </div>
         </div>
@@ -340,24 +340,24 @@ onKeyStroke('Enter', () => {
           :class="{
             'mb-5': !isEeActive,
           }"
-          class="mt-5 text-nc-content-gray-subtle2 font-medium"
+          class="mt-5 text-atm-content-gray-subtle2 font-medium"
         >
           {{ $t('labels.baseDuplicateMessage') }}
           <template v-if="!isBaseOwner">{{ $t('labels.baseDuplicateMessage2') }}</template>
         </div>
 
         <div v-if="isEeActive" class="mb-5">
-          <NcDivider divider-class="!my-5" />
+          <AtDivider divider-class="!my-5" />
 
-          <div class="text-nc-content-gray font-medium leading-5">
+          <div class="text-atm-content-gray font-medium leading-5">
             {{ $t('labels.workspace') }}
 
-            <NcDropdown v-model:visible="dropdownOpen" class="mt-2">
+            <AtDropdown v-model:visible="dropdownOpen" class="mt-2">
               <div
-                class="rounded-lg border-1 transition-all cursor-pointer flex items-center border-nc-border-gray-medium h-8 py-1 gap-2 px-3"
+                class="rounded-lg border-1 transition-all cursor-pointer flex items-center border-atm-border-gray-medium h-8 py-1 gap-2 px-3"
                 style="box-shadow: 0px 0px 4px 0px rgba(var(--rgb-base), 0.08)"
                 :class="{
-                  '!border-nc-border-brand !shadow-selected': dropdownOpen,
+                  '!border-atm-border-brand !shadow-selected': dropdownOpen,
                 }"
               >
                 <GeneralWorkspaceIcon size="small" :workspace="targetWorkspace" />
@@ -367,36 +367,36 @@ onKeyStroke('Enter', () => {
                 </div>
 
                 <div class="flex gap-2 items-center">
-                  <div v-if="activeWorkspace?.id === targetWorkspace?.id" class="text-nc-content-gray-muted leading-4.5 text-xs">
+                  <div v-if="activeWorkspace?.id === targetWorkspace?.id" class="text-atm-content-gray-muted leading-4.5 text-xs">
                     {{ $t('labels.currentWorkspace') }}
                   </div>
                   <GeneralIcon
                     :class="{
                       'transform rotate-180': dropdownOpen,
                     }"
-                    class="text-nc-content-gray transition-all w-4 h-4"
+                    class="text-atm-content-gray transition-all w-4 h-4"
                     icon="ncChevronDown"
                   />
                 </div>
               </div>
 
               <template #overlay>
-                <NcList
+                <AtList
                   :value="targetWorkspace"
                   :item-height="28"
                   close-on-select
-                  class="nc-base-workspace-selection"
+                  class="atm-base-workspace-selection"
                   :min-items-for-search="6"
                   container-class-name="w-full"
                   :list="workspaceOptions"
                   option-label-key="title"
                 >
                   <template #listHeader>
-                    <div class="text-nc-content-gray-muted text-[13px] px-3 pt-2.5 pb-1.5 font-medium leading-5">
+                    <div class="text-atm-content-gray-muted text-[13px] px-3 pt-2.5 pb-1.5 font-medium leading-5">
                       {{ $t('labels.duplicateBaseMessage') }}
                     </div>
 
-                    <NcDivider />
+                    <AtDivider />
                   </template>
 
                   <template #listItem="{ option }">
@@ -408,39 +408,39 @@ onKeyStroke('Enter', () => {
                       </div>
 
                       <div class="flex items-center gap-2">
-                        <div v-if="activeWorkspace?.id === option.id" class="text-nc-content-gray-muted leading-4.5 text-xs">
+                        <div v-if="activeWorkspace?.id === option.id" class="text-atm-content-gray-muted leading-4.5 text-xs">
                           {{ $t('labels.currentWorkspace') }}
                         </div>
                         <GeneralIcon
                           v-if="option.id === targetWorkspace?.id"
-                          class="text-nc-content-brand w-4 h-4"
+                          class="text-atm-content-brand w-4 h-4"
                           icon="ncCheck"
                         />
                       </div>
                     </div>
                   </template>
-                </NcList>
+                </AtList>
               </template>
-            </NcDropdown>
+            </AtDropdown>
           </div>
         </div>
       </template>
 
       <template v-else-if="status === 'success'">
-        <div class="text-nc-content-gray-emphasis my-5 font-medium">
+        <div class="text-atm-content-gray-emphasis my-5 font-medium">
           Base <span class="font-bold leading-5">"{{ base.title }}"</span> has finished duplication.
         </div>
       </template>
 
       <template v-else-if="status === 'error'">
-        <div class="text-nc-content-gray-emphasis my-5 font-medium">{{ $t('labels.errorMessage') }} {{ errorMessage }}</div>
+        <div class="text-atm-content-gray-emphasis my-5 font-medium">{{ $t('labels.errorMessage') }} {{ errorMessage }}</div>
       </template>
     </div>
     <div class="flex flex-row gap-x-2 justify-end">
-      <NcButton v-if="!isLoading" key="back" type="secondary" size="small" @click="dialogShow = false">
+      <AtButton v-if="!isLoading" key="back" type="secondary" size="small" @click="dialogShow = false">
         {{ $t('general.cancel') }}
-      </NcButton>
-      <NcButton
+      </AtButton>
+      <AtButton
         key="submit"
         v-e="['a:base:duplicate']"
         size="small"
@@ -452,7 +452,7 @@ onKeyStroke('Enter', () => {
         <template v-else-if="status === 'loading'"> Duplicating {{ $t('objects.project') }} </template>
         <template v-else-if="status === 'success'"> {{ $t('labels.goToBase') }} </template>
         <template v-else-if="status === 'error'"> {{ $t('labels.tryAgain') }} </template>
-      </NcButton>
+      </AtButton>
     </div>
   </GeneralModal>
 </template>
@@ -462,16 +462,16 @@ onKeyStroke('Enter', () => {
   @apply !bg-black !bg-opacity-[8%];
 }
 
-.nc-list-root {
+.atm-list-root {
   @apply !w-[432px] !pt-0;
 }
 </style>
 
 <style lang="scss">
-.nc-base-workspace-selection {
-  .nc-list {
+.atm-base-workspace-selection {
+  .atm-list {
     @apply !px-1;
-    .nc-list-item {
+    .atm-list-item {
       @apply !py-1;
     }
   }

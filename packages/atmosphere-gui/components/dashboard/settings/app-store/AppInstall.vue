@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PluginTestReqType, PluginType } from 'nocodb-sdk'
+import type { PluginTestReqType, PluginType } from 'atmosphere-sdk'
 
 const { id } = defineProps<{
   id: string
@@ -154,11 +154,11 @@ onMounted(async () => {
         </div>
 
         <div class="absolute -right-2 -top-0.5">
-          <NcButton type="text" size="small" icon-only @click="emits('close')">
+          <AtButton type="text" size="small" icon-only @click="emits('close')">
             <template #icon>
               <GeneralIcon icon="close" />
             </template>
-          </NcButton>
+          </AtButton>
         </div>
       </div>
 
@@ -222,11 +222,11 @@ onMounted(async () => {
             <tfoot>
               <tr>
                 <td :colspan="plugin.formDetails.items.length" class="text-center">
-                  <NcButton type="secondary" size="small" icon-only class="mr-1" inner-class="px-2" @click="addSetting">
+                  <AtButton type="secondary" size="small" icon-only class="mr-1" inner-class="px-2" @click="addSetting">
                     <template #icon>
                       <component :is="iconMap.plus" class="flex mx-auto" />
                     </template>
-                  </NcButton>
+                  </AtButton>
                 </td>
               </tr>
             </tfoot>
@@ -265,7 +265,7 @@ onMounted(async () => {
         </template>
 
         <div class="flex flex-row space-x-4 justify-center mt-4">
-          <NcButton
+          <AtButton
             v-for="(action, i) in plugin.formDetails.actions"
             :key="i"
             class="!px-5"
@@ -276,7 +276,7 @@ onMounted(async () => {
             @click="doAction(action.key)"
           >
             {{ action.label }}
-          </NcButton>
+          </AtButton>
         </div>
       </a-form>
     </div>

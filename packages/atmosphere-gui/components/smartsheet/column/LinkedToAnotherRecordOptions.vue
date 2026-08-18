@@ -12,7 +12,7 @@ import {
   ViewTypes,
   isSupportedDisplayValueColumn,
   isSystemColumn,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -570,14 +570,14 @@ const handleScrollIntoView = () => {
 <template>
   <div class="w-full flex flex-col gap-4">
     <div class="flex flex-col gap-4">
-      <a-form-item :label="$t('labels.relationType')" class="nc-ltar-relation-type !mb-0">
+      <a-form-item :label="$t('labels.relationType')" class="atm-ltar-relation-type !mb-0">
         <a-radio-group v-model:value="linkType" name="type" :disabled="isEdit" class="w-full">
           <!-- Custom links use V1 relation types: MM, HM, OO -->
           <template v-if="vModel.is_custom_link">
-            <a-row :gutter="[8, 8]" class="nc-links-3-col">
+            <a-row :gutter="[8, 8]" class="atm-links-3-col">
               <a-col :span="8">
                 <a-radio value="mm" data-testid="Many to Many">
-                  <span class="nc-ltar-icon nc-mm-icon">
+                  <span class="atm-ltar-icon atm-mm-icon">
                     <GeneralIcon icon="mm_solid" />
                   </span>
                   {{ $t('title.manyToMany') }}
@@ -585,7 +585,7 @@ const handleScrollIntoView = () => {
               </a-col>
               <a-col :span="8">
                 <a-radio value="hm" data-testid="Has Many">
-                  <span class="nc-ltar-icon nc-hm-icon">
+                  <span class="atm-ltar-icon atm-hm-icon">
                     <GeneralIcon icon="hm_solid" />
                   </span>
                   {{ $t('title.hasMany') }}
@@ -593,7 +593,7 @@ const handleScrollIntoView = () => {
               </a-col>
               <a-col :span="8">
                 <a-radio value="oo" data-testid="One to One">
-                  <span class="nc-ltar-icon nc-oo-icon">
+                  <span class="atm-ltar-icon atm-oo-icon">
                     <GeneralIcon icon="oneToOneSolid" />
                   </span>
                   {{ $t('title.oneToOne') }}
@@ -608,7 +608,7 @@ const handleScrollIntoView = () => {
             <a-row :gutter="[8, 8]">
               <a-col :span="12">
                 <a-radio value="mm" data-testid="Many to Many">
-                  <span class="nc-ltar-icon nc-mm-icon">
+                  <span class="atm-ltar-icon atm-mm-icon">
                     <GeneralIcon icon="mm_solid" />
                   </span>
                   {{ $t('title.manyToMany') }}
@@ -616,7 +616,7 @@ const handleScrollIntoView = () => {
               </a-col>
               <a-col :span="12">
                 <a-radio :value="RelationTypes.ONE_TO_MANY" data-testid="One to Many">
-                  <span class="nc-ltar-icon nc-om-icon">
+                  <span class="atm-ltar-icon atm-om-icon">
                     <GeneralIcon icon="hm_solid" />
                   </span>
                   {{ $t('title.oneToMany') }}
@@ -624,7 +624,7 @@ const handleScrollIntoView = () => {
               </a-col>
               <a-col :span="12">
                 <a-radio :value="RelationTypes.MANY_TO_ONE" data-testid="Many to One">
-                  <span class="nc-ltar-icon nc-mo-icon">
+                  <span class="atm-ltar-icon atm-mo-icon">
                     <GeneralIcon icon="bt_solid" />
                   </span>
                   {{ $t('title.manyToOne') }}
@@ -632,7 +632,7 @@ const handleScrollIntoView = () => {
               </a-col>
               <a-col :span="12">
                 <a-radio value="oo" data-testid="One to One">
-                  <span class="nc-ltar-icon nc-oo-icon">
+                  <span class="atm-ltar-icon atm-oo-icon">
                     <GeneralIcon icon="oneToOneSolid" />
                   </span>
                   {{ $t('title.oneToOne') }}
@@ -642,10 +642,10 @@ const handleScrollIntoView = () => {
           </template>
           <!-- Legacy Links (V1): MM, HM, OO -->
           <template v-else>
-            <a-row :gutter="[8, 8]" class="nc-links-3-col">
+            <a-row :gutter="[8, 8]" class="atm-links-3-col">
               <a-col :span="8">
                 <a-radio value="mm" data-testid="Many to Many">
-                  <span class="nc-ltar-icon nc-mm-icon">
+                  <span class="atm-ltar-icon atm-mm-icon">
                     <GeneralIcon icon="mm_solid" />
                   </span>
                   {{ $t('title.manyToMany') }}
@@ -653,7 +653,7 @@ const handleScrollIntoView = () => {
               </a-col>
               <a-col :span="8">
                 <a-radio value="hm" data-testid="Has Many">
-                  <span class="nc-ltar-icon nc-hm-icon">
+                  <span class="atm-ltar-icon atm-hm-icon">
                     <GeneralIcon icon="hm_solid" />
                   </span>
                   {{ $t('title.hasMany') }}
@@ -661,7 +661,7 @@ const handleScrollIntoView = () => {
               </a-col>
               <a-col :span="8">
                 <a-radio value="oo" data-testid="One to One">
-                  <span class="nc-ltar-icon nc-oo-icon">
+                  <span class="atm-ltar-icon atm-oo-icon">
                     <GeneralIcon icon="oneToOneSolid" />
                   </span>
                   {{ $t('title.oneToOne') }}
@@ -674,26 +674,26 @@ const handleScrollIntoView = () => {
     </div>
     <div
       v-if="isUpgradeable"
-      class="flex items-center justify-between bg-nc-orange-50 dark:bg-nc-orange-20 rounded-lg px-3 py-2 -mt-2"
-      data-testid="nc-ltar-upgrade-banner"
+      class="flex items-center justify-between bg-atm-orange-50 dark:bg-atm-orange-20 rounded-lg px-3 py-2 -mt-2"
+      data-testid="atm-ltar-upgrade-banner"
     >
       <div class="flex items-center gap-2">
         <GeneralIcon icon="alertTriangle" class="flex-none h-4 w-4 text-orange-500" />
-        <span class="text-sm text-nc-content-gray">
+        <span class="text-sm text-atm-content-gray">
           {{ $t('msg.info.upgradeLinkFieldAvailable') }}
           <a
-            href="https://nocodb.com/docs/product-docs/fields/field-types/links-based/link-to-another-record#upgrade-from-links-v1"
+            href="https://atmosphere.dev/docs/product-docs/fields/field-types/links-based/link-to-another-record#upgrade-from-links-v1"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-nc-content-brand underline ml-1"
+            class="text-atm-content-brand underline ml-1"
             >{{ $t('msg.learnMore') }}</a
           >
         </span>
       </div>
       <GeneralSourceRestrictionTooltip :message="$t('tooltip.fieldCannotBeUpgraded')" :enabled="!!isMetaReadOnly">
-        <NcButton size="xs" type="primary" :disabled="isMetaReadOnly" @click="emit('upgrade')">
+        <AtButton size="xs" type="primary" :disabled="isMetaReadOnly" @click="emit('upgrade')">
           {{ $t('general.upgrade') }}
-        </NcButton>
+        </AtButton>
       </GeneralSourceRestrictionTooltip>
     </div>
     <div v-if="isFeatureEnabled(FEATURE_FLAG.CUSTOM_LINK) && isEeUI && !isEEFeatureBlocked">
@@ -751,19 +751,19 @@ const handleScrollIntoView = () => {
           @base-change="onBaseChange"
         />
       </template>
-      <a-form-item class="flex w-full pb-2 nc-ltar-child-table" v-bind="validateInfos.childId">
-        <NcTooltip :disabled="!isLinkedTablePrivate" placement="right">
+      <a-form-item class="flex w-full pb-2 atm-ltar-child-table" v-bind="validateInfos.childId">
+        <AtTooltip :disabled="!isLinkedTablePrivate" placement="right">
           <a-select
             v-model:value="referenceTableChildId"
             show-search
             :disabled="isEdit || isLinkedTablePrivate"
             :filter-option="(input, option) => antSelectFilterOption(input, option, ['data-label'])"
             :placeholder="$t('placeholder.selectTableToLink')"
-            dropdown-class-name="nc-dropdown-ltar-child-table"
+            dropdown-class-name="atm-dropdown-ltar-child-table"
             @change="handleUpdateRefTable"
           >
             <template #suffixIcon>
-              <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+              <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
             </template>
             <a-select-option
               v-for="table of refTables"
@@ -774,14 +774,14 @@ const handleScrollIntoView = () => {
             >
               <div class="flex w-full items-center gap-2">
                 <div class="min-w-5 flex items-center justify-center">
-                  <GeneralTableIcon v-if="(table as any).is_private" class="!text-nc-content-gray-disabled" />
-                  <GeneralTableIcon v-else :meta="table" class="text-nc-content-gray-muted" />
+                  <GeneralTableIcon v-if="(table as any).is_private" class="!text-atm-content-gray-disabled" />
+                  <GeneralTableIcon v-else :meta="table" class="text-atm-content-gray-muted" />
                 </div>
-                <NcTooltip v-if="!(table as any).is_private" class="flex-1 truncate" show-on-truncate-only>
+                <AtTooltip v-if="!(table as any).is_private" class="flex-1 truncate" show-on-truncate-only>
                   <template #title>{{ table.title }}</template>
                   <span>{{ table.title }}</span>
-                </NcTooltip>
-                <span v-else class="text-nc-content-gray-disabled">{{ $t('labels.privateTable') }}</span>
+                </AtTooltip>
+                <span v-else class="text-atm-content-gray-disabled">{{ $t('labels.privateTable') }}</span>
               </div>
             </a-select-option>
           </a-select>
@@ -793,7 +793,7 @@ const handleScrollIntoView = () => {
               })
             }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
       </a-form-item>
     </template>
 
@@ -806,7 +806,7 @@ const handleScrollIntoView = () => {
           :disabled="!vModel.childId && !(vModel.is_custom_link && vModel.custom?.ref_model_id)"
           @change="onToggleCustomDisplayField"
         />
-        <span class="cursor-pointer" data-testid="nc-use-custom-display-field" @click="onCustomDisplayLabelClick">
+        <span class="cursor-pointer" data-testid="atm-use-custom-display-field" @click="onCustomDisplayLabelClick">
           {{ $t('labels.useCustomDisplayField') }}
         </span>
         <LazyPaymentUpgradeBadge
@@ -817,31 +817,31 @@ const handleScrollIntoView = () => {
         />
       </div>
       <a-form-item v-if="useCustomDisplayField" class="!pl-8 flex w-full pb-2 mt-4 space-y-2">
-        <NcSelect
+        <AtSelect
           v-model:value="vModel.fk_display_value_column_id"
           :placeholder="$t('labels.selectFieldAsDisplayName')"
           show-search
           :disabled="isEEFeatureBlocked"
           :filter-option="(input, option) => antSelectFilterOption(input, option, ['data-label'])"
-          dropdown-class-name="nc-dropdown-ltar-display-value-field"
+          dropdown-class-name="atm-dropdown-ltar-display-value-field"
         >
           <a-select-option v-for="field of eligibleDisplayFields" :key="field.id" :value="field.id" :data-label="field.title">
             <div class="flex w-full items-center gap-2">
               <div class="min-w-5 flex items-center justify-center">
-                <SmartsheetHeaderIcon :column="field" class="text-nc-content-gray-muted" />
+                <SmartsheetHeaderIcon :column="field" class="text-atm-content-gray-muted" />
               </div>
-              <NcTooltip class="flex-1 truncate" show-on-truncate-only>
+              <AtTooltip class="flex-1 truncate" show-on-truncate-only>
                 <template #title>{{ field.title }}</template>
                 <span>{{ field.title }}</span>
-              </NcTooltip>
+              </AtTooltip>
             </div>
           </a-select-option>
-        </NcSelect>
+        </AtSelect>
       </a-form-item>
     </div>
 
     <div v-if="!hideAdvancedOptions" class="flex flex-col gap-2">
-      <NcTooltip :disabled="!isSyncedField && !isLinkedViewPrivate" placement="right">
+      <AtTooltip :disabled="!isSyncedField && !isLinkedViewPrivate" placement="right">
         <div class="flex gap-2 items-center">
           <a-switch
             v-model:checked="limitRecToView"
@@ -858,15 +858,15 @@ const handleScrollIntoView = () => {
           <span
             v-e="['c:link:limit-record-by-view', { status: limitRecToView }]"
             class="cursor-pointer inline-flex items-center gap-1"
-            data-testid="nc-limit-record-view"
+            data-testid="atm-limit-record-view"
             @click="onViewLabelClick"
           >
             {{ $t('labels.limitRecordSelectionToView') }}
 
             <a
-              href="https://nocodb.com/docs/product-docs/fields/field-types/links-based/links#limit-by-view"
+              href="https://atmosphere.dev/docs/product-docs/fields/field-types/links-based/links#limit-by-view"
               target="_blank"
-              class="flex text-nc-content-gray-disabled hover:text-nc-content-gray-subtle"
+              class="flex text-atm-content-gray-disabled hover:text-atm-content-gray-subtle"
               @click.stop
             >
               <GeneralIcon icon="ncInfo" class="flex-none w-3.5 h-3.5" /> </a
@@ -881,16 +881,16 @@ const handleScrollIntoView = () => {
                 })
           }}
         </template>
-      </NcTooltip>
-      <a-form-item v-if="limitRecToView" class="!pl-8 flex w-full pb-2 mt-4 space-y-2 nc-ltar-child-view">
-        <NcTooltip :disabled="!isLinkedViewPrivate" placement="right">
-          <NcSelect
+      </AtTooltip>
+      <a-form-item v-if="limitRecToView" class="!pl-8 flex w-full pb-2 mt-4 space-y-2 atm-ltar-child-view">
+        <AtTooltip :disabled="!isLinkedViewPrivate" placement="right">
+          <AtSelect
             v-model:value="vModel.childViewId"
             :placeholder="$t('labels.selectView')"
             show-search
             :disabled="isLinkedViewPrivate"
             :filter-option="(input, option) => antSelectFilterOption(input, option, ['data-label'])"
-            dropdown-class-name="nc-dropdown-ltar-child-view"
+            dropdown-class-name="atm-dropdown-ltar-child-view"
           >
             <a-select-option
               v-for="view of refViews"
@@ -904,18 +904,18 @@ const handleScrollIntoView = () => {
                   <GeneralViewIcon
                     v-if="(view as any).is_private"
                     :meta="{type: ViewTypes.GRID} as any"
-                    class="!text-nc-content-gray-disabled"
+                    class="!text-atm-content-gray-disabled"
                   />
-                  <GeneralViewIcon v-else :meta="view" class="text-nc-content-gray-muted" />
+                  <GeneralViewIcon v-else :meta="view" class="text-atm-content-gray-muted" />
                 </div>
-                <NcTooltip v-if="!(view as any).is_private" class="flex-1 truncate" show-on-truncate-only>
+                <AtTooltip v-if="!(view as any).is_private" class="flex-1 truncate" show-on-truncate-only>
                   <template #title>{{ view.title }}</template>
                   <span>{{ view.title }}</span>
-                </NcTooltip>
-                <span v-else class="text-nc-content-gray-disabled">{{ $t('labels.privateView') }}</span>
+                </AtTooltip>
+                <span v-else class="text-atm-content-gray-disabled">{{ $t('labels.privateView') }}</span>
               </div>
             </a-select-option>
-          </NcSelect>
+          </AtSelect>
 
           <template #title>
             {{
@@ -924,7 +924,7 @@ const handleScrollIntoView = () => {
               })
             }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
       </a-form-item>
     </div>
 
@@ -932,7 +932,7 @@ const handleScrollIntoView = () => {
       <div class="flex flex-col gap-2">
         <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_LTAR_LIMIT_SELECTION_BY_FILTER">
           <template #default="{ click }">
-            <NcTooltip :disabled="!isSyncedField" placement="right">
+            <AtTooltip :disabled="!isSyncedField" placement="right">
               <div class="flex gap-2 items-center">
                 <a-switch
                   v-e="['c:link:limit-record-by-filter', { status: limitRecToCond }]"
@@ -953,16 +953,16 @@ const handleScrollIntoView = () => {
                 />
                 <span
                   v-e="['c:link:limit-record-by-filter', { status: limitRecToCond }]"
-                  data-testid="nc-limit-record-filters"
+                  data-testid="atm-limit-record-filters"
                   class="cursor-pointer inline-flex items-center gap-1"
                   @click="click(PlanFeatureTypes.FEATURE_LTAR_LIMIT_SELECTION_BY_FILTER, () => onFilterLabelClick())"
                 >
                   {{ $t('labels.limitRecordSelectionToFilters') }}
 
                   <a
-                    href="https://nocodb.com/docs/product-docs/fields/field-types/links-based/links#limit-by-filter-"
+                    href="https://atmosphere.dev/docs/product-docs/fields/field-types/links-based/links#limit-by-filter-"
                     target="_blank"
-                    class="flex text-nc-content-gray-disabled hover:text-nc-content-gray-subtle"
+                    class="flex text-atm-content-gray-disabled hover:text-atm-content-gray-subtle"
                     @click.stop
                   >
                     <GeneralIcon icon="ncInfo" class="flex-none w-3.5 h-3.5" />
@@ -979,10 +979,10 @@ const handleScrollIntoView = () => {
                 />
               </div>
               <template #title> {{ $t('tooltip.optionNotAvailableInSyncTable') }} </template>
-            </NcTooltip>
+            </AtTooltip>
           </template>
         </PaymentUpgradeBadgeProvider>
-        <div v-if="limitRecToCond && !isLinkedTablePrivate" class="overflow-auto nc-scrollbar-thin">
+        <div v-if="limitRecToCond && !isLinkedTablePrivate" class="overflow-auto atm-scrollbar-thin">
           <LazySmartsheetToolbarColumnFilter
             ref="filterRef"
             class="!pl-8 !p-0 max-w-620px"
@@ -999,10 +999,10 @@ const handleScrollIntoView = () => {
     </template>
     <template v-if="(!isXcdbBase && !isEdit) || isLinks">
       <div>
-        <NcButton
+        <AtButton
           size="small"
           type="text"
-          class="!text-nc-content-gray-muted !hover:text-nc-content-gray-subtle"
+          class="!text-atm-content-gray-muted !hover:text-atm-content-gray-subtle"
           @click.stop="advancedOptions = !advancedOptions"
         >
           <div class="flex items-center gap-2">
@@ -1012,7 +1012,7 @@ const handleScrollIntoView = () => {
 
             <GeneralIcon :icon="advancedOptions ? 'arrowUp' : 'arrowDown'" class="h-4 w-4" />
           </div>
-        </NcButton>
+        </AtButton>
       </div>
 
       <div v-if="advancedOptions" class="flex flex-col gap-4">
@@ -1024,14 +1024,14 @@ const handleScrollIntoView = () => {
                 v-model:value="vModel.onUpdate"
                 :disabled="vModel.virtual"
                 name="onUpdate"
-                dropdown-class-name="nc-dropdown-on-update"
+                dropdown-class-name="atm-dropdown-on-update"
                 @change="onDataTypeChange"
               >
                 <template #label>
                   <span class="capitalize">{{ $t('labels.onUpdate') }}</span>
                 </template>
                 <template #suffixIcon>
-                  <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+                  <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
                 </template>
                 <a-select-option v-for="(option, i) of onUpdateDeleteOptions" :key="i" :value="option">
                   <template v-if="option === 'NO ACTION'">{{ $t('title.links.noAction') }}</template>
@@ -1055,11 +1055,11 @@ const handleScrollIntoView = () => {
                 v-model:value="vModel.onDelete"
                 :disabled="vModel.virtual"
                 name="onDelete"
-                dropdown-class-name="nc-dropdown-on-delete"
+                dropdown-class-name="atm-dropdown-on-delete"
                 @change="onDataTypeChange"
               >
                 <template #suffixIcon>
-                  <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+                  <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
                 </template>
                 <a-select-option v-for="(option, i) of onUpdateDeleteOptions" :key="i" :value="option">
                   <template v-if="option === 'NO ACTION'">{{ $t('title.links.noAction') }}</template>
@@ -1078,11 +1078,11 @@ const handleScrollIntoView = () => {
           <div class="flex flex-row">
             <a-form-item>
               <div class="flex items-center gap-1">
-                <NcSwitch v-model:checked="vModel.virtual" :disabled="vModel.is_custom_link" @change="onDataTypeChange">
-                  <div class="text-sm text-nc-content-gray select-none">
+                <AtSwitch v-model:checked="vModel.virtual" :disabled="vModel.is_custom_link" @change="onDataTypeChange">
+                  <div class="text-sm text-atm-content-gray select-none">
                     {{ $t('title.virtualRelation') }}
                   </div>
-                </NcSwitch>
+                </AtSwitch>
               </div>
             </a-form-item>
           </div>
@@ -1093,11 +1093,11 @@ const handleScrollIntoView = () => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-filter-grid) {
+:deep(.atm-filter-grid) {
   @apply !pr-0;
 }
 
-:deep(.nc-ltar-relation-type .ant-radio-group) {
+:deep(.atm-ltar-relation-type .ant-radio-group) {
   .ant-row {
     @apply flex flex-wrap;
   }
@@ -1107,17 +1107,17 @@ const handleScrollIntoView = () => {
   }
 
   .ant-radio-wrapper {
-    @apply transition-all flex-row-reverse justify-between items-center py-1 pl-1 pr-3 m-0 px-2 border-1 border-nc-border-gray-medium rounded-lg flex-1;
+    @apply transition-all flex-row-reverse justify-between items-center py-1 pl-1 pr-3 m-0 px-2 border-1 border-atm-border-gray-medium rounded-lg flex-1;
 
     &.ant-radio-wrapper-checked {
-      @apply border-nc-border-brand bg-nc-bg-brand-light;
+      @apply border-atm-border-brand bg-atm-bg-brand-light;
 
       &:not(.ant-radio-wrapper-disabled):focus-within {
-        @apply border-nc-border-brand;
+        @apply border-atm-border-brand;
       }
     }
 
-    span:not(.ant-radio):not(.nc-ltar-icon) {
+    span:not(.ant-radio):not(.atm-ltar-icon) {
       @apply flex-1 pl-0 flex items-center gap-2;
     }
 
@@ -1125,13 +1125,13 @@ const handleScrollIntoView = () => {
       @apply top-0;
     }
 
-    .nc-ltar-icon {
+    .atm-ltar-icon {
       @apply inline-flex items-center p-1 rounded-md;
     }
   }
 }
 
-:deep(.nc-ltar-relation-type .ant-col.ant-form-item-control) {
+:deep(.atm-ltar-relation-type .ant-col.ant-form-item-control) {
   @apply flex-1;
 }
 </style>

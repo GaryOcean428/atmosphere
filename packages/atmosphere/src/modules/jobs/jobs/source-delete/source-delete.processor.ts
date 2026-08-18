@@ -6,7 +6,7 @@ import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 
 @Injectable()
 export class SourceDeleteProcessor {
-  private readonly debugLog = debug('nc:jobs:source-delete');
+  private readonly debugLog = debug('atm:jobs:source-delete');
 
   constructor(
     private readonly sourcesService: SourcesService,

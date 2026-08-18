@@ -81,7 +81,7 @@ onMounted(async () => {
       centered
       min-height="300"
       :footer="null"
-      wrap-class-name="nc-modal-plugin-install"
+      wrap-class-name="atm-modal-plugin-install"
       v-bind="$attrs"
     >
       <DashboardSettingsAppStoreAppInstall
@@ -98,15 +98,15 @@ onMounted(async () => {
       width="24rem"
       centered
       :footer="null"
-      wrap-class-name="nc-modal-plugin-uninstall"
+      wrap-class-name="atm-modal-plugin-uninstall"
     >
       <div class="flex flex-col h-full">
         <div class="flex flex-row justify-center mt-2 text-center w-full text-base">
           {{ `Click on confirm to reset ${pluginApp && pluginApp.title}` }}
         </div>
         <div class="flex mt-6 justify-center space-x-2">
-          <NcButton type="secondary" @click="showPluginUninstallModal = false"> {{ $t('general.cancel') }} </NcButton>
-          <NcButton type="danger" @click="resetPlugin"> {{ $t('general.confirm') }} </NcButton>
+          <AtButton type="secondary" @click="showPluginUninstallModal = false"> {{ $t('general.cancel') }} </AtButton>
+          <AtButton type="danger" @click="resetPlugin"> {{ $t('general.confirm') }} </AtButton>
         </div>
       </div>
     </a-modal>
@@ -115,12 +115,12 @@ onMounted(async () => {
       <a-alert type="warning">
         <template #message>
           <div class="flex flex-row items-center gap-3">
-            <GeneralIcon icon="ncAlertCircle" class="text-nc-content-orange-medium w-6 h-6" />
+            <GeneralIcon icon="ncAlertCircle" class="text-atm-content-orange-medium w-6 h-6" />
             <span class="font-weight-bold">App Store Deprecation</span>
           </div>
         </template>
         <template #description>
-          <div class="text-nc-content-gray-muted ml-9">
+          <div class="text-atm-content-gray-muted ml-9">
             App store will soon be removed. Email & Storage plugins are now available in Accounts/Setup page. Rest of the plugins
             here will be moved to integrations.
           </div>
@@ -132,25 +132,25 @@ onMounted(async () => {
         v-for="(app, i) in apps"
         :key="i"
         class="sm:w-100 md:w-130"
-        :class="`relative flex overflow-x-hidden app-item-card !shadow-sm rounded-md w-full nc-app-store-card-${app.title}`"
+        :class="`relative flex overflow-x-hidden app-item-card !shadow-sm rounded-md w-full atm-app-store-card-${app.title}`"
       >
         <div class="install-btn flex flex-row justify-end space-x-1">
           <a-button v-if="app.parsedInput" size="small" type="primary" @click="showInstallPluginModal(app)">
-            <div class="flex flex-row justify-center items-center caption capitalize nc-app-store-card-edit">
+            <div class="flex flex-row justify-center items-center caption capitalize atm-app-store-card-edit">
               <IcRoundEdit class="pr-0.5" :height="12" />
               {{ $t('general.edit') }}
             </div>
           </a-button>
 
           <a-button v-if="app.parsedInput" size="small" outlined @click="showResetPluginModal(app)">
-            <div class="flex flex-row justify-center items-center caption capitalize nc-app-store-card-reset">
+            <div class="flex flex-row justify-center items-center caption capitalize atm-app-store-card-reset">
               <component :is="iconMap.closeCircle" />
               <div class="flex ml-0.5">{{ $t('general.reset') }}</div>
             </div>
           </a-button>
 
           <a-button v-else size="small" type="primary" @click="showInstallPluginModal(app)">
-            <div class="flex flex-row justify-center items-center caption capitalize nc-app-store-card-install">
+            <div class="flex flex-row justify-center items-center caption capitalize atm-app-store-card-install">
               <component :is="iconMap.plus" />
               {{ $t('general.install') }}
             </div>
@@ -173,7 +173,7 @@ onMounted(async () => {
           </div>
 
           <div class="flex flex-col flex-1 w-3/5 pl-3">
-            <h5 class="text-subHeading2 text-nc-content-gray">{{ app.title }}</h5>
+            <h5 class="text-subHeading2 text-atm-content-gray">{{ app.title }}</h5>
 
             {{ app.description }}
           </div>

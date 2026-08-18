@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { isValidHexColour, normalizeHexColour } from 'nocodb-sdk'
+import { isValidHexColour, normalizeHexColour } from 'atmosphere-sdk'
 import { iconMap } from '~/utils/iconUtils'
 
 interface Props {
@@ -12,7 +12,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const column = inject(ColumnInj, ref())
 
-// Interface pages get the redesigned colour panel (NcColorPanel); the classic
+// Interface pages get the redesigned colour panel (AtColorPanel); the classic
 // data app keeps the legacy picker.
 const isInterfaceContext = useIsInterfaceUi()
 
@@ -62,7 +62,7 @@ const onTextInput = (e: Event) => {
 </script>
 
 <template>
-  <div class="nc-cell-field flex items-center gap-1 w-full h-full">
+  <div class="atm-cell-field flex items-center gap-1 w-full h-full">
     <!-- Colour swatch button to open picker -->
     <div
       class="flex-shrink-0 w-5 h-5 cursor-pointer flex items-center justify-center"
@@ -70,7 +70,7 @@ const onTextInput = (e: Event) => {
       @click.stop="openColorPicker(isValidHex ? vModel : '#FFFFFF')"
     >
       <div v-if="isValidHex" :class="shapeClass" :style="{ backgroundColor: vModel }" class="w-4 h-4 border-1 border-gray-300" />
-      <component :is="iconMap.palette" v-else class="w-4 h-4 text-nc-content-gray-muted" />
+      <component :is="iconMap.palette" v-else class="w-4 h-4 text-atm-content-gray-muted" />
     </div>
 
     <!-- Text input for manual hex entry -->
@@ -79,23 +79,23 @@ const onTextInput = (e: Event) => {
       :disabled="disabled"
       type="text"
       placeholder="#FFFFFF"
-      class="flex-1 h-full bg-transparent border-none !focus:(border-none outline-none ring-transparent) text-sm font-mono nc-cell-field !pl-0"
+      class="flex-1 h-full bg-transparent border-none !focus:(border-none outline-none ring-transparent) text-sm font-mono atm-cell-field !pl-0"
       @input="onTextInput"
       @keydown.stop
       @mousedown.stop
     />
 
     <!-- Color Picker Dropdown -->
-    <NcDropdown
+    <AtDropdown
       v-model:visible="isOpen"
       :auto-close="false"
       use-backdrop
-      overlay-class-name="nc-colour-picker-dropdown !rounded-xl"
+      overlay-class-name="atm-colour-picker-dropdown !rounded-xl"
     >
       <div class="sr-only w-5 h-5"></div>
       <template #overlay>
         <div>
-          <NcColorPanel
+          <AtColorPanel
             v-if="isInterfaceContext"
             :key="pickerKey"
             :model-value="tempColor"
@@ -104,15 +104,15 @@ const onTextInput = (e: Event) => {
           />
           <GeneralAdvanceColorPicker v-else :key="pickerKey" :model-value="tempColor" :is-open="isOpen" @input="onColorChange" />
           <div
-            class="flex items-center justify-end gap-2 mt-3 p-2 border-t border-nc-border-gray-medium"
+            class="flex items-center justify-end gap-2 mt-3 p-2 border-t border-atm-border-gray-medium"
             @click.stop
             @mousedown.stop
           >
-            <NcButton type="secondary" size="small" @click="close"> {{ $t('general.cancel') }} </NcButton>
-            <NcButton type="primary" size="small" @click="save"> {{ $t('general.save') }} </NcButton>
+            <AtButton type="secondary" size="small" @click="close"> {{ $t('general.cancel') }} </AtButton>
+            <AtButton type="primary" size="small" @click="save"> {{ $t('general.save') }} </AtButton>
           </div>
         </div>
       </template>
-    </NcDropdown>
+    </AtDropdown>
   </div>
 </template>

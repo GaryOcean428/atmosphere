@@ -5,10 +5,10 @@ import {
   isBtLikeV2Junction,
   JSEPNode,
   LongTextAiMetaProp,
-  NcErrorType,
+  AtErrorType,
   UITypes,
   validateFormulaAndExtractTreeWithType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { getColumnName } from 'src/helpers/dbHelpers';
 import { DBErrorExtractor } from 'src/helpers/db-error/extractor';
 import genRollupSelectv2 from '../genRollupSelectv2';
@@ -22,7 +22,7 @@ import {
   getFormulaOutputMaxLength,
   wrapFormulaWithMaxLength,
 } from './formula-query-builder.helpers';
-import type { ClientType, LiteralNode } from 'nocodb-sdk';
+import type { ClientType, LiteralNode } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { BarcodeColumn, Model, QrCodeColumn, User } from '~/models';
 import type Column from '~/models/Column';
@@ -35,9 +35,9 @@ import type {
 } from './formula-query-builder.types';
 import { DBQueryClient } from '~/dbQueryClient';
 import { isTransientError } from '~/helpers/db-error/utils';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { getRefColumnIfAlias } from '~/helpers';
-import { NcBaseErrorv2, NcError } from '~/helpers/catchError';
+import { AtBaseErrorv2, AtError } from '~/helpers/catchError';
 import { BaseUser, ButtonColumn } from '~/models';
 import FormulaColumn from '~/models/FormulaColumn';
 import { CacheScope } from '~/utils/globals';
@@ -579,7 +579,7 @@ export default async function formulaQueryBuilderv2({
         error_type: 'FORMULA_TOO_LONG_ERROR',
         message: `Generated query too long for ${columnInfo.title}${columnInfo.id}`,
       });
-      NcError.get(context).formulaError(
+      AtError.get(context).formulaError(
         `The generated query for ${columnInfo.title} exceeds the maximum allowed length. Try simplifying the formula by reducing the number of referenced fields, lookup chains, or nested formula references.`,
       );
     }
@@ -666,8 +666,8 @@ export default async function formulaQueryBuilderv2({
       !skipMarkingColumn &&
       (validateFormula ||
         (column?.id &&
-          e instanceof NcBaseErrorv2 &&
-          e.error === NcErrorType.ERR_CIRCULAR_REF_IN_FORMULA))
+          e instanceof AtBaseErrorv2 &&
+          e.error === AtErrorType.ERR_CIRCULAR_REF_IN_FORMULA))
     ) {
       console.error(e);
 
@@ -677,7 +677,7 @@ export default async function formulaQueryBuilderv2({
             error: null,
           });
           // update cache to reflect the error in UI
-          await NocoCache.update(
+          await AtmosphereCache.update(
             context,
             `${CacheScope.COL_BUTTON}:${column.id}`,
             {
@@ -691,7 +691,7 @@ export default async function formulaQueryBuilderv2({
           });
 
           // update cache to reflect the error in UI
-          await NocoCache.update(
+          await AtmosphereCache.update(
             context,
             `${CacheScope.COL_FORMULA}:${column.id}`,
             {
@@ -710,7 +710,7 @@ export default async function formulaQueryBuilderv2({
     }
 
     // if it's a formula error, throw it
-    if (e instanceof NcBaseErrorv2) {
+    if (e instanceof AtBaseErrorv2) {
       throw e;
     }
 
@@ -718,7 +718,7 @@ export default async function formulaQueryBuilderv2({
       clientType: baseModelSqlv2.clientType as ClientType,
       ignoreDefault: true,
     });
-    NcError.get(context).formulaError(dbError?.message ?? e.message);
+    AtError.get(context).formulaError(dbError?.message ?? e.message);
   }
   return qb;
 }

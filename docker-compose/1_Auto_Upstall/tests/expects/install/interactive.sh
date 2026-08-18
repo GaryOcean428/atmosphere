@@ -1,14 +1,14 @@
 #!/usr/bin/env expect -f
 #
-# Drives noco.sh through the interactive wizard for a local install.
+# Drives atmosphere.sh through the interactive wizard for a local install.
 # Preflight is skipped and curl is mocked, so it runs offline on any OS.
 
 set timeout 30
 set here [file dirname [file normalize [info script]]]
 set env(PATH) "$here/../../mocks:$env(PATH)"
-set env(NOCO_SKIP_PREFLIGHT) "1"
+set env(ATMOSPHERE_SKIP_PREFLIGHT) "1"
 
-spawn bash "$here/../../../noco.sh"
+spawn bash "$here/../../../atmosphere.sh"
 
 # Domain prompt — type localhost (local mode)
 expect "Domain or IP*"

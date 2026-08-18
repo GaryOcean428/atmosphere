@@ -1,5 +1,5 @@
 import { GenericFieldHandler } from './generic';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
 import type { MetaService } from 'src/meta/meta.service';
 import type { Column } from 'src/models';
@@ -10,7 +10,7 @@ export class ComputedFieldHandler extends GenericFieldHandler {
     row: any;
     column: Column;
     options?: {
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       baseModel?: IBaseModelSqlV2;
     };

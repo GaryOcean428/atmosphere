@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, EventType, ViewTypes } from 'nocodb-sdk';
+import { AppEvents, EventType, ViewTypes } from 'atmosphere-sdk';
 import type {
   GalleryUpdateReqType,
   UserType,
   ViewCreateReqType,
-} from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
-import { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { MetaService } from '~/meta/meta.service';
 import {
   type ViewWebhookManager,
@@ -16,31 +16,31 @@ import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
 import { assertPersonalViewAllowed } from '~/helpers/checkPersonalViewFeature';
 import { assertNotSandbox } from '~/helpers/sandboxGuards';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
 import { GalleryView, Model, User, View } from '~/models';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheScope } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 @Injectable()
 export class GalleriesService {
   constructor(protected readonly appHooksService: AppHooksService) {}
 
-  async galleryViewGet(context: NcContext, param: { galleryViewId: string }) {
+  async galleryViewGet(context: AtContext, param: { galleryViewId: string }) {
     return await GalleryView.get(context, param.galleryViewId);
   }
 
   @TraceCommand(OperationName.galleryViewCreate)
   async galleryViewCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       gallery: ViewCreateReqType;
       user: UserType;
       ownedBy?: string;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -58,7 +58,7 @@ export class GalleriesService {
     );
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     await assertPersonalViewAllowed(context, param.gallery.lock_type);
@@ -75,7 +75,7 @@ export class GalleriesService {
       ncMeta,
     );
     if (existingView) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'view',
         alias: param.gallery.title,
         label: 'title',
@@ -113,7 +113,7 @@ export class GalleriesService {
 
     // populate  cache and add to list since the list cache already exist
     const view = await View.get(context, id, false, ncMeta);
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       context,
       CacheScope.VIEW,
       [view.fk_model_id],
@@ -138,7 +138,7 @@ export class GalleriesService {
 
     await view.getView(context);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -159,11 +159,11 @@ export class GalleriesService {
 
   @TraceCommand(OperationName.galleryViewUpdate)
   async galleryViewUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       galleryViewId: string;
       gallery: GalleryUpdateReqType;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -176,7 +176,7 @@ export class GalleriesService {
     const view = await View.get(context, param.galleryViewId, false, ncMeta);
 
     if (!view) {
-      NcError.get(context).viewNotFound(param.galleryViewId);
+      AtError.get(context).viewNotFound(param.galleryViewId);
     }
 
     const viewWebhookManager =
@@ -223,7 +223,7 @@ export class GalleriesService {
     // Strip the stored bcrypt password hash from every outbound payload.
     const safeView = View.maskPasswordForResponse(view);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,

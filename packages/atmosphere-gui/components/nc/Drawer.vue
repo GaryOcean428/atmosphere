@@ -198,9 +198,9 @@ const canScrollUp = ref(false)
 const canScrollDown = ref(false)
 
 const scrollFadeClass = computed(() => {
-  if (canScrollUp.value && canScrollDown.value) return 'nc-scroll-fade'
-  if (canScrollUp.value) return 'nc-scroll-fade-top'
-  if (canScrollDown.value) return 'nc-scroll-fade-bottom'
+  if (canScrollUp.value && canScrollDown.value) return 'atm-scroll-fade'
+  if (canScrollUp.value) return 'atm-scroll-fade-top'
+  if (canScrollDown.value) return 'atm-scroll-fade-bottom'
   return ''
 })
 
@@ -239,9 +239,9 @@ const bodyHeight = computed(() => {
 const effectiveHeight = computed(() => (props.contentHeight ? 'auto' : props.height))
 
 const wrapClassNameComputed = computed(() => {
-  let className = 'nc-drawer-wrapper'
+  let className = 'atm-drawer-wrapper'
   if (props.contentHeight) {
-    className += ' nc-drawer-content-height'
+    className += ' atm-drawer-content-height'
   }
   if (props.wrapClassName) {
     className += ` ${props.wrapClassName}`
@@ -265,35 +265,35 @@ onMounted(() => {
     :class="wrapClassNameComputed"
     :body-style="{ padding: 0, ...bodyStyle }"
     :footer="null"
-    class="nc-drawer"
+    class="atm-drawer"
     @keydown.esc="visible = false"
   >
     <div
       ref="drawerContentRef"
-      class="nc-drawer-content h-full"
+      class="atm-drawer-content h-full"
       @touchstart="onContentTouchStart"
       @touchmove="onContentTouchMove"
       @touchend="onContentTouchEnd"
     >
       <!-- Drag handle -->
-      <div v-if="showDragHandle" ref="dragHandleRef" class="nc-drawer-drag-handle" :class="headerClassName">
-        <div class="nc-drawer-drag-indicator" />
+      <div v-if="showDragHandle" ref="dragHandleRef" class="atm-drawer-drag-handle" :class="headerClassName">
+        <div class="atm-drawer-drag-indicator" />
       </div>
 
       <!-- Header -->
-      <div v-if="slots.header || title" ref="headerRef" class="nc-drawer-header">
+      <div v-if="slots.header || title" ref="headerRef" class="atm-drawer-header">
         <slot name="header">
-          <div class="text-sm font-semibold text-nc-content-gray">{{ title }}</div>
+          <div class="text-sm font-semibold text-atm-content-gray">{{ title }}</div>
         </slot>
       </div>
 
       <!-- Body -->
       <div
         ref="drawerBodyRef"
-        class="nc-drawer-body"
+        class="atm-drawer-body"
         :style="{ height: bodyHeight }"
         :class="[
-          scrollableBody ? 'overflow-y-auto nc-scrollbar-thin' : 'overflow-hidden',
+          scrollableBody ? 'overflow-y-auto atm-scrollbar-thin' : 'overflow-hidden',
           scrollableBody ? scrollFadeClass : '',
           bodyClassName,
         ]"
@@ -303,7 +303,7 @@ onMounted(() => {
       </div>
 
       <!-- Footer -->
-      <div v-if="slots.footer" ref="footerRef" class="nc-drawer-footer" :class="footerClassName">
+      <div v-if="slots.footer" ref="footerRef" class="atm-drawer-footer" :class="footerClassName">
         <slot name="footer" />
       </div>
     </div>
@@ -311,9 +311,9 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
-.nc-drawer-wrapper {
+.atm-drawer-wrapper {
   .ant-drawer-content-wrapper {
-    @apply !rounded-t-3xl overflow-hidden dark:border-t-1 dark:border-nc-border-gray-medium;
+    @apply !rounded-t-3xl overflow-hidden dark:border-t-1 dark:border-atm-border-gray-medium;
   }
 
   .ant-drawer-content {
@@ -324,7 +324,7 @@ onMounted(() => {
     @apply !p-0 h-full;
   }
 
-  &.nc-drawer-content-height {
+  &.atm-drawer-content-height {
     .ant-drawer-content-wrapper {
       max-height: v-bind('props.maxHeight');
     }
@@ -333,23 +333,23 @@ onMounted(() => {
 </style>
 
 <style lang="scss" scoped>
-.nc-drawer-content {
-  @apply bg-nc-bg-default;
+.atm-drawer-content {
+  @apply bg-atm-bg-default;
 }
 
-.nc-drawer-drag-handle {
+.atm-drawer-drag-handle {
   @apply flex items-center justify-center py-2 cursor-grab active:cursor-grabbing;
 }
 
-.nc-drawer-drag-indicator {
-  @apply w-9 h-1 rounded-full bg-nc-bg-gray-dark;
+.atm-drawer-drag-indicator {
+  @apply w-9 h-1 rounded-full bg-atm-bg-gray-dark;
 }
 
-.nc-drawer-header {
+.atm-drawer-header {
   @apply pb-2;
 }
 
-.nc-drawer-body {
+.atm-drawer-body {
   @apply px-4 pb-4;
 }
 </style>

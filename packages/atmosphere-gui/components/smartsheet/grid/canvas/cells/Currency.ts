@@ -1,4 +1,4 @@
-import { roundUpToPrecision } from 'nocodb-sdk'
+import { roundUpToPrecision } from 'atmosphere-sdk'
 import { renderSingleLineText, renderTagLabel } from '../utils/canvas'
 
 export const CurrencyRenderer: CellRenderer = {

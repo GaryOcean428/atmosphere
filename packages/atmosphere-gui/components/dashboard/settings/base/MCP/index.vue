@@ -77,7 +77,7 @@ const columns = [
     justify: 'justify-end',
     align: 'center',
   },
-] as NcTableColumnProps[]
+] as AtTableColumnProps[]
 
 onMounted(async () => {
   loadSorts()
@@ -142,10 +142,10 @@ const getFormattedDate = (date: string, format?: string) => dayjs(date).format(f
   <div v-if="isCreatingMcpToken" class="absolute w-full h-full inset-0 flex items-center justify-center z-90 bg-black/12">
     <div
       style="box-shadow: 0px 8px 8px -4px rgba(0, 0, 0, 0.04), 0px 20px 24px -4px rgba(0, 0, 0, 0.1)"
-      class="bg-nc-bg-default p-6 flex flex-col w-[488px] rounded-2xl dark:(border-1 border-nc-border-gray-medium)"
+      class="bg-atm-bg-default p-6 flex flex-col w-[488px] rounded-2xl dark:(border-1 border-atm-border-gray-medium)"
     >
-      <div class="text-nc-content-gray-emphasis text-lg font-bold">{{ $t('labels.creatingMCPToken') }}</div>
-      <div class="text-nc-gray-subtle2 mt-2">
+      <div class="text-atm-content-gray-emphasis text-lg font-bold">{{ $t('labels.creatingMCPToken') }}</div>
+      <div class="text-atm-gray-subtle2 mt-2">
         {{ $t('labels.creatingTokenDescription') }}
       </div>
 
@@ -157,7 +157,7 @@ const getFormattedDate = (date: string, format?: string) => dayjs(date).format(f
 
   <div class="flex flex-col w-full">
     <div class="flex items-center justify-end">
-      <NcButton
+      <AtButton
         :disabled="isUnsavedMCPTokenPending"
         type="primary"
         data-testid="add-new-mcp-token"
@@ -168,39 +168,39 @@ const getFormattedDate = (date: string, format?: string) => dayjs(date).format(f
           <GeneralIcon icon="plus" />
           {{ $t('labels.newMCPEndpoint') }}
         </div>
-      </NcButton>
+      </AtButton>
     </div>
 
-    <NcTable
+    <AtTable
       v-model:order-by="orderBy"
       :columns="columns"
       header-row-height="44px"
       row-height="44px"
       :data="sortedMcpTokens"
       class="h-full mt-4"
-      body-row-class-name="nc-base-settings-mcp-token-item group no-border-last"
+      body-row-class-name="atm-base-settings-mcp-token-item group no-border-last"
       @row-click="handleOpenTokenModal"
     >
       <template #bodyCell="{ column, record: token }">
         <template v-if="column.key === 'name'">
-          <NcTooltip v-if="!token.isNew" class="truncate text-nc-content-gray font-semibold text-sm">
+          <AtTooltip v-if="!token.isNew" class="truncate text-atm-content-gray font-semibold text-sm">
             {{ token.title }}
 
             <template #title>
-              <div class="text-[10px] leading-[14px] uppercase font-semibold pt-1 text-nc-content-brand-hover">
+              <div class="text-[10px] leading-[14px] uppercase font-semibold pt-1 text-atm-content-brand-hover">
                 {{ $t('labels.createdOn') }}
               </div>
               <div class="mt-1 text-[13px]">
                 {{ dayjs(token.created_at).format('D MMMM YYYY, hh:mm A') }}
               </div>
-              <div class="text-[10px] leading-[14px] uppercase font-semibold mt-2 text-nc-content-brand-hover">
+              <div class="text-[10px] leading-[14px] uppercase font-semibold mt-2 text-atm-content-brand-hover">
                 {{ $t('labels.createdBy') }}
               </div>
               <div class="mt-1 pb-1 text-[13px]">
                 {{ token.created_display_name }}
               </div>
             </template>
-          </NcTooltip>
+          </AtTooltip>
           <a-input
             v-else
             ref="newTokenInputRef"
@@ -213,45 +213,45 @@ const getFormattedDate = (date: string, format?: string) => dayjs(date).format(f
         </template>
 
         <template v-if="column.key === 'created_at'">
-          <div v-if="!token.isNew && token.created_at" class="text-nc-content-gray-subtle">
+          <div v-if="!token.isNew && token.created_at" class="text-atm-content-gray-subtle">
             {{ getFormattedDate(token.created_at, 'D MMM YYYY') }}
           </div>
         </template>
 
         <template v-if="column.key === 'action'">
-          <NcDropdown v-if="!token.isNew">
-            <NcButton type="secondary" class="!hidden !group-hover:block" size="small" @click.stop>
+          <AtDropdown v-if="!token.isNew">
+            <AtButton type="secondary" class="!hidden !group-hover:block" size="small" @click.stop>
               <GeneralIcon icon="threeDotVertical" />
-            </NcButton>
+            </AtButton>
 
             <template #overlay>
-              <NcMenu variant="small">
-                <NcMenuItem @click="regenerateToken(token)">
+              <AtMenu variant="small">
+                <AtMenuItem @click="regenerateToken(token)">
                   <GeneralIcon icon="refresh" />
                   {{ $t('labels.regenerateToken') }}
-                </NcMenuItem>
-                <NcDivider />
-                <NcMenuItem danger @click="confirmDeleteToken(token)">
+                </AtMenuItem>
+                <AtDivider />
+                <AtMenuItem danger @click="confirmDeleteToken(token)">
                   <GeneralIcon icon="delete" />
                   {{ $t('labels.deleteToken') }}
-                </NcMenuItem>
-              </NcMenu>
+                </AtMenuItem>
+              </AtMenu>
             </template>
-          </NcDropdown>
+          </AtDropdown>
           <div v-else>
             <div class="flex gap-2">
-              <NcButton data-testid="cancel-token-btn" type="secondary" size="small" @click.stop="cancelNewMcpToken()">
+              <AtButton data-testid="cancel-token-btn" type="secondary" size="small" @click.stop="cancelNewMcpToken()">
                 {{ $t('general.cancel') }}
-              </NcButton>
+              </AtButton>
 
-              <NcButton data-testid="create-token-btn" type="primary" size="small" @click.stop="createTokenWithExpiry(token)">
+              <AtButton data-testid="create-token-btn" type="primary" size="small" @click.stop="createTokenWithExpiry(token)">
                 {{ $t('general.save') }}
-              </NcButton>
+              </AtButton>
             </div>
           </div>
         </template>
       </template>
-    </NcTable>
+    </AtTable>
 
     <DashboardSettingsBaseMCPModal
       v-if="isTokenModalVisible"
@@ -264,6 +264,6 @@ const getFormattedDate = (date: string, format?: string) => dayjs(date).format(f
 
 <style scoped lang="scss">
 .ant-input {
-  @apply rounded-lg py-1 px-3 w-398 h-8 border-1 focus:border-nc-border-brand border-nc-border-gray-medium;
+  @apply rounded-lg py-1 px-3 w-398 h-8 border-1 focus:border-atm-border-brand border-atm-border-gray-medium;
 }
 </style>

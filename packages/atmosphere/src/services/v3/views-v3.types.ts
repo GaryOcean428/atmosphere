@@ -1,10 +1,10 @@
-import type { NcContext, NcRequest } from 'nocodb-sdk';
+import type { AtContext, AtRequest } from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
 
 export interface IViewsV3Service {
   getView(
-    context: NcContext,
-    param: { viewId: string; req: NcRequest },
+    context: AtContext,
+    param: { viewId: string; req: AtRequest },
     ncMeta?: MetaService,
   ): Promise<any>;
 }

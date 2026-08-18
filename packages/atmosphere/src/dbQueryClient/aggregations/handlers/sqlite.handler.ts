@@ -6,7 +6,7 @@ import {
   FormulaDataTypes,
   NumericalAggregations,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Knex } from '~/db/CustomKnex';
 import type { AggregationGeneratorParams } from '~/dbQueryClient/types';
 import type { AggregationSqlContext } from '~/dbQueryClient/aggregations/aggregation-handler.interface';
@@ -26,7 +26,7 @@ export class SqliteAggregationHandler extends GenericAggregationHandler {
     } = params;
     const knex = baseModelSqlv2.dbDriver;
 
-    // Filtered derived table exposing the column value as a plain `nc_val` column;
+    // Filtered derived table exposing the column value as a plain `atm_val` column;
     // used as the FROM source for the self-contained-subquery aggregates below so
     // they honor filters. Falls back to the raw table only when no baseQuery was
     // supplied. (Inline aggregates keep using `column_query` over the outer query.)
@@ -34,13 +34,13 @@ export class SqliteAggregationHandler extends GenericAggregationHandler {
       ? baseQuery
           .clone()
           .clearSelect()
-          .select(knex.raw(`(??) as nc_val`, [column_query]))
+          .select(knex.raw(`(??) as atm_val`, [column_query]))
       : undefined;
     const subAggFrom: string | Knex.Raw = derivedInner
-      ? knex.raw(`(??) as nc_agg_sub`, [derivedInner])
+      ? knex.raw(`(??) as atm_agg_sub`, [derivedInner])
       : baseModelSqlv2.tnPath;
     const subAggCol: string | Knex.QueryBuilder = derivedInner
-      ? 'nc_val'
+      ? 'atm_val'
       : column_query;
 
     let condnValue: any = "''";

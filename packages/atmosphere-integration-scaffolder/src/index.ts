@@ -12,7 +12,7 @@ const rootPath = path.resolve(
   __dirname,
   "..",
   "..",
-  "nocodb",
+  "atmosphere",
   "src",
   "ee",
   "integrations"
@@ -309,7 +309,7 @@ async function generateFormBoilerplate(type: string, subType: string) {
     );
   }
 
-  const boilerplate = `import { FormBuilderInputType } from 'nocodb-sdk';
+  const boilerplate = `import { FormBuilderInputType } from 'atmosphere-sdk';
 export default [
   {
     type: FormBuilderInputType.Input,
@@ -363,8 +363,8 @@ async function generateManifest(type: string, subType: string) {
 }
 
 /*
-NocoDB Integration tool
-- NocoDB have following categories of integrations:
+Atmosphere Integration tool
+- Atmosphere have following categories of integrations:
   - AI (ai)
   - Sync (sync)
 - This tool will help you to create a boilerplate for creating a new subType for category

@@ -1,10 +1,10 @@
-import { ViewTypes } from 'nocodb-sdk'
-import type { RowColoringInfo, ViewSettingOverrideOptions } from 'nocodb-sdk'
+import { ViewTypes } from 'atmosphere-sdk'
+import type { RowColoringInfo, ViewSettingOverrideOptions } from 'atmosphere-sdk'
 import { iconMap } from './iconUtils'
 import type { Language } from '~/lib/types'
-import UsersIcon from '~icons/nc-icons/users'
-import LockIcon from '~icons/nc-icons-v2/lock'
-import PersonalIcon from '~icons/nc-icons/personal'
+import UsersIcon from '~icons/atm-icons/users'
+import LockIcon from '~icons/atm-icons-v2/lock'
+import PersonalIcon from '~icons/atm-icons/personal'
 
 export const viewIcons: Record<number | string, { icon: any; color: string; darkColor?: string }> = {
   [ViewTypes.GRID]: { icon: iconMap.grid, color: 'var(--color-view-icon-grid)' },

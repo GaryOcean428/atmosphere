@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { AttachmentResType } from 'nocodb-sdk'
+import type { AttachmentResType } from 'atmosphere-sdk'
 
 interface Props {
   bannerImageUrl?: AttachmentResType
@@ -17,18 +17,18 @@ const getBannerImageSrc = computed(() => {
 
 <template>
   <div
-    class="nc-form-banner-wrapper w-full mx-auto rounded-2xl overflow-hidden"
+    class="atm-form-banner-wrapper w-full mx-auto rounded-2xl overflow-hidden"
     :class="!bannerImageUrl ? 'shadow-sm' : ''"
     :style="{ aspectRatio: 4 / 1 }"
   >
     <LazyCellAttachmentPreviewImage
       v-if="bannerImageUrl"
       :srcs="getBannerImageSrc"
-      class="nc-form-banner-image object-cover w-full"
+      class="atm-form-banner-image object-cover w-full"
       :is-cell-preview="false"
     />
     <img v-else-if="formBannerUrl" :src="formBannerUrl" alt="" class="h-full w-full object-cover" />
-    <div v-else dir="ltr" class="h-full flex items-stretch justify-between bg-nc-bg-default">
+    <div v-else dir="ltr" class="h-full flex items-stretch justify-between bg-atm-bg-default">
       <div class="flex -mt-1">
         <img src="~assets/img/form-banner-left.png" alt="form-banner-left'" />
       </div>

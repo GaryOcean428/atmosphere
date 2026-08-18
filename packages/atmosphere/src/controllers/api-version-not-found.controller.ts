@@ -1,6 +1,6 @@
 import { All, Controller, HttpCode, Req } from '@nestjs/common';
-import { NcRequest } from 'nocodb-sdk';
-import { NcError } from 'src/helpers/catchError';
+import { AtRequest } from 'atmosphere-sdk';
+import { AtError } from 'src/helpers/catchError';
 
 const V1_PATH_PREFIX = '/api/v1/*';
 const V2_PATH_PREFIX = '/api/v2/*';
@@ -10,8 +10,8 @@ const NOT_FOUND_PATH_PREFIX = '/api/v:apiVersion(\\d+)/*';
 export class ApiVersionNotFoundController {
   @All([V1_PATH_PREFIX, V2_PATH_PREFIX])
   @HttpCode(404)
-  async apiVersion1And2NotFound(@Req() req: NcRequest) {
-    NcError.notFound(`Cannot ${req.method} ${req.path}`);
+  async apiVersion1And2NotFound(@Req() req: AtRequest) {
+    AtError.notFound(`Cannot ${req.method} ${req.path}`);
   }
 
   @All(NOT_FOUND_PATH_PREFIX)

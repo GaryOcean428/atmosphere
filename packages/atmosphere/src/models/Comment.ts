@@ -1,13 +1,13 @@
-import type { AttachmentType, CommentType, MetaType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AttachmentType, CommentType, MetaType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { parseMetaProp, prepareForDb } from '~/utils/modelUtils';
 import { extractProps } from '~/helpers/extractProps';
 import Model from '~/models/Model';
 import FileReference from '~/models/FileReference';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
-import { NcError } from '~/helpers/catchError';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
+import { AtError } from '~/helpers/catchError';
 
 export default class Comment implements CommentType {
   id?: string;
@@ -41,9 +41,9 @@ export default class Comment implements CommentType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     commentId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const comment = await ncMeta.metaGet2(
       context.workspace_id,
@@ -56,10 +56,10 @@ export default class Comment implements CommentType {
   }
 
   public static async listByModel(
-    context: NcContext,
+    context: AtContext,
     fk_model_id: string,
     pagination?: { limit: number; offset: number },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Comment[]> {
     const comments = await ncMeta.metaList2(
       context.workspace_id,
@@ -84,7 +84,7 @@ export default class Comment implements CommentType {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     {
       row_id,
       fk_model_id,
@@ -92,7 +92,7 @@ export default class Comment implements CommentType {
       row_id: string;
       fk_model_id: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const commentList = await ncMeta
       .knex(MetaTable.COMMENTS)
@@ -108,9 +108,9 @@ export default class Comment implements CommentType {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     comment: Partial<Comment>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(comment, [
       'id',
@@ -133,7 +133,7 @@ export default class Comment implements CommentType {
       );
     }
 
-    if (!insertObj.fk_model_id) NcError.tableNotFound(insertObj.fk_model_id);
+    if (!insertObj.fk_model_id) AtError.tableNotFound(insertObj.fk_model_id);
 
     if (!insertObj.source_id) {
       const model = await Model.getByIdOrName(
@@ -170,10 +170,10 @@ export default class Comment implements CommentType {
     return commentObj;
   }
   public static async update(
-    context: NcContext,
+    context: AtContext,
     commentId: string,
     comment: Partial<Comment>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(comment, [
       'comment',
@@ -220,7 +220,7 @@ export default class Comment implements CommentType {
     context,
     commentId: string,
     comment: Partial<Comment>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(comment, [
       'resolved_by',
@@ -241,9 +241,9 @@ export default class Comment implements CommentType {
   }
 
   static async delete(
-    context: NcContext,
+    context: AtContext,
     commentId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaUpdate(
       context.workspace_id,
@@ -268,9 +268,9 @@ export default class Comment implements CommentType {
   }
 
   static async deleteModelComments(
-    context: NcContext,
+    context: AtContext,
     fk_model_id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return ncMeta.metaDelete(
       context.workspace_id,
@@ -283,13 +283,13 @@ export default class Comment implements CommentType {
   }
 
   public static async commentsCount(
-    context: NcContext,
+    context: AtContext,
     args: {
       ids: string[];
       fk_model_id: string;
     },
   ) {
-    const audits = await Noco.ncMeta
+    const audits = await Atmosphere.ncMeta
       .knex(MetaTable.COMMENTS)
       .count('id', { as: 'count' })
       .select('row_id')
@@ -307,9 +307,9 @@ export default class Comment implements CommentType {
    * List all non-deleted comments for a document, ordered by created_at asc.
    */
   public static async listByDoc(
-    context: NcContext,
+    context: AtContext,
     fk_doc_id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const commentList = await ncMeta
       .knex(MetaTable.COMMENTS)
@@ -328,9 +328,9 @@ export default class Comment implements CommentType {
    * Insert a document comment (does not require fk_model_id / source_id).
    */
   public static async insertDocComment(
-    context: NcContext,
+    context: AtContext,
     comment: Partial<Comment>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(comment, [
       'id',
@@ -344,7 +344,7 @@ export default class Comment implements CommentType {
     ]);
 
     if (!insertObj.fk_doc_id) {
-      NcError.badRequest('fk_doc_id is required for document comments');
+      AtError.badRequest('fk_doc_id is required for document comments');
     }
 
     const res = await ncMeta.metaInsert2(
@@ -361,9 +361,9 @@ export default class Comment implements CommentType {
    * Soft-delete all comments for a given document (cascade on doc delete).
    */
   static async deleteDocComments(
-    context: NcContext,
+    context: AtContext,
     fk_doc_id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return ncMeta
       .knex(MetaTable.COMMENTS)
@@ -376,9 +376,9 @@ export default class Comment implements CommentType {
    * Count comments per document (for sidebar badge).
    */
   public static async docCommentsCount(
-    context: NcContext,
+    context: AtContext,
     docIds: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const results = await ncMeta
       .knex(MetaTable.COMMENTS)
@@ -431,13 +431,13 @@ export default class Comment implements CommentType {
    * - FileReferences whose file is no longer present are soft-deleted.
    */
   protected static async reconcileAttachments(
-    context: NcContext,
+    context: AtContext,
     comment: Comment,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const attachments = comment.attachments || [];
 
-    const storageAdapter = await NcPluginMgrv2.storageAdapter();
+    const storageAdapter = await AtPluginMgrv2.storageAdapter();
 
     // Validate any pre-existing ids actually belong to this comment (e.g. an
     // attachment copied from another comment carries a foreign id) — treat

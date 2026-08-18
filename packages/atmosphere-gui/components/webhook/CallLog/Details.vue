@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { HookLogType } from 'nocodb-sdk'
+import type { HookLogType } from 'atmosphere-sdk'
 import { hookLogFormatter } from '../../../utils/datetimeUtils'
 
 interface Props {
@@ -110,18 +110,18 @@ const hookType = (item: HookLogType) => {
 
 <style scoped lang="scss">
 .container {
-  @apply p-6 h-full overflow-auto nc-scrollbar-thin flex-col flex gap-6;
+  @apply p-6 h-full overflow-auto atm-scrollbar-thin flex-col flex gap-6;
   .log-details {
     @apply grid grid-cols-2 gap-2;
 
     .log-detail-item {
       @apply flex flex-row;
       .label {
-        @apply w-30 font-bold text-small1 text-nc-content-gray-emphasis;
+        @apply w-30 font-bold text-small1 text-atm-content-gray-emphasis;
       }
 
       .value {
-        @apply text-nc-content-gray-subtle2 font-500 text-small1;
+        @apply text-atm-content-gray-subtle2 font-500 text-small1;
       }
     }
   }
@@ -137,7 +137,7 @@ const hookType = (item: HookLogType) => {
   .log-url-wrapper {
     @apply flex flex-row gap-2 items-center h-20px;
     .log-method {
-      @apply bg-nc-bg-gray-medium rounded-md leading-20px px-1 text-nc-content-gray-subtle2;
+      @apply bg-atm-bg-gray-medium rounded-md leading-20px px-1 text-atm-content-gray-subtle2;
     }
 
     .log-url {

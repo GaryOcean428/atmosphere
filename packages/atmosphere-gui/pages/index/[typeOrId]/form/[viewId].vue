@@ -8,7 +8,7 @@ definePageMeta({
   pageType: 'shared-view',
 })
 
-useSidebar('nc-left-sidebar', { hasSidebar: false })
+useSidebar('atm-left-sidebar', { hasSidebar: false })
 
 const route = useRoute()
 
@@ -67,7 +67,7 @@ const focus: VNodeRef = (el: typeof InputPassword) => {
         centered
         :footer="null"
         :mask-closable="false"
-        wrap-class-name="nc-modal-shared-form-password-dlg"
+        wrap-class-name="atm-modal-shared-form-password-dlg"
         :mask-style="{
           backgroundColor: 'rgba(var(--color-base-white), 0.64)',
           backdropFilter: 'blur(8px)',
@@ -75,7 +75,7 @@ const focus: VNodeRef = (el: typeof InputPassword) => {
         @close="passwordDlg = false"
       >
         <div class="flex flex-col gap-5">
-          <div class="flex flex-row items-center gap-x-2 text-base font-weight-700 text-nc-content-gray">
+          <div class="flex flex-row items-center gap-x-2 text-base font-weight-700 text-atm-content-gray">
             <GeneralIcon icon="ncKey" class="!text-base w-5 h-5" />
             {{ $t('msg.thisSharedViewIsProtected') }}
           </div>
@@ -94,22 +94,22 @@ const focus: VNodeRef = (el: typeof InputPassword) => {
                 :placeholder="$t('msg.enterPassword')"
               />
               <Transition name="layout">
-                <div v-if="passwordError" class="mb-2 text-sm text-nc-content-red-medium">{{ passwordError }}</div>
+                <div v-if="passwordError" class="mb-2 text-sm text-atm-content-red-medium">{{ passwordError }}</div>
               </Transition>
             </a-form-item>
           </a-form>
           <div class="flex flex-row justify-end gap-x-2">
-            <NcButton
+            <AtButton
               :disabled="!form.password"
               type="primary"
               size="small"
               html-type="submit"
               class="!px-2"
-              data-testid="nc-shared-view-password-submit-btn"
+              data-testid="atm-shared-view-password-submit-btn"
               @click="loadSharedView"
               >{{ $t('objects.view') }}
               <template #loading> {{ $t('msg.verifyingPassword') }}</template>
-            </NcButton>
+            </AtButton>
           </div>
         </div>
       </a-modal>
@@ -130,18 +130,18 @@ const focus: VNodeRef = (el: typeof InputPassword) => {
   filter: invert(1) hue-rotate(180deg);
 }
 
-:deep(.nc-cell-attachment) {
+:deep(.atm-cell-attachment) {
   @apply p-0;
 
-  .nc-attachment-cell {
+  .atm-attachment-cell {
     @apply px-4 min-h-[75px] w-full h-full;
 
-    .nc-attachment {
+    .atm-attachment {
       @apply md:(w-[50px] h-[50px]) lg:(w-[75px] h-[75px]) min-h-[50px] min-w-[50px];
     }
 
-    .nc-attachment-cell-dropzone {
-      @apply rounded bg-nc-bg-gray-extradark/75;
+    .atm-attachment-cell-dropzone {
+      @apply rounded bg-atm-bg-gray-extradark/75;
     }
   }
 }

@@ -2,11 +2,11 @@ import { getModelPaths } from './templates/paths';
 import type { Model, Source } from '~/models';
 import type { SwaggerColumn } from './getSwaggerColumnMetas';
 import type { SwaggerView } from '~/services/api-docs/shared/swaggerUtils';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 
 export default async function getPaths(
-  context: NcContext,
+  context: AtContext,
   {
     model,
     columns,
@@ -19,7 +19,7 @@ export default async function getPaths(
     sourcesMap: Map<string, Source>;
     tableName: string;
   },
-  _ncMeta = Noco.ncMeta,
+  _ncMeta = Atmosphere.ncMeta,
 ) {
   const swaggerPaths = await getModelPaths(context, {
     tableName,

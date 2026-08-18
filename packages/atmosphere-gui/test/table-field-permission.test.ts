@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { PermissionGrantedType, PermissionRole } from 'nocodb-sdk'
+import { PermissionGrantedType, PermissionRole } from 'atmosphere-sdk'
 import { evaluateTableFieldPermission } from '~/utils/tableFieldPermission'
 
 /**

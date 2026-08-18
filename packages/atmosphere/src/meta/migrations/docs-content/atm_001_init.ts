@@ -10,7 +10,7 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
 
     table.primary(['base_id', 'fk_doc_id']);
-    table.index(['base_id', 'fk_workspace_id'], 'nc_doc_content_v2_tenant_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_doc_content_v2_tenant_idx');
   });
 
   const isPg =

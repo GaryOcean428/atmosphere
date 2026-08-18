@@ -1,6 +1,6 @@
 import { isString } from '@vue/shared'
-import { type Roles, type RolesObj, SourceRestriction, type SourceType } from 'nocodb-sdk'
-import { extractRolesObj } from 'nocodb-sdk'
+import { type Roles, type RolesObj, SourceRestriction, type SourceType } from 'atmosphere-sdk'
+import { extractRolesObj } from 'atmosphere-sdk'
 import type { MaybeRef } from 'vue'
 
 const hasPermission = (role: Roles, hasRole: boolean, permission: Permission | string) => {
@@ -163,7 +163,7 @@ export const useRolesShared = createSharedComposable(() => {
       roles?: string | Record<string, boolean> | string[] | null
       source?: MaybeRef<SourceType & { meta?: Record<string, any> }>
       skipSourceCheck?: boolean
-      base?: MaybeRef<NcProject>
+      base?: MaybeRef<AtProject>
       skipBaseCheck?: boolean
     } = {},
   ) => {

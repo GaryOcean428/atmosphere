@@ -1,6 +1,6 @@
 import type { PropType } from '@vue/runtime-core'
-import type { ColumnType, LinkToAnotherRecordType, LookupType, RollupType } from 'nocodb-sdk'
-import { ButtonActionsType, RelationTypes, UITypes } from 'nocodb-sdk'
+import type { ColumnType, LinkToAnotherRecordType, LookupType, RollupType } from 'atmosphere-sdk'
+import { ButtonActionsType, RelationTypes, UITypes } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 
 import CountIcon from '~icons/mdi/counter'
@@ -113,7 +113,7 @@ export default defineComponent({
 
       const { icon: Icon, color } = renderIcon(column.value, relationColumn)
 
-      return h(Icon, { class: `${color || defaultColor.value || 'text-inherit'} mx-1 flex-none nc-virtual-cell-icon` })
+      return h(Icon, { class: `${color || defaultColor.value || 'text-inherit'} mx-1 flex-none atm-virtual-cell-icon` })
     }
   },
 })

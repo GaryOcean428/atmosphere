@@ -1,6 +1,6 @@
 import type { Edge, Node } from '@vue-flow/core'
-import type { WorkflowNodeDefinition, WorkflowType } from 'nocodb-sdk'
-import { GeneralNodeID, INIT_WORKFLOW_NODES } from 'nocodb-sdk'
+import type { WorkflowNodeDefinition, WorkflowType } from 'atmosphere-sdk'
+import { GeneralNodeID, INIT_WORKFLOW_NODES } from 'atmosphere-sdk'
 import { generateRandomUUID } from '~/utils/generateName'
 
 /**
@@ -124,7 +124,7 @@ const prefixVariableKeysRecursive = (variable: any, prefix: string): any => {
 
 /**
  * Generate a unique node title based on the node type title
- * E.g., 'NocoDB', 'NocoDB1', 'NocoDB2', etc.
+ * E.g., 'Atmosphere', 'Atmosphere1', 'Atmosphere2', etc.
  */
 const generateUniqueNodeTitle = (nodeMeta: UIWorkflowNodeDefinition, nodes: Node[]): string => {
   const baseTitle = nodeMeta.title

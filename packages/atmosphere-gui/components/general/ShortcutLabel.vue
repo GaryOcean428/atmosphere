@@ -37,19 +37,19 @@ const getLabel = (key: string) => {
 </script>
 
 <template>
-  <div class="nc-shortcut-label-wrapper">
-    <div v-for="(key, index) in props.keys" :key="index" class="nc-shortcut-label">
+  <div class="atm-shortcut-label-wrapper">
+    <div v-for="(key, index) in props.keys" :key="index" class="atm-shortcut-label">
       <span>{{ getLabel(key) }}</span>
     </div>
   </div>
 </template>
 
 <style scoped>
-.nc-shortcut-label-wrapper {
+.atm-shortcut-label-wrapper {
   @apply flex gap-1;
 }
 
-.nc-shortcut-label {
+.atm-shortcut-label {
   @apply text-[0.7rem] leading-6 min-w-5 min-h-5 text-center relative z-0 after:(content-[''] left-0 top-0 -z-1 bg-current opacity-10 absolute w-full h-full rounded) px-1;
 }
 </style>

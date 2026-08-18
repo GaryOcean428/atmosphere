@@ -16,26 +16,26 @@ import type {
   UserType,
   ViewType,
   WidgetType,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { CustomUrl } from '~/models';
 
 export type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
-export interface NcBaseEvent {
-  context: NcContext;
-  req: NcRequest;
+export interface AtBaseEvent {
+  context: AtContext;
+  req: AtRequest;
   clientId?: string;
 }
 
-export interface ProjectInviteEvent extends NcBaseEvent {
+export interface ProjectInviteEvent extends AtBaseEvent {
   base: BaseType;
   user: UserType;
   invitedBy: UserType;
   role: ProjectRoles | string;
 }
 
-export interface RowCommentEvent extends NcBaseEvent {
+export interface RowCommentEvent extends AtBaseEvent {
   base: BaseType;
   user: UserType;
   model: TableType;
@@ -50,7 +50,7 @@ export interface RowCommentEvent extends NcBaseEvent {
   source?: { interfaceId: string; pageId: string };
 }
 
-export interface RowMentionEvent extends NcBaseEvent {
+export interface RowMentionEvent extends AtBaseEvent {
   model: TableType;
   rowId: string;
   user: UserType;
@@ -58,129 +58,129 @@ export interface RowMentionEvent extends NcBaseEvent {
   mentions: string[];
 }
 
-export interface ProjectUserUpdateEvent extends NcBaseEvent {
+export interface ProjectUserUpdateEvent extends AtBaseEvent {
   base: BaseType;
   user: UserType;
   baseUser: Partial<ProjectUserReqType>;
   oldBaseUser: Partial<ProjectUserReqType>;
 }
 export interface UserProfileUpdateEvent
-  extends Optional<NcBaseEvent, 'context'> {
+  extends Optional<AtBaseEvent, 'context'> {
   user: UserType;
   oldUser: Partial<UserType>;
 }
 
-export interface ProjectUserDeleteEvent extends NcBaseEvent {
+export interface ProjectUserDeleteEvent extends AtBaseEvent {
   base: BaseType;
   user: UserType;
 }
 
-export interface ProjectUserResendInviteEvent extends NcBaseEvent {
+export interface ProjectUserResendInviteEvent extends AtBaseEvent {
   base: BaseType;
   user: UserType;
   baseUser: ProjectUserReqType;
 }
 
-export interface ProjectCreateEvent extends NcBaseEvent {
+export interface ProjectCreateEvent extends AtBaseEvent {
   base: BaseType;
   user: UserType;
   xcdb: boolean;
 }
 
-export interface ProjectUpdateEvent extends NcBaseEvent {
+export interface ProjectUpdateEvent extends AtBaseEvent {
   base: BaseType;
   updateObj: Record<string, any>;
   oldBaseObj: BaseType;
   user: UserType;
 }
 
-export interface TableUpdateEvent extends NcBaseEvent {
+export interface TableUpdateEvent extends AtBaseEvent {
   table: Partial<TableType>;
   prevTable: TableType;
 }
 
-export interface ProjectDeleteEvent extends NcBaseEvent {
+export interface ProjectDeleteEvent extends AtBaseEvent {
   base: BaseType;
   user: UserType;
 }
 
-export interface WelcomeEvent extends Optional<NcBaseEvent, 'context'> {
+export interface WelcomeEvent extends Optional<AtBaseEvent, 'context'> {
   user: UserType;
 }
 
-export interface UserSignupEvent extends Optional<NcBaseEvent, 'context'> {
+export interface UserSignupEvent extends Optional<AtBaseEvent, 'context'> {
   user: UserType;
 }
 
-export interface UserInviteEvent extends Optional<NcBaseEvent, 'context'> {
+export interface UserInviteEvent extends Optional<AtBaseEvent, 'context'> {
   user: UserType;
   role: string;
   workspaceInvite?: boolean;
   workspaceId?: string;
 }
 
-export interface UserSigninEvent extends Optional<NcBaseEvent, 'context'> {
+export interface UserSigninEvent extends Optional<AtBaseEvent, 'context'> {
   user: UserType;
 }
 
 export interface UserSigninFailedEvent
-  extends Optional<NcBaseEvent, 'context' | 'req'> {
+  extends Optional<AtBaseEvent, 'context' | 'req'> {
   email?: string;
   provider?: string;
   reason?: string;
 }
 
-export interface UserSignoutEvent extends Optional<NcBaseEvent, 'context'> {
+export interface UserSignoutEvent extends Optional<AtBaseEvent, 'context'> {
   user: UserType;
 }
 
-export interface ApiCreatedEvent extends NcBaseEvent {
+export interface ApiCreatedEvent extends AtBaseEvent {
   info: any;
 }
 
 export interface UserPasswordChangeEvent
-  extends Optional<NcBaseEvent, 'context'> {
+  extends Optional<AtBaseEvent, 'context'> {
   user: UserType;
 }
 
 export interface UserPasswordForgotEvent
-  extends Optional<NcBaseEvent, 'context'> {
+  extends Optional<AtBaseEvent, 'context'> {
   user: UserType;
 }
 
 export interface UserPasswordResetEvent
-  extends Optional<NcBaseEvent, 'context'> {
+  extends Optional<AtBaseEvent, 'context'> {
   user: UserType;
 }
 
 export interface UserEmailVerificationEvent
-  extends Optional<NcBaseEvent, 'context'> {
+  extends Optional<AtBaseEvent, 'context'> {
   user: UserType;
 }
 
-export interface TableEvent extends NcBaseEvent {
+export interface TableEvent extends AtBaseEvent {
   table: TableType;
   user: UserType;
   source?: SourceType;
 }
 
-export interface ViewEvent extends NcBaseEvent {
+export interface ViewEvent extends AtBaseEvent {
   view: ViewType;
   user?: UserType;
 }
 
-export interface ViewCreateEvent extends NcBaseEvent {
+export interface ViewCreateEvent extends AtBaseEvent {
   view: ViewType;
   owner: UserType;
   user?: UserType;
 }
-export interface ViewDeleteEvent extends NcBaseEvent {
+export interface ViewDeleteEvent extends AtBaseEvent {
   view: ViewType;
   owner: UserType;
   user?: UserType;
 }
 
-export interface SharedViewUpdateEvent extends NcBaseEvent {
+export interface SharedViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   sharedView: any;
   oldSharedView: any;
@@ -192,69 +192,69 @@ export interface ViewUpdateEvent extends ViewEvent {
   owner: UserType;
 }
 
-export interface FormViewUpdateEvent extends NcBaseEvent {
+export interface FormViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   formView: any;
   oldFormView: any;
 }
 
-export interface GridViewUpdateEvent extends NcBaseEvent {
+export interface GridViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   gridView: any;
   oldGridView: any;
   owner: UserType;
 }
 
-export interface KanbanViewUpdateEvent extends NcBaseEvent {
+export interface KanbanViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   kanbanView: any;
   oldKanbanView: any;
   owner: UserType;
 }
 
-export interface GalleryViewUpdateEvent extends NcBaseEvent {
+export interface GalleryViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   galleryView: any;
   oldGalleryView: any;
   owner: UserType;
 }
 
-export interface CalendarViewUpdateEvent extends NcBaseEvent {
+export interface CalendarViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   calendarView: any;
   oldCalendarView: any;
   owner: UserType;
 }
 
-export interface MapViewUpdateEvent extends NcBaseEvent {
+export interface MapViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   mapView: any;
   oldMapView: any;
   owner: UserType;
 }
 
-export interface TimelineViewUpdateEvent extends NcBaseEvent {
+export interface TimelineViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   timelineView: any;
   oldTimelineView: any;
   owner: UserType;
 }
 
-export interface GanttViewUpdateEvent extends NcBaseEvent {
+export interface GanttViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   ganttView: any;
   oldGanttView: any;
   owner: UserType;
 }
 
-export interface FormViewUpdateEvent extends NcBaseEvent {
+export interface FormViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   formView: any;
   oldFormView: any;
   owner: UserType;
 }
 
-export interface ListViewUpdateEvent extends NcBaseEvent {
+export interface ListViewUpdateEvent extends AtBaseEvent {
   view: ViewType;
   listView: any;
   oldListView: any;
@@ -275,7 +275,7 @@ type FilterEventAdditionalProp =
       widget: WidgetType;
     };
 
-export type FilterEvent = NcBaseEvent & {
+export type FilterEvent = AtBaseEvent & {
   filter: FilterType;
   ip?: string;
   column?: ColumnType;
@@ -285,7 +285,7 @@ export type FilterUpdateEvent = FilterEvent & {
   oldFilter: FilterType;
 };
 
-export interface ColumnEvent extends NcBaseEvent {
+export interface ColumnEvent extends AtBaseEvent {
   table: TableType;
   columnId: string;
   column: ColumnType;
@@ -296,7 +296,7 @@ export interface ColumnUpdateEvent extends ColumnEvent {
   oldColumn: ColumnType;
 }
 
-export interface SortEvent extends NcBaseEvent {
+export interface SortEvent extends AtBaseEvent {
   sort: SortType;
   ip?: string;
   view: ViewType;
@@ -307,45 +307,45 @@ export interface SortUpdateEvent extends SortEvent {
   oldSort: SortType;
 }
 
-export interface OrgUserInviteEvent extends Omit<NcBaseEvent, 'context'> {
+export interface OrgUserInviteEvent extends Omit<AtBaseEvent, 'context'> {
   user: UserType;
   count?: number;
-  context?: NcContext;
+  context?: AtContext;
 }
 
-export interface OrgUserUpdateEvent extends Omit<NcBaseEvent, 'context'> {
+export interface OrgUserUpdateEvent extends Omit<AtBaseEvent, 'context'> {
   userId: string;
   orgId: string;
   oldRole?: string;
   newRole: string;
-  context?: NcContext;
+  context?: AtContext;
 }
 
-export interface OrgUserDeleteEvent extends Omit<NcBaseEvent, 'context'> {
+export interface OrgUserDeleteEvent extends Omit<AtBaseEvent, 'context'> {
   userId: string;
-  context?: NcContext;
+  context?: AtContext;
 }
 
-export interface OrgUserAddEvent extends Omit<NcBaseEvent, 'context'> {
+export interface OrgUserAddEvent extends Omit<AtBaseEvent, 'context'> {
   userId: string;
   orgId: string;
   role: string;
-  context?: NcContext;
+  context?: AtContext;
 }
 
-export interface OrgUserRemoveEvent extends Omit<NcBaseEvent, 'context'> {
+export interface OrgUserRemoveEvent extends Omit<AtBaseEvent, 'context'> {
   userId: string;
   orgId: string;
-  context?: NcContext;
+  context?: AtContext;
 }
 
-export interface OrgWorkspaceEvent extends Omit<NcBaseEvent, 'context'> {
+export interface OrgWorkspaceEvent extends Omit<AtBaseEvent, 'context'> {
   workspaceId: string;
   orgId: string;
-  context?: NcContext;
+  context?: AtContext;
 }
 
-export interface ViewColumnEvent extends NcBaseEvent {
+export interface ViewColumnEvent extends AtBaseEvent {
   viewColumn: any;
   view: ViewType;
   column: ColumnType;
@@ -356,11 +356,11 @@ export interface ViewColumnUpdateEvent extends ViewColumnEvent {
   internal?: boolean;
 }
 
-export interface RelationEvent extends NcBaseEvent {
+export interface RelationEvent extends AtBaseEvent {
   column: ColumnType;
 }
 
-export interface WebhookEvent extends NcBaseEvent {
+export interface WebhookEvent extends AtBaseEvent {
   hook: HookType;
   tableId: string;
 }
@@ -369,12 +369,12 @@ export interface WebhookUpdateEvent extends WebhookEvent {
   oldHook: HookType;
 }
 
-export interface WebhookTriggerEvent extends NcBaseEvent {
+export interface WebhookTriggerEvent extends AtBaseEvent {
   hook: HookType;
   data: any;
 }
 
-export interface ApiTokenCreateEvent extends Optional<NcBaseEvent, 'context'> {
+export interface ApiTokenCreateEvent extends Optional<AtBaseEvent, 'context'> {
   userId: string;
   tokenId: string;
   tokenTitle: string;
@@ -383,7 +383,7 @@ export interface ApiTokenCreateEvent extends Optional<NcBaseEvent, 'context'> {
   hasExpiry?: boolean;
 }
 
-export interface ApiTokenUpdateEvent extends Optional<NcBaseEvent, 'context'> {
+export interface ApiTokenUpdateEvent extends Optional<AtBaseEvent, 'context'> {
   userId: string;
   tokenId: string;
   tokenTitle: string;
@@ -392,21 +392,21 @@ export interface ApiTokenUpdateEvent extends Optional<NcBaseEvent, 'context'> {
   hasExpiry?: boolean;
 }
 
-export interface ApiTokenDeleteEvent extends Optional<NcBaseEvent, 'context'> {
+export interface ApiTokenDeleteEvent extends Optional<AtBaseEvent, 'context'> {
   userId: string;
   tokenId: string;
   tokenTitle: string;
 }
 
-export interface PluginTestEvent extends Optional<NcBaseEvent, 'context'> {
+export interface PluginTestEvent extends Optional<AtBaseEvent, 'context'> {
   testBody: PluginTestReqType;
 }
 
-export interface PluginEvent extends Optional<NcBaseEvent, 'context'> {
+export interface PluginEvent extends Optional<AtBaseEvent, 'context'> {
   plugin: PluginType;
 }
 
-export interface SharedBaseEvent extends NcBaseEvent {
+export interface SharedBaseEvent extends AtBaseEvent {
   link?: string;
   base?: BaseType;
   sharedBaseRole: string;
@@ -417,38 +417,38 @@ export interface SharedBaseEvent extends NcBaseEvent {
 export interface SharedBaseDeleteEvent
   extends Omit<SharedBaseEvent, 'sharedBaseRole'> {}
 
-export interface SourceEvent extends NcBaseEvent {
+export interface SourceEvent extends AtBaseEvent {
   source: SourceType;
   integration: IntegrationType;
 }
 
-export interface AttachmentEvent extends Optional<NcBaseEvent, 'context'> {
+export interface AttachmentEvent extends Optional<AtBaseEvent, 'context'> {
   type: 'url' | 'file';
 }
 
-export interface FormColumnEvent extends NcBaseEvent {
+export interface FormColumnEvent extends AtBaseEvent {
   formColumn: any;
 }
 
-export interface GridColumnEvent extends NcBaseEvent {}
+export interface GridColumnEvent extends AtBaseEvent {}
 
-export interface MetaDiffEvent extends NcBaseEvent {
+export interface MetaDiffEvent extends AtBaseEvent {
   base: BaseType;
   source?: SourceType;
 }
 
-export interface UIAclEvent extends NcBaseEvent {
+export interface UIAclEvent extends AtBaseEvent {
   base: any;
   role: string;
   view: any;
   disabled: boolean;
 }
 
-export interface SyncSourceEvent extends NcBaseEvent {
+export interface SyncSourceEvent extends AtBaseEvent {
   syncSource: Partial<SyncSource>;
 }
 
-export interface IntegrationEvent extends Optional<NcBaseEvent, 'context'> {
+export interface IntegrationEvent extends Optional<AtBaseEvent, 'context'> {
   integration: IntegrationType;
   user: UserType;
   ip?: string;
@@ -458,7 +458,7 @@ export interface SourceUpdateEvent extends SourceEvent {
   oldSource: Partial<SourceType>;
 }
 
-export interface BaseDuplicateEvent extends NcBaseEvent {
+export interface BaseDuplicateEvent extends AtBaseEvent {
   sourceBase: BaseType;
   destBase?: BaseType;
   user: UserType;
@@ -467,7 +467,7 @@ export interface BaseDuplicateEvent extends NcBaseEvent {
   options?: unknown;
 }
 
-export interface TableDuplicateEvent extends NcBaseEvent {
+export interface TableDuplicateEvent extends AtBaseEvent {
   sourceTable: TableType;
   destTable?: TableType;
   user: UserType;
@@ -477,7 +477,7 @@ export interface TableDuplicateEvent extends NcBaseEvent {
   options?: unknown;
 }
 
-export interface ColumnDuplicateEvent extends NcBaseEvent {
+export interface ColumnDuplicateEvent extends AtBaseEvent {
   table: TableType;
   sourceColumn: ColumnType;
   destColumn?: ColumnType;
@@ -487,27 +487,27 @@ export interface ColumnDuplicateEvent extends NcBaseEvent {
   options?: unknown;
 }
 
-export interface ViewDuplicateEvent extends NcBaseEvent {
+export interface ViewDuplicateEvent extends AtBaseEvent {
   sourceView: ViewType;
   destView?: ViewType;
   id?: string;
   error?: string;
 }
 
-export interface ModelRoleVisibilityEvent extends NcBaseEvent {
+export interface ModelRoleVisibilityEvent extends AtBaseEvent {
   view: ViewType;
   role: string;
   disabled: boolean;
 }
 
-export interface DataImportEvent extends NcBaseEvent {
+export interface DataImportEvent extends AtBaseEvent {
   view: ViewType;
   table: TableType;
   type: 'excel' | 'csv';
   id: string;
 }
 
-export interface IntegrationEvent extends Optional<NcBaseEvent, 'context'> {
+export interface IntegrationEvent extends Optional<AtBaseEvent, 'context'> {
   integration: IntegrationType;
   user: UserType;
   ip?: string;
@@ -517,24 +517,24 @@ export interface IntegrationUpdateEvent extends IntegrationEvent {
   oldIntegration: IntegrationType;
 }
 
-export interface DataExportEvent extends NcBaseEvent {
+export interface DataExportEvent extends AtBaseEvent {
   view: ViewType;
   table: TableType;
   type: 'excel' | 'csv' | 'json' | 'ics';
 }
 
-export interface RecordsSoftDeleteEvent extends NcBaseEvent {
+export interface RecordsSoftDeleteEvent extends AtBaseEvent {
   tableId: string;
   rowIds: string[];
   deletedAt: string;
 }
 
-export interface RecordsRestoreEvent extends NcBaseEvent {
+export interface RecordsRestoreEvent extends AtBaseEvent {
   tableId: string;
   rowIds: string[];
 }
 
-export interface RecordsPermanentDeleteEvent extends NcBaseEvent {
+export interface RecordsPermanentDeleteEvent extends AtBaseEvent {
   tableId: string;
   rowIds: string[];
 }
@@ -558,14 +558,14 @@ export type AppEventPayload =
   | ResourceRestoreEvent
   | ResourcePermanentDeleteEvent;
 
-export interface ResourceRestoreEvent extends NcBaseEvent {
+export interface ResourceRestoreEvent extends AtBaseEvent {
   resourceType: string;
   resourceId: string;
   name: string;
   user: Partial<UserType>;
 }
 
-export interface ResourcePermanentDeleteEvent extends NcBaseEvent {
+export interface ResourcePermanentDeleteEvent extends AtBaseEvent {
   resourceType: string;
   resourceId: string;
   name: string;

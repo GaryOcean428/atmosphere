@@ -2,9 +2,9 @@ import { randomBytes } from 'crypto';
 import { promisify } from 'util';
 import { nanoid } from 'nanoid';
 import bcrypt from 'bcryptjs';
-import { OAuthClientType } from 'nocodb-sdk';
-import type { AttachmentResType } from 'nocodb-sdk';
-import type { OAuthClient as IOAuthClient } from 'nocodb-sdk';
+import { OAuthClientType } from 'atmosphere-sdk';
+import type { AttachmentResType } from 'atmosphere-sdk';
+import type { OAuthClient as IOAuthClient } from 'atmosphere-sdk';
 import {
   CacheDelDirection,
   CacheGetType,
@@ -12,10 +12,10 @@ import {
   MetaTable,
   RootScopes,
 } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
 import { prepareForDb, prepareForResponse } from '~/utils/modelUtils';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { deserializeJSON, serializeJSON } from '~/utils/serialize';
 import { PresignedUrl } from '~/models/index';
 
@@ -45,7 +45,7 @@ export default class OAuthClient implements IOAuthClient {
 
   public static async insert(
     clientData: Partial<OAuthClient>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let insertData = extractProps(clientData, [
       'client_type',
@@ -107,7 +107,7 @@ export default class OAuthClient implements IOAuthClient {
     );
 
     return this.getByClientId(res.client_id, ncMeta).then(async (client) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         'root',
         CacheScope.OAUTH_CLIENT,
         [],
@@ -121,8 +121,8 @@ export default class OAuthClient implements IOAuthClient {
     });
   }
 
-  static async getByClientId(clientId: string, ncMeta = Noco.ncMeta) {
-    let data = await NocoCache.get(
+  static async getByClientId(clientId: string, ncMeta = Atmosphere.ncMeta) {
+    let data = await AtmosphereCache.get(
       'root',
       `${CacheScope.OAUTH_CLIENT}:${clientId}`,
       CacheGetType.TYPE_OBJECT,
@@ -136,7 +136,7 @@ export default class OAuthClient implements IOAuthClient {
         { client_id: clientId },
       );
       if (data) {
-        await NocoCache.set(
+        await AtmosphereCache.set(
           'root',
           `${CacheScope.OAUTH_CLIENT}:${clientId}`,
           data,
@@ -158,7 +158,7 @@ export default class OAuthClient implements IOAuthClient {
     return data && (await this.castType(data));
   }
 
-  static async list(userId?: string, ncMeta = Noco.ncMeta) {
+  static async list(userId?: string, ncMeta = Atmosphere.ncMeta) {
     const condition = userId ? { fk_user_id: userId } : {};
     const clients = await ncMeta.metaList2(
       RootScopes.ROOT,
@@ -169,12 +169,12 @@ export default class OAuthClient implements IOAuthClient {
     return await Promise.all(clients?.map(async (c) => await this.castType(c)));
   }
 
-  static async delete(clientId: string, ncMeta = Noco.ncMeta) {
+  static async delete(clientId: string, ncMeta = Atmosphere.ncMeta) {
     if (!clientId) {
       return false;
     }
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       'root',
       `${CacheScope.OAUTH_CLIENT}:${clientId}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -188,7 +188,7 @@ export default class OAuthClient implements IOAuthClient {
     );
   }
 
-  static async regenerateSecret(clientId: string, ncMeta = Noco.ncMeta) {
+  static async regenerateSecret(clientId: string, ncMeta = Atmosphere.ncMeta) {
     if (!clientId) {
       return false;
     }
@@ -207,7 +207,7 @@ export default class OAuthClient implements IOAuthClient {
       { client_id: clientId },
     );
 
-    await NocoCache.update('root', `${CacheScope.OAUTH_CLIENT}:${clientId}`, {
+    await AtmosphereCache.update('root', `${CacheScope.OAUTH_CLIENT}:${clientId}`, {
       client_secret: hashedSecret,
     });
 
@@ -221,7 +221,7 @@ export default class OAuthClient implements IOAuthClient {
   static async update(
     clientId: string,
     body: Partial<OAuthClient>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (!clientId) {
       return false;
@@ -258,7 +258,7 @@ export default class OAuthClient implements IOAuthClient {
       { client_id: clientId },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       'root',
       `${CacheScope.OAUTH_CLIENT}:${clientId}`,
       updateObj,
@@ -308,7 +308,7 @@ export default class OAuthClient implements IOAuthClient {
 
   protected static async convertAttachmentType<K extends Record<string, any>>(
     attachmentObjs: K,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<{ [P in keyof K]: AttachmentResType }> {
     try {
       if (attachmentObjs) {

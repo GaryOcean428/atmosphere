@@ -1,23 +1,23 @@
 import { useStorage } from '@vueuse/core'
-import type { SerializerOrParserFnProps } from 'nocodb-sdk'
-import { extractProps } from 'nocodb-sdk'
+import type { SerializerOrParserFnProps } from 'atmosphere-sdk'
+import { extractProps } from 'atmosphere-sdk'
 
 /**
  * - ncCurrentClipboardDataId: current copied clipboard data id
  * - ncWaitingClipboardDataId: paste operation in progress clipboard data ids
  */
-export enum NcClipboardDataKey {
+export enum AtClipboardDataKey {
   ncClipboardData = 'ncClipboardData',
   ncCurrentClipboardDataId = 'ncCurrentClipboardDataId',
   ncWaitingClipboardDataIds = 'ncWaitingClipboardDataIds',
 }
 
 const useNcClipboardData = () => {
-  const cellClipboardData = useStorage<NcClipboardDataType>(NcClipboardDataKey.ncClipboardData, {})
+  const cellClipboardData = useStorage<AtClipboardDataType>(AtClipboardDataKey.ncClipboardData, {})
 
-  const currentCellClipboardDataId = useStorage<string>(NcClipboardDataKey.ncCurrentClipboardDataId, '')
+  const currentCellClipboardDataId = useStorage<string>(AtClipboardDataKey.ncCurrentClipboardDataId, '')
 
-  const waitingCellClipboardDataIds = useStorage<string[]>(NcClipboardDataKey.ncWaitingClipboardDataIds, [])
+  const waitingCellClipboardDataIds = useStorage<string[]>(AtClipboardDataKey.ncWaitingClipboardDataIds, [])
 
   const resetCellClipboard = () => {
     cellClipboardData.value = {}
@@ -25,12 +25,12 @@ const useNcClipboardData = () => {
     waitingCellClipboardDataIds.value = []
   }
 
-  const getCurrentCopiedCellClipboardData = (clipboardData: string): NcClipboardDataItemType | null => {
+  const getCurrentCopiedCellClipboardData = (clipboardData: string): AtClipboardDataItemType | null => {
     if (!currentCellClipboardDataId.value || !cellClipboardData.value?.[currentCellClipboardDataId.value]) {
       return null
     }
 
-    const currentClipboardDataItem = cellClipboardData.value?.[currentCellClipboardDataId.value] as NcClipboardDataItemType
+    const currentClipboardDataItem = cellClipboardData.value?.[currentCellClipboardDataId.value] as AtClipboardDataItemType
 
     if (currentClipboardDataItem?.copiedPlainText === clipboardData && currentClipboardDataItem.dbCellValueArr.length) {
       return currentClipboardDataItem
@@ -41,7 +41,7 @@ const useNcClipboardData = () => {
       )
       cellClipboardData.value = {
         ...extractProps(cellClipboardData.value, waitingCellClipboardDataIds.value),
-      } as NcClipboardDataType
+      } as AtClipboardDataType
 
       currentCellClipboardDataId.value = ''
 
@@ -59,14 +59,14 @@ const useNcClipboardData = () => {
     return id
   }
 
-  const setCellClipboardDataItem = (item: NcClipboardDataItemType) => {
+  const setCellClipboardDataItem = (item: AtClipboardDataItemType) => {
     /**
      * Keep only the waiting cell clipboard data ids and the new item
      */
     cellClipboardData.value = {
       ...extractProps(cellClipboardData.value, waitingCellClipboardDataIds.value),
       [item.id]: item,
-    } as NcClipboardDataType
+    } as AtClipboardDataType
 
     currentCellClipboardDataId.value = item.id
 
@@ -74,7 +74,7 @@ const useNcClipboardData = () => {
   }
 
   const extractCellClipboardData = (
-    storedClipboardData: NcClipboardDataItemType | null,
+    storedClipboardData: AtClipboardDataItemType | null,
     rowIndex: number,
     columnIndex: number,
   ): SerializerOrParserFnProps['params']['clipboardItem'] | undefined => {

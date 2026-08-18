@@ -1,4 +1,4 @@
-import type { OrgUserListItemType } from 'nocodb-sdk'
+import type { OrgUserListItemType } from 'atmosphere-sdk'
 
 /**
  * CE stub — org users are an EE concept. Returns an empty list so the invite

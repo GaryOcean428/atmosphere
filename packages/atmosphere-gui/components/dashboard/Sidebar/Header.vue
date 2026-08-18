@@ -16,7 +16,7 @@ const showSidebarBtn = computed(() => !(isMobileMode.value && !activeViewTitleOr
 
 <template>
   <div
-    class="flex items-center nc-sidebar-header w-full border-b-1 border-nc-border-gray-medium group md:(px-2 py-1.2) xs:(px-1 py-1)"
+    class="flex items-center atm-sidebar-header w-full border-b-1 border-atm-border-gray-medium group md:(px-2 py-1.2) xs:(px-1 py-1)"
     :data-workspace-title="activeWorkspace?.title"
     style="height: var(--topbar-height)"
   >
@@ -25,7 +25,7 @@ const showSidebarBtn = computed(() => !(isMobileMode.value && !activeViewTitleOr
 
       <div class="flex flex-grow min-w-1"></div>
 
-      <NcTooltip
+      <AtTooltip
         class="flex"
         :class="{
           '!opacity-100': !isLeftSidebarOpen,
@@ -36,12 +36,12 @@ const showSidebarBtn = computed(() => !(isMobileMode.value && !activeViewTitleOr
         <template #title>
           {{ isLeftSidebarOpen ? `${$t('title.hideSidebar')}` : `${$t('title.showSidebar')}` }}
         </template>
-        <NcButton
+        <AtButton
           v-if="showSidebarBtn"
           v-e="['c:leftSidebar:hideToggle']"
           :type="isMobileMode ? 'secondary' : 'text'"
           :size="isMobileMode ? 'medium' : 'small'"
-          class="nc-sidebar-left-toggle-icon !text-nc-content-gray-subtle !hover:text-nc-content-gray !xs:(h-10.5 max-h-10.5 max-w-10.5) !md:(hover:bg-nc-bg-gray-medium)"
+          class="atm-sidebar-left-toggle-icon !text-atm-content-gray-subtle !hover:text-atm-content-gray !xs:(h-10.5 max-h-10.5 max-w-10.5) !md:(hover:bg-atm-bg-gray-medium)"
           @click="isLeftSidebarOpen = !isLeftSidebarOpen"
         >
           <div class="flex items-center text-inherit">
@@ -49,14 +49,14 @@ const showSidebarBtn = computed(() => !(isMobileMode.value && !activeViewTitleOr
             <GeneralIcon
               v-else
               icon="doubleLeftArrow"
-              class="duration-150 transition-all !text-lg -mt-0.5 !text-nc-content-gray-muted bg-opacity-50 transform rtl:rotate-180"
+              class="duration-150 transition-all !text-lg -mt-0.5 !text-atm-content-gray-muted bg-opacity-50 transform rtl:rotate-180"
               :class="{
                 'rotate-180 rtl:rotate-0': !isLeftSidebarOpen,
               }"
             />
           </div>
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
     </div>
     <div v-else class="flex flex-row items-center w-full mt-0.25 ml-2.5 gap-x-3">
       <a-skeleton-input :active="true" class="!w-6 !h-6 !rounded overflow-hidden" />

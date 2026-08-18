@@ -1,4 +1,4 @@
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 export const useBaseTrash = createSharedComposable(() => {
   const isOpen = ref(false)
 

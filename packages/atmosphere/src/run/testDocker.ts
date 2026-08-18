@@ -2,12 +2,12 @@ import dns from 'node:dns';
 import axios from 'axios';
 import cors from 'cors';
 import express from 'express';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { User } from '~/models';
 import { handleUncaughtErrors } from '~/utils';
 handleUncaughtErrors(process);
 
-process.env.NC_VERSION = '0009044';
+process.env.ATMOSPHERE_VERSION = '0009044';
 
 // ref: https://github.com/nodejs/node/issues/40702#issuecomment-1103623246
 dns.setDefaultResultOrder('ipv4first');
@@ -26,27 +26,27 @@ server.use(
 server.set('view engine', 'ejs');
 
 process.env[`DEBUG`] = 'xc*';
-process.env[`NC_ALLOW_LOCAL_HOOKS`] = 'true';
-process.env[`NC_ALLOW_LOCAL_EXTERNAL_DBS`] = 'true';
-process.env[`NC_ALLOW_LOCAL_DATA_IMPORT`] = 'true';
+process.env[`ATMOSPHERE_ALLOW_LOCAL_HOOKS`] = 'true';
+process.env[`ATMOSPHERE_ALLOW_LOCAL_EXTERNAL_DBS`] = 'true';
+process.env[`ATMOSPHERE_ALLOW_LOCAL_DATA_IMPORT`] = 'true';
 
 (async () => {
-  if (process.env.NC_WORKER_CONTAINER === 'true') {
+  if (process.env.ATMOSPHERE_WORKER_CONTAINER === 'true') {
     const httpServer = server.listen(process.env.PORT || 8080, async () => {
-      server.use(await Noco.init({}, httpServer, server));
+      server.use(await Atmosphere.init({}, httpServer, server));
     });
   } else {
     const httpServer = server.listen(process.env.PORT || 8080, async () => {
-      server.use(await Noco.init({}, httpServer, server));
+      server.use(await Atmosphere.init({}, httpServer, server));
 
       let admin_response;
-      if (!(await User.getByEmail('user@nocodb.com'))) {
+      if (!(await User.getByEmail('user@atmosphere.dev'))) {
         admin_response = await axios.post(
           `http://localhost:${
             process.env.PORT || 8080
           }/api/v1/auth/user/signup`,
           {
-            email: 'user@nocodb.com',
+            email: 'user@atmosphere.dev',
             password: 'Password123.',
           },
         );
@@ -57,20 +57,20 @@ process.env[`NC_ALLOW_LOCAL_DATA_IMPORT`] = 'true';
             process.env.PORT || 8080
           }/api/v1/auth/user/signin`,
           {
-            email: 'user@nocodb.com',
+            email: 'user@atmosphere.dev',
             password: 'Password123.',
           },
         );
       }
 
       for (let i = 0; i < 4; i++) {
-        if (!(await User.getByEmail(`user-${i}@nocodb.com`))) {
+        if (!(await User.getByEmail(`user-${i}@atmosphere.dev`))) {
           const response = await axios.post(
             `http://localhost:${
               process.env.PORT || 8080
             }/api/v1/auth/user/signup`,
             {
-              email: `user-${i}@nocodb.com`,
+              email: `user-${i}@atmosphere.dev`,
               password: 'Password123.',
             },
           );

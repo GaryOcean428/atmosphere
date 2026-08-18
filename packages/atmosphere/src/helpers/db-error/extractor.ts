@@ -1,4 +1,4 @@
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import { Logger } from '@nestjs/common';
 import type {
   DBErrorExtractResult,

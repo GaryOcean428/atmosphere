@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { ColumnHelper, UITypes, dateFormats, jalaliDateFormats, timeFormats } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, dateFormats, jalaliDateFormats, timeFormats } from 'atmosphere-sdk'
 import { type TimeZone, getTimeZones } from '@vvo/tzdb'
 import { timeFormatsObj } from '../../cell/DateTime/utils'
 
@@ -85,33 +85,33 @@ const combinedPreview = computed(
         <div class="flex items-center justify-between w-full gap-2">
           <span class="flex-none">{{ $t('labels.dateFormat') }}</span>
           <span class="flex items-center gap-1.5 min-w-0">
-            <span class="flex-none text-nc-content-gray-muted">{{ $t('labels.preview') }}</span>
-            <span class="truncate text-nc-content-gray font-weight-500">{{ combinedPreview }}</span>
+            <span class="flex-none text-atm-content-gray-muted">{{ $t('labels.preview') }}</span>
+            <span class="truncate text-atm-content-gray font-weight-500">{{ combinedPreview }}</span>
           </span>
         </div>
       </template>
       <a-select
         v-model:value="vModel.meta.date_format"
-        class="nc-date-select"
-        dropdown-class-name="nc-dropdown-date-format"
+        class="atm-date-select"
+        dropdown-class-name="atm-dropdown-date-format"
         show-search
       >
         <template #suffixIcon>
-          <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+          <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
         </template>
 
         <a-select-option v-for="(format, i) of allDateFormats" :key="i" :value="format">
           <div class="w-full flex items-center gap-2">
-            <span class="nc-check-gutter flex-none w-4 h-4 flex items-center justify-center">
+            <span class="atm-check-gutter flex-none w-4 h-4 flex items-center justify-center">
               <component
                 :is="iconMap.check"
                 v-if="vModel.meta.date_format === format"
-                id="nc-selected-item-icon"
-                class="text-nc-content-brand w-4 h-4"
+                id="atm-selected-item-icon"
+                class="text-atm-content-brand w-4 h-4"
               />
             </span>
-            <span class="nc-format-example flex-1 min-w-0 truncate text-nc-content-gray">{{ formatDateExample(format) }}</span>
-            <span class="nc-format-token flex-none">{{ format }}</span>
+            <span class="atm-format-example flex-1 min-w-0 truncate text-atm-content-gray">{{ formatDateExample(format) }}</span>
+            <span class="atm-format-token flex-none">{{ format }}</span>
           </div>
         </a-select-option>
       </a-select>
@@ -120,29 +120,29 @@ const combinedPreview = computed(
       <template #label>
         <span>{{ $t('labels.timeFormat') }}</span>
       </template>
-      <a-select v-model:value="vModel.meta.time_format" class="nc-time-select" dropdown-class-name="nc-dropdown-time-format">
+      <a-select v-model:value="vModel.meta.time_format" class="atm-time-select" dropdown-class-name="atm-dropdown-time-format">
         <template #suffixIcon>
-          <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+          <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
         </template>
 
         <a-select-option v-for="(format, i) of timeFormats" :key="i" :value="format">
-          <div class="w-full flex items-center gap-2" :data-testid="`nc-time-${format}`">
-            <span class="nc-check-gutter flex-none w-4 h-4 flex items-center justify-center">
+          <div class="w-full flex items-center gap-2" :data-testid="`atm-time-${format}`">
+            <span class="atm-check-gutter flex-none w-4 h-4 flex items-center justify-center">
               <component
                 :is="iconMap.check"
                 v-if="vModel.meta.time_format === format"
-                id="nc-selected-item-icon"
-                class="text-nc-content-brand w-4 h-4"
+                id="atm-selected-item-icon"
+                class="text-atm-content-brand w-4 h-4"
               />
             </span>
-            <span class="nc-format-example flex-1 min-w-0 truncate text-nc-content-gray">{{ formatTimeExample(format) }}</span>
-            <span class="nc-format-token flex-none">{{ format }}</span>
+            <span class="atm-format-example flex-1 min-w-0 truncate text-atm-content-gray">{{ formatTimeExample(format) }}</span>
+            <span class="atm-format-token flex-none">{{ format }}</span>
           </div>
         </a-select-option>
       </a-select>
     </a-form-item>
     <a-form-item>
-      <a-radio-group v-if="vModel.meta" v-model:value="vModel.meta.is12hrFormat" class="nc-time-form-layout">
+      <a-radio-group v-if="vModel.meta" v-model:value="vModel.meta.is12hrFormat" class="atm-time-form-layout">
         <a-radio :value="true">{{ $t('labels.hours12') }}</a-radio>
         <a-radio :value="false">{{ $t('labels.hours24') }}</a-radio>
       </a-radio-group>
@@ -150,26 +150,26 @@ const combinedPreview = computed(
 
     <template v-if="appInfo.ee">
       <a-form-item>
-        <NcTooltip :disabled="true">
+        <AtTooltip :disabled="true">
           <div class="flex items-center gap-1">
-            <NcSwitch v-model:checked="isDisplayTimezone">
-              <div class="text-sm text-nc-content-gray select-none">
+            <AtSwitch v-model:checked="isDisplayTimezone">
+              <div class="text-sm text-atm-content-gray select-none">
                 {{ $t('labels.displayTimezone') }}
               </div>
-            </NcSwitch>
+            </AtSwitch>
           </div>
-        </NcTooltip>
+        </AtTooltip>
       </a-form-item>
       <a-form-item>
-        <NcTooltip :disabled="true">
+        <AtTooltip :disabled="true">
           <div class="flex items-center gap-1">
-            <NcSwitch v-model:checked="useSameTimezoneForAll">
-              <div class="text-sm text-nc-content-gray select-none">
+            <AtSwitch v-model:checked="useSameTimezoneForAll">
+              <div class="text-sm text-atm-content-gray select-none">
                 {{ $t('labels.useSameTimezoneForAllMembers') }}
               </div>
-            </NcSwitch>
+            </AtSwitch>
           </div>
-        </NcTooltip>
+        </AtTooltip>
       </a-form-item>
       <a-form-item v-if="useSameTimezoneForAll">
         <a-select
@@ -177,12 +177,12 @@ const combinedPreview = computed(
           show-search
           allow-clear
           :filter-option="(input, option) => antSelectFilterOption(input, option, ['key', 'data-abbreviation'])"
-          dropdown-class-name="nc-dropdown-timezone"
+          dropdown-class-name="atm-dropdown-timezone"
           :placeholder="$t('placeholder.useSameTimezoneForAll')"
-          class="nc-search-timezone"
+          class="atm-search-timezone"
         >
           <template #suffixIcon>
-            <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+            <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
           </template>
 
           <a-select-opt-group :label="$t('labels.suggested')">
@@ -195,13 +195,13 @@ const combinedPreview = computed(
               <div class="flex gap-2 w-full justify-between items-center">
                 <span>{{ timezone.name }}</span>
                 <div>
-                  <span class="text-nc-content-gray-muted text-[13px] mr-2">
+                  <span class="text-atm-content-gray-muted text-[13px] mr-2">
                     {{ timezone.abbreviation }}
                   </span>
                   <component
                     :is="iconMap.check"
-                    id="nc-selected-item-icon"
-                    class="text-nc-content-brand w-4 h-4"
+                    id="atm-selected-item-icon"
+                    class="text-atm-content-brand w-4 h-4"
                     :class="{ invisible: vModel.meta.timezone !== timezone.name }"
                   />
                 </div>
@@ -218,13 +218,13 @@ const combinedPreview = computed(
               <div class="flex gap-2 w-full justify-between items-center">
                 <span>{{ timezone.name }}</span>
                 <div>
-                  <span class="text-nc-content-gray-muted text-[13px] mr-2">
+                  <span class="text-atm-content-gray-muted text-[13px] mr-2">
                     {{ timezone.abbreviation }}
                   </span>
                   <component
                     :is="iconMap.check"
-                    id="nc-selected-item-icon"
-                    class="text-nc-content-brand w-4 h-4"
+                    id="atm-selected-item-icon"
+                    class="text-atm-content-brand w-4 h-4"
                     :class="{ invisible: vModel.meta.timezone !== timezone.name }"
                   />
                 </div>
@@ -239,37 +239,37 @@ const combinedPreview = computed(
 
 <style lang="scss" scoped>
 // In the dropdown list the format token is plain muted text alongside the example
-.nc-format-token {
-  @apply text-nc-content-gray-muted text-captionSm font-mono;
+.atm-format-token {
+  @apply text-atm-content-gray-muted text-captionSm font-mono;
 }
 
 // The closed selector reuses the selected option's markup — render it as a clean
 // "example + format badge": drop the leading checkmark gutter, keep the example from
 // stretching so the badge sits next to it, and pill the token
 :deep(.ant-select-selection-item) {
-  .nc-check-gutter {
+  .atm-check-gutter {
     display: none;
   }
 
-  .nc-format-example {
+  .atm-format-example {
     flex: 0 1 auto;
   }
 
-  .nc-format-token {
-    @apply bg-nc-bg-gray-light rounded px-1.5 py-0.5 leading-tight;
+  .atm-format-token {
+    @apply bg-atm-bg-gray-light rounded px-1.5 py-0.5 leading-tight;
   }
 }
 
-:deep(.nc-time-form-layout) {
-  @apply flex justify-between gap-2 children:(flex-1 m-0 px-2 py-1 border-1 border-nc-border-gray-dark rounded-lg);
+:deep(.atm-time-form-layout) {
+  @apply flex justify-between gap-2 children:(flex-1 m-0 px-2 py-1 border-1 border-atm-border-gray-dark rounded-lg);
 
   .ant-radio-wrapper {
     @apply transition-all;
     span {
-      @apply text-nc-content-gray;
+      @apply text-atm-content-gray;
     }
     &:not(.ant-radio-wrapper-disabled).ant-radio-wrapper-checked {
-      @apply border-nc-border-brand;
+      @apply border-atm-border-brand;
     }
   }
 }

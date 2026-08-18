@@ -9,8 +9,8 @@ import {
   type ViewType,
   isColumnInError,
   isSupportedDisplayValueColumn,
-} from 'nocodb-sdk'
-import { UITypes } from 'nocodb-sdk'
+} from 'atmosphere-sdk'
+import { UITypes } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import type { Group } from '../lib/types'
 import type { InterfacePageDataApi } from '../lib/interfaceData'
@@ -429,7 +429,7 @@ const [useProvideViewGroupBy, useViewGroupBy] = useInjectionState(
               filtersArr: nestedFilters.value,
             })
           : !isPublic
-          ? await api.dbViewRow.groupBy('noco', base.value.id, view.value.fk_model_id, view.value.id, {
+          ? await api.dbViewRow.groupBy('atmosphere', base.value.id, view.value.fk_model_id, view.value.id, {
               offset: ((group.paginationData.page ?? 0) - 1) * groupByGroupLimit.value,
               limit: groupByGroupLimit.value,
               ...params,
@@ -549,7 +549,7 @@ const [useProvideViewGroupBy, useViewGroupBy] = useInjectionState(
               filtersArr: nestedFilters.value,
             })
           : !isPublic
-          ? await api.dbViewRow.list('noco', base.value.id, view.value.fk_model_id, view.value.id, {
+          ? await api.dbViewRow.list('atmosphere', base.value.id, view.value.fk_model_id, view.value.id, {
               ...query,
               ...params,
               include_row_color: true,

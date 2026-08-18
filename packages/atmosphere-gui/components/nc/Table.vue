@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import type { CSSProperties } from '@vue/runtime-dom'
 
-import { type PaginatedType } from 'nocodb-sdk'
+import { type PaginatedType } from 'atmosphere-sdk'
 
 interface Props {
-  columns: NcTableColumnProps[]
+  columns: AtTableColumnProps[]
   data: Record<string, any>[]
   headerRowHeight?: CSSProperties['height']
   rowHeight?: CSSProperties['height']
@@ -20,7 +20,7 @@ interface Props {
   bodyRowClassName?: string
   headerCellClassName?: string
   bodyCellClassName?: string
-  customHeaderRow?: (columns: NcTableColumnProps[]) => Record<string, any>
+  customHeaderRow?: (columns: AtTableColumnProps[]) => Record<string, any>
   customRow?: (record: Record<string, any>, recordIndex: number) => Record<string, any>
   pagination?: boolean
   paginationOffset?: number
@@ -28,7 +28,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  columns: () => [] as NcTableColumnProps[],
+  columns: () => [] as AtTableColumnProps[],
   data: () => [] as Record<string, any>[],
   headerRowHeight: '54px',
   rowHeight: '54px',
@@ -74,9 +74,9 @@ const orderBy = useVModel(props, 'orderBy', emit)
 
 const { columns, data, isDataLoading, customHeaderRow, customRow } = toRefs(props)
 
-const headerRowClassName = computed(() => `nc-table-header-row ${props.headerRowClassName}`)
+const headerRowClassName = computed(() => `atm-table-header-row ${props.headerRowClassName}`)
 
-const bodyRowClassName = computed(() => `nc-table-row ${props.bodyRowClassName}`)
+const bodyRowClassName = computed(() => `atm-table-row ${props.bodyRowClassName}`)
 
 const slots = useSlots()
 
@@ -213,21 +213,21 @@ watch(
 
 <template>
   <div
-    class="nc-table-container relative"
+    class="atm-table-container relative"
     :class="{
       bordered,
-      'nc-disable-table-scroll': disableTableScroll,
+      'atm-disable-table-scroll': disableTableScroll,
       'min-h-120': isDataLoading,
     }"
   >
     <template v-if="$slots.tableToolbar">
       <div
         ref="tableToolbarRef"
-        class="nc-table-toolbar pb-4"
+        class="atm-table-toolbar pb-4"
         :class="[
           tableToolbarClassName,
           {
-            'sticky z-5 top-0 bg-nc-bg-default': forceStickyHeader,
+            'sticky z-5 top-0 bg-atm-bg-default': forceStickyHeader,
           },
         ]"
       >
@@ -237,12 +237,12 @@ watch(
 
     <div
       ref="tableWrapper"
-      class="nc-table-wrapper relative"
+      class="atm-table-wrapper relative"
       :class="{
         'sticky-first-column': stickyFirstColumn && !isMobileMode,
         'h-full':
           (data.length || (isDataLoading && !data.length && (slots.tableFooter || showPagination))) && !disableTableScroll,
-        'nc-scrollbar-thin !overflow-auto max-h-full': !disableTableScroll,
+        'atm-scrollbar-thin !overflow-auto max-h-full': !disableTableScroll,
       }"
       :style="{
         maxHeight: disableTableScroll ? undefined : `calc(100% - ${tableToolbarHeight + tableFooterHeight}px)`,
@@ -270,16 +270,16 @@ watch(
             <th
               v-for="(col, index) in columns"
               :key="index"
-              class="nc-table-header-cell"
+              class="atm-table-header-cell"
               :class="[
                 `${headerCellClassName}`,
                 `${col.headerCellClassName ?? ''}`,
-                `nc-table-header-cell-${index}`,
-                `nc-table-header-cell-${col.key}`,
+                `atm-table-header-cell-${index}`,
+                `atm-table-header-cell-${col.key}`,
                 {
-                  '!hover:bg-nc-bg-gray-light select-none cursor-pointer': col.showOrderBy,
+                  '!hover:bg-atm-bg-gray-light select-none cursor-pointer': col.showOrderBy,
                   'cursor-not-allowed': col.showOrderBy && !data?.length,
-                  '!text-nc-content-gray-subtle': col.showOrderBy && col?.dataIndex && orderBy[col.dataIndex],
+                  '!text-atm-content-gray-subtle': col.showOrderBy && col?.dataIndex && orderBy[col.dataIndex],
                   'flex-1': !col.width && !col.basis,
                 },
               ]"
@@ -288,7 +288,7 @@ watch(
                 flexBasis: !col.width ? col.basis : undefined,
                 maxWidth: col.width ? `${col.width}px` : undefined,
               }"
-              :data-test-id="`nc-table-header-cell-${col.name || col.key}`"
+              :data-test-id="`atm-table-header-cell-${col.name || col.key}`"
               @click="col.showOrderBy && col?.dataIndex ? updateOrderBy(col.dataIndex) : undefined"
             >
               <div
@@ -335,19 +335,19 @@ watch(
               :style="{
                 height: rowHeight,
               }"
-              :class="[`${bodyRowClassName}`, `nc-table-row-${recordIndex}`]"
+              :class="[`${bodyRowClassName}`, `atm-table-row-${recordIndex}`]"
               v-bind="customRow ? customRow(record, recordIndex) : {}"
               @click="onRowClick(record, recordIndex)"
             >
               <td
                 v-for="(col, colIndex) of columns"
                 :key="colIndex"
-                class="nc-table-cell"
+                class="atm-table-cell"
                 :class="[
                   `${bodyCellClassName}`,
                   `${col.bodyCellClassName ?? ''}`,
-                  `nc-table-cell-${recordIndex}`,
-                  `nc-table-cell-${col.key}`,
+                  `atm-table-cell-${recordIndex}`,
+                  `atm-table-cell-${col.key}`,
                   {
                     'flex-1': !col.width && !col.basis,
                   },
@@ -357,7 +357,7 @@ watch(
                   flexBasis: !col.width ? col.basis : undefined,
                   maxWidth: col.width ? `${col.width}px` : undefined,
                 }"
-                :data-test-id="`nc-table-cell-${col.name || col.key}`"
+                :data-test-id="`atm-table-cell-${col.name || col.key}`"
               >
                 <div
                   :class="[`${col.align || 'items-center'} ${col.justify || ''}`]"
@@ -375,7 +375,7 @@ watch(
             </tr>
 
             <template v-if="slots.extraRow">
-              <tr class="nc-table-extra-row">
+              <tr class="atm-table-extra-row">
                 <slot name="extraRow" />
               </tr>
             </template>
@@ -394,7 +394,7 @@ watch(
     </div>
     <div
       v-if="!isDataLoading && !data?.length"
-      class="flex-none nc-table-empty flex items-center justify-center py-8 px-6 h-full"
+      class="flex-none atm-table-empty flex items-center justify-center py-8 px-6 h-full"
       :style="{
         maxHeight: `calc(100% - ${headerRowHeight} - ${tableToolbarHeight + tableFooterHeight}px)`,
       }"
@@ -409,17 +409,17 @@ watch(
     <template v-if="slots.tableFooter || showPagination">
       <div ref="tableFooterRef">
         <slot name="tableFooter">
-          <div v-if="showPagination" class="flex flex-row justify-center items-center bg-nc-bg-gray-extralight min-h-10">
+          <div v-if="showPagination" class="flex flex-row justify-center items-center bg-atm-bg-gray-extralight min-h-10">
             <div class="flex justify-between items-center w-full px-6">
               <div>&nbsp;</div>
-              <NcPagination
+              <AtPagination
                 v-model:current="paginationData.page"
                 v-model:page-size="paginationData.pageSize"
                 :total="+(paginationData.totalRows || 0)"
                 show-size-changer
                 :use-stored-page-size="false"
               />
-              <div class="text-nc-content-gray-muted text-xs">
+              <div class="text-atm-content-gray-muted text-xs">
                 {{ paginationData.totalRows }} {{ paginationData.totalRows === 1 ? 'row' : 'rows' }}
               </div>
             </div>
@@ -431,27 +431,27 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-.nc-table-container {
+.atm-table-container {
   &.bordered {
-    @apply border-1 border-nc-border-gray-medium rounded-lg overflow-hidden w-full;
+    @apply border-1 border-atm-border-gray-medium rounded-lg overflow-hidden w-full;
   }
 
-  &:not(.bordered):not(.nc-disable-table-scroll) {
+  &:not(.bordered):not(.atm-disable-table-scroll) {
     @apply overflow-hidden w-full;
   }
 
-  .nc-table-wrapper {
+  .atm-table-wrapper {
     @apply w-full;
 
     &.sticky-first-column {
       th {
         &:first-of-type {
-          @apply bg-nc-bg-gray-extralight;
+          @apply bg-atm-bg-gray-extralight;
         }
       }
       td {
         &:first-of-type {
-          @apply bg-nc-bg-default;
+          @apply bg-atm-bg-default;
         }
       }
 
@@ -466,7 +466,7 @@ watch(
         th,
         td {
           &:first-of-type {
-            @apply !border-nc-border-gray-medium;
+            @apply !border-atm-border-gray-medium;
           }
         }
       }
@@ -475,9 +475,9 @@ watch(
     thead {
       @apply w-full max-w-full;
       th {
-        @apply bg-nc-bg-gray-extralight text-sm text-nc-content-gray-muted font-weight-500;
+        @apply bg-atm-bg-gray-extralight text-sm text-atm-content-gray-muted font-weight-500;
         &.cell-title {
-          @apply sticky left-0 z-4 bg-nc-bg-gray-extralight;
+          @apply sticky left-0 z-4 bg-atm-bg-gray-extralight;
         }
       }
     }
@@ -485,32 +485,32 @@ watch(
       @apply w-full max-w-full;
 
       tr {
-        &:not(.nc-table-extra-row) {
+        &:not(.atm-table-extra-row) {
           @apply cursor-pointer;
         }
 
         td {
-          @apply text-sm text-nc-content-gray-subtle2;
+          @apply text-sm text-atm-content-gray-subtle2;
         }
       }
     }
     tr {
       @apply flex w-full max-w-full;
 
-      &:not(.nc-table-extra-row) {
-        @apply border-b-1 border-nc-border-gray-medium;
+      &:not(.atm-table-extra-row) {
+        @apply border-b-1 border-atm-border-gray-medium;
       }
 
-      &.no-border-last:not(.nc-table-extra-row):last-child {
+      &.no-border-last:not(.atm-table-extra-row):last-child {
         @apply border-b-0;
       }
 
       &.selected td {
-        @apply !bg-nc-bg-brand;
+        @apply !bg-atm-bg-brand;
       }
 
       &:not(.selected):hover td {
-        @apply !bg-nc-bg-gray-extralight;
+        @apply !bg-atm-bg-gray-extralight;
       }
 
       th,

@@ -3,13 +3,13 @@ import {
   isBtLikeV2Junction,
   isMMOrMMLike,
   isRollupAggregatableColumn,
-  NC_ERROR_SENTINEL,
-  NcDataErrorCodes,
+  ATMOSPHERE_ERROR_SENTINEL,
+  AtDataErrorCodes,
   RelationTypes,
   UITypes,
-} from 'nocodb-sdk';
-import { CircularRefContext } from 'nocodb-sdk';
-import type { ClientType } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import { CircularRefContext } from 'atmosphere-sdk';
+import type { ClientType } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from './IBaseModelSqlV2';
 import type { Knex } from 'knex';
 import type {
@@ -20,7 +20,7 @@ import type {
   RollupColumn,
 } from '~/models';
 import type { XKnex } from '~/db/CustomKnex';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { RelationManager } from '~/db/relation-manager';
 import { Column, Model } from '~/models';
 import formulaQueryBuilderv2 from '~/db/formulav2/formulaQueryBuilderv2';
@@ -44,7 +44,7 @@ export default async function genRollupSelectv2(param: {
   // call `.as()` on it, which knex 3's `Raw` doesn't implement. Oracle is the
   // one dialect that rejects a SELECT without a FROM.
   const errorSentinel = () => {
-    const qb = knex.select(knex.raw(`?`, [NC_ERROR_SENTINEL]));
+    const qb = knex.select(knex.raw(`?`, [ATMOSPHERE_ERROR_SENTINEL]));
     return {
       builder: baseModelSqlv2.isOracle ? qb.from(knex.raw('dual')) : qb,
     };
@@ -103,7 +103,7 @@ export default async function genRollupSelectv2(param: {
   profiler.log('get relation (parent/child) columns');
 
   if (!rollupColumn) {
-    NcError.get(context).fieldNotFound(columnOptions.fk_rollup_column_id);
+    AtError.get(context).fieldNotFound(columnOptions.fk_rollup_column_id);
   }
 
   // No column to aggregate: the fallthrough in `applyFunction` would bind a null
@@ -143,7 +143,7 @@ export default async function genRollupSelectv2(param: {
   // column lowers to a correlated subquery (nested Rollup / Formula /
   // Created-Modified), defer the aggregate to a derived-table wrap in
   // `wrapMssqlNestedAgg` below.
-  const NC_ROLLUP_VAL_ALIAS = '__nc_rollup_val';
+  const ATMOSPHERE_ROLLUP_VAL_ALIAS = '__nc_rollup_val';
   let selectColumnIsSubquery = false;
 
   const applyFunction = async (qb: any) => {
@@ -175,7 +175,7 @@ export default async function genRollupSelectv2(param: {
       >(refContext);
 
       if (!formulOption) {
-        NcError.get(context).fieldNotFound(columnOptions.fk_rollup_column_id);
+        AtError.get(context).fieldNotFound(columnOptions.fk_rollup_column_id);
       }
 
       const formulaQb = await formulaQueryBuilderv2({
@@ -319,7 +319,7 @@ export default async function genRollupSelectv2(param: {
     // MSSQL nested-subquery path: select the per-row value; the aggregate
     // is applied by wrapMssqlNestedAgg over an enclosing derived table.
     if (baseModelSqlv2.isMssql && selectColumnIsSubquery) {
-      qb.select({ [NC_ROLLUP_VAL_ALIAS]: selectColumnName });
+      qb.select({ [ATMOSPHERE_ROLLUP_VAL_ALIAS]: selectColumnName });
       profiler.log('applyFunction done (mssql derived-agg deferred)');
       return;
     }
@@ -385,7 +385,7 @@ export default async function genRollupSelectv2(param: {
       : aggInner;
     return knex
       .from(innerQb.as(`${refTableAlias}__agg`))
-      .select(knex.raw(aggSql, [NC_ROLLUP_VAL_ALIAS]));
+      .select(knex.raw(aggSql, [ATMOSPHERE_ROLLUP_VAL_ALIAS]));
   };
 
   const relationType = isMMLike
@@ -494,7 +494,7 @@ export default async function genRollupSelectv2(param: {
       });
       if (!mmModel) {
         return this.dbDriver.raw(`?`, [
-          NcDataErrorCodes.NC_ERR_MM_MODEL_NOT_FOUND,
+          AtDataErrorCodes.ATMOSPHERE_ERR_MM_MODEL_NOT_FOUND,
         ]);
       }
 
@@ -560,6 +560,6 @@ export default async function genRollupSelectv2(param: {
     }
 
     default:
-      NcError.get(context).unSupportedRelation(relationColumnOption.type);
+      AtError.get(context).unSupportedRelation(relationColumnOption.type);
   }
 }

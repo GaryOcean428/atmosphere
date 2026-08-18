@@ -1,16 +1,16 @@
-import { ProjectRoles } from 'nocodb-sdk';
+import { ProjectRoles } from 'atmosphere-sdk';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 
 export async function getCommandPaletteForUserWorkspace(
   userId: string,
-  workspaceId: string = 'nc',
-  ncMeta = Noco.ncMeta,
+  workspaceId: string = 'atm',
+  ncMeta = Atmosphere.ncMeta,
 ) {
   const key = `${CacheScope.CMD_PALETTE}:${userId}:${workspaceId}`;
 
-  let cmdData = await NocoCache.get('root', key, CacheGetType.TYPE_OBJECT);
+  let cmdData = await AtmosphereCache.get('root', key, CacheGetType.TYPE_OBJECT);
 
   if (!cmdData) {
     cmdData = {
@@ -58,10 +58,10 @@ export async function getCommandPaletteForUserWorkspace(
         }),
     };
 
-    await NocoCache.set('root', key, cmdData);
+    await AtmosphereCache.set('root', key, cmdData);
     // append to lists for later cleanup
-    await NocoCache.set('root', `${CacheScope.CMD_PALETTE}:ws`, [key]);
-    await NocoCache.set('root', `${CacheScope.CMD_PALETTE}:user:${userId}`, [
+    await AtmosphereCache.set('root', `${CacheScope.CMD_PALETTE}:ws`, [key]);
+    await AtmosphereCache.set('root', `${CacheScope.CMD_PALETTE}:user:${userId}`, [
       key,
     ]);
   }
@@ -81,26 +81,26 @@ export async function getCommandPaletteForUserWorkspace(
 }
 
 export async function cleanCommandPaletteCache(_ws?: string) {
-  const keys = await NocoCache.get(
+  const keys = await AtmosphereCache.get(
     'root',
     `${CacheScope.CMD_PALETTE}:ws`,
     CacheGetType.TYPE_ARRAY,
   );
 
   if (keys) {
-    await NocoCache.del('root', [...keys, `${CacheScope.CMD_PALETTE}`]);
+    await AtmosphereCache.del('root', [...keys, `${CacheScope.CMD_PALETTE}`]);
   }
 }
 
 export async function cleanCommandPaletteCacheForUser(userId: string) {
-  const keys = await NocoCache.get(
+  const keys = await AtmosphereCache.get(
     'root',
     `${CacheScope.CMD_PALETTE}:user:${userId}`,
     CacheGetType.TYPE_ARRAY,
   );
 
   if (keys) {
-    await NocoCache.del('root', [
+    await AtmosphereCache.del('root', [
       ...keys,
       `${CacheScope.CMD_PALETTE}:${userId}`,
     ]);

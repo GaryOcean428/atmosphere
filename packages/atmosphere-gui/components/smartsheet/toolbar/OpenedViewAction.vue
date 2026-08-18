@@ -62,22 +62,22 @@ function openDeleteDialog() {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="isDropdownOpen"
-    class="nc-actions-menu-btn nc-view-context-btn"
-    overlay-class-name="nc-dropdown-actions-menu"
+    class="atm-actions-menu-btn atm-view-context-btn"
+    overlay-class-name="atm-dropdown-actions-menu"
   >
     <div>
-      <NcButton
+      <AtButton
         v-e="['c:toolbar:view-actions']"
-        class="nc-view-action-menu-btn nc-toolbar-btn !border-0 !h-7 !px-1.5 !min-w-7"
+        class="atm-view-action-menu-btn atm-toolbar-btn !border-0 !h-7 !px-1.5 !min-w-7"
         size="small"
         type="secondary"
       >
         <div class="flex items-center gap-0.5">
           <GeneralIcon icon="threeDotVertical" class="!h-4 !w-4" />
         </div>
-      </NcButton>
+      </AtButton>
     </div>
     <template #overlay>
       <SmartsheetToolbarViewActionMenu
@@ -89,5 +89,5 @@ function openDeleteDialog() {
         @description-update="updateDescription"
       />
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

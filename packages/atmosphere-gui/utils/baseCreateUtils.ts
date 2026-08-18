@@ -1,8 +1,8 @@
-import { type BoolType, SSLUsage } from 'nocodb-sdk'
+import { type BoolType, SSLUsage } from 'atmosphere-sdk'
 import { ClientType } from '~/lib/enums'
 
-// todo: move to noco-sdk
-export enum NcProjectType {
+// todo: move to atmosphere-sdk
+export enum AtProjectType {
   DB = 'database',
 }
 
@@ -65,7 +65,7 @@ interface DatabricksConnection {
 
 const defaultHost = 'localhost'
 
-export { getTestDatabaseName } from 'nocodb-sdk'
+export { getTestDatabaseName } from 'atmosphere-sdk'
 
 export const clientTypes = [
   {

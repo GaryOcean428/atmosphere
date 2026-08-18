@@ -15,15 +15,15 @@ withDefaults(defineProps<Props>(), {
 <template>
   <div class="flex flex-col space-y-6 w-full">
     <!-- Connections skeleton -->
-    <div class="nc-connections-skeleton" style="container-type: inline-size">
+    <div class="atm-connections-skeleton" style="container-type: inline-size">
       <div class="flex items-center gap-2 mb-4">
         <a-skeleton-input active class="!h-4 !w-36 !min-w-0 !children:rounded-md" />
       </div>
-      <div class="nc-connection-skeleton-grid grid grid-cols-1 gap-3">
+      <div class="atm-connection-skeleton-grid grid grid-cols-1 gap-3">
         <div
           v-for="i in connectionCount"
           :key="`conn-skeleton-${i}`"
-          class="flex items-center gap-3 border-1 border-nc-border-gray-medium rounded-xl p-3"
+          class="flex items-center gap-3 border-1 border-atm-border-gray-medium rounded-xl p-3"
         >
           <a-skeleton-avatar active shape="square" class="!h-[44px] !w-[44px] !children:(rounded-lg w-[44px] h-[44px])" />
           <div class="flex-1 flex flex-col gap-2">
@@ -32,19 +32,19 @@ withDefaults(defineProps<Props>(), {
           </div>
         </div>
       </div>
-      <NcDivider v-if="showDivider" class="!mt-6 !mb-0" />
+      <AtDivider v-if="showDivider" class="!mt-6 !mb-0" />
     </div>
 
     <!-- Integration categories skeleton -->
-    <div class="nc-integrations-skeleton" style="container-type: inline-size">
+    <div class="atm-integrations-skeleton" style="container-type: inline-size">
       <div class="flex items-center gap-2 mb-3">
         <a-skeleton-input active class="!h-4 !w-36 !min-w-0 !children:rounded-md" />
       </div>
-      <div class="nc-integration-skeleton-grid grid grid-cols-1 gap-3">
+      <div class="atm-integration-skeleton-grid grid grid-cols-1 gap-3">
         <div
           v-for="i in integrationCount"
           :key="`int-skeleton-${i}`"
-          class="flex items-center gap-4 border-1 border-nc-border-gray-medium rounded-xl p-3"
+          class="flex items-center gap-4 border-1 border-atm-border-gray-medium rounded-xl p-3"
         >
           <a-skeleton-avatar active shape="square" class="!h-[44px] !w-[44px] !children:(rounded-lg w-[44px] h-[44px])" />
           <div class="flex-1 flex flex-col gap-2">
@@ -58,8 +58,8 @@ withDefaults(defineProps<Props>(), {
 </template>
 
 <style lang="scss" scoped>
-.nc-connections-skeleton {
-  .nc-connection-skeleton-grid {
+.atm-connections-skeleton {
+  .atm-connection-skeleton-grid {
     @supports not (container-type: inline-size) {
       @media (min-width: 540px) {
         @apply grid-cols-2;
@@ -88,8 +88,8 @@ withDefaults(defineProps<Props>(), {
   }
 }
 
-.nc-integrations-skeleton {
-  .nc-integration-skeleton-grid {
+.atm-integrations-skeleton {
+  .atm-integration-skeleton-grid {
     @supports not (container-type: inline-size) {
       @media (min-width: 540px) {
         @apply grid-cols-2;

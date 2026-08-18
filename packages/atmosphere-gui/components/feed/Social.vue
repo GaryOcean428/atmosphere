@@ -5,34 +5,34 @@ const { isDark } = useTheme()
 
 const socialIcons = [
   {
-    name: '@nocodb',
+    name: '@atmosphere',
     icon: iconMap.iconTwitter,
-    link: 'https://twitter.com/nocodb',
-    e: 'c:nocodb:twitter-open',
+    link: 'https://twitter.com/atmosphere',
+    e: 'c:atmosphere:twitter-open',
   },
   {
-    name: 'NocoDB',
+    name: 'Atmosphere',
     icon: iconMap.youtube,
-    e: 'c:nocodb:youtube-open',
-    link: 'https://www.youtube.com/@nocodb',
+    e: 'c:atmosphere:youtube-open',
+    link: 'https://www.youtube.com/@atmosphere',
   },
   {
-    name: 'NocoDB',
+    name: 'Atmosphere',
     icon: iconMap.iconDiscord,
-    e: 'c:nocodb:discord-open',
-    link: 'http://discord.nocodb.com',
+    e: 'c:atmosphere:discord-open',
+    link: 'http://discord.atmosphere.dev',
   },
   {
-    name: 'r/NocoDB',
+    name: 'r/Atmosphere',
     icon: iconMap.iconReddit,
-    e: 'c:nocodb:reddit-open',
-    link: 'https://www.reddit.com/r/NocoDB/',
+    e: 'c:atmosphere:reddit-open',
+    link: 'https://www.reddit.com/r/Atmosphere/',
   },
   {
     name: 'Forum',
-    icon: iconMap.nocodb1,
-    e: 'c:nocodb:forum-open',
-    link: 'https://community.nocodb.com/',
+    icon: iconMap.atmosphere1,
+    e: 'c:atmosphere:forum-open',
+    link: 'https://community.atmosphere.dev/',
   },
 ]
 
@@ -45,13 +45,13 @@ const openUrl = (url: string, e: string) => {
 </script>
 
 <template>
-  <div style="width: 230px" class="flex flex-col bg-nc-bg-default border-nc-border-gray-medium rounded-lg border-1">
-    <div class="text-nc-content-gray font-semibold leading-6 border-b-1 border-nc-border-gray-medium px-4 py-3">Stay tuned</div>
+  <div style="width: 230px" class="flex flex-col bg-atm-bg-default border-atm-border-gray-medium rounded-lg border-1">
+    <div class="text-atm-content-gray font-semibold leading-6 border-b-1 border-atm-border-gray-medium px-4 py-3">Stay tuned</div>
     <div class="flex flex-col p-1">
       <div
         v-for="social in socialIcons"
         :key="social.name"
-        class="flex items-center social-icon-wrapper cursor-pointer rounded-lg hover:bg-nc-bg-gray-light py-3 px-4 gap-2 text-nc-content-gray"
+        class="flex items-center social-icon-wrapper cursor-pointer rounded-lg hover:bg-atm-bg-gray-light py-3 px-4 gap-2 text-atm-content-gray"
         @click="openUrl(social.link, social.e)"
       >
         <component
@@ -79,7 +79,7 @@ const openUrl = (url: string, e: string) => {
 }
 
 .social-icon-wrapper {
-  .nc-icon {
+  .atm-icon {
     @apply mr-0.15;
   }
 

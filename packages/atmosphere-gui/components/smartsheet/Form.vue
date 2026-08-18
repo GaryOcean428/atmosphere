@@ -22,7 +22,7 @@ import {
   getSystemColumns,
   isLinksOrLTAR,
   isVirtualCol,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type { ValidateInfo } from 'ant-design-vue/es/form/useForm'
 import { estimateRowHeightPx } from './form/formRowEstimate'
 import type { ImageCropperConfig } from '#imports'
@@ -42,9 +42,9 @@ const hiddenBubbleMenuOptions = [
   RichTextBubbleMenuOptions.image,
 ]
 
-const enum NcForm {
-  heading = 'nc-form-heading',
-  subheading = 'nc-form-sub-heading',
+const enum AtForm {
+  heading = 'atm-form-heading',
+  subheading = 'atm-form-sub-heading',
 }
 
 const { isMobileMode, user, appInfo } = useGlobal()
@@ -557,7 +557,7 @@ const ROW_PRERENDER_MARGIN_PX = 900
 
 function ensureRowObserver(el: HTMLElement) {
   if (rowVisibilityObserver) return
-  const root = el.closest('.nc-form-preview-scroller') as HTMLElement | null
+  const root = el.closest('.atm-form-preview-scroller') as HTMLElement | null
   rowVisibilityObserver = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
@@ -586,7 +586,7 @@ function ensureRowObserver(el: HTMLElement) {
 // scroller's viewport right now? Forces a layout read, so it's reliable inside the directive's
 // `mounted` hook.
 function isRowElementNearViewport(el: HTMLElement) {
-  const root = el.closest('.nc-form-preview-scroller') as HTMLElement | null
+  const root = el.closest('.atm-form-preview-scroller') as HTMLElement | null
   const rect = el.getBoundingClientRect()
   const top = root ? root.getBoundingClientRect().top : 0
   const bottom = root ? root.getBoundingClientRect().bottom : window.innerHeight || document.documentElement.clientHeight
@@ -1038,7 +1038,7 @@ const openUploadImage = (isUploadBanner: boolean) => {
   if (!isEditable || !appInfo.value.ee) return
 
   imageCropperData.value.uploadConfig = {
-    path: [NOCO, base.value.id, meta.value?.id, formViewData.value?.id].join('/'),
+    path: [ATMOSPHERE, base.value.id, meta.value?.id, formViewData.value?.id].join('/'),
   }
   if (isUploadBanner) {
     imageCropperData.value.cropperConfig = {
@@ -1128,7 +1128,7 @@ const updateFieldTitle = (value: string) => {
 
 const handleAutoScrollFormField = (title: string, isSidebar: boolean) => {
   const field = document.querySelector(
-    `${isSidebar ? '.nc-form-field-item-' : '.nc-form-drag-'}${CSS.escape(toSafeClassName(title))}`,
+    `${isSidebar ? '.atm-form-field-item-' : '.atm-form-drag-'}${CSS.escape(toSafeClassName(title))}`,
   )
 
   if (field) {
@@ -1298,13 +1298,13 @@ useEventListener(
     if (
       (draggableRef.value?.targetDomElement && draggableRef.value?.targetDomElement.contains(e.target)) ||
       (e.target as HTMLElement)?.closest(
-        // `[data-testid="nc-form-fields"]` (a preview field cell, both grid + single-column
-        // layouts) and `[class*="nc-form-field-item-"]` (a sidebar field-list row) are field
+        // `[data-testid="atm-form-fields"]` (a preview field cell, both grid + single-column
+        // layouts) and `[class*="atm-form-field-item-"]` (a sidebar field-list row) are field
         // selections — the field's own click handler will switch `activeRow`. Deselecting here
         // first would set `activeRow = ''`, unmounting the config panel + its rich-text editor,
         // which then remount on the click — destroying/recreating the ProseMirror editor on
         // every field switch (the dominant ~400ms field-switch cost).
-        '.nc-form-right-panel, [data-testid="nc-form-fields"], [class*="nc-form-field-item-"], [class*="dropdown"], .nc-form-rich-text-field, .ant-modal, .ant-modal-wrap, .nc-share-base-button, .nc-form-right-sidebar-content-resizable-wrapper .splitpanes__splitter, .nc-sidebar-toggle-btn, .nc-form-field-hide',
+        '.atm-form-right-panel, [data-testid="atm-form-fields"], [class*="atm-form-field-item-"], [class*="dropdown"], .atm-form-rich-text-field, .ant-modal, .ant-modal-wrap, .atm-share-base-button, .atm-form-right-sidebar-content-resizable-wrapper .splitpanes__splitter, .atm-sidebar-toggle-btn, .atm-form-field-hide',
       )
     ) {
       return
@@ -1319,7 +1319,7 @@ const handleOnClick = (e: MouseEvent) => {
   if (isSidebarVisible.value) return
 
   const target = e.target as HTMLElement
-  const parentPreview = target.closest('.nc-form-preview')
+  const parentPreview = target.closest('.atm-form-preview')
 
   const isChildOfPreview = parentPreview && target !== parentPreview
 
@@ -1338,11 +1338,11 @@ const { message: templatedMessage } = useTemplatedMessage(
 <template>
   <div class="h-full relative">
     <template v-if="isMobileMode">
-      <div class="pl-6 pr-[120px] py-6 bg-nc-bg-default flex-col justify-start items-start gap-2.5 inline-flex">
-        <div class="text-nc-content-gray-muted text-5xl font-semibold leading-16">
+      <div class="pl-6 pr-[120px] py-6 bg-atm-bg-default flex-col justify-start items-start gap-2.5 inline-flex">
+        <div class="text-atm-content-gray-muted text-5xl font-semibold leading-16">
           {{ $t('general.available') }}<br />{{ $t('title.inDesktop') }}
         </div>
-        <div class="text-nc-content-gray-muted text-base font-medium leading-normal">
+        <div class="text-atm-content-gray-muted text-base font-medium leading-normal">
           {{ $t('msg.formViewNotSupportedOnMobile') }}
         </div>
       </div>
@@ -1350,13 +1350,13 @@ const { message: templatedMessage } = useTemplatedMessage(
     <template v-else>
       <div
         v-if="submitted"
-        class="h-full p-6 overflow-auto nc-scrollbar-thin"
+        class="h-full p-6 overflow-auto atm-scrollbar-thin"
         :style="{
           background: parseProp(formViewData?.meta)?.background_color
             ? getDarkModeCompatibleBgColor({ color: parseProp(formViewData?.meta)?.background_color, isDark, shade: 0 })
-            : 'var(--nc-bg-gray-extralight)',
+            : 'var(--atm-bg-gray-extralight)',
         }"
-        data-testid="nc-form-wrapper-submit"
+        data-testid="atm-form-wrapper-submit"
       >
         <div class="max-w-[max(33%,688px)] mx-auto">
           <GeneralFormBanner
@@ -1365,18 +1365,18 @@ const { message: templatedMessage } = useTemplatedMessage(
           />
 
           <div
-            class="transition-all duration-300 ease-in relative my-6 bg-nc-bg-default rounded-3xl border-1 border-nc-border-gray-medium px-4 py-8 lg:p-12 md:(p-8)"
+            class="transition-all duration-300 ease-in relative my-6 bg-atm-bg-default rounded-3xl border-1 border-atm-border-gray-medium px-4 py-8 lg:p-12 md:(p-8)"
           >
             <div v-if="formViewData" class="items-center justify-center text-left mt-2">
               <div>
-                <h1 class="text-2xl font-bold text-nc-content-gray-emphasis mb-4">
+                <h1 class="text-2xl font-bold text-atm-content-gray-emphasis mb-4">
                   {{ formViewData.heading }}
                 </h1>
 
                 <div v-if="formViewData.subheading?.trim()">
                   <CellRichText
                     :value="formViewData.subheading"
-                    class="font-medium text-base text-nc-content-gray-muted !h-auto mb-4 -ml-1"
+                    class="font-medium text-base text-atm-content-gray-muted !h-auto mb-4 -ml-1"
                     is-form-field
                     read-only
                     sync-value-change
@@ -1386,7 +1386,7 @@ const { message: templatedMessage } = useTemplatedMessage(
 
               <div class="flex justify-center">
                 <div class="w-full">
-                  <a-alert class="nc-form-success-msg !my-4 !py-4 text-left !rounded-lg" type="success" outlined>
+                  <a-alert class="atm-form-success-msg !my-4 !py-4 text-left !rounded-lg" type="success" outlined>
                     <template #message>
                       <CellRichText
                         v-if="templatedMessage"
@@ -1401,7 +1401,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                   </a-alert>
 
                   <div class="mt-16 w-full flex justify-between items-center gap-3">
-                    <div v-if="formViewData.show_blank_form" class="text-nc-content-gray-disabled">
+                    <div v-if="formViewData.show_blank_form" class="text-atm-content-gray-disabled">
                       {{
                         $t('msg.newFormWillBeLoaded', {
                           seconds: secondsRemain,
@@ -1410,7 +1410,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                     </div>
 
                     <div v-if="formViewData.submit_another_form || !isPublic" class="flex-1 flex justify-end">
-                      <NcButton
+                      <AtButton
                         type="primary"
                         size="small"
                         @click="
@@ -1421,7 +1421,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                         "
                       >
                         {{ $t('activity.submitAnotherForm') }}
-                      </NcButton>
+                      </AtButton>
                     </div>
                   </div>
                 </div>
@@ -1431,7 +1431,7 @@ const { message: templatedMessage } = useTemplatedMessage(
         </div>
       </div>
 
-      <div v-else class="nc-form-wrapper h-full w-full flex relative" data-testid="nc-form-wrapper">
+      <div v-else class="atm-form-wrapper h-full w-full flex relative" data-testid="atm-form-wrapper">
         <div v-if="isLoadingFormView" class="flex-1 flex items-center justify-center text-center h-full">
           <div>
             <GeneralLoader size="xlarge" />
@@ -1444,7 +1444,7 @@ const { message: templatedMessage } = useTemplatedMessage(
           <SmartsheetFormLayout :is-sidebar-visible="isSidebarVisible">
             <template #preview>
               <div
-                class="nc-form-preview-scroller w-full h-full overflow-auto nc-scrollbar-thin p-6"
+                class="atm-form-preview-scroller w-full h-full overflow-auto atm-scrollbar-thin p-6"
                 :style="{
                   background: parseProp(formViewData?.meta)?.background_color
                     ? getDarkModeCompatibleBgColor({
@@ -1452,7 +1452,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                         isDark,
                         shade: 0,
                       })
-                    : 'var(--nc-bg-gray-extralight)',
+                    : 'var(--atm-bg-gray-extralight)',
                 }"
               >
                 <Transition
@@ -1464,19 +1464,19 @@ const { message: templatedMessage } = useTemplatedMessage(
                   leave-to-class="opacity-0"
                 >
                   <div v-show="!isSidebarVisible" class="absolute top-4 right-4 rtl:(left-4 right-auto) z-499">
-                    <NcTooltip placement="topRight" class="nc-sidebar-toggle-btn">
+                    <AtTooltip placement="topRight" class="atm-sidebar-toggle-btn">
                       <template #title> {{ $t('activity.toggleSidebar') }}</template>
-                      <NcButton icon-only size="small" type="secondary" @click.stop="isSidebarVisible = true">
+                      <AtButton icon-only size="small" type="secondary" @click.stop="isSidebarVisible = true">
                         <template #icon>
                           <GeneralIcon icon="sidebar" class="w-4 h-4" />
                         </template>
-                      </NcButton>
-                    </NcTooltip>
+                      </AtButton>
+                    </AtTooltip>
                   </div>
                 </Transition>
-                <div class="nc-form-preview min-w-[616px] overflow-x-auto nc-scrollbar-thin" @click="handleOnClick">
+                <div class="atm-form-preview min-w-[616px] overflow-x-auto atm-scrollbar-thin" @click="handleOnClick">
                   <div v-if="!isAllowedToAddRecord" class="mb-6">
-                    <NcAlert
+                    <AtAlert
                       type="warning"
                       show-icon
                       background
@@ -1502,7 +1502,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                     />
                     <div class="absolute bottom-0 right-0 hidden group-hover:block">
                       <div class="flex items-center space-x-1 m-2">
-                        <NcTooltip :disabled="showEEFeatures || isLocked">
+                        <AtTooltip :disabled="showEEFeatures || isLocked">
                           <template #title>
                             <div class="text-center">
                               {{ $t('msg.info.thisFeatureIsOnlyAvailableInEnterpriseEdition') }}
@@ -1510,11 +1510,11 @@ const { message: templatedMessage } = useTemplatedMessage(
                           </template>
                           <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_FORM_CUSTOM_LOGO">
                             <template #default="{ click }">
-                              <NcButton
+                              <AtButton
                                 type="secondary"
                                 size="small"
-                                class="nc-form-upload-banner-btn"
-                                data-testid="nc-form-upload-banner-btn"
+                                class="atm-form-upload-banner-btn"
+                                data-testid="atm-form-upload-banner-btn"
                                 :disabled="!isEeUI || isLocked || !showEEFeatures"
                                 @click.stop="click(PlanFeatureTypes.FEATURE_FORM_CUSTOM_LOGO, () => openUploadImage(true))"
                               >
@@ -1534,17 +1534,17 @@ const { message: templatedMessage } = useTemplatedMessage(
                                     "
                                   />
                                 </div>
-                              </NcButton>
+                              </AtButton>
                             </template>
                           </PaymentUpgradeBadgeProvider>
-                        </NcTooltip>
-                        <NcTooltip v-if="isEeUI && formViewData.banner_image_url" :disabled="isLocked">
+                        </AtTooltip>
+                        <AtTooltip v-if="isEeUI && formViewData.banner_image_url" :disabled="isLocked">
                           <template #title> {{ $t('general.delete') }} {{ $t('general.banner') }} </template>
-                          <NcButton
+                          <AtButton
                             type="secondary"
                             size="small"
-                            class="nc-form-delete-banner-btn"
-                            data-testid="nc-form-delete-banner-btn"
+                            class="atm-form-delete-banner-btn"
+                            data-testid="atm-form-delete-banner-btn"
                             :disabled="isLocked"
                             @click.stop="
                               () => {
@@ -1558,8 +1558,8 @@ const { message: templatedMessage } = useTemplatedMessage(
                             <div class="flex gap-2 items-center">
                               <component :is="iconMap.delete" class="w-4 h-4" />
                             </div>
-                          </NcButton>
-                        </NcTooltip>
+                          </AtButton>
+                        </AtTooltip>
                       </div>
                     </div>
                   </div>
@@ -1569,7 +1569,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                     :expires-at="formViewData?.expires_at"
                     class="mt-6 max-w-[max(33%,688px)] mx-auto"
                   />
-                  <NcAlert
+                  <AtAlert
                     v-if="blockAddNewRecord"
                     type="warning"
                     show-icon
@@ -1583,34 +1583,34 @@ const { message: templatedMessage } = useTemplatedMessage(
                     "
                   >
                     <template #action>
-                      <NcButton
-                        class="nc-upgrade-plan-btn"
+                      <AtButton
+                        class="atm-upgrade-plan-btn"
                         type="primary"
                         size="small"
                         @click.stop="navigateToPricing({ limitOrFeature: PlanLimitTypes.LIMIT_RECORD_PER_WORKSPACE })"
                       >
                         {{ isWsOwner ? $t('labels.upgradePlan') : $t('general.requestUpgrade') }}
-                      </NcButton>
+                      </AtButton>
                     </template>
-                  </NcAlert>
+                  </AtAlert>
                   <a-card
-                    class="!py-8 !lg:py-12 !border-nc-border-gray-medium !rounded-3xl !mt-6 !max-w-[max(33%,688px)] !mx-auto"
+                    class="!py-8 !lg:py-12 !border-atm-border-gray-medium !rounded-3xl !mt-6 !max-w-[max(33%,688px)] !mx-auto"
                     :body-style="{
                       margin: '0 auto',
                       padding: '0px !important',
                     }"
                   >
-                    <a-form :model="formState" class="nc-form" no-style>
+                    <a-form :model="formState" class="atm-form" no-style>
                       <!-- form header -->
                       <div class="flex flex-col px-4 lg:px-6">
                         <!-- Form logo  -->
                         <div class="mb-4">
                           <div
-                            class="nc-form-logo-wrapper mx-6 group relative h-56px overflow-hidden inline-flex items-center"
+                            class="atm-form-logo-wrapper mx-6 group relative h-56px overflow-hidden inline-flex items-center"
                             :class="
                               formViewData.logo_url
-                                ? 'max-w-189px hover:(w-full bg-nc-bg-gray-light rounded-xl) '
-                                : 'bg-nc-bg-gray-light  rounded-xl'
+                                ? 'max-w-189px hover:(w-full bg-atm-bg-gray-light rounded-xl) '
+                                : 'bg-atm-bg-gray-light  rounded-xl'
                             "
                             style="transition: all 0.3s ease-in"
                           >
@@ -1618,14 +1618,14 @@ const { message: templatedMessage } = useTemplatedMessage(
                               v-if="formViewData.logo_url"
                               :key="formViewData.logo_url?.path"
                               :srcs="getFormLogoSrc"
-                              class="flex-none nc-form-logo !object-contain object-left max-h-full max-w-full !m-0"
+                              class="flex-none atm-form-logo !object-contain object-left max-h-full max-w-full !m-0"
                               :is-cell-preview="false"
                             />
                             <div
                               class="items-center space-x-1 flex-nowrap m-3"
                               :class="formViewData.logo_url ? 'hidden absolute top-0 left-0 group-hover:flex' : 'flex'"
                             >
-                              <NcTooltip :disabled="showEEFeatures || isLocked">
+                              <AtTooltip :disabled="showEEFeatures || isLocked">
                                 <template #title>
                                   <div class="text-center">
                                     {{ $t('msg.info.thisFeatureIsOnlyAvailableInEnterpriseEdition') }}
@@ -1636,11 +1636,11 @@ const { message: templatedMessage } = useTemplatedMessage(
                                   :feature="PlanFeatureTypes.FEATURE_FORM_CUSTOM_LOGO"
                                 >
                                   <template #default="{ click }">
-                                    <NcButton
+                                    <AtButton
                                       type="secondary"
                                       size="small"
-                                      class="nc-form-upload-logo-btn group"
-                                      data-testid="nc-form-upload-log-btn"
+                                      class="atm-form-upload-logo-btn group"
+                                      data-testid="atm-form-upload-log-btn"
                                       :disabled="!isEeUI || isLocked || !showEEFeatures"
                                       @click.stop="click(PlanFeatureTypes.FEATURE_FORM_CUSTOM_LOGO, () => openUploadImage(false))"
                                     >
@@ -1661,17 +1661,17 @@ const { message: templatedMessage } = useTemplatedMessage(
                                           class="-my-1"
                                         />
                                       </div>
-                                    </NcButton>
+                                    </AtButton>
                                   </template>
                                 </PaymentUpgradeBadgeProvider>
-                              </NcTooltip>
-                              <NcTooltip v-if="isEeUI && formViewData.logo_url" :disabled="isLocked">
+                              </AtTooltip>
+                              <AtTooltip v-if="isEeUI && formViewData.logo_url" :disabled="isLocked">
                                 <template #title> {{ $t('general.delete') }} {{ $t('general.logo') }} </template>
-                                <NcButton
+                                <AtButton
                                   type="secondary"
                                   size="small"
-                                  class="nc-form-delete-logo-btn"
-                                  data-testid="nc-form-delete-logo-btn"
+                                  class="atm-form-delete-logo-btn"
+                                  data-testid="atm-form-delete-logo-btn"
                                   :disabled="isLocked"
                                   @click.stop="
                                     () => {
@@ -1684,8 +1684,8 @@ const { message: templatedMessage } = useTemplatedMessage(
                                   <div class="flex gap-2 items-center">
                                     <component :is="iconMap.delete" class="w-4 h-4" />
                                   </div>
-                                </NcButton>
-                              </NcTooltip>
+                                </AtButton>
+                              </AtTooltip>
                             </div>
                           </div>
                         </div>
@@ -1695,7 +1695,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                           class="border-transparent px-4 lg:px-6"
                           :class="[
                             {
-                              'overflow-hidden border-2 cursor-pointer mb-1 py-4 lg:py-6 focus-within:bg-nc-bg-gray-extralight':
+                              'overflow-hidden border-2 cursor-pointer mb-1 py-4 lg:py-6 focus-within:bg-atm-bg-gray-extralight':
                                 isEditable,
                             },
                             isEditable && (blockFormGridLayout ? 'rounded-2xl' : 'rounded-xl'),
@@ -1703,32 +1703,32 @@ const { message: templatedMessage } = useTemplatedMessage(
                               'mb-4 py-0 lg:py-0': !isEditable,
                             },
                             {
-                              'hover:bg-nc-bg-gray-extralight': activeRow !== NcForm.heading && isEditable,
+                              'hover:bg-atm-bg-gray-extralight': activeRow !== AtForm.heading && isEditable,
                             },
                             {
-                              'bg-nc-bg-gray-extralight': activeRow === NcForm.heading && isEditable,
+                              'bg-atm-bg-gray-extralight': activeRow === AtForm.heading && isEditable,
                             },
                             {
-                              '!hover:bg-nc-bg-default !ring-0 !cursor-auto': isLocked,
+                              '!hover:bg-atm-bg-default !ring-0 !cursor-auto': isLocked,
                             },
                           ]"
-                          @click.stop="onFormItemClick({ id: NcForm.heading })"
+                          @click.stop="onFormItemClick({ id: AtForm.heading })"
                         >
                           <a-form-item v-if="isEditable" class="!my-0">
-                            <NcAutoSizeTextarea
+                            <AtAutoSizeTextarea
                               v-model:model-value="formViewData.heading"
-                              class="nc-form-focus-element !p-0 !m-0 w-full !font-bold !text-2xl !bg-transparent !text-nc-content-gray-emphasis"
+                              class="atm-form-focus-element !p-0 !m-0 w-full !font-bold !text-2xl !bg-transparent !text-atm-content-gray-emphasis"
                               :placeholder="$t('title.formTitle')"
                               :bordered="false"
-                              :data-testid="NcForm.heading"
-                              :data-title="NcForm.heading"
+                              :data-testid="AtForm.heading"
+                              :data-title="AtForm.heading"
                               @input="updateView"
-                              @focus="activeRow = NcForm.heading"
+                              @focus="activeRow = AtForm.heading"
                               @blur="activeRow = ''"
                             />
                           </a-form-item>
 
-                          <div v-else class="font-bold text-2xl text-nc-content-gray-emphasis">
+                          <div v-else class="font-bold text-2xl text-atm-content-gray-emphasis">
                             {{ formViewData.heading }}
                           </div>
                         </div>
@@ -1738,42 +1738,42 @@ const { message: templatedMessage } = useTemplatedMessage(
                           class="border-transparent px-4 lg:px-6 empty:hidden"
                           :class="[
                             {
-                              'border-2 cursor-pointer mb-1 py-4 lg:py-6 focus-within:bg-nc-bg-gray-extralight': isEditable,
+                              'border-2 cursor-pointer mb-1 py-4 lg:py-6 focus-within:bg-atm-bg-gray-extralight': isEditable,
                             },
                             isEditable && (blockFormGridLayout ? 'rounded-2xl' : 'rounded-xl'),
                             {
                               'mb-4 py-0 lg:py-0': !isEditable,
                             },
                             {
-                              'hover:bg-nc-bg-gray-extralight': activeRow !== NcForm.subheading && isEditable,
+                              'hover:bg-atm-bg-gray-extralight': activeRow !== AtForm.subheading && isEditable,
                             },
                             {
-                              'bg-nc-bg-gray-extralight': activeRow === NcForm.subheading && isEditable,
+                              'bg-atm-bg-gray-extralight': activeRow === AtForm.subheading && isEditable,
                             },
                             {
-                              '!hover:bg-nc-bg-default !ring-0 !cursor-auto': isLocked,
+                              '!hover:bg-atm-bg-default !ring-0 !cursor-auto': isLocked,
                             },
                           ]"
-                          @click.stop="onFormItemClick({ id: NcForm.subheading })"
+                          @click.stop="onFormItemClick({ id: AtForm.subheading })"
                         >
                           <LazyCellRichText
                             v-if="isEditable && !isLocked"
                             v-model:value="formViewData.subheading"
                             :placeholder="$t('msg.info.formDesc')"
-                            class="nc-form-description nc-form-focus-element font-medium text-base !text-nc-content-gray-muted -ml-1"
+                            class="atm-form-description atm-form-focus-element font-medium text-base !text-atm-content-gray-muted -ml-1"
                             is-form-field
-                            :autofocus="activeRow === NcForm.subheading"
-                            :data-testid="NcForm.subheading"
-                            :data-title="NcForm.subheading"
+                            :autofocus="activeRow === AtForm.subheading"
+                            :data-testid="AtForm.subheading"
+                            :data-title="AtForm.subheading"
                             hide-mention
                             @update:value="updateView"
-                            @focus="activeRow = NcForm.subheading"
+                            @focus="activeRow = AtForm.subheading"
                             @blur="activeRow = ''"
                           />
                           <LazyCellRichText
                             v-else-if="formViewData.subheading"
                             :value="formViewData.subheading"
-                            class="font-medium text-base !text-nc-content-gray-muted -ml-1"
+                            class="font-medium text-base !text-atm-content-gray-muted -ml-1"
                             is-form-field
                             read-only
                             sync-value-change
@@ -1782,7 +1782,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                       </div>
 
                       <!-- EE: multi-column grid layout (gated by plan feature) -->
-                      <div v-if="!blockFormGridLayout" class="h-full px-4 lg:px-6 nc-form-rows">
+                      <div v-if="!blockFormGridLayout" class="h-full px-4 lg:px-6 atm-form-rows">
                         <template v-for="formRow in rowsWithKey" :key="formRow._key">
                           <!--
                             Inter-row drop zone: lets the user extract a field
@@ -1795,7 +1795,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                             :model-value="[]"
                             item-key="id"
                             group="form-inputs"
-                            class="nc-form-row-gap min-h-0"
+                            class="atm-form-row-gap min-h-0"
                             :move="onFieldMoveToNewRowCallback"
                             @change="onFieldMoveToNewRow($event, formRow._key)"
                           >
@@ -1806,7 +1806,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                           <div
                             v-observe-row
                             :data-row-key="formRow._key"
-                            class="nc-form-row flex items-stretch gap-1 min-w-0"
+                            class="atm-form-row flex items-stretch gap-1 min-w-0"
                             :style="isRowRendered(formRow) ? undefined : { minHeight: `${rowPlaceholderHeightPx(formRow)}px` }"
                           >
                             <Draggable
@@ -1814,10 +1814,10 @@ const { message: templatedMessage } = useTemplatedMessage(
                               :model-value="formRow.fields"
                               item-key="id"
                               draggable=".item"
-                              handle=".nc-form-field-drag-handler"
+                              handle=".atm-form-field-drag-handler"
                               group="form-inputs"
-                              ghost-class="nc-form-field-ghost"
-                              class="flex items-stretch gap-1 flex-1 min-w-0 nc-form-row-fields"
+                              ghost-class="atm-form-field-ghost"
+                              class="flex items-stretch gap-1 flex-1 min-w-0 atm-form-row-fields"
                               :move="(ev: any) => onFieldMoveCallback(ev, formRow.fields)"
                               :disabled="isLocked || !isEditable || gridUpdatePending"
                               @start="drag = true"
@@ -1842,7 +1842,7 @@ const { message: templatedMessage } = useTemplatedMessage(
 
                         <div
                           v-if="!visibleColumns.length && isEditable"
-                          class="mt-4 border-dashed border-2 border-nc-border-gray-extradark py-3 text-nc-content-gray-disabled text-center"
+                          class="mt-4 border-dashed border-2 border-atm-border-gray-extradark py-3 text-atm-content-gray-disabled text-center"
                         >
                           {{ $t('title.selectFieldsFromRightPannelToAddHere') }}
                         </div>
@@ -1851,7 +1851,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                             :model-value="[]"
                             item-key="id"
                             group="form-inputs"
-                            class="nc-form-new-row-zone min-h-2 rounded-md border border-dashed border-nc-border-gray-medium"
+                            class="atm-form-new-row-zone min-h-2 rounded-md border border-dashed border-atm-border-gray-medium"
                             :move="onFieldMoveToNewRowCallback"
                             @change="onFieldMoveToNewRow($event)"
                           >
@@ -1860,7 +1860,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                             </template>
                             <template #footer>
                               <span
-                                class="pointer-events-none text-nc-content-gray-muted absolute -bottom-4 w-full text-center text-xs"
+                                class="pointer-events-none text-atm-content-gray-muted absolute -bottom-4 w-full text-center text-xs"
                               >
                                 {{ $t('title.dropHereToStartNewRow') }}
                               </span>
@@ -1877,9 +1877,9 @@ const { message: templatedMessage } = useTemplatedMessage(
                         :model-value="visibleColumns"
                         item-key="fk_column_id"
                         draggable=".item"
-                        handle=".nc-form-field-drag-handler"
+                        handle=".atm-form-field-drag-handler"
                         group="form-inputs"
-                        ghost-class="nc-form-field-ghost"
+                        ghost-class="atm-form-field-ghost"
                         class="h-full px-4 lg:px-6"
                         :move="onMoveCallback"
                         :disabled="isLocked || !isEditable"
@@ -1889,9 +1889,9 @@ const { message: templatedMessage } = useTemplatedMessage(
                           <div
                             v-if="!isLocked || (isLocked && element?.visible)"
                             :key="element.id"
-                            class="nc-editable nc-form-focus-element item relative bg-nc-bg-default p-4 lg:p-6"
+                            class="atm-editable atm-form-focus-element item relative bg-atm-bg-default p-4 lg:p-6"
                             :class="[
-                              `nc-form-drag-${toSafeClassName(element.title)}`,
+                              `atm-form-drag-${toSafeClassName(element.title)}`,
                               {
                                 'rounded-2xl border-2 my-1': isEditable,
                               },
@@ -1899,48 +1899,48 @@ const { message: templatedMessage } = useTemplatedMessage(
                                 'border-transparent my-0': !isEditable,
                               },
                               {
-                                'nc-form-field-drag-handler border-transparent hover:(bg-nc-bg-gray-extralight) cursor-pointer':
+                                'atm-form-field-drag-handler border-transparent hover:(bg-atm-bg-gray-extralight) cursor-pointer':
                                   activeRow !== element.id && isEditable,
                               },
 
                               {
-                                'border-nc-border-brand': activeRow === element.id,
+                                'border-atm-border-brand': activeRow === element.id,
                               },
                               {
-                                '!hover:bg-nc-bg-default !ring-0 !cursor-auto': isLocked,
+                                '!hover:bg-atm-bg-default !ring-0 !cursor-auto': isLocked,
                               },
                             ]"
                             :data-title="element.title"
-                            data-testid="nc-form-fields"
+                            data-testid="atm-form-fields"
                             @click.stop="onFormItemClick(element)"
                           >
                             <template v-if="activeRow === element.id">
                               <div class="absolute -left-3 top-6">
-                                <NcButton
+                                <AtButton
                                   type="primary"
                                   size="small"
-                                  class="nc-form-field-drag-handler !cursor-move !p-1 !min-w-6 !h-auto !rounded"
+                                  class="atm-form-field-drag-handler !cursor-move !p-1 !min-w-6 !h-auto !rounded"
                                 >
                                   <component
                                     :is="iconMap.drag"
-                                    class="nc-form-field-drag-handler flex-none !h-4 !w-4 text-white font-bold"
+                                    class="atm-form-field-drag-handler flex-none !h-4 !w-4 text-white font-bold"
                                   />
-                                </NcButton>
+                                </AtButton>
                               </div>
                               <div class="absolute right-1 top-1">
-                                <NcTooltip
+                                <AtTooltip
                                   :title="
                                     isRequired(element, element.required)
                                       ? $t('tooltip.youCantRemoveARequiredField')
                                       : $t('tooltip.removeFromForm')
                                   "
                                 >
-                                  <NcButton
+                                  <AtButton
                                     type="link"
                                     size="xsmall"
-                                    class="nc-form-field-hide !bg-transparent !h-6 !w-6"
+                                    class="atm-form-field-hide !bg-transparent !h-6 !w-6"
                                     :class="{
-                                      '!text-nc-content-gray-muted !hover:text-nc-content-brand': !isRequired(
+                                      '!text-atm-content-gray-muted !hover:text-atm-content-brand': !isRequired(
                                         element,
                                         element.required,
                                       ),
@@ -1952,12 +1952,12 @@ const { message: templatedMessage } = useTemplatedMessage(
                                     <template #icon>
                                       <GeneralIcon icon="close" class="!w-4 !h-4" />
                                     </template>
-                                  </NcButton>
-                                </NcTooltip>
+                                  </AtButton>
+                                </AtTooltip>
                               </div>
                             </template>
                             <div class="flex items-center gap-3">
-                              <NcTooltip
+                              <AtTooltip
                                 v-if="allViewFilters[element.fk_column_id]?.length && !isLocked"
                                 class="relative h-3.5 w-3.5 flex cursor-pointer"
                                 placement="topLeft"
@@ -1967,22 +1967,22 @@ const { message: templatedMessage } = useTemplatedMessage(
                                   <GeneralIcon
                                     v-if="element?.visible"
                                     icon="eye"
-                                    class="nc-field-visibility-icon nc-field-visible w-3.5 h-3.5 flex-none text-nc-content-gray-muted"
+                                    class="atm-field-visibility-icon atm-field-visible w-3.5 h-3.5 flex-none text-atm-content-gray-muted"
                                   />
                                   <GeneralIcon
                                     v-else
                                     icon="eyeSlash"
-                                    class="nc-field-visibility-icon w-3.5 h-3.5 flex-none text-nc-content-gray-muted"
+                                    class="atm-field-visibility-icon w-3.5 h-3.5 flex-none text-atm-content-gray-muted"
                                   />
                                 </Transition>
-                              </NcTooltip>
-                              <div class="text-sm font-semibold text-nc-content-gray">
-                                <span data-testid="nc-form-input-label">
+                              </AtTooltip>
+                              <div class="text-sm font-semibold text-atm-content-gray">
+                                <span data-testid="atm-form-input-label">
                                   {{ element.label || element.title }}
                                 </span>
                                 <span
                                   v-if="isRequired(element, element.required)"
-                                  class="text-nc-content-red-medium text-base leading-[18px]"
+                                  class="text-atm-content-red-medium text-base leading-[18px]"
                                 >
                                   &nbsp;*
                                 </span>
@@ -1995,8 +1995,8 @@ const { message: templatedMessage } = useTemplatedMessage(
                               is-form-field
                               read-only
                               sync-value-change
-                              class="nc-form-help-text text-nc-content-gray-muted text-sm mt-2 -ml-1"
-                              data-testid="nc-form-help-text"
+                              class="atm-form-help-text text-atm-content-gray-muted text-sm mt-2 -ml-1"
+                              data-testid="atm-form-help-text"
                               @update:value="updateColMeta(element)"
                             />
 
@@ -2007,7 +2007,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                         <template #footer>
                           <div
                             v-if="!visibleColumns.length && isEditable"
-                            class="mt-4 border-dashed border-2 border-nc-border-gray-extradark py-3 text-nc-content-gray-disabled text-center"
+                            class="mt-4 border-dashed border-2 border-atm-border-gray-extradark py-3 text-atm-content-gray-disabled text-center"
                           >
                             {{ $t('title.selectFieldsFromRightPannelToAddHere') }}
                           </div>
@@ -2017,14 +2017,14 @@ const { message: templatedMessage } = useTemplatedMessage(
                       <div class="flex justify-between items-center mt-6 !px-8 !lg:px-12">
                         <div></div>
 
-                        <NcButton
+                        <AtButton
                           type="primary"
                           size="small"
                           :disabled="disableFormSubmit"
                           :loading="isFormSubmitting"
-                          class="nc-form-submit nc-form-focus-element"
-                          data-testid="nc-form-submit"
-                          data-title="nc-form-submit"
+                          class="atm-form-submit atm-form-focus-element"
+                          data-testid="atm-form-submit"
+                          data-title="atm-form-submit"
                           @click.stop="submitForm"
                         >
                           {{
@@ -2032,13 +2032,13 @@ const { message: templatedMessage } = useTemplatedMessage(
                               ? parseProp(formViewData?.meta)?.submit_button_label || $t('general.submit')
                               : $t('general.submit')
                           }}
-                        </NcButton>
+                        </AtButton>
                       </div>
                     </a-form>
 
                     <div v-if="!parseProp(formViewData?.meta).hide_branding" class="px-8 lg:px-12">
                       <a-divider class="!my-8" />
-                      <!-- NocoDB Branding  -->
+                      <!-- Atmosphere Branding  -->
                       <div class="inline-block">
                         <GeneralFormBranding @click.stop />
                       </div>
@@ -2050,53 +2050,53 @@ const { message: templatedMessage } = useTemplatedMessage(
             <template #sidebar>
               <!-- Right Panel -->
               <div
-                class="nc-form-right-panel h-full flex-grow max-w-full"
+                class="atm-form-right-panel h-full flex-grow max-w-full"
                 :class="{
-                  'overflow-y-auto nc-scrollbar-thin': activeField,
+                  'overflow-y-auto atm-scrollbar-thin': activeField,
                   'relative': isLocked,
                 }"
               >
                 <!-- Form Field settings -->
-                <div v-if="activeField && activeColumn" class="nc-form-field-right-panel">
+                <div v-if="activeField && activeColumn" class="atm-form-field-right-panel">
                   <!-- Field header -->
-                  <div class="px-4 pt-4 pb-2 flex items-center border-b border-nc-border-gray-medium font-medium">
+                  <div class="px-4 pt-4 pb-2 flex items-center border-b border-atm-border-gray-medium font-medium">
                     <div
-                      class="text-nc-content-gray-subtle2 font-medium cursor-pointer select-none hover:underline"
+                      class="text-atm-content-gray-subtle2 font-medium cursor-pointer select-none hover:underline"
                       @click="activeRow = ''"
                     >
                       {{ $t('objects.viewType.form') }}
                     </div>
-                    <div class="px-1.75 text-nc-content-gray-muted text-xl font-normal">/</div>
+                    <div class="px-1.75 text-atm-content-gray-muted text-xl font-normal">/</div>
 
                     <div class="flex items-center py-1.5">
-                      <SmartsheetHeaderIcon :column="activeField" class="text-nc-content-gray" />
+                      <SmartsheetHeaderIcon :column="activeField" class="text-atm-content-gray" />
                     </div>
 
-                    <NcTooltip class="truncate flex-1 text-sm font-semibold pr-1" show-on-truncate-only>
+                    <AtTooltip class="truncate flex-1 text-sm font-semibold pr-1" show-on-truncate-only>
                       <template #title>
                         <div class="text-center">
                           {{ activeField.title }}
                         </div>
                       </template>
 
-                      <span data-testid="nc-form-input-label text-nc-content-gray">
+                      <span data-testid="atm-form-input-label text-atm-content-gray">
                         {{ activeField.title }}
                       </span>
-                    </NcTooltip>
+                    </AtTooltip>
 
                     <div class="flex items-center space-x-2">
                       <a-dropdown
                         v-model:visible="dropdownStates.showEditColumn"
                         :trigger="['click']"
-                        overlay-class-name="nc-dropdown-form-edit-column rounded-2xl"
+                        overlay-class-name="atm-dropdown-form-edit-column rounded-2xl"
                         :disabled="!isUIAllowed('fieldEdit') || isLocked"
                         @visible-change="onVisibilityChange('showEditColumn')"
                       >
-                        <NcButton type="secondary" size="small" class="nc-form-add-field" data-testid="nc-form-add-field">
+                        <AtButton type="secondary" size="small" class="atm-form-add-field" data-testid="atm-form-add-field">
                           {{ $t('general.edit') }} {{ $t('objects.field') }}
-                        </NcButton>
+                        </AtButton>
                         <template #overlay>
-                          <div class="nc-edit-or-add-provider-wrapper">
+                          <div class="atm-edit-or-add-provider-wrapper">
                             <LazySmartsheetColumnEditOrAddProvider
                               v-if="dropdownStates.showEditColumn"
                               ref="editOrAddProviderRef"
@@ -2121,29 +2121,29 @@ const { message: templatedMessage } = useTemplatedMessage(
                         "
                         @hide-field="showOrHideColumn(activeField, false, false)"
                       />
-                      <NcTooltip placement="topRight" class="nc-sidebar-toggle-btn">
+                      <AtTooltip placement="topRight" class="atm-sidebar-toggle-btn">
                         <template #title> {{ $t('activity.toggleSidebar') }}</template>
-                        <NcButton icon-only size="small" type="secondary" @click.stop="isSidebarVisible = !isSidebarVisible">
+                        <AtButton icon-only size="small" type="secondary" @click.stop="isSidebarVisible = !isSidebarVisible">
                           <template #icon>
                             <GeneralIcon icon="sidebar" class="w-4 h-4" />
                           </template>
-                        </NcButton>
-                      </NcTooltip>
+                        </AtButton>
+                      </AtTooltip>
                     </div>
                   </div>
                   <!-- Field text -->
-                  <div class="nc-form-field-text p-4 flex flex-col gap-4 border-b border-nc-border-gray-medium">
-                    <div class="text-sm font-bold text-nc-content-gray">
+                  <div class="atm-form-field-text p-4 flex flex-col gap-4 border-b border-atm-border-gray-medium">
+                    <div class="text-sm font-bold text-atm-content-gray">
                       {{ $t('objects.field') }} {{ $t('general.text').toLowerCase() }}
                     </div>
 
-                    <NcAutoSizeTextarea
+                    <AtAutoSizeTextarea
                       ref="focusLabel"
                       :model-value="activeFieldLabel"
                       :rows="1"
                       :hide-scrollbar="false"
-                      class="form-meta-input nc-form-input-label !max-h-7.5rem nc-scrollbar-thin hover:(border-nc-brand-400)"
-                      data-testid="nc-form-input-label"
+                      class="form-meta-input atm-form-input-label !max-h-7.5rem atm-scrollbar-thin hover:(border-atm-brand-400)"
+                      data-testid="atm-form-input-label"
                       :placeholder="$t('msg.info.formInput')"
                       @focus="onFocusActiveFieldLabel"
                       @blur="isFocusedFieldLabel = false"
@@ -2161,15 +2161,15 @@ const { message: templatedMessage } = useTemplatedMessage(
                       sync-value-change skips while focused so the caret never jumps mid-edit.
                     -->
                     <LazyCellRichText
-                      key="nc-form-help-text-editor"
+                      key="atm-form-help-text-editor"
                       :value="activeField.description"
                       :placeholder="$t('msg.info.formHelpText')"
-                      class="form-meta-input nc-form-input-help-text"
+                      class="form-meta-input atm-form-input-help-text"
                       is-form-field
                       sync-value-change
                       :hidden-bubble-menu-options="hiddenBubbleMenuOptions"
                       hide-mention
-                      data-testid="nc-form-input-help-text"
+                      data-testid="atm-form-input-help-text"
                       @update:value="updateActiveFieldDescription"
                     />
                   </div>
@@ -2178,10 +2178,10 @@ const { message: templatedMessage } = useTemplatedMessage(
 
                 <!-- Form Settings -->
                 <template v-else>
-                  <Splitpanes v-if="formViewData" horizontal class="nc-form-settings w-full nc-form-right-splitpane">
-                    <Pane min-size="30" size="50" class="nc-form-right-splitpane-item p-4 flex flex-col space-y-4 !min-h-200px">
+                  <Splitpanes v-if="formViewData" horizontal class="atm-form-settings w-full atm-form-right-splitpane">
+                    <Pane min-size="30" size="50" class="atm-form-right-splitpane-item p-4 flex flex-col space-y-4 !min-h-200px">
                       <div class="flex flex-wrap justify-between items-center gap-2">
-                        <div class="text-sm font-bold text-nc-content-gray">
+                        <div class="text-sm font-bold text-atm-content-gray">
                           {{ $t('objects.viewType.form') }} {{ $t('objects.fields') }}
                         </div>
 
@@ -2191,18 +2191,18 @@ const { message: templatedMessage } = useTemplatedMessage(
                             v-model:visible="dropdownStates.showAddColumn"
                             :trigger="['click']"
                             :disabled="isLocked"
-                            overlay-class-name="nc-dropdown-form-add-column rounded-2xl"
+                            overlay-class-name="atm-dropdown-form-add-column rounded-2xl"
                             @visible-change="onVisibilityChange('showAddColumn')"
                           >
-                            <NcButton type="secondary" size="small" class="nc-form-add-field" data-testid="nc-form-add-field">
+                            <AtButton type="secondary" size="small" class="atm-form-add-field" data-testid="atm-form-add-field">
                               <div class="flex gap-2 items-center">
                                 <component :is="iconMap.plus" class="w-4 h-4" />
                                 <span> {{ $t('activity.addFieldFromFormView') }} </span>
                               </div>
-                            </NcButton>
+                            </AtButton>
 
                             <template #overlay>
-                              <div class="nc-edit-or-add-provider-wrapper">
+                              <div class="atm-edit-or-add-provider-wrapper">
                                 <LazySmartsheetColumnEditOrAddProvider
                                   v-if="dropdownStates.showAddColumn"
                                   ref="editOrAddProviderRef"
@@ -2214,40 +2214,40 @@ const { message: templatedMessage } = useTemplatedMessage(
                               </div>
                             </template>
                           </a-dropdown>
-                          <NcTooltip placement="topRight" class="nc-sidebar-toggle-btn">
+                          <AtTooltip placement="topRight" class="atm-sidebar-toggle-btn">
                             <template #title> {{ $t('activity.toggleSidebar') }}</template>
-                            <NcButton icon-only size="small" type="secondary" @click.stop="isSidebarVisible = !isSidebarVisible">
+                            <AtButton icon-only size="small" type="secondary" @click.stop="isSidebarVisible = !isSidebarVisible">
                               <template #icon>
                                 <GeneralIcon icon="sidebar" class="w-4 h-4" />
                               </template>
-                            </NcButton>
-                          </NcTooltip>
+                            </AtButton>
+                          </AtTooltip>
                         </div>
                       </div>
 
                       <form autocomplete="off">
                         <a-input
-                          key="nc-form-field-search-input"
+                          key="atm-form-field-search-input"
                           v-model:value="searchQuery"
                           type="text"
                           autocomplete="off"
                           class="!h-9 !px-3 !py-1 !rounded-lg"
                           :placeholder="`${$t('placeholder.searchFields')}...`"
-                          name="nc-form-field-search-input"
-                          data-testid="nc-form-field-search-input"
+                          name="atm-form-field-search-input"
+                          data-testid="atm-form-field-search-input"
                         >
                           <template #prefix>
                             <GeneralIcon
                               icon="search"
-                              class="mr-2 h-4 w-4 text-nc-content-gray-muted group-hover:text-nc-content-gray-extreme"
+                              class="mr-2 h-4 w-4 text-atm-content-gray-muted group-hover:text-atm-content-gray-extreme"
                             />
                           </template>
                           <template #suffix>
                             <GeneralIcon
                               v-if="searchQuery.length > 0"
                               icon="close"
-                              class="ml-2 h-4 w-4 text-nc-content-gray-muted group-hover:text-nc-content-gray-extreme"
-                              data-testid="nc-form-field-clear-search"
+                              class="ml-2 h-4 w-4 text-atm-content-gray-muted group-hover:text-atm-content-gray-extreme"
+                              data-testid="atm-form-field-clear-search"
                               @click="searchQuery = ''"
                             />
                           </template>
@@ -2255,34 +2255,34 @@ const { message: templatedMessage } = useTemplatedMessage(
                       </form>
 
                       <div
-                        class="nc-form-fields-list border-1 border-nc-border-gray-medium rounded-lg overflow-y-auto nc-scrollbar-thin"
+                        class="atm-form-fields-list border-1 border-atm-border-gray-medium rounded-lg overflow-y-auto atm-scrollbar-thin"
                       >
-                        <div v-if="!localColumns.length" class="px-0.5 py-2 text-nc-content-gray-muted text-center">
+                        <div v-if="!localColumns.length" class="px-0.5 py-2 text-atm-content-gray-muted text-center">
                           {{ $t('title.noFieldsFound') }}
                         </div>
                         <template v-if="localColumns.length">
                           <div
-                            key="nc-form-show-all-fields"
-                            class="w-full flex items-center border-b-1 rounded-t-lg border-nc-border-gray-medium bg-nc-bg-gray-extralight sticky top-0 z-49"
-                            data-testid="nc-form-show-all-fields"
+                            key="atm-form-show-all-fields"
+                            class="w-full flex items-center border-b-1 rounded-t-lg border-atm-border-gray-medium bg-atm-bg-gray-extralight sticky top-0 z-49"
+                            data-testid="atm-form-show-all-fields"
                             @click.stop
                           >
-                            <div class="flex-none mx-2 text-nc-content-brand">
+                            <div class="flex-none mx-2 text-atm-content-brand">
                               {{ visibleColumns.length }}/{{ localColumns.length }} {{ $t('general.selected') }}
                             </div>
 
                             <div class="flex-1 flex items-center justify-end truncate">
                               <div class="flex items-center px-2">
-                                <NcSwitch
+                                <AtSwitch
                                   :checked="visibleColumns.length === localColumns.length"
                                   size="small"
-                                  class="nc-switch"
+                                  class="atm-switch"
                                   :disabled="isLocked"
                                   placement="right"
                                   @change="handleAddOrRemoveAllColumns"
                                 >
                                   <div class="font-base my-1.5 select-none">{{ $t('activity.selectAllFields') }}</div>
-                                </NcSwitch>
+                                </AtSwitch>
                               </div>
                             </div>
                           </div>
@@ -2290,7 +2290,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                             v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 50 })"
                             :list="localColumns"
                             item-key="id"
-                            ghost-class="nc-form-field-ghost"
+                            ghost-class="atm-form-field-ghost"
                             :style="{ height: 'calc(100% - 64px)' }"
                             :disabled="isLocked || !isEditable"
                             @change="onMove($event)"
@@ -2315,7 +2315,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                               "
                               #footer
                             >
-                              <div class="px-0.5 py-2 text-nc-content-gray-muted text-center">
+                              <div class="px-0.5 py-2 text-atm-content-gray-muted text-center">
                                 {{ $t('title.noFieldsFound') }} {{ $t('labels.withTitle') }} `{{ searchQuery }}`
                               </div>
                             </template>
@@ -2323,14 +2323,14 @@ const { message: templatedMessage } = useTemplatedMessage(
                         </template>
                       </div>
                     </Pane>
-                    <Pane min-size="20" size="50" class="nc-form-right-splitpane-item !overflow-y-auto nc-scrollbar-thin">
-                      <div class="p-4 flex flex-col space-y-4 border-b border-nc-border-gray-medium">
+                    <Pane min-size="20" size="50" class="atm-form-right-splitpane-item !overflow-y-auto atm-scrollbar-thin">
+                      <div class="p-4 flex flex-col space-y-4 border-b border-atm-border-gray-medium">
                         <!-- Appearance Settings -->
-                        <div class="text-sm font-bold text-nc-content-gray">{{ $t('labels.appearanceSettings') }}</div>
+                        <div class="text-sm font-bold text-atm-content-gray">{{ $t('labels.appearanceSettings') }}</div>
 
                         <div class="flex flex-col space-y-3">
                           <div :class="isLocked || !isEditable ? 'pointer-events-none' : ''">
-                            <div class="text-nc-content-gray">{{ $t('labels.backgroundColor') }}</div>
+                            <div class="text-atm-content-gray">{{ $t('labels.backgroundColor') }}</div>
                             <div class="flex justify-start">
                               <LazyGeneralColorPicker
                                 :model-value="(formViewData.meta as Record<string,any>).background_color"
@@ -2348,7 +2348,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                                 color-box-border
                                 is-new-design
                                 invert-in-dark-mode
-                                class="nc-form-theme-color-picker !pb-0 !pl-0 -ml-1"
+                                class="atm-form-theme-color-picker !pb-0 !pl-0 -ml-1"
                                 @input="handleChangeBackground"
                               />
                             </div>
@@ -2357,10 +2357,10 @@ const { message: templatedMessage } = useTemplatedMessage(
                           <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_HIDE_BRANDING">
                             <template #default="{ click }">
                               <div class="flex items-center justify-between gap-3">
-                                <!-- Hide NocoDB Branding -->
+                                <!-- Hide Atmosphere Branding -->
 
                                 <span class="flex items-center gap-3">
-                                  {{ isWhiteLabelled ? $t('labels.hideBranding') : $t('labels.hideNocodbBranding') }}
+                                  {{ isWhiteLabelled ? $t('labels.hideBranding') : $t('labels.hideAtmosphereBranding') }}
 
                                   <LazyPaymentUpgradeBadge
                                     v-if="showEEFeatures"
@@ -2378,8 +2378,8 @@ const { message: templatedMessage } = useTemplatedMessage(
                                   v-e="[`a:form-view:hide-branding`]"
                                   :checked="parseProp(formViewData.meta)?.hide_branding"
                                   size="small"
-                                  class="nc-form-hide-branding"
-                                  data-testid="nc-form-hide-branding"
+                                  class="atm-form-hide-branding"
+                                  data-testid="atm-form-hide-branding"
                                   :disabled="isLocked || !isEditable"
                                   @change="(value) => {
                                     if (click(PlanFeatureTypes.FEATURE_HIDE_BRANDING)) return
@@ -2389,14 +2389,14 @@ const { message: templatedMessage } = useTemplatedMessage(
                                   }"
                                 />
 
-                                <NcTooltip v-else placement="topRight">
+                                <AtTooltip v-else placement="topRight">
                                   <template #title>
                                     <div class="text-center">
                                       {{ $t('msg.info.thisFeatureIsOnlyAvailableInEnterpriseEdition') }}
                                     </div>
                                   </template>
                                   <a-switch :checked="false" size="small" :disabled="true" />
-                                </NcTooltip>
+                                </AtTooltip>
                               </div>
                             </template>
                           </PaymentUpgradeBadgeProvider>
@@ -2407,8 +2407,8 @@ const { message: templatedMessage } = useTemplatedMessage(
                               v-e="[`a:form-view:hide-banner`]"
                               :checked="parseProp(formViewData.meta)?.hide_banner"
                               size="small"
-                              class="nc-form-hide-banner"
-                              data-testid="nc-form-hide-banner"
+                              class="atm-form-hide-banner"
+                              data-testid="atm-form-hide-banner"
                               :disabled="isLocked || !isEditable"
                               @change="(value) => {
                                   if (isLocked || !isEditable) return
@@ -2440,8 +2440,8 @@ const { message: templatedMessage } = useTemplatedMessage(
                                     v-e="[`a:form-view:custom-submit-label`]"
                                     :checked="parseProp(formViewData.meta)?.custom_submit_enabled"
                                     size="small"
-                                    class="nc-form-custom-submit-enabled"
-                                    data-testid="nc-form-custom-submit-enabled"
+                                    class="atm-form-custom-submit-enabled"
+                                    data-testid="atm-form-custom-submit-enabled"
                                     :disabled="isLocked || !isEditable"
                                     @change="
                                     (value) => {
@@ -2454,14 +2454,14 @@ const { message: templatedMessage } = useTemplatedMessage(
                                     }
                                   "
                                   />
-                                  <NcTooltip v-else placement="topRight">
+                                  <AtTooltip v-else placement="topRight">
                                     <template #title>
                                       <div class="text-center">
                                         {{ $t('msg.info.thisFeatureIsOnlyAvailableInEnterpriseEdition') }}
                                       </div>
                                     </template>
                                     <a-switch :checked="false" size="small" :disabled="true" />
-                                  </NcTooltip>
+                                  </AtTooltip>
                                 </div>
 
                                 <div
@@ -2472,7 +2472,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                                     :value="parseProp(formViewData.meta)?.submit_button_label || $t('general.submit')"
                                     class="!h-8 !px-3 !py-1 !rounded-lg"
                                     :placeholder="$t('general.submit')"
-                                    data-testid="nc-form-submit-button-label"
+                                    data-testid="atm-form-submit-button-label"
                                     :disabled="isLocked || !isEditable || !isFeatureEnabled"
                                     :maxlength="50"
                                     @update:value="
@@ -2501,7 +2501,7 @@ const { message: templatedMessage } = useTemplatedMessage(
 
                       <div class="p-4 flex flex-col space-y-4">
                         <!-- Post Form Submission Settings -->
-                        <div class="text-sm font-bold text-nc-content-gray">
+                        <div class="text-sm font-bold text-atm-content-gray">
                           {{ $t('msg.info.postFormSubmissionSettings') }}
                         </div>
 
@@ -2530,8 +2530,8 @@ const { message: templatedMessage } = useTemplatedMessage(
                                     v-e="[`a:form-view:redirect-url`]"
                                     :checked="isOpenRedirectUrl"
                                     size="small"
-                                    class="nc-form-checkbox-redirect-url"
-                                    data-testid="nc-form-checkbox-redirect-url"
+                                    class="atm-form-checkbox-redirect-url"
+                                    data-testid="atm-form-checkbox-redirect-url"
                                     :disabled="isLocked || !isEditable"
                                     @change="
                                       (value) => {
@@ -2543,14 +2543,14 @@ const { message: templatedMessage } = useTemplatedMessage(
                                       }
                                     "
                                   />
-                                  <NcTooltip v-else placement="topRight">
+                                  <AtTooltip v-else placement="topRight">
                                     <template #title>
                                       <div class="text-center">
                                         {{ $t('msg.info.thisFeatureIsOnlyAvailableInEnterpriseEdition') }}
                                       </div>
                                     </template>
                                     <a-switch :checked="false" size="small" :disabled="true" />
-                                  </NcTooltip>
+                                  </AtTooltip>
                                 </div>
                               </template>
                             </PaymentUpgradeBadgeProvider>
@@ -2561,14 +2561,14 @@ const { message: templatedMessage } = useTemplatedMessage(
                                   type="text"
                                   class="!h-8 !px-3 !py-1 !rounded-lg"
                                   :placeholder="$t('placeholder.pasteRedirectUrlHere')"
-                                  data-testid="nc-form-redirect-url-input"
+                                  data-testid="atm-form-redirect-url-input"
                                   @input="handleUpdateRedirectUrl"
                                 ></a-input>
                               </a-form-item>
-                              <div class="text-small leading-[18px] text-nc-content-gray-disabled pl-3">
+                              <div class="text-small leading-[18px] text-atm-content-gray-disabled pl-3">
                                 {{ $t('msg.info.useRecordIdInRedirectUrl') }}
                                 <a
-                                  href="https://nocodb.com/docs/product-docs/views/view-types/form#redirect-url"
+                                  href="https://atmosphere.dev/docs/product-docs/views/view-types/form#redirect-url"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   class="!no-underline !hover:underline"
@@ -2586,8 +2586,8 @@ const { message: templatedMessage } = useTemplatedMessage(
                                 v-model:checked="formViewData.submit_another_form"
                                 v-e="[`a:form-view:submit-another-form`]"
                                 size="small"
-                                class="nc-form-checkbox-submit-another-form"
-                                data-testid="nc-form-checkbox-submit-another-form"
+                                class="atm-form-checkbox-submit-another-form"
+                                data-testid="atm-form-checkbox-submit-another-form"
                                 :disabled="isLocked || !isEditable"
                                 @change="updateView"
                               />
@@ -2600,8 +2600,8 @@ const { message: templatedMessage } = useTemplatedMessage(
                                 v-model:checked="formViewData.show_blank_form"
                                 v-e="[`a:form-view:show-blank-form`]"
                                 size="small"
-                                class="nc-form-checkbox-show-blank-form"
-                                data-testid="nc-form-checkbox-show-blank-form"
+                                class="atm-form-checkbox-show-blank-form"
+                                data-testid="atm-form-checkbox-show-blank-form"
                                 :disabled="isLocked || !isEditable"
                                 @change="updateView"
                               />
@@ -2611,19 +2611,19 @@ const { message: templatedMessage } = useTemplatedMessage(
                               <!-- Save draft in browser -->
                               <div class="flex items-center">
                                 {{ $t('msg.info.saveDraftToBrowser') }}
-                                <NcTooltip>
+                                <AtTooltip>
                                   <template #title>
                                     {{ $t('tooltip.saveDraftToBrowser') }}
                                   </template>
-                                  <GeneralIcon icon="info" class="text-nc-content-gray-disabled ml-1" />
-                                </NcTooltip>
+                                  <GeneralIcon icon="info" class="text-atm-content-gray-disabled ml-1" />
+                                </AtTooltip>
                               </div>
                               <a-switch
                                 v-model:checked="formViewData.save_draft_to_browser"
                                 v-e="[`a:form-view:save-draft-to-browser`]"
                                 size="small"
-                                class="nc-form-checkbox-save-draft-to-browser"
-                                data-testid="nc-form-checkbox-save-draft-to-browser"
+                                class="atm-form-checkbox-save-draft-to-browser"
+                                data-testid="atm-form-checkbox-save-draft-to-browser"
                                 :disabled="isLocked || !isEditable"
                                 @change="updateView"
                               />
@@ -2638,7 +2638,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                               :model-value="formViewData.email"
                               :base-id="base?.id"
                               :disabled="isLocked || !isEditable"
-                              class="nc-form-email-responses"
+                              class="atm-form-email-responses"
                               @update:model-value="(val) => (formViewData!.email = val)"
                               @change="updateView"
                             />
@@ -2647,32 +2647,32 @@ const { message: templatedMessage } = useTemplatedMessage(
 
                         <!-- Show this message -->
                         <div v-if="!isOpenRedirectUrl" class="pb-10">
-                          <div class="text-nc-content-gray mb-2 flex items-center">
+                          <div class="text-atm-content-gray mb-2 flex items-center">
                             {{ $t('msg.info.formDisplayMessage') }}
-                            <NcTooltip>
+                            <AtTooltip>
                               <template #title>
                                 {{ $t('tooltip.formDisplayMessageTemplating') }}
                               </template>
-                              <GeneralIcon icon="info" class="text-nc-content-gray-disabled ml-1" />
-                            </NcTooltip>
+                              <GeneralIcon icon="info" class="text-atm-content-gray-disabled ml-1" />
+                            </AtTooltip>
                           </div>
                           <a-form-item class="!my-0">
                             <LazyCellRichText
                               v-if="!isLocked && isEditable"
                               v-model:value="formViewData.success_msg"
-                              class="nc-form-after-submit-msg editable"
+                              class="atm-form-after-submit-msg editable"
                               is-form-field
                               :hidden-bubble-menu-options="hiddenBubbleMenuOptions"
                               hide-mention
-                              data-testid="nc-form-after-submit-msg"
+                              data-testid="atm-form-after-submit-msg"
                               @update:value="updateView" />
                             <LazyCellRichText
                               v-else
                               :value="formViewData.success_msg"
-                              class="nc-form-after-submit-msg"
+                              class="atm-form-after-submit-msg"
                               is-form-field
                               read-only
-                              data-testid="nc-form-after-submit-msg"
+                              data-testid="atm-form-after-submit-msg"
                           /></a-form-item>
                         </div>
                       </div>
@@ -2693,13 +2693,13 @@ const { message: templatedMessage } = useTemplatedMessage(
       v-if="!showBaseAccessRequestOverlay && (user?.base_roles?.viewer || user?.base_roles?.commenter) && !isMobileMode"
       class="absolute inset-0 bg-black/40 z-500 grid place-items-center"
     >
-      <div class="text-center bg-nc-bg-default px-6 py-8 rounded-xl max-w-lg">
-        <div class="text-2xl text-nc-content-gray font-bold">
+      <div class="text-center bg-atm-bg-default px-6 py-8 rounded-xl max-w-lg">
+        <div class="text-2xl text-atm-content-gray font-bold">
           {{ $t('msg.info.yourCurrentRoleIs') }}
           '<span class="capitalize"> {{ Object.keys(user?.base_roles ?? {})?.[0] ?? ProjectRoles.NO_ACCESS }}</span
           >'.
         </div>
-        <div class="text-sm text-nc-content-inverted-secondary pt-6">
+        <div class="text-sm text-atm-content-inverted-secondary pt-6">
           {{ $t('msg.info.pleaseRequestAccessForView', { viewName: 'form view' }) }}
         </div>
       </div>
@@ -2708,33 +2708,33 @@ const { message: templatedMessage } = useTemplatedMessage(
 </template>
 
 <style scoped lang="scss">
-.nc-editable:hover {
-  :deep(.nc-field-remove-icon) {
+.atm-editable:hover {
+  :deep(.atm-field-remove-icon) {
     @apply opacity-100;
   }
 }
 
-.nc-form-input-label {
-  @apply !px-4 !py-2 font-semibold text-nc-content-gray !rounded-lg !text-sm;
+.atm-form-input-label {
+  @apply !px-4 !py-2 font-semibold text-atm-content-gray !rounded-lg !text-sm;
 }
 
 // Field description help text — also styled in the extracted FieldBody/GridField
 // components; this copy covers the CE single-column path's inline help text.
-.nc-form-help-text {
+.atm-form-help-text {
   max-width: 100%;
   white-space: pre-line;
 }
 
-.nc-form-input-enable-scanner-form-item {
+.atm-form-input-enable-scanner-form-item {
   :deep(.ant-form-item-control-input) {
     @apply min-h-max;
   }
 }
-:deep(.nc-form-right-splitpane .splitpanes__splitter) {
-  @apply !border-t-1 !border-nc-border-gray-medium relative w-auto;
+:deep(.atm-form-right-splitpane .splitpanes__splitter) {
+  @apply !border-t-1 !border-atm-border-gray-medium relative w-auto;
 
   &::before {
-    @apply content-[':::'] block h-4 leading-12px px-2 font-bold text-nc-content-gray border-1 border-nc-border-gray-medium rounded bg-nc-bg-default absolute -top-2.5 z-49 !left-[calc(50%_-_16px)] !w-auto;
+    @apply content-[':::'] block h-4 leading-12px px-2 font-bold text-atm-content-gray border-1 border-atm-border-gray-medium rounded bg-atm-bg-default absolute -top-2.5 z-49 !left-[calc(50%_-_16px)] !w-auto;
   }
 
   &:hover::before {
@@ -2742,24 +2742,24 @@ const { message: templatedMessage } = useTemplatedMessage(
   }
 }
 
-:deep(.nc-form-theme-color-picker .color-selector) {
-  @apply !text-nc-content-inverted-primary;
+:deep(.atm-form-theme-color-picker .color-selector) {
+  @apply !text-atm-content-inverted-primary;
 }
 
-.nc-form-field-ghost {
-  @apply bg-nc-bg-gray-extralight;
+.atm-form-field-ghost {
+  @apply bg-atm-bg-gray-extralight;
 }
-:deep(.nc-form-input-required + button):focus-visible {
+:deep(.atm-form-input-required + button):focus-visible {
   @apply shadow-focus;
 }
-:deep(.nc-form-switch-focus):focus-visible {
+:deep(.atm-form-switch-focus):focus-visible {
   @apply shadow-focus;
 }
-.nc-form-field-layout {
+.atm-form-field-layout {
   @apply !flex !items-center w-full space-x-3;
 
   :deep(.ant-radio-wrapper) {
-    @apply border-1 border-nc-border-gray-medium rounded-lg !py-2 !px-3 basis-full !mr-0 !items-center bg-nc-bg-default;
+    @apply border-1 border-atm-border-gray-medium rounded-lg !py-2 !px-3 basis-full !mr-0 !items-center bg-atm-bg-default;
     .ant-radio {
       @apply !top-0;
 
@@ -2773,37 +2773,37 @@ const { message: templatedMessage } = useTemplatedMessage(
 
 <style lang="scss">
 .form-meta-input {
-  .nc-textarea-rich-editor {
-    @apply pl-3 pr-4 !rounded-lg !text-sm border-1 border-nc-border-gray-medium focus-within:border-nc-border-brand;
+  .atm-textarea-rich-editor {
+    @apply pl-3 pr-4 !rounded-lg !text-sm border-1 border-atm-border-gray-medium focus-within:border-atm-border-brand;
 
     &:hover {
-      @apply border-nc-brand-400;
+      @apply border-atm-brand-400;
     }
     &:focus-within {
       @apply shadow-selected;
     }
   }
 
-  &.nc-form-input-label .nc-textarea-rich-editor {
-    @apply pt-2 pb-1 font-semibold text-nc-content-gray;
+  &.atm-form-input-label .atm-textarea-rich-editor {
+    @apply pt-2 pb-1 font-semibold text-atm-content-gray;
   }
-  &.nc-form-input-help-text .nc-textarea-rich-editor {
-    @apply pt-1 text-nc-content-inverted-secondary;
+  &.atm-form-input-help-text .atm-textarea-rich-editor {
+    @apply pt-1 text-atm-content-inverted-secondary;
     .ProseMirror {
       max-height: 7.5rem !important;
     }
   }
 }
-.nc-form-after-submit-msg {
+.atm-form-after-submit-msg {
   .editable {
-    .nc-textarea-rich-editor {
+    .atm-textarea-rich-editor {
       &:hover {
-        @apply border-nc-brand-400;
+        @apply border-atm-brand-400;
       }
     }
   }
-  .nc-textarea-rich-editor {
-    @apply pl-1 pr-2 pt-2 pb-1 !rounded-lg !text-sm border-1 border-nc-border-gray-medium focus-within:border-nc-border-brand;
+  .atm-textarea-rich-editor {
+    @apply pl-1 pr-2 pt-2 pb-1 !rounded-lg !text-sm border-1 border-atm-border-gray-medium focus-within:border-atm-border-brand;
 
     &:focus-within {
       @apply shadow-selected;
@@ -2815,8 +2815,8 @@ const { message: templatedMessage } = useTemplatedMessage(
     }
   }
 }
-.nc-form-description {
-  .nc-form-field-bubble-menu-wrapper {
+.atm-form-description {
+  .atm-form-field-bubble-menu-wrapper {
     @apply -bottom-12;
   }
 }

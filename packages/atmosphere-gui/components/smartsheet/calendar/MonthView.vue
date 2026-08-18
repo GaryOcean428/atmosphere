@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type dayjs from 'dayjs'
-import { CalendarEventTheme, PermissionEntity, PermissionKey, UITypes } from 'nocodb-sdk'
+import { CalendarEventTheme, PermissionEntity, PermissionKey, UITypes } from 'atmosphere-sdk'
 
 const emit = defineEmits(['newRecord', 'expandRecord', 'recordContextMenu'])
 
@@ -1095,7 +1095,7 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
     v-if="calendarRange"
     class="prevent-select relative"
     :class="isExpanded ? 'min-h-full' : 'h-full'"
-    data-testid="nc-calendar-month-view"
+    data-testid="atm-calendar-month-view"
   >
     <div
       class="grid"
@@ -1108,7 +1108,7 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
       <div
         v-for="(day, index) in days"
         :key="index"
-        class="nc-calendar-weekday-label text-center bg-nc-bg-gray-extralight py-1 border-r-1 last:border-r-0 border-nc-border-gray-light font-semibold leading-4 uppercase text-[10px] text-nc-content-gray-muted"
+        class="atm-calendar-weekday-label text-center bg-atm-bg-gray-extralight py-1 border-r-1 last:border-r-0 border-atm-border-gray-light font-semibold leading-4 uppercase text-[10px] text-atm-content-gray-muted"
       >
         {{ day }}
       </div>
@@ -1119,7 +1119,7 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
         :key="week.weekIndex"
         :class="calendarData.gridClass"
         :style="gridTemplateColumns ? { gridTemplateColumns } : undefined"
-        data-testid="nc-calendar-month-week"
+        data-testid="atm-calendar-month-week"
       >
         <template v-for="(day, i) in week.days">
           <div
@@ -1127,13 +1127,13 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
             :key="day.key"
             :class="{
               'selected-date': isDateSelected(day.date) || (focusedDate && day.date.isSame(focusedDate, 'day')),
-              '!text-nc-content-gray-disabled': !day.isInPagedMonth,
-              '!bg-nc-bg-gray-extralight !hover:bg-nc-bg-gray-light !border-nc-border-gray-medium': day.isWeekend,
-              '!border-r-nc-border-gray-medium': week.days[i + 1]?.isWeekend,
+              '!text-atm-content-gray-disabled': !day.isInPagedMonth,
+              '!bg-atm-bg-gray-extralight !hover:bg-atm-bg-gray-light !border-atm-border-gray-medium': day.isWeekend,
+              '!border-r-atm-border-gray-medium': week.days[i + 1]?.isWeekend,
               'border-t-1': week.weekIndex === 0,
             }"
-            class="text-right relative group last:border-r-0 bg-nc-bg-default transition text-sm h-full border-r-1 border-b-1 border-nc-border-gray-light font-medium hover:bg-nc-bg-gray-extralight text-nc-content-gray-default bg-nc-bg-default"
-            data-testid="nc-calendar-month-day"
+            class="text-right relative group last:border-r-0 bg-atm-bg-default transition text-sm h-full border-r-1 border-b-1 border-atm-border-gray-light font-medium hover:bg-atm-bg-gray-extralight text-atm-content-gray-default bg-atm-bg-default"
+            data-testid="atm-calendar-month-day"
             @click="selectDate(day.date)"
             @dblclick="addRecord(day.date)"
           >
@@ -1154,8 +1154,8 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
                 }"
               ></span>
 
-              <NcDropdown v-if="isAddDeleteInlineEnabled && calendarRange.length > 1 && !isSyncedFromColumn" auto-close>
-                <NcButton
+              <AtDropdown v-if="isAddDeleteInlineEnabled && calendarRange.length > 1 && !isSyncedFromColumn" auto-close>
+                <AtButton
                   :class="{
                     '!block': isDateSelected(day.date),
                     '!hidden': !isDateSelected(day.date),
@@ -1165,14 +1165,14 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
                   type="secondary"
                 >
                   <component :is="iconMap.plus" class="h-4 w-4" />
-                </NcButton>
+                </AtButton>
                 <template #overlay>
-                  <NcMenu class="w-64">
-                    <NcMenuItem> {{ $t('labels.selectDateFieldToAdd') }} </NcMenuItem>
-                    <NcMenuItem
+                  <AtMenu class="w-64">
+                    <AtMenuItem> {{ $t('labels.selectDateFieldToAdd') }} </AtMenuItem>
+                    <AtMenuItem
                       v-for="(range, index) in calendarRange"
                       :key="index"
-                      class="text-nc-content-gray-default font-semibold text-sm"
+                      class="text-atm-content-gray-default font-semibold text-sm"
                       @click="addRecordWithRange(range, day.date)"
                     >
                       <div class="flex items-center gap-1">
@@ -1180,10 +1180,10 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
 
                         <span class="ml-1">{{ range.fk_from_col!.title }}</span>
                       </div>
-                    </NcMenuItem>
-                  </NcMenu>
+                    </AtMenuItem>
+                  </AtMenu>
                 </template>
-              </NcDropdown>
+              </AtDropdown>
 
               <PermissionsTooltip
                 v-else-if="
@@ -1194,7 +1194,7 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
                 :permission="PermissionKey.TABLE_RECORD_ADD"
               >
                 <template #default="{ isAllowed }">
-                  <NcButton
+                  <AtButton
                     :class="{
                       '!block': isDateSelected(day.date),
                       '!hidden': !isDateSelected(day.date),
@@ -1206,14 +1206,14 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
                     @click="addRecordWithRange(calendarRange[0], day.date)"
                   >
                     <component :is="iconMap.plus" />
-                  </NcButton>
+                  </AtButton>
                 </template>
               </PermissionsTooltip>
               <span
                 :class="{
-                  'bg-nc-bg-brand text-nc-content-brand !font-bold': day.isToday,
+                  'bg-atm-bg-brand text-atm-content-brand !font-bold': day.isToday,
                 }"
-                class="nc-calendar-day-label px-1.3 py-1 text-[13px] text-sm leading-3 font-medium rounded-lg"
+                class="atm-calendar-day-label px-1.3 py-1 text-[13px] text-sm leading-3 font-medium rounded-lg"
               >
                 {{ day.dayNumber }}
               </span>
@@ -1225,7 +1225,7 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
               {{ day.dayNumber }}
             </div>
 
-            <NcDropdown
+            <AtDropdown
               v-if="
                 recordsToDisplay.count[day.date.format('YYYY-MM-DD')] &&
                 recordsToDisplay.count[day.date.format('YYYY-MM-DD')]?.overflow &&
@@ -1233,9 +1233,9 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
               "
               :trigger="isMobileMode ? [] : ['click']"
             >
-              <NcButton
+              <AtButton
                 v-e="`['c:calendar:month-view-more']`"
-                class="!absolute bottom-1 right-1 text-center min-w-4.5 mx-auto z-3 text-nc-content-gray-muted"
+                class="!absolute bottom-1 right-1 text-center min-w-4.5 mx-auto z-3 text-atm-content-gray-muted"
                 :class="{
                   // Interfaces can render narrow day columns (collapsed weekends in a
                   // small viz) — clamp the badge to its own cell so it can't spill
@@ -1247,10 +1247,10 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
                 @click="viewMore(day.date)"
               >
                 <span class="text-xs px-1"> + {{ recordsToDisplay.count[day.date.format('YYYY-MM-DD')]?.overflowCount }} </span>
-              </NcButton>
+              </AtButton>
 
               <template #overlay>
-                <div class="bg-nc-bg-default px-4 gap-3 flex flex-col py-4 max-h-70 overflow-y-auto">
+                <div class="bg-atm-bg-default px-4 gap-3 flex flex-col py-4 max-h-70 overflow-y-auto">
                   <LazySmartsheetCalendarSideRecordCard
                     v-for="(record, idx) in recordsToDisplay.count[day.date.format('YYYY-MM-DD')]?.overflowRecords"
                     :key="idx"
@@ -1258,7 +1258,7 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
                     class="w-64"
                     :invalid="false"
                     :row="record"
-                    data-testid="nc-sidebar-record-card"
+                    data-testid="atm-sidebar-record-card"
                     @click="emit('expandRecord', record)"
                   >
                     <template v-if="!isRowEmpty(record, displayField)">
@@ -1274,7 +1274,7 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
                       </template>
                     </template>
                     <template v-else>
-                      <span class="text-nc-content-gray-muted"> - </span>
+                      <span class="text-atm-content-gray-muted"> - </span>
                     </template>
                     <template #tooltip>
                       <SmartsheetRecordFieldsTooltip :record="record" :fields="fields" />
@@ -1282,17 +1282,17 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
                   </LazySmartsheetCalendarSideRecordCard>
                 </div>
               </template>
-            </NcDropdown>
+            </AtDropdown>
           </div>
         </template>
       </div>
     </div>
-    <div class="absolute inset-0 z-2 pointer-events-none mt-8 pb-7.5" data-testid="nc-calendar-month-record-container">
+    <div class="absolute inset-0 z-2 pointer-events-none mt-8 pb-7.5" data-testid="atm-calendar-month-record-container">
       <template v-for="record in visibleRecords">
         <div
           v-if="record.rowMeta.style?.display !== 'none'"
           :key="record.rowMeta.id"
-          :data-testid="`nc-calendar-month-record-${record.row[displayField!.title!]}`"
+          :data-testid="`atm-calendar-month-record-${record.row[displayField!.title!]}`"
           :data-unique-id="`${record.rowMeta.id}`"
           :style="{
             ...record.rowMeta.style,
@@ -1325,7 +1325,7 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
               @resize-start="onResizeStart"
             >
               <template v-if="[UITypes.DateTime, UITypes.LastModifiedTime, UITypes.CreatedTime].includes(calDataType)" #time>
-                <span class="text-xs font-medium text-nc-content-gray-disabled">
+                <span class="text-xs font-medium text-atm-content-gray-disabled">
                   {{
                     is12hrTimeColumn(record.rowMeta.range?.fk_from_col)
                       ? timezoneDayjs
@@ -1373,7 +1373,7 @@ const addRecordWithRange = (range: any, date: dayjs.Dayjs) => {
 }
 
 .selected-date {
-  @apply relative !bg-nc-bg-brand;
+  @apply relative !bg-atm-bg-brand;
 
   &:first-of-type::after {
     @apply left-0.5 w-[calc(100%_-_2px)];

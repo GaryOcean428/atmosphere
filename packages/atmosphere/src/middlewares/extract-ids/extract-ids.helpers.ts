@@ -1,6 +1,6 @@
-import { ViewLockType } from 'nocodb-sdk';
+import { ViewLockType } from 'atmosphere-sdk';
 
-export const VIEW_KEY = Symbol.for('nc:view');
+export const VIEW_KEY = Symbol.for('atm:view');
 
 /**
  * Attach the view to the request when it carries a lock_type the ACL

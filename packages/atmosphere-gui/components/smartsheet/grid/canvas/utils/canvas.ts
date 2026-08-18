@@ -1,6 +1,6 @@
 import { LRUCache } from 'lru-cache'
 import JsBarcode from 'jsbarcode'
-import type { ColumnType, UserType } from 'nocodb-sdk'
+import type { ColumnType, UserType } from 'atmosphere-sdk'
 import type { SpriteLoader } from '../loaders/SpriteLoader'
 import { type MarkdownLoader, markdownTextCache } from '../loaders/markdownLoader'
 import type { RenderMultiLineTextProps, RenderSingleLineTextProps, RenderTagProps } from './types'
@@ -299,7 +299,7 @@ export const renderCheckbox = (
   ctx.roundRect(x, y, size, size, radius)
 
   if (isDisabled) {
-    ctx.fillStyle = getColor('#F5F5F5', 'var(--nc-bg-gray-medium)')
+    ctx.fillStyle = getColor('#F5F5F5', 'var(--atm-bg-gray-medium)')
     ctx.fill()
 
     if (isChecked) {
@@ -308,11 +308,11 @@ export const renderCheckbox = (
         size: 12,
         x: x + 2,
         y: y + 2,
-        color: getColor('#B8B8B8', 'var(--nc-bg-gray-extra-dark)'),
+        color: getColor('#B8B8B8', 'var(--atm-bg-gray-extra-dark)'),
       })
     }
 
-    ctx.strokeStyle = strokeColor ?? getColor('#D9D9D9', 'var(--nc-bg-gray-dark)')
+    ctx.strokeStyle = strokeColor ?? getColor('#D9D9D9', 'var(--atm-bg-gray-dark)')
     ctx.lineWidth = 1
     ctx.stroke()
   } else if (isChecked) {
@@ -783,10 +783,10 @@ export const renderMarkdownBlocks = (
         let bgColor
         if (token.mentionData.isSameUser) {
           mentionTextColor = getColor('#17803D', themeV4Colors.green['500']) // Current user text color
-          bgColor = getColor('#D4F7E0', 'var(--nc-bg-brand-inverted)') // Current user background
+          bgColor = getColor('#D4F7E0', 'var(--atm-bg-brand-inverted)') // Current user background
         } else {
           mentionTextColor = getColor(themeV4Colors.brand['500']) // Other user text color
-          bgColor = getColor('#EBF0FF', 'var(--nc-bg-brand-inverted)') // Other user background
+          bgColor = getColor('#EBF0FF', 'var(--atm-bg-brand-inverted)') // Other user background
         }
 
         // Draw rounded rectangle background

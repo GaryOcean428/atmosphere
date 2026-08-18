@@ -68,13 +68,13 @@ watch(
       v-model:visible="isOpen"
       :trigger="['click']"
       :disabled="readonly || isMasterManagedApp"
-      overlay-class-name="nc-base-icon-color-picker-dropdown overflow-hidden max-w-[342px] relative"
+      overlay-class-name="atm-base-icon-color-picker-dropdown overflow-hidden max-w-[342px] relative"
     >
       <div
-        class="flex flex-row justify-center items-center select-none rounded nc-base-icon-picker-trigger"
+        class="flex flex-row justify-center items-center select-none rounded atm-base-icon-picker-trigger"
         :class="{
-          'hover:bg-gray-500 dark:hover:bg-nc-bg-gray-dark hover:bg-opacity-15 cursor-pointer': !readonly && !isMasterManagedApp,
-          'bg-gray-500 dark:bg-nc-bg-gray-dark bg-opacity-15': isOpen,
+          'hover:bg-gray-500 dark:hover:bg-atm-bg-gray-dark hover:bg-opacity-15 cursor-pointer': !readonly && !isMasterManagedApp,
+          'bg-gray-500 dark:bg-atm-bg-gray-dark bg-opacity-15': isOpen,
           'h-5 w-5 text-base': size === 'xsmall',
           'h-6 w-6 text-lg': size === 'small',
           'h-8 w-8 text-xl': size === 'medium',
@@ -83,7 +83,7 @@ watch(
         }"
         @click="onClick"
       >
-        <NcTooltip placement="topLeft" :disabled="readonly || isOpen">
+        <AtTooltip placement="topLeft" :disabled="readonly || isOpen">
           <template #title>
             {{
               isMasterManagedApp ? $t('tooltip.changeIconColorNotSupportedForManagedMasterApp') : $t('tooltip.changeIconColour')
@@ -93,7 +93,7 @@ watch(
           <div class="flex items-center">
             <GeneralProjectIcon :color="colorRef" :icon="icon" :class="iconClass" :managed-app="managedApp" />
           </div>
-        </NcTooltip>
+        </AtTooltip>
       </div>
       <template #overlay>
         <div class="flex justify-start">
@@ -101,7 +101,7 @@ watch(
             :model-value="colorRef"
             :colors="baseIconColors"
             :is-new-design="true"
-            class="nc-base-icon-color-picker"
+            class="atm-base-icon-color-picker"
             @input="updateIconColor"
           />
         </div>
@@ -111,13 +111,13 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-.nc-base-icon-color-picker-dropdown {
+.atm-base-icon-color-picker-dropdown {
   box-shadow: 0px 8px 8px -4px #0000000a, 0px 20px 24px -4px #0000001a;
 }
 </style>
 
 <style lang="scss">
-.nc-base-icon-color-picker-dropdown {
-  @apply rounded-lg border-1 border-nc-border-gray-medium;
+.atm-base-icon-color-picker-dropdown {
+  @apply rounded-lg border-1 border-atm-border-gray-medium;
 }
 </style>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { RoleLabels } from 'nocodb-sdk'
-import { RoleDescriptions } from 'nocodb-sdk'
+import type { RoleLabels } from 'atmosphere-sdk'
+import { RoleDescriptions } from 'atmosphere-sdk'
 import type { SelectValue } from 'ant-design-vue/es/select'
 
 const props = withDefaults(
@@ -45,7 +45,7 @@ async function onChangeRole(val: SelectValue) {
 }
 
 onClickOutside(dropdownRef, (e) => {
-  if ((e.target as HTMLElement)?.closest('.nc-role-selector-dropdown')) {
+  if ((e.target as HTMLElement)?.closest('.atm-role-selector-dropdown')) {
     return
   }
 
@@ -64,7 +64,7 @@ const closeOnClickOption = (optionValue: keyof typeof RoleLabels) => {
   <div
     ref="dropdownRef"
     size="lg"
-    class="nc-roles-selector relative flex items-center gap-3"
+    class="atm-roles-selector relative flex items-center gap-3"
     @click="isDropdownOpen = !isDropdownOpen"
   >
     <RolesBadge
@@ -76,22 +76,22 @@ const closeOnClickOption = (optionValue: keyof typeof RoleLabels) => {
       data-testid="roles"
       class="flex-none"
     />
-    <NcTooltip
+    <AtTooltip
       v-if="showInherit && inheritRef === role"
-      class="uppercase text-[10px] leading-4 text-nc-content-gray-muted"
+      class="uppercase text-[10px] leading-4 text-atm-content-gray-muted"
       placement="bottom"
     >
       <template #title>
         {{ $t('tooltip.roleInheritedFromWorkspace') }}
       </template>
       {{ $t('objects.workspace') }}
-    </NcTooltip>
+    </AtTooltip>
 
     <a-select
       :value="roleRef"
       :open="isDropdownOpen"
       :dropdown-match-select-width="false"
-      dropdown-class-name="!rounded-lg !h-fit max-w-[350px] nc-role-selector-dropdown"
+      dropdown-class-name="!rounded-lg !h-fit max-w-[350px] atm-role-selector-dropdown"
       class="py-1 !absolute top-0 w-20 h-full z-10 text-xs opacity-0"
       :class="{
         'right-0': placement === 'bottomRight',
@@ -106,13 +106,13 @@ const closeOnClickOption = (optionValue: keyof typeof RoleLabels) => {
             'w-full': descriptionRef,
             'w-[200px]': !descriptionRef,
           }"
-          class="flex flex-col nc-role-select-dropdown gap-1"
+          class="flex flex-col atm-role-select-dropdown gap-1"
         >
           <div class="flex items-center justify-between">
             <RolesBadge disabled :border="false" :inherit="inheritRef === rl" :role="rl" />
             <GeneralIcon v-if="!newRole && rl === roleRef" icon="check" class="text-primary" />
           </div>
-          <div v-if="descriptionRef" class="text-nc-content-gray-muted text-xs">{{ RoleDescriptions[rl] }}</div>
+          <div v-if="descriptionRef" class="text-atm-content-gray-muted text-xs">{{ RoleDescriptions[rl] }}</div>
         </div>
       </a-select-option>
       <a-select-option
@@ -128,16 +128,16 @@ const closeOnClickOption = (optionValue: keyof typeof RoleLabels) => {
             'w-full': descriptionRef,
             'w-[200px]': !descriptionRef,
           }"
-          class="h-full flex flex-col justify-center nc-role-select-dropdown gap-1"
+          class="h-full flex flex-col justify-center atm-role-select-dropdown gap-1"
         >
           <div class="flex items-center justify-between">
-            <RolesBadge :border="false" :class="`nc-role-select-${rl}`" :inherit="inheritRef === rl" :role="rl" />
+            <RolesBadge :border="false" :class="`atm-role-select-${rl}`" :inherit="inheritRef === rl" :role="rl" />
 
             <GeneralLoader v-if="rl === newRole" size="medium" />
 
             <GeneralIcon v-else-if="!newRole && rl === roleRef" icon="check" class="text-primary" />
           </div>
-          <div v-if="descriptionRef" class="text-nc-content-gray-muted text-xs">{{ RoleDescriptions[rl] }}</div>
+          <div v-if="descriptionRef" class="text-atm-content-gray-muted text-xs">{{ RoleDescriptions[rl] }}</div>
         </div>
       </a-select-option>
     </a-select>
@@ -148,7 +148,7 @@ const closeOnClickOption = (optionValue: keyof typeof RoleLabels) => {
 .ant-select-item-option-content {
   white-space: normal; /* Change from 'nowrap' to 'normal' */
 }
-.nc-role-selector-dropdown {
+.atm-role-selector-dropdown {
   .rc-virtual-list-holder {
     &::-webkit-scrollbar {
       width: 4px;
@@ -162,10 +162,10 @@ const closeOnClickOption = (optionValue: keyof typeof RoleLabels) => {
     }
     &::-webkit-scrollbar-thumb {
       width: 4px;
-      @apply bg-nc-bg-gray-medium rounded-md;
+      @apply bg-atm-bg-gray-medium rounded-md;
     }
     &::-webkit-scrollbar-thumb:hover {
-      @apply bg-nc-bg-gray-dark;
+      @apply bg-atm-bg-gray-dark;
     }
   }
 }

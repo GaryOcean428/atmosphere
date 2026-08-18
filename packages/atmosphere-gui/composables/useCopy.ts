@@ -36,7 +36,7 @@ export const useCopy = (showDialogIfFailed = false) => {
       Modal.info({
         title: 'Copy failed, please manually copy it from here',
         content: text,
-        class: 'nc-copy-failed-modal',
+        class: 'atm-copy-failed-modal',
         width: '550px',
       })
       return false

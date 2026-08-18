@@ -12,7 +12,7 @@ import {
   isVirtualCol,
   ncHasProperties,
   readonlyMetaAllowedTypes,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { flip, offset, shift, useFloating } from '@floating-ui/vue'
 import axios from 'axios'
 import type { CSSProperties, ComputedRef, Ref } from 'vue'
@@ -1158,7 +1158,7 @@ function extractHoverMetaColRegions(row: Row, group?: CanvasGroup) {
       fontFamily: `600 ${reduceFontSize ? '10px' : '12px'} Inter`,
       textAlign: 'center',
       isTagLabel: true,
-      fillStyle: getColor('var(--nc-brand-accent)'),
+      fillStyle: getColor('var(--atm-brand-accent)'),
     })
 
     regions.push({
@@ -2009,7 +2009,7 @@ async function handleMouseUp(e: MouseEvent, _elementMap: CanvasElement) {
       return
     } else {
       if (upgradeModalInlineState.value.isHoveredLearnMore) {
-        window.open('https://nocodb.com/pricing', '_blank', 'noopener,noreferrer')
+        window.open('https://atmosphere.dev/pricing', '_blank', 'noopener,noreferrer')
         return
       }
 
@@ -3335,7 +3335,7 @@ onClickOutside(
       isExpandedCellInputExist() ||
       isLinkDropdownExist() ||
       isGeneralOverlayActive() ||
-      (element && hasAncestorWithClass(element, ['ant-select-dropdown', 'nc-dropdown', 'nc-colour-picker-modal']))
+      (element && hasAncestorWithClass(element, ['ant-select-dropdown', 'atm-dropdown', 'atm-colour-picker-modal']))
     ) {
       return
     }
@@ -3362,15 +3362,15 @@ onClickOutside(
   },
   {
     ignore: [
-      '.nc-edit-or-add-provider-wrapper',
+      '.atm-edit-or-add-provider-wrapper',
       '.canvas-aggregation',
       '.canvas-header-column-menu',
       '.canvas-header-add-new-row-menu',
       '.canvas-group-context-menu',
-      '.nc-smart-text-panel',
+      '.atm-smart-text-panel',
       // Interface builder: interacting with a field's config pane must not
       // count as an outside-click deselect (it would close the pane mid-edit).
-      '.nc-interface-properties-panel',
+      '.atm-interface-properties-panel',
     ],
   },
 )
@@ -3616,7 +3616,7 @@ watch(
   <div ref="wrapperRef" dir="ltr" class="w-full h-full relative">
     <div
       v-if="isBulkOperationInProgress"
-      class="absolute h-full flex items-center justify-center z-70 w-full inset-0 bg-nc-bg-default/30"
+      class="absolute h-full flex items-center justify-center z-70 w-full inset-0 bg-atm-bg-default/30"
     >
       <a-spin size="large" />
     </div>
@@ -3646,19 +3646,19 @@ watch(
             <div
               v-if="descriptionPopoverState"
               ref="descriptionPopoverRef"
-              class="nc-field-description-popover"
+              class="atm-field-description-popover"
               :style="descriptionFloatingStyles"
               @mouseenter="clearDescriptionHideTimer"
               @mouseleave="scheduleHideDescriptionPopover"
             >
-              <div class="nc-field-description-popover-body" @wheel.stop>{{ descriptionPopoverState.text }}</div>
+              <div class="atm-field-description-popover-body" @wheel.stop>{{ descriptionPopoverState.text }}</div>
             </div>
           </Transition>
         </Teleport>
-        <NcDropdown
+        <AtDropdown
           v-model:visible="isContextMenuOpen"
           :trigger="['contextmenu']"
-          overlay-class-name="nc-dropdown-grid-context-menu"
+          overlay-class-name="atm-dropdown-grid-context-menu"
         >
           <canvas
             ref="canvasRef"
@@ -3710,7 +3710,7 @@ watch(
               @send-record="handleSendRecord"
             />
           </template>
-        </NcDropdown>
+        </AtDropdown>
         <div class="absolute pointer-events-none inset-0">
           <div
             v-if="editEnabled?.row"
@@ -3724,17 +3724,17 @@ watch(
               borderRadius: '2px',
               willChange: 'top, left, width, height',
             }"
-            class="nc-canvas-table-editable-cell-wrapper pointer-events-auto"
+            class="atm-canvas-table-editable-cell-wrapper pointer-events-auto"
             :class="{
               [`row-height-${rowHeightEnum ?? 1}`]: true,
               'on-stick ': isClamped.isStuck,
-              'border-nc-border-brand': isClamped.isStuck && editEnabled.isCellEditable,
+              'border-atm-border-brand': isClamped.isStuck && editEnabled.isCellEditable,
               'border-[#9AA2AF]': isClamped.isStuck && (!editEnabled.isCellEditable || editEnabled.isSyncedColumn),
             }"
           >
             <div
               ref="activeCellElement"
-              class="relative w-[calc(100%-5px)] h-[calc(100%-5px)] rounded-br-[9px] bg-nc-bg-default"
+              class="relative w-[calc(100%-5px)] h-[calc(100%-5px)] rounded-br-[9px] bg-atm-bg-default"
               :class="{
                 'px-[0.550rem]': !noPadding && !editEnabled.fixed,
                 'px-[0.49rem]': editEnabled.fixed,
@@ -3787,7 +3787,7 @@ watch(
     </Scroller>
 
     <template v-if="overlayStyle">
-      <NcDropdown
+      <AtDropdown
         :trigger="['click']"
         :visible="
           isDropdownVisible &&
@@ -3824,32 +3824,32 @@ watch(
           <!-- Interface pages: minimal field menu — the full column menu's
                view-level actions (sort, insert, view-column hide) don't apply
                to a synthetic interface viz -->
-          <NcMenu
+          <AtMenu
             v-else-if="openColumnDropdownField && interfacePageDataApi"
-            class="nc-interface-field-menu w-[184px]"
+            class="atm-interface-field-menu w-[184px]"
             variant="medium"
           >
-            <NcMenuItem
+            <AtMenuItem
               v-if="isUIAllowed('fieldEdit') && !openColumnDropdownField.readonly"
-              data-testid="nc-interface-grid-field-edit"
+              data-testid="atm-interface-grid-field-edit"
               @click="onInterfaceEditField($event)"
             >
               <div v-e="['c:interface:grid:field:edit']" class="text-bodyDefaultSm flex items-center gap-2">
                 <component :is="iconMap.ncEdit" class="opacity-80" />
                 {{ $t('labels.editField') }}
               </div>
-            </NcMenuItem>
-            <NcMenuItem
+            </AtMenuItem>
+            <AtMenuItem
               v-if="!openColumnDropdownField.pv"
-              data-testid="nc-interface-grid-field-hide"
+              data-testid="atm-interface-grid-field-hide"
               @click="onInterfaceHideField"
             >
               <div v-e="['c:interface:grid:field:hide']" class="text-bodyDefaultSm flex items-center gap-2">
                 <component :is="iconMap.eyeSlash" class="!w-4 !h-4 opacity-80" />
                 {{ $t('general.hideField') }}
               </div>
-            </NcMenuItem>
-          </NcMenu>
+            </AtMenuItem>
+          </AtMenu>
           <SmartsheetHeaderColumnMenu
             v-else-if="openColumnDropdownField"
             v-model:is-open="isDropdownVisible"
@@ -3874,7 +3874,7 @@ watch(
             @toggle-expand-all="toggleGroupExpandAll"
           />
 
-          <div v-if="isCreateOrEditColumnDropdownOpen" class="nc-edit-or-add-provider-wrapper">
+          <div v-if="isCreateOrEditColumnDropdownOpen" class="atm-edit-or-add-provider-wrapper">
             <SmartsheetColumnEditOrAddProvider
               :key="editColumn?.id || 'new'"
               ref="columnEditOrAddProviderRef"
@@ -3890,25 +3890,25 @@ watch(
             />
           </div>
         </template>
-      </NcDropdown>
+      </AtDropdown>
     </template>
     <!-- Interface pages create records via the grid's inline "+" row / configured
          form buttons — the floating split button is data-tab chrome -->
     <div v-if="!interfacePageDataApi" class="absolute bottom-12 z-5 left-2" @click.stop>
-      <NcTooltip v-if="meta?.synced" placement="right" :disabled="!meta?.synced">
-        <NcButton class="nc-grid-add-new-row" size="small" disabled type="secondary" :shadow="false">
+      <AtTooltip v-if="meta?.synced" placement="right" :disabled="!meta?.synced">
+        <AtButton class="atm-grid-add-new-row" size="small" disabled type="secondary" :shadow="false">
           <div class="flex items-center gap-2">
             <GeneralIcon icon="plus" />
             {{ $t('activity.newRecord') }}
           </div>
-        </NcButton>
+        </AtButton>
         <template #title>
           <div class="flex flex-col gap-1">
             <div class="text-captionBold">{{ $t('objects.permissions.addNewRecordTooltipTitle') }}</div>
             <div class="text-captionSm">{{ $t('tooltip.cannotCreateRecordInSyncTable') }}</div>
           </div>
         </template>
-      </NcTooltip>
+      </AtTooltip>
       <PermissionsTooltip
         v-else-if="isAddingEmptyRowAllowed && !removeInlineAddRecord"
         :entity="PermissionEntity.TABLE"
@@ -3917,12 +3917,12 @@ watch(
         show-overlay
       >
         <template #default="{ isAllowed }">
-          <NcDropdown :disabled="!isAllowed">
-            <div class="flex shadow-nc-sm rounded-lg">
-              <NcButton
+          <AtDropdown :disabled="!isAllowed">
+            <div class="flex shadow-atm-sm rounded-lg">
+              <AtButton
                 v-if="isMobileMode"
                 v-e="[isAddNewRecordGridMode ? 'c:row:add:grid' : 'c:row:add:form']"
-                class="nc-grid-add-new-row"
+                class="atm-grid-add-new-row"
                 size="small"
                 type="secondary"
                 :shadow="false"
@@ -3932,8 +3932,8 @@ watch(
                   <GeneralIcon icon="plus" />
                   {{ $t('activity.newRecord') }}
                 </div>
-              </NcButton>
-              <NcButton
+              </AtButton>
+              <AtButton
                 v-else
                 v-e="[
                   selectedTemplate
@@ -3942,7 +3942,7 @@ watch(
                     ? 'c:row:add:grid'
                     : 'c:row:add:form',
                 ]"
-                class="nc-grid-add-new-row"
+                class="atm-grid-add-new-row"
                 size="small"
                 :class="{
                   '!rounded-r-none !border-r-0': !isGroupBy,
@@ -3957,7 +3957,7 @@ watch(
                     : onNewRecordToFormClick()
                 "
               >
-                <div data-testid="nc-pagination-add-record" class="flex items-center gap-2">
+                <div data-testid="atm-pagination-add-record" class="flex items-center gap-2">
                   <GeneralIcon icon="plus" />
                   <template v-if="selectedTemplate">
                     {{ selectedTemplate.title }}
@@ -3967,16 +3967,16 @@ watch(
                   </template>
                   <template v-else> {{ $t('activity.newRecord') }} - {{ $t('objects.viewType.form') }}</template>
                 </div>
-              </NcButton>
-              <NcButton
+              </AtButton>
+              <AtButton
                 v-if="!isMobileMode && !isGroupBy"
                 size="small"
-                class="!rounded-l-none nc-add-record-more-info"
+                class="!rounded-l-none atm-add-record-more-info"
                 type="secondary"
                 :shadow="false"
               >
                 <GeneralIcon icon="arrowUp" />
-              </NcButton>
+              </AtButton>
             </div>
 
             <template #overlay>
@@ -3987,7 +3987,7 @@ watch(
                 :on-open-template-manager="onOpenTemplateManager"
               />
             </template>
-          </NcDropdown>
+          </AtDropdown>
         </template>
       </PermissionsTooltip>
     </div>
@@ -4010,62 +4010,62 @@ watch(
 </template>
 
 <style scoped lang="scss">
-.nc-canvas-table-editable-cell-wrapper {
+.atm-canvas-table-editable-cell-wrapper {
   @apply sticky !text-small !leading-[18px] overflow-hidden;
 
   &.on-stick {
-    @apply bg-nc-bg-default border-2 !rounded;
+    @apply bg-atm-bg-default border-2 !rounded;
   }
 
   &.row-height-1 {
-    :deep(.nc-multi-select) {
+    :deep(.atm-multi-select) {
       height: 28px !important;
     }
 
-    :deep(.nc-single-select) {
+    :deep(.atm-single-select) {
       height: 30px !important;
     }
 
-    :deep(.nc-user-select) {
+    :deep(.atm-user-select) {
       margin-top: -2px;
       .ant-select-selector {
         @apply !h-7;
       }
     }
 
-    :deep(.nc-cell-datetime:not(.nc-under-ltar)) {
+    :deep(.atm-cell-datetime:not(.atm-under-ltar)) {
       @apply !py-0.75 !px-1.5;
     }
 
-    :deep(.nc-cell-geodata) {
+    :deep(.atm-cell-geodata) {
       @apply !pt-0.5;
     }
 
-    :deep(.nc-virtual-cell-lookup:has(.nc-cell-attachment)) {
+    :deep(.atm-virtual-cell-lookup:has(.atm-cell-attachment)) {
       @apply !h-full;
     }
   }
 
-  :deep(.nc-virtual-cell-lookup:has(.nc-virtual-cell-linktoanotherrecord)),
-  :deep(.nc-virtual-cell-lookup:has(.nc-virtual-cell-links)) {
+  :deep(.atm-virtual-cell-lookup:has(.atm-virtual-cell-linktoanotherrecord)),
+  :deep(.atm-virtual-cell-lookup:has(.atm-virtual-cell-links)) {
     @apply !overflow-hidden;
   }
 
-  :deep(.nc-cell-longtext) {
+  :deep(.atm-cell-longtext) {
     @apply !px-[2px];
 
-    &:not(.nc-under-ltar) {
-      .nc-text-area-clamped-text {
+    &:not(.atm-under-ltar) {
+      .atm-text-area-clamped-text {
         @apply !px-[7px] !pt-[5px];
       }
 
-      .nc-readonly-rich-text-wrapper {
+      .atm-readonly-rich-text-wrapper {
         @apply !pl-2 pt-0.5;
       }
     }
   }
 
-  :deep(.nc-cell-attachment) {
+  :deep(.atm-cell-attachment) {
     [data-row-height='1'] {
       @apply -mt-[0.5px];
       .empty-add-files {
@@ -4081,69 +4081,69 @@ watch(
       }
     }
 
-    .nc-attachment-image {
+    .atm-attachment-image {
       @apply !hover:cursor-pointer;
     }
   }
 
-  :deep(.nc-cell-multiselect) {
+  :deep(.atm-cell-multiselect) {
     @apply !px-2;
   }
 
-  :deep(.nc-single-select) {
+  :deep(.atm-single-select) {
     @apply !h-auto !px-2;
   }
 
-  :deep(.nc-cell-geodata) {
+  :deep(.atm-cell-geodata) {
     @apply !pt-2 !h-auto;
   }
 
-  :deep(.nc-cell-user) {
+  :deep(.atm-cell-user) {
     @apply !h-auto !mt-0.5;
   }
 
-  :deep(.nc-cell-singlelinetext),
-  :deep(.nc-cell-number),
-  :deep(.nc-cell-url),
-  :deep(.nc-cell-user),
-  :deep(.nc-cell-geometry),
-  :deep(.nc-multi-select),
-  :deep(.nc-cell-decimal),
-  :deep(.nc-cell-currency) {
+  :deep(.atm-cell-singlelinetext),
+  :deep(.atm-cell-number),
+  :deep(.atm-cell-url),
+  :deep(.atm-cell-user),
+  :deep(.atm-cell-geometry),
+  :deep(.atm-multi-select),
+  :deep(.atm-cell-decimal),
+  :deep(.atm-cell-currency) {
     @apply !h-auto;
   }
 
-  :deep(.nc-cell-json) {
+  :deep(.atm-cell-json) {
     @apply !py-1;
   }
 
-  :deep(.nc-cell-datetime:not(.nc-under-ltar)) {
+  :deep(.atm-cell-datetime:not(.atm-under-ltar)) {
     @apply !py-1 !px-2;
   }
 
-  :deep(.nc-cell-date:not(.nc-under-ltar)),
-  :deep(.nc-cell-year:not(.nc-under-ltar)),
-  :deep(.nc-cell-time:not(.nc-under-ltar)) {
+  :deep(.atm-cell-date:not(.atm-under-ltar)),
+  :deep(.atm-cell-year:not(.atm-under-ltar)),
+  :deep(.atm-cell-time:not(.atm-under-ltar)) {
     @apply !h-auto !py-1;
   }
 
-  :deep(.nc-virtual-cell-qrcode),
-  :deep(.nc-virtual-cell-barcode) {
+  :deep(.atm-virtual-cell-qrcode),
+  :deep(.atm-virtual-cell-barcode) {
     @apply !h-full;
   }
 
-  :deep(.nc-virtual-cell.nc-virtual-cell-linktoanotherrecord > div) {
+  :deep(.atm-virtual-cell.atm-virtual-cell-linktoanotherrecord > div) {
     @apply min-h-7;
   }
 
-  .nc-cell,
-  .nc-virtual-cell {
+  .atm-cell,
+  .atm-virtual-cell {
     @apply !text-small !leading-[18px];
 
-    :deep(.nc-cell-field),
+    :deep(.atm-cell-field),
     :deep(input),
     :deep(textarea),
-    :deep(.nc-cell-field-link) {
+    :deep(.atm-cell-field-link) {
       @apply !text-small leading-[18px];
 
       &:not(.ant-select-selection-search-input) {
@@ -4152,33 +4152,33 @@ watch(
     }
   }
 
-  :deep(.nc-cell),
-  :deep(.nc-virtual-cell) {
-    &:not(.nc-cell-date):not(.nc-cell-datetime):not(.nc-cell-year):not(.nc-cell-time) {
+  :deep(.atm-cell),
+  :deep(.atm-virtual-cell) {
+    &:not(.atm-cell-date):not(.atm-cell-datetime):not(.atm-cell-year):not(.atm-cell-time) {
       input {
         @apply min-h-[26px] !important;
       }
     }
   }
 
-  :deep(.nc-cell-datetime.nc-under-ltar) {
+  :deep(.atm-cell-datetime.atm-under-ltar) {
     @apply !py-0 !leading-[16px];
   }
 
-  :deep(.nc-under-ltar .nc-cell-field div) {
+  :deep(.atm-under-ltar .atm-cell-field div) {
     @apply !leading-[16px];
   }
 }
 </style>
 
 <style lang="scss">
-.nc-field-description-popover {
+.atm-field-description-popover {
   @apply bg-gray-800 text-white rounded-lg text-xs shadow-lg dark:!bg-[#3a3f4b];
   max-width: 320px;
   z-index: 1000;
 }
 
-.nc-field-description-popover-body {
+.atm-field-description-popover-body {
   @apply whitespace-pre-wrap break-words px-2.5 py-1.5;
   max-height: 60vh;
   overflow-y: auto;

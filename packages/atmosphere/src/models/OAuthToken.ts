@@ -6,10 +6,10 @@ import {
   MetaTable,
   RootScopes,
 } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
 import { prepareForDb, prepareForResponse } from '~/utils/modelUtils';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { buildRevokeIfActiveUpdate } from '~/models/oauth-token.queries';
 
 export default class OAuthToken {
@@ -40,7 +40,7 @@ export default class OAuthToken {
 
   public static async insert(
     tokenData: Partial<OAuthToken>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let insertData = extractProps(tokenData, [
       'fk_client_id',
@@ -74,7 +74,7 @@ export default class OAuthToken {
 
     return this.getByAccessToken(insertData.access_token, ncMeta).then(
       async (token) => {
-        await NocoCache.appendToList(
+        await AtmosphereCache.appendToList(
           'root',
           CacheScope.OAUTH_TOKEN,
           [],
@@ -85,7 +85,7 @@ export default class OAuthToken {
     );
   }
 
-  static async get(id: string, ncMeta = Noco.ncMeta) {
+  static async get(id: string, ncMeta = Atmosphere.ncMeta) {
     const data = await ncMeta.metaGet(
       RootScopes.ROOT,
       RootScopes.ROOT,
@@ -96,8 +96,8 @@ export default class OAuthToken {
     return data && this.castType(data);
   }
 
-  static async getByAccessToken(accessToken: string, ncMeta = Noco.ncMeta) {
-    let data = await NocoCache.get(
+  static async getByAccessToken(accessToken: string, ncMeta = Atmosphere.ncMeta) {
+    let data = await AtmosphereCache.get(
       'root',
       `${CacheScope.OAUTH_TOKEN}:${accessToken}`,
       CacheGetType.TYPE_OBJECT,
@@ -111,7 +111,7 @@ export default class OAuthToken {
         { access_token: accessToken },
       );
       if (data) {
-        await NocoCache.set(
+        await AtmosphereCache.set(
           'root',
           `${CacheScope.OAUTH_TOKEN}:${accessToken}`,
           data,
@@ -122,7 +122,7 @@ export default class OAuthToken {
     return data && this.castType(data);
   }
 
-  static async getByRefreshToken(refreshToken: string, ncMeta = Noco.ncMeta) {
+  static async getByRefreshToken(refreshToken: string, ncMeta = Atmosphere.ncMeta) {
     const data = await ncMeta.metaGet(
       RootScopes.ROOT,
       RootScopes.ROOT,
@@ -133,7 +133,7 @@ export default class OAuthToken {
     return data && this.castType(data);
   }
 
-  static async listByUser(userId: string, ncMeta = Noco.ncMeta) {
+  static async listByUser(userId: string, ncMeta = Atmosphere.ncMeta) {
     const tokens = await ncMeta.metaList2(
       RootScopes.ROOT,
       RootScopes.ROOT,
@@ -144,7 +144,7 @@ export default class OAuthToken {
     return tokens?.map((t) => this.castType(t));
   }
 
-  static async revoke(id: string, ncMeta = Noco.ncMeta) {
+  static async revoke(id: string, ncMeta = Atmosphere.ncMeta) {
     const token = await this.get(id, ncMeta);
     if (!token) {
       return false;
@@ -163,7 +163,7 @@ export default class OAuthToken {
     );
 
     // Update cache by access token
-    await NocoCache.update(
+    await AtmosphereCache.update(
       'root',
       `${CacheScope.OAUTH_TOKEN}:${token.access_token}`,
       updateData,
@@ -178,7 +178,7 @@ export default class OAuthToken {
    * revoked); false if it was already revoked or does not exist. Used to make
    * refresh-token rotation single-use under concurrency (GHSA-353r).
    */
-  static async revokeIfActive(id: string, ncMeta = Noco.ncMeta) {
+  static async revokeIfActive(id: string, ncMeta = Atmosphere.ncMeta) {
     const token = await this.get(id, ncMeta);
     if (!token) {
       return false;
@@ -195,7 +195,7 @@ export default class OAuthToken {
     }
 
     // Update cache by access token
-    await NocoCache.update(
+    await AtmosphereCache.update(
       'root',
       `${CacheScope.OAUTH_TOKEN}:${token.access_token}`,
       { is_revoked: true },
@@ -204,14 +204,14 @@ export default class OAuthToken {
     return true;
   }
 
-  static async revokeAllByUser(userId: string, ncMeta = Noco.ncMeta) {
+  static async revokeAllByUser(userId: string, ncMeta = Atmosphere.ncMeta) {
     const tokens = await this.listByUser(userId, ncMeta);
     if (tokens?.length) {
       await Promise.all(tokens.map((t) => this.revoke(t.id, ncMeta)));
     }
   }
 
-  static async deleteAllByClient(clientId: string, ncMeta = Noco.ncMeta) {
+  static async deleteAllByClient(clientId: string, ncMeta = Atmosphere.ncMeta) {
     const BATCH_SIZE = 100;
     let deletedCount = 0;
 
@@ -234,7 +234,7 @@ export default class OAuthToken {
 
       // Clear cache for each token in the batch
       for (const token of tokens) {
-        await NocoCache.deepDel(
+        await AtmosphereCache.deepDel(
           'root',
           `${CacheScope.OAUTH_TOKEN}:${token.access_token}`,
           CacheDelDirection.CHILD_TO_PARENT,
@@ -261,7 +261,7 @@ export default class OAuthToken {
     return deletedCount;
   }
 
-  static async updateLastUsed(id: string, ncMeta = Noco.ncMeta) {
+  static async updateLastUsed(id: string, ncMeta = Atmosphere.ncMeta) {
     const token = await this.get(id, ncMeta);
     if (!token) {
       return false;
@@ -280,7 +280,7 @@ export default class OAuthToken {
     );
 
     // Update cache by access token
-    await NocoCache.update(
+    await AtmosphereCache.update(
       'root',
       `${CacheScope.OAUTH_TOKEN}:${token.access_token}`,
       updateData,

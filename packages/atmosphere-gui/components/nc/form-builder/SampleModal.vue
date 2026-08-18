@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { FormBuilderInputType, FormBuilderValidatorType } from '@noco-integrations/core'
+import { FormBuilderInputType, FormBuilderValidatorType } from '@atmosphere-integrations/core'
 const initState = ref({
   someDefaultProp: 'value',
 })
@@ -81,9 +81,9 @@ const { formState, isLoading, submit } = useProvideFormBuilderHelper({
 
 <template>
   <div class="h-full">
-    <NcFormBuilder />
+    <AtFormBuilder />
     <div class="mt-10"></div>
-    <NcButton :loading="isLoading" type="primary" @click="submit">Submit</NcButton>
+    <AtButton :loading="isLoading" type="primary" @click="submit">Submit</AtButton>
   </div>
 </template>
 

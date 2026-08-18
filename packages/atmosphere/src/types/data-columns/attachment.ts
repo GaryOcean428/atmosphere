@@ -1,5 +1,5 @@
 import type { AttachmentFilePathConstructed } from '~/helpers/attachmentHelpers';
-import type { NcContext, NcRequest, PublicAttachmentScope } from 'nocodb-sdk';
+import type { AtContext, AtRequest, PublicAttachmentScope } from 'atmosphere-sdk';
 
 // Attachment data types for v3 API
 export interface DataAttachmentRequestUrl {
@@ -15,9 +15,9 @@ export type DataAttachmentRequest =
   | DataAttachmentRequestId;
 
 export interface AttachmentUrlUploadParam {
-  context: NcContext;
+  context: AtContext;
   scope?: PublicAttachmentScope;
-  req?: Partial<NcRequest>;
+  req?: Partial<AtRequest>;
   modelId: string;
   column: {
     id: string;
@@ -40,12 +40,12 @@ export interface AttachmentUrlUploadParam {
 }
 
 export interface AttachmentBase64UploadParam {
-  context: NcContext;
+  context: AtContext;
   scope?: PublicAttachmentScope;
   modelId: string;
   columnId: string;
   recordId: string;
-  req?: Partial<NcRequest>;
+  req?: Partial<AtRequest>;
   attachment: {
     contentType: string;
     file: string; // base64-encoded-file-content

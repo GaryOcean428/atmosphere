@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { NcButtonProps } from '../nc/Button.vue'
+import type { AtButtonProps } from '../atm/Button.vue'
 
-export interface GeneralCopyButtonProps extends NcButtonProps {
+export interface GeneralCopyButtonProps extends AtButtonProps {
   content?: string | number
   timeout?: number
   showToast?: boolean
@@ -61,12 +61,12 @@ defineExpose({
 </script>
 
 <template>
-  <NcButton v-bind="restButtonProps" :size="size" @click="copyContent()">
+  <AtButton v-bind="restButtonProps" :size="size" @click="copyContent()">
     <div class="flex children:flex-none relative h-4 w-4" :class="iconClass">
       <Transition name="icon-fade" :duration="200">
         <GeneralIcon v-if="isCopied" icon="check" class="h-4 w-4 opacity-80" :class="iconClass" />
         <GeneralIcon v-else icon="copy" class="h-4 w-4 opacity-80" :class="iconClass" />
       </Transition>
     </div>
-  </NcButton>
+  </AtButton>
 </template>

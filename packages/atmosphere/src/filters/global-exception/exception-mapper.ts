@@ -1,17 +1,17 @@
 import { NotFoundException } from '@nestjs/common';
 import {
-  NcApiVersion,
-  NcSDKError,
-  NcSDKErrorV2,
+  AtApiVersion,
+  AtSDKError,
+  AtSDKErrorV2,
   BadRequest as SdkBadRequest,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import {
   AjvError,
   BadRequest,
   extractDBError,
   Forbidden,
-  NcBaseError,
-  NcBaseErrorv2,
+  AtBaseError,
+  AtBaseErrorv2,
   NotFound,
   OptionsNotExistsError,
   TestConnectionError,
@@ -54,15 +54,15 @@ export interface MappedExceptionResponse {
  */
 export function mapExceptionToResponse(
   exception: any,
-  apiVersion?: NcApiVersion,
+  apiVersion?: AtApiVersion,
 ): MappedExceptionResponse {
   // try to extract db error for unknown errors
   const dbError =
-    exception instanceof NcBaseError ? null : extractDBError(exception);
+    exception instanceof AtBaseError ? null : extractDBError(exception);
   if (dbError) {
     const { httpStatus, ...responsePayload } = dbError;
     return {
-      status: apiVersion === NcApiVersion.V3 ? httpStatus : 400,
+      status: apiVersion === AtApiVersion.V3 ? httpStatus : 400,
       body: responsePayload,
     };
   }
@@ -73,7 +73,7 @@ export function mapExceptionToResponse(
 
   if (
     exception instanceof OptionsNotExistsError &&
-    apiVersion === NcApiVersion.V3
+    apiVersion === AtApiVersion.V3
   ) {
     return {
       status: 422,
@@ -92,7 +92,7 @@ export function mapExceptionToResponse(
     exception instanceof UniqueConstraintViolationError
   ) {
     return {
-      status: apiVersion === NcApiVersion.V3 ? 409 : 400,
+      status: apiVersion === AtApiVersion.V3 ? 409 : 400,
       body: {
         error: 'FIELD_UNIQUE_CONSTRAINT_VIOLATION',
         message: exception.message,
@@ -110,7 +110,7 @@ export function mapExceptionToResponse(
   ) {
     // Fallback check in case the class is not properly imported
     return {
-      status: apiVersion === NcApiVersion.V3 ? 409 : 400,
+      status: apiVersion === AtApiVersion.V3 ? 409 : 400,
       body: {
         error: 'FIELD_UNIQUE_CONSTRAINT_VIOLATION',
         message: exception.message,
@@ -126,21 +126,21 @@ export function mapExceptionToResponse(
 
   if (
     exception instanceof Unauthorized ||
-    (exception.getStatus?.() === 401 && !(exception instanceof NcBaseErrorv2))
+    (exception.getStatus?.() === 401 && !(exception instanceof AtBaseErrorv2))
   ) {
     return { status: 401, body: { msg: exception.message } };
   }
 
   if (
     exception instanceof Forbidden ||
-    (exception.getStatus?.() === 403 && !(exception instanceof NcBaseErrorv2))
+    (exception.getStatus?.() === 403 && !(exception instanceof AtBaseErrorv2))
   ) {
     return { status: 403, body: { msg: exception.message } };
   }
 
   if (
     exception instanceof NotFound ||
-    (exception.getStatus?.() === 404 && !(exception instanceof NcBaseErrorv2))
+    (exception.getStatus?.() === 404 && !(exception instanceof AtBaseErrorv2))
   ) {
     return { status: 404, body: { msg: exception.message } };
   }
@@ -155,12 +155,12 @@ export function mapExceptionToResponse(
   if (
     exception instanceof UnprocessableEntity ||
     exception instanceof SdkBadRequest ||
-    exception instanceof NcSDKError
+    exception instanceof AtSDKError
   ) {
     return { status: 422, body: { msg: exception.message } };
   }
 
-  if (exception instanceof NcSDKErrorV2) {
+  if (exception instanceof AtSDKErrorV2) {
     return {
       status: exception.getStatus?.() ?? 422,
       body: {
@@ -177,7 +177,7 @@ export function mapExceptionToResponse(
     };
   }
 
-  if (exception instanceof NcBaseErrorv2) {
+  if (exception instanceof AtBaseErrorv2) {
     return {
       status: exception.code,
       body: {
@@ -196,7 +196,7 @@ export function mapExceptionToResponse(
 
   // Default 500 — sanitized message. Caller decides on Sentry capture and
   // whether to attach dev innerError.
-  const msgProp = apiVersion === NcApiVersion.V3 ? 'message' : 'msg';
+  const msgProp = apiVersion === AtApiVersion.V3 ? 'message' : 'msg';
   return {
     status: 500,
     body: {

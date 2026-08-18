@@ -1,4 +1,4 @@
-import { type FilterType, type TableType, UITypes } from 'nocodb-sdk'
+import { type FilterType, type TableType, UITypes } from 'atmosphere-sdk'
 
 export function useColumnFilteredOrSorted() {
   const { nestedFilters, allFilters, sorts, validFiltersFromUrlParams, meta } = useSmartsheetStoreOrThrow()
@@ -70,10 +70,10 @@ export function useColumnFilteredOrSorted() {
       'cellBorderColor': themeV3Colors.gray['200'],
       'cellBorderColor.hovered': themeV3Colors.gray['200'],
       'cellBorderColor.selected': themeV3Colors.gray['200'],
-      'cellBgClass': '!bg-nc-green-50 column-filtered',
-      'toolbarBgClass': '!bg-nc-bg-green-light !hover:bg-nc-bg-green-dark',
-      'toolbarChipBgClass': 'bg-nc-bg-green-dark group-hover:bg-nc-green-200',
-      'toolbarTextClass': 'text-nc-green-700',
+      'cellBgClass': '!bg-atm-green-50 column-filtered',
+      'toolbarBgClass': '!bg-atm-bg-green-light !hover:bg-atm-bg-green-dark',
+      'toolbarChipBgClass': 'bg-atm-bg-green-dark group-hover:bg-atm-green-200',
+      'toolbarTextClass': 'text-atm-green-700',
       'headerBgColor': '#27D66510',
       'headerBgClass':
         "relative !bg-[var(--color-base-white)] after:(content-[''] absolute block inset-0 !bg-[#27D66510] pointer-events-none)",
@@ -94,10 +94,10 @@ export function useColumnFilteredOrSorted() {
       'cellBorderColor': themeV3Colors.gray['200'],
       'cellBorderColor.hovered': themeV3Colors.gray['200'],
       'cellBorderColor.selected': themeV3Colors.gray['200'],
-      'cellBgClass': '!bg-nc-orange-50 column-sorted !border-b-nc-gray-200',
-      'toolbarBgClass': '!bg-nc-bg-orange-light !hover:bg-nc-bg-orange-dark',
-      'toolbarChipBgClass': 'bg-nc-bg-orange-dark group-hover:bg-nc-orange-200',
-      'toolbarTextClass': 'text-nc-orange-700',
+      'cellBgClass': '!bg-atm-orange-50 column-sorted !border-b-atm-gray-200',
+      'toolbarBgClass': '!bg-atm-bg-orange-light !hover:bg-atm-bg-orange-dark',
+      'toolbarChipBgClass': 'bg-atm-bg-orange-dark group-hover:bg-atm-orange-200',
+      'toolbarTextClass': 'text-atm-orange-700',
       'headerBgColor': '#FA823110',
       'headerBgClass':
         "relative !bg-[var(--color-base-white)] after:(content-[''] absolute block inset-0 !bg-[#FA823110] pointer-events-none)",

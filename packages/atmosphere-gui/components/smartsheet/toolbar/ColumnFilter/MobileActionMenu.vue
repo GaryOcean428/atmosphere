@@ -18,24 +18,24 @@ const isOpen = ref(false)
 </script>
 
 <template>
-  <NcDropdown v-model:visible="isOpen" placement="bottomRight">
-    <NcButton type="text" icon-only size="xsmall">
+  <AtDropdown v-model:visible="isOpen" placement="bottomRight">
+    <AtButton type="text" icon-only size="xsmall">
       <template #icon>
         <GeneralIcon icon="threeDotVertical" />
       </template>
-    </NcButton>
+    </AtButton>
     <template #overlay>
-      <NcMenu variant="small" @click="isOpen = false">
+      <AtMenu variant="small" @click="isOpen = false">
         <template v-for="(item, idx) of items" :key="idx">
-          <NcDivider v-if="item.danger" />
+          <AtDivider v-if="item.danger" />
 
-          <NcMenuItem :danger="item.danger" @click="item.onClick">
+          <AtMenuItem :danger="item.danger" @click="item.onClick">
             <GeneralIcon :icon="item.icon" />
 
             {{ item.title }}
-          </NcMenuItem>
+          </AtMenuItem>
         </template>
-      </NcMenu>
+      </AtMenu>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

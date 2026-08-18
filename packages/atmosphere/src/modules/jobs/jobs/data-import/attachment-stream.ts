@@ -1,9 +1,9 @@
 import type { Readable } from 'stream';
-import type { AttachmentReqType, FileImportType } from 'nocodb-sdk';
-import type IStorageAdapterV2 from '~/types/nc-plugin/lib/IStorageAdapterV2';
+import type { AttachmentReqType, FileImportType } from 'atmosphere-sdk';
+import type IStorageAdapterV2 from '~/types/atm-plugin/lib/IStorageAdapterV2';
 import { resolveAttachmentFilePath } from '~/helpers/attachmentHelpers';
-import { NcError } from '~/helpers/catchError';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import { AtError } from '~/helpers/catchError';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 
 /**
  * Opens a read stream for an uploaded import file.
@@ -17,10 +17,10 @@ export async function openImportAttachmentStream(
   encoding?: string,
 ): Promise<Readable> {
   if (!attachment?.path && !attachment?.url) {
-    NcError.badRequest('Attachment path or url is required');
+    AtError.badRequest('Attachment path or url is required');
   }
 
-  const storage = (await NcPluginMgrv2.storageAdapter()) as IStorageAdapterV2;
+  const storage = (await AtPluginMgrv2.storageAdapter()) as IStorageAdapterV2;
   const filePath = resolveAttachmentFilePath(attachment);
 
   return storage.fileReadByStream(
@@ -34,6 +34,6 @@ export async function deleteImportAttachment(
   attachment: Pick<AttachmentReqType, 'path' | 'url'>,
 ): Promise<void> {
   if (!attachment?.path && !attachment?.url) return;
-  const storage = (await NcPluginMgrv2.storageAdapter()) as IStorageAdapterV2;
+  const storage = (await AtPluginMgrv2.storageAdapter()) as IStorageAdapterV2;
   await storage.fileDelete(resolveAttachmentFilePath(attachment));
 }

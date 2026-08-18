@@ -25,22 +25,22 @@ const themeIcon = computed(
 </script>
 
 <template>
-  <NcTooltip v-if="isThemeEnabled" :placement="placement" :arrow="false">
+  <AtTooltip v-if="isThemeEnabled" :placement="placement" :arrow="false">
     <template #title>
       <div class="capitalize">Appearance: {{ selectedTheme }}</div>
     </template>
     <div
-      v-e="['c:nocodb:theme']"
-      class="nc-mini-sidebar-btn-full-width"
+      v-e="['c:atmosphere:theme']"
+      class="atm-mini-sidebar-btn-full-width"
       :class="[
         buttonClass,
         {
-          'nc-render-as-btn': renderAsBtn,
+          'atm-render-as-btn': renderAsBtn,
         },
       ]"
-      data-testid="nc-sidebar-theme"
+      data-testid="atm-sidebar-theme"
     >
-      <div class="nc-mini-sidebar-btn relative" @click="toggleTheme">
+      <div class="atm-mini-sidebar-btn relative" @click="toggleTheme">
         <GeneralIcon
           :icon="themeIcon"
           :class="{
@@ -50,16 +50,16 @@ const themeIcon = computed(
         />
       </div>
     </div>
-  </NcTooltip>
+  </AtTooltip>
 </template>
 
 <style lang="scss" scoped>
-.nc-mini-sidebar-btn-full-width {
-  &.nc-render-as-btn {
-    @apply text-nc-content-gray-subtle rounded-lg flex-none flex justify-center items-center cursor-pointer hover:bg-nc-bg-gray-medium transition-all duration-200;
+.atm-mini-sidebar-btn-full-width {
+  &.atm-render-as-btn {
+    @apply text-atm-content-gray-subtle rounded-lg flex-none flex justify-center items-center cursor-pointer hover:bg-atm-bg-gray-medium transition-all duration-200;
 
-    .nc-mini-sidebar-btn {
-      @apply !p-1.5 flex items-center justify-center children:flex-none text-nc-content-gray-muted h-full w-full;
+    .atm-mini-sidebar-btn {
+      @apply !p-1.5 flex items-center justify-center children:flex-none text-atm-content-gray-muted h-full w-full;
     }
   }
 }

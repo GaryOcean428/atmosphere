@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-import type { NcButtonProps } from './Button.vue'
-import type { NcModalProps } from './Modal.vue'
+import type { AtButtonProps } from './Button.vue'
+import type { AtModalProps } from './Modal.vue'
 
 /**
- * NcModalConfirm component - A customizable modal confirmation dialog.
+ * AtModalConfirm component - A customizable modal confirmation dialog.
  *
  * @example
  * ```ts
  * const isOpen = ref(true)
  *
- * const { close } = useDialog(NcModalConfirm, {
+ * const { close } = useDialog(AtModalConfirm, {
  *   'visible': isOpen,
  *   'title': 'Confirm Action',
  *   'content': 'Are you sure you want to proceed?',
@@ -31,9 +31,9 @@ import type { NcModalProps } from './Modal.vue'
  */
 
 /**
- * Props interface extending NcModalProps with additional customization options.
+ * Props interface extending AtModalProps with additional customization options.
  */
-export interface NcConfirmModalProps extends NcModalProps {
+export interface AtConfirmModalProps extends AtModalProps {
   /** Type of modal (affects icon and styling) */
   type?: 'error' | 'success' | 'warning' | 'info'
 
@@ -61,7 +61,7 @@ export interface NcConfirmModalProps extends NcModalProps {
   /** Whether to show the OK button */
   showOkBtn?: boolean
 
-  okProps?: Partial<NcButtonProps>
+  okProps?: Partial<AtButtonProps>
 
   /** Text for the Cancel button */
   cancelText?: string
@@ -72,16 +72,16 @@ export interface NcConfirmModalProps extends NcModalProps {
   /** Whether to show the Cancel button */
   showCancelBtn?: boolean
 
-  cancelProps?: Partial<NcButtonProps>
+  cancelProps?: Partial<AtButtonProps>
 
-  /** Extra HTML attributes for the `.nc-modal-confirm` wrapper div */
+  /** Extra HTML attributes for the `.atm-modal-confirm` wrapper div */
   wrapperProps?: Record<string, any>
 
   /** Determines which button gets focus on open */
   focusBtn?: 'ok' | 'cancel' | null
 }
 
-const props = withDefaults(defineProps<NcConfirmModalProps>(), {
+const props = withDefaults(defineProps<AtConfirmModalProps>(), {
   maskClosable: false,
   showSeparator: false,
   size: 'xs',
@@ -192,7 +192,7 @@ useSelectedCellKeydownListener(
         if (
           isActiveInputElementExist() ||
           isActiveButtonOrLinkElementExist() ||
-          !document.activeElement?.closest('.nc-modal-confirm-wrapper')
+          !document.activeElement?.closest('.atm-modal-confirm-wrapper')
         ) {
           return
         }
@@ -223,22 +223,22 @@ useSelectedCellKeydownListener(
 </script>
 
 <template>
-  <NcModal v-bind="restProps" v-model:visible="vModel" title="" wrap-class-name="nc-modal-confirm-wrapper">
-    <div class="nc-modal-confirm flex flex-col gap-5" :class="[`nc-modal-confirm-type-${type}`]" v-bind="wrapperProps">
+  <AtModal v-bind="restProps" v-model:visible="vModel" title="" wrap-class-name="atm-modal-confirm-wrapper">
+    <div class="atm-modal-confirm flex flex-col gap-5" :class="[`atm-modal-confirm-type-${type}`]" v-bind="wrapperProps">
       <div class="flex gap-4">
-        <div v-if="showIcon" class="nc-modal-confirm-icon-wrapper">
+        <div v-if="showIcon" class="atm-modal-confirm-icon-wrapper">
           <slot name="icon">
-            <GeneralIcon :icon="iconName" class="nc-confirm-modal-icon" />
+            <GeneralIcon :icon="iconName" class="atm-confirm-modal-icon" />
           </slot>
         </div>
         <div class="flex-1 flex flex-col gap-2">
           <div class="flex items-start gap-3">
-            <div class="nc-modal-confirm-title" :class="titleClass">
+            <div class="atm-modal-confirm-title" :class="titleClass">
               <slot name="title">{{ title }}</slot>
             </div>
             <slot name="headerAction"></slot>
           </div>
-          <div v-if="content || $slots.content" class="nc-modal-confirm-content" :class="contentClass">
+          <div v-if="content || $slots.content" class="atm-modal-confirm-content" :class="contentClass">
             <slot name="content">{{ content }}</slot>
           </div>
         </div>
@@ -246,83 +246,83 @@ useSelectedCellKeydownListener(
       <slot name="extraContent"></slot>
 
       <div class="flex flex-row w-full justify-end gap-2 empty:hidden">
-        <NcButton
+        <AtButton
           v-if="showCancelBtn"
           ref="cancelBtnRef"
           :type="cancelProps?.type ?? 'secondary'"
           size="small"
-          class="nc-modal-confirm-cancel-btn"
+          class="atm-modal-confirm-cancel-btn"
           :class="cancelClass"
           v-bind="cancelProps"
           :hide-focus="initialFocus"
           @click="onClickCancel"
         >
           {{ cancelText || $t('general.cancel') }}
-        </NcButton>
-        <NcButton
+        </AtButton>
+        <AtButton
           v-if="showOkBtn"
           ref="okBtnRef"
           :type="okProps?.type ?? 'primary'"
           size="small"
-          class="nc-modal-confirm-ok-btn"
+          class="atm-modal-confirm-ok-btn"
           :class="okClass"
           v-bind="okProps"
           :hide-focus="initialFocus"
           @click="emits('ok')"
         >
           {{ okText || $t('general.ok') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss" scoped>
-.nc-modal-confirm {
-  .nc-modal-confirm-icon-wrapper {
+.atm-modal-confirm {
+  .atm-modal-confirm-icon-wrapper {
     @apply flex children:flex-none;
 
-    .nc-confirm-modal-icon {
+    .atm-confirm-modal-icon {
       @apply h-6 w-6;
     }
   }
 
-  .nc-modal-confirm-title {
-    @apply text-base text-nc-content-gray font-weight-700 flex-1;
+  .atm-modal-confirm-title {
+    @apply text-base text-atm-content-gray font-weight-700 flex-1;
   }
 
-  .nc-modal-confirm-content {
-    @apply text-sm text-nc-content-gray-subtle2 font-weight-500 line-clamp-3;
+  .atm-modal-confirm-content {
+    @apply text-sm text-atm-content-gray-subtle2 font-weight-500 line-clamp-3;
   }
 
-  &.nc-modal-confirm-type-success {
-    .nc-modal-confirm-icon-wrapper {
+  &.atm-modal-confirm-type-success {
+    .atm-modal-confirm-icon-wrapper {
       @apply text-green-700;
     }
   }
 
-  &.nc-modal-confirm-type-error {
-    .nc-modal-confirm-icon-wrapper {
+  &.atm-modal-confirm-type-error {
+    .atm-modal-confirm-icon-wrapper {
       @apply text-red-700;
     }
   }
 
-  &.nc-modal-confirm-type-warning {
-    .nc-modal-confirm-icon-wrapper {
+  &.atm-modal-confirm-type-warning {
+    .atm-modal-confirm-icon-wrapper {
       @apply text-orange-500;
     }
   }
 
-  &.nc-modal-confirm-type-info {
-    .nc-modal-confirm-icon-wrapper {
-      @apply text-nc-content-brand;
+  &.atm-modal-confirm-type-info {
+    .atm-modal-confirm-icon-wrapper {
+      @apply text-atm-content-brand;
     }
   }
 }
 </style>
 
 <style lang="scss">
-.nc-modal-confirm-wrapper {
+.atm-modal-confirm-wrapper {
   @apply z-1050;
 }
 </style>

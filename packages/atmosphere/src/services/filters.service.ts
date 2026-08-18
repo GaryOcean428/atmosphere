@@ -5,20 +5,20 @@ import {
   comparisonOpList,
   EventType,
   MetaEventType,
-} from 'nocodb-sdk';
-import type { FilterReqType, FilterType, UITypes, UserType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { FilterReqType, FilterType, UITypes, UserType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import type { ViewWebhookManager } from '~/utils/view-webhook-manager';
 import { MetaService } from '~/meta/meta.service';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { ViewWebhookManagerBuilder } from '~/utils/view-webhook-manager';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { MetaDependencyEventHandler } from '~/services/meta-dependency/event-handler.service';
 import { validatePayload } from '~/helpers';
-import { NcError } from '~/helpers/catchError';
-import NocoSocket from '~/socket/NocoSocket';
+import { AtError } from '~/helpers/catchError';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 import { Column, Filter, Hook, View } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
@@ -32,12 +32,12 @@ export class FiltersService {
   ) {}
 
   async hookFilterCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       filter: FilterReqType;
       hookId: any;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload('swagger.json#/components/schemas/FilterReq', param.filter);
@@ -45,7 +45,7 @@ export class FiltersService {
     const hook = await Hook.get(context, param.hookId);
 
     if (!hook) {
-      NcError.badRequest('Hook not found');
+      AtError.badRequest('Hook not found');
     }
 
     const filter = await Filter.insert(context, {
@@ -62,17 +62,17 @@ export class FiltersService {
     return filter;
   }
 
-  async hookFilterList(context: NcContext, param: { hookId: any }) {
+  async hookFilterList(context: AtContext, param: { hookId: any }) {
     return Filter.rootFilterListByHook(context, { hookId: param.hookId });
   }
 
   async buttonFilterCreate(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       filter: FilterReqType;
       buttonColId: any;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ): Promise<any> {
     // placeholder method — button visibility conditions are an EE-only feature
@@ -80,25 +80,25 @@ export class FiltersService {
     return null;
   }
 
-  async buttonFilterList(context: NcContext, param: { buttonColId: string }) {
+  async buttonFilterList(context: AtContext, param: { buttonColId: string }) {
     return Filter.rootFilterListByButtonColumn(context, {
       buttonColId: param.buttonColId,
     });
   }
 
   async filterDelete(
-    context: NcContext,
-    param: { filterId: string; req: NcRequest },
+    context: AtContext,
+    param: { filterId: string; req: AtRequest },
     ncMeta?: MetaService,
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     const filter = await Filter.get(context, param.filterId);
 
     if (!filter) {
-      NcError.get(context).filterNotFound(param.filterId);
+      AtError.get(context).filterNotFound(param.filterId);
     }
 
     const parentData = await filter.extractRelatedParentMetas(context);
@@ -149,7 +149,7 @@ export class FiltersService {
       });
     }
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -170,12 +170,12 @@ export class FiltersService {
   }
 
   async filterCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       filter: FilterReqType;
       viewId: string;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload('swagger.json#/components/schemas/FilterReq', param.filter);
@@ -185,7 +185,7 @@ export class FiltersService {
         colId: param.filter.fk_column_id,
       });
       if (column?.colOptions?.error) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           `Cannot use column '${column.title}' in filter: ${column.colOptions.error}`,
         );
       }
@@ -218,7 +218,7 @@ export class FiltersService {
       newEntity: filter,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -239,12 +239,12 @@ export class FiltersService {
   }
 
   async filterUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       filter: FilterReqType;
       filterId: string;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
     ncMeta?: MetaService,
   ) {
@@ -257,7 +257,7 @@ export class FiltersService {
         ncMeta,
       );
       if (column?.colOptions?.error) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           `Cannot use column '${column.title}' in filter: ${column.colOptions.error}`,
         );
       }
@@ -266,7 +266,7 @@ export class FiltersService {
     const filter = await Filter.get(context, param.filterId, ncMeta);
 
     if (!filter) {
-      NcError.get(context).filterNotFound(param.filterId);
+      AtError.get(context).filterNotFound(param.filterId);
     }
 
     let viewWebhookManager: ViewWebhookManager;
@@ -330,7 +330,7 @@ export class FiltersService {
       );
     }
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -352,13 +352,13 @@ export class FiltersService {
 
   @TraceCommand(OperationName.filterBulkLogicalOpUpdate)
   async filterBulkLogicalOpUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       filters: Array<{
         filterId: string;
         logical_op: 'and' | 'or' | 'not';
       }>;
-      req: NcRequest;
+      req: AtRequest;
     },
     ncMeta?: MetaService,
   ) {
@@ -368,25 +368,25 @@ export class FiltersService {
       [];
     for (const { filterId, logical_op } of param.filters) {
       const before = await Filter.get(context, filterId, ncMeta);
-      if (!before) NcError.get(context).badRequest('Filter not found');
+      if (!before) AtError.get(context).badRequest('Filter not found');
       loaded.push({ before, logical_op });
     }
 
     const firstViewId = loaded[0].before.fk_view_id;
     if (!firstViewId) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Bulk logical_op update only supports view-scoped filters',
       );
     }
     const firstParentId = loaded[0].before.fk_parent_id ?? null;
     for (const { before } of loaded) {
       if (before.fk_view_id !== firstViewId) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'All filters must belong to the same view',
         );
       }
       if ((before.fk_parent_id ?? null) !== firstParentId) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'All filters must share the same parent (be siblings)',
         );
       }
@@ -440,7 +440,7 @@ export class FiltersService {
         ncMeta,
       );
 
-      NocoSocket.broadcastEvent(
+      AtmosphereSocket.broadcastEvent(
         context,
         {
           event: EventType.META_EVENT,
@@ -465,8 +465,8 @@ export class FiltersService {
   }
 
   async filterChildrenList(
-    context: NcContext,
-    param: { filterId: string; req?: NcRequest },
+    context: AtContext,
+    param: { filterId: string; req?: AtRequest },
   ) {
     return Filter.parentFilterList(context, {
       parentId: param.filterId,
@@ -474,15 +474,15 @@ export class FiltersService {
   }
 
   async filterGet(
-    context: NcContext,
-    param: { filterId: string; req?: NcRequest },
+    context: AtContext,
+    param: { filterId: string; req?: AtRequest },
   ) {
     const filter = await Filter.get(context, param.filterId);
     return filter;
   }
 
   async filterList(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string; includeAllFilters?: boolean },
   ) {
     const filter = await (param.includeAllFilters
@@ -493,12 +493,12 @@ export class FiltersService {
   }
 
   async linkFilterCreate(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       filter: any;
       columnId: string;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ): Promise<any> {
     // placeholder method
@@ -510,14 +510,14 @@ export class FiltersService {
    * Works for all filter types: hook, link, grid, etc.
    */
   async transformFiltersForColumnTypeChange(
-    context: NcContext,
+    context: AtContext,
     params: {
       columnId: string;
       newColumnType: UITypes;
       oldColumnType: UITypes;
       sqlUi: any;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     const { columnId, newColumnType, oldColumnType, sqlUi } = params;
 
@@ -546,14 +546,14 @@ export class FiltersService {
    * Get all filters that reference a specific column from all filter tables
    */
   private async getAllFiltersForColumn(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<FilterType[]> {
     const filters: FilterType[] = [];
 
     try {
-      // Query nc_filter table directly for all filters referencing this column
+      // Query atm_filter table directly for all filters referencing this column
       const filterResults = await ncMeta.metaList2(
         context.workspace_id,
         context.base_id,
@@ -605,9 +605,9 @@ export class FiltersService {
    * Delete a filter directly from the database
    */
   private async deleteFilter(
-    context: NcContext,
+    context: AtContext,
     filterId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     await Filter.delete(context, filterId, ncMeta);
   }

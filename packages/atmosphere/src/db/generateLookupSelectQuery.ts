@@ -2,15 +2,15 @@ import {
   isBtLikeV2Junction,
   isMMOrMMLike,
   isSupportedDisplayValueColumn,
-  NC_ERROR_SENTINEL,
+  ATMOSPHERE_ERROR_SENTINEL,
   RelationTypes,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Knex } from 'knex';
-import type { ClientType } from 'nocodb-sdk';
+import type { ClientType } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { QueryWithCte } from '~/helpers/dbHelpers';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type {
   BarcodeColumn,
   Column,
@@ -28,7 +28,7 @@ import {
   applyNestedLookupLevelLimit,
   loadLookupSortAndLimit,
 } from '~/db/lookupSortLimit';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { getAliasedSoftDeleteFilter, getAs } from '~/helpers/dbHelpers';
 import { Model, View } from '~/models';
 import { getAliasGenerator } from '~/utils';
@@ -37,7 +37,7 @@ import { DBQueryClient } from '~/dbQueryClient';
 const LOOKUP_VAL_SEPARATOR = '___';
 
 export async function getDisplayValueOfRefTable(
-  context: NcContext,
+  context: AtContext,
   relationCol: Column<LinkToAnotherRecordColumn | LinksColumn>,
 ) {
   // Use the column's own base_id for getColOptions since the relation metadata
@@ -78,7 +78,7 @@ export async function getDisplayValueOfRefTable(
  * Falls back to the display value when ltarSubField is absent or not 'id'.
  */
 export async function getRefTableColumnForFilter(
-  context: NcContext,
+  context: AtContext,
   relationCol: Column<LinkToAnotherRecordColumn | LinksColumn>,
   ltarSubField?: string,
 ) {
@@ -168,7 +168,7 @@ export default async function generateLookupSelectQuery({
       lookupColOpt = await column.getColOptions<LookupColumn>(context);
       if (lookupColOpt?.error) {
         return {
-          builder: NC_ERROR_SENTINEL,
+          builder: ATMOSPHERE_ERROR_SENTINEL,
           applyCte: () => {},
         };
       }
@@ -176,11 +176,11 @@ export default async function generateLookupSelectQuery({
       column.uidt !== UITypes.LinkToAnotherRecord &&
       column.uidt !== UITypes.Links
     ) {
-      NcError.get(context).badRequest('Invalid field type');
+      AtError.get(context).badRequest('Invalid field type');
     }
 
     await column.getColOptions<LookupColumn>(context);
-    let refContext: NcContext;
+    let refContext: AtContext;
     {
       const relationCol = lookupColOpt
         ? await lookupColOpt.getRelationColumn(context)
@@ -188,7 +188,7 @@ export default async function generateLookupSelectQuery({
 
       if (!relationCol) {
         return {
-          builder: NC_ERROR_SENTINEL,
+          builder: ATMOSPHERE_ERROR_SENTINEL,
           applyCte: () => {},
         };
       }
@@ -389,7 +389,7 @@ export default async function generateLookupSelectQuery({
 
     if (!lookupColumn) {
       return {
-        builder: NC_ERROR_SENTINEL,
+        builder: ATMOSPHERE_ERROR_SENTINEL,
         applyCte: () => {},
       };
     }
@@ -406,7 +406,7 @@ export default async function generateLookupSelectQuery({
       lookupColumn = colOpt ? await colOpt.getValueColumn(refContext) : null;
       if (!lookupColumn) {
         return {
-          builder: NC_ERROR_SENTINEL,
+          builder: ATMOSPHERE_ERROR_SENTINEL,
           applyCte: () => {},
         };
       }
@@ -453,7 +453,7 @@ export default async function generateLookupSelectQuery({
           );
           if (nestedLookupColOpt?.error) {
             return {
-              builder: NC_ERROR_SENTINEL,
+              builder: ATMOSPHERE_ERROR_SENTINEL,
               applyCte: () => {},
             };
           }
@@ -464,7 +464,7 @@ export default async function generateLookupSelectQuery({
 
         if (!relationCol) {
           return {
-            builder: NC_ERROR_SENTINEL,
+            builder: ATMOSPHERE_ERROR_SENTINEL,
             applyCte: () => {},
           };
         }
@@ -675,7 +675,7 @@ export default async function generateLookupSelectQuery({
 
         if (!lookupColumn) {
           return {
-            builder: NC_ERROR_SENTINEL,
+            builder: ATMOSPHERE_ERROR_SENTINEL,
             applyCte: () => {},
           };
         }
@@ -744,7 +744,7 @@ export default async function generateLookupSelectQuery({
             break;
           case UITypes.Attachment:
             if (!isAggregation) {
-              NcError.get(context).badRequest(
+              AtError.get(context).badRequest(
                 'Group by using attachment column is not supported',
               );
               break;
@@ -912,7 +912,7 @@ export default async function generateLookupSelectQuery({
         };
       }
 
-      NcError.get(context).notImplemented(
+      AtError.get(context).notImplemented(
         'This operation on Lookup/LTAR for this database',
       );
     }

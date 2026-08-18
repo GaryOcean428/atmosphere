@@ -1,9 +1,9 @@
 import type { Source } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import { Hook } from '~/models';
 
 export async function generateBaseIdMap(
-  context: NcContext,
+  context: AtContext,
   source: Source,
   idMap: Map<string, string>,
 ) {

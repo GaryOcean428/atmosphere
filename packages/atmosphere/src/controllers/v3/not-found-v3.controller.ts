@@ -1,5 +1,5 @@
 import { All, Controller, HttpCode, Req } from '@nestjs/common';
-import { NcRequest } from 'nocodb-sdk';
+import { AtRequest } from 'atmosphere-sdk';
 
 const NOT_FOUND_PATH_PREFIX = '/api/v3/*';
 
@@ -7,7 +7,7 @@ const NOT_FOUND_PATH_PREFIX = '/api/v3/*';
 export class NotFoundV3Controller {
   @All(NOT_FOUND_PATH_PREFIX)
   @HttpCode(404)
-  async notFoundV3(@Req() req: NcRequest) {
+  async notFoundV3(@Req() req: AtRequest) {
     return {
       error: 'NOT_FOUND',
       message: `Cannot ${req.method} ${req.path}`,

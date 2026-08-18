@@ -4,11 +4,11 @@ import type CustomKnex from '~/db/CustomKnex';
 import type { MetaService } from '~/meta/meta.service';
 import { Model, Source } from '~/models';
 import { MetaTable } from '~/utils/globals';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import SimpleLRUCache from '~/utils/cache';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
-const PARALLEL_LIMIT = +process.env.NC_ORDER_MIGRATION_PARALLEL_LIMIT || 10;
+const PARALLEL_LIMIT = +process.env.ATMOSPHERE_ORDER_MIGRATION_PARALLEL_LIMIT || 10;
 
 const renameTableSql = {
   mariadb: 'RENAME TABLE ?? TO ??',
@@ -54,7 +54,7 @@ export class RecoverDisconnectedTableNames {
   constructor() {}
 
   log = (...msgs: string[]) => {
-    console.log('[nc_job_008_recover_disconnected_table_name]: ', ...msgs);
+    console.log('[atm_job_008_recover_disconnected_table_name]: ', ...msgs);
   };
 
   logExecutionTime(message: string, hrTime) {
@@ -89,7 +89,7 @@ export class RecoverDisconnectedTableNames {
   }
 
   async job() {
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
 
     try {
       this.cache.clear();
@@ -171,7 +171,7 @@ export class RecoverDisconnectedTableNames {
         return;
       }
 
-      const dbDriver: CustomKnex = await NcConnectionMgrv2.get(source);
+      const dbDriver: CustomKnex = await AtConnectionMgrv2.get(source);
       const model = await Model.get(context, modelData.id);
       const baseModel = await Model.getBaseModelSQL(context, {
         model,

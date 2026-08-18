@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { NotificationType } from 'nocodb-sdk'
+import type { NotificationType } from 'atmosphere-sdk'
 import axios, { type CancelTokenSource } from 'axios'
 
 const CancelToken = axios.CancelToken

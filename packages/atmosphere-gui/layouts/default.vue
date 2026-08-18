@@ -7,7 +7,7 @@ const { te, t } = useI18n()
 
 const { productName } = useBranding()
 
-const { hasSidebar } = useSidebar('nc-left-sidebar')
+const { hasSidebar } = useSidebar('atm-left-sidebar')
 
 const refreshSidebar = ref(false)
 
@@ -27,7 +27,7 @@ watch(hasSidebar, (val) => {
 })
 
 onMounted(() => {
-  until(() => document.querySelector('#nc-sidebar-left'))
+  until(() => document.querySelector('#atm-sidebar-left'))
     .toBeTruthy()
     .then(() => {
       sidebarReady.value = true
@@ -43,7 +43,7 @@ export default {
 
 <template>
   <div class="w-full h-full">
-    <Teleport v-if="sidebarReady" :to="hasSidebar ? '#nc-sidebar-left' : null" :disabled="!hasSidebar">
+    <Teleport v-if="sidebarReady" :to="hasSidebar ? '#atm-sidebar-left' : null" :disabled="!hasSidebar">
       <slot v-if="!refreshSidebar" name="sidebar" />
     </Teleport>
 

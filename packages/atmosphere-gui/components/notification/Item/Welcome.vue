@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WelcomeEventType } from 'nocodb-sdk'
+import type { WelcomeEventType } from 'atmosphere-sdk'
 
 const props = defineProps<{
   item: WelcomeEventType
@@ -10,6 +10,6 @@ const item = toRef(props, 'item')
 
 <template>
   <NotificationItemWrapper :item="item">
-    <div>Welcome to <span class="font-semibold">NocoDB!</span> We’re excited to have you onboard.</div>
+    <div>Welcome to <span class="font-semibold">Atmosphere!</span> We’re excited to have you onboard.</div>
   </NotificationItemWrapper>
 </template>

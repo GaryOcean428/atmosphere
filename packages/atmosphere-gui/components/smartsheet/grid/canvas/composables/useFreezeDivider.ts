@@ -1,5 +1,5 @@
-import type { GridType, ViewType } from 'nocodb-sdk'
-import { ViewTypes } from 'nocodb-sdk'
+import type { GridType, ViewType } from 'atmosphere-sdk'
+import { ViewTypes } from 'atmosphere-sdk'
 import { parseCellWidth } from '../utils/cell'
 import { AGGREGATION_HEIGHT, FROZEN_AREA_MAX_WIDTH_RATIO } from '../utils/constants'
 

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { type NcContext } from 'nocodb-sdk';
+import { type AtContext } from 'atmosphere-sdk';
 import { customAlphabet } from 'nanoid';
 import type { IColumnDataBackupHandler } from './column-data-backup-handler.types';
 import type {
@@ -9,7 +9,7 @@ import type {
 import type { Column } from '~/models';
 import { Model } from '~/models';
 import { getBaseModelSqlFromModelId } from '~/helpers/dbHelpers';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { MssqlColumnDataBackup } from '~/services/column-data-backup-handler/mssql-column-data-backup';
 import { MysqlColumnDataBackup } from '~/services/column-data-backup-handler/mysql-column-data-backup';
 import { OracleColumnDataBackup } from '~/services/column-data-backup-handler/oracle-column-data-backup';
@@ -80,7 +80,7 @@ export class ColumnDataBackupHandler implements IColumnDataBackupHandler {
   }
 
   private async resolveDriver(
-    context: NcContext,
+    context: AtContext,
     column: Column<any>,
   ): Promise<{
     driver: ColumnDataBackupDriver;
@@ -96,7 +96,7 @@ export class ColumnDataBackupHandler implements IColumnDataBackupHandler {
       this.logger.error(
         `${clientType} database is not supported for column data backup`,
       );
-      NcError.get(context).notImplemented(
+      AtError.get(context).notImplemented(
         `${clientType} database is not supported for column data backup`,
       );
     }
@@ -104,7 +104,7 @@ export class ColumnDataBackupHandler implements IColumnDataBackupHandler {
   }
 
   async backup(
-    context: NcContext,
+    context: AtContext,
     param: {
       sourceColumn: Column<any>;
       backupUid: string;
@@ -128,7 +128,7 @@ export class ColumnDataBackupHandler implements IColumnDataBackupHandler {
   }
 
   async restore(
-    context: NcContext,
+    context: AtContext,
     param: {
       destinationColumn: Column<any>;
       backupRef: ColumnBackupRef;
@@ -146,7 +146,7 @@ export class ColumnDataBackupHandler implements IColumnDataBackupHandler {
   }
 
   async drop(
-    context: NcContext,
+    context: AtContext,
     param: { backupRef: ColumnBackupRef },
   ): Promise<void> {
     const model = await Model.get(context, param.backupRef.fkModelId).catch(

@@ -1,6 +1,6 @@
 import { CheckboxGeneralHandler } from './checkbox.general.handler';
 import type { Logger } from '@nestjs/common';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
 import type { MetaService } from 'src/meta/meta.service';
 import type { Column } from 'src/models';
@@ -12,7 +12,7 @@ export class CheckboxSqliteHandler extends CheckboxGeneralHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       logger?: Logger;
     };

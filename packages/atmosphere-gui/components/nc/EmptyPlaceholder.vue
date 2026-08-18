@@ -29,11 +29,11 @@ defineProps<Props>()
   @apply flex flex-col items-center justify-center mx-auto max-w-[420px] text-center gap-3;
 
   .placeholder-title {
-    @apply text-nc-content-gray;
+    @apply text-atm-content-gray;
   }
 
   .placeholder-subtitle {
-    @apply text-nc-content-gray-subtle2;
+    @apply text-atm-content-gray-subtle2;
   }
 }
 </style>

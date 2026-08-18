@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getSeparatorChars, resolveColumnSeparator } from 'nocodb-sdk'
+import { getSeparatorChars, resolveColumnSeparator } from 'atmosphere-sdk'
 
 interface Props {
   // when we set a number, then it is number type

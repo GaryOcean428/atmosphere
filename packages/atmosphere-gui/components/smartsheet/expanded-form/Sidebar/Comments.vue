@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import tippy from 'tippy.js'
-import { ProjectRoles, UITypes, WorkspaceRolesToProjectRoles, getAttachmentAnnotationKey } from 'nocodb-sdk'
-import type { ColumnType, CommentImageAnnotation, CommentType, WorkspaceUserRoles } from 'nocodb-sdk'
+import { ProjectRoles, UITypes, WorkspaceRolesToProjectRoles, getAttachmentAnnotationKey } from 'atmosphere-sdk'
+import type { ColumnType, CommentImageAnnotation, CommentType, WorkspaceUserRoles } from 'atmosphere-sdk'
 
 /**
  * Copy URL builds a base-data deep link — hosts whose consumers have no data
@@ -505,12 +505,12 @@ const tooltipInstances: any[] = []
 function loadCommentEditedTooltip() {
   resetTooltipInstances()
 
-  document.querySelectorAll('.nc-rich-link-tooltip').forEach((el) => {
+  document.querySelectorAll('.atm-rich-link-tooltip').forEach((el) => {
     const tooltip = Object.values(el.attributes).find((attr) => attr.name === 'data-tooltip')
     if (!tooltip) return
 
     const content = document.createElement('span')
-    content.className = 'tooltip nc-rich-link-tooltip-popup'
+    content.className = 'tooltip atm-rich-link-tooltip-popup'
     content.textContent = tooltip.value
 
     const instance = tippy(el, {
@@ -576,15 +576,15 @@ onBeforeUnmount(() => {
       <GeneralLoader size="xlarge" />
     </div>
     <div v-else class="flex flex-col h-full">
-      <div v-if="comments.length === 0" class="flex flex-col my-1 text-center justify-center h-full nc-scrollbar-thin">
-        <div class="text-center text-3xl text-nc-content-gray-subtle opacity-40">
+      <div v-if="comments.length === 0" class="flex flex-col my-1 text-center justify-center h-full atm-scrollbar-thin">
+        <div class="text-center text-3xl text-atm-content-gray-subtle opacity-40">
           <GeneralIcon icon="commentHere" />
         </div>
         <div class="text-center my-4 px-6">
-          <div class="font-medium text-nc-content-gray-muted">
-            {{ hasEditPermission ? $t('activity.startCommenting') : $t('activity.noCommentsYet') }}
+          <div class="font-medium text-atm-content-gray-muted">
+            {{ hasEditPermission ? $t('activity.startCommenting') : $t('activity.atmospheremmentsYet') }}
           </div>
-          <div v-if="hasEditPermission" class="text-xs text-nc-content-gray-subtle2 mt-2">
+          <div v-if="hasEditPermission" class="text-xs text-atm-content-gray-subtle2 mt-2">
             {{ $t('activity.startCommentingDescription') }}
           </div>
         </div>
@@ -592,17 +592,17 @@ onBeforeUnmount(() => {
       <!-- Comments exist but the active filter matches none -->
       <div
         v-else-if="visibleComments.length === 0"
-        class="flex flex-col my-1 text-center justify-center h-full nc-scrollbar-thin"
-        data-testid="nc-comments-no-filter-match"
+        class="flex flex-col my-1 text-center justify-center h-full atm-scrollbar-thin"
+        data-testid="atm-comments-no-filter-match"
       >
-        <div class="text-center text-3xl text-nc-content-gray-subtle opacity-40">
+        <div class="text-center text-3xl text-atm-content-gray-subtle opacity-40">
           <GeneralIcon icon="commentHere" />
         </div>
-        <div class="text-center my-4 px-6 font-medium text-nc-content-gray-muted">
-          {{ $t('labels.noCommentsMatchFilter') }}
+        <div class="text-center my-4 px-6 font-medium text-atm-content-gray-muted">
+          {{ $t('labels.atmospheremmentsMatchFilter') }}
         </div>
       </div>
-      <div v-else ref="commentsWrapperEl" class="flex flex-col h-full py-1 nc-scrollbar-thin">
+      <div v-else ref="commentsWrapperEl" class="flex flex-col h-full py-1 atm-scrollbar-thin">
         <div
           v-for="(commentItem, index) of visibleComments"
           :key="commentItem.id"
@@ -612,16 +612,16 @@ onBeforeUnmount(() => {
             },
             commentItem.id,
           ]"
-          class="nc-comment-item"
+          class="atm-comment-item"
           @mouseover="handleResetHoverEffect"
           @mouseenter="imageAnnotations?.setHovered(commentItem.id!)"
           @mouseleave="imageAnnotations?.setHovered(null)"
         >
           <div
             :class="{
-              'hover:bg-nc-bg-gray-light': editCommentValue?.id !== commentItem!.id,
-              'nc-hovered-comment bg-nc-bg-gray-light': hoveredCommentId === commentItem!.id,
-              'bg-nc-bg-gray-light':
+              'hover:bg-atm-bg-gray-light': editCommentValue?.id !== commentItem!.id,
+              'atm-hovered-comment bg-atm-bg-gray-light': hoveredCommentId === commentItem!.id,
+              'bg-atm-bg-gray-light':
                 imageAnnotations &&
                 (imageAnnotations.activeAnnotationId.value === commentItem.id ||
                   imageAnnotations.hoveredAnnotationId.value === commentItem.id),
@@ -650,16 +650,16 @@ onBeforeUnmount(() => {
                   size="medium"
                 />
                 <div class="flex h-[28px] items-center gap-3 w-[calc(100%_-_40px)]">
-                  <NcDropdown placement="topLeft" :trigger="['hover']" class="flex-none max-w-[calc(100%_-_72px)]">
-                    <div class="truncate text-nc-content-gray font-medium !text-small !leading-[18px] overflow-hidden">
+                  <AtDropdown placement="topLeft" :trigger="['hover']" class="flex-none max-w-[calc(100%_-_72px)]">
+                    <div class="truncate text-atm-content-gray font-medium !text-small !leading-[18px] overflow-hidden">
                       {{ createdBy(commentItem) }}
                     </div>
 
                     <template #overlay>
-                      <div class="bg-nc-bg-default rounded-lg">
+                      <div class="bg-atm-bg-default rounded-lg">
                         <div class="flex items-center gap-4 py-3 px-2">
                           <GeneralUserIcon
-                            class="border-1 border-nc-border-gray-medium rounded-full"
+                            class="border-1 border-atm-border-gray-medium rounded-full"
                             :user="{
                               display_name: commentItem?.created_display_name,
                               email: commentItem?.created_by_email,
@@ -668,10 +668,10 @@ onBeforeUnmount(() => {
                             size="base"
                           />
                           <div class="flex flex-col">
-                            <div class="font-semibold text-nc-content-gray">
+                            <div class="font-semibold text-atm-content-gray">
                               {{ createdBy(commentItem) }}
                             </div>
-                            <div class="text-xs text-nc-content-gray-subtle2">
+                            <div class="text-xs text-atm-content-gray-subtle2">
                               {{ commentItem.created_by_email }}
                             </div>
                           </div>
@@ -683,7 +683,7 @@ onBeforeUnmount(() => {
                           v-if="!props.hideRoleInfo && !isInterfaceSurface && isUIAllowed('dataEdit')"
                           keypath="labels.hasRoleInBase"
                           tag="div"
-                          class="px-3 rounded-b-lg !text-[13px] items-center text-nc-content-gray-subtle2 flex gap-1 bg-nc-bg-gray-light py-1.5"
+                          class="px-3 rounded-b-lg !text-[13px] items-center text-atm-content-gray-subtle2 flex gap-1 bg-atm-bg-gray-light py-1.5"
                         >
                           <template #role>
                             <RolesBadge size="sm" :border="false" :role="getUserRole(commentItem.created_by_email!)" />
@@ -691,32 +691,32 @@ onBeforeUnmount(() => {
                         </i18n-t>
                       </div>
                     </template>
-                  </NcDropdown>
-                  <div class="text-xs text-nc-content-gray-muted">
+                  </AtDropdown>
+                  <div class="text-xs text-atm-content-gray-muted">
                     {{ timeAgo(commentItem.created_at!) }}
                   </div>
                 </div>
               </div>
               <div class="flex items-center">
-                <NcDropdown
+                <AtDropdown
                   v-if="
                     !editCommentValue &&
                     (!props.hideCopyUrl || (user && commentItem.created_by_email === user.email && hasEditPermission))
                   "
-                  class="nc-comment-more-actions !hidden !group-hover:block"
+                  class="atm-comment-more-actions !hidden !group-hover:block"
                   overlay-class-name="!min-w-[160px]"
                   placement="bottomRight"
                 >
-                  <NcButton
-                    class="nc-expand-form-more-actions !hover:bg-nc-bg-gray-medium !w-7 !h-7 !bg-transparent"
+                  <AtButton
+                    class="atm-expand-form-more-actions !hover:bg-atm-bg-gray-medium !w-7 !h-7 !bg-transparent"
                     size="xsmall"
                     type="text"
                   >
                     <GeneralIcon class="text-md" icon="threeDotVertical" />
-                  </NcButton>
+                  </AtButton>
                   <template #overlay>
-                    <NcMenu variant="small">
-                      <NcMenuItem
+                    <AtMenu variant="small">
+                      <AtMenuItem
                         v-if="user && commentItem.created_by_email === user.email && hasEditPermission"
                         v-e="['c:comment-expand:comment:edit']"
                         @click="editComment(commentItem)"
@@ -725,8 +725,8 @@ onBeforeUnmount(() => {
                           <component :is="iconMap.rename" class="cursor-pointer" />
                           {{ $t('general.edit') }}
                         </div>
-                      </NcMenuItem>
-                      <NcMenuItem
+                      </AtMenuItem>
+                      <AtMenuItem
                         v-if="!props.hideCopyUrl"
                         v-e="['c:comment-expand:comment:copy']"
                         @click="copyComment(commentItem)"
@@ -735,44 +735,44 @@ onBeforeUnmount(() => {
                           <component :is="iconMap.copy" class="cursor-pointer" />
                           {{ $t('activity.copyUrl') }}
                         </div>
-                      </NcMenuItem>
+                      </AtMenuItem>
                       <template v-if="user && commentItem.created_by_email === user.email && hasEditPermission">
-                        <NcDivider />
-                        <NcMenuItem v-e="['c:row-expand:comment:delete']" danger @click="deleteComment(commentItem.id!)">
+                        <AtDivider />
+                        <AtMenuItem v-e="['c:row-expand:comment:delete']" danger @click="deleteComment(commentItem.id!)">
                           <div class="flex gap-2 items-center">
                             <GeneralIcon icon="delete" class="cursor-pointer" />
                             {{ $t('general.delete') }}
                           </div>
-                        </NcMenuItem>
+                        </AtMenuItem>
                       </template>
-                    </NcMenu>
+                    </AtMenu>
                   </template>
-                </NcDropdown>
+                </AtDropdown>
                 <div v-if="appInfo.ee">
-                  <NcTooltip v-if="!commentItem.resolved_by && hasEditPermission">
-                    <NcButton
-                      class="nc-resolve-comment-btn !w-7 !h-7 !bg-transparent !hover:bg-nc-bg-gray-medium !hidden !group-hover:block"
+                  <AtTooltip v-if="!commentItem.resolved_by && hasEditPermission">
+                    <AtButton
+                      class="atm-resolve-comment-btn !w-7 !h-7 !bg-transparent !hover:bg-atm-bg-gray-medium !hidden !group-hover:block"
                       size="xsmall"
                       type="text"
                       @click="resolveComment(commentItem.id!)"
                     >
                       <GeneralIcon class="text-md" icon="checkCircle" />
-                    </NcButton>
+                    </AtButton>
 
                     <template #title>{{ $t('activity.clickToResolve') }}</template>
-                  </NcTooltip>
+                  </AtTooltip>
 
-                  <NcTooltip v-else-if="commentItem.resolved_by">
+                  <AtTooltip v-else-if="commentItem.resolved_by">
                     <template #title>{{ `${$t('activity.resolvedBy')} ${commentItem.resolved_display_name_short}` }}</template>
-                    <NcButton
-                      class="!h-7 !w-7 !bg-transparent !hover:bg-nc-bg-gray-medium text-semibold"
+                    <AtButton
+                      class="!h-7 !w-7 !bg-transparent !hover:bg-atm-bg-gray-medium text-semibold"
                       size="xsmall"
                       type="text"
                       @click="resolveComment(commentItem.id!)"
                     >
-                      <GeneralIcon class="text-md rounded-full bg-nc-fill-green-dark text-white" icon="checkFill" />
-                    </NcButton>
-                  </NcTooltip>
+                      <GeneralIcon class="text-md rounded-full bg-atm-fill-green-dark text-white" icon="checkFill" />
+                    </AtButton>
+                  </AtTooltip>
                 </div>
               </div>
             </div>
@@ -794,7 +794,7 @@ onBeforeUnmount(() => {
                   autofocus-to-end
                   :hide-options="false"
                   :extra-save-enabled="editAttachments.length > 0"
-                  class="expanded-form-comment-edit-input cursor-text expanded-form-comment-input !py-2 !px-2 !m-0 w-full !border-1 !border-nc-border-gray-medium !rounded-lg !bg-nc-bg-default !text-nc-content-gray !text-small !leading-18px !max-h-[240px]"
+                  class="expanded-form-comment-edit-input cursor-text expanded-form-comment-input !py-2 !px-2 !m-0 w-full !border-1 !border-atm-border-gray-medium !rounded-lg !bg-atm-bg-default !text-atm-content-gray !text-small !leading-18px !max-h-[240px]"
                   data-testid="expanded-form-comment-input"
                   @save="onEditComment"
                   @keydown.esc="onCancel"
@@ -818,20 +818,20 @@ onBeforeUnmount(() => {
                     />
                   </template>
                   <template v-if="isCommentAttachmentsEnabled" #bottom-bar-start>
-                    <NcTooltip :title="$t('activity.attachFile')" placement="top">
-                      <NcButton
+                    <AtTooltip :title="$t('activity.attachFile')" placement="top">
+                      <AtButton
                         v-e="['c:comment:attach-file']"
                         type="text"
                         size="xsmall"
-                        class="nc-comment-attach-btn !h-7 !w-7"
+                        class="atm-comment-attach-btn !h-7 !w-7"
                         :loading="isEditAttachmentUploading"
                         :disabled="isEditAttachmentUploading"
-                        data-testid="nc-comment-attach-btn"
+                        data-testid="atm-comment-attach-btn"
                         @click="openEditFilePicker"
                       >
                         <GeneralIcon v-if="!isEditAttachmentUploading" icon="lucidePaperclip" class="h-3.5 w-3.5" />
-                      </NcButton>
-                    </NcTooltip>
+                      </AtButton>
+                    </AtTooltip>
                   </template>
                 </SmartsheetExpandedFormRichComment>
               </div>
@@ -839,12 +839,12 @@ onBeforeUnmount(() => {
               <div v-else class="space-y-1 pl-9">
                 <div
                   v-if="annotationRefByCommentId[commentItem.id!]"
-                  class="nc-annotation-attachment inline-flex max-w-full items-center gap-2 rounded-lg border-1 border-nc-border-gray-medium bg-nc-bg-default px-1.5 py-1"
+                  class="atm-annotation-attachment inline-flex max-w-full items-center gap-2 rounded-lg border-1 border-atm-border-gray-medium bg-atm-bg-default px-1.5 py-1"
                   :class="{
-                    'cursor-pointer hover:bg-nc-bg-gray-light':
+                    'cursor-pointer hover:bg-atm-bg-gray-light':
                       !!imageAnnotations || annotationRefByCommentId[commentItem.id!].matched,
                   }"
-                  :data-testid="`nc-annotation-attachment-${commentItem.id}`"
+                  :data-testid="`atm-annotation-attachment-${commentItem.id}`"
                   @click="viewAnnotationComment(commentItem)"
                 >
                   <img
@@ -852,15 +852,15 @@ onBeforeUnmount(() => {
                     :src="annotationRefByCommentId[commentItem.id!].thumbnailSrc"
                     class="h-6 w-6 flex-none rounded object-cover"
                   />
-                  <GeneralIcon v-else icon="image" class="h-4 w-4 flex-none text-nc-content-gray-muted" />
-                  <NcTooltip show-on-truncate-only class="truncate text-small text-nc-content-gray">
+                  <GeneralIcon v-else icon="image" class="h-4 w-4 flex-none text-atm-content-gray-muted" />
+                  <AtTooltip show-on-truncate-only class="truncate text-small text-atm-content-gray">
                     {{ annotationRefByCommentId[commentItem.id!].title }}
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
                 <div
                   v-if="parsedHtmlComments[commentItem.id]"
                   v-dompurify-html="parsedHtmlComments[commentItem.id]"
-                  class="nc-rich-text-content !text-small !leading-18px !text-nc-content-gray"
+                  class="atm-rich-text-content !text-small !leading-18px !text-atm-content-gray"
                   @click="handleDompurifyLinkClick"
                 ></div>
                 <SmartsheetExpandedFormCommentAttachments
@@ -872,17 +872,17 @@ onBeforeUnmount(() => {
 
                 <div
                   v-if="annotationLabels[commentItem.id] || annotationRefByCommentId[commentItem.id!]?.matched"
-                  class="nc-annotation-ref mt-1 inline-flex items-center gap-1.5 rounded-lg border-1 border-nc-border-gray-medium bg-nc-bg-default px-1.5 py-0.5 cursor-pointer hover:bg-nc-bg-gray-light"
-                  :data-testid="`nc-annotation-ref-${annotationLabels[commentItem.id] ?? commentItem.id}`"
+                  class="atm-annotation-ref mt-1 inline-flex items-center gap-1.5 rounded-lg border-1 border-atm-border-gray-medium bg-atm-bg-default px-1.5 py-0.5 cursor-pointer hover:bg-atm-bg-gray-light"
+                  :data-testid="`atm-annotation-ref-${annotationLabels[commentItem.id] ?? commentItem.id}`"
                   @click="viewAnnotationComment(commentItem)"
                 >
                   <span
                     v-if="annotationLabels[commentItem.id]"
-                    class="flex h-3.5 w-3.5 flex-none items-center justify-center rounded-full bg-nc-fill-primary text-white text-[9px] font-semibold"
+                    class="flex h-3.5 w-3.5 flex-none items-center justify-center rounded-full bg-atm-fill-primary text-white text-[9px] font-semibold"
                   >
                     {{ annotationLabels[commentItem.id] }}
                   </span>
-                  <span v-e="['c:attachment:annotation:view']" class="text-[11px] font-medium text-nc-content-brand">
+                  <span v-e="['c:attachment:annotation:view']" class="text-[11px] font-medium text-atm-content-brand">
                     {{ $t('general.view') }}
                   </span>
                 </div>
@@ -894,7 +894,7 @@ onBeforeUnmount(() => {
       <SmartsheetExpandedFormCommentTypingIndicator v-if="isEeUI && hasEditPermission" :draft="comment" />
       <div
         v-if="hasEditPermission"
-        class="px-3 pt-1 pb-3 nc-comment-input !rounded-br-2xl gap-2 flex relative z-10 bg-nc-bg-default"
+        class="px-3 pt-1 pb-3 atm-comment-input !rounded-br-2xl gap-2 flex relative z-10 bg-atm-bg-default"
         @paste="isCommentAttachmentsEnabled ? handleAttachmentPaste($event) : undefined"
         @dragover.prevent
         @drop="isCommentAttachmentsEnabled ? handleAttachmentDrop($event) : undefined"
@@ -905,7 +905,7 @@ onBeforeUnmount(() => {
           :hide-options="false"
           :extra-save-enabled="pendingAttachments.length > 0"
           :placeholder="`${$t('general.comment')}...`"
-          class="expanded-form-comment-input !py-2 !px-2 cursor-text border-1 rounded-lg w-full bg-transparent !text-nc-content-gray !text-small !leading-18px !max-h-[240px]"
+          class="expanded-form-comment-input !py-2 !px-2 cursor-text border-1 rounded-lg w-full bg-transparent !text-atm-content-gray !text-small !leading-18px !max-h-[240px]"
           :autofocus="isExpandedFormCommentMode"
           data-testid="expanded-form-comment-input"
           @focus="isExpandedFormCommentMode = false"
@@ -922,20 +922,20 @@ onBeforeUnmount(() => {
             />
           </template>
           <template v-if="isCommentAttachmentsEnabled" #bottom-bar-start>
-            <NcTooltip :title="$t('activity.attachFile')" placement="top">
-              <NcButton
+            <AtTooltip :title="$t('activity.attachFile')" placement="top">
+              <AtButton
                 v-e="['c:comment:attach-file']"
                 type="text"
                 size="xsmall"
-                class="nc-comment-attach-btn !h-7 !w-7"
+                class="atm-comment-attach-btn !h-7 !w-7"
                 :loading="isAttachmentUploading"
                 :disabled="isAttachmentUploading"
-                data-testid="nc-comment-attach-btn"
+                data-testid="atm-comment-attach-btn"
                 @click="openFilePicker"
               >
                 <GeneralIcon v-if="!isAttachmentUploading" icon="lucidePaperclip" class="h-3.5 w-3.5" />
-              </NcButton>
-            </NcTooltip>
+              </AtButton>
+            </AtTooltip>
           </template>
         </SmartsheetExpandedFormRichComment>
       </div>
@@ -949,30 +949,30 @@ onBeforeUnmount(() => {
   box-shadow: none;
   &:focus,
   &:focus-within {
-    @apply min-h-16 !bg-nc-bg-default border-nc-border-brand;
-    box-shadow: 0px 0px 0px 2px rgba(var(--nc-brand-accent-rgb), 0.24);
+    @apply min-h-16 !bg-atm-bg-default border-atm-border-brand;
+    box-shadow: 0px 0px 0px 2px rgba(var(--atm-brand-accent-rgb), 0.24);
   }
   &::placeholder {
     @apply !text-gray-400;
   }
 }
 
-:deep(.expanded-form-comment-edit-input .nc-comment-rich-editor) {
-  @apply bg-nc-bg-default;
+:deep(.expanded-form-comment-edit-input .atm-comment-rich-editor) {
+  @apply bg-atm-bg-default;
 }
 
-.nc-hovered-comment {
-  .nc-expand-form-more-actions,
-  .nc-resolve-comment-btn {
+.atm-hovered-comment {
+  .atm-expand-form-more-actions,
+  .atm-resolve-comment-btn {
     @apply !block;
   }
 }
 
-:deep(.nc-rich-link-tooltip) {
-  @apply text-nc-content-gray-muted;
+:deep(.atm-rich-link-tooltip) {
+  @apply text-atm-content-gray-muted;
 }
 
-.nc-rich-text-content {
+.atm-rich-text-content {
   p {
     @apply !m-0 !leading-5;
   }
@@ -980,7 +980,7 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="scss">
-.nc-rich-link-tooltip-popup {
-  @apply text-xs bg-nc-content-gray text-nc-content-inverted-primary px-2 py-1 rounded-lg;
+.atm-rich-link-tooltip-popup {
+  @apply text-xs bg-atm-content-gray text-atm-content-inverted-primary px-2 py-1 rounded-lg;
 }
 </style>

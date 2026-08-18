@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
 import requestIp from 'request-ip';
 import cookieParser from 'cookie-parser';
-import { NcDebug } from 'nc-gui/utils/debug';
+import { AtDebug } from 'atmosphere-gui/utils/debug';
 import type { INestApplication } from '@nestjs/common';
 import type { MetaService } from '~/meta/meta.service';
 import type { IEventEmitter } from '~/modules/event-emitter/event-emitter.interface';
@@ -28,7 +28,7 @@ import { DataReflection, Integration, Store } from '~/models';
 import { getRedisURL } from '~/helpers/redisHelpers';
 import { RedisIoAdapter } from '~/gateways/RedisIoAdapter';
 import { DEFAULT_APP_SETTINGS } from '~/interface/AppSettings';
-import { NC_APP_SETTINGS } from '~/constants';
+import { ATMOSPHERE_APP_SETTINGS } from '~/constants';
 
 dotenv.config();
 declare const module: any;
@@ -39,10 +39,10 @@ if (process.env.NODE_ENV === 'development') {
   require('source-map-support').install();
 }
 
-export default class Noco {
-  protected static _this: Noco;
+export default class Atmosphere {
+  protected static _this: Atmosphere;
   protected static ee: boolean;
-  public static readonly env: string = '_noco';
+  public static readonly env: string = '_atmosphere';
   protected static _httpServer: http.Server;
   protected static _server: Express;
 
@@ -82,9 +82,9 @@ export default class Noco {
   constructor() {
     process.env.PORT = process.env.PORT || '8080';
     // todo: move
-    // if env variable NC_MINIMAL_DBS is set, then disable base creation with external sources
-    if (process.env.NC_MINIMAL_DBS === 'true') {
-      process.env.NC_CONNECT_TO_EXTERNAL_DB_DISABLED = 'true';
+    // if env variable ATMOSPHERE_MINIMAL_DBS is set, then disable base creation with external sources
+    if (process.env.ATMOSPHERE_MINIMAL_DBS === 'true') {
+      process.env.ATMOSPHERE_CONNECT_TO_EXTERNAL_DB_DISABLED = 'true';
     }
 
     this.router = express.Router();
@@ -131,19 +131,19 @@ export default class Noco {
   }
 
   public get ncMeta(): any {
-    return Noco._ncMeta;
+    return Atmosphere._ncMeta;
   }
 
   public get ncAudit(): AuditService {
-    return Noco._ncAudit;
+    return Atmosphere._ncAudit;
   }
 
   public get ncChatMessages(): ChatMessagesService {
-    return Noco._ncChatMessages;
+    return Atmosphere._ncChatMessages;
   }
 
   public get ncOperationLogs(): OperationLogsService {
-    return Noco._ncOperationLogs;
+    return Atmosphere._ncOperationLogs;
   }
 
   public static getConfig(): any {
@@ -151,7 +151,7 @@ export default class Noco {
   }
 
   public static isEE(): boolean {
-    return this.ee || process.env.NC_CLOUD === 'true';
+    return this.ee || process.env.ATMOSPHERE_CLOUD === 'true';
   }
 
   public static async loadEEState(): Promise<boolean> {
@@ -167,10 +167,10 @@ export default class Noco {
       bodyParser: false,
     });
 
-    Noco._nestApp = nestApp;
+    Atmosphere._nestApp = nestApp;
 
     this.initCustomLogger(nestApp);
-    NcDebug.log('Custom logger initialized');
+    AtDebug.log('Custom logger initialized');
     nestApp.flushLogs();
 
     if ((module as any)?.hot) {
@@ -189,11 +189,11 @@ export default class Noco {
       );
     }
 
-    if (process.env.NC_WORKER_CONTAINER === 'true') {
+    if (process.env.ATMOSPHERE_WORKER_CONTAINER === 'true') {
       if (!getRedisURL()) {
-        throw new Error('NC_REDIS_URL is required');
+        throw new Error('ATMOSPHERE_REDIS_URL is required');
       }
-      process.env.NC_DISABLE_TELE = 'true';
+      process.env.ATMOSPHERE_DISABLE_TELE = 'true';
     }
 
     this._httpServer = nestApp.getHttpAdapter().getInstance();
@@ -205,15 +205,15 @@ export default class Noco {
     const redisIoAdapter = new RedisIoAdapter(httpServer);
     await redisIoAdapter.connectToRedis();
     nestApp.useWebSocketAdapter(redisIoAdapter);
-    NcDebug.log('Websocket adapter initialized');
+    AtDebug.log('Websocket adapter initialized');
 
     await nestApp.init();
-    NcDebug.log('Nest app initialized');
+    AtDebug.log('Nest app initialized');
 
     await nestApp.enableShutdownHooks();
-    NcDebug.log('Shutdown hooks enabled');
+    AtDebug.log('Shutdown hooks enabled');
 
-    const dashboardPath = process.env.NC_DASHBOARD_URL ?? '/';
+    const dashboardPath = process.env.ATMOSPHERE_DASHBOARD_URL ?? '/';
     server.use(express.static(path.join(__dirname, 'public')));
 
     if (dashboardPath.startsWith('http')) {
@@ -244,9 +244,9 @@ export default class Noco {
     }
 
     await Integration.init();
-    NcDebug.log('Integration initialized');
+    AtDebug.log('Integration initialized');
 
-    if (process.env.NC_WORKER_CONTAINER !== 'true') {
+    if (process.env.ATMOSPHERE_WORKER_CONTAINER !== 'true') {
       await DataReflection.init();
     }
 
@@ -270,7 +270,7 @@ export default class Noco {
             RootScopes.ROOT,
             MetaTable.STORE,
             {
-              key: 'nc_auth_jwt_secret',
+              key: 'atm_auth_jwt_secret',
             },
           )
         )?.value;
@@ -280,7 +280,7 @@ export default class Noco {
             RootScopes.ROOT,
             MetaTable.STORE,
             {
-              key: 'nc_auth_jwt_secret',
+              key: 'atm_auth_jwt_secret',
               value: (secret = uuidv4()),
             },
             true,
@@ -292,7 +292,7 @@ export default class Noco {
       this.config.auth.jwt.options = this.config.auth.jwt.options || {};
       if (!this.config.auth.jwt.options?.expiresIn) {
         this.config.auth.jwt.options.expiresIn =
-          process.env.NC_JWT_EXPIRES_IN ?? '10h';
+          process.env.ATMOSPHERE_JWT_EXPIRES_IN ?? '10h';
       }
     }
     let serverId = (
@@ -301,7 +301,7 @@ export default class Noco {
         RootScopes.ROOT,
         MetaTable.STORE,
         {
-          key: 'nc_server_id',
+          key: 'atm_server_id',
         },
       )
     )?.value;
@@ -311,13 +311,13 @@ export default class Noco {
         RootScopes.ROOT,
         MetaTable.STORE,
         {
-          key: 'nc_server_id',
+          key: 'atm_server_id',
           value: (serverId = T.id),
         },
         true,
       );
     }
-    process.env.NC_SERVER_UUID = serverId;
+    process.env.ATMOSPHERE_SERVER_UUID = serverId;
   }
 
   protected static initCustomLogger(_nestApp: INestApplication<any>) {
@@ -343,7 +343,7 @@ export default class Noco {
 
   private static async loadAppSettings(): Promise<void> {
     try {
-      const storeData = await Store.get(NC_APP_SETTINGS, false, this._ncMeta);
+      const storeData = await Store.get(ATMOSPHERE_APP_SETTINGS, false, this._ncMeta);
 
       if (storeData?.value) {
         this._appSettings = {
@@ -371,7 +371,7 @@ export default class Noco {
 
     await Store.saveOrUpdate(
       {
-        key: NC_APP_SETTINGS,
+        key: ATMOSPHERE_APP_SETTINGS,
         value: JSON.stringify(newSettings),
       },
       this._ncMeta,

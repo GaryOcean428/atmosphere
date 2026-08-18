@@ -1,20 +1,20 @@
 import dayjs from 'dayjs';
 import { customAlphabet } from 'nanoid';
-import { ClientType, FormulaDataTypes, JSEPNode, UITypes } from 'nocodb-sdk';
+import { ClientType, FormulaDataTypes, JSEPNode, UITypes } from 'atmosphere-sdk';
 import { sanitize } from 'src/helpers/sqlSanitize';
 import commonFns, {
   extractDatetimeFormat,
   safeDateAddUnitSQL,
   validateDateAddUnit,
 } from './commonFns';
-import type { CallExpressionNode } from 'nocodb-sdk';
+import type { CallExpressionNode } from 'atmosphere-sdk';
 import type { MapFnArgs } from '~/db/mapFunctionName';
 import { convertUnits } from '~/helpers/convertUnits';
 import {
   getWeekdayByText,
   getWeekStartOffsetSunday,
 } from '~/helpers/formulaFnHelper';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { getDatetimeFormatHandler } from '~/db/datetime-format';
 
 const getArraySourceAttachmentUnnested = async (
@@ -553,7 +553,7 @@ END`,
     // the match"), which knex applies when inlining this raw inside another
     // raw with named bindings (e.g. the `:value` placeholders in VALUE()).
     // The result is corrupted SQL like `CONCAT(', '.price')` and a syntax
-    // error. See nocodb/nocodb#12695.
+    // error. See atmosphere/atmosphere#12695.
     const pathArg = pt.arguments[1];
     if (
       pathArg?.type === JSEPNode.LITERAL &&
@@ -711,7 +711,7 @@ END`,
       );
 
       if (!rowMetaColumn) {
-        NcError.badRequest(
+        AtError.badRequest(
           'This table does not support last modified time with arguments',
         );
       }
@@ -741,7 +741,7 @@ END`,
       (col) => col.column_name === 'updated_at',
     );
     if (!createdAtCol) {
-      NcError.badRequest('Updated at field not found');
+      AtError.badRequest('Updated at field not found');
     }
 
     return {

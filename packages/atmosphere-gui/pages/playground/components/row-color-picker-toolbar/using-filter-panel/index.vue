@@ -28,42 +28,42 @@ onMounted(async () => {
 
 <template>
   <MockInjection>
-    <div class="bg-nc-bg-gray-light overflow-auto pb-8">
+    <div class="bg-atm-bg-gray-light overflow-auto pb-8">
       <a-card>
         <h4>Simple</h4>
         <div class="flex gap-4">
           <div class="flex flex-col gap-2">
-            <div><NcSwitch v-model:checked="options1.disabled">disabled</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.isLockedView">isLockedView</NcSwitch></div>
-            <div><NcSwitch v-model:checked="options1.disableAddNewFilter">disableAddNewFilter</NcSwitch></div>
+            <div><AtSwitch v-model:checked="options1.disabled">disabled</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.isLockedView">isLockedView</AtSwitch></div>
+            <div><AtSwitch v-model:checked="options1.disableAddNewFilter">disableAddNewFilter</AtSwitch></div>
           </div>
           <div class="flex-col gap-2">
             <div class="flex-col space-y-2">
               <div>
                 dbClientType:
-                <NcSelect v-model:value="options1.dbClientType">
+                <AtSelect v-model:value="options1.dbClientType">
                   <a-select-option value="PG">PG</a-select-option>
                   <a-select-option value="MYSQL">mysql</a-select-option>
                   <a-select-option value="SQLITE">sqlite</a-select-option>
-                </NcSelect>
+                </AtSelect>
               </div>
               <div>
                 filterPerViewLimit:
                 <input
                   v-model="options1.filterPerViewLimit"
                   type="number"
-                  class="text-xs p-1 border-nc-border-gray-medium"
+                  class="text-xs p-1 border-atm-border-gray-medium"
                 /><br />
               </div>
               <div>
                 filtersCount:
-                <input v-model="options1.filtersCount" type="number" class="text-xs p-1 border-nc-border-gray-medium" /><br />
+                <input v-model="options1.filtersCount" type="number" class="text-xs p-1 border-atm-border-gray-medium" /><br />
               </div>
             </div>
           </div>
           <div class="flex-col flex-grow space-y-2">
             vModel:
-            <div class="min-w-[300px] max-h-[200px] overflow-wrap bg-nc-bg-gray-dark overflow-y-scroll">
+            <div class="min-w-[300px] max-h-[200px] overflow-wrap bg-atm-bg-gray-dark overflow-y-scroll">
               <pre>{{ JSON.stringify(vModel, null, 2) }}</pre>
             </div>
           </div>

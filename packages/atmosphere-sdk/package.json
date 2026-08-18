@@ -1,21 +1,21 @@
 {
-  "name": "nocodb-sdk",
+  "name": "atmosphere-sdk",
   "version": "0.301.3",
-  "description": "NocoDB SDK",
+  "description": "Atmosphere SDK",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
   "author": {
-    "name": "NocoDB Inc",
-    "url": "https://nocodb.com/"
+    "name": "Atmosphere Inc",
+    "url": "https://atmosphere.dev/"
   },
-  "homepage": "https://github.com/nocodb/nocodb",
+  "homepage": "https://github.com/GaryOcean428/atmosphere",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nocodb/nocodb.git"
+    "url": "https://github.com/GaryOcean428/atmosphere.git"
   },
   "bugs": {
-    "url": "https://github.com/nocodb/nocodb/issues"
+    "url": "https://github.com/GaryOcean428/atmosphere/issues"
   },
   "engines": {
     "node": ">=18"
@@ -35,7 +35,7 @@
     "test:spelling": "cspell \"{README.md,.github/*.md,src/**/*.ts}\"",
     "test:unit": "ENV_FILE=./config/.env.test jest",
     "watch:build": "tsc -p tsconfig.json -w",
-    "generate:sdk": "node build-script/mergeAndGenerateSwaggerCE && pnpm dlx swagger-typescript-api@10.0.3 -r -p ./nc_swagger.json -o ./src/lib/  --axios --unwrap-response-data  --module-name-first-tag --type-suffix=Type --templates ../../scripts/sdk/templates; rm ./nc_swagger.json",
+    "generate:sdk": "node build-script/mergeAndGenerateSwaggerCE && pnpm dlx swagger-typescript-api@10.0.3 -r -p ./atm_swagger.json -o ./src/lib/  --axios --unwrap-response-data  --module-name-first-tag --type-suffix=Type --templates ../../scripts/sdk/templates; rm ./atm_swagger.json",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {

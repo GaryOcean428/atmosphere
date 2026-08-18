@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CommentHookConfigType } from 'nocodb-sdk'
+import type { CommentHookConfigType } from 'atmosphere-sdk'
 
 // CE stub — comment webhooks are EE-only. The EE overlay
 // (ee/components/webhook/CommentFilters.vue) provides the real UI.
@@ -9,5 +9,5 @@ defineEmits<{ 'update:modelValue': [value: CommentHookConfigType] }>()
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

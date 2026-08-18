@@ -1,4 +1,4 @@
-import { UITypes, TARGET_TABLES, TARGET_TABLES_META } from 'nocodb-sdk';
+import { UITypes, TARGET_TABLES, TARGET_TABLES_META } from 'atmosphere-sdk';
 import { SyncSchema } from './types';
 
 export const SCHEMA_CALENDAR: SyncSchema = {

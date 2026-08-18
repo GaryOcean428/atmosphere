@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type ColumnType, isVirtualCol } from 'nocodb-sdk'
+import { type ColumnType, isVirtualCol } from 'atmosphere-sdk'
 
 const props = withDefaults(
   defineProps<{
@@ -62,11 +62,11 @@ useProvideSmartsheetRowStore(row)
 
 <template>
   <div
-    class="nc-list-item-wrapper hover:bg-nc-bg-gray-extralight group px-[1px] border-y-1 border-nc-border-gray-medium border-t-transparent"
+    class="atm-list-item-wrapper hover:bg-atm-bg-gray-extralight group px-[1px] border-y-1 border-atm-border-gray-medium border-t-transparent"
   >
     <a-card
       tabindex="0"
-      class="nc-list-item !outline-none transition-all relative group-hover:!bg-nc-bg-gray-extralight cursor-pointer !border-transparent"
+      class="atm-list-item !outline-none transition-all relative group-hover:!bg-atm-bg-gray-extralight cursor-pointer !border-transparent"
       :body-style="{ padding: '6px 10px !important', borderRadius: 0 }"
       :hoverable="false"
     >
@@ -97,30 +97,30 @@ useProvideSmartsheetRowStore(row)
           <SmartsheetPlainCell
             :model-value="row.row[displayField.title]"
             :column="displayField"
-            class="font-semibold text-nc-content-brand nc-display-value leading-[20px]"
+            class="font-semibold text-atm-content-brand atm-display-value leading-[20px]"
           />
 
           <div v-if="fieldsToDisplay.length > 0" class="flex ml-[-0.25rem] sm:flex-row xs:(flex-col mt-2) gap-4 min-h-5">
             <div v-for="field in fieldsToDisplay" :key="field.id" class="sm:(w-1/3 max-w-1/3 overflow-hidden)">
               <div v-if="!isRowEmpty(row, field)" class="flex flex-col gap-[-1]">
-                <NcTooltip class="z-10 flex" placement="bottomLeft" :arrow-point-at-center="false">
+                <AtTooltip class="z-10 flex" placement="bottomLeft" :arrow-point-at-center="false">
                   <template #title>
                     <LazySmartsheetHeaderVirtualCell
                       v-if="isVirtualCol(field)"
-                      class="text-gray-100 !text-sm nc-picker-record-cell-tooltip"
+                      class="text-gray-100 !text-sm atm-picker-record-cell-tooltip"
                       :column="field"
                       :hide-menu="true"
                       hide-icon-tooltip
                     />
                     <LazySmartsheetHeaderCell
                       v-else
-                      class="text-gray-100 !text-sm nc-picker-record-cell-tooltip"
+                      class="text-gray-100 !text-sm atm-picker-record-cell-tooltip"
                       :column="field"
                       :hide-menu="true"
                       hide-icon-tooltip
                     />
                   </template>
-                  <div class="nc-picker-record-cell flex w-full max-w-full">
+                  <div class="atm-picker-record-cell flex w-full max-w-full">
                     <LazySmartsheetVirtualCell
                       v-if="isVirtualCol(field)"
                       v-model="row.row[field.title]"
@@ -135,7 +135,7 @@ useProvideSmartsheetRowStore(row)
                       :read-only="true"
                     />
                   </div>
-                </NcTooltip>
+                </AtTooltip>
               </div>
               <div v-else class="flex flex-row w-full max-w-72 h-5 pl-1 items-center justify-start">-</div>
             </div>
@@ -151,38 +151,38 @@ useProvideSmartsheetRowStore(row)
   @apply rounded-lg;
 }
 
-.nc-picker-record-cell {
-  :deep(.nc-cell),
-  :deep(.nc-virtual-cell) {
-    @apply !text-small !text-nc-content-gray-subtle2 ml-1;
+.atm-picker-record-cell {
+  :deep(.atm-cell),
+  :deep(.atm-virtual-cell) {
+    @apply !text-small !text-atm-content-gray-subtle2 ml-1;
 
-    .nc-cell-field,
-    .nc-cell-field-link,
+    .atm-cell-field,
+    .atm-cell-field-link,
     input,
     textarea {
       @apply !text-small !p-0 m-0;
     }
 
-    &:not(.nc-display-value-cell) {
-      @apply text-nc-content-gray-subtle2;
+    &:not(.atm-display-value-cell) {
+      @apply text-atm-content-gray-subtle2;
       font-weight: 500;
 
-      .nc-cell-field,
+      .atm-cell-field,
       input,
       textarea {
-        @apply text-nc-content-gray-subtle2;
+        @apply text-atm-content-gray-subtle2;
         font-weight: 500;
       }
     }
 
-    .nc-cell-field,
-    a.nc-cell-field-link,
+    .atm-cell-field,
+    a.atm-cell-field-link,
     input,
     textarea {
       @apply !p-0 m-0;
     }
 
-    &.nc-cell-longtext {
+    &.atm-cell-longtext {
       @apply leading-[18px];
 
       textarea {
@@ -192,7 +192,7 @@ useProvideSmartsheetRowStore(row)
       .long-text-wrapper {
         @apply !min-h-4;
 
-        .nc-rich-text-grid {
+        .atm-rich-text-grid {
           @apply pl-0 -ml-1;
         }
       }
@@ -219,43 +219,43 @@ useProvideSmartsheetRowStore(row)
     }
   }
 }
-.nc-picker-record-cell-tooltip {
+.atm-picker-record-cell-tooltip {
   @apply !bg-transparent !hover:bg-transparent;
 
-  :deep(.nc-cell-icon) {
+  :deep(.atm-cell-icon) {
     @apply !ml-0;
   }
   :deep(.name) {
     @apply !text-small;
   }
-  :deep(.nc-cell-name-wrapper) {
+  :deep(.atm-cell-name-wrapper) {
     max-width: 100% !important;
   }
 }
 </style>
 
 <style lang="scss">
-.nc-list-item {
+.atm-list-item {
   @apply border-1 border-transparent rounded-md;
 
   &:focus-visible,
-  &.nc-is-selected {
-    @apply border-nc-border-brand;
+  &.atm-is-selected {
+    @apply border-atm-border-brand;
     box-shadow: 0 0 0 1px rgba(var(--rgb-color-brand-500), 1);
   }
   &:hover {
-    .nc-text-area-expand-btn {
+    .atm-text-area-expand-btn {
       @apply !hidden;
     }
   }
   .long-text-wrapper {
     @apply select-none pointer-events-none;
-    .nc-readonly-rich-text-wrapper {
+    .atm-readonly-rich-text-wrapper {
       @apply !min-h-5 !max-h-5;
     }
-    .nc-rich-text-embed {
+    .atm-rich-text-embed {
       @apply -mt-0.5;
-      .nc-textarea-rich-editor {
+      .atm-textarea-rich-editor {
         @apply !overflow-hidden;
         .ProseMirror {
           @apply !overflow-hidden line-clamp-1 h-[18px] pt-0.4;

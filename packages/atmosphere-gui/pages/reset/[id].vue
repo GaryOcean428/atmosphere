@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { validatePassword } from 'nocodb-sdk'
+import { validatePassword } from 'atmosphere-sdk'
 
 definePageMeta({
   requiresAuth: false,
@@ -54,9 +54,9 @@ function resetError() {
         class="md:bg-primary signin bg-opacity-5 forgot-password h-full min-h-[600px] flex flex-col justify-center items-center"
       >
         <div
-          class="bg-nc-bg-default md:mt-[60px] relative flex flex-col justify-center gap-2 w-full max-w-[500px] mx-auto p-8 md:(rounded-lg border-1 border-nc-border-gray-medium shadow-xl)"
+          class="bg-atm-bg-default md:mt-[60px] relative flex flex-col justify-center gap-2 w-full max-w-[500px] mx-auto p-8 md:(rounded-lg border-1 border-atm-border-gray-medium shadow-xl)"
         >
-          <LazyGeneralNocoIcon class="color-transition hover:(ring ring-accent ring-opacity-100)" :animate="isLoading" />
+          <LazyGeneralAtmosphereIcon class="color-transition hover:(ring ring-accent ring-opacity-100)" :animate="isLoading" />
 
           <div class="self-center flex flex-col justify-center items-center text-center gap-2">
             <h1 class="prose-2xl font-bold my-4 w-full">{{ $t('title.resetPassword') }}</h1>
@@ -106,12 +106,12 @@ function resetError() {
             </a-form-item>
 
             <div class="self-center flex flex-col gap-4 items-center justify-center w-full">
-              <NcButton type="primary" :is-loading="isLoading" html-type="submit">
+              <AtButton type="primary" :is-loading="isLoading" html-type="submit">
                 <span class="flex items-center gap-2">
                   <component :is="iconMap.signin" />
                   {{ $t('general.reset') }}
                 </span>
-              </NcButton>
+              </AtButton>
             </div>
           </a-form>
         </div>

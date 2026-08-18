@@ -1,4 +1,4 @@
-import { isBtLikeV2Junction, UITypes } from 'nocodb-sdk';
+import { isBtLikeV2Junction, UITypes } from 'atmosphere-sdk';
 import { ComputedFieldHandler } from '../computed';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Knex } from '~/db/CustomKnex';

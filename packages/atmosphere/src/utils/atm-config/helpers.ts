@@ -15,21 +15,21 @@ import { DriverClient } from './interfaces';
 import type { Connection, DbConfig } from './interfaces';
 
 export async function prepareEnv({
-  databaseUrlFile = process.env.NC_DATABASE_URL_FILE ||
+  databaseUrlFile = process.env.ATMOSPHERE_DATABASE_URL_FILE ||
     process.env.DATABASE_URL_FILE,
-  databaseUrl = process.env.NC_DATABASE_URL || process.env.DATABASE_URL,
+  databaseUrl = process.env.ATMOSPHERE_DATABASE_URL || process.env.DATABASE_URL,
 } = {}) {
   if (databaseUrlFile) {
     const database_url = await promisify(fs.readFile)(databaseUrlFile, 'utf-8');
-    process.env.NC_DB = jdbcToXcUrl(database_url);
+    process.env.ATMOSPHERE_DB = jdbcToXcUrl(database_url);
   } else if (databaseUrl) {
-    process.env.NC_DB = jdbcToXcUrl(databaseUrl);
+    process.env.ATMOSPHERE_DB = jdbcToXcUrl(databaseUrl);
   }
 }
 
 export function getToolDir() {
   return (
-    process.env.NC_APP_DATA_DIR || process.env.NC_TOOL_DIR || process.cwd()
+    process.env.ATMOSPHERE_APP_DATA_DIR || process.env.ATMOSPHERE_TOOL_DIR || process.cwd()
   );
 }
 
@@ -197,7 +197,7 @@ export function xcUrlToDbConfig(
 
   Object.assign(dbConfig, {
     meta: {
-      tn: 'nc_evolutions',
+      tn: 'atm_evolutions',
       allSchemas:
         !!url.searchParams.get('allSchemas') ||
         !(url.searchParams.get('d') || url.searchParams.get('database')),
@@ -213,7 +213,7 @@ export function xcUrlToDbConfig(
       metaTables: 'db',
       migrations: {
         disabled: false,
-        name: 'nc_evolutions',
+        name: 'atm_evolutions',
       },
     },
   });

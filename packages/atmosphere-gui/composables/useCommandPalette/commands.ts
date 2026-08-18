@@ -42,7 +42,7 @@ export const getHomeCommands = () => [
     parent: 'user',
     section: 'Community',
     handler: () => {
-      navigateTo('https://twitter.com/NocoDB', { external: true })
+      navigateTo('https://twitter.com/Atmosphere', { external: true })
     },
   },
   {
@@ -52,7 +52,7 @@ export const getHomeCommands = () => [
     parent: 'user',
     section: 'Community',
     handler: () => {
-      navigateTo('https://www.reddit.com/r/NocoDB/', { external: true })
+      navigateTo('https://www.reddit.com/r/Atmosphere/', { external: true })
     },
   },
 ]

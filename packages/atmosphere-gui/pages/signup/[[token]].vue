@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { validatePassword } from 'nocodb-sdk'
+import { validatePassword } from 'atmosphere-sdk'
 import type { RuleObject } from 'ant-design-vue/es/form'
 
 definePageMeta({
@@ -78,7 +78,7 @@ async function signUp() {
     try {
       // TODO: Add to swagger
       if (isEnabledOnboardingFlow.value) {
-        const continueAfterOnboardingFlow = 'nc'
+        const continueAfterOnboardingFlow = 'atm'
 
         /**
          * Onboarding flow is shown only for new users
@@ -97,7 +97,7 @@ async function signUp() {
       return await navigateTo({
         name: 'index-typeOrId',
         params: {
-          typeOrId: 'nc',
+          typeOrId: 'atm',
         },
       })
     } catch (e) {
@@ -141,9 +141,9 @@ onMounted(async () => {
     <NuxtLayout>
       <div class="md:bg-primary bg-opacity-5 signup h-full min-h-[600px] flex flex-col justify-center items-center">
         <div
-          class="bg-nc-bg-default md:mt-[60px] relative flex flex-col justify-center gap-2 w-full max-w-[500px] mx-auto p-8 md:(rounded-lg border-1 border-nc-border-gray-medium shadow-xl)"
+          class="bg-atm-bg-default md:mt-[60px] relative flex flex-col justify-center gap-2 w-full max-w-[500px] mx-auto p-8 md:(rounded-lg border-1 border-atm-border-gray-medium shadow-xl)"
         >
-          <GeneralNocoIcon class="color-transition hover:(ring ring-accent ring-opacity-100)" :animate="isLoading" />
+          <GeneralAtmosphereIcon class="color-transition hover:(ring ring-accent ring-opacity-100)" :animate="isLoading" />
 
           <h1 class="prose-2xl font-bold self-center my-4">
             {{ $t('general.signUp') }}
@@ -161,7 +161,7 @@ onMounted(async () => {
                 <div
                   v-if="error"
                   class="self-center mb-4 bg-red-500 text-white rounded-lg w-3/4 mx-auto p-1"
-                  data-testid="nc-signup-error"
+                  data-testid="atm-signup-error"
                 >
                   <div class="flex items-center gap-2 justify-center">
                     <MaterialSymbolsWarning />
@@ -205,7 +205,7 @@ onMounted(async () => {
               <a
                 v-if="appInfo.googleAuthEnabled"
                 :href="`${appInfo.ncSiteUrl}/auth/google`"
-                class="scaling-btn bg-opacity-100 after:(!bg-nc-bg-default) !text-primary !no-underline"
+                class="scaling-btn bg-opacity-100 after:(!bg-atm-bg-default) !text-primary !no-underline"
               >
                 <span class="flex items-center gap-2">
                   <LogosGoogleGmail />
@@ -239,7 +239,7 @@ onMounted(async () => {
                   size="small"
                   class="my-1 hover:(ring ring-accent ring-opacity-100) focus:(!ring !ring-accent ring-opacity-100)"
                 />
-                <div class="prose-xs text-nc-content-gray-muted">{{ $t('msg.subscribeToOurWeeklyNewsletter') }}</div>
+                <div class="prose-xs text-atm-content-gray-muted">{{ $t('msg.subscribeToOurWeeklyNewsletter') }}</div>
               </div>
 
               <div class="text-end prose-sm">
@@ -251,12 +251,12 @@ onMounted(async () => {
           </a-form>
         </div>
 
-        <div class="prose-sm mt-4 text-nc-content-gray-muted">
+        <div class="prose-sm mt-4 text-atm-content-gray-muted">
           {{ $t('msg.bySigningUp') }}
           <a
-            class="prose-sm !text-nc-content-gray-muted underline"
+            class="prose-sm !text-atm-content-gray-muted underline"
             target="_blank"
-            href="https://nocodb.com/policy-nocodb"
+            href="https://atmosphere.dev/policy-atmosphere"
             rel="noopener"
           >
             {{ $t('title.termsOfService') }}</a

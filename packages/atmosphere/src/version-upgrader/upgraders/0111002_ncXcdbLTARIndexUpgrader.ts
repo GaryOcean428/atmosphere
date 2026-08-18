@@ -1,19 +1,19 @@
 import { Logger } from '@nestjs/common';
-import { RelationTypes, UITypes } from 'nocodb-sdk';
+import { RelationTypes, UITypes } from 'atmosphere-sdk';
 import type { LinkToAnotherRecordColumn } from '~/models';
 import type { MetaService } from '~/meta/meta.service';
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
-import type { NcContext } from '~/interface/config';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
+import type { AtContext } from '~/interface/config';
 import { MetaTable } from '~/utils/globals';
 import { Source } from '~/models';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { Model } from '~/models';
 
 const logger = new Logger('LTARIndexUpgrader');
 
 // An upgrader for adding missing index of LTAR relations in XCDB sources
 async function upgradeModelRelationsIndex(
-  context: NcContext,
+  context: AtContext,
   {
     model,
     indexes,
@@ -23,10 +23,10 @@ async function upgradeModelRelationsIndex(
     ncMeta: MetaService;
     model: Model;
     sqlClient: ReturnType<
-      (typeof NcConnectionMgrv2)['getSqlClient']
+      (typeof AtConnectionMgrv2)['getSqlClient']
     > extends Promise<infer U>
       ? U
-      : ReturnType<(typeof NcConnectionMgrv2)['getSqlClient']>;
+      : ReturnType<(typeof AtConnectionMgrv2)['getSqlClient']>;
     indexes: {
       cn: string;
       key_name: string;
@@ -98,7 +98,7 @@ async function upgradeModelRelationsIndex(
 
 // An upgrader for adding missing index for LTAR relations in XCDB sources
 async function upgradeBaseRelations(
-  context: NcContext,
+  context: AtContext,
   {
     ncMeta,
     source,
@@ -107,7 +107,7 @@ async function upgradeBaseRelations(
     source: Source;
   },
 ) {
-  const sqlClient = await NcConnectionMgrv2.getSqlClient(source, ncMeta.knex);
+  const sqlClient = await AtConnectionMgrv2.getSqlClient(source, ncMeta.knex);
 
   // get models for the base
   const models = await ncMeta.metaList2(
@@ -145,7 +145,7 @@ async function upgradeBaseRelations(
 }
 
 // Add missing index for LTAR relations
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   logger.log(
     'Starting upgrade for LTAR relations in XCDB sources to add missing index',
   );

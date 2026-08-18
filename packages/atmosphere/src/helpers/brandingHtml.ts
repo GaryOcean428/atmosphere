@@ -5,7 +5,7 @@ import type { Request } from 'express';
  * SPA shell unchanged. The EE override (`src/ee/helpers/brandingHtml.ts`)
  * rewrites the document <head> (title, og:*, twitter:*, theme-color, favicon)
  * from the instance white-label config so link unfurlers / crawlers — which
- * never run our JS — see the configured brand instead of the build-time NocoDB
+ * never run our JS — see the configured brand instead of the build-time Atmosphere
  * defaults. Resolved automatically via the `~/` build overlay.
  */
 export async function injectBrandingMeta(

@@ -34,27 +34,27 @@ const handleUpdateSelectedOptions = (val: string[]) => {
 </script>
 
 <template>
-  <div class="rounded-lg border-1 border-nc-border-gray-medium w-full max-w-full">
-    <div v-if="options.length > 6" class="border-b-1 border-nc-border-gray-medium pl-1 group" @click.stop>
+  <div class="rounded-lg border-1 border-atm-border-gray-medium w-full max-w-full">
+    <div v-if="options.length > 6" class="border-b-1 border-atm-border-gray-medium pl-1 group" @click.stop>
       <a-input
         ref="inputRef"
         v-model:value="searchVal"
         :placeholder="$t('general.search')"
-        class="nc-multi-select-search-field-input !pl-2 !pr-1.5 flex-1 !py-2"
+        class="atm-multi-select-search-field-input !pl-2 !pr-1.5 flex-1 !py-2"
         allow-clear
         autocomplete="off"
         :bordered="false"
       >
         <template #prefix>
-          <GeneralIcon icon="search" class="nc-search-icon text-nc-content-gray-muted opacity-50 h-4 w-4 mr-1.5" />
+          <GeneralIcon icon="search" class="atm-search-icon text-atm-content-gray-muted opacity-50 h-4 w-4 mr-1.5" />
         </template>
       </a-input>
     </div>
-    <div class="w-full max-w-full max-h-[252px] nc-scrollbar-thin p-1">
+    <div class="w-full max-w-full max-h-[252px] atm-scrollbar-thin p-1">
       <a-checkbox-group
         :value="selectedOptions"
         :disabled="disabled"
-        class="nc-field-layout-list"
+        class="atm-field-layout-list"
         @click.stop
         @update:value="handleUpdateSelectedOptions($event as string[])"
       >
@@ -64,9 +64,9 @@ const handleUpdateSelectedOptions = (val: string[]) => {
           :value="op.title"
           :data-testid="`select-option-${column.title}-${location === 'filter' ? 'filter' : rowIndex}`"
           :class="[
-            `nc-select-option-${column.title}-${op.title}`,
+            `atm-select-option-${column.title}-${op.title}`,
             {
-              '!hidden nc-hidden-option': !searchCompare(op.title, searchVal),
+              '!hidden atm-hidden-option': !searchCompare(op.title, searchVal),
             },
           ]"
         >
@@ -77,7 +77,7 @@ const handleUpdateSelectedOptions = (val: string[]) => {
               }"
               class="text-small"
             >
-              <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+              <AtTooltip class="truncate max-w-full" show-on-truncate-only>
                 <template #title>
                   {{ op.title }}
                 </template>
@@ -91,7 +91,7 @@ const handleUpdateSelectedOptions = (val: string[]) => {
                 >
                   {{ op.title }}
                 </span>
-              </NcTooltip>
+              </AtTooltip>
             </span>
           </a-tag>
         </a-checkbox>

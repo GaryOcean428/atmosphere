@@ -2,7 +2,7 @@ import type { DataImportHandler } from '~/modules/jobs/jobs/data-import/handlers
 import { CsvImportHandler } from '~/modules/jobs/jobs/data-import/handlers/csv-import.handler';
 import { JsonImportHandler } from '~/modules/jobs/jobs/data-import/handlers/json-import.handler';
 import { ExcelImportHandler } from '~/modules/jobs/jobs/data-import/handlers/excel-import.handler';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 
 const handlers: Record<string, DataImportHandler> = {
   csv: new CsvImportHandler(),
@@ -13,7 +13,7 @@ const handlers: Record<string, DataImportHandler> = {
 export function getImportHandler(importType: string): DataImportHandler {
   const handler = handlers[importType];
   if (!handler) {
-    NcError.badRequest(`Unsupported import type: ${importType}`);
+    AtError.badRequest(`Unsupported import type: ${importType}`);
   }
   return handler;
 }

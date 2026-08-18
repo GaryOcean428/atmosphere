@@ -1,6 +1,6 @@
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { MetaService } from '~/meta/meta.service';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import View from '~/models/View';
 
 /**
@@ -18,9 +18,9 @@ import View from '~/models/View';
  * span bases must invalidate per-base.
  */
 export async function invalidateSingleQueryCacheForModels(
-  context: NcContext,
+  context: AtContext,
   modelIds: Array<string | undefined | null>,
-  ncMeta: MetaService = Noco.ncMeta,
+  ncMeta: MetaService = Atmosphere.ncMeta,
 ): Promise<void> {
   const ids = new Set(modelIds.filter((id): id is string => !!id));
   for (const id of ids) {

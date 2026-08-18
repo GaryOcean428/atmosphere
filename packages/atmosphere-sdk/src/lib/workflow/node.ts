@@ -46,7 +46,7 @@ export interface WorkflowNodeDefinition {
 
   /**
    * Trigger activation type (only for trigger nodes)
-   * - NONE: No activation needed (e.g., manual triggers, internal NocoDB triggers)
+   * - NONE: No activation needed (e.g., manual triggers, internal Atmosphere triggers)
    * - WEBHOOK: Requires external webhook registration (e.g., GitHub, GitLab)
    * - CRON: Requires scheduling (e.g., cron triggers)
    */
@@ -63,8 +63,8 @@ export interface WorkflowNodeDefinition {
   testModes?: TriggerTestMode[];
 
   package?: {
-    name: string; // e.g., 'github', 'google', 'core', 'nocodb'
-    title: string; // e.g., 'GitHub', 'Google', 'Core', 'NocoDB'
+    name: string; // e.g., 'github', 'google', 'core', 'atmosphere'
+    title: string; // e.g., 'GitHub', 'Google', 'Core', 'Atmosphere'
     icon?: string; // Package icon
   };
 

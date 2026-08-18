@@ -12,7 +12,7 @@ export interface FormDraft {
 
 export type FormDraftMap = Record<string /* sharedViewUuid */, FormDraft>
 
-const STORAGE_KEY = 'nc-shared-form-drafts'
+const STORAGE_KEY = 'atm-shared-form-drafts'
 const TTL_MS = 30 * 24 * 60 * 60 * 1000
 
 export class FormDraftStorageManager {

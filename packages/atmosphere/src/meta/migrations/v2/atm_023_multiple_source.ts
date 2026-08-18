@@ -2,7 +2,7 @@ import type { Knex } from 'knex';
 import { MetaTable, MetaTableOldV2 } from '~/utils/globals';
 
 const up = async (knex: Knex) => {
-  await knex.schema.alterTable(MetaTable.SYNC_SOURCE, (table) => {
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_SOURCE, (table) => {
     table.string('base_id', 20);
     table.foreign('base_id').references(`${MetaTableOldV2.BASES}.id`);
   });
@@ -18,7 +18,7 @@ const up = async (knex: Knex) => {
 };
 
 const down = async (knex) => {
-  await knex.schema.alterTable(MetaTable.SYNC_SOURCE, (table) => {
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_SOURCE, (table) => {
     table.dropColumn('base_id');
   });
 
@@ -37,7 +37,7 @@ export { up, down };
 /**
  * @copyright Copyright (c) 2022, Xgene Cloud Ltd
  *
- * @author Mert Ersoy <mert@nocodb.com>
+ * @author Mert Ersoy <mert@atmosphere.dev>
  *
  * @license GNU AGPL version 3 or any later version
  *

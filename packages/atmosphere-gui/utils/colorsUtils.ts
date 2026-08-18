@@ -1,7 +1,7 @@
 import colors from 'windicss/colors'
-import { enumColors as enumColor } from 'nocodb-sdk'
+import { enumColors as enumColor } from 'atmosphere-sdk'
 import tinycolor from 'tinycolor2'
-export { enumColors as enumColor } from 'nocodb-sdk'
+export { enumColors as enumColor } from 'atmosphere-sdk'
 
 export const theme = {
   light: ['#ffdce5', '#fee2d5', '#ffeab6', '#d1f7c4', '#ede2fe', '#eee', '#cfdffe', '#d0f1fd', '#c2f5e8', '#ffdaf6'],
@@ -59,8 +59,8 @@ export const themeV2Colors = {
 
 // @deprecated
 // Use CSS variables from variables.css directly in future like:
-// color: var(--nc-content-brand)
-// background: var(--nc-bg-brand)
+// color: var(--atm-content-brand)
+// background: var(--atm-bg-brand)
 // The above values map 1:1 directly with Figma CSS variables.
 export const themeV3Colors = {
   base: {
@@ -426,7 +426,7 @@ export function ncBuildColorsWithOpacity(colors: Record<string, any>, prefix: st
 export const themeV4Colors = {
   base: { white: '--rgb-color-base-white', black: '--rgb-color-base-black' },
   brand: {
-    inverted: '--rgb-nc-bg-brand-inverted',
+    inverted: '--rgb-atm-bg-brand-inverted',
     20: '--rgb-color-brand-20',
     50: '--rgb-color-brand-50',
     100: '--rgb-color-brand-100',
@@ -562,14 +562,14 @@ export const themeV4Colors = {
 /**
  * In our WindiCSS config, we already added `themeV3Colors`.
  * To add `themeV4Colors` without conflicts, we create a new object
- * with all top-level keys prefixed by `nc-` (e.g., `gray` → `nc-gray`).
+ * with all top-level keys prefixed by `atm-` (e.g., `gray` → `atm-gray`).
  *
  * This keeps both V3 and V4 colors available in the theme without overwriting each other.
  */
 export const themeV4ColorsWithNcPrefix: {
-  [K in keyof typeof themeV4Colors as `nc-${K}`]: (typeof themeV4Colors)[K]
+  [K in keyof typeof themeV4Colors as `atm-${K}`]: (typeof themeV4Colors)[K]
 } = Object.entries(themeV4Colors).reduce((acc, [key, value]) => {
-  acc[`nc-${key}` as `nc-${string}`] = value
+  acc[`atm-${key}` as `atm-${string}`] = value
   return acc
 }, {} as any)
 
@@ -594,45 +594,45 @@ export const themeV4ColorsWithNcPrefix: {
  * ###### Text Color
  * To apply a text color, you can use:
  * ```html
- * <p class="text-nc-content-gray-subtle">This is subtle gray text.</p>
+ * <p class="text-atm-content-gray-subtle">This is subtle gray text.</p>
  * ```
  *
  * ###### Border Color
  * To apply a border color, you can use:
  * ```html
- * <div class="border-nc-border-gray-light">This div has a light gray border.</div>
+ * <div class="border-atm-border-gray-light">This div has a light gray border.</div>
  * ```
  *
  * ###### Background Color
  * To apply a background color, you can use:
  * ```html
- * <div class="bg-nc-bg-brand">This div has a brand color background.</div>
- * <div class="bg-nc-bg-blue-dark">This div has a blue dark color background.</div>
+ * <div class="bg-atm-bg-brand">This div has a brand color background.</div>
+ * <div class="bg-atm-bg-blue-dark">This div has a blue dark color background.</div>
  * ```
  *
  * ###### Fill Color
  * light theme fill colors are globally extended in WindiCSS and can be used for various purposes such as:
  * - **SVG Fill**:
  * ```html
- * <svg class="fill-nc-fill-primary">...</svg>
+ * <svg class="fill-atm-fill-primary">...</svg>
  * ```
  * - **Text Color**:
  * ```html
- * <p class="text-nc-fill-red-dark">...</p>
+ * <p class="text-atm-fill-red-dark">...</p>
  * ```
  * - **Border Color**:
  * ```html
- * <div class="border-nc-fill-primary">...</div>
+ * <div class="border-atm-fill-primary">...</div>
  * ```
  * - **Background Color**:
  * ```html
- * <div class="bg-nc-fill-primary-hover">...</div>
+ * <div class="bg-atm-fill-primary-hover">...</div>
  * ```
  * This setup ensures that your styles are consistent with your design specifications and easily maintainable across the project.
  */
 export const themeVariables = {
   content: {
-    'nc-content-gray': {
+    'atm-content-gray': {
       extreme: themeV4Colors.base.black,
       emphasis: themeV4Colors.gray[900],
       DEFAULT: themeV4Colors.gray[800],
@@ -641,69 +641,69 @@ export const themeVariables = {
       muted: themeV4Colors.gray[500],
       disabled: themeV4Colors.gray[400],
     },
-    'nc-content-brand': {
+    'atm-content-brand': {
       DEFAULT: themeV4Colors.brand[500],
       disabled: themeV4Colors.brand[600],
       hover: themeV4Colors.gray[300],
     },
-    'nc-content-inverted-primary': {
+    'atm-content-inverted-primary': {
       DEFAULT: themeV4Colors.base.white,
       hover: themeV4Colors.base.white,
       disabled: themeV4Colors.gray[500],
     },
-    'nc-content-inverted-secondary': {
+    'atm-content-inverted-secondary': {
       DEFAULT: themeV4Colors.gray[700],
       hover: themeV4Colors.gray[700],
       disabled: themeV4Colors.gray[500],
     },
-    'nc-content-red': {
+    'atm-content-red': {
       dark: themeV4Colors.red[700],
       medium: themeV4Colors.red[500],
       light: themeV4Colors.red[300],
     },
-    'nc-content-green': {
+    'atm-content-green': {
       dark: themeV4Colors.green[700],
       medium: themeV4Colors.green[500],
       light: themeV4Colors.green[300],
     },
-    'nc-content-yellow': {
+    'atm-content-yellow': {
       dark: themeV4Colors.yellow[700],
       medium: themeV4Colors.yellow[500],
       light: themeV4Colors.yellow[300],
     },
-    'nc-content-blue': {
+    'atm-content-blue': {
       dark: themeV4Colors.blue[700],
       medium: themeV4Colors.blue[500],
       light: themeV4Colors.blue[300],
     },
-    'nc-content-purple': {
+    'atm-content-purple': {
       dark: themeV4Colors.purple[700],
       medium: themeV4Colors.purple[500],
       light: themeV4Colors.purple[300],
     },
-    'nc-content-pink': {
+    'atm-content-pink': {
       dark: themeV4Colors.pink[700],
       medium: themeV4Colors.pink[500],
       light: themeV4Colors.pink[300],
     },
-    'nc-content-orange': {
+    'atm-content-orange': {
       dark: themeV4Colors.orange[700],
       medium: themeV4Colors.orange[500],
       light: themeV4Colors.orange[300],
     },
-    'nc-content-maroon': {
+    'atm-content-maroon': {
       dark: themeV4Colors.maroon[700],
       medium: themeV4Colors.maroon[500],
       light: themeV4Colors.maroon[300],
     },
   },
   background: {
-    'nc-bg-default': themeV4Colors.base.white,
-    'nc-bg-brand': {
+    'atm-bg-default': themeV4Colors.base.white,
+    'atm-bg-brand': {
       DEFAULT: themeV4Colors.brand[50],
       inverted: themeV4Colors.brand.inverted,
     },
-    'nc-bg-gray': {
+    'atm-bg-gray': {
       extralight: themeV4Colors.gray[50],
       sidebar: themeV4Colors.gray[50],
       minisidebar: themeV4Colors.gray[100],
@@ -712,45 +712,45 @@ export const themeVariables = {
       dark: themeV4Colors.gray[300],
       extradark: themeV4Colors.gray[400],
     },
-    'nc-bg-red': {
+    'atm-bg-red': {
       light: themeV4Colors.red[50],
       dark: themeV4Colors.red[100],
     },
-    'nc-bg-green': {
+    'atm-bg-green': {
       light: themeV4Colors.green[50],
       dark: themeV4Colors.green[100],
     },
-    'nc-bg-yellow': {
+    'atm-bg-yellow': {
       light: themeV4Colors.yellow[50],
       dark: themeV4Colors.yellow[100],
     },
-    'nc-bg-blue': {
+    'atm-bg-blue': {
       light: themeV4Colors.blue[50],
       dark: themeV4Colors.blue[100],
     },
-    'nc-bg-purple': {
+    'atm-bg-purple': {
       light: themeV4Colors.purple[50],
       dark: themeV4Colors.purple[100],
     },
-    'nc-bg-pink': {
+    'atm-bg-pink': {
       light: themeV4Colors.pink[50],
       dark: themeV4Colors.pink[100],
     },
-    'nc-bg-orange': {
+    'atm-bg-orange': {
       light: themeV4Colors.orange[50],
       dark: themeV4Colors.orange[100],
     },
-    'nc-bg-maroon': {
+    'atm-bg-maroon': {
       light: themeV4Colors.maroon[50],
       dark: themeV4Colors.maroon[100],
     },
   },
   border: {
-    'nc-border-brand': {
+    'atm-border-brand': {
       DEFAULT: themeV4Colors.brand[500],
       medium: themeV4Colors.brand[200],
     },
-    'nc-border-gray': {
+    'atm-border-gray': {
       extralight: themeV4Colors.gray[50],
       light: themeV4Colors.gray[100],
       medium: themeV4Colors.gray[200],
@@ -758,91 +758,91 @@ export const themeVariables = {
       extradark: themeV4Colors.gray[400],
       underline: themeV4Colors.gray[600],
     },
-    'nc-border-red': {
+    'atm-border-red': {
       DEFAULT: themeV4Colors.red[500],
     },
-    'nc-border-green': {
+    'atm-border-green': {
       DEFAULT: themeV4Colors.green[500],
     },
-    'nc-border-yellow': {
+    'atm-border-yellow': {
       DEFAULT: themeV4Colors.yellow[500],
     },
-    'nc-border-blue': {
+    'atm-border-blue': {
       DEFAULT: themeV4Colors.blue[500],
     },
-    'nc-border-purple': {
+    'atm-border-purple': {
       DEFAULT: themeV4Colors.purple[500],
       medium: themeV4Colors.purple[200],
       light: themeV4Colors.purple[100],
     },
-    'nc-border-pink': {
+    'atm-border-pink': {
       DEFAULT: themeV4Colors.pink[500],
     },
-    'nc-border-orange': {
+    'atm-border-orange': {
       DEFAULT: themeV4Colors.orange[500],
     },
-    'nc-border-maroon': {
+    'atm-border-maroon': {
       DEFAULT: themeV4Colors.maroon[500],
     },
   },
   fill: {
-    'nc-fill-primary': {
+    'atm-fill-primary': {
       DEFAULT: themeV4Colors.brand[500],
       hover: themeV4Colors.brand[600],
       disabled: themeV4Colors.gray[300],
       disabled2: themeV4Colors.brand[200],
     },
-    'nc-fill-secondary': {
+    'atm-fill-secondary': {
       DEFAULT: themeV4Colors.base.white,
       hover: themeV4Colors.gray[50],
       disabled: themeV4Colors.base.white,
     },
-    'nc-fill-warning': {
+    'atm-fill-warning': {
       DEFAULT: themeV4Colors.red[500],
       hover: themeV4Colors.red[600],
       disabled: themeV4Colors.gray[50],
     },
-    'nc-fill-success': {
+    'atm-fill-success': {
       DEFAULT: themeV4Colors.green[500],
       hover: themeV4Colors.green[600],
       disabled: themeV4Colors.gray[50],
     },
-    'nc-fill-red': {
+    'atm-fill-red': {
       dark: themeV4Colors.red[700],
       medium: themeV4Colors.red[500],
       light: themeV4Colors.red[300],
     },
-    'nc-fill-green': {
+    'atm-fill-green': {
       dark: themeV4Colors.green[700],
       medium: themeV4Colors.green[500],
       light: themeV4Colors.green[300],
     },
-    'nc-fill-yellow': {
+    'atm-fill-yellow': {
       dark: themeV4Colors.yellow[700],
       medium: themeV4Colors.yellow[500],
       light: themeV4Colors.yellow[300],
     },
-    'nc-fill-blue': {
+    'atm-fill-blue': {
       dark: themeV4Colors.blue[700],
       medium: themeV4Colors.blue[500],
       light: themeV4Colors.blue[300],
     },
-    'nc-fill-purple': {
+    'atm-fill-purple': {
       dark: themeV4Colors.purple[700],
       medium: themeV4Colors.purple[500],
       light: themeV4Colors.purple[300],
     },
-    'nc-fill-pink': {
+    'atm-fill-pink': {
       dark: themeV4Colors.pink[700],
       medium: themeV4Colors.pink[500],
       light: themeV4Colors.pink[300],
     },
-    'nc-fill-orange': {
+    'atm-fill-orange': {
       dark: themeV4Colors.orange[700],
       medium: themeV4Colors.orange[500],
       light: themeV4Colors.orange[300],
     },
-    'nc-fill-maroon': {
+    'atm-fill-maroon': {
       dark: themeV4Colors.maroon[700],
       medium: themeV4Colors.maroon[500],
       light: themeV4Colors.maroon[300],

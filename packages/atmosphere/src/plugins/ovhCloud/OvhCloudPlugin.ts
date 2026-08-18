@@ -1,6 +1,6 @@
 import OvhCloud from './OvhCloud';
-import type { IStorageAdapterV2 } from '~/types/nc-plugin';
-import { XcStoragePlugin } from '~/types/nc-plugin';
+import type { IStorageAdapterV2 } from '~/types/atm-plugin';
+import { XcStoragePlugin } from '~/types/atm-plugin';
 
 class OvhCloudPlugin extends XcStoragePlugin {
   private static storageAdapter: OvhCloud;

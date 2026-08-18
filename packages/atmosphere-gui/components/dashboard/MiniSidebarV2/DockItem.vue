@@ -43,7 +43,7 @@ const itemStyle = computed(() => ({
 
 <template>
   <div
-    class="nc-dock-item"
+    class="atm-dock-item"
     :class="{ active, disabled }"
     :style="itemStyle"
     :data-panel="panelKey"
@@ -51,17 +51,17 @@ const itemStyle = computed(() => ({
     @click="!disabled && emits('click')"
   >
     <!-- Active indicator bar -->
-    <span class="nc-dock-item-indicator" />
+    <span class="atm-dock-item-indicator" />
 
     <slot>
-      <GeneralIcon v-if="currentIcon" :icon="(currentIcon as any)" class="nc-dock-item-icon" />
+      <GeneralIcon v-if="currentIcon" :icon="(currentIcon as any)" class="atm-dock-item-icon" />
     </slot>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-dock-item {
-  @apply relative flex items-center justify-center cursor-pointer flex-shrink-0 text-nc-content-gray-muted;
+.atm-dock-item {
+  @apply relative flex items-center justify-center cursor-pointer flex-shrink-0 text-atm-content-gray-muted;
   width: 48px;
   height: 48px;
   border-radius: 10px;
@@ -91,8 +91,8 @@ const itemStyle = computed(() => ({
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
-  .nc-dock-item-indicator {
-    @apply bg-nc-content-brand;
+  .atm-dock-item-indicator {
+    @apply bg-atm-content-brand;
     position: absolute;
     left: -12px;
     top: 50%;
@@ -105,14 +105,14 @@ const itemStyle = computed(() => ({
     pointer-events: none;
   }
 
-  .nc-dock-item-icon {
+  .atm-dock-item-icon {
     @apply h-5 w-5 flex items-center justify-center;
     color: inherit;
     pointer-events: none;
   }
 
   &:hover:not(.active):not(.disabled) {
-    @apply text-nc-content-subtle2;
+    @apply text-atm-content-subtle2;
     background: rgba(0, 0, 0, 0.05);
 
     :root[theme='dark'] & {
@@ -121,14 +121,14 @@ const itemStyle = computed(() => ({
   }
 
   &.active {
-    @apply text-nc-content-brand;
+    @apply text-atm-content-brand;
     background: rgba(0, 0, 0, 0.08);
 
     :root[theme='dark'] & {
       background: rgba(255, 255, 255, 0.08);
     }
 
-    .nc-dock-item-indicator {
+    .atm-dock-item-indicator {
       opacity: 1;
     }
   }
@@ -140,7 +140,7 @@ const itemStyle = computed(() => ({
 </style>
 
 <style lang="scss">
-.rtl .nc-dock-item {
+.rtl .atm-dock-item {
   transform-origin: right center;
 
   &[data-label]:hover::before {
@@ -148,7 +148,7 @@ const itemStyle = computed(() => ({
     right: calc(100% + 10px);
   }
 
-  .nc-dock-item-indicator {
+  .atm-dock-item-indicator {
     left: auto;
     right: -12px;
     border-radius: 3px 0 0 3px;

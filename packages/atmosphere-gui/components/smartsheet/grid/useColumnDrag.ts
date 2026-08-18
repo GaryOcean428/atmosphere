@@ -1,4 +1,4 @@
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 
 export const useColumnDrag = ({
   fields,
@@ -127,7 +127,7 @@ export const useColumnDrag = ({
 
     const y = dragColPlaceholderDomRef.value!.getBoundingClientRect().top
     const domsUnderMouse = document.elementsFromPoint(e.clientX, y)
-    const columnDom = domsUnderMouse.find((dom) => dom.classList.contains('nc-grid-column-header'))
+    const columnDom = domsUnderMouse.find((dom) => dom.classList.contains('atm-grid-column-header'))
 
     if (columnDom) {
       toBeDroppedColId.value = columnDom?.getAttribute('data-col') ?? null

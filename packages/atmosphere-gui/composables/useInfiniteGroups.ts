@@ -7,7 +7,7 @@ import {
   type TableType,
   UITypes,
   type ViewType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { createGroupUniqueIdentifier, generateGroupPath } from '../components/smartsheet/grid/canvas/utils/groupby'
 import type { CanvasGroup } from '#imports'
 import { groupKeysManager } from '#imports'
@@ -177,7 +177,7 @@ export const useInfiniteGroups = (
                   },
                 },
               )
-            : await $api.dbViewRow.groupBy('noco', base.value.id, view.value.fk_model_id, view.value.id, {
+            : await $api.dbViewRow.groupBy('atmosphere', base.value.id, view.value.fk_model_id, view.value.id, {
                 offset,
                 limit: GROUP_CHUNK_SIZE,
                 where: effectiveWhere,
@@ -628,7 +628,7 @@ export const useInfiniteGroups = (
                 },
               },
             )
-          : await $api.dbViewRow.groupByCount('noco', base.value.id!, view.value.fk_model_id, view.value.id!, {
+          : await $api.dbViewRow.groupByCount('atmosphere', base.value.id!, view.value.fk_model_id, view.value.id!, {
               where: effectiveWhere,
               column_name: groupCol.column.title,
             })
@@ -666,7 +666,7 @@ export const useInfiniteGroups = (
                 },
               },
             )
-          : await $api.dbViewRow.groupByCount('noco', base.value.id!, view.value.fk_model_id, view.value.id!, {
+          : await $api.dbViewRow.groupByCount('atmosphere', base.value.id!, view.value.fk_model_id, view.value.id!, {
               where: effectiveWhere,
               column_name: groupCol.column.title,
               filterArrJson: JSON.stringify(groupFilterArr),

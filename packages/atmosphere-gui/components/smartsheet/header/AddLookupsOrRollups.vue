@@ -6,7 +6,7 @@ import {
   UITypes,
   getAvailableRollupForColumn,
   rollupAllFunctions,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import Draggable from 'vuedraggable'
 import { generateUniqueColumnName } from '~/helpers/parsers/parserHelpers'
 
@@ -215,10 +215,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <NcModal v-model:visible="value" size="small">
+  <AtModal v-model:visible="value" size="small">
     <div class="flex flex-col gap-3">
       <div>
-        <h1 class="text-base text-nc-content-gray font-semibold flex items-center gap-2">
+        <h1 class="text-base text-atm-content-gray font-semibold flex items-center gap-2">
           <SmartsheetHeaderVirtualCellIcon
             :column-meta="{
               uidt: type,
@@ -232,7 +232,7 @@ onMounted(async () => {
 
           {{ $t(type === UITypes.Lookup ? 'general.addLookupField' : 'general.addRollupField') }}
         </h1>
-        <div class="text-nc-content-gray-muted text-[13px] leading-5">
+        <div class="text-atm-content-gray-muted text-[13px] leading-5">
           {{ type === UITypes.Lookup ? $t('labels.addNewLookupHelperText1') : $t('labels.addNewRollupHelperText1') }}
 
           <span class="font-semibold">
@@ -245,12 +245,12 @@ onMounted(async () => {
       <div class="flex w-full gap-2 justify-between items-center">
         <a-input v-model:value="searchField" class="w-full h-8 flex-1" size="small" :placeholder="$t('placeholder.searchFields')">
           <template #prefix>
-            <component :is="iconMap.search" class="w-4 text-nc-content-gray-muted h-4" />
+            <component :is="iconMap.search" class="w-4 text-atm-content-gray-muted h-4" />
           </template>
         </a-input>
         <div class="flex items-center gap-2">
-          <NcButton size="small" type="text" class="!text-xs" @click="clearAll"> {{ $t('labels.clearAll') }} </NcButton>
-          <NcButton size="small" type="text" class="!text-xs" @click="selectAll"> {{ $t('general.addAll') }} </NcButton>
+          <AtButton size="small" type="text" class="!text-xs" @click="clearAll"> {{ $t('labels.clearAll') }} </AtButton>
+          <AtButton size="small" type="text" class="!text-xs" @click="selectAll"> {{ $t('general.addAll') }} </AtButton>
         </div>
       </div>
 
@@ -258,38 +258,38 @@ onMounted(async () => {
         :class="{
           'flex items-center justify-center': isLoadingModel,
         }"
-        class="border-1 rounded-md h-[300px] nc-scrollbar-md border-nc-border-gray-medium"
+        class="border-1 rounded-md h-[300px] atm-scrollbar-md border-atm-border-gray-medium"
       >
         <Draggable
           v-if="!isLoadingModel"
           v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 50 })"
           v-model="filteredColumns"
           item-key="id"
-          ghost-class="nc-lookup-menu-items-ghost"
+          ghost-class="atm-lookup-menu-items-ghost"
           @start="isDragging = true"
           @end="isDragging = false"
         >
           <template #item="{ element: field }">
             <div
               :key="field.id"
-              :data-testid="`nc-lookup-add-menu-${field.title}`"
+              :data-testid="`atm-lookup-add-menu-${field.title}`"
               class="px-3 py-1 flex flex-row items-center rounded-md"
               :class="{
-                'hover:bg-nc-bg-gray-light': !isDragging,
+                'hover:bg-atm-bg-gray-light': !isDragging,
               }"
               @click.stop="selectedFields[field.id] = !selectedFields[field.id]"
             >
-              <component :is="iconMap.drag" class="cursor-move !h-3.75 text-nc-content-gray-subtle2 mr-1" />
+              <component :is="iconMap.drag" class="cursor-move !h-3.75 text-atm-content-gray-subtle2 mr-1" />
               <div class="flex flex-row items-center w-full cursor-pointer truncate ml-1 py-[5px] pr-2">
-                <SmartsheetHeaderIcon :column="field" class="!w-3.5 !h-3.5" color="text-nc-content-gray-muted" />
-                <NcTooltip class="flex-1 pl-1 pr-2 truncate" show-on-truncate-only>
+                <SmartsheetHeaderIcon :column="field" class="!w-3.5 !h-3.5" color="text-atm-content-gray-muted" />
+                <AtTooltip class="flex-1 pl-1 pr-2 truncate" show-on-truncate-only>
                   <template #title>
                     {{ field.title }}
                   </template>
                   <template #default>{{ field.title }}</template>
-                </NcTooltip>
+                </AtTooltip>
 
-                <NcCheckbox v-model:checked="selectedFields[field.id]" size="default" />
+                <AtCheckbox v-model:checked="selectedFields[field.id]" size="default" />
               </div>
 
               <div class="flex-1" />
@@ -303,11 +303,11 @@ onMounted(async () => {
       </div>
 
       <div class="flex w-full gap-2 justify-end">
-        <NcButton type="secondary" size="small" @click="value = false">
+        <AtButton type="secondary" size="small" @click="value = false">
           {{ $t('general.cancel') }}
-        </NcButton>
+        </AtButton>
 
-        <NcButton
+        <AtButton
           :loading="isLoading"
           :disabled="!Object.values(selectedFields).filter(Boolean).length"
           size="small"
@@ -318,22 +318,22 @@ onMounted(async () => {
               count: Object.values(selectedFields).filter(Boolean).length || '',
             })
           }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style scoped lang="scss">
 .ant-input::placeholder {
-  @apply text-nc-content-gray-muted;
+  @apply text-atm-content-gray-muted;
 }
 
 .ant-input:placeholder-shown {
-  @apply text-nc-content-gray-muted !text-md;
+  @apply text-atm-content-gray-muted !text-md;
 }
 
 .ant-input-affix-wrapper {
-  @apply px-4 rounded-lg py-2 w-84 border-1 focus:border-nc-border-brand border-nc-border-gray-medium !ring-0;
+  @apply px-4 rounded-lg py-2 w-84 border-1 focus:border-atm-border-brand border-atm-border-gray-medium !ring-0;
 }
 </style>

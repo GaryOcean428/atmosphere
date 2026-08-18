@@ -3,7 +3,7 @@ import knex from 'knex';
 import isEmpty from 'lodash/isEmpty';
 import mapKeys from 'lodash/mapKeys';
 import find from 'lodash/find';
-import { ncIsNullOrUndefined, UITypes } from 'nocodb-sdk';
+import { ncIsNullOrUndefined, UITypes } from 'atmosphere-sdk';
 import debug from 'debug';
 import KnexClient from '~/db/sql-client/lib/KnexClient';
 import Debug from '~/db/util/Debug';
@@ -17,7 +17,7 @@ import pgQueries from '~/db/sql-client/lib/pg/pg.queries';
 import deepClone from '~/helpers/deepClone';
 
 const log = new Debug('PGClient');
-const debugTableUpdateQuery = debug('nc:db:query:PGClient:tableUpdate');
+const debugTableUpdateQuery = debug('atm:db:query:PGClient:tableUpdate');
 
 class PGClient extends KnexClient {
   constructor(connectionConfig) {
@@ -42,10 +42,10 @@ class PGClient extends KnexClient {
 
     try {
       if (!args.schema) {
-        args.schema = `nc${nanoid(8)}`;
+        args.schema = `atm${nanoid(8)}`;
       }
       if (!args.user) {
-        args.user = `nc${nanoid(8)}`;
+        args.user = `atm${nanoid(8)}`;
       }
       if (!args.password) {
         args.password = nanoid(16);

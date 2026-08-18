@@ -1,4 +1,4 @@
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 
 const [useProvideExpandedFormPanel, useExpandedFormPanel] = useInjectionState(() => {
   const meta = inject(MetaInj, ref())

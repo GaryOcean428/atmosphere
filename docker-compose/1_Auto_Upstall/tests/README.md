@@ -1,9 +1,9 @@
 # Auto-upstall installer tests
 
-Automated tests for `noco.sh`, the NocoDB auto-upstall install wizard.
+Automated tests for `atmosphere.sh`, the Atmosphere auto-upstall install wizard.
 
 The installer's file generation is decoupled from its OS/Docker/port preflight via
-the internal `NOCO_SKIP_PREFLIGHT` env var, so the whole fast suite runs on **any OS,
+the internal `ATMOSPHERE_SKIP_PREFLIGHT` env var, so the whole fast suite runs on **any OS,
 with no Docker and no network**.
 
 ## What's covered
@@ -34,7 +34,7 @@ Requires `bats`, and `jq` for `examples.bats` (and `expect` for the gated intera
 bundled Postgres password is normalized to `__PASSWORD__` before diffing. When a golden
 test fails, the bats output shows a unified diff of exactly what changed.
 
-After an **intentional** change to `noco.sh`'s compose generation, regenerate and review:
+After an **intentional** change to `atmosphere.sh`'s compose generation, regenerate and review:
 
 ```bash
 ./lib/regen-golden.sh

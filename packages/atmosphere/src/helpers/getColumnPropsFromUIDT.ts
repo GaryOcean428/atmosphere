@@ -1,5 +1,5 @@
-import { SqlUiFactory, UITypes } from 'nocodb-sdk';
-import type { ColumnReqType, NormalColumnRequestType } from 'nocodb-sdk';
+import { SqlUiFactory, UITypes } from 'atmosphere-sdk';
+import type { ColumnReqType, NormalColumnRequestType } from 'atmosphere-sdk';
 import type Source from '~/models/Source';
 import type Column from '~/models/Column';
 

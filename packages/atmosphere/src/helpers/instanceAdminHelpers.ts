@@ -1,5 +1,5 @@
-import { ProjectRoles, WorkspaceUserRoles } from 'nocodb-sdk';
-import Noco from '~/Noco';
+import { ProjectRoles, WorkspaceUserRoles } from 'atmosphere-sdk';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 
 const SEAT_CONSUMING_ROLES = [
@@ -21,7 +21,7 @@ const SEAT_CONSUMING_ROLES = [
  * EE on-prem overrides this with full team-aware seat calculation.
  */
 export async function calculateInstanceEditorCount(
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<number> {
   const knex = ncMeta.knexConnection;
 

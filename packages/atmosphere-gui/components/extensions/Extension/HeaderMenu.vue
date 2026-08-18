@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PlanLimitTypes, PlanTitles } from 'nocodb-sdk'
+import { PlanLimitTypes, PlanTitles } from 'atmosphere-sdk'
 
 interface Props {
   isFullscreen?: boolean
@@ -35,16 +35,16 @@ const onDuplicate = () => {
 
 <template>
   <div class="flex items-center" @click.stop>
-    <NcDropdown :trigger="['click']" placement="bottomRight">
-      <NcButton type="text" :size="isFullscreen ? 'small' : 'xs'" class="!px-1">
+    <AtDropdown :trigger="['click']" placement="bottomRight">
+      <AtButton type="text" :size="isFullscreen ? 'small' : 'xs'" class="!px-1">
         <GeneralIcon icon="threeDotVertical" />
-      </NcButton>
+      </AtButton>
 
       <template #overlay>
-        <NcMenu variant="small">
-          <NcMenuItemCopyId
+        <AtMenu variant="small">
+          <AtMenuItemCopyId
             :id="extension.id!"
-            data-testid="nc-extension-item-action-copy-id"
+            data-testid="atm-extension-item-action-copy-id"
             :tooltip="$t('labels.clickToCopyExtensionID')"
             :label="
               $t('labels.extensionIdColon', {
@@ -52,14 +52,14 @@ const onDuplicate = () => {
               })
             "
           />
-          <NcDivider v-if="extensionAccess.create || extensionAccess.update || extensionAccess.delete" />
+          <AtDivider v-if="extensionAccess.create || extensionAccess.update || extensionAccess.delete" />
           <template v-if="!activeError">
-            <NcMenuItem v-if="extensionAccess.create" data-rec="true" @click="emits('rename')">
+            <AtMenuItem v-if="extensionAccess.create" data-rec="true" @click="emits('rename')">
               <GeneralIcon icon="edit" />
               {{ $t('general.rename') }}
-            </NcMenuItem>
+            </AtMenuItem>
 
-            <NcMenuItem
+            <AtMenuItem
               v-if="extensionAccess.create && showEEFeatures"
               data-rec="true"
               class="group"
@@ -77,25 +77,25 @@ const onDuplicate = () => {
                 :content="$t('upgrade.upgradeToAddMoreExtensions')"
                 remove-click
               />
-            </NcMenuItem>
+            </AtMenuItem>
 
-            <NcMenuItem data-rec="true" @click="emits('showDetails')">
+            <AtMenuItem data-rec="true" @click="emits('showDetails')">
               <GeneralIcon icon="info" />
               {{ $t('general.details') }}
-            </NcMenuItem>
+            </AtMenuItem>
 
-            <NcDivider v-if="extensionAccess.update || extensionAccess.delete" />
+            <AtDivider v-if="extensionAccess.update || extensionAccess.delete" />
           </template>
-          <NcMenuItem v-if="extensionAccess.update" data-rec="true" danger @click="emits('clearData')">
+          <AtMenuItem v-if="extensionAccess.update" data-rec="true" danger @click="emits('clearData')">
             <GeneralIcon icon="reload" />
             Clear data
-          </NcMenuItem>
-          <NcMenuItem v-if="extensionAccess.delete" data-rec="true" danger @click="emits('delete')">
+          </AtMenuItem>
+          <AtMenuItem v-if="extensionAccess.delete" data-rec="true" danger @click="emits('delete')">
             <GeneralIcon icon="delete" />
             {{ $t('general.delete') }}
-          </NcMenuItem>
-        </NcMenu>
+          </AtMenuItem>
+        </AtMenu>
       </template>
-    </NcDropdown>
+    </AtDropdown>
   </div>
 </template>

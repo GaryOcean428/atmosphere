@@ -171,20 +171,20 @@ watch(() => props.modelValue, syncFromValue, { immediate: true })
 </script>
 
 <template>
-  <div ref="panelRef" class="nc-color-panel" data-testid="nc-color-panel">
+  <div ref="panelRef" class="atm-color-panel" data-testid="atm-color-panel">
     <!-- Preview row: live option pill + editable hex field -->
     <div class="flex items-center gap-2.5">
-      <div class="nc-color-panel-pill" :style="{ background: pillBg, color: pillText }" data-testid="nc-color-panel-pill">
+      <div class="atm-color-panel-pill" :style="{ background: pillBg, color: pillText }" data-testid="atm-color-panel-pill">
         <span class="truncate">{{ pillLabel }}</span>
       </div>
 
       <div class="flex-1" />
 
-      <div class="nc-color-panel-hex-field">
+      <div class="atm-color-panel-hex-field">
         <input
           :value="hexFieldValue"
           spellcheck="false"
-          data-testid="nc-color-panel-hex-input"
+          data-testid="atm-color-panel-hex-input"
           @input="draft = ($event.target as HTMLInputElement).value"
           @blur="commitHex"
           @keydown.enter.prevent=";($event.target as HTMLInputElement).blur()"
@@ -194,17 +194,17 @@ watch(() => props.modelValue, syncFromValue, { immediate: true })
 
     <!-- Hue rail -->
     <div class="flex flex-col gap-2">
-      <div class="nc-color-panel-label">{{ t('general.hue') }}</div>
-      <div class="nc-color-panel-hue-grid">
+      <div class="atm-color-panel-label">{{ t('general.hue') }}</div>
+      <div class="atm-color-panel-hue-grid">
         <button
           v-for="(fam, i) in families"
           :key="fam.key"
           type="button"
           :title="fam.name"
-          class="nc-color-panel-hue-dot"
-          :class="{ 'nc-selected': i === familyIndex && !override }"
+          class="atm-color-panel-hue-dot"
+          :class="{ 'atm-selected': i === familyIndex && !override }"
           :style="{ background: fam.shades[REPRESENTATIVE_SHADE] }"
-          :data-testid="`nc-color-panel-hue-${fam.key}`"
+          :data-testid="`atm-color-panel-hue-${fam.key}`"
           @click="pickFamily(i)"
           @keydown.right.prevent="moveFocus($event, 1)"
           @keydown.left.prevent="moveFocus($event, -1)"
@@ -215,24 +215,24 @@ watch(() => props.modelValue, syncFromValue, { immediate: true })
     <!-- Shade ramp -->
     <div class="flex flex-col gap-2">
       <div class="flex justify-between items-baseline">
-        <span class="nc-color-panel-label">{{ t('general.shade') }}</span>
-        <span class="nc-color-panel-hex-readout">{{ currentColor.toUpperCase() }}</span>
+        <span class="atm-color-panel-label">{{ t('general.shade') }}</span>
+        <span class="atm-color-panel-hex-readout">{{ currentColor.toUpperCase() }}</span>
       </div>
-      <div class="nc-color-panel-ramp">
+      <div class="atm-color-panel-ramp">
         <button
           v-for="(shade, i) in families[familyIndex].shades"
           :key="shade"
           type="button"
           :title="shade.toUpperCase()"
-          class="nc-color-panel-ramp-cell"
+          class="atm-color-panel-ramp-cell"
           :style="{ background: shade }"
-          data-testid="nc-color-panel-ramp-cell"
+          data-testid="atm-color-panel-ramp-cell"
           @click="pickShade(i)"
           @keydown.right.prevent="moveFocus($event, 1)"
           @keydown.left.prevent="moveFocus($event, -1)"
         >
           <span
-            class="nc-color-panel-ramp-dot"
+            class="atm-color-panel-ramp-dot"
             :style="{ background: contrastText(shade), opacity: i === shadeIndex && !override ? 1 : 0 }"
           />
         </button>
@@ -242,14 +242,14 @@ watch(() => props.modelValue, syncFromValue, { immediate: true })
 </template>
 
 <style lang="scss" scoped>
-.nc-color-panel {
+.atm-color-panel {
   @apply flex flex-col;
   width: 296px;
   padding: 14px;
   gap: 14px;
 }
 
-.nc-color-panel-pill {
+.atm-color-panel-pill {
   @apply inline-flex items-center min-w-0;
   height: 26px;
   max-width: 170px;
@@ -259,73 +259,73 @@ watch(() => props.modelValue, syncFromValue, { immediate: true })
   font-weight: 600;
 }
 
-.nc-color-panel-hex-field {
+.atm-color-panel-hex-field {
   @apply flex items-center;
   height: 28px;
   padding: 0 8px;
-  border: 1px solid var(--nc-border-gray-medium);
+  border: 1px solid var(--atm-border-gray-medium);
   border-radius: 8px;
 
   input {
     @apply font-mono uppercase bg-transparent border-none outline-none;
     width: 68px;
     font-size: 12px;
-    color: var(--nc-content-gray);
+    color: var(--atm-content-gray);
   }
 }
 
-.nc-color-panel-label {
+.atm-color-panel-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--nc-content-gray-muted);
+  color: var(--atm-content-gray-muted);
 }
 
-.nc-color-panel-hex-readout {
+.atm-color-panel-hex-readout {
   @apply font-mono;
   font-size: 11px;
-  color: var(--nc-content-gray-muted);
+  color: var(--atm-content-gray-muted);
 }
 
 // Layout in plain scoped CSS — rare windi utilities (grid-cols-9, gap-[5px])
 // can be missing from a dev server that predates this file, which blew the
 // aspect-ratio dots up to container width.
-.nc-color-panel-hue-grid {
+.atm-color-panel-hue-grid {
   display: grid;
   grid-template-columns: repeat(9, minmax(0, 1fr));
   gap: 6px;
 }
 
-.nc-color-panel-hue-dot {
+.atm-color-panel-hue-dot {
   @apply cursor-pointer border-none p-0;
   aspect-ratio: 1;
   border-radius: 50%;
   box-shadow: inset 0 0 0 1px rgba(16, 16, 21, 0.08);
   transition: box-shadow 150ms;
 
-  &.nc-selected,
+  &.atm-selected,
   &:focus-visible {
-    box-shadow: 0 0 0 2px var(--nc-bg-default), 0 0 0 4px var(--color-brand-500);
+    box-shadow: 0 0 0 2px var(--atm-bg-default), 0 0 0 4px var(--color-brand-500);
     outline: none;
   }
 }
 
-.nc-color-panel-ramp {
+.atm-color-panel-ramp {
   @apply flex overflow-hidden;
   height: 34px;
   border-radius: 8px;
   border: 1px solid rgba(16, 16, 21, 0.08);
 }
 
-.nc-color-panel-ramp-cell {
+.atm-color-panel-ramp-cell {
   @apply flex-1 cursor-pointer grid place-items-center border-none p-0;
 
   &:focus-visible {
-    box-shadow: inset 0 0 0 2px var(--nc-bg-default), inset 0 0 0 4px var(--color-brand-500);
+    box-shadow: inset 0 0 0 2px var(--atm-bg-default), inset 0 0 0 4px var(--color-brand-500);
     outline: none;
   }
 }
 
-.nc-color-panel-ramp-dot {
+.atm-color-panel-ramp-dot {
   @apply block;
   width: 6px;
   height: 6px;

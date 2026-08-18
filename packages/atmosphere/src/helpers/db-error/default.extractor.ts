@@ -1,4 +1,4 @@
-import { NcErrorType } from 'nocodb-sdk';
+import { AtErrorType } from 'atmosphere-sdk';
 import type { Logger } from '@nestjs/common';
 import type { DBErrorExtractResult, IClientDbErrorExtractor } from './utils';
 
@@ -14,7 +14,7 @@ export class DefaultDBErrorExtractor implements IClientDbErrorExtractor {
 
     if (error.code === 'EACCES') {
       return {
-        error: NcErrorType.ERR_DATABASE_OP_FAILED,
+        error: AtErrorType.ERR_DATABASE_OP_FAILED,
         message: 'Connection to internal hosts is not allowed',
         code: 'EACCES',
         httpStatus: 403,
@@ -33,7 +33,7 @@ export class DefaultDBErrorExtractor implements IClientDbErrorExtractor {
     }
 
     return {
-      error: NcErrorType.ERR_DATABASE_OP_FAILED,
+      error: AtErrorType.ERR_DATABASE_OP_FAILED,
       message,
       code: error.code,
       httpStatus,

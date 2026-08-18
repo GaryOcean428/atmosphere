@@ -1,5 +1,5 @@
-import { InterfacePageLayoutTypes, InterfaceVisualizationTypes } from 'nocodb-sdk'
-import type { ColumnType, InterfaceGridVizConfig, InterfacePageType } from 'nocodb-sdk'
+import { InterfacePageLayoutTypes, InterfaceVisualizationTypes } from 'atmosphere-sdk'
+import type { ColumnType, InterfaceGridVizConfig, InterfacePageType } from 'atmosphere-sdk'
 import { scopeColumnsToPageVisualization } from '~/ee/utils/interfaceUtils'
 
 /**

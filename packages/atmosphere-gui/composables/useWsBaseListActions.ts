@@ -1,4 +1,4 @@
-import type { SourceType } from 'nocodb-sdk'
+import type { SourceType } from 'atmosphere-sdk'
 import { DlgBaseErd } from '#components'
 
 const [useProvideWsBaseListActions, useWsBaseListActions] = useInjectionState((closeModal: () => void) => {
@@ -18,16 +18,16 @@ const [useProvideWsBaseListActions, useWsBaseListActions] = useInjectionState((c
   const dialogState = reactive({
     duplicate: {
       isOpen: false,
-      base: null as NcProject | null,
+      base: null as AtProject | null,
     },
     delete: {
       isOpen: false,
-      base: null as NcProject | null,
+      base: null as AtProject | null,
     },
   })
 
   // Helper to update base in its workspace
-  const updateBaseInWorkspace = (base: NcProject, updates: Partial<NcProject>) => {
+  const updateBaseInWorkspace = (base: AtProject, updates: Partial<AtProject>) => {
     const workspaceId = base.fk_workspace_id!
 
     if (isEeUI) {
@@ -46,7 +46,7 @@ const [useProvideWsBaseListActions, useWsBaseListActions] = useInjectionState((c
   }
 
   // Actions
-  const onRename = async (base: NcProject, title: string) => {
+  const onRename = async (base: AtProject, title: string) => {
     try {
       updateBaseInWorkspace(base, { title })
       await $api.base.update(base.id!, { title })
@@ -57,7 +57,7 @@ const [useProvideWsBaseListActions, useWsBaseListActions] = useInjectionState((c
     }
   }
 
-  const onToggleStarred = async (base: NcProject) => {
+  const onToggleStarred = async (base: AtProject) => {
     try {
       const newStarredState = !base.starred
       updateBaseInWorkspace(base, { starred: newStarredState })
@@ -75,13 +75,13 @@ const [useProvideWsBaseListActions, useWsBaseListActions] = useInjectionState((c
     }
   }
 
-  const onDuplicate = (base: NcProject) => {
+  const onDuplicate = (base: AtProject) => {
     dialogState.duplicate.base = base
     dialogState.duplicate.isOpen = true
     $e('c:base:duplicate')
   }
 
-  const onOpenErd = (base: NcProject, source: SourceType) => {
+  const onOpenErd = (base: AtProject, source: SourceType) => {
     $e('c:project:relation')
 
     const isOpen = ref(true)
@@ -99,18 +99,18 @@ const [useProvideWsBaseListActions, useWsBaseListActions] = useInjectionState((c
     }
   }
 
-  const onOpenSettings = async (base: NcProject) => {
+  const onOpenSettings = async (base: AtProject) => {
     closeModal()
     const workspaceId = base.fk_workspace_id || route.params.typeOrId
     await navigateTo(`/${workspaceId}/${base.id}/settings/settings`)
   }
 
-  const onDelete = (base: NcProject) => {
+  const onDelete = (base: AtProject) => {
     dialogState.delete.base = base
     dialogState.delete.isOpen = true
   }
 
-  const onUpdateColor = async (base: NcProject, color: string) => {
+  const onUpdateColor = async (base: AtProject, color: string) => {
     try {
       const newMeta = {
         ...parseProp(base.meta),
@@ -126,7 +126,7 @@ const [useProvideWsBaseListActions, useWsBaseListActions] = useInjectionState((c
   }
 
   // `null` clears the custom glyph so the base falls back to its default icon.
-  const onUpdateIcon = async (base: NcProject, icon: string | null) => {
+  const onUpdateIcon = async (base: AtProject, icon: string | null) => {
     try {
       const newMeta = {
         ...parseProp(base.meta),
@@ -141,7 +141,7 @@ const [useProvideWsBaseListActions, useWsBaseListActions] = useInjectionState((c
     }
   }
 
-  const onReorder = async (base: NcProject, newOrder: number) => {
+  const onReorder = async (base: AtProject, newOrder: number) => {
     try {
       updateBaseInWorkspace(base, { order: newOrder })
       await $api.base.update(base.id!, { order: newOrder })
@@ -152,7 +152,7 @@ const [useProvideWsBaseListActions, useWsBaseListActions] = useInjectionState((c
     }
   }
 
-  const onSelect = async (base: NcProject) => {
+  const onSelect = async (base: AtProject) => {
     // Prevent selecting bases in locked workspaces (CE mode, non-default)
     if (workspaceStore.isWorkspaceCeLocked(base.fk_workspace_id)) return
 
@@ -182,7 +182,7 @@ const [useProvideWsBaseListActions, useWsBaseListActions] = useInjectionState((c
   }
 
   /** Force-open the data view — the "Go to data" action on an interface-default card. */
-  const onOpenData = async (base: NcProject) => {
+  const onOpenData = async (base: AtProject) => {
     if (workspaceStore.isWorkspaceCeLocked(base.fk_workspace_id)) return
 
     $e('a:workspace:base:open-data')

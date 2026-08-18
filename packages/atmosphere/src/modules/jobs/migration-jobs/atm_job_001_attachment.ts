@@ -1,32 +1,32 @@
 import path from 'path';
 import debug from 'debug';
 import PQueue from 'p-queue';
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import { Injectable } from '@nestjs/common';
 import mime from 'mime/lite';
 import { FileReference, Source } from '~/models';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
-import Noco from '~/Noco';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable, RootScopes } from '~/utils/globals';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { Model } from '~/models';
 import { extractProps } from '~/helpers/extractProps';
 import { getPathFromUrl } from '~/helpers/attachmentHelpers';
 
 @Injectable()
 export class AttachmentMigration {
-  private readonly debugLog = debug('nc:migration-jobs:attachment');
+  private readonly debugLog = debug('atm:migration-jobs:attachment');
 
   log = (...msgs: string[]) => {
-    console.log('[nc_job_001_attachment]: ', ...msgs);
+    console.log('[atm_job_001_attachment]: ', ...msgs);
   };
 
   async job() {
     try {
-      const ncMeta = Noco.ncMeta;
+      const ncMeta = Atmosphere.ncMeta;
 
-      const temp_file_references_table = 'nc_temp_file_references';
-      const temp_processed_models_table = 'nc_temp_processed_models';
+      const temp_file_references_table = 'atm_temp_file_references';
+      const temp_processed_models_table = 'atm_temp_processed_models';
 
       const fileReferencesTableExists =
         await ncMeta.knexConnection.schema.hasTable(temp_file_references_table);
@@ -68,11 +68,11 @@ export class AttachmentMigration {
       }
 
       // get all file references
-      const storageAdapter = await NcPluginMgrv2.storageAdapter(ncMeta);
+      const storageAdapter = await AtPluginMgrv2.storageAdapter(ncMeta);
 
       const storageAdapterType = storageAdapter.name;
 
-      const fileScanStream = await storageAdapter.scanFiles('nc/uploads/**');
+      const fileScanStream = await storageAdapter.scanFiles('atm/uploads/**');
 
       const fileReferenceBuffer = [];
 
@@ -194,7 +194,7 @@ export class AttachmentMigration {
           (c) => c.uidt === UITypes.Attachment,
         );
 
-        const dbDriver = await NcConnectionMgrv2.get(source);
+        const dbDriver = await AtConnectionMgrv2.get(source);
 
         if (!dbDriver) {
           this.log(`connection can't achieved for ${source_id}`);
@@ -316,7 +316,7 @@ export class AttachmentMigration {
                 for (const attachment of attachmentArr) {
                   try {
                     if ('path' in attachment || 'url' in attachment) {
-                      const filePath = `nc/uploads/${
+                      const filePath = `atm/uploads/${
                         attachment.path?.replace(/^download\//, '') ||
                         getPathFromUrl(attachment.url, true)
                       }`;

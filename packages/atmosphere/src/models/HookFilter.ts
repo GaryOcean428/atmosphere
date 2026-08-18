@@ -1,10 +1,10 @@
 import { Logger } from '@nestjs/common';
-import type { FilterType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { FilterType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import Model from '~/models/Model';
 import Column from '~/models/Column';
 import View from '~/models/View';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   CacheDelDirection,
   CacheGetType,
@@ -12,9 +12,9 @@ import {
   FilterCacheScope,
   MetaTable,
 } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 const logger = new Logger('Filter');
 
@@ -42,8 +42,8 @@ export default class Filter {
   }
 
   public async getModel(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model> {
     return this.fk_view_id
       ? (await View.get(context, this.fk_view_id, false, ncMeta)).getModel(
@@ -60,9 +60,9 @@ export default class Filter {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     filter: Partial<FilterType>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(filter, [
       'id',
@@ -104,19 +104,19 @@ export default class Filter {
   }
 
   static async redisPostInsert(
-    context: NcContext,
+    context: AtContext,
     id,
     filter: Partial<FilterType>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (!(id && filter.fk_view_id)) {
       logger.error(
         `Mandatory fields missing in FILTER_EXP cache population : id(${id}), fk_view_id(${filter.fk_view_id}), fk_parent_id(${filter.fk_view_id})`,
       );
-      NcError.get(context).internalServerError(`Failed to create filter`);
+      AtError.get(context).internalServerError(`Failed to create filter`);
     }
     const key = `${CacheScope.FILTER_EXP}:${id}`;
-    let value = await NocoCache.get(context, key, CacheGetType.TYPE_OBJECT);
+    let value = await AtmosphereCache.get(context, key, CacheGetType.TYPE_OBJECT);
     if (!value) {
       /* get from db */
       value = await ncMeta.metaGet2(
@@ -127,11 +127,11 @@ export default class Filter {
       );
 
       /* store in redis */
-      await NocoCache.set(context, key, value).then(async () => {
+      await AtmosphereCache.set(context, key, value).then(async () => {
         /* append key to relevant lists */
         const p = [];
         p.push(
-          NocoCache.appendToList(
+          AtmosphereCache.appendToList(
             context,
             CacheScope.FILTER_EXP,
             [FilterCacheScope.VIEW, filter.fk_view_id],
@@ -140,7 +140,7 @@ export default class Filter {
         );
         if (filter.fk_parent_id) {
           p.push(
-            NocoCache.appendToList(
+            AtmosphereCache.appendToList(
               context,
               CacheScope.FILTER_EXP,
               [FilterCacheScope.VIEW, filter.fk_view_id, filter.fk_parent_id],
@@ -148,7 +148,7 @@ export default class Filter {
             ),
           );
           p.push(
-            NocoCache.appendToList(
+            AtmosphereCache.appendToList(
               context,
               CacheScope.FILTER_EXP,
               [FilterCacheScope.PARENT, filter.fk_parent_id],
@@ -158,7 +158,7 @@ export default class Filter {
         }
         if (filter.fk_column_id) {
           p.push(
-            NocoCache.appendToList(
+            AtmosphereCache.appendToList(
               context,
               CacheScope.FILTER_EXP,
               [FilterCacheScope.COLUMN, filter.fk_column_id],
@@ -173,10 +173,10 @@ export default class Filter {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     id,
     filter: Partial<Filter>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(filter, [
       'fk_column_id',
@@ -197,14 +197,14 @@ export default class Filter {
     );
 
     // update cache
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.FILTER_EXP}:${id}`,
       updateObj,
     );
   }
 
-  static async delete(context: NcContext, id: string, ncMeta = Noco.ncMeta) {
+  static async delete(context: AtContext, id: string, ncMeta = Atmosphere.ncMeta) {
     const filter = await this.get(context, id, ncMeta);
 
     const deleteRecursively = async (filter: Filter) => {
@@ -217,7 +217,7 @@ export default class Filter {
         MetaTable.FILTER_EXP,
         filter.id,
       );
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         context,
         `${CacheScope.FILTER_EXP}:${filter.id}`,
         CacheDelDirection.CHILD_TO_PARENT,
@@ -226,7 +226,7 @@ export default class Filter {
     await deleteRecursively(filter);
   }
 
-  public getColumn(context: NcContext, ncMeta = Noco.ncMeta): Promise<Column> {
+  public getColumn(context: AtContext, ncMeta = Atmosphere.ncMeta): Promise<Column> {
     if (!this.fk_column_id) return null;
     return Column.get(
       context,
@@ -237,9 +237,9 @@ export default class Filter {
     );
   }
 
-  // public async getGroup(ncMeta = Noco.ncMeta): Promise<Filter> {
+  // public async getGroup(ncMeta = Atmosphere.ncMeta): Promise<Filter> {
   //   if (!this.fk_parent_id) return null;
-  //   let filterObj = await NocoCache.get(
+  //   let filterObj = await AtmosphereCache.get(
   //     `${CacheScope.FILTER_EXP}:${this.fk_parent_id}`,
   //     2
   //   );
@@ -247,7 +247,7 @@ export default class Filter {
   //     filterObj = await ncMeta.metaGet2(context.workspace_id, context.base_id, MetaTable.FILTER_EXP, {
   //       id: this.fk_parent_id
   //     });
-  //     await NocoCache.set(
+  //     await AtmosphereCache.set(
   //       `${CacheScope.FILTER_EXP}:${this.fk_parent_id}`,
   //       filterObj
   //     );
@@ -256,12 +256,12 @@ export default class Filter {
   // }
   //
   public async getChildren(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Filter[]> {
     if (this.children) return this.children;
     if (!this.is_group) return null;
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.FILTER_EXP,
       [FilterCacheScope.PARENT, this.id],
@@ -280,7 +280,7 @@ export default class Filter {
           },
         },
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.FILTER_EXP,
         [FilterCacheScope.PARENT, this.id],
@@ -307,15 +307,15 @@ export default class Filter {
   // }
 
   public static async getFilterObject(
-    context: NcContext,
+    context: AtContext,
     {
       viewId,
     }: {
       viewId: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<FilterType> {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.FILTER_EXP,
       [FilterCacheScope.VIEW, viewId],
@@ -333,7 +333,7 @@ export default class Filter {
         },
       );
 
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.FILTER_EXP,
         [FilterCacheScope.VIEW, viewId],
@@ -406,7 +406,7 @@ export default class Filter {
     return result;
   }
 
-  // static async deleteAll(viewId: string, ncMeta = Noco.ncMeta) {
+  // static async deleteAll(viewId: string, ncMeta = Atmosphere.ncMeta) {
   //   const filter = await this.getFilterObject({ viewId }, ncMeta);
   //
   //   const deleteRecursively = async filter => {
@@ -414,7 +414,7 @@ export default class Filter {
   //     for (const f of filter?.children || []) await deleteRecursively(f);
   //     if (filter.id) {
   //       await ncMeta.metaDelete(context.workspace_id, context.base_id, filter.id);
-  //       await NocoCache.deepDel(
+  //       await AtmosphereCache.deepDel(
   //         `${CacheScope.FILTER_EXP}:${filter.id}`,
   //         CacheDelDirection.CHILD_TO_PARENT
   //       );
@@ -424,13 +424,13 @@ export default class Filter {
   // }
   //
   private static async get(
-    context: NcContext,
+    context: AtContext,
     id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let filterObj =
       id &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.FILTER_EXP}:${id}`,
         CacheGetType.TYPE_OBJECT,
@@ -444,17 +444,17 @@ export default class Filter {
           id,
         },
       );
-      await NocoCache.set(context, `${CacheScope.FILTER_EXP}:${id}`, filterObj);
+      await AtmosphereCache.set(context, `${CacheScope.FILTER_EXP}:${id}`, filterObj);
     }
     return filterObj && new Filter(filterObj);
   }
   //
   static async rootFilterList(
-    context: NcContext,
+    context: AtContext,
     { viewId }: { viewId: any },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.FILTER_EXP,
       [FilterCacheScope.VIEW, viewId],
@@ -471,7 +471,7 @@ export default class Filter {
           condition: { fk_view_id: viewId },
         },
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.FILTER_EXP,
         [FilterCacheScope.VIEW, viewId],
@@ -489,9 +489,9 @@ export default class Filter {
   //     viewId: any;
   //     parentId: any;
   //   },
-  //   ncMeta = Noco.ncMeta
+  //   ncMeta = Atmosphere.ncMeta
   // ) {
-  //   let filterObjs = await NocoCache.getList(CacheScope.FILTER_EXP, [
+  //   let filterObjs = await AtmosphereCache.getList(CacheScope.FILTER_EXP, [
   //     FilterCacheScope.VIEW,
   //     viewId,
   //     parentId
@@ -503,7 +503,7 @@ export default class Filter {
   //         fk_view_id: viewId
   //       }
   //     });
-  //     await NocoCache.setList(
+  //     await AtmosphereCache.setList(
   //       CacheScope.FILTER_EXP,
   //       [FilterCacheScope.VIEW, viewId, parentId],
   //       filterObjs

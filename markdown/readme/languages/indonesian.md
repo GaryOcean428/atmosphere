@@ -1,10 +1,10 @@
 
 <h1 align="center" style="border-bottom: none">
      <div>
-        <a href="https://www.nocodb.com">
-            <img src="/packages/nc-gui/assets/img/icons/512x512.png" width="80" />
+        <a href="https://www.atmosphere.dev">
+            <img src="/packages/atmosphere-gui/assets/img/icons/512x512.png" width="80" />
             <br>
-            NocoDB
+            Atmosphere
         </a>
     </div>
     ✨ Free & Self-hostable Airtable alternative ✨ <br>
@@ -22,12 +22,12 @@ Mengubah MySQL, PostgreSQL, SQL Server, SQLite & MariaDB apapun menjadi spreadsh
 </div>
 
 <p align="center">
-    <a href="http://www.nocodb.com"><b>Website</b></a> •
+    <a href="http://www.atmosphere.dev"><b>Website</b></a> •
     <a href="https://discord.gg/c7GEYrvFtT"><b>Discord</b></a> •
-    <a href="https://community.nocodb.com/"><b>Komunitas</b></a> •
-    <a href="https://twitter.com/nocodb"><b>Twitter</b></a> •
-    <a href="https://www.reddit.com/r/NocoDB/"><b>Reddit</b></a> •
-    <a href="https://docs.nocodb.com/"><b>Dokumentasi</b></a>
+    <a href="https://community.atmosphere.dev/"><b>Komunitas</b></a> •
+    <a href="https://twitter.com/atmosphere"><b>Twitter</b></a> •
+    <a href="https://www.reddit.com/r/Atmosphere/"><b>Reddit</b></a> •
+    <a href="https://docs.atmosphere.dev/"><b>Dokumentasi</b></a>
 </p>
 
 ![All Views](https://user-images.githubusercontent.com/35857179/194825053-3aa3373d-3e0f-4b42-b3f1-42928332054a.gif)
@@ -35,12 +35,12 @@ Mengubah MySQL, PostgreSQL, SQL Server, SQLite & MariaDB apapun menjadi spreadsh
 <img src="https://static.scarf.sh/a.png?x-pxid=c12a77cc-855e-4602-8a0f-614b2d0da56a" />
 
 <p align="center">
-  <a href="https://www.producthunt.com/posts/nocodb?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-nocodb" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=297536&theme=dark" alt="NocoDB - Free & Self-hostable Airtable alternative | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+  <a href="https://www.producthunt.com/posts/atmosphere?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-atmosphere" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=297536&theme=dark" alt="Atmosphere - Free & Self-hostable Airtable alternative | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 </p>
 
 # Join Tim Kami
 
-<p align=""><a href="http://careers.nocodb.com" target="_blank"><img src="https://user-images.githubusercontent.com/61551451/169663818-45643495-e95b-48e2-be13-01d6a77dc2fd.png" width="250"/></a></p>
+<p align=""><a href="http://careers.atmosphere.dev" target="_blank"><img src="https://user-images.githubusercontent.com/61551451/169663818-45643495-e95b-48e2-be13-01d6a77dc2fd.png" width="250"/></a></p>
 
 # Join Komunitas Kami
 
@@ -48,7 +48,7 @@ Mengubah MySQL, PostgreSQL, SQL Server, SQLite & MariaDB apapun menjadi spreadsh
 <img src="https://discordapp.com/api/guilds/661905455894888490/widget.png?style=banner3" alt="">
 </a>
 
-[![Stargazers repo roster for @nocodb/nocodb](https://reporoster.com/stars/nocodb/nocodb)](https://github.com/nocodb/nocodb/stargazers)
+[![Stargazers repo roster for @atmosphere/atmosphere](https://reporoster.com/stars/atmosphere/atmosphere)](https://github.com/GaryOcean428/atmosphere/stargazers)
 
 # Coba singkat
 
@@ -57,83 +57,83 @@ Mengubah MySQL, PostgreSQL, SQL Server, SQLite & MariaDB apapun menjadi spreadsh
 ```bash
 # for SQLite
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  nocodb/nocodb:latest
+  atmosphere/atmosphere:latest
 
 # for PostgreSQL
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  -e NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
-  -e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-  nocodb/nocodb:latest````
+  -e ATMOSPHERE_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
+  -e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+  atmosphere/atmosphere:latest````
 
 > Untuk menyimpan data di dalam Docker, Anda dapat melakukan mount volume di direktori /usr/app/data/ mulai dari versi 0.10.6. Jika tidak, data Anda akan hilang setelah mengulang pembuatan kontainer.
 
-> Jika Anda berencana untuk memasukkan beberapa karakter khusus, Anda perlu mengubah set karakter dan kolasi sendiri saat membuat basis data. Silakan lihat contoh-contoh untuk [MySQL Docker](https://github.com/nocodb/nocodb/issues/1340#issuecomment-1049481043).
+> Jika Anda berencana untuk memasukkan beberapa karakter khusus, Anda perlu mengubah set karakter dan kolasi sendiri saat membuat basis data. Silakan lihat contoh-contoh untuk [MySQL Docker](https://github.com/GaryOcean428/atmosphere/issues/1340#issuecomment-1049481043).
 
 ## Binaries
 
 ##### MacOS (x64)
 
 ```bash
-curl http://get.nocodb.com/macos-x64 -o nocodb -L && chmod +x nocodb && ./nocodb
+curl http://get.atmosphere.dev/macos-x64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere
 ```
 
 ##### MacOS (arm64)
 
 ```bash
-curl http://get.nocodb.com/macos-arm64 -o nocodb -L && chmod +x nocodb && ./nocodb
+curl http://get.atmosphere.dev/macos-arm64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere
 ```
 
 ##### Linux (x64)
 
 ```bash
-curl http://get.nocodb.com/linux-x64 -o nocodb -L && chmod +x nocodb && ./nocodb
+curl http://get.atmosphere.dev/linux-x64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere
 ```
 
 ##### Linux (arm64)
 
 ```bash
-curl http://get.nocodb.com/linux-arm64 -o nocodb -L && chmod +x nocodb && ./nocodb
+curl http://get.atmosphere.dev/linux-arm64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere
 ```
 
 ##### Windows (x64)
 
 ```bash
-iwr http://get.nocodb.com/win-x64.exe -o Noco-win-x64.exe
-.\Noco-win-x64.exe
+iwr http://get.atmosphere.dev/win-x64.exe -o Atmosphere-win-x64.exe
+.\Atmosphere-win-x64.exe
 ```
 
 ##### Windows (arm64)
 
 ```bash
-iwr http://get.nocodb.com/win-arm64.exe -o Noco-win-arm64.exe
-.\Noco-win-arm64.exe
+iwr http://get.atmosphere.dev/win-arm64.exe -o Atmosphere-win-arm64.exe
+.\Atmosphere-win-arm64.exe
 ```
 
 ## Docker Compose
 
-Kami menyediakan berbagai file docker-compose.yml di [bawah direktori](https://github.com/nocodb/nocodb/tree/master/docker-compose) ini. Berikut beberapa contohnya:
+Kami menyediakan berbagai file docker-compose.yml di [bawah direktori](https://github.com/GaryOcean428/atmosphere/tree/master/docker-compose) ini. Berikut beberapa contohnya:
 
 ```bash
-git clone https://github.com/nocodb/nocodb
+git clone https://github.com/GaryOcean428/atmosphere
 # for PostgreSQL
-cd nocodb/docker-compose/2_pg
+cd atmosphere/docker-compose/2_pg
 docker compose up -d
 ```
 
 > Untuk menyimpan data dalam Docker, Anda dapat melakukan mount volume pada direktori /usr/app/data/ mulai dari versi 0.10.6. Jika tidak, data Anda akan hilang setelah mengulang pembuatan kontainer.
 
-> Jika Anda berencana untuk memasukkan beberapa karakter khusus, Anda perlu mengubah set karakter dan kolasi sendiri saat membuat basis data. Silakan lihat contoh-contoh untuk [MySQL Docker Compose](https://github.com/nocodb/nocodb/issues/1313#issuecomment-1046625974).
+> Jika Anda berencana untuk memasukkan beberapa karakter khusus, Anda perlu mengubah set karakter dan kolasi sendiri saat membuat basis data. Silakan lihat contoh-contoh untuk [MySQL Docker Compose](https://github.com/GaryOcean428/atmosphere/issues/1313#issuecomment-1046625974).
 
 
 ```bash
-git clone https://github.com/nocodb/nocodb-seed
-cd nocodb-seed
+git clone https://github.com/GaryOcean428/atmosphere-seed
+cd atmosphere-seed
 npm install
 npm start
 ```
@@ -232,26 +232,26 @@ Akses dasbor menggunakan : [http://localhost:8080/dashboard](http://localhost:80
 
 ### Sinkronisasi Skema
 
-Kami memungkinkan Anda untuk menyinkronkan perubahan skema jika Anda telah melakukan perubahan di luar antarmuka NocoDB GUI. Namun, perlu diperhatikan bahwa Anda harus menyediakan migrasi skema sendiri untuk berpindah dari satu lingkungan ke lingkungan lainnya. Lihat [Sinkronisasi Skema](https://docs.nocodb.com/data-sources/sync-with-data-source) untuk detail lebih lanjut.
+Kami memungkinkan Anda untuk menyinkronkan perubahan skema jika Anda telah melakukan perubahan di luar antarmuka Atmosphere GUI. Namun, perlu diperhatikan bahwa Anda harus menyediakan migrasi skema sendiri untuk berpindah dari satu lingkungan ke lingkungan lainnya. Lihat [Sinkronisasi Skema](https://docs.atmosphere.dev/data-sources/sync-with-data-source) untuk detail lebih lanjut.
 
 ### Audit
 
-Kami menyimpan semua log operasi pengguna di satu tempat. Lihat [Audit](https://docs.nocodb.com/data-sources/actions-on-data-sources/#audit-logs) untuk detail lebih lanjut.
+Kami menyimpan semua log operasi pengguna di satu tempat. Lihat [Audit](https://docs.atmosphere.dev/data-sources/actions-on-data-sources/#audit-logs) untuk detail lebih lanjut.
 
 # Pengaturan Produksi
 
-Secara default, SQLite digunakan untuk menyimpan metadata. Namun, Anda dapat menentukan basis data Anda sendiri. Parameter koneksi untuk basis data ini dapat ditentukan dalam variabel lingkungan `NC_DB`. Selain itu, kami juga menyediakan
+Secara default, SQLite digunakan untuk menyimpan metadata. Namun, Anda dapat menentukan basis data Anda sendiri. Parameter koneksi untuk basis data ini dapat ditentukan dalam variabel lingkungan `ATMOSPHERE_DB`. Selain itu, kami juga menyediakan
 
 ## Environment variables
 
-Silakan lihat [Environment Variables](https://docs.nocodb.com/getting-started/self-hosted/environment-variables) untuk informasi lebih lanjut. 
+Silakan lihat [Environment Variables](https://docs.atmosphere.dev/getting-started/self-hosted/environment-variables) untuk informasi lebih lanjut. 
 
 # Pengaturan Pengembangan
 
-Silakan lihat [Pengaturan Development](https://docs.nocodb.com/engineering/development-setup) untuk informasi lebih lanjut.
+Silakan lihat [Pengaturan Development](https://docs.atmosphere.dev/engineering/development-setup) untuk informasi lebih lanjut.
 
 # Berkontribusi
-Silakan lihat [Panduan Kontribusi](https://github.com/nocodb/nocodb/blob/master/.github/CONTRIBUTING.md) untuk informasi lebih lanjut.
+Silakan lihat [Panduan Kontribusi](https://github.com/GaryOcean428/atmosphere/blob/master/.github/CONTRIBUTING.md) untuk informasi lebih lanjut.
 
 # Kenapa kita membangun ini?
 

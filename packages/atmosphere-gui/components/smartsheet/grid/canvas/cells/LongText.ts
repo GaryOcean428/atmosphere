@@ -1,4 +1,4 @@
-import { isAIPromptCol, isSmartText } from 'nocodb-sdk'
+import { isAIPromptCol, isSmartText } from 'atmosphere-sdk'
 import { isBoxHovered, renderIconButton, renderMarkdown, renderMultiLineText, renderTagLabel } from '../utils/canvas'
 import { AILongTextCellRenderer } from './AILongText'
 

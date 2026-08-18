@@ -1,4 +1,4 @@
-import { UITypes } from 'nocodb-sdk'
+import { UITypes } from 'atmosphere-sdk'
 
 export const COLUMN_HEADER_HEIGHT_IN_PX = 32
 export const CELL_BOTTOM_BORDER_IN_PX = 1

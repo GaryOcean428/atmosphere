@@ -1,4 +1,4 @@
-import { isLinkV2, type NcRequest, RelationTypes } from 'nocodb-sdk';
+import { isLinkV2, type AtRequest, RelationTypes } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type { DisplacedRecord } from '~/command-registry/types';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
@@ -22,7 +22,7 @@ export interface NestedLinkAuditEntry {
   rowIdIsInsertedRow: boolean;
   refRowIdIsInsertedRow: boolean;
   type: RelationTypes;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 export interface NestedLinkLastModifiedEntry {
@@ -31,7 +31,7 @@ export interface NestedLinkLastModifiedEntry {
   refBaseModel: IBaseModelSqlV2;
   col: Column;
   nestedData: any;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 export class NestedLinkPreparator {
@@ -77,7 +77,7 @@ export class NestedLinkPreparator {
       nestedCols: Column[];
       data: Record<string, any>;
       insertObj: Record<string, any>;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const postInsertOps: ((

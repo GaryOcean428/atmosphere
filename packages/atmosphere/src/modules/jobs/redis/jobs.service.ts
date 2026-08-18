@@ -1,7 +1,7 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bull';
-import { getTrueCircularReplacer } from 'nocodb-sdk';
+import { getTrueCircularReplacer } from 'atmosphere-sdk';
 import type { JobOptions } from 'bull';
 import type { OnModuleInit } from '@nestjs/common';
 import {
@@ -15,7 +15,7 @@ import {
 import { JobsRedis } from '~/modules/jobs/redis/jobs-redis';
 import { Job } from '~/models';
 import { MetaTable, RootScopes } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 @Injectable()
 export class JobsService implements OnModuleInit {
@@ -25,7 +25,7 @@ export class JobsService implements OnModuleInit {
 
   // pause primary instance queue
   async onModuleInit() {
-    if (process.env.NC_WORKER_CONTAINER === 'false') {
+    if (process.env.ATMOSPHERE_WORKER_CONTAINER === 'false') {
       await this.jobsQueue.pause(true);
     }
 
@@ -57,8 +57,8 @@ export class JobsService implements OnModuleInit {
 
   async toggleQueue() {
     if (
-      process.env.NC_WORKER_CONTAINER !== 'true' &&
-      process.env.NC_WORKER_CONTAINER !== 'false'
+      process.env.ATMOSPHERE_WORKER_CONTAINER !== 'true' &&
+      process.env.ATMOSPHERE_WORKER_CONTAINER !== 'false'
     ) {
       // resume primary instance queue if there is no worker
       const workerCount = await JobsRedis.workerCount();
@@ -116,7 +116,7 @@ export class JobsService implements OnModuleInit {
     if (!jobData) {
       if (SKIP_STORING_JOB_META.includes(name as JobTypes)) {
         jobData = {
-          id: await Noco.ncMeta.genNanoid(MetaTable.JOBS),
+          id: await Atmosphere.ncMeta.genNanoid(MetaTable.JOBS),
         };
       } else {
         jobData = await Job.insert(context, {

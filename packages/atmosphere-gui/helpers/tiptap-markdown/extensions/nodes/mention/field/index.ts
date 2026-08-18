@@ -1,7 +1,7 @@
 import TipTapMention from '@tiptap/extension-mention'
 import type MarkdownIt from 'markdown-it'
 import regexp from 'markdown-it-regexp'
-import type { UserType } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
 
 // Todo: Update user mention to field mention
 
@@ -26,7 +26,7 @@ export const parseFieldMention = (
 
     let className = 'mention'
     if (bUser.id === currentUser?.id) {
-      className += ' nc-current-user'
+      className += ' atm-current-user'
     }
 
     return `<span class="${className}" data-id='${JSON.stringify({
@@ -51,7 +51,7 @@ export const FieldMention = TipTapMention.extend({
 
     const innerText = attributes.name && attributes.name.length > 0 ? attributes.name : attributes.email
 
-    const styles = attributes.isSameUser === true || attributes.isSameUser === 'true' ? 'nc-current-user' : ''
+    const styles = attributes.isSameUser === true || attributes.isSameUser === 'true' ? 'atm-current-user' : ''
 
     return [
       'span',

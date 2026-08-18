@@ -1,8 +1,8 @@
-import type { BaseType, WorkspaceType, WorkspaceUserRoles } from 'nocodb-sdk'
+import type { BaseType, WorkspaceType, WorkspaceUserRoles } from 'atmosphere-sdk'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { isString } from '@vue/shared'
 
-export interface NcWorkspace extends WorkspaceType {}
+export interface AtWorkspace extends WorkspaceType {}
 
 export const useWorkspace = defineStore('workspaceStore', () => {
   const basesStore = useBases()
@@ -67,7 +67,7 @@ export const useWorkspace = defineStore('workspaceStore', () => {
   )
 
   const activeWorkspaceId = computed(() => {
-    return appInfo.value.defaultWorkspaceId || 'nc'
+    return appInfo.value.defaultWorkspaceId || 'atm'
   })
 
   const activeWorkspace = computed(() => {
@@ -304,26 +304,26 @@ export const useWorkspace = defineStore('workspaceStore', () => {
   const navigateToIntegrations = async (_?: string, cmdOrCtrl?: boolean, query: Record<string, string> = {}) => {
     if (cmdOrCtrl) {
       await navigateTo(
-        { path: '/nc/integrations', query },
+        { path: '/atm/integrations', query },
         {
           open: navigateToBlankTargetOpenOption,
         },
       )
     } else {
-      await navigateTo({ path: '/nc/integrations', query })
+      await navigateTo({ path: '/atm/integrations', query })
     }
   }
 
   const navigateToFeed = async (_?: string, cmdOrCtrl?: boolean, query: Record<string, string> = {}) => {
     if (cmdOrCtrl) {
       await navigateTo(
-        { path: '/nc/feed', query },
+        { path: '/atm/feed', query },
         {
           open: navigateToBlankTargetOpenOption,
         },
       )
     } else {
-      await navigateTo({ path: '/nc/feed', query })
+      await navigateTo({ path: '/atm/feed', query })
     }
   }
 

@@ -6,7 +6,7 @@ const route = useRoute()
 const { te, t } = useI18n()
 
 // todo: fix this
-// const { hasSidebar, isOpen } = useSidebar('nc-left-sidebar')
+// const { hasSidebar, isOpen } = useSidebar('atm-left-sidebar')
 const hasSidebar = ref(true)
 const isOpen = ref(true)
 
@@ -49,38 +49,38 @@ export default {
 <template>
   <a-layout>
     <a-layout-header class="max-h-[var(--new-header-height)] !px-2">
-      <div class="flex w-full h-full items-center nc-header-content">
+      <div class="flex w-full h-full items-center atm-header-content">
         <div class="flex-1 min-w-0 w-50">
           <nuxt-link :to="isPublic ? '' : '/'">
             <img v-if="isWhiteLabelled && logoUrl" :src="logoUrl" :alt="productName" class="h-11 max-w-[180px] object-contain" />
-            <img v-else src="~/assets/img/brand/nocodb-full.png" class="h-11" />
+            <img v-else src="~/assets/img/brand/atmosphere-full.png" class="h-11" />
           </nuxt-link>
         </div>
 
         <div v-if="$route.name === 'index-index'" class="flex gap-1">
-          <!-- <a-button class="!text-inherit" data-testid="nc-dash-nav-workspaces"> Projects</a-button -->
-          <!-- <a-button ghost class="!text-inherit" data-testid="nc-dash-nav-explore"> {{ $t('general.template') }}</a-button>
-          <a-button ghost class="!text-inherit" data-testid="nc-dash-nav-help"> {{ $t('general.help') }}</a-button> -->
+          <!-- <a-button class="!text-inherit" data-testid="atm-dash-nav-workspaces"> Projects</a-button -->
+          <!-- <a-button ghost class="!text-inherit" data-testid="atm-dash-nav-explore"> {{ $t('general.template') }}</a-button>
+          <a-button ghost class="!text-inherit" data-testid="atm-dash-nav-help"> {{ $t('general.help') }}</a-button> -->
         </div>
         <div class="flex-1 min-w-0 flex justify-end gap-2">
           <div class="flex flex-row flex-grow">
             <slot name="navbar" />
           </div>
-          <!-- <div v-if="isHomeScreen" class="nc-quick-action-wrapper" data-testid="nc-quick-action-wrapper">
-            <MaterialSymbolsSearch class="nc-quick-action-icon" />
+          <!-- <div v-if="isHomeScreen" class="atm-quick-action-wrapper" data-testid="atm-quick-action-wrapper">
+            <MaterialSymbolsSearch class="atm-quick-action-icon" />
             <input class="" placeholder="Quick Actions" />
 
-            <span class="nc-quick-action-shortcut">⌘ K</span>
+            <span class="atm-quick-action-shortcut">⌘ K</span>
           </div> -->
 
           <div v-if="!isPublic" class="flex items-center">
-            <NotificationMenu class="mr-2" data-testid="nc-notification-bell-icon" />
+            <NotificationMenu class="mr-2" data-testid="atm-notification-bell-icon" />
           </div>
 
-          <a-dropdown v-if="!isPublic" :trigger="['click']" overlay-class-name="nc-dropdown-user-accounts-menu">
-            <div class="flex items-center gap-1 cursor-pointer" data-testid="nc-ws-account-menu-dropdown">
+          <a-dropdown v-if="!isPublic" :trigger="['click']" overlay-class-name="atm-dropdown-user-accounts-menu">
+            <div class="flex items-center gap-1 cursor-pointer" data-testid="atm-ws-account-menu-dropdown">
               <div
-                class="h-8.5 w-8.5 rounded-full text-xs bg-secondary flex items-center justify-center font-weight-bold text-nc-content-gray-extreme uppercase"
+                class="h-8.5 w-8.5 rounded-full text-xs bg-secondary flex items-center justify-center font-weight-bold text-atm-content-gray-extreme uppercase"
               >
                 {{ email ? email.split('@')[0].slice(0, 2) : 'A' }}
               </div>
@@ -89,16 +89,16 @@ export default {
 
             <template #overlay>
               <a-menu class="!py-0 leading-8 !rounded min-w-40">
-                <a-menu-item key="0" data-testid="nc-menu-accounts__user-settings" class="!rounded-t">
+                <a-menu-item key="0" data-testid="atm-menu-accounts__user-settings" class="!rounded-t">
                   <nuxt-link
                     v-e="['c:navbar:user:email']"
-                    class="nc-base-menu-item group !no-underline"
+                    class="atm-base-menu-item group !no-underline"
                     :to="appInfo.isCloud ? '/account/users' : '/admin?tab=users-list'"
                   >
                     <MdiAccountCircleOutline class="mt-1 group-hover:text-accent" />&nbsp;
                     <div class="prose group-hover:text-primary">
                       <div>{{ $t('labels.account') }}</div>
-                      <div class="text-xs text-nc-content-gray-muted">{{ email }}</div>
+                      <div class="text-xs text-atm-content-gray-muted">{{ email }}</div>
                     </div>
                   </nuxt-link>
                 </a-menu-item>
@@ -107,7 +107,7 @@ export default {
                 <!-- <a-menu-item v-if="isUIAllowed('superAdminAppStore')" key="0" class="!rounded-t">
                   <nuxt-link
                     v-e="['c:settings:appstore', { page: true }]"
-                    class="nc-base-menu-item group !no-underline"
+                    class="atm-base-menu-item group !no-underline"
                     to="/admin/users"
                   >
                     <MdiShieldAccountOutline class="mt-1 group-hover:text-accent" />&nbsp;
@@ -117,11 +117,11 @@ export default {
 
                 <a-menu-divider class="!m-0" />
 
-                <a-menu-item key="1" class="!rounded-b group" data-testid="nc-menu-accounts__sign-out">
+                <a-menu-item key="1" class="!rounded-b group" data-testid="atm-menu-accounts__sign-out">
                   <div
                     v-e="['a:navbar:user:sign-out']"
-                    class="nc-base-menu-item group"
-                    data-testid="nc-logout-btn"
+                    class="atm-base-menu-item group"
+                    data-testid="atm-logout-btn"
                     @click="logout"
                   >
                     <MdiLogout class="group-hover:text-accent" />&nbsp;
@@ -138,14 +138,14 @@ export default {
       </div>
     </a-layout-header>
     <!--    todo: change class name -->
-    <a-layout class="nc-root">
+    <a-layout class="atm-root">
       <a-layout-sider
         v-if="hasSidebar"
         ref="sidebar"
         :collapsed="!isOpen"
         width="250"
         collapsed-width="50"
-        class="relative shadow-md h-full z-1 nc-left-sidebar h-[calc(100vh_-_var(--new-header-height))] !shadow-none border-nc-border-gray-light border-r-1 !overflow-x-hidden"
+        class="relative shadow-md h-full z-1 atm-left-sidebar h-[calc(100vh_-_var(--new-header-height))] !shadow-none border-atm-border-gray-light border-r-1 !overflow-x-hidden"
         :trigger="null"
         collapsible
         theme="light"
@@ -160,13 +160,13 @@ export default {
 </template>
 
 <style scoped lang="scss">
-.nc-workspace-avatar {
-  @apply min-w-6 h-6 rounded-[6px] flex items-center justify-center text-nc-content-inverted-primary font-weight-bold uppercase;
+.atm-workspace-avatar {
+  @apply min-w-6 h-6 rounded-[6px] flex items-center justify-center text-atm-content-inverted-primary font-weight-bold uppercase;
   font-size: 0.7rem;
 }
 
-.nc-workspace-list {
-  .nc-workspace-list-item {
+.atm-workspace-list {
+  .atm-workspace-list-item {
     @apply flex gap-2 items-center;
   }
 
@@ -182,21 +182,21 @@ export default {
     @apply opacity-100;
   }
 
-  .nc-workspace-menu {
+  .atm-workspace-menu {
     @apply opacity-0 transition-opactity;
   }
 
-  :deep(.ant-menu-item:hover) .nc-workspace-menu {
+  :deep(.ant-menu-item:hover) .atm-workspace-menu {
     @apply opacity-100;
   }
 }
 
-:deep(.nc-workspace-list .ant-menu-item) {
+:deep(.atm-workspace-list .ant-menu-item) {
   @apply !my-0;
 }
 
-.nc-workspace-group {
-  .nc-workspace-group-item {
+.atm-workspace-group {
+  .atm-workspace-group-item {
     &:hover {
       @apply bg-primary bg-opacity-3 text-primary;
     }
@@ -207,23 +207,23 @@ export default {
 
     @apply h-[40px] px-4 flex items-center gap-2 cursor-pointer;
 
-    .nc-icon {
+    .atm-icon {
       @apply w-6;
     }
   }
 }
 
 // todo:  apply globally at windicss level
-.nc-root {
+.atm-root {
   @apply text-[#4B5563];
 }
 
-.nc-collab-list {
-  .nc-collab-list-item {
+.atm-collab-list {
+  .atm-collab-list-item {
     @apply flex gap-2 py-2 px-4 items-center;
 
-    .nc-collab-avatar {
-      @apply w-6 h-6 rounded-full flex items-center justify-center text-nc-content-inverted-primary font-weight-bold uppercase;
+    .atm-collab-avatar {
+      @apply w-6 h-6 rounded-full flex items-center justify-center text-atm-content-inverted-primary font-weight-bold uppercase;
       font-size: 0.7rem;
     }
   }
@@ -234,27 +234,27 @@ export default {
 }
 
 .ant-layout-header {
-  @apply !h-20 bg-transparent border-b-1 border-nc-border-gray-medium;
+  @apply !h-20 bg-transparent border-b-1 border-atm-border-gray-medium;
 }
 
-.nc-quick-action-wrapper {
+.atm-quick-action-wrapper {
   @apply relative;
 
   input {
-    @apply h-10 w-60 bg-nc-bg-gray-light rounded-md pl-9 pr-5 mr-2;
+    @apply h-10 w-60 bg-atm-bg-gray-light rounded-md pl-9 pr-5 mr-2;
   }
 
-  .nc-quick-action-icon {
+  .atm-quick-action-icon {
     @apply absolute left-2 top-6;
   }
 
-  .nc-quick-action-shortcut {
-    @apply text-nc-content-gray-disabled absolute right-4 top-0;
+  .atm-quick-action-shortcut {
+    @apply text-atm-content-gray-disabled absolute right-4 top-0;
   }
 }
 
 :deep(.ant-tabs-tab:not(ant-tabs-tab-active)) {
-  @apply !text-nc-content-gray-muted;
+  @apply !text-atm-content-gray-muted;
 }
 
 :deep(.ant-tabs-content) {

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import dayjs from 'dayjs'
-import { jalaliWeekdaysShort } from 'nocodb-sdk'
+import { jalaliWeekdaysShort } from 'atmosphere-sdk'
 
 interface Props {
   size?: 'medium'
@@ -181,66 +181,66 @@ const paginate = (action: 'next' | 'prev') => {
 <template>
   <div class="flex flex-col">
     <div
-      class="flex justify-between border-b-1 nc-date-week-header items-center box-border"
+      class="flex justify-between border-b-1 atm-date-week-header items-center box-border"
       :class="{
         'px-2 py-1 h-10': isCellInputField,
         'px-3 py-2': !isCellInputField,
       }"
     >
       <template v-if="header === 'v1'">
-        <NcTooltip hide-on-click>
-          <NcButton class="!border-0" size="small" type="text" @click="paginate('prev')">
+        <AtTooltip hide-on-click>
+          <AtButton class="!border-0" size="small" type="text" @click="paginate('prev')">
             <component :is="iconMap.arrowLeft" class="h-4 w-4" />
-          </NcButton>
+          </AtButton>
           <template #title>
             <span>{{ $t('labels.previous') }}</span>
           </template>
-        </NcTooltip>
+        </AtTooltip>
 
-        <div v-if="isCellInputField" class="text-nc-content-gray-subtle text-sm font-semibold">
-          <span class="nc-month-picker-btn cursor-pointer hover:text-nc-content-brand" @click="pickerType = 'month'">{{
+        <div v-if="isCellInputField" class="text-atm-content-gray-subtle text-sm font-semibold">
+          <span class="atm-month-picker-btn cursor-pointer hover:text-atm-content-brand" @click="pickerType = 'month'">{{
             currentMonth
           }}</span>
           {{ ' ' }}
-          <span class="nc-year-picker-btn cursor-pointer hover:text-nc-content-brand" @click="pickerType = 'year'">{{
+          <span class="atm-year-picker-btn cursor-pointer hover:text-atm-content-brand" @click="pickerType = 'year'">{{
             currentYear
           }}</span>
         </div>
-        <span v-else class="text-nc-content-gray-subtle text-sm font-semibold">{{ currentMonthYear }}</span>
+        <span v-else class="text-atm-content-gray-subtle text-sm font-semibold">{{ currentMonthYear }}</span>
 
-        <NcTooltip hide-on-click>
-          <NcButton class="!border-0" data-testid="nc-calendar-next-btn" size="small" type="text" @click="paginate('next')">
+        <AtTooltip hide-on-click>
+          <AtButton class="!border-0" data-testid="atm-calendar-next-btn" size="small" type="text" @click="paginate('next')">
             <component :is="iconMap.arrowRight" class="h-4 w-4" />
-          </NcButton>
+          </AtButton>
           <template #title>
             <span>{{ $t('labels.next') }}</span>
           </template>
-        </NcTooltip>
+        </AtTooltip>
       </template>
       <template v-else>
-        <div class="text-nc-content-gray-subtle text-sm font-semibold">
-          <span class="px-1 font-bold leading-6 text-sm text-nc-content-gray-subtle py-2">
+        <div class="text-atm-content-gray-subtle text-sm font-semibold">
+          <span class="px-1 font-bold leading-6 text-sm text-atm-content-gray-subtle py-2">
             {{ currentMonthYear }}
           </span>
         </div>
 
         <div class="flex items-center justify-center">
-          <NcTooltip hide-on-click>
-            <NcButton class="!border-0" size="small" type="text" @click="paginate('prev')">
+          <AtTooltip hide-on-click>
+            <AtButton class="!border-0" size="small" type="text" @click="paginate('prev')">
               <GeneralIcon icon="ncChevronLeft" class="h-4 w-4" />
-            </NcButton>
+            </AtButton>
             <template #title>
               <span>{{ $t('labels.previous') }}</span>
             </template>
-          </NcTooltip>
-          <NcTooltip hide-on-click>
-            <NcButton class="!border-0" data-testid="nc-calendar-next-btn" size="small" type="text" @click="paginate('next')">
+          </AtTooltip>
+          <AtTooltip hide-on-click>
+            <AtButton class="!border-0" data-testid="atm-calendar-next-btn" size="small" type="text" @click="paginate('next')">
               <GeneralIcon icon="ncChevronRight" class="h-4 w-4" />
-            </NcButton>
+            </AtButton>
             <template #title>
               <span>{{ $t('labels.next') }}</span>
             </template>
-          </NcTooltip>
+          </AtTooltip>
         </div>
       </template>
     </div>
@@ -249,19 +249,19 @@ const paginate = (action: 'next' | 'prev') => {
         <div
           class="flex justify-between gap-1"
           :class="{
-            'border-b-1 border-nc-border-gray-medium ': isCellInputField,
+            'border-b-1 border-atm-border-gray-medium ': isCellInputField,
           }"
         >
           <span
             v-for="(day, index) in days"
             :key="index"
-            class="flex w-8 h-8 items-center font-[400] justify-center text-nc-content-gray-muted"
+            class="flex w-8 h-8 items-center font-[400] justify-center text-atm-content-gray-muted"
             >{{ day }}</span
           >
         </div>
       </div>
       <div
-        class="grid gap-x-1 gap-y-0.25 py-1 nc-date-week-grid-wrapper grid-cols-7"
+        class="grid gap-x-1 gap-y-0.25 py-1 atm-date-week-grid-wrapper grid-cols-7"
         :class="{
           'px-2': isCellInputField,
           'px-2.5': !isCellInputField,
@@ -273,87 +273,87 @@ const paginate = (action: 'next' | 'prev') => {
           :class="{
             'rounded-lg': !isWeekPicker && !isCellInputField,
             'border-1 ': isSelectedDate(date) && !isWeekPicker && isDayInPagedMonth(date),
-            'bg-nc-bg-gray-medium !font-bold':
+            'bg-atm-bg-gray-medium !font-bold':
               isSelectedDate(date) && !isWeekPicker && isDayInPagedMonth(date) && !isCellInputField,
-            'bg-nc-bg-gray-dark !font-weight-600':
+            'bg-atm-bg-gray-dark !font-weight-600':
               isSelectedDate(date) && !isWeekPicker && isDayInPagedMonth(date) && isCellInputField,
-            'hover:(border-1 border-nc-border-gray-medium bg-nc-bg-gray-light)': !isSelectedDate(date) && !isWeekPicker,
-            'nc-selected-week !font-semibold z-1': isDateInSelectedWeek(date) && isWeekPicker,
+            'hover:(border-1 border-atm-border-gray-medium bg-atm-bg-gray-light)': !isSelectedDate(date) && !isWeekPicker,
+            'atm-selected-week !font-semibold z-1': isDateInSelectedWeek(date) && isWeekPicker,
             'border-none': isWeekPicker,
             'border-transparent': !isWeekPicker,
-            'text-nc-content-gray-disabled': !isDateInCurrentMonth(date),
-            'nc-selected-week-start': isSameDate(date, selectedWeek?.start),
-            'nc-selected-week-end': isSameDate(date, selectedWeek?.end),
-            'rounded-md text-nc-content-brand !font-semibold nc-calendar-today':
+            'text-atm-content-gray-disabled': !isDateInCurrentMonth(date),
+            'atm-selected-week-start': isSameDate(date, selectedWeek?.start),
+            'atm-selected-week-end': isSameDate(date, selectedWeek?.end),
+            'rounded-md text-atm-content-brand !font-semibold atm-calendar-today':
               isSameDate(date, timezoneDayjs.dayjsTz()) && isDateInCurrentMonth(date),
-            'text-nc-content-gray-muted': isJalali ? date.get('day') === 5 : date.get('day') === 0 || date.get('day') === 6,
-            'nc-date-item font-weight-400': isCellInputField,
+            'text-atm-content-gray-muted': isJalali ? date.get('day') === 5 : date.get('day') === 0 || date.get('day') === 6,
+            'atm-date-item font-weight-400': isCellInputField,
             'font-medium': !isCellInputField,
             'rounded': !isWeekPicker && isCellInputField,
           }"
-          class="px-1 h-8 w-8 py-1 relative transition border-1 flex text-nc-content-gray-subtle leading-5 font-[400] items-center cursor-pointer justify-center"
-          data-testid="nc-calendar-date"
+          class="px-1 h-8 w-8 py-1 relative transition border-1 flex text-atm-content-gray-subtle leading-5 font-[400] items-center cursor-pointer justify-center"
+          data-testid="atm-calendar-date"
           :title="isCellInputField ? date.format(isJalali ? 'jYYYY-jMM-jDD' : 'YYYY-MM-DD') : undefined"
           @click="handleSelectDate(date)"
         >
           <span
             v-if="isActiveDate(date)"
             :class="{
-              '!border-nc-base-white': isSelectedDate(date),
-              '!border-nc-brand-50': isSameDate(date, timezoneDayjs.dayjsTz()),
+              '!border-atm-base-white': isSelectedDate(date),
+              '!border-atm-brand-50': isSameDate(date, timezoneDayjs.dayjsTz()),
             }"
-            class="absolute top-1 transition right-1 h-1.5 w-1.5 z-2 border-1 rounded-full border-nc-base-white bg-nc-fill-primary"
+            class="absolute top-1 transition right-1 h-1.5 w-1.5 z-2 border-1 rounded-full border-atm-base-white bg-atm-fill-primary"
           ></span>
-          <span class="nc-date-item-inner z-2">
+          <span class="atm-date-item-inner z-2">
             {{ isJalali ? date.format('jD') : date.get('date') }}
           </span>
         </span>
       </div>
       <div v-if="isCellInputField" class="flex items-center justify-center px-2 pb-2 pt-1 gap-2">
-        <NcButton
-          class="nc-date-picker-now-btn !h-7"
+        <AtButton
+          class="atm-date-picker-now-btn !h-7"
           size="small"
           type="secondary"
           @click="handleSelectDate(timezoneDayjs.dayjsTz())"
         >
           <span class="text-small"> {{ $t('labels.today') }} </span>
-        </NcButton>
-        <NcTooltip v-if="showCurrentDateOption" :disabled="showCurrentDateOption !== 'disabled'">
+        </AtButton>
+        <AtTooltip v-if="showCurrentDateOption" :disabled="showCurrentDateOption !== 'disabled'">
           <template #title>
             {{ $t('tooltip.currentDateNotAvail') }}
           </template>
-          <NcButton
-            class="nc-date-picker-current-date-btn !h-7"
+          <AtButton
+            class="atm-date-picker-current-date-btn !h-7"
             size="small"
             type="secondary"
             :disabled="showCurrentDateOption === 'disabled'"
             @click="emit('currentDate')"
           >
             <span class="text-small"> {{ $t('labels.currentDate') }} </span>
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-selected-week {
+.atm-selected-week {
   @apply relative transition-all;
 }
 
-.nc-selected-week:before {
-  @apply absolute top-0 left-0 w-full h-full bg-nc-bg-gray-medium;
+.atm-selected-week:before {
+  @apply absolute top-0 left-0 w-full h-full bg-atm-bg-gray-medium;
   content: '';
   width: 134%;
   height: 100%;
 }
 
-.nc-selected-week-start:before {
+.atm-selected-week-start:before {
   @apply !border-l-1 !rounded-l-lg;
 }
 
-.nc-selected-week-end:before {
+.atm-selected-week-end:before {
   width: 100%;
   @apply !border-r-1 !rounded-r-lg;
 }

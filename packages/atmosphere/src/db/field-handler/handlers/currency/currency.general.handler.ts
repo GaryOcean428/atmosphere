@@ -1,9 +1,9 @@
-import { getNumericValue, type NcContext, parseProp } from 'nocodb-sdk';
+import { getNumericValue, type AtContext, parseProp } from 'atmosphere-sdk';
 import { DecimalGeneralHandler } from '../decimal/decimal.general.handler';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
 import type { MetaService } from 'src/meta/meta.service';
 import type { Column } from 'src/models';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 export class CurrencyGeneralHandler extends DecimalGeneralHandler {
   override async parseUserInput(params: {
@@ -12,7 +12,7 @@ export class CurrencyGeneralHandler extends DecimalGeneralHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
@@ -21,7 +21,7 @@ export class CurrencyGeneralHandler extends DecimalGeneralHandler {
 
       const numericValueResult = getNumericValue(params.value, locale);
       if (!numericValueResult.isValid) {
-        NcError._.invalidValueForField({
+        AtError._.invalidValueForField({
           value: params.value,
           column: params.column.title,
           type: params.column.uidt,

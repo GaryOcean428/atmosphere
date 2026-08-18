@@ -12,7 +12,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div class="nc-project-home-section">
+  <div class="atm-project-home-section">
     <div class="flex flex-col gap-3" :class="containerClass">
       <div v-for="i in props.rows" :key="i" class="flex items-center gap-2">
         <a-skeleton-avatar active shape="square" class="!h-5 !w-5 !children:(rounded-md w-5 h-5)" />

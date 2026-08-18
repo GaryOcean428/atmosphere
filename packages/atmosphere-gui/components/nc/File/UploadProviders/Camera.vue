@@ -84,22 +84,22 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="w-full relative h-full">
-    <NcTooltip class="absolute top-3 right-2 z-10">
-      <NcButton type="text" class="!border-0" :disabled="isLoading" :size="isMobileMode ? 'small' : 'xsmall'" @click="closeModal">
+    <AtTooltip class="absolute top-3 right-2 z-10">
+      <AtButton type="text" class="!border-0" :disabled="isLoading" :size="isMobileMode ? 'small' : 'xsmall'" @click="closeModal">
         <GeneralIcon icon="close" />
-      </NcButton>
+      </AtButton>
 
       <template #title> {{ $t('general.close') }} </template>
-    </NcTooltip>
-    <div v-if="!permissionGranted" class="w-full h-full flex bg-nc-bg-gray-extralight items-center justify-center">
+    </AtTooltip>
+    <div v-if="!permissionGranted" class="w-full h-full flex bg-atm-bg-gray-extralight items-center justify-center">
       <div
-        class="flex flex-col hover:bg-nc-bg-default p-2 cursor-pointer rounded-md !transition-all transition-ease-in-out duration-300 gap-2 items-center justify-center"
+        class="flex flex-col hover:bg-atm-bg-default p-2 cursor-pointer rounded-md !transition-all transition-ease-in-out duration-300 gap-2 items-center justify-center"
         @click="startCamera"
       >
-        <div class="p-5 bg-nc-bg-default rounded-md shadow-sm">
-          <mdi-camera class="text-4xl text-nc-content-gray" />
+        <div class="p-5 bg-atm-bg-default rounded-md shadow-sm">
+          <mdi-camera class="text-4xl text-atm-content-gray" />
         </div>
-        <h1 class="text-nc-content-gray font-semibold text-center text-xl">
+        <h1 class="text-atm-content-gray font-semibold text-center text-xl">
           {{ $t('labels.allowAccessToYourCamera') }}
         </h1>
       </div>
@@ -115,33 +115,33 @@ onBeforeUnmount(() => {
       <div v-show="!capturedImage" class="w-full gap-3 h-full flex-col flex items-center justify-between">
         <video ref="videoRef" class="rounded-md w-full aspect-video max-w-md flex-1 object-contain" autoplay playsinline></video>
 
-        <NcButton class="!rounded-full !px-0" :disabled="isLoading" @click="captureImage">
+        <AtButton class="!rounded-full !px-0" :disabled="isLoading" @click="captureImage">
           <mdi-camera class="text-xl" />
-        </NcButton>
+        </AtButton>
       </div>
 
       <div v-show="capturedImage" class="flex group flex-col">
         <canvas ref="canvasRef" class="mb-2 rounded-md w-full aspect-video max-w-md flex-1 object-contain"></canvas>
 
-        <div class="relative text-[12px] font-semibold text-nc-content-gray flex">
+        <div class="relative text-[12px] font-semibold text-atm-content-gray flex">
           <div class="flex-auto truncate line-height-4">
             {{ capturedImage?.name }}
           </div>
           <div
             v-if="!isLoading"
-            class="flex-none hide-ui transition-all transition-ease-in-out !h-4 flex items-center bg-nc-bg-default"
+            class="flex-none hide-ui transition-all transition-ease-in-out !h-4 flex items-center bg-atm-bg-default"
           >
-            <NcTooltip placement="bottom">
+            <AtTooltip placement="bottom">
               <template #title> {{ $t('title.removeFile') }} </template>
-              <GeneralIcon icon="delete" class="!text-nc-content-red-medium cursor-pointer" @click="retakeImage" />
-            </NcTooltip>
+              <GeneralIcon icon="delete" class="!text-atm-content-red-medium cursor-pointer" @click="retakeImage" />
+            </AtTooltip>
           </div>
         </div>
-        <div class="flex-none text-[10px] font-semibold text-nc-content-gray-muted">
+        <div class="flex-none text-[10px] font-semibold text-atm-content-gray-muted">
           {{ formatBytes(capturedImage?.size, 0) }}
         </div>
       </div>
-      <NcFileUploadProvidersBottomBar v-show="capturedImage" class="pr-2 bottom-1 relative" upload-text="Upload Image" />
+      <AtFileUploadProvidersBottomBar v-show="capturedImage" class="pr-2 bottom-1 relative" upload-text="Upload Image" />
     </div>
   </div>
 </template>

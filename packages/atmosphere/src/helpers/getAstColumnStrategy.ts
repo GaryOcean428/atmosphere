@@ -7,21 +7,21 @@ import {
   isLinksOrLTAR,
   isOrderCol,
   isSystemColumn,
-  NcApiVersion,
+  AtApiVersion,
   RelationTypes,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Column, LinkToAnotherRecordColumn, Model, View } from '~/models';
 
-// Per-strategy debug loggers, namespaced `nc:ast:<strategy name>` — enable e.g.
-// `DEBUG=nc:ast:*` (all) or `DEBUG=nc:ast:viewVisibilityField` (one strategy) to
+// Per-strategy debug loggers, namespaced `atm:ast:<strategy name>` — enable e.g.
+// `DEBUG=atm:ast:*` (all) or `DEBUG=atm:ast:viewVisibilityField` (one strategy) to
 // trace which strategy owned each column and what it resolved to. Cached so each
 // namespace is created once.
 const strategyDebuggers = new Map<string, ReturnType<typeof debug>>();
 const getStrategyDebug = (name: string): ReturnType<typeof debug> => {
   let log = strategyDebuggers.get(name);
   if (!log) {
-    log = debug(`nc:ast:${name}`);
+    log = debug(`atm:ast:${name}`);
     strategyDebuggers.set(name, log);
   }
   return log;
@@ -29,7 +29,7 @@ const getStrategyDebug = (name: string): ReturnType<typeof debug> => {
 
 /**
  * The projection map `getAst` returns. Kept intentionally narrow (`1 | true |
- * null | Ast`) so it stays assignable to `nocoExecute`'s `FieldRequest`.
+ * null | Ast`) so it stays assignable to `atmosphereExecute`'s `FieldRequest`.
  */
 export type Ast = {
   [key: string]: 1 | true | null | Ast;
@@ -50,7 +50,7 @@ export type AstResult = boolean | number | null | undefined | Ast;
 export interface ColumnAstContext {
   model: Model;
   view?: View;
-  apiVersion: NcApiVersion;
+  apiVersion: AtApiVersion;
   getHiddenColumn: boolean;
   extractOrderColumn: boolean;
   includePkByDefault: boolean;
@@ -129,7 +129,7 @@ const rowColorButtonFieldStrategy: ColumnAstStrategy = {
 // 4. Primary key on APIv3 — always returned (surfaced as `id`).
 const v3PrimaryKeyFieldStrategy: ColumnAstStrategy = {
   name: 'v3PrimaryKeyField',
-  match: (ctx, { col }) => !!col.pk && ctx.apiVersion === NcApiVersion.V3,
+  match: (ctx, { col }) => !!col.pk && ctx.apiVersion === AtApiVersion.V3,
   resolve: () => true,
 };
 
@@ -141,7 +141,7 @@ const v3SystemFieldStrategy: ColumnAstStrategy = {
     col.system &&
     !col.pk &&
     ![UITypes.CreatedTime, UITypes.LastModifiedTime].includes(col.uidt) &&
-    ctx.apiVersion === NcApiVersion.V3,
+    ctx.apiVersion === AtApiVersion.V3,
   resolve: () => false,
 };
 
@@ -251,7 +251,7 @@ const explicitFieldsFieldStrategy: ColumnAstStrategy = {
   name: 'explicitFieldsField',
   match: (ctx) => !!ctx.fields?.length,
   resolve: (ctx, { col, value, isInFields }) =>
-    (isInFields && value) || (ctx.apiVersion === NcApiVersion.V3 && col.pk),
+    (isInFields && value) || (ctx.apiVersion === AtApiVersion.V3 && col.pk),
 };
 
 // 12. Fallback — no view, no fields: every column is requested.

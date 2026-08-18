@@ -62,9 +62,9 @@ watch(visible, (value) => {
 <template>
   <GeneralModal v-model:visible="visible" size="small" centered>
     <div ref="modalRef" class="flex flex-col p-4 md:p-6">
-      <div class="flex flex-row pb-2 mb-3 font-medium text-lg text-nc-content-gray">{{ deleteLabel }} {{ props.entityName }}</div>
+      <div class="flex flex-row pb-2 mb-3 font-medium text-lg text-atm-content-gray">{{ deleteLabel }} {{ props.entityName }}</div>
 
-      <div v-if="showDefaultDeleteMsg" class="mb-3 text-nc-content-gray">
+      <div v-if="showDefaultDeleteMsg" class="mb-3 text-atm-content-gray">
         {{
           $t('msg.areYouSureUWantToDeleteLabel', {
             deleteLabel: deleteLabel.toLowerCase(),
@@ -81,32 +81,32 @@ watch(visible, (value) => {
         </a-alert>
       </template>
       <div class="flex flex-row gap-x-2 mt-2.5 pt-2.5 justify-end">
-        <NcButton type="secondary" size="small" @click="visible = false">
+        <AtButton type="secondary" size="small" @click="visible = false">
           {{ $t('general.cancel') }}
-        </NcButton>
+        </AtButton>
 
-        <NcButton
+        <AtButton
           key="submit"
           type="danger"
           :disabled="disableDeleteBtn"
           size="small"
           html-type="submit"
           :loading="isLoading"
-          data-testid="nc-delete-modal-delete-btn"
+          data-testid="atm-delete-modal-delete-btn"
           @click="onDelete"
         >
           {{ `${deleteLabel} ${props.entityName}` }}
           <template #loading>
             {{ $t('general.deleting') }}
           </template>
-        </NcButton>
+        </AtButton>
       </div>
     </div>
   </GeneralModal>
 </template>
 
 <style lang="scss">
-.nc-modal-wrapper {
+.atm-modal-wrapper {
   .ant-modal-content {
     @apply !p-0;
   }

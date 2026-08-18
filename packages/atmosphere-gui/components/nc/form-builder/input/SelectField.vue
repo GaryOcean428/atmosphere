@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 interface Props {
   value?: string | string[] | null
   tableId?: string
@@ -57,16 +57,16 @@ const handleValueUpdate = (value: any) => {
 </script>
 
 <template>
-  <NcListDropdown v-model:is-open="isOpenColumnSelectDropdown" :disabled="disabled" :has-error="!!selectedColumn?.ncItemDisabled">
+  <AtListDropdown v-model:is-open="isOpenColumnSelectDropdown" :disabled="disabled" :has-error="!!selectedColumn?.ncItemDisabled">
     <div class="flex-1 flex items-center gap-2 min-w-0">
       <div v-if="selectedColumn && !Array.isArray(selectedColumn)" class="min-w-5 flex items-center justify-center">
-        <SmartsheetHeaderIcon :column="selectedColumn.column as ColumnType" color="text-nc-content-gray-muted" />
+        <SmartsheetHeaderIcon :column="selectedColumn.column as ColumnType" color="text-atm-content-gray-muted" />
       </div>
-      <NcTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
+      <AtTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
         <span
           class="text-sm flex-1 truncate"
           :class="{
-            'text-nc-content-gray-muted': !selectedColumn || (Array.isArray(selectedColumn) && selectedColumn.length === 0),
+            'text-atm-content-gray-muted': !selectedColumn || (Array.isArray(selectedColumn) && selectedColumn.length === 0),
           }"
         >
           {{ selectedColumnLabel }}
@@ -75,11 +75,11 @@ const handleValueUpdate = (value: any) => {
         <template #title>
           {{ selectedColumnLabel }}
         </template>
-      </NcTooltip>
+      </AtTooltip>
 
       <GeneralIcon
         v-if="selectedColumn && !disabled"
-        class="hidden text-nc-content-gray-muted transition group-hover:!block h-4 w-4 cursor-pointer"
+        class="hidden text-atm-content-gray-muted transition group-hover:!block h-4 w-4 cursor-pointer"
         icon="ncXCircle"
         @click.stop="handleValueUpdate(null)"
       />
@@ -91,7 +91,7 @@ const handleValueUpdate = (value: any) => {
       />
     </div>
     <template #overlay="{ onEsc }">
-      <NcList
+      <AtList
         v-model:open="isOpenColumnSelectDropdown"
         :value="multiple ? (Array.isArray(modelValue) ? modelValue : []) : modelValue || ''"
         :list="columnList"
@@ -105,10 +105,10 @@ const handleValueUpdate = (value: any) => {
       >
         <template #listItemExtraLeft="{ option }">
           <div class="min-w-5 flex items-center justify-center">
-            <SmartsheetHeaderIcon :column="option.column as ColumnType" color="text-nc-content-gray-muted" />
+            <SmartsheetHeaderIcon :column="option.column as ColumnType" color="text-atm-content-gray-muted" />
           </div>
         </template>
-      </NcList>
+      </AtList>
     </template>
-  </NcListDropdown>
+  </AtListDropdown>
 </template>

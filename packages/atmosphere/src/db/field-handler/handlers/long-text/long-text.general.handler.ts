@@ -1,7 +1,7 @@
-import { NcError } from 'src/helpers/catchError';
-import { NC_MAX_TEXT_LENGTH } from 'src/constants';
-import { isAIPromptCol, ncIsObject } from 'nocodb-sdk';
-import type { AIRecordType, NcContext } from 'nocodb-sdk';
+import { AtError } from 'src/helpers/catchError';
+import { ATMOSPHERE_MAX_TEXT_LENGTH } from 'src/constants';
+import { isAIPromptCol, ncIsObject } from 'atmosphere-sdk';
+import type { AIRecordType, AtContext } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
 import type { MetaService } from 'src/meta/meta.service';
 import type { Column, Filter } from '~/models';
@@ -115,7 +115,7 @@ export class LongTextGeneralHandler extends GenericFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
@@ -128,7 +128,7 @@ export class LongTextGeneralHandler extends GenericFieldHandler {
     value = value?.toString() ?? '';
 
     // if (typeof params.value !== 'string') {
-    //   NcError.invalidValueForField({
+    //   AtError.invalidValueForField({
     //     value: params.value,
     //     column: params.column.title,
     //     type: params.column.uidt,
@@ -138,18 +138,18 @@ export class LongTextGeneralHandler extends GenericFieldHandler {
     //   Number(params.column.dtxp) > 0 &&
     //   params.value.length > Number(params.column.dtxp)
     // ) {
-    //   NcError.invalidValueForField({
+    //   AtError.invalidValueForField({
     //     value: params.value,
     //     column: params.column.title,
     //     type: params.column.uidt,
     //   });
     // }
-    if (value.length > NC_MAX_TEXT_LENGTH) {
-      NcError._.valueLengthExceedLimit({
+    if (value.length > ATMOSPHERE_MAX_TEXT_LENGTH) {
+      AtError._.valueLengthExceedLimit({
         length: value.length,
         column: params.column.title,
         type: params.column.uidt,
-        maxLength: NC_MAX_TEXT_LENGTH,
+        maxLength: ATMOSPHERE_MAX_TEXT_LENGTH,
       });
     }
 

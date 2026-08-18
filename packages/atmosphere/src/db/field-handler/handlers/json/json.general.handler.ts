@@ -1,7 +1,7 @@
-import { ncIsNull, ncIsUndefined } from 'nocodb-sdk';
-import { NcError } from 'src/helpers/catchError';
-import { NC_MAX_TEXT_LENGTH } from 'src/constants';
-import type { NcContext } from 'nocodb-sdk';
+import { ncIsNull, ncIsUndefined } from 'atmosphere-sdk';
+import { AtError } from 'src/helpers/catchError';
+import { ATMOSPHERE_MAX_TEXT_LENGTH } from 'src/constants';
+import type { AtContext } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type CustomKnex from '~/db/CustomKnex';
 import type { FilterOptions } from '~/db/field-handler/field-handler.interface';
@@ -167,7 +167,7 @@ export class JsonGeneralHandler extends GenericFieldHandler {
             break;
 
           default:
-            NcError._.unsupportedFilterOperation(filter.comparison_op);
+            AtError._.unsupportedFilterOperation(filter.comparison_op);
         }
       },
     };
@@ -204,7 +204,7 @@ export class JsonGeneralHandler extends GenericFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
@@ -215,19 +215,19 @@ export class JsonGeneralHandler extends GenericFieldHandler {
       (typeof params.value === 'string' && params.value.length) ??
       (typeof params.value === 'object' && JSON.stringify(params.value).length);
 
-    if (length > NC_MAX_TEXT_LENGTH) {
-      NcError._.valueLengthExceedLimit({
+    if (length > ATMOSPHERE_MAX_TEXT_LENGTH) {
+      AtError._.valueLengthExceedLimit({
         column: params.column.title,
         type: params.column.uidt,
         length,
-        maxLength: NC_MAX_TEXT_LENGTH,
+        maxLength: ATMOSPHERE_MAX_TEXT_LENGTH,
       });
     }
     const parseJsonResult = this.parseJsonValue(params.value);
     if (parseJsonResult.isValidJson) {
       return { value: parseJsonResult.jsonVal };
     } else {
-      NcError.invalidValueForField({
+      AtError.invalidValueForField({
         value: params.value,
         column: params.column.title,
         type: params.column.uidt,

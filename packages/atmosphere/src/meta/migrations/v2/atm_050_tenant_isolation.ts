@@ -1,21 +1,21 @@
 import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
-import { replaceLongBaseIds } from '~/meta/migrations/v2/nc_054_id_length';
+import { replaceLongBaseIds } from '~/meta/migrations/v2/atm_054_id_length';
 
 /*
   Add base_id to:
-    nc_calendar_view_range_v2: MetaTable.CALENDAR_VIEW_RANGE
-    nc_col_barcode_v2: MetaTable.COL_BARCODE
-    nc_col_formula_v2: MetaTable.COL_FORMULA
-    nc_col_lookup_v2: MetaTable.COL_LOOKUP
-    nc_col_qrcode_v2: MetaTable.COL_QRCODE
-    nc_col_relations_v2: MetaTable.COL_RELATIONS
-    nc_col_rollup_v2: MetaTable.COL_ROLLUP
-    nc_col_select_options_v2: MetaTable.COL_SELECT_OPTIONS
+    atm_calendar_view_range_v2: MetaTable.CALENDAR_VIEW_RANGE
+    atm_col_barcode_v2: MetaTable.COL_BARCODE
+    atm_col_formula_v2: MetaTable.COL_FORMULA
+    atm_col_lookup_v2: MetaTable.COL_LOOKUP
+    atm_col_qrcode_v2: MetaTable.COL_QRCODE
+    atm_col_relations_v2: MetaTable.COL_RELATIONS
+    atm_col_rollup_v2: MetaTable.COL_ROLLUP
+    atm_col_select_options_v2: MetaTable.COL_SELECT_OPTIONS
 */
 
 const log = (message: string) => {
-  console.log(`nc_050_tenant_isolation: ${message}`);
+  console.log(`atm_050_tenant_isolation: ${message}`);
 };
 
 let hrTime = process.hrtime();
@@ -180,14 +180,14 @@ const up = async (knex: Knex) => {
   log('Migrating data');
 
   /*
-    nc_calendar_view_range_v2	only fk_view_id is available - join with nc_views_v2 on id to get base_id
-    nc_col_barcode_v2	only fk_column_id is available - join with nc_columns_v2 on id to get base_id
-    nc_col_formula_v2	only fk_column_id is available - join with nc_columns_v2 on id to get base_id
-    nc_col_lookup_v2	only fk_column_id is available - join with nc_columns_v2 on id to get base_id
-    nc_col_qrcode_v2	only fk_column_id is available - join with nc_columns_v2 on id to get base_id
-    nc_col_relations_v2	only fk_column_id is available - join with nc_columns_v2 on id to get base_id
-    nc_col_rollup_v2	only fk_column_id is available - join with nc_columns_v2 on id to get base_id
-    nc_col_select_options_v2	only fk_column_id is available - join with nc_columns_v2 on id to get base_id
+    atm_calendar_view_range_v2	only fk_view_id is available - join with atm_views_v2 on id to get base_id
+    atm_col_barcode_v2	only fk_column_id is available - join with atm_columns_v2 on id to get base_id
+    atm_col_formula_v2	only fk_column_id is available - join with atm_columns_v2 on id to get base_id
+    atm_col_lookup_v2	only fk_column_id is available - join with atm_columns_v2 on id to get base_id
+    atm_col_qrcode_v2	only fk_column_id is available - join with atm_columns_v2 on id to get base_id
+    atm_col_relations_v2	only fk_column_id is available - join with atm_columns_v2 on id to get base_id
+    atm_col_rollup_v2	only fk_column_id is available - join with atm_columns_v2 on id to get base_id
+    atm_col_select_options_v2	only fk_column_id is available - join with atm_columns_v2 on id to get base_id
   */
 
   // Migrate base_id
@@ -237,7 +237,7 @@ const up = async (knex: Knex) => {
     MetaTable.SOURCES_OLD,
     MetaTable.MODELS,
     MetaTable.PROJECT_USERS,
-    MetaTable.SYNC_SOURCE,
+    MetaTable.SYATMOSPHERE_SOURCE,
     MetaTable.EXTENSIONS,
   ];
 
@@ -260,7 +260,7 @@ const up = async (knex: Knex) => {
   logExecutionTime('Dropped existing base_id indexes');
 
   // Recreate existing source_id indexes as name might clash with base_id (old name for source_id)
-  const recreateSourceIdIndexes = [MetaTable.MODELS, MetaTable.SYNC_SOURCE];
+  const recreateSourceIdIndexes = [MetaTable.MODELS, MetaTable.SYATMOSPHERE_SOURCE];
 
   log('Recreating existing source_id indexes');
 
@@ -315,8 +315,8 @@ const up = async (knex: Knex) => {
     MetaTable.MODELS,
     MetaTable.SORT,
     MetaTable.SOURCES_OLD,
-    MetaTable.SYNC_LOGS,
-    MetaTable.SYNC_SOURCE,
+    MetaTable.SYATMOSPHERE_LOGS,
+    MetaTable.SYATMOSPHERE_SOURCE,
     MetaTable.VIEWS,
     MetaTable.MODEL_ROLE_VISIBILITY,
     MetaTable.COMMENTS,

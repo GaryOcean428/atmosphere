@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, EventType } from 'nocodb-sdk';
+import { AppEvents, EventType } from 'atmosphere-sdk';
 import type {
   FilterCreateUpdateV3Type,
   FilterCreateV3Type,
@@ -9,16 +9,16 @@ import type {
   FilterUpdateV3Type,
   FilterV3Type,
   UserType,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { MetaService } from '~/meta/meta.service';
 import type { ViewWebhookManager } from '~/utils/view-webhook-manager';
 import { validatePayload } from '~/helpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { Column, Filter, Hook, View } from '~/models';
 import RowColorCondition from '~/models/RowColorCondition';
-import Noco from '~/Noco';
-import NocoSocket from '~/socket/NocoSocket';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { FiltersService } from '~/services/filters.service';
 import { addDummyRootAndNest } from '~/services/v3/filters-v3.helper';
@@ -40,11 +40,11 @@ export class FiltersV3Service {
   ) {}
 
   async filterCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       filter: FilterCreateV3Type;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     } & { viewId: string }, // | { hookId: string } | { linkColumnId: string }),
   ) {
     // if root group creation then check existing root group
@@ -71,7 +71,7 @@ export class FiltersV3Service {
           context,
         });
 
-        NocoSocket.broadcastEvent(
+        AtmosphereSocket.broadcastEvent(
           context,
           {
             event: EventType.META_EVENT,
@@ -101,7 +101,7 @@ export class FiltersV3Service {
     viewWebhookManager,
     insertedFilters,
     fkLevelId,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   }: {
     context: any;
     param:
@@ -200,7 +200,7 @@ export class FiltersV3Service {
         ncMeta,
       );
       if (filterColumn?.colOptions?.error) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           `Cannot use column '${filterColumn.title}' in filter: ${filterColumn.colOptions.error}`,
         );
       }
@@ -241,13 +241,13 @@ export class FiltersV3Service {
             existingRootFilter.logical_op !==
               extractLogicalOp(groupOrFilter.group_operator)
           ) {
-            NcError.get(context).badRequest(
+            AtError.get(context).badRequest(
               `A root group with a different group operator already exists. Existing: ${existingRootFilter.logical_op?.toUpperCase()}, New: ${
                 groupOrFilter.group_operator
               }`,
             );
           } else if (!('group_operator' in groupOrFilter)) {
-            NcError.get(context).badRequest(
+            AtError.get(context).badRequest(
               `A root group already exists. Cannot add a standalone filter to the root.`,
             );
           }
@@ -338,7 +338,7 @@ export class FiltersV3Service {
       );
       insertedFilters?.push(filter);
     } else {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Invalid structure: Expected a group or filter.',
       );
     }
@@ -362,7 +362,7 @@ export class FiltersV3Service {
           linkColumnId: string;
         }
       | { rowColorConditionId: string },
-    context: NcContext,
+    context: AtContext,
     ncMeta?: MetaService,
   ) {
     let additionalProps = {};
@@ -372,7 +372,7 @@ export class FiltersV3Service {
       const hook = await Hook.get(context, param.hookId);
 
       if (!hook) {
-        NcError.hookNotFound(param.hookId);
+        AtError.hookNotFound(param.hookId);
       }
 
       additionalProps = {
@@ -388,7 +388,7 @@ export class FiltersV3Service {
         ncMeta,
       );
       if (!rowColorCondition) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Row color condition with id ${param.rowColorConditionId} not found`,
         );
       }
@@ -402,7 +402,7 @@ export class FiltersV3Service {
       const view = await View.get(context, param.viewId);
 
       if (!view) {
-        NcError.viewNotFound(param.viewId);
+        AtError.viewNotFound(param.viewId);
       }
 
       additionalProps = {
@@ -416,8 +416,8 @@ export class FiltersV3Service {
   }
 
   async filterDelete(
-    context: NcContext,
-    param: { filterId: string; req: NcRequest; viewId: string },
+    context: AtContext,
+    param: { filterId: string; req: AtRequest; viewId: string },
   ) {
     // if filter id is `root` then delete whole filters of the view
     if (param.filterId === 'root') {
@@ -429,7 +429,7 @@ export class FiltersV3Service {
     const filter = await Filter.get(context, param.filterId ?? '');
 
     if (!filter || filter.fk_view_id !== param.viewId) {
-      NcError.badRequest('Filter not found');
+      AtError.badRequest('Filter not found');
     }
 
     // `viewId` isn't consumed by the v2 filterDelete (the filter is resolved by
@@ -444,13 +444,13 @@ export class FiltersV3Service {
   }
 
   async filterUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       filter: FilterUpdateV3Type;
       filterId: string;
       viewId: string;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload(
@@ -462,7 +462,7 @@ export class FiltersV3Service {
     const filter = await Filter.get(context, param.filterId ?? '');
 
     if (!filter) {
-      NcError.badRequest('Filter not found');
+      AtError.badRequest('Filter not found');
     }
 
     // if group operator is changed, update all children logical_op
@@ -502,12 +502,12 @@ export class FiltersV3Service {
   }
 
   private async extractGroup(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       parentFilterId: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // get nested list
     const list = await this.filterList(
@@ -540,9 +540,9 @@ export class FiltersV3Service {
   }
 
   async filterList(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string } | { hookId: string } | { linkColumnId: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let filters = [];
 
@@ -580,9 +580,9 @@ export class FiltersV3Service {
    * same flat-list → nested-tree build as `filterList`, pre-filtered by level.
    */
   async filterListByLevel(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string; levelId: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const filters = (
       await Filter.allViewFilterList(context, { viewId: param.viewId }, ncMeta)
@@ -591,7 +591,7 @@ export class FiltersV3Service {
   }
 
   async filterReplace(
-    context: NcContext,
+    context: AtContext,
     param: {
       filter: FilterCreateV3Type;
       user: UserType & {
@@ -599,7 +599,7 @@ export class FiltersV3Service {
         workspace_roles?: Record<string, boolean>;
         provider?: string;
       };
-      req: NcRequest;
+      req: AtRequest;
     } & { viewId: string }, // | { hookId: string } | { linkColumnId: string }),
   ) {
     // delete existing filters
@@ -616,7 +616,7 @@ export class FiltersV3Service {
 
   // skip viewWebhookManager for this, deleteAll is not a standalone operation, it's invoked by view service
   async filterDeleteAll(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
     },

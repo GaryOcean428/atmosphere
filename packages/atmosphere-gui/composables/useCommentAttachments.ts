@@ -1,4 +1,4 @@
-import type { AttachmentType } from 'nocodb-sdk'
+import type { AttachmentType } from 'atmosphere-sdk'
 
 /**
  * CE stub — attaching files to comments is an EE/paid feature. In CE the UI is

@@ -1,31 +1,31 @@
-import { NcErrorType } from '~/lib/globals';
+import { AtErrorType } from '~/lib/globals';
 
-export class NcBaseError extends Error {
+export class AtBaseError extends Error {
   constructor(message: string) {
     super(message);
   }
 }
 
-export class BadRequestV2 extends NcBaseError {}
+export class BadRequestV2 extends AtBaseError {}
 
-export class NotAllowed extends NcBaseError {}
+export class NotAllowed extends AtBaseError {}
 
-export class Unauthorized extends NcBaseError {}
+export class Unauthorized extends AtBaseError {}
 
-export class Forbidden extends NcBaseError {}
+export class Forbidden extends AtBaseError {}
 
-export class NotFound extends NcBaseError {}
+export class NotFound extends AtBaseError {}
 
-export class SsoError extends NcBaseError {}
+export class SsoError extends AtBaseError {}
 
-export class MetaError extends NcBaseError {
+export class MetaError extends AtBaseError {
   constructor(param: { message: string; sql: string }) {
     super(param.message);
     Object.assign(this, param);
   }
 }
 
-export class ExternalError extends NcBaseError {
+export class ExternalError extends AtBaseError {
   constructor(error: Error) {
     super(error.message);
     Object.assign(this, error);
@@ -34,7 +34,7 @@ export class ExternalError extends NcBaseError {
 
 export class ExternalTimeout extends ExternalError {}
 
-export class UnprocessableEntity extends NcBaseError {}
+export class UnprocessableEntity extends AtBaseError {}
 
 export class OptionsNotExistsError extends BadRequestV2 {
   constructor({
@@ -78,7 +78,7 @@ export class UniqueConstraintViolationError extends BadRequestV2 {
   fieldName: string;
 }
 
-export class TestConnectionError extends NcBaseError {
+export class TestConnectionError extends AtBaseError {
   public sql_code?: string;
 
   constructor(message: string, sql_code?: string) {
@@ -87,22 +87,22 @@ export class TestConnectionError extends NcBaseError {
   }
 }
 
-export type NcErrorArgs = {
+export type AtErrorArgs = {
   params?: string | string[];
   customMessage?: string | ((...args: string[]) => string);
   details?: any;
 };
 
-export class NcBaseErrorv2 extends NcBaseError {
-  error: NcErrorType;
+export class AtBaseErrorv2 extends AtBaseError {
+  error: AtErrorType;
   code: number;
   details?: any;
 
   constructor(
     message: string,
     code: number,
-    error: NcErrorType,
-    args?: NcErrorArgs
+    error: AtErrorType,
+    args?: AtErrorArgs
   ) {
     super(message);
     this.error = error;

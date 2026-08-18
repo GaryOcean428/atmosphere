@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 // todo: Remove this "Provider" component and use the "EditOrAdd" component directly
-import type { ColumnReqType, ColumnType } from 'nocodb-sdk'
+import type { ColumnReqType, ColumnType } from 'atmosphere-sdk'
 
 interface Props {
   column?: ColumnType

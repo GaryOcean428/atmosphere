@@ -26,19 +26,19 @@ const token = useVModel(props, 'token')
 const supportedDocs: SupportedDocsType[] = [
   {
     title: 'Getting Started with MCP Server',
-    href: 'https://nocodb.com/docs/product-docs/mcp',
+    href: 'https://atmosphere.dev/docs/product-docs/mcp',
   },
   {
     title: 'Claude Setup',
-    href: 'https://nocodb.com/docs/product-docs/mcp#claude',
+    href: 'https://atmosphere.dev/docs/product-docs/mcp#claude',
   },
   {
     title: 'Cursor Setup',
-    href: 'https://nocodb.com/docs/product-docs/mcp#cursor',
+    href: 'https://atmosphere.dev/docs/product-docs/mcp#cursor',
   },
   {
     title: 'Windsurf Setup',
-    href: 'https://nocodb.com/docs/product-docs/mcp#windsurf',
+    href: 'https://atmosphere.dev/docs/product-docs/mcp#windsurf',
   },
 ]
 
@@ -63,10 +63,10 @@ const serverName = computed(() => {
 
   if (props.showWorkspaceBaseInfo) {
     title = isEeUI
-      ? `NocoDB ${token.value.workspace?.title || 'Workspace'} - ${token.value.base?.title || 'Base'}`
-      : `NocoDB - ${token.value.base?.title || 'Base'}`
+      ? `Atmosphere ${token.value.workspace?.title || 'Workspace'} - ${token.value.base?.title || 'Base'}`
+      : `Atmosphere - ${token.value.base?.title || 'Base'}`
   } else {
-    title = `NocoDB Base - ${openedProject.value?.title}`
+    title = `Atmosphere Base - ${openedProject.value?.title}`
   }
 
   if (activeTab.value === 'antigravity') {
@@ -96,46 +96,46 @@ const code = computed(
 </script>
 
 <template>
-  <NcModal v-model:visible="modalVisible" :show-separator="true" size="large" wrap-class-name="nc-modal-mcp-token-create-edit">
+  <AtModal v-model:visible="modalVisible" :show-separator="true" size="large" wrap-class-name="atm-modal-mcp-token-create-edit">
     <template #header>
       <div class="flex w-full items-center p-2 justify-between">
         <div class="flex items-center gap-3 pl-1 flex-1">
-          <GeneralIcon class="text-nc-content-gray-emphasis h-5 w-5" icon="mcp" />
-          <span class="text-nc-content-gray-emphasis truncate font-semibold text-xl">
+          <GeneralIcon class="text-atm-content-gray-emphasis h-5 w-5" icon="mcp" />
+          <span class="text-atm-content-gray-emphasis truncate font-semibold text-xl">
             {{ token.title }}
           </span>
         </div>
 
         <div class="flex justify-end items-center gap-3 pr-0.5 flex-1">
-          <NcButton type="text" size="small" data-testid="nc-close-webhook-modal" @click.stop="closeModal">
+          <AtButton type="text" size="small" data-testid="atm-close-webhook-modal" @click.stop="closeModal">
             <GeneralIcon icon="close" />
-          </NcButton>
+          </AtButton>
         </div>
       </div>
     </template>
-    <div class="flex bg-nc-bg-default rounded-b-2xl h-[calc(100%_-_66px)]">
+    <div class="flex bg-atm-bg-default rounded-b-2xl h-[calc(100%_-_66px)]">
       <div
         ref="containerElem"
-        class="h-full flex-1 flex flex-col overflow-y-auto scroll-smooth nc-scrollbar-thin px-24 py-6 mx-auto"
+        class="h-full flex-1 flex flex-col overflow-y-auto scroll-smooth atm-scrollbar-thin px-24 py-6 mx-auto"
       >
         <div class="flex flex-col max-w-[640px] w-full mx-auto gap-3">
-          <div class="text-nc-content-gray font-bold leading-6">
+          <div class="text-atm-content-gray font-bold leading-6">
             {{ $t('labels.mcpSetup') }}
           </div>
 
           <!-- Workspace/Base Info (for account-level view) -->
-          <div v-if="showWorkspaceBaseInfo" class="flex flex-col gap-2 p-4 bg-nc-bg-gray-extralight rounded-lg">
+          <div v-if="showWorkspaceBaseInfo" class="flex flex-col gap-2 p-4 bg-atm-bg-gray-extralight rounded-lg">
             <div v-if="isEeUI" class="flex items-center gap-2">
-              <span class="text-sm font-semibold text-nc-content-gray-subtle">{{ $t('objects.workspace') }}:</span>
-              <span class="text-sm text-nc-content-gray-subtle2">{{ token.workspace?.title || '-' }}</span>
+              <span class="text-sm font-semibold text-atm-content-gray-subtle">{{ $t('objects.workspace') }}:</span>
+              <span class="text-sm text-atm-content-gray-subtle2">{{ token.workspace?.title || '-' }}</span>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-sm font-semibold text-nc-content-gray-subtle">{{ $t('objects.project') }}:</span>
-              <span class="text-sm text-nc-content-gray-subtle2">{{ token.base?.title || '-' }}</span>
+              <span class="text-sm font-semibold text-atm-content-gray-subtle">{{ $t('objects.project') }}:</span>
+              <span class="text-sm text-atm-content-gray-subtle2">{{ token.base?.title || '-' }}</span>
             </div>
           </div>
 
-          <NcAlert type="info" class="mt-3 max-w-[640px] w-full mx-auto">
+          <AtAlert type="info" class="mt-3 max-w-[640px] w-full mx-auto">
             <template #message>
               {{ $t('labels.mcpTokenVisibilityInfo') }}
             </template>
@@ -143,22 +143,22 @@ const code = computed(
               {{ $t('labels.mcpTokenVisibilityInfoDescription') }} <br />
               {{ $t('labels.mcpTokenVisibilityInfoDescription2') }}
             </template>
-          </NcAlert>
-          <NcTabs v-model:active-key="activeTab">
+          </AtAlert>
+          <AtTabs v-model:active-key="activeTab">
             <a-tab-pane key="claude" class="!h-full">
               <template #tab>
                 <span
                   :class="{
-                    'text-nc-content-brand font-medium': activeTab === 'claude',
-                    'text-nc-content-gray-subtle': activeTab !== 'claude',
+                    'text-atm-content-brand font-medium': activeTab === 'claude',
+                    'text-atm-content-gray-subtle': activeTab !== 'claude',
                   }"
                   class="text-sm"
                 >
                   Claude
                 </span>
               </template>
-              <div class="relative flex flex-col leading-6 text-nc-content-gray-subtle2 gap-3 my-3">
-                Get started with the NocoDB MCP with Claude Desktop in 3 simple steps
+              <div class="relative flex flex-col leading-6 text-atm-content-gray-subtle2 gap-3 my-3">
+                Get started with the Atmosphere MCP with Claude Desktop in 3 simple steps
 
                 <ol class="list-decimal pl-5">
                   <li>Navigate to Claude Desktop settings from the navigation bar.</li>
@@ -166,7 +166,7 @@ const code = computed(
                   <li>Add the JSON configuration that’s provided after creating a token in claude_desktop_config.json</li>
                 </ol>
 
-                <NcButton
+                <AtButton
                   v-if="showRegenerateButton"
                   type="secondary"
                   class="w-39"
@@ -175,7 +175,7 @@ const code = computed(
                   @click="regenerateToken(token)"
                 >
                   {{ $t('labels.regenerateToken') }}
-                </NcButton>
+                </AtButton>
 
                 <DashboardSettingsBaseMCPCode :key="code" :code="code" />
               </div>
@@ -184,16 +184,16 @@ const code = computed(
               <template #tab>
                 <span
                   :class="{
-                    'text-nc-content-brand font-medium': activeTab === 'cursor',
-                    'text-nc-content-gray-subtle': activeTab !== 'cursor',
+                    'text-atm-content-brand font-medium': activeTab === 'cursor',
+                    'text-atm-content-gray-subtle': activeTab !== 'cursor',
                   }"
                   class="text-sm"
                 >
                   Cursor
                 </span>
               </template>
-              <div class="relative flex flex-col leading-6 text-nc-content-gray-subtle2 gap-3 my-3">
-                Get started with the NocoDB MCP with Cursor in 3 simple steps
+              <div class="relative flex flex-col leading-6 text-atm-content-gray-subtle2 gap-3 my-3">
+                Get started with the Atmosphere MCP with Cursor in 3 simple steps
 
                 <ol class="list-decimal pl-5">
                   <li>Open Cursor Settings (press Shift+Cmd+J)</li>
@@ -201,7 +201,7 @@ const code = computed(
                   <li>Add the JSON configuration that’s provided after creating a token.</li>
                 </ol>
 
-                <NcButton
+                <AtButton
                   v-if="showRegenerateButton"
                   type="secondary"
                   class="w-44"
@@ -210,7 +210,7 @@ const code = computed(
                   @click="regenerateToken(token)"
                 >
                   {{ $t('labels.regenerateToken') }}
-                </NcButton>
+                </AtButton>
                 <DashboardSettingsBaseMCPCode :key="code" :code="code" />
               </div>
             </a-tab-pane>
@@ -218,16 +218,16 @@ const code = computed(
               <template #tab>
                 <span
                   :class="{
-                    'text-nc-content-brand font-medium': activeTab === 'windsurf',
-                    'text-nc-content-gray-subtle': activeTab !== 'windsurf',
+                    'text-atm-content-brand font-medium': activeTab === 'windsurf',
+                    'text-atm-content-gray-subtle': activeTab !== 'windsurf',
                   }"
                   class="text-sm"
                 >
                   Windsurf
                 </span>
               </template>
-              <div class="relative flex flex-col leading-6 text-nc-content-gray-subtle2 gap-3 my-3">
-                Get started with the NocoDB MCP with Windsurf in 4 simple steps
+              <div class="relative flex flex-col leading-6 text-atm-content-gray-subtle2 gap-3 my-3">
+                Get started with the Atmosphere MCP with Windsurf in 4 simple steps
 
                 <ol class="list-decimal pl-5">
                   <li>Access Windsurf settings and Select Cascade Tab in the left sidebar</li>
@@ -236,7 +236,7 @@ const code = computed(
                   <li>Paste the JSON configuration that’s provided after creating a token in the opened file</li>
                 </ol>
 
-                <NcButton
+                <AtButton
                   v-if="showRegenerateButton"
                   type="secondary"
                   class="w-44"
@@ -245,7 +245,7 @@ const code = computed(
                   @click="regenerateToken(token)"
                 >
                   {{ $t('labels.regenerateToken') }}
-                </NcButton>
+                </AtButton>
 
                 <DashboardSettingsBaseMCPCode :code="code" />
               </div>
@@ -254,16 +254,16 @@ const code = computed(
               <template #tab>
                 <span
                   :class="{
-                    'text-nc-content-brand font-medium': activeTab === 'antigravity',
-                    'text-nc-content-gray-subtle': activeTab !== 'antigravity',
+                    'text-atm-content-brand font-medium': activeTab === 'antigravity',
+                    'text-atm-content-gray-subtle': activeTab !== 'antigravity',
                   }"
                   class="text-sm"
                 >
                   AntiGravity
                 </span>
               </template>
-              <div class="relative flex flex-col leading-6 text-nc-content-gray-subtle2 gap-3 my-3">
-                Get started with the NocoDB MCP with AntiGravity in 4 simple steps
+              <div class="relative flex flex-col leading-6 text-atm-content-gray-subtle2 gap-3 my-3">
+                Get started with the Atmosphere MCP with AntiGravity in 4 simple steps
 
                 <ol class="list-decimal pl-5">
                   <li>Click on the three dots in the top right of the agent window, and click on "MCP Servers"</li>
@@ -272,7 +272,7 @@ const code = computed(
                   <li>Paste the JSON configuration that’s provided after creating a token in the opened file</li>
                 </ol>
 
-                <NcButton
+                <AtButton
                   v-if="showRegenerateButton"
                   type="secondary"
                   class="w-44"
@@ -281,35 +281,35 @@ const code = computed(
                   @click="regenerateToken(token)"
                 >
                   {{ $t('labels.regenerateToken') }}
-                </NcButton>
+                </AtButton>
 
                 <DashboardSettingsBaseMCPCode :code="code" />
               </div>
             </a-tab-pane>
-          </NcTabs>
+          </AtTabs>
         </div>
       </div>
 
-      <NcModalSupportedDocsSidebar>
-        <NcModalSupportedDocs :docs="supportedDocs"> </NcModalSupportedDocs>
-      </NcModalSupportedDocsSidebar>
+      <AtModalSupportedDocsSidebar>
+        <AtModalSupportedDocs :docs="supportedDocs"> </AtModalSupportedDocs>
+      </AtModalSupportedDocsSidebar>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss">
-.nc-modal-mcp-token-create-edit {
+.atm-modal-mcp-token-create-edit {
   z-index: 1050;
   a {
-    @apply !no-underline !text-nc-content-gray-subtle !hover:text-primary;
+    @apply !no-underline !text-atm-content-gray-subtle !hover:text-primary;
   }
-  .nc-modal {
+  .atm-modal {
     @apply !p-0;
     height: min(calc(100vh - 100px), 1024px);
     max-height: min(calc(100vh - 100px), 1024px) !important;
   }
 
-  .nc-modal-header {
+  .atm-modal-header {
     @apply !mb-0 !pb-0;
   }
 

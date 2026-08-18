@@ -64,34 +64,34 @@ watch(stepIndex, (newIndex, oldIndex, cleanup) => {
 </script>
 
 <template>
-  <div data-testid="nc-onboarding-flow-container" class="w-full flex items-stretch h-full">
-    <div data-testid="nc-onboarding-flow-image-preview-section" class="hidden lg:block w-1/2">
+  <div data-testid="atm-onboarding-flow-container" class="w-full flex items-stretch h-full">
+    <div data-testid="atm-onboarding-flow-image-preview-section" class="hidden lg:block w-1/2">
       <slot name="imagePreviewSection">
         <AuthOnboardingLayoutImagePreviewSection ref="imagePreviewSectionRef" />
       </slot>
     </div>
     <div
-      class="w-full lg:(w-1/2) transition-width duration-250 h-full flex flex-col gap-10 pr-2 nc-scrollbar-thin !overflow-x-hidden !overflow-y-scroll relative border-l-1 border-nc-border-gray-medium"
+      class="w-full lg:(w-1/2) transition-width duration-250 h-full flex flex-col gap-10 pr-2 atm-scrollbar-thin !overflow-x-hidden !overflow-y-scroll relative border-l-1 border-atm-border-gray-medium"
     >
       <header
-        data-testid="nc-onboarding-flow-header"
-        class="px-4 pt-4 pb-2 lg:(pt-8 pb-2 px-8) flex items-center justify-between w-full max-w-[672px] lg:max-w-[704px] mx-auto sticky top-0 bg-nc-bg-default z-10"
+        data-testid="atm-onboarding-flow-header"
+        class="px-4 pt-4 pb-2 lg:(pt-8 pb-2 px-8) flex items-center justify-between w-full max-w-[672px] lg:max-w-[704px] mx-auto sticky top-0 bg-atm-bg-default z-10"
       >
-        <GeneralIcon icon="nocodb1" class="w-12 h-12 flex-none" />
+        <GeneralIcon icon="atmosphere1" class="w-12 h-12 flex-none" />
 
         <div class="w-[200px] text-bodyBold pr-1">
           <a-progress
             :percent="progress.percentage"
             size="small"
             status="normal"
-            stroke-color="var(--nc-content-brand)"
-            trail-color="var(--nc-bg-brand-inverted)"
+            stroke-color="var(--atm-content-brand)"
+            trail-color="var(--atm-bg-brand-inverted)"
             :show-info="false"
           />
         </div>
       </header>
       <div
-        data-testid="nc-onboarding-flow-content"
+        data-testid="atm-onboarding-flow-content"
         class="flex-1 w-full max-w-[672px] lg:max-w-[704px] mx-auto flex flex-col gap-[120px] px-4 lg:(px-8)"
       >
         <slot name="content"></slot>
@@ -99,8 +99,8 @@ watch(stepIndex, (newIndex, oldIndex, cleanup) => {
 
       <slot name="footer">
         <footer
-          data-testid="nc-onboarding-flow-footer"
-          class="flex flex-col justify-end w-full max-w-[672px] lg:max-w-[704px] mx-auto px-4 pt-2 pb-4 lg:(pt-2 pb-10 px-8) sticky bottom-0 bg-nc-bg-default z-10"
+          data-testid="atm-onboarding-flow-footer"
+          class="flex flex-col justify-end w-full max-w-[672px] lg:max-w-[704px] mx-auto px-4 pt-2 pb-4 lg:(pt-2 pb-10 px-8) sticky bottom-0 bg-atm-bg-default z-10"
         >
           <div
             class="flex items-center"
@@ -109,42 +109,42 @@ watch(stepIndex, (newIndex, oldIndex, cleanup) => {
               'justify-between': showNextButton,
             }"
           >
-            <NcTooltip v-if="stepIndex === 0" :disabled="!isDisabledSkipButton">
+            <AtTooltip v-if="stepIndex === 0" :disabled="!isDisabledSkipButton">
               <template #title> Will be enabled after 2 seconds </template>
-              <NcButton
+              <AtButton
                 type="text"
                 size="small"
                 mobile-size="medium"
                 :disabled="isDisabledSkipButton"
-                data-testid="nc-onboarding-flow-skip-button"
+                data-testid="atm-onboarding-flow-skip-button"
                 @click="onCompleteOnboardingFlow(true)"
               >
                 <div class="opacity-50">
                   {{ $t('general.skip') }}
                 </div>
-              </NcButton>
-            </NcTooltip>
-            <NcButton
+              </AtButton>
+            </AtTooltip>
+            <AtButton
               v-else
               type="text"
               size="small"
               mobile-size="medium"
               :disabled="isFirst"
-              data-testid="nc-onboarding-flow-back-button"
+              data-testid="atm-onboarding-flow-back-button"
               @click="goToPrevious()"
             >
               <template #icon>
                 <GeneralIcon icon="ncArrowLeft" class="w-4 h-4" />
               </template>
               {{ $t('general.back') }}
-            </NcButton>
+            </AtButton>
             <template v-if="showNextButton">
-              <NcButton
+              <AtButton
                 type="primary"
                 size="small"
                 mobile-size="medium"
                 :disabled="!isFilledVisibleOptions"
-                data-testid="nc-onboarding-flow-next-button"
+                data-testid="atm-onboarding-flow-next-button"
                 @click="isLast ? onCompleteOnboardingFlow(false) : goToNext()"
               >
                 <div class="flex items-center gap-2">
@@ -153,7 +153,7 @@ watch(stepIndex, (newIndex, oldIndex, cleanup) => {
                     <GeneralIcon icon="ncEnter" class="w-4 h-4" />
                   </div>
                 </div>
-              </NcButton>
+              </AtButton>
             </template>
           </div>
         </footer>

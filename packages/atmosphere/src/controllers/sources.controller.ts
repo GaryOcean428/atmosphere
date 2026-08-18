@@ -7,14 +7,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { BaseReqType } from 'nocodb-sdk';
+import { BaseReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { SourcesService } from '~/services/sources.service';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 import { maskKnexConfig } from '~/helpers/responseHelpers';
 
 @Controller()
@@ -28,7 +28,7 @@ export class SourcesController {
   ])
   @Acl('baseGet')
   async baseGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('sourceId') sourceId: string,
   ) {
     const source = await this.sourcesService.baseGetWithConfig(context, {
@@ -51,11 +51,11 @@ export class SourcesController {
   ])
   @Acl('baseUpdate')
   async baseUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('sourceId') sourceId: string,
     @Param('baseId') baseId: string,
     @Body() body: BaseReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const source = await this.sourcesService.baseUpdate(context, {
       sourceId,
@@ -76,7 +76,7 @@ export class SourcesController {
   ])
   @Acl('baseList')
   async baseList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
   ) {
     const sources = await this.sourcesService.baseList(context, {

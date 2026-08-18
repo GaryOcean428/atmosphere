@@ -91,11 +91,11 @@ const handleFileDeleteStart = () => {
 </script>
 
 <template>
-  <div class="nc-attachment-item group gap-1 flex border-1 rounded-md border-nc-border-gray-medium flex-col relative">
-    <NcCheckbox
+  <div class="atm-attachment-item group gap-1 flex border-1 rounded-md border-atm-border-gray-medium flex-col relative">
+    <AtCheckbox
       v-if="allowSelection"
       v-model:checked="isSelected"
-      class="nc-attachment-checkbox absolute top-2 left-2 group-hover:(opacity-100) opacity-0 z-50"
+      class="atm-attachment-checkbox absolute top-2 left-2 group-hover:(opacity-100) opacity-0 z-50"
       :class="{ '!opacity-100': isSelected }"
     />
 
@@ -103,8 +103,8 @@ const handleFileDeleteStart = () => {
          pointer-events-none: the click still opens the card's viewer. -->
     <div
       v-if="commentCount"
-      class="nc-attachment-card-comment-badge absolute top-1.5 right-1.5 z-10 flex items-center gap-1 h-6 px-2 rounded-full bg-nc-bg-default shadow-sm border-1 border-nc-border-gray-light text-bodySm text-nc-content-gray pointer-events-none"
-      data-testid="nc-attachment-card-comment-count"
+      class="atm-attachment-card-comment-badge absolute top-1.5 right-1.5 z-10 flex items-center gap-1 h-6 px-2 rounded-full bg-atm-bg-default shadow-sm border-1 border-atm-border-gray-light text-bodySm text-atm-content-gray pointer-events-none"
+      data-testid="atm-attachment-card-comment-count"
     >
       {{ commentCount }}
       <GeneralIcon icon="messageCircle" class="w-3.5 h-3.5" />
@@ -114,7 +114,7 @@ const handleFileDeleteStart = () => {
         'cursor-move': isDragging,
         'cursor-pointer': !isDragging,
       }"
-      class="nc-attachment h-full flex justify-center items-center overflow-hidden"
+      class="atm-attachment h-full flex justify-center items-center overflow-hidden"
       @click.stop="emits('clicked')"
     >
       <LazyCellAttachmentPreviewThumbnail
@@ -130,17 +130,17 @@ const handleFileDeleteStart = () => {
 
     <div class="relative px-1 pb-1 items-center flex" :title="attachment.title">
       <div
-        class="nc-attachment-card-title flex w-full text-[12px] items-center text-nc-content-gray-subtle cursor-default h-5"
+        class="atm-attachment-card-title flex w-full text-[12px] items-center text-atm-content-gray-subtle cursor-default h-5"
         :class="{ truncate: !isRenamingFile }"
         @dblclick.stop="allowRename && isEditAllowed && handleFileRenameStart()"
       >
-        <NcTooltip v-if="!isRenamingFile" class="truncate h-5 flex items-center" show-on-truncate-only>
+        <AtTooltip v-if="!isRenamingFile" class="truncate h-5 flex items-center" show-on-truncate-only>
           {{ attachment.title }}
 
           <template #title>
             {{ attachment.title }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
         <a-input
           v-else
           ref="inputBox"
@@ -153,44 +153,44 @@ const handleFileDeleteStart = () => {
         />
       </div>
       <div
-        class="nc-attachment-card-actions flex-none hide-ui transition-all transition-ease-in-out !h-5 gap-0.5 flex items-center bg-nc-bg-default"
+        class="atm-attachment-card-actions flex-none hide-ui transition-all transition-ease-in-out !h-5 gap-0.5 flex items-center bg-atm-bg-default"
         :class="{ '!h-auto !w-auto !overflow-visible !whitespace-normal': isRenamingFile }"
       >
-        <NcTooltip placement="bottom">
+        <AtTooltip placement="bottom">
           <template #title> {{ $t('title.downloadFile') }} </template>
-          <NcButton
-            class="!p-0 !w-5 !h-5 !text-nc-content-gray-muted !min-w-[fit-content]"
+          <AtButton
+            class="!p-0 !w-5 !h-5 !text-atm-content-gray-muted !min-w-[fit-content]"
             size="xsmall"
             type="text"
             @click="downloadAttachment(attachment)"
           >
             <component :is="iconMap.download" class="!text-xs h-13px w-13px" />
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
 
-        <NcTooltip v-if="allowRename && isEditAllowed" placement="bottom">
+        <AtTooltip v-if="allowRename && isEditAllowed" placement="bottom">
           <template #title> {{ $t('title.renameFile') }} </template>
-          <NcButton
+          <AtButton
             size="xsmall"
-            class="!p-0 nc-attachment-rename !h-5 !w-5 !text-nc-content-gray-muted !min-w-[fit-content] gap-2"
+            class="!p-0 atm-attachment-rename !h-5 !w-5 !text-atm-content-gray-muted !min-w-[fit-content] gap-2"
             type="text"
             @click="handleFileRenameStart"
           >
             <component :is="iconMap.rename" class="text-xs h-13px w-13px" />
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
 
-        <NcTooltip v-if="allowDelete && isEditAllowed" placement="bottom">
+        <AtTooltip v-if="allowDelete && isEditAllowed" placement="bottom">
           <template #title> {{ $t('title.removeFile') }} </template>
-          <NcButton
-            class="!p-0 !h-5 !w-5 !text-nc-fill-red-medium nc-attachment-remove !min-w-[fit-content]"
+          <AtButton
+            class="!p-0 !h-5 !w-5 !text-atm-fill-red-medium atm-attachment-remove !min-w-[fit-content]"
             size="xsmall"
             type="text"
             @click="handleFileDeleteStart"
           >
             <component :is="iconMap.delete" class="text-xs h-13px w-13px" />
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
       </div>
     </div>
   </div>

@@ -39,12 +39,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="dialogShow"
     :show-separator="false"
     size="medium"
     width="50rem"
-    wrap-class-name="nc-modal-file-upload"
+    wrap-class-name="atm-modal-file-upload"
     class="!rounded-md"
     @keydown.esc="dialogShow = false"
   >
@@ -52,13 +52,13 @@ onMounted(() => {
       <div
         v-if="enabledProviders.length > 1"
         style="border-top-left-radius: 1rem; border-bottom-left-radius: 1rem"
-        class="px-2 bg-nc-bg-gray-extralight"
+        class="px-2 bg-atm-bg-gray-extralight"
       >
-        <NcMenu class="!h-full !bg-nc-bg-gray-extralight flex flex-col" :class="{ '!flex-row overflow-x-scroll': isMobileMode }">
-          <NcMenuItem
+        <AtMenu class="!h-full !bg-atm-bg-gray-extralight flex flex-col" :class="{ '!flex-row overflow-x-scroll': isMobileMode }">
+          <AtMenuItem
             v-if="enabledProviders.includes('local')"
             key="local"
-            class="!hover:bg-nc-bg-gray-medium !hover:text-nc-content-gray rounded-md"
+            class="!hover:bg-atm-bg-gray-medium !hover:text-atm-content-gray rounded-md"
             :class="{
               'active-menu': activeMenu === 'local',
             }"
@@ -68,12 +68,12 @@ onMounted(() => {
               <GeneralIcon icon="file" />
               {{ $t('title.localFiles') }}
             </div>
-          </NcMenuItem>
+          </AtMenuItem>
 
-          <NcMenuItem
+          <AtMenuItem
             v-if="enabledProviders.includes('url')"
             key="url"
-            class="!hover:bg-nc-bg-gray-medium !hover:text-nc-content-gray rounded-md"
+            class="!hover:bg-atm-bg-gray-medium !hover:text-atm-content-gray rounded-md"
             :class="{
               'active-menu': activeMenu === 'url',
             }"
@@ -83,12 +83,12 @@ onMounted(() => {
               <GeneralIcon icon="link2" />
               {{ $t('title.uploadViaUrl') }}
             </div>
-          </NcMenuItem>
+          </AtMenuItem>
 
-          <NcMenuItem
+          <AtMenuItem
             v-if="enabledProviders.includes('webcam')"
             key="webcam"
-            class="!hover:bg-nc-bg-gray-medium !hover:text-nc-content-gray rounded-md"
+            class="!hover:bg-atm-bg-gray-medium !hover:text-atm-content-gray rounded-md"
             :class="{
               'active-menu': activeMenu === 'webcam',
             }"
@@ -98,30 +98,30 @@ onMounted(() => {
               <GeneralIcon icon="camera" />
               {{ $t('title.webcam') }}
             </div>
-          </NcMenuItem>
-        </NcMenu>
+          </AtMenuItem>
+        </AtMenu>
       </div>
 
       <div style="height: 425px" class="!w-full flex-grow p-2">
-        <NcFileUploadProvidersLocal v-show="activeMenu === 'local'" />
+        <AtFileUploadProvidersLocal v-show="activeMenu === 'local'" />
 
-        <NcFileUploadProvidersCamera v-if="activeMenu === 'webcam'" />
+        <AtFileUploadProvidersCamera v-if="activeMenu === 'webcam'" />
 
-        <NcFileUploadProvidersUrl v-if="activeMenu === 'url'" />
+        <AtFileUploadProvidersUrl v-if="activeMenu === 'url'" />
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss">
-.nc-modal-file-upload {
+.atm-modal-file-upload {
   .active-menu {
-    @apply bg-nc-bg-brand-inverted font-semibold text-nc-content-brand rounded-md;
+    @apply bg-atm-bg-brand-inverted font-semibold text-atm-content-brand rounded-md;
   }
 }
 
-.nc-modal-file-upload {
-  .nc-modal {
+.atm-modal-file-upload {
+  .atm-modal {
     @apply !p-0;
   }
 }

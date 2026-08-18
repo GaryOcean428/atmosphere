@@ -62,7 +62,7 @@ const resetError = () => {
 
 <template>
   <div class="flex flex-col">
-    <NcPageHeader>
+    <AtPageHeader>
       <template #icon>
         <GeneralIcon icon="passwordChange" class="flex-none text-[20px] h-5 w-5" />
       </template>
@@ -71,14 +71,14 @@ const resetError = () => {
           {{ $t('activity.changePwd') }}
         </span>
       </template>
-    </NcPageHeader>
-    <div class="nc-content-max-w p-6 h-[calc(100vh_-_100px)] flex flex-col gap-6 overflow-auto nc-scrollbar-thin">
+    </AtPageHeader>
+    <div class="atm-content-max-w p-6 h-[calc(100vh_-_100px)] flex flex-col gap-6 overflow-auto atm-scrollbar-thin">
       <div class="flex flex-col gap-6 w-150 mx-auto">
-        <div class="mt-5 flex flex-col border-1 rounded-2xl border-nc-border-gray-medium p-6 gap-y-2">
+        <div class="mt-5 flex flex-col border-1 rounded-2xl border-atm-border-gray-medium p-6 gap-y-2">
           <div class="relative flex flex-col justify-start gap-2 w-full">
             <a-form
               ref="formValidator"
-              data-testid="nc-user-settings-form"
+              data-testid="atm-user-settings-form"
               layout="vertical"
               class="change-password"
               no-style
@@ -87,7 +87,7 @@ const resetError = () => {
             >
               <Transition name="layout">
                 <div v-if="error" class="mx-auto mb-4 bg-red-500 text-white rounded-lg w-3/4 p-1">
-                  <div data-testid="nc-user-settings-form__error" class="flex items-center gap-2 justify-center" data-rec="true">
+                  <div data-testid="atm-user-settings-form__error" class="flex items-center gap-2 justify-center" data-rec="true">
                     <MaterialSymbolsWarning />
                     {{ error }}
                   </div>
@@ -102,7 +102,7 @@ const resetError = () => {
               >
                 <a-input-password
                   v-model:value="form.currentPassword"
-                  data-testid="nc-user-settings-form__current-password"
+                  data-testid="atm-user-settings-form__current-password"
                   class="password"
                   :placeholder="$t('placeholder.password.current')"
                   @focus="resetError"
@@ -112,7 +112,7 @@ const resetError = () => {
               <a-form-item :label="$t('placeholder.password.new')" data-rec="true" name="password" :rules="formRules.password">
                 <a-input-password
                   v-model:value="form.password"
-                  data-testid="nc-user-settings-form__new-password"
+                  data-testid="atm-user-settings-form__new-password"
                   class="password"
                   :placeholder="$t('placeholder.password.new')"
                   @focus="resetError"
@@ -127,7 +127,7 @@ const resetError = () => {
               >
                 <a-input-password
                   v-model:value="form.passwordRepeat"
-                  data-testid="nc-user-settings-form__new-password-repeat"
+                  data-testid="atm-user-settings-form__new-password-repeat"
                   class="password"
                   :placeholder="$t('placeholder.password.confirm')"
                   @focus="resetError"
@@ -135,12 +135,12 @@ const resetError = () => {
               </a-form-item>
 
               <div class="text-right mt-5">
-                <NcButton size="small" data-testid="nc-user-settings-form__submit" html-type="submit">
+                <AtButton size="small" data-testid="atm-user-settings-form__submit" html-type="submit">
                   <div class="flex justify-center items-center gap-2" data-rec="true">
                     <component :is="iconMap.passwordChange" />
                     {{ $t('activity.changePwd') }}
                   </div>
-                </NcButton>
+                </AtButton>
               </div>
             </a-form>
           </div>
@@ -170,7 +170,7 @@ const resetError = () => {
   }
 
   :deep(.ant-form-item-label > label) {
-    @apply !text-sm font-default mb-2 text-nc-content-gray-subtle flex;
+    @apply !text-sm font-default mb-2 text-atm-content-gray-subtle flex;
 
     &.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
       @apply content-[''] m-0;
@@ -178,7 +178,7 @@ const resetError = () => {
   }
 
   :deep(.ant-form-item-label) {
-    @apply !pb-0 text-small leading-[18px] text-nc-content-gray-subtle;
+    @apply !pb-0 text-small leading-[18px] text-atm-content-gray-subtle;
   }
 
   :deep(.ant-form-item-control-input) {

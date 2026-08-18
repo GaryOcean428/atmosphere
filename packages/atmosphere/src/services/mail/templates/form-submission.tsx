@@ -12,15 +12,15 @@ import {
   Text,
 } from '@react-email/components';
 import * as React from 'react';
-import { UITypes } from 'nocodb-sdk';
-import type { WhiteLabelConfig } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
+import type { WhiteLabelConfig } from 'atmosphere-sdk';
 import {
   ContentWrapper,
   Footer,
   RootWrapper,
   getFieldIconUrl,
 } from '~/services/mail/templates/components';
-import { NC_EMAIL_ASSETS_BASE_URL } from '~/constants';
+import { ATMOSPHERE_EMAIL_ASSETS_BASE_URL } from '~/constants';
 
 interface FormSubmissionTemplateProps {
   formTitle: string;
@@ -65,7 +65,7 @@ const FormSubmission = ({
                 <tr>
                   <td style={{ paddingRight: '8px', verticalAlign: 'middle' }}>
                     <Img
-                      src={`${NC_EMAIL_ASSETS_BASE_URL}/icons/form-view.png`}
+                      src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/icons/form-view.png`}
                       alt="Form View Icon"
                       height={24}
                       width={24}

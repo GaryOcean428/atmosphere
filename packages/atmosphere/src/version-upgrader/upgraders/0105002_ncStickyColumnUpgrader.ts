@@ -1,11 +1,11 @@
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
 import { MetaTable } from '~/utils/globals';
 
 // before 0.104.3, display value column can be in any position in table
 // with this upgrade we introduced sticky primary column feature
 // this upgrader will make display value column first column in grid views
 
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   const grid_columns = await ncMeta.knexConnection(MetaTable.GRID_VIEW_COLUMNS);
 
   const grid_views = [...new Set(grid_columns.map((col) => col.fk_view_id))];

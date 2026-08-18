@@ -35,14 +35,14 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="nc-sidebar flex flex-col bg-nc-bg-gray-sidebar outline-r-1 outline-nc-border-gray-light select-none w-full h-full font-medium z-2"
+    class="atm-sidebar flex flex-col bg-atm-bg-gray-sidebar outline-r-1 outline-atm-border-gray-light select-none w-full h-full font-medium z-2"
     :style="{
       outlineWidth: '1px',
     }"
   >
     <DashboardTreeViewProjectList>
       <template #footer>
-        <div v-if="!isSharedBase" class="nc-sidebar-bottom-section">
+        <div v-if="!isSharedBase" class="atm-sidebar-bottom-section">
           <PaymentUpgradeSidebarBanner v-if="appInfo.ee" />
 
           <LazyGeneralMaintenanceAlert />
@@ -62,17 +62,17 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.nc-sidebar-top-button {
-  @apply flex flex-row mx-1 px-3.5 rounded-md items-center py-0.75 my-0.5 gap-x-2 hover:bg-nc-bg-gray-medium cursor-pointer;
+.atm-sidebar-top-button {
+  @apply flex flex-row mx-1 px-3.5 rounded-md items-center py-0.75 my-0.5 gap-x-2 hover:bg-atm-bg-gray-medium cursor-pointer;
 }
 
-.nc-sidebar-bottom-section {
+.atm-sidebar-bottom-section {
   @apply flex-none overflow-auto p-1 empty:hidden;
 
-  &:not(:has(.nc-maintenance-sidebar-banner)) &:not(:has(.nc-upgrade-sidebar-banner)) {
+  &:not(:has(.atm-maintenance-sidebar-banner)) &:not(:has(.atm-upgrade-sidebar-banner)) {
     @apply border-t-1;
   }
-  &:has(.nc-upgrade-sidebar-banner) {
+  &:has(.atm-upgrade-sidebar-banner) {
     @apply -mt-2.5 pointer-events-none;
   }
 
@@ -90,29 +90,29 @@ onUnmounted(() => {
 </style>
 
 <style lang="scss">
-.nc-treeview-header {
+.atm-treeview-header {
   @apply px-3 py-1.5 flex gap-2 h-[var(--topbar-height)];
 }
 
-.nc-project-home-section {
+.atm-project-home-section {
   @apply px-1 pb-3;
 }
 
-.nc-project-home-section-item {
+.atm-project-home-section-item {
   @apply w-full px-3 py-1.5 flex items-center gap-2 h-8;
 }
 
-.nc-project-home-section-header {
-  @apply w-full pl-3 pr-3 md:pr-1.5 py-1.5 flex items-center gap-2 h-8 text-nc-content-gray-muted text-captionBold sticky top-0 bg-nc-bg-gray-extralight z-2;
+.atm-project-home-section-header {
+  @apply w-full pl-3 pr-3 md:pr-1.5 py-1.5 flex items-center gap-2 h-8 text-atm-content-gray-muted text-captionBold sticky top-0 bg-atm-bg-gray-extralight z-2;
 }
 
-.nc-treeview-base-list,
-.nc-treeview-active-base {
+.atm-treeview-base-list,
+.atm-treeview-active-base {
   @apply w-full h-full flex-1 flex flex-col;
 }
 
-.nc-treeview-loading {
-  .nc-sidebar-header-content {
+.atm-treeview-loading {
+  .atm-sidebar-header-content {
     @apply flex-1;
   }
 }

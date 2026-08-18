@@ -1,4 +1,4 @@
-import { UITypes, validateDateWithUnknownFormat } from 'nocodb-sdk';
+import { UITypes, validateDateWithUnknownFormat } from 'atmosphere-sdk';
 import isURL from 'validator/lib/isURL';
 
 // Boolean option pairs for checkbox detection

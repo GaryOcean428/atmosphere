@@ -2,7 +2,7 @@
  * CE stub for useSharedDoc. The real implementation lives in
  * ee/composables/useSharedDoc.ts — docs and doc-share are EE-only features.
  */
-import type { PublicDocContentResponse, PublicDocMetaResponse } from 'nocodb-sdk'
+import type { PublicDocContentResponse, PublicDocMetaResponse } from 'atmosphere-sdk'
 
 export function useSharedDoc() {
   const meta = ref<PublicDocMetaResponse | null>(null)

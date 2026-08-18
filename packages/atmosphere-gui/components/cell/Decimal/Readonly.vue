@@ -5,7 +5,7 @@ import {
   getSeparatorChars,
   resolveColumnSeparator,
   roundUpToPrecision,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 interface Props {
   // when we set a number, then it is number type
@@ -44,5 +44,5 @@ const displayValue = computed(() => {
 </script>
 
 <template>
-  <div class="nc-cell-field truncate">{{ displayValue }}</div>
+  <div class="atm-cell-field truncate">{{ displayValue }}</div>
 </template>

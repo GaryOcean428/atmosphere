@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnType, GridType } from 'nocodb-sdk'
-import { isSmartText } from 'nocodb-sdk'
+import type { ColumnType, GridType } from 'atmosphere-sdk'
+import { isSmartText } from 'atmosphere-sdk'
 import InfiniteTable from './InfiniteTable.vue'
 import Table from './Table.vue'
 import CanvasTable from './canvas/index.vue'
@@ -870,9 +870,9 @@ watch([() => view.value?.id, () => meta.value?.columns], async () => {
 
 <template>
   <div
-    class="relative flex flex-row h-full min-h-0 w-full nc-grid-wrapper"
-    data-testid="nc-grid-wrapper"
-    :style="`background-color: ${isGroupBy && !isCanvasGroupByTableEnabled ? `${baseColor}` : 'var(--nc-bg-gray-extralight)'};`"
+    class="relative flex flex-row h-full min-h-0 w-full atm-grid-wrapper"
+    data-testid="atm-grid-wrapper"
+    :style="`background-color: ${isGroupBy && !isCanvasGroupByTableEnabled ? `${baseColor}` : 'var(--atm-bg-gray-extralight)'};`"
   >
     <div class="flex flex-col flex-1 min-w-0 h-full">
       <Table
@@ -1040,9 +1040,9 @@ watch([() => view.value?.id, () => meta.value?.columns], async () => {
 </template>
 
 <style lang="scss">
-.nc-grid-pagination-wrapper .ant-dropdown-button {
+.atm-grid-pagination-wrapper .ant-dropdown-button {
   > .ant-btn {
-    @apply !p-0 !rounded-l-lg hover:border-nc-gray-300;
+    @apply !p-0 !rounded-l-lg hover:border-atm-gray-300;
   }
 
   > .ant-dropdown-trigger {

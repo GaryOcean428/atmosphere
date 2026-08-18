@@ -1,8 +1,8 @@
-import { FormulaDataTypes, JSEPNode } from 'nocodb-sdk';
+import { FormulaDataTypes, JSEPNode } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type { MapFnArgs } from '~/db/mapFunctionName';
 import { concatKnexRaw } from '~/helpers/dbHelpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { DEFAULT_DATETIME_FORMAT } from '~/db/datetime-format';
 
 // Reads the (optional) format argument of DATETIME_FORMAT. The format must be a
@@ -19,7 +19,7 @@ export function extractDatetimeFormat(pt: MapFnArgs['pt']): string {
     formatArg.type !== JSEPNode.LITERAL ||
     typeof formatArg.value !== 'string'
   ) {
-    NcError.badRequest(
+    AtError.badRequest(
       'Second parameter of DATETIME_FORMAT must be a constant text format',
     );
   }
@@ -40,7 +40,7 @@ export const ALLOWED_DATEADD_UNITS = new Set([
 export function validateDateAddUnit(raw: string): string {
   const unit = raw.replace(/["']/g, '').trim().toLowerCase();
   if (!ALLOWED_DATEADD_UNITS.has(unit)) {
-    NcError.badRequest(`Invalid DATEADD unit: ${unit}`);
+    AtError.badRequest(`Invalid DATEADD unit: ${unit}`);
   }
   return unit;
 }
@@ -468,7 +468,7 @@ export default {
   RECORD_ID: async (args: MapFnArgs) => {
     const pkCol = args.model?.primaryKey;
     if (!pkCol) {
-      NcError.badRequest('Primary key not found');
+      AtError.badRequest('Primary key not found');
     }
 
     return {
@@ -482,7 +482,7 @@ export default {
       (col) => col.column_name === 'created_at',
     );
     if (!createdAtCol) {
-      NcError.badRequest('Created at field not found');
+      AtError.badRequest('Created at field not found');
     }
 
     return {
@@ -498,7 +498,7 @@ export default {
       (col) => col.column_name === 'updated_at',
     );
     if (!createdAtCol) {
-      NcError.badRequest('Updated at field not found');
+      AtError.badRequest('Updated at field not found');
     }
 
     return {

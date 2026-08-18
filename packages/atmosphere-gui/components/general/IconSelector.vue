@@ -4,7 +4,7 @@ import { Upload } from 'ant-design-vue'
 import { EmojiIndex, Picker } from 'emoji-mart-vue-fast/src'
 import data from 'emoji-mart-vue-fast/data/apple.json'
 import 'emoji-mart-vue-fast/css/emoji-mart.css'
-import { IconType } from 'nocodb-sdk'
+import { IconType } from 'atmosphere-sdk'
 
 interface Props {
   icon: string | Record<string, any>
@@ -288,11 +288,11 @@ watch(isOpen, (newValue) => {
 
 <template>
   <div>
-    <NcDropdown
+    <AtDropdown
       v-bind="$attrs"
       v-model:visible="isOpen"
       overlay-class-name="w-[calc(100%_-_16px)] md:w-[432px]"
-      class="nc-icon-selector"
+      class="atm-icon-selector"
       @visible-change="onVisibilityChange"
     >
       <div :class="defaultSlotWrapperClass">
@@ -307,15 +307,15 @@ watch(isOpen, (newValue) => {
       </div>
       <template #overlay>
         <div class="pt-2 h-[320px]">
-          <NcTabs v-model:active-key="activeTab" class="nc-icon-selector-dropdown-tabs h-full">
+          <AtTabs v-model:active-key="activeTab" class="atm-icon-selector-dropdown-tabs h-full">
             <template #leftExtra>
               <div class="w-0"></div>
             </template>
             <template #rightExtra>
               <div>
-                <NcButton size="xs" type="text" :disabled="!vIcon" @click.stop="handleRemoveIcon">
+                <AtButton size="xs" type="text" :disabled="!vIcon" @click.stop="handleRemoveIcon">
                   {{ $t('general.remove') }}
-                </NcButton>
+                </AtButton>
               </div>
             </template>
             <a-tab-pane v-for="tabItem of tabs" :key="tabItem.value" class="w-full" :disabled="isLoading">
@@ -326,13 +326,13 @@ watch(isOpen, (newValue) => {
                 </div>
               </template>
 
-              <div v-if="tabItem.value === IconType.ICON" class="h-full overflow-y-auto nc-scrollbar-visible flex flex-col">
-                <div class="!sticky top-0 flex gap-2 bg-nc-bg-default px-2 py-2">
+              <div v-if="tabItem.value === IconType.ICON" class="h-full overflow-y-auto atm-scrollbar-visible flex flex-col">
+                <div class="!sticky top-0 flex gap-2 bg-atm-bg-default px-2 py-2">
                   <a-input
                     ref="inputRef"
                     v-model:value="searchQuery"
                     :placeholder="$t('placeholder.searchIcons')"
-                    class="nc-dropdown-search-unified-input z-10"
+                    class="atm-dropdown-search-unified-input z-10"
                   >
                   </a-input>
                 </div>
@@ -344,7 +344,7 @@ watch(isOpen, (newValue) => {
                     :key="idx"
                     :icon="i"
                     :title="name"
-                    class="w-6 hover:bg-nc-bg-gray-light cursor-pointer rounded p-1 text-nc-content-gray-subtle h-6"
+                    class="w-6 hover:bg-atm-bg-gray-light cursor-pointer rounded p-1 text-atm-content-gray-subtle h-6"
                     @click="selectIcon(name)"
                   />
                 </div>
@@ -363,21 +363,21 @@ watch(isOpen, (newValue) => {
                     />
                   </div>
                   <div class="flex-1 w-[calc(100%_-_108px)]">
-                    <NcTooltip class="truncate flex-1 text-current" show-on-truncate-only>
+                    <AtTooltip class="truncate flex-1 text-current" show-on-truncate-only>
                       <template #title> {{ vIcon?.title || 'Workspace logo' }}</template>
                       {{ vIcon?.title || 'Workspace logo' }}
-                    </NcTooltip>
-                    <div class="text-nc-content-gray-muted text-sm">
+                    </AtTooltip>
+                    <div class="text-atm-content-gray-muted text-sm">
                       {{ vIcon?.size ? `${(vIcon?.size / 1048576).toFixed(2)} MB` : '0 MB' }}
                     </div>
                   </div>
 
                   <div>
-                    <NcButton icon-only type="text" size="xs" class="!px-1" @click="handleRemoveIcon(false)">
+                    <AtButton icon-only type="text" size="xs" class="!px-1" @click="handleRemoveIcon(false)">
                       <template #icon>
                         <GeneralIcon icon="deleteListItem" />
                       </template>
-                    </NcButton>
+                    </AtButton>
                   </div>
                 </div>
                 <div class="flex-1">
@@ -388,21 +388,21 @@ watch(isOpen, (newValue) => {
                     :disabled="isUploadingImage"
                     :multiple="false"
                     :show-upload-list="false"
-                    class="nc-icon-selector-image-uploader"
+                    class="atm-icon-selector-image-uploader"
                     :custom-request="customReqCbk"
                     :before-upload="beforeUpload"
                     @change="handleChange"
                     @reject="rejectDrop"
                   >
-                    <div class="ant-upload-drag-icon !text-nc-content-gray-muted !mb-2 text-center">
+                    <div class="ant-upload-drag-icon !text-atm-content-gray-muted !mb-2 text-center">
                       <div v-if="isUploadingImage" class="h-6 grid place-items-center">
                         <GeneralLoader size="regular" />
                       </div>
                       <GeneralIcon v-else icon="upload" class="h-6 w-6" />
                     </div>
 
-                    <div class="ant-upload-text !text-nc-content-gray-muted !text-sm">
-                      Drop your icon here or <span class="text-nc-content-brand hover:underline">browse file</span>
+                    <div class="ant-upload-text !text-atm-content-gray-muted !text-sm">
+                      Drop your icon here or <span class="text-atm-content-brand hover:underline">browse file</span>
                       <div class="mt-1">Supported: image/*</div>
                     </div>
                   </a-upload-dragger>
@@ -420,16 +420,16 @@ watch(isOpen, (newValue) => {
                   :i18n="{
                     search: 'Search emoji',
                   }"
-                  class="nc-icon-selector-emoji-picker"
+                  class="atm-icon-selector-emoji-picker"
                   @select="selectEmoji"
                   @click.stop="() => {}"
                 ></Picker>
               </div>
             </a-tab-pane>
-          </NcTabs>
+          </AtTabs>
         </div>
       </template>
-    </NcDropdown>
+    </AtDropdown>
 
     <GeneralImageCropper
       v-if="tabs.some((t) => t.value === IconType.IMAGE) && imageCropperData"
@@ -443,7 +443,7 @@ watch(isOpen, (newValue) => {
 </template>
 
 <style lang="scss" scoped>
-.nc-icon-selector-dropdown-tabs {
+.atm-icon-selector-dropdown-tabs {
   :deep(.ant-tabs-nav) {
     @apply px-3;
 
@@ -463,7 +463,7 @@ watch(isOpen, (newValue) => {
       }
 
       .tab-title {
-        @apply text-xs leading-[24px] px-2 rounded hover:bg-nc-bg-gray-light transition-colors flex items-center gap-2;
+        @apply text-xs leading-[24px] px-2 rounded hover:bg-atm-bg-gray-light transition-colors flex items-center gap-2;
       }
     }
   }
@@ -472,7 +472,7 @@ watch(isOpen, (newValue) => {
     @apply h-full;
   }
 
-  &.nc-ai-loading {
+  &.atm-ai-loading {
     :deep(.ant-tabs-tab) {
       @apply !cursor-wait;
     }
@@ -480,36 +480,36 @@ watch(isOpen, (newValue) => {
 
   :deep(.ant-tabs-tab-disabled) {
     .tab-title {
-      @apply text-nc-content-gray-muted hover:bg-transparent;
+      @apply text-atm-content-gray-muted hover:bg-transparent;
     }
   }
 }
 
 :deep(.ant-input::placeholder) {
-  @apply text-nc-content-gray-muted;
+  @apply text-atm-content-gray-muted;
 }
 
-:deep(.nc-icon-selector img) {
+:deep(.atm-icon-selector img) {
   @apply !cursor-pointer;
 }
 </style>
 
 <style>
-.nc-icon-selector-image-uploader {
+.atm-icon-selector-image-uploader {
   &.ant-upload.ant-upload-drag {
-    @apply !rounded-lg !bg-nc-bg-default !hover:bg-nc-bg-gray-light !transition-colors duration-300;
+    @apply !rounded-lg !bg-atm-bg-default !hover:bg-atm-bg-gray-light !transition-colors duration-300;
   }
   .ant-upload-btn {
     @apply !flex flex-col items-center justify-center !min-h-[176px];
   }
 }
 
-.nc-icon-selector-emoji-picker.emoji-mart {
+.atm-icon-selector-emoji-picker.emoji-mart {
   @apply !w-full md:!w-107.5 !h-full !border-none bg-transparent rounded-t-none rounded-b-lg;
 
   .emoji-mart-category .emoji-mart-emoji:hover:before,
   .emoji-mart-emoji-selected:before {
-    @apply bg-nc-bg-gray-medium;
+    @apply bg-atm-bg-gray-medium;
   }
 
   span.emoji-type-native {
@@ -535,12 +535,12 @@ watch(isOpen, (newValue) => {
   }
 
   .emoji-mart-scroll {
-    /* `nc-scrollbar-visible` replaces the library's `overflow: overlay`, which
+    /* `atm-scrollbar-visible` replaces the library's `overflow: overlay`, which
        keeps the bar hidden until the user scrolls. */
-    @apply mt-1 px-1 overflow-x-hidden overflow-y-auto nc-scrollbar-visible;
+    @apply mt-1 px-1 overflow-x-hidden overflow-y-auto atm-scrollbar-visible;
 
     h3.emoji-mart-category-label {
-      @apply text-xs text-nc-content-gray-muted mb-0 bg-nc-bg-default;
+      @apply text-xs text-atm-content-gray-muted mb-0 bg-atm-bg-default;
     }
   }
 

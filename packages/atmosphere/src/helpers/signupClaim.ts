@@ -1,5 +1,5 @@
-import NocoCache from '~/cache/NocoCache';
-import { NcError } from '~/helpers/catchError';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import { AtError } from '~/helpers/catchError';
 import { normalizeEmail } from '~/utils/emailUtils';
 
 // Only has to outlive the re-check + insert below (a few ms). Kept short because
@@ -30,7 +30,7 @@ export async function withSignupClaim<T>(
 ): Promise<T> {
   const key = claimKey(email);
 
-  const claimed = await NocoCache.setIfNotExist(
+  const claimed = await AtmosphereCache.setIfNotExist(
     'root',
     key,
     '1',
@@ -40,12 +40,12 @@ export async function withSignupClaim<T>(
   // Held only while another signup for this address is mid-insert, so by the
   // time this response lands the address really is taken.
   if (!claimed) {
-    NcError.badRequest('User already exist');
+    AtError.badRequest('User already exist');
   }
 
   try {
     if (await findExisting()) {
-      NcError.badRequest('User already exist');
+      AtError.badRequest('User already exist');
     }
 
     return await create();
@@ -53,6 +53,6 @@ export async function withSignupClaim<T>(
     // Swallowed: awaiting bare, a Redis blip here would replace an already-created
     // account with a 500, and the retry would hit "User already exist". The TTL
     // releases the claim anyway.
-    await NocoCache.del('root', key).catch(() => {});
+    await AtmosphereCache.del('root', key).catch(() => {});
   }
 }

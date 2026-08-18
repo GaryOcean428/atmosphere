@@ -3,16 +3,16 @@
 // import {XKnex} from "../sql-data-mapper";
 import type { MetaService } from '~/meta/meta.service';
 import type Source from '~/models/Source';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import SqlClientFactory from '~/db/sql-client/lib/SqlClientFactory';
 import KnexMigratorv2 from '~/db/sql-migrator/lib/KnexMigratorv2';
 import Debug from '~/db/util/Debug';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 
 const log = new Debug('SqlMgr');
 
 export default class SqlMgrv2 {
-  public context: NcContext;
+  public context: AtContext;
 
   protected _migrator: KnexMigratorv2;
   protected ncMeta?: MetaService;
@@ -25,7 +25,7 @@ export default class SqlMgrv2 {
    * @param {String} args.toolDbPath - path to sqlite file that sql mgr will use
    * @memberof SqlMgr
    */
-  constructor(context: NcContext, args: { id: string }, ncMeta = null) {
+  constructor(context: AtContext, args: { id: string }, ncMeta = null) {
     const func = 'constructor';
     log.api(`${func}:args:`, args);
     // this.metaDb = args.metaDb;
@@ -115,7 +115,7 @@ export default class SqlMgrv2 {
       down: sqlMigrationFiles.down
     });
 
-    // mark as migration done in nc_evolutions table
+    // mark as migration done in atm_evolutions table
     console.log(
       `TODO: write sql migration files for '${op}' with`,
       sqlMigrationStatements
@@ -142,9 +142,9 @@ export default class SqlMgrv2 {
       sourceClient &&
       metaClient === sourceClient
     ) {
-      return NcConnectionMgrv2.getSqlClient(source, this.ncMeta.knex);
+      return AtConnectionMgrv2.getSqlClient(source, this.ncMeta.knex);
     }
 
-    return NcConnectionMgrv2.getSqlClient(source);
+    return AtConnectionMgrv2.getSqlClient(source);
   }
 }

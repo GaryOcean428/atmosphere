@@ -151,73 +151,73 @@ watch(
 </script>
 
 <template>
-  <div class="nc-app-market flex flex-col h-full">
+  <div class="atm-app-market flex flex-col h-full">
     <!-- Header -->
-    <div class="nc-app-market-header">
+    <div class="atm-app-market-header">
       <div class="flex items-center gap-3">
-        <div class="nc-app-market-icon">
+        <div class="atm-app-market-icon">
           <GeneralIcon icon="ncBox" class="h-5 w-5" />
         </div>
         <div class="flex-1">
-          <div class="text-lg font-semibold text-nc-content-gray-emphasis">{{ t('title.appStore') }}</div>
-          <div class="text-xs text-nc-content-gray-subtle2">Discover and install managed applications</div>
+          <div class="text-lg font-semibold text-atm-content-gray-emphasis">{{ t('title.appStore') }}</div>
+          <div class="text-xs text-atm-content-gray-subtle2">Discover and install managed applications</div>
         </div>
 
-        <NcButton size="small" type="text" @click="visible = false">
-          <GeneralIcon icon="close" class="text-nc-content-gray-muted h-4 w-4" />
-        </NcButton>
+        <AtButton size="small" type="text" @click="visible = false">
+          <GeneralIcon icon="close" class="text-atm-content-gray-muted h-4 w-4" />
+        </AtButton>
       </div>
     </div>
 
     <!-- Search and Filter Bar -->
-    <div class="nc-app-market-filters">
+    <div class="atm-app-market-filters">
       <div class="flex gap-3">
         <a-input
           v-model:value="searchQuery"
-          class="flex-1 nc-input-sm nc-input-shadow !rounded-lg"
+          class="flex-1 atm-input-sm atm-input-shadow !rounded-lg"
           :placeholder="t('placeholder.searchByTitle')"
           allow-clear
         >
           <template #prefix>
-            <GeneralIcon icon="search" class="h-4 w-4 text-nc-content-gray-muted" />
+            <GeneralIcon icon="search" class="h-4 w-4 text-atm-content-gray-muted" />
           </template>
         </a-input>
 
-        <NcSelect
+        <AtSelect
           v-model:value="selectedCategory"
-          class="xs:max-w-30 md:w-48 nc-select-sm"
+          class="xs:max-w-30 md:w-48 atm-select-sm"
           :placeholder="t('labels.category')"
           allow-clear
         >
           <a-select-option v-for="cat in categories" :key="cat" :value="cat" class="items-center">
             {{ cat }}
           </a-select-option>
-        </NcSelect>
+        </AtSelect>
       </div>
 
       <!-- Results count -->
-      <div v-if="!loading && filteredManagedApps.length > 0" class="mt-3 text-xs text-nc-content-gray-muted">
+      <div v-if="!loading && filteredManagedApps.length > 0" class="mt-3 text-xs text-atm-content-gray-muted">
         {{ filteredManagedApps.length }} {{ filteredManagedApps.length === 1 ? 'app' : 'apps' }} available
       </div>
     </div>
 
     <!-- Content Area -->
-    <div class="flex-1 overflow-y-auto nc-scrollbar-thin">
+    <div class="flex-1 overflow-y-auto atm-scrollbar-thin">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center h-full">
         <div class="flex flex-col items-center gap-3">
           <a-spin size="large" />
-          <div class="text-sm text-nc-content-gray-muted">Loading applications...</div>
+          <div class="text-sm text-atm-content-gray-muted">Loading applications...</div>
         </div>
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="filteredManagedApps.length === 0" class="nc-app-market-empty">
-        <div class="nc-empty-icon">
-          <GeneralIcon icon="ncBox" class="h-10 w-10 text-nc-content-gray-muted" />
+      <div v-else-if="filteredManagedApps.length === 0" class="atm-app-market-empty">
+        <div class="atm-empty-icon">
+          <GeneralIcon icon="ncBox" class="h-10 w-10 text-atm-content-gray-muted" />
         </div>
-        <div class="text-base font-semibold text-nc-content-gray mb-2">No applications found</div>
-        <div class="text-sm text-nc-content-gray-subtle text-center max-w-md">
+        <div class="text-base font-semibold text-atm-content-gray mb-2">No applications found</div>
+        <div class="text-sm text-atm-content-gray-subtle text-center max-w-md">
           {{
             searchQuery || selectedCategory
               ? "Try adjusting your search or filters to find what you're looking for."
@@ -227,25 +227,25 @@ watch(
       </div>
 
       <!-- App List -->
-      <div v-else class="nc-app-market-list">
-        <div v-for="managedApp in filteredManagedApps" :key="managedApp.id" class="nc-app-item">
-          <div class="nc-app-item-content">
+      <div v-else class="atm-app-market-list">
+        <div v-for="managedApp in filteredManagedApps" :key="managedApp.id" class="atm-app-item">
+          <div class="atm-app-item-content">
             <!-- App Icon & Info -->
-            <div class="nc-app-info">
-              <div class="nc-app-icon">
+            <div class="atm-app-info">
+              <div class="atm-app-icon">
                 <GeneralIcon icon="ncBox" />
               </div>
-              <div class="nc-app-details">
-                <div class="nc-app-title-row">
-                  <h3 class="nc-app-title">{{ managedApp.title }}</h3>
-                  <div v-if="managedApp.category" class="nc-app-categories">
+              <div class="atm-app-details">
+                <div class="atm-app-title-row">
+                  <h3 class="atm-app-title">{{ managedApp.title }}</h3>
+                  <div v-if="managedApp.category" class="atm-app-categories">
                     <div
                       v-for="cat in managedApp.category
                         .split(',')
                         .map((c) => c.trim())
                         .filter(Boolean)"
                       :key="cat"
-                      class="nc-app-category"
+                      class="atm-app-category"
                     >
                       <GeneralIcon icon="ncHash" class="h-3 w-3" />
                       <span>{{ cat }}</span>
@@ -253,29 +253,29 @@ watch(
                   </div>
                 </div>
                 <p
-                  class="nc-app-description"
+                  class="atm-app-description"
                   :class="{
-                    '!text-nc-content-gray-muted': !managedApp.description,
+                    '!text-atm-content-gray-muted': !managedApp.description,
                   }"
                 >
                   {{ managedApp.description || 'No description available' }}
                 </p>
-                <div class="nc-app-meta-row">
-                  <div class="nc-app-meta">
-                    <span class="nc-app-meta-item">
+                <div class="atm-app-meta-row">
+                  <div class="atm-app-meta">
+                    <span class="atm-app-meta-item">
                       <GeneralIcon icon="download" class="h-3.5 w-3.5" />
                       <span class="font-medium">{{ formatInstallCount(managedApp.install_count || 0) }}</span>
-                      <span class="text-nc-content-gray-muted">installs</span>
+                      <span class="text-atm-content-gray-muted">installs</span>
                     </span>
-                    <span v-if="managedApp.version" class="nc-app-meta-item">
+                    <span v-if="managedApp.version" class="atm-app-meta-item">
                       <GeneralIcon icon="gitCommit" class="h-3.5 w-3.5" />
                       <span>v{{ managedApp.version }}</span>
                     </span>
                   </div>
 
                   <!-- Install Button (inline on mobile) -->
-                  <div class="nc-app-action md:hidden">
-                    <NcButton
+                  <div class="atm-app-action md:hidden">
+                    <AtButton
                       :loading="installing === managedApp.id"
                       :disabled="!!installing"
                       size="xs"
@@ -286,15 +286,15 @@ watch(
                         <GeneralIcon icon="download" class="h-3.5 w-3.5" />
                       </template>
                       {{ installing === managedApp.id ? 'Installing...' : t('general.install') }}
-                    </NcButton>
+                    </AtButton>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Install Button (desktop) -->
-            <div class="nc-app-action hidden md:block">
-              <NcButton
+            <div class="atm-app-action hidden md:block">
+              <AtButton
                 :loading="installing === managedApp.id"
                 :disabled="!!installing"
                 size="small"
@@ -305,7 +305,7 @@ watch(
                   <GeneralIcon icon="download" class="h-4 w-4" />
                 </template>
                 {{ installing === managedApp.id ? 'Installing...' : t('general.install') }}
-              </NcButton>
+              </AtButton>
             </div>
           </div>
         </div>
@@ -325,57 +325,57 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-.nc-app-market {
-  @apply bg-nc-bg-gray-extralight;
+.atm-app-market {
+  @apply bg-atm-bg-gray-extralight;
 }
 
-.nc-app-market-header {
-  @apply px-4 md:px-6 py-3 md:py-4 bg-nc-bg-default border-b-1 border-nc-border-gray-light;
+.atm-app-market-header {
+  @apply px-4 md:px-6 py-3 md:py-4 bg-atm-bg-default border-b-1 border-atm-border-gray-light;
 }
 
-.nc-app-market-icon {
+.atm-app-market-icon {
   @apply w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm;
-  background: linear-gradient(135deg, var(--nc-content-brand) 0%, var(--nc-content-blue-medium) 100%);
-  box-shadow: 0 2px 4px rgba(var(--nc-brand-accent-rgb), 0.15);
+  background: linear-gradient(135deg, var(--atm-content-brand) 0%, var(--atm-content-blue-medium) 100%);
+  box-shadow: 0 2px 4px rgba(var(--atm-brand-accent-rgb), 0.15);
 }
 
-.nc-app-market-filters {
-  @apply px-4 md:px-6 py-4 bg-nc-bg-default border-b-1 border-nc-border-gray-light;
+.atm-app-market-filters {
+  @apply px-4 md:px-6 py-4 bg-atm-bg-default border-b-1 border-atm-border-gray-light;
 }
 
-.nc-app-market-empty {
+.atm-app-market-empty {
   @apply flex flex-col items-center justify-center h-full p-8;
 }
 
-.nc-empty-icon {
-  @apply w-20 h-20 rounded-full bg-nc-bg-gray-light flex items-center justify-center mb-4;
+.atm-empty-icon {
+  @apply w-20 h-20 rounded-full bg-atm-bg-gray-light flex items-center justify-center mb-4;
 }
 
-.nc-app-market-list {
+.atm-app-market-list {
   @apply p-4 md:p-6;
 }
 
-.nc-app-item {
-  @apply bg-nc-bg-default border-1 border-nc-border-gray-medium rounded-xl mb-3 relative overflow-hidden;
+.atm-app-item {
+  @apply bg-atm-bg-default border-1 border-atm-border-gray-medium rounded-xl mb-3 relative overflow-hidden;
   @apply transition-all duration-200 ease-in-out;
 
   &::before {
-    @apply absolute left-0 top-0 bottom-0 w-1 bg-nc-content-brand opacity-0;
+    @apply absolute left-0 top-0 bottom-0 w-1 bg-atm-content-brand opacity-0;
     @apply transition-opacity duration-200 ease-in-out;
     content: '';
   }
 
   &:hover {
-    @apply border-nc-border-brand transform translate-x-0.5;
-    box-shadow: 0 4px 12px rgba(var(--nc-brand-accent-rgb), 0.08);
+    @apply border-atm-border-brand transform translate-x-0.5;
+    box-shadow: 0 4px 12px rgba(var(--atm-brand-accent-rgb), 0.08);
 
     &::before {
       @apply opacity-100;
     }
 
-    .nc-app-icon {
+    .atm-app-icon {
       @apply transform scale-105;
-      box-shadow: 0 4px 8px rgba(var(--nc-brand-accent-rgb), 0.15);
+      box-shadow: 0 4px 8px rgba(var(--atm-brand-accent-rgb), 0.15);
     }
   }
 
@@ -384,68 +384,68 @@ watch(
   }
 }
 
-.nc-app-item-content {
+.atm-app-item-content {
   @apply flex items-center gap-4 px-4 py-3;
 }
 
-.nc-app-info {
+.atm-app-info {
   @apply flex gap-3 flex-1 min-w-0;
 }
 
-.nc-app-icon {
-  @apply w-10 h-10 rounded-lg border-1 border-nc-border-gray-light flex items-center justify-center flex-shrink-0 text-nc-content-brand;
+.atm-app-icon {
+  @apply w-10 h-10 rounded-lg border-1 border-atm-border-gray-light flex items-center justify-center flex-shrink-0 text-atm-content-brand;
   @apply transition-all duration-200 ease-in-out;
-  background: linear-gradient(135deg, var(--nc-bg-brand) 0%, var(--nc-bg-blue-light) 100%);
+  background: linear-gradient(135deg, var(--atm-bg-brand) 0%, var(--atm-bg-blue-light) 100%);
 
   :deep(svg) {
     @apply w-5 h-5;
   }
 }
 
-.nc-app-details {
+.atm-app-details {
   @apply flex-1 min-w-0;
 }
 
-.nc-app-title-row {
+.atm-app-title-row {
   @apply flex items-center gap-2 mb-1.5;
 }
 
-.nc-app-title {
-  @apply text-base font-semibold text-nc-content-gray-emphasis m-0 truncate flex-shrink-0;
+.atm-app-title {
+  @apply text-base font-semibold text-atm-content-gray-emphasis m-0 truncate flex-shrink-0;
 }
 
-.nc-app-categories {
+.atm-app-categories {
   @apply flex items-center gap-2 flex-wrap;
 }
 
-.nc-app-category {
-  @apply inline-flex items-center gap-1 px-2.5 py-0.5 bg-nc-bg-gray-light border-1 border-nc-border-gray-light;
-  @apply rounded-full text-xs text-nc-content-gray-subtle whitespace-nowrap flex-shrink-0;
+.atm-app-category {
+  @apply inline-flex items-center gap-1 px-2.5 py-0.5 bg-atm-bg-gray-light border-1 border-atm-border-gray-light;
+  @apply rounded-full text-xs text-atm-content-gray-subtle whitespace-nowrap flex-shrink-0;
 }
 
-.nc-app-description {
-  @apply text-sm text-nc-content-gray-subtle m-0 mb-2 leading-normal line-clamp-2;
+.atm-app-description {
+  @apply text-sm text-atm-content-gray-subtle m-0 mb-2 leading-normal line-clamp-2;
 }
 
-.nc-app-meta-row {
+.atm-app-meta-row {
   @apply flex items-center justify-between gap-3;
 }
 
-.nc-app-meta {
-  @apply flex items-center gap-4 text-xs text-nc-content-gray-subtle2;
+.atm-app-meta {
+  @apply flex items-center gap-4 text-xs text-atm-content-gray-subtle2;
 }
 
-.nc-app-meta-item {
+.atm-app-meta-item {
   @apply flex items-center gap-1.5;
 }
 
-.nc-app-action {
+.atm-app-action {
   @apply flex-shrink-0;
 }
 
 // Responsive adjustments
 @media (max-width: 819px) {
-  .nc-app-title-row {
+  .atm-app-title-row {
     @apply flex-wrap;
   }
 }

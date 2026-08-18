@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DependencyTableType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import { DependencyTableType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import DependencyTracker from '~/models/DependencyTracker';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import {
   Dashboard,
   DateDependency,
@@ -16,7 +16,7 @@ import { processConcurrently } from '~/utils';
 @Injectable()
 export class DependencyService {
   async checkDependency(
-    context: NcContext,
+    context: AtContext,
     params: {
       entityType: string;
       entityId: string;
@@ -27,7 +27,7 @@ export class DependencyService {
     const sourceType = entityType;
 
     if (!sourceType) {
-      NcError.get(context).badRequest(`Invalid entity type: ${entityType}`);
+      AtError.get(context).badRequest(`Invalid entity type: ${entityType}`);
     }
 
     const breakingChanges = await DependencyTracker.checkBreakingChanges(

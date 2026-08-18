@@ -15,12 +15,12 @@ import {
   FieldOptionsDeleteReqV3Type,
   FieldUpdateV3Type,
   FieldV3Type,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 import { ColumnsV3Service } from '~/services/v3/columns-v3.service';
 import { PREFIX_APIV3_METABASE } from '~/constants/controllers';
 
@@ -33,10 +33,10 @@ export class ColumnsV3Controller {
   @HttpCode(200)
   @Acl('columnAdd')
   async columnAdd(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Body() body: FieldV3Type,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.columnsV3Service.columnAdd(context, {
       tableId,
@@ -52,10 +52,10 @@ export class ColumnsV3Controller {
   ])
   @Acl('columnUpdate')
   async columnUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('columnId') columnId: string,
     @Body() body: FieldUpdateV3Type,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.columnsV3Service.columnUpdate(context, {
       columnId: columnId,
@@ -71,9 +71,9 @@ export class ColumnsV3Controller {
   ])
   @Acl('columnDelete')
   async columnDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('columnId') columnId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.columnsV3Service.columnDelete(context, {
       columnId,
@@ -87,7 +87,7 @@ export class ColumnsV3Controller {
   ])
   @Acl('columnGet')
   async columnGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('columnId') columnId: string,
   ) {
     return await this.columnsV3Service.columnGet(context, { columnId });
@@ -97,10 +97,10 @@ export class ColumnsV3Controller {
   @HttpCode(200)
   @Acl('columnUpdate')
   async columnOptionsAdd(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('columnId') columnId: string,
     @Body() body: FieldOptionsAddReqV3Type,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.columnsV3Service.columnOptionsAdd(context, {
       columnId,
@@ -114,10 +114,10 @@ export class ColumnsV3Controller {
   @HttpCode(200)
   @Acl('columnUpdate')
   async columnOptionsDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('columnId') columnId: string,
     @Body() body: FieldOptionsDeleteReqV3Type,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.columnsV3Service.columnOptionsDelete(context, {
       columnId,

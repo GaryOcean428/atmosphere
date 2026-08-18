@@ -61,36 +61,36 @@ const onResultDone = () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6" data-testid="nc-token-create-form">
-    <span class="text-sm text-nc-content-gray-muted" data-rec="true">{{ $t('msg.apiTokenCreate') }}</span>
+  <div class="flex flex-col gap-6" data-testid="atm-token-create-form">
+    <span class="text-sm text-atm-content-gray-muted" data-rec="true">{{ $t('msg.apiTokenCreate') }}</span>
 
     <div class="max-w-150 flex flex-col gap-6">
       <!-- Name -->
       <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-bold text-nc-content-gray">{{ $t('general.name') }}</label>
-        <a-input v-model:value="tokenName" class="!rounded-lg max-w-150" :maxlength="255" data-testid="nc-token-name-input" />
+        <label class="text-sm font-bold text-atm-content-gray">{{ $t('general.name') }}</label>
+        <a-input v-model:value="tokenName" class="!rounded-lg max-w-150" :maxlength="255" data-testid="atm-token-name-input" />
       </div>
 
       <!-- Actions -->
-      <div class="flex justify-end gap-3 pt-4 border-t border-nc-border-gray-light">
-        <NcButton type="text" size="small" data-testid="nc-token-cancel-btn" @click="emit('cancel')">
+      <div class="flex justify-end gap-3 pt-4 border-t border-atm-border-gray-light">
+        <AtButton type="text" size="small" data-testid="atm-token-cancel-btn" @click="emit('cancel')">
           {{ $t('general.cancel') }}
-        </NcButton>
-        <NcButton
+        </AtButton>
+        <AtButton
           type="primary"
           size="small"
           :loading="isCreating"
           :disabled="!isFormValid"
-          data-testid="nc-token-create-btn"
+          data-testid="atm-token-create-btn"
           @click="submitToken"
         >
           {{ $t('activity.createToken') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
 
     <!-- Token Created Modal -->
-    <NcModalConfirm
+    <AtModalConfirm
       v-model:visible="showResultModal"
       type="success"
       :title="$t('msg.info.tokenCreatedSuccessfully')"
@@ -101,41 +101,41 @@ const onResultDone = () => {
       :keyboard="false"
       :closable="false"
       size="sm"
-      :wrapper-props="{ 'data-testid': 'nc-token-result-modal' }"
+      :wrapper-props="{ 'data-testid': 'atm-token-result-modal' }"
       @ok="onResultDone"
     >
       <template #extraContent>
         <!-- Help text -->
-        <p class="text-sm text-nc-content-gray-subtle2 mb-0 leading-5">
+        <p class="text-sm text-atm-content-gray-subtle2 mb-0 leading-5">
           {{ $t('msg.info.tokenResultHelpText') }}
         </p>
 
         <!-- Token value -->
         <div
-          class="flex items-center gap-2 bg-nc-bg-gray-extralight border-1 border-nc-border-gray-medium rounded-lg px-3 py-2.5"
+          class="flex items-center gap-2 bg-atm-bg-gray-extralight border-1 border-atm-border-gray-medium rounded-lg px-3 py-2.5"
         >
           <code
-            class="text-xs text-nc-content-gray-extreme select-all leading-5 flex-1 min-w-0 truncate"
+            class="text-xs text-atm-content-gray-extreme select-all leading-5 flex-1 min-w-0 truncate"
             style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
-            data-testid="nc-token-created-value"
+            data-testid="atm-token-created-value"
           >
             {{ createdTokenValue }}
           </code>
-          <NcTooltip :title="tokenCopied ? $t('general.copied') : $t('general.copy')">
-            <NcButton size="xs" type="secondary" class="flex-none !px-1.5" data-testid="nc-token-copy-btn" @click="copyToken">
+          <AtTooltip :title="tokenCopied ? $t('general.copied') : $t('general.copy')">
+            <AtButton size="xs" type="secondary" class="flex-none !px-1.5" data-testid="atm-token-copy-btn" @click="copyToken">
               <GeneralIcon
                 :icon="tokenCopied ? 'check' : 'copy'"
                 class="w-4 h-4"
-                :class="tokenCopied ? 'text-green-600' : 'text-nc-content-gray-subtle2'"
+                :class="tokenCopied ? 'text-green-600' : 'text-atm-content-gray-subtle2'"
               />
-            </NcButton>
-          </NcTooltip>
+            </AtButton>
+          </AtTooltip>
         </div>
 
         <!-- Warning -->
-        <NcAlert type="warning" :description="$t('msg.info.tokenWontBeDisplayedAgain')" />
+        <AtAlert type="warning" :description="$t('msg.info.tokenWontBeDisplayedAgain')" />
       </template>
-    </NcModalConfirm>
+    </AtModalConfirm>
   </div>
 </template>
 

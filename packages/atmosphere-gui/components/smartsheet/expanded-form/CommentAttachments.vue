@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AttachmentType } from 'nocodb-sdk'
+import type { AttachmentType } from 'atmosphere-sdk'
 
 interface Props {
   attachments?: AttachmentType[]
@@ -112,13 +112,13 @@ onBeforeUnmount(() => {
 <template>
   <div
     v-if="attachments?.length"
-    class="nc-comment-attachments grid gap-2"
+    class="atm-comment-attachments grid gap-2"
     :style="{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }"
   >
     <div
       v-for="(item, index) in attachments"
       :key="`${item.id || item.title}-${index}`"
-      class="nc-comment-attachment group relative flex items-center gap-2 min-w-0 border-1 border-nc-border-gray-medium rounded-lg bg-nc-bg-default px-2 py-1.5 cursor-pointer hover:bg-nc-bg-gray-light transition-colors"
+      class="atm-comment-attachment group relative flex items-center gap-2 min-w-0 border-1 border-atm-border-gray-medium rounded-lg bg-atm-bg-default px-2 py-1.5 cursor-pointer hover:bg-atm-bg-gray-light transition-colors"
       @click="onOpen(item)"
     >
       <img
@@ -130,25 +130,25 @@ onBeforeUnmount(() => {
       <GeneralIcon v-else :icon="getAttachmentIcon(item.title, item.mimetype)" class="h-7 w-7 flex-none" />
 
       <div class="flex flex-col min-w-0 overflow-hidden">
-        <NcTooltip show-on-truncate-only class="truncate text-small leading-4 text-nc-content-gray">
+        <AtTooltip show-on-truncate-only class="truncate text-small leading-4 text-atm-content-gray">
           <template #title>{{ item.title }}</template>
           {{ item.title }}
-        </NcTooltip>
-        <span v-if="item.size" class="text-tiny leading-4 text-nc-content-gray-muted">
+        </AtTooltip>
+        <span v-if="item.size" class="text-tiny leading-4 text-atm-content-gray-muted">
           {{ getReadableFileSize(item.size) }}
         </span>
       </div>
 
-      <NcButton
+      <AtButton
         v-if="editable"
         type="text"
         size="xxsmall"
-        class="nc-comment-attachment-remove !absolute -top-2 -right-2 !flex !bg-nc-bg-default !border-1 !border-nc-border-gray-medium !rounded-full !h-5 !w-5 !shadow-sm"
-        data-testid="nc-comment-attachment-remove"
+        class="atm-comment-attachment-remove !absolute -top-2 -right-2 !flex !bg-atm-bg-default !border-1 !border-atm-border-gray-medium !rounded-full !h-5 !w-5 !shadow-sm"
+        data-testid="atm-comment-attachment-remove"
         @click.stop="emits('remove', index)"
       >
         <GeneralIcon icon="close" class="text-tiny" />
-      </NcButton>
+      </AtButton>
     </div>
   </div>
 </template>

@@ -61,7 +61,7 @@ function updateInput(e: any) {
     :ref="focus"
     :value="vModel"
     :autocomplete="formFieldAutocomplete"
-    class="nc-cell-field h-full w-full outline-none py-1 bg-transparent"
+    class="atm-cell-field h-full w-full outline-none py-1 bg-transparent"
     @input="updateInput"
     @blur="editEnabled = false"
     @keydown.down.stop
@@ -73,13 +73,13 @@ function updateInput(e: any) {
     @selectstart.capture.stop
     @mousedown.stop
   />
-  <NcAutoSizeTextarea
+  <AtAutoSizeTextarea
     v-else
     :ref="focus"
     v-model:model-value="textareaValue"
     :hide-scrollbar="false"
     :bordered="false"
-    class="!px-2 !py-1 !min-h-7 !max-h-7.5rem resize-none nc-scrollbar-thin"
+    class="!px-2 !py-1 !min-h-7 !max-h-7.5rem resize-none atm-scrollbar-thin"
     style="color: inherit"
     @keydown.enter.prevent
   />

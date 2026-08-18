@@ -1,5 +1,5 @@
-import type { ColumnType, FilterType, KanbanType, SortType, TableType, ViewType } from 'nocodb-sdk'
-import { NcApiVersion, ViewLockType, ViewTypes, extractFilterFromXwhere, getFirstNonPersonalView } from 'nocodb-sdk'
+import type { ColumnType, FilterType, KanbanType, SortType, TableType, ViewType } from 'atmosphere-sdk'
+import { AtApiVersion, ViewLockType, ViewTypes, extractFilterFromXwhere, getFirstNonPersonalView } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import { validateRowFilters } from '~/utils/dataUtils'
 import { flattenFiltersForEval } from '~/utils/realtimeUtils'
@@ -115,7 +115,7 @@ const [useProvideSmartsheetStore, useSmartsheetStore] = useInjectionState(
     const filtersFromUrlParams = computed(() => {
       if (route.value.query.where && !ncIsEmptyObject(aliasColObjMap.value)) {
         return extractFilterFromXwhere(
-          { api_version: NcApiVersion.V1, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone },
+          { api_version: AtApiVersion.V1, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone },
           route.value.query.where as string,
           aliasColObjMap.value,
           false,
@@ -190,7 +190,7 @@ const [useProvideSmartsheetStore, useSmartsheetStore] = useInjectionState(
     const xWhereFilters = computed<FilterType[]>(() => {
       if (!xWhere.value || ncIsEmptyObject(aliasColObjMap.value)) return []
       const { filters, errors } = extractFilterFromXwhere(
-        { api_version: NcApiVersion.V1, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone },
+        { api_version: AtApiVersion.V1, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone },
         xWhere.value,
         aliasColObjMap.value,
         false,

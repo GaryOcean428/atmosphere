@@ -106,16 +106,16 @@ watch(
 </script>
 
 <template>
-  <div class="nc-workspace-settings-container overflow-auto nc-scrollbar-thin" :class="containerHeightClass">
-    <div v-if="currentWorkspace" class="flex flex-col items-start nc-content-max-w mx-auto w-full pb-6 md:pb-10 px-4 md:px-6">
-      <div class="nc-settings-item-card-wrapper mt-4">
-        <div class="nc-settings-item-heading text-nc-content-gray-emphasis">
+  <div class="atm-workspace-settings-container overflow-auto atm-scrollbar-thin" :class="containerHeightClass">
+    <div v-if="currentWorkspace" class="flex flex-col items-start atm-content-max-w mx-auto w-full pb-6 md:pb-10 px-4 md:px-6">
+      <div class="atm-settings-item-card-wrapper mt-4">
+        <div class="atm-settings-item-heading text-atm-content-gray-emphasis">
           {{ $t('objects.workspace') }} {{ $t('general.appearance') }}
         </div>
-        <div class="nc-settings-item-card flex flex-col w-full p-4 md:p-6">
+        <div class="atm-settings-item-card flex flex-col w-full p-4 md:p-6">
           <a-form ref="formValidator" layout="vertical" no-style :model="form" class="w-full" @finish="saveChanges">
             <div class="flex-1">
-              <div class="text-sm text-nc-content-gray-subtle2">{{ $t('general.name') }}</div>
+              <div class="text-sm text-atm-content-gray-subtle2">{{ $t('general.name') }}</div>
               <a-form-item name="title" :rules="formRules.title" class="!mt-2 !mb-0">
                 <a-input
                   v-model:value="form.title"
@@ -123,12 +123,12 @@ watch(
                   :placeholder="$t('labels.workspaceName')"
                   size="large"
                   :disabled="!hasWorkspaceManagePermission"
-                  data-testid="nc-workspace-settings-settings-rename-input"
+                  data-testid="atm-workspace-settings-settings-rename-input"
                 />
               </a-form-item>
             </div>
             <div v-if="hasWorkspaceManagePermission" class="flex flex-row w-full justify-end mt-8 gap-4">
-              <NcButton
+              <AtButton
                 v-if="isSaveChangesBtnEnabled"
                 type="secondary"
                 size="small"
@@ -136,8 +136,8 @@ watch(
                 @click="onCancel"
               >
                 {{ $t('general.cancel') }}
-              </NcButton>
-              <NcButton
+              </AtButton>
+              <AtButton
                 v-e="['c:workspace:settings:rename']"
                 type="primary"
                 html-type="submit"
@@ -147,7 +147,7 @@ watch(
               >
                 <template #loading> {{ $t('general.saving') }} </template>
                 {{ $t('general.save') }}
-              </NcButton>
+              </AtButton>
             </div>
           </a-form>
         </div>

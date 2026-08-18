@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useTitle } from '@vueuse/core'
-import { PlanFeatureTypes, PlanTitles } from 'nocodb-sdk'
+import { PlanFeatureTypes, PlanTitles } from 'atmosphere-sdk'
 
 const props = defineProps<{
   workspaceId?: string
@@ -33,12 +33,12 @@ const { isWsAuditEnabled, handleUpgradePlan, blockTeamsManagement, showUpgradeTo
 const { isFromIntegrationPage, eventBus, searchQuery: storeSearchQuery, loadIntegrations } = useProvideIntegrationViewStore()
 
 // Local ref for integrations view mode (main page vs all-connections page).
-// Cannot use activeViewTab (which writes to route.query.tab) because the outer NcTabs
+// Cannot use activeViewTab (which writes to route.query.tab) because the outer AtTabs
 // also reads route.query.tab — changing it to 'connections' makes the outer pane blank.
 const integrationsViewMode = ref<'main' | 'all-connections'>('main')
 
 // After creating an integration, switch to all-connections view
-// (the store sets activeViewTab='connections' which breaks outer NcTabs, so we handle it here)
+// (the store sets activeViewTab='connections' which breaks outer AtTabs, so we handle it here)
 const integrationEventBusHandler = (event: string) => {
   if (event === IntegrationStoreEvents.INTEGRATION_ADD) {
     integrationsViewMode.value = 'all-connections'
@@ -192,20 +192,20 @@ if (!props.isNewWsPage) {
 </script>
 
 <template>
-  <div v-if="currentWorkspace" class="flex w-full flex-col nc-workspace-settings h-full overflow-hidden">
+  <div v-if="currentWorkspace" class="flex w-full flex-col atm-workspace-settings h-full overflow-hidden">
     <div
       v-if="!props.workspaceId && !isNewWsPage"
-      class="min-w-0 p-2 h-[var(--topbar-height)] border-b-1 border-nc-border-gray-medium flex items-center gap-2"
+      class="min-w-0 p-2 h-[var(--topbar-height)] border-b-1 border-atm-border-gray-medium flex items-center gap-2"
     >
       <GeneralOpenLeftSidebarBtn v-if="isMobileMode && !isLeftSidebarOpen" />
       <div
-        class="flex-1 nc-breadcrumb nc-no-negative-margin pl-1 nc-workspace-title"
+        class="flex-1 atm-breadcrumb atm-no-negative-margin pl-1 atm-workspace-title"
         :class="{
           'max-w-[calc(100%_-_52px)]': isMobileMode,
         }"
       >
         <div
-          class="nc-breadcrumb-item capitalize truncate"
+          class="atm-breadcrumb-item capitalize truncate"
           :class="{
             '!text-bodyLgBold': isNewWsPage,
           }"
@@ -213,9 +213,9 @@ if (!props.isNewWsPage) {
           {{ currentWorkspace?.title }}
         </div>
         <template v-if="!isNewWsPage">
-          <GeneralIcon icon="ncSlash1" class="nc-breadcrumb-divider" />
+          <GeneralIcon icon="ncSlash1" class="atm-breadcrumb-divider" />
 
-          <h1 class="nc-breadcrumb-item active truncate">
+          <h1 class="atm-breadcrumb-item active truncate">
             {{ $t('title.teamAndSettings') }}
           </h1>
         </template>
@@ -224,27 +224,27 @@ if (!props.isNewWsPage) {
       <GeneralHideLeftSidebarBtn v-if="isMobileMode && isLeftSidebarOpen" />
     </div>
     <template v-else-if="!isNewWsPage">
-      <div class="nc-breadcrumb px-2">
-        <div class="nc-breadcrumb-item">
+      <div class="atm-breadcrumb px-2">
+        <div class="atm-breadcrumb-item">
           {{ org.title }}
         </div>
-        <GeneralIcon icon="ncSlash1" class="nc-breadcrumb-divider" />
+        <GeneralIcon icon="ncSlash1" class="atm-breadcrumb-divider" />
 
         <NuxtLink
           :href="`/admin/${orgId}/workspaces`"
-          class="!hover:(text-nc-content-gray underline-nc-border-gray-underline) flex items-center !text-nc-content-gray-subtle !underline-transparent max-w-1/4"
+          class="!hover:(text-atm-content-gray underline-atm-border-gray-underline) flex items-center !text-atm-content-gray-subtle !underline-transparent max-w-1/4"
         >
-          <div class="nc-breadcrumb-item">
+          <div class="atm-breadcrumb-item">
             {{ $t('labels.workspaces') }}
           </div>
         </NuxtLink>
-        <GeneralIcon icon="ncSlash1" class="nc-breadcrumb-divider" />
+        <GeneralIcon icon="ncSlash1" class="atm-breadcrumb-divider" />
 
-        <div class="nc-breadcrumb-item active truncate capitalize">
+        <div class="atm-breadcrumb-item active truncate capitalize">
           {{ currentWorkspace?.title }}
         </div>
       </div>
-      <NcPageHeader>
+      <AtPageHeader>
         <template #icon>
           <div class="flex justify-center items-center h-6 w-6">
             <GeneralWorkspaceIcon :workspace="currentWorkspace" size="medium" />
@@ -255,10 +255,10 @@ if (!props.isNewWsPage) {
             {{ currentWorkspace?.title }}
           </span>
         </template>
-      </NcPageHeader>
+      </AtPageHeader>
     </template>
 
-    <NcTabs v-model:active-key="tab" class="flex-1 min-h-0" :class="{ 'hide-tabs': isNewWsPage }">
+    <AtTabs v-model:active-key="tab" class="flex-1 min-h-0" :class="{ 'hide-tabs': isNewWsPage }">
       <template #leftExtra>
         <div class="w-3"></div>
       </template>
@@ -295,7 +295,7 @@ if (!props.isNewWsPage) {
             </div>
           </template>
           <div
-            class="nc-integrations-layout nc-content-max-w mx-auto"
+            class="atm-integrations-layout atm-content-max-w mx-auto"
             :class="isNewWsPage ? 'h-[calc(100vh-var(--topbar-height))]' : 'h-[calc(100vh-var(--topbar-height)-44px)]'"
           >
             <!-- Main integrations page -->
@@ -313,19 +313,19 @@ if (!props.isNewWsPage) {
             <!-- All connections page -->
             <template v-else-if="integrationsViewMode === 'all-connections'">
               <div class="h-full flex flex-col px-8 py-6">
-                <NcButton
+                <AtButton
                   type="link"
                   size="small"
-                  class="!text-nc-content-brand self-start !-ml-1.5 mb-4 !p-0 !h-auto !min-h-0"
+                  class="!text-atm-content-brand self-start !-ml-1.5 mb-4 !p-0 !h-auto !min-h-0"
                   inner-class="hover:underline"
                   @click="integrationsViewMode = 'main'"
                 >
                   <GeneralIcon icon="arrowLeft" class="mr-1" />
                   {{ $t('general.backToIntegrations') }}
-                </NcButton>
+                </AtButton>
 
                 <div class="flex items-center justify-between mb-2">
-                  <h2 class="text-lg font-semibold text-nc-content-gray mb-0">
+                  <h2 class="text-lg font-semibold text-atm-content-gray mb-0">
                     {{ $t('general.allConnections') }}
                   </h2>
                   <WorkspaceIntegrationsAddConnectionDropdown />
@@ -344,7 +344,7 @@ if (!props.isNewWsPage) {
         <template v-if="wsTabVisibility.billing">
           <a-tab-pane key="billing" class="w-full">
             <template #tab>
-              <div class="tab-title" data-testid="nc-workspace-settings-tab-billing">
+              <div class="tab-title" data-testid="atm-workspace-settings-tab-billing">
                 <GeneralIcon icon="ncDollarSign" class="flex-none h-4 w-4" />
                 {{ $t('general.billing') }}
               </div>
@@ -357,7 +357,7 @@ if (!props.isNewWsPage) {
         <template v-if="wsTabVisibility.audits">
           <a-tab-pane key="audits" class="w-full">
             <template #tab>
-              <div class="tab-title" data-testid="nc-workspace-settings-tab-audits">
+              <div class="tab-title" data-testid="atm-workspace-settings-tab-audits">
                 <GeneralIcon icon="audit" class="h-4 w-4" />
                 {{ $t('title.audits') }}
                 <LazyPaymentUpgradeBadge
@@ -375,7 +375,7 @@ if (!props.isNewWsPage) {
         <template v-if="wsTabVisibility.sso">
           <a-tab-pane key="sso" class="w-full">
             <template #tab>
-              <div class="tab-title" data-testid="nc-workspace-settings-tab-billing">
+              <div class="tab-title" data-testid="atm-workspace-settings-tab-billing">
                 <GeneralIcon icon="sso" class="flex-none h-4 w-4" />
                 {{ $t('title.sso') }}
               </div>
@@ -388,7 +388,7 @@ if (!props.isNewWsPage) {
 
       <a-tab-pane v-if="wsTabVisibility.settings" key="settings" class="w-full">
         <template #tab>
-          <div class="tab-title" data-testid="nc-workspace-settings-tab-settings">
+          <div class="tab-title" data-testid="atm-workspace-settings-tab-settings">
             <GeneralIcon icon="ncSettings" class="h-4 w-4" />
             {{ $t('labels.settings') }}
           </div>
@@ -396,7 +396,7 @@ if (!props.isNewWsPage) {
 
         <WorkspaceSettings :workspace-id="currentWorkspace.id" />
       </a-tab-pane>
-    </NcTabs>
+    </AtTabs>
   </div>
 </template>
 

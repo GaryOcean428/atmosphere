@@ -148,7 +148,7 @@ function handleMouseMove(e: MouseEvent) {
       sidebarState.value = 'peekOpenEnd'
     }, animationDuration)
   } else if (isAwayFromSidebar && sidebarState.value === 'peekOpenEnd') {
-    if ((e.target as HTMLElement).closest('.nc-dropdown.active') || isNcDropdownOpen()) {
+    if ((e.target as HTMLElement).closest('.atm-dropdown.active') || isNcDropdownOpen()) {
       return
     }
 
@@ -163,8 +163,8 @@ function handleMouseMove(e: MouseEvent) {
 function onWindowResize(e?: any): void {
   if (isChatToggling.value) return
 
-  const chatPanelOffset = parseFloat(document.documentElement.style.getPropertyValue('--nc-chat-panel-offset')) || 0
-  const sandboxDrawerOffset = parseFloat(document.documentElement.style.getPropertyValue('--nc-sandbox-drawer-offset')) || 0
+  const chatPanelOffset = parseFloat(document.documentElement.style.getPropertyValue('--atm-chat-panel-offset')) || 0
+  const sandboxDrawerOffset = parseFloat(document.documentElement.style.getPropertyValue('--atm-sandbox-drawer-offset')) || 0
   viewportWidth.value = window.innerWidth - chatPanelOffset - sandboxDrawerOffset
 
   if (!e && isLeftSidebarOpen.value && !sideBarSize.value.current && !isMobileMode.value) {
@@ -240,17 +240,17 @@ function onResize(widthPercent: any) {
 
 const contentWidthStyle = computed(() => ({
   width: isMiniSidebarVisible.value
-    ? 'calc(100vw - var(--mini-sidebar-width) - var(--nc-chat-panel-offset, 0px) - var(--nc-sandbox-drawer-offset, 0px))'
-    : 'calc(100vw - var(--nc-chat-panel-offset, 0px) - var(--nc-sandbox-drawer-offset, 0px))',
+    ? 'calc(100vw - var(--mini-sidebar-width) - var(--atm-chat-panel-offset, 0px) - var(--atm-sandbox-drawer-offset, 0px))'
+    : 'calc(100vw - var(--atm-chat-panel-offset, 0px) - var(--atm-sandbox-drawer-offset, 0px))',
 }))
 
 watch([isChatPanelExpanded, isSandboxDrawerOpen], () => {
   isChatToggling.value = true
-  document.documentElement.classList.add('nc-chat-toggling')
+  document.documentElement.classList.add('atm-chat-toggling')
 
   nextTick(() => {
-    const chatOffset = parseFloat(document.documentElement.style.getPropertyValue('--nc-chat-panel-offset')) || 0
-    const sandboxOffset = parseFloat(document.documentElement.style.getPropertyValue('--nc-sandbox-drawer-offset')) || 0
+    const chatOffset = parseFloat(document.documentElement.style.getPropertyValue('--atm-chat-panel-offset')) || 0
+    const sandboxOffset = parseFloat(document.documentElement.style.getPropertyValue('--atm-sandbox-drawer-offset')) || 0
     viewportWidth.value = window.innerWidth - chatOffset - sandboxOffset
 
     const containerWidth = isMiniSidebarVisible.value ? viewportWidth.value - miniSidebarWidth.value : viewportWidth.value
@@ -261,7 +261,7 @@ watch([isChatPanelExpanded, isSandboxDrawerOpen], () => {
     window.dispatchEvent(new Event('resize'))
     setTimeout(() => {
       isChatToggling.value = false
-      document.documentElement.classList.remove('nc-chat-toggling')
+      document.documentElement.classList.remove('atm-chat-toggling')
     }, 50)
   })
 })
@@ -272,13 +272,13 @@ watch([isChatPanelExpanded, isSandboxDrawerOpen], () => {
     <DashboardMiniSidebarV2 v-if="isMiniSidebarVisible" />
 
     <div
-      class="flex-none overflow-hidden nc-view-content-area"
-      :class="{ 'nc-view-content-hidden': isChatFullScreen }"
+      class="flex-none overflow-hidden atm-view-content-area"
+      :class="{ 'atm-view-content-hidden': isChatFullScreen }"
       :style="contentWidthStyle"
     >
       <DashboardTopbar v-if="showTopbar" :workspace-id="workspaceId" />
       <Splitpanes
-        class="nc-sidebar-content-resizable-wrapper h-full"
+        class="atm-sidebar-content-resizable-wrapper h-full"
         :class="{
           'sidebar-closed': !isLeftSidebarOpen,
           'hide-resize-bar': !isLeftSidebarOpen || sidebarState === 'openStart' || hideSidebar,
@@ -291,7 +291,7 @@ watch([isChatPanelExpanded, isSandboxDrawerOpen], () => {
           min-size="15%"
           :size="mobileNormalizedSidebarSize"
           max-size="60%"
-          class="nc-sidebar-splitpane !sm:max-w-140 relative !overflow-visible flex"
+          class="atm-sidebar-splitpane !sm:max-w-140 relative !overflow-visible flex"
           :class="{
             hidden: hideSidebar,
           }"
@@ -302,7 +302,7 @@ watch([isChatPanelExpanded, isSandboxDrawerOpen], () => {
         >
           <div
             ref="wrapperRef"
-            class="nc-sidebar-wrapper relative nc-new-sidebar flex flex-col h-full justify-center !sm:(max-w-140) absolute overflow-visible"
+            class="atm-sidebar-wrapper relative atm-new-sidebar flex flex-col h-full justify-center !sm:(max-w-140) absolute overflow-visible"
             :class="{
               'mobile': isMobileMode,
               'minimized-height': !isLeftSidebarOpen,
@@ -331,27 +331,27 @@ watch([isChatPanelExpanded, isSandboxDrawerOpen], () => {
 </template>
 
 <style lang="scss">
-.nc-sidebar-wrapper.minimized-height {
+.atm-sidebar-wrapper.minimized-height {
   & > * {
-    @apply h-4/5 pb-2 !(rounded-r-lg border-1 border-nc-border-gray-medium shadow-lg);
+    @apply h-4/5 pb-2 !(rounded-r-lg border-1 border-atm-border-gray-medium shadow-lg);
     width: calc(100% + 4px);
   }
 
-  &.nc-new-sidebar > * {
+  &.atm-new-sidebar > * {
     @apply !border-l-0;
   }
 }
 
-.mobile.nc-sidebar-wrapper.minimized-height > * {
+.mobile.atm-sidebar-wrapper.minimized-height > * {
   @apply !h-full;
 }
 
-.nc-sidebar-wrapper > * {
+.atm-sidebar-wrapper > * {
   transition: all 0.2s ease-in-out;
   @apply z-501 absolute;
 }
 
-.nc-sidebar-wrapper.hide-sidebar {
+.atm-sidebar-wrapper.hide-sidebar {
   @apply !min-w-0;
 
   > * {
@@ -363,24 +363,24 @@ watch([isChatPanelExpanded, isSandboxDrawerOpen], () => {
 
 /** Split pane CSS */
 
-.nc-sidebar-content-resizable-wrapper {
+.atm-sidebar-content-resizable-wrapper {
   > .splitpanes__splitter {
     @apply !w-0 relative overflow-visible;
   }
 
   > .splitpanes__splitter:before {
-    @apply bg-nc-bg-gray-medium w-0.25 absolute left-0 top-0 h-full z-40;
+    @apply bg-atm-bg-gray-medium w-0.25 absolute left-0 top-0 h-full z-40;
     content: '';
   }
 
   > .splitpanes__splitter:hover:before {
-    @apply bg-nc-border-gray-medium;
+    @apply bg-atm-border-gray-medium;
     width: 3px !important;
     left: 0px;
   }
 
   &.splitpanes--dragging > .splitpanes__splitter:before {
-    @apply bg-nc-border-gray-medium;
+    @apply bg-atm-border-gray-medium;
     width: 3px !important;
     left: 0px;
   }
@@ -398,7 +398,7 @@ watch([isChatPanelExpanded, isSandboxDrawerOpen], () => {
   }
 }
 
-.nc-sidebar-content-resizable-wrapper.hide-resize-bar {
+.atm-sidebar-content-resizable-wrapper.hide-resize-bar {
   > .splitpanes__splitter {
     cursor: default !important;
     opacity: 0 !important;
@@ -418,38 +418,38 @@ watch([isChatPanelExpanded, isSandboxDrawerOpen], () => {
   }
 }
 
-:root.nc-chat-toggling .splitpanes__pane {
+:root.atm-chat-toggling .splitpanes__pane {
   transition: none !important;
 }
 
-.nc-view-content-area {
+.atm-view-content-area {
   transition: opacity 200ms ease;
 }
 
-.nc-view-content-hidden {
+.atm-view-content-hidden {
   opacity: 0;
   pointer-events: none;
 }
 
 /** RTL overrides */
 .rtl {
-  .nc-sidebar-wrapper.minimized-height {
+  .atm-sidebar-wrapper.minimized-height {
     & > * {
       @apply !rounded-r-none !rounded-l-lg;
     }
 
-    &.nc-new-sidebar > * {
+    &.atm-new-sidebar > * {
       @apply !border-l-1 !border-r-0;
     }
   }
 
-  .nc-sidebar-wrapper.hide-sidebar {
+  .atm-sidebar-wrapper.hide-sidebar {
     > * {
       transform: translateX(100%);
     }
   }
 
-  .nc-sidebar-content-resizable-wrapper {
+  .atm-sidebar-content-resizable-wrapper {
     > .splitpanes__splitter:before {
       @apply left-auto right-0;
     }

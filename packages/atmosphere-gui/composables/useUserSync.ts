@@ -4,7 +4,7 @@ export interface UserObject {
   display_name?: string
 }
 
-const MESSAGE_TYPE = '___NC_USER_SYNC' as const
+const MESSAGE_TYPE = '___ATMOSPHERE_USER_SYNC' as const
 
 export const useUserSync = createSharedComposable(() => {
   const isIFrame = ncIsIframe()
@@ -26,7 +26,7 @@ export const useUserSync = createSharedComposable(() => {
       }
 
       const url = new URL(src, window.location.origin)
-      if (url.origin === 'https://app.nocodb.com') {
+      if (url.origin === 'https://app.atmosphere.dev') {
         return url.origin
       }
       return null

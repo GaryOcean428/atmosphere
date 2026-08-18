@@ -18,7 +18,7 @@ import { NotificationsService } from '~/services/notifications/notifications.ser
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { extractProps } from '~/helpers/extractProps';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
-import { NcRequest } from '~/interface/config';
+import { AtRequest } from '~/interface/config';
 import { PubSubRedis } from '~/redis/pubsub-redis';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 
@@ -47,7 +47,7 @@ export class NotificationsController implements OnModuleDestroy {
     scope: 'org',
   })
   async notificationPoll(
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Res()
     res: Response & {
       resId: string;
@@ -91,7 +91,7 @@ export class NotificationsController implements OnModuleDestroy {
   @Acl('notification', {
     scope: 'org',
   })
-  async notificationList(@Req() req: NcRequest) {
+  async notificationList(@Req() req: AtRequest) {
     return this.notificationsService.notificationList({
       user: req.user,
       is_deleted: false,
@@ -107,7 +107,7 @@ export class NotificationsController implements OnModuleDestroy {
   async notificationUpdate(
     @Param('notificationId') notificationId,
     @Body() body,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return this.notificationsService.notificationUpdate({
       notificationId,
@@ -122,7 +122,7 @@ export class NotificationsController implements OnModuleDestroy {
   })
   async notificationDelete(
     @Param('notificationId') notificationId,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return this.notificationsService.notificationDelete({
       notificationId,
@@ -135,7 +135,7 @@ export class NotificationsController implements OnModuleDestroy {
     scope: 'org',
   })
   @HttpCode(200)
-  async markAllRead(@Req() req: NcRequest) {
+  async markAllRead(@Req() req: AtRequest) {
     return this.notificationsService.markAllRead({
       user: req.user,
     });

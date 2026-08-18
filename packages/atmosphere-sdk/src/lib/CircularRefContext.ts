@@ -1,5 +1,5 @@
 import { arrFlatMap } from './arrayHelpers';
-import { NcErrorBase } from './error-handler';
+import { AtErrorBase } from './error-handler';
 
 type CircularRefType = {
   id: string;
@@ -44,7 +44,7 @@ export class CircularRefContext {
     }
     if (this.refs.has(ref.id)) {
       const [_root_id, root] = this.refs.entries().next().value;
-      new NcErrorBase().formulaCircularRefError(
+      new AtErrorBase().formulaCircularRefError(
         `Detected circular ref for column '${this.formatRef(
           ref
         )}', when evaluate column '${this.formatRef(root)}'`

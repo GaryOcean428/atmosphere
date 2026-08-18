@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { ColumnType, TableType, ViewType } from 'nocodb-sdk'
-import { ExpandedFormMode, PermissionEntity, PermissionKey, ViewTypes } from 'nocodb-sdk'
+import type { ColumnType, TableType, ViewType } from 'atmosphere-sdk'
+import { ExpandedFormMode, PermissionEntity, PermissionKey, ViewTypes } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import { Drawer } from 'ant-design-vue'
-import NcModal from '../../nc/Modal.vue'
+import AtModal from '../../atm/Modal.vue'
 
 interface Props {
   modelValue?: boolean
@@ -604,7 +604,7 @@ useActiveKeydownListener(
       // remove focus from the active input if any
       ;(document.activeElement as HTMLElement)?.blur()
 
-      const modalFocusEl = wrapper.value?.closest('.ant-modal-wrap.nc-modal-wrapper, .ant-drawer.nc-drawer-expanded-form')
+      const modalFocusEl = wrapper.value?.closest('.ant-modal-wrap.atm-modal-wrapper, .ant-drawer.atm-drawer-expanded-form')
 
       // Focus on the modal or drawer if it exists so that onEsc key can close the modal or drawer
       if (modalFocusEl) {
@@ -861,7 +861,7 @@ export default {
 
 <template>
   <component
-    :is="isMobileMode ? Drawer : NcModal"
+    :is="isMobileMode ? Drawer : AtModal"
     :body-style="{ padding: 0 }"
     :class="{ active: isExpanded }"
     :closable="false"
@@ -874,12 +874,12 @@ export default {
         ? 'min(80vw,1280px)'
         : 'min(70vw,768px)'
     "
-    class="nc-drawer-expanded-form"
+    class="atm-drawer-expanded-form"
     :size="isMobileMode ? 'medium' : 'small'"
     v-bind="modalProps"
     @update:visible="onIsExpandedUpdate"
   >
-    <div class="h-[85vh] xs:(max-h-full h-full) max-h-215 flex flex-col" data-testid="nc-expanded-form-modal">
+    <div class="h-[85vh] xs:(max-h-full h-full) max-h-215 flex flex-col" data-testid="atm-expanded-form-modal">
       <div v-if="isMobileMode" class="flex-none h-4 flex items-center justify-center">
         <div
           class="flex-none h-full flex items-center justify-center cursor-pointer"
@@ -888,47 +888,47 @@ export default {
           @touchend="onTouchEnd"
           @click="onClose()"
         >
-          <div class="w-[72px] h-[2px] rounded-full bg-nc-bg-gray-dark"></div>
+          <div class="w-[72px] h-[2px] rounded-full bg-atm-bg-gray-dark"></div>
         </div>
       </div>
       <div
-        class="flex gap-2 min-h-7 flex-shrink-0 w-full items-center nc-expanded-form-header p-4 xs:(px-2 py-0 min-h-[48px]) border-b-1 border-nc-border-gray-medium"
+        class="flex gap-2 min-h-7 flex-shrink-0 w-full items-center atm-expanded-form-header p-4 xs:(px-2 py-0 min-h-[48px]) border-b-1 border-atm-border-gray-medium"
       >
         <div class="flex gap-2 min-w-0 min-h-8">
           <div class="flex gap-2">
-            <NcTooltip v-if="props.showNextPrevIcons" class="flex items-center">
+            <AtTooltip v-if="props.showNextPrevIcons" class="flex items-center">
               <template #title> {{ $t('labels.prevRow') }} {{ renderAltOrOptlKey() }} + ←</template>
-              <NcButton
+              <AtButton
                 :disabled="isFirstRow || isLoading"
-                class="nc-prev-arrow !w-7 !h-7 !text-nc-content-gray-muted !disabled:text-nc-content-brand-hover"
-                data-testid="nc-expanded-form-prev"
+                class="atm-prev-arrow !w-7 !h-7 !text-atm-content-gray-muted !disabled:text-atm-content-brand-hover"
+                data-testid="atm-expanded-form-prev"
                 type="text"
                 size="xsmall"
                 @click="onPrev"
               >
                 <GeneralIcon icon="chevronDown" class="transform rotate-180" />
-              </NcButton>
-            </NcTooltip>
-            <NcTooltip v-if="props.showNextPrevIcons" class="flex items-center">
+              </AtButton>
+            </AtTooltip>
+            <AtTooltip v-if="props.showNextPrevIcons" class="flex items-center">
               <template #title> {{ $t('labels.nextRow') }} {{ renderAltOrOptlKey() }} + →</template>
-              <NcButton
+              <AtButton
                 :disabled="isLastRow || isLoading"
-                class="nc-next-arrow !w-7 !h-7 !text-nc-content-gray-muted !disabled:text-nc-content-brand-hover"
-                data-testid="nc-expanded-form-next"
+                class="atm-next-arrow !w-7 !h-7 !text-atm-content-gray-muted !disabled:text-atm-content-brand-hover"
+                data-testid="atm-expanded-form-next"
                 type="text"
                 size="xsmall"
                 @click="onNext"
               >
                 <GeneralIcon icon="chevronDown" />
-              </NcButton>
-            </NcTooltip>
+              </AtButton>
+            </AtTooltip>
           </div>
           <div v-if="isLoading" class="flex items-center">
             <a-skeleton-input active class="!h-6 !sm:mr-14 !w-52 !rounded-md !overflow-hidden" size="small" />
           </div>
           <div v-else class="flex-1 flex items-center gap-2 xs:(flex-row-reverse justify-end) min-w-0">
             <!-- Table selector dropdown (template mode) -->
-            <NcListTableSelector
+            <AtListTableSelector
               v-if="templateMode && !props.showNextPrevIcons && activeMeta?.base_id"
               :key="activeMeta.base_id"
               :value="activeMeta.id || null"
@@ -936,25 +936,25 @@ export default {
               disable-label
               dropdown-class="max-w-64 min-w-32"
               dropdown-overlay-class-name="max-w-64 min-w-32"
-              default-slot-wrapper-class="!px-1.5 !bg-nc-bg-gray-extralight hover:!bg-nc-bg-gray-light"
+              default-slot-wrapper-class="!px-1.5 !bg-atm-bg-gray-extralight hover:!bg-atm-bg-gray-light"
               @update:value="onTemplateTableChange($event as string)"
             >
-            </NcListTableSelector>
+            </AtListTableSelector>
 
             <!-- Static table chip (non-template mode) -->
             <div
               v-else-if="!props.showNextPrevIcons"
-              class="hidden md:flex items-center rounded-lg bg-nc-bg-gray-light px-2 py-1 gap-2"
+              class="hidden md:flex items-center rounded-lg bg-atm-bg-gray-light px-2 py-1 gap-2"
             >
-              <GeneralTableIcon size="xsmall" :meta="activeMeta" class="!mx-0 !text-nc-content-inverted-secondary" />
-              <span class="nc-expanded-form-table-name whitespace-nowrap">{{ tableTitle }}</span>
+              <GeneralTableIcon size="xsmall" :meta="activeMeta" class="!mx-0 !text-atm-content-inverted-secondary" />
+              <span class="atm-expanded-form-table-name whitespace-nowrap">{{ tableTitle }}</span>
             </div>
             <div v-if="templateMode" class="flex flex-col truncate overflow-hidden">
               <input
                 ref="templateNameInputRef"
                 v-model="editableTemplateName"
                 class="bg-transparent border-none outline-none font-bold text-xl w-full placeholder-gray-300"
-                :class="isDuplicateTemplateName ? 'text-red-500' : 'text-nc-content-gray'"
+                :class="isDuplicateTemplateName ? 'text-red-500' : 'text-atm-content-gray'"
                 :placeholder="$t('placeholder.enterTemplateName')"
               />
               <span v-if="isDuplicateTemplateName" class="text-red-500 text-[11px] pl-0.5">
@@ -965,20 +965,20 @@ export default {
               <!-- Breadcrumb trail for nested sub-record forms (e.g., Project Template > Tasks) -->
               <div
                 v-if="props.breadcrumbs?.length"
-                class="flex items-center gap-1 text-[11px] text-nc-content-gray-muted leading-tight"
+                class="flex items-center gap-1 text-[11px] text-atm-content-gray-muted leading-tight"
               >
                 <template v-for="(crumb, idx) in props.breadcrumbs" :key="idx">
                   <span class="truncate max-w-[140px]">{{ crumb }}</span>
-                  <GeneralIcon icon="chevronRight" class="flex-none h-3 w-3 text-nc-content-gray-muted" />
+                  <GeneralIcon icon="chevronRight" class="flex-none h-3 w-3 text-atm-content-gray-muted" />
                 </template>
               </div>
-              <span class="font-bold text-nc-content-gray text-xl truncate">
+              <span class="font-bold text-atm-content-gray text-xl truncate">
                 {{ props.newRecordHeader ?? $t('activity.newRecord') }}
               </span>
             </div>
             <div
               v-else-if="displayValue && !row?.rowMeta?.new"
-              class="flex items-center font-bold text-nc-content-gray text-2xl overflow-hidden"
+              class="flex items-center font-bold text-atm-content-gray text-2xl overflow-hidden"
             >
               <span class="min-w-[120px] md:min-w-[300px]">
                 <SmartsheetPlainCell v-model="displayValue" :column="displayField" show-tooltip />
@@ -989,11 +989,11 @@ export default {
         <div v-if="!templateMode && !blueprintMode" class="ml-auto flex items-center gap-3">
           <!-- Unsaved (isNew) rows have no pk, so there is nothing for peers to be present on. -->
           <SmartsheetExpandedFormPresence v-if="isEeUI && !isNew" />
-          <SmartsheetExpandedFormViewModeSelector v-model="activeViewMode" :view="view" class="nc-expanded-form-mode-switch" />
+          <SmartsheetExpandedFormViewModeSelector v-model="activeViewMode" :view="view" class="atm-expanded-form-mode-switch" />
         </div>
         <div v-else class="ml-auto" />
         <div class="flex gap-2">
-          <NcButton
+          <AtButton
             v-if="showMobileDiscussionToggle"
             v-e="['c:row-expand:mobile-discussion-toggle']"
             class="!w-7 !h-7"
@@ -1003,9 +1003,9 @@ export default {
           >
             <GeneralIcon
               :icon="mobileDiscussionMode ? 'menu' : 'ncMessageSquare1Outline'"
-              class="text-md text-nc-content-inverted-secondary"
+              class="text-md text-atm-content-inverted-secondary"
             />
-          </NcButton>
+          </AtButton>
           <PermissionsTooltip
             v-if="isUIAllowed('dataEdit', baseRoles) && !isSqlView"
             :entity="PermissionEntity.TABLE"
@@ -1016,18 +1016,18 @@ export default {
             :default-tooltip="isMobileMode ? '' : `${renderAltOrOptlKey()} + S`"
           >
             <template #default="{ isAllowed }">
-              <NcButton
+              <AtButton
                 v-e="['c:row-expand:save']"
                 :disabled="!isAllowed || isSaveRecordBtnDisabled"
                 :loading="isSaving"
-                class="nc-expand-form-save-btn !h-7 !px-2"
-                data-testid="nc-expanded-form-save"
+                class="atm-expand-form-save-btn !h-7 !px-2"
+                data-testid="atm-expanded-form-save"
                 type="primary"
                 size="xsmall"
                 @click="save"
               >
                 <div class="xs:px-1">{{ newRecordSubmitBtnText ?? $t('activity.saveRow') }}</div>
-              </NcButton>
+              </AtButton>
             </template>
           </PermissionsTooltip>
           <SmartsheetExpandedFormMoreOptionsMenu
@@ -1041,16 +1041,16 @@ export default {
             @request-close="onClose(true)"
           />
 
-          <NcButton
+          <AtButton
             v-if="!isMobileMode"
-            class="nc-expand-form-close-btn !w-7 !h-7"
-            data-testid="nc-expanded-form-close"
+            class="atm-expand-form-close-btn !w-7 !h-7"
+            data-testid="atm-expanded-form-close"
             type="text"
             size="xsmall"
             @click="onClose()"
           >
-            <GeneralIcon class="text-md text-nc-content-inverted-secondary h-4 w-4" icon="close" />
-          </NcButton>
+            <GeneralIcon class="text-md text-atm-content-inverted-secondary h-4 w-4" icon="close" />
+          </AtButton>
         </div>
       </div>
       <div ref="wrapper" class="flex-grow w-full min-h-0">
@@ -1096,7 +1096,7 @@ export default {
       </div>
       <div
         v-if="templateMode || blueprintMode"
-        class="nc-expanded-form-template-notice flex items-center justify-center gap-2 px-4 py-1.5 border-t-1 border-nc-border-gray-medium bg-nc-bg-gray-extralight text-nc-content-gray-muted text-[11px] flex-shrink-0"
+        class="atm-expanded-form-template-notice flex items-center justify-center gap-2 px-4 py-1.5 border-t-1 border-atm-border-gray-medium bg-atm-bg-gray-extralight text-atm-content-gray-muted text-[11px] flex-shrink-0"
       >
         <GeneralIcon icon="info" class="flex-none w-3.5 h-3.5" />
         <span v-if="templateMode">{{ $t('msg.info.editingRecordTemplate') }}</span>
@@ -1114,7 +1114,7 @@ export default {
 </template>
 
 <style lang="scss">
-.nc-drawer-expanded-form {
+.atm-drawer-expanded-form {
   @apply xs:my-0;
 
   .ant-drawer-content-wrapper {
@@ -1134,46 +1134,46 @@ export default {
   }
 }
 
-.nc-expanded-cell-header {
-  @apply w-full text-nc-content-gray-muted !font-weight-500 xs:(text-nc-content-gray-subtle2 mb-2 !text-small) pr-3;
+.atm-expanded-cell-header {
+  @apply w-full text-atm-content-gray-muted !font-weight-500 xs:(text-atm-content-gray-subtle2 mb-2 !text-small) pr-3;
   font-size: 13px !important;
 
-  svg.nc-cell-icon,
-  svg.nc-virtual-cell-icon {
+  svg.atm-cell-icon,
+  svg.atm-virtual-cell-icon {
     @apply !w-3.5 !h-3.5;
   }
 
-  .nc-cell-name-wrapper,
-  .nc-cell-name-wrapper span,
-  .nc-cell-name-wrapper .truncate {
+  .atm-cell-name-wrapper,
+  .atm-cell-name-wrapper span,
+  .atm-cell-name-wrapper .truncate {
     font-size: 13px !important;
   }
 }
 
-.nc-expanded-cell-header > :nth-child(2) {
+.atm-expanded-cell-header > :nth-child(2) {
   font-size: 13px !important;
 }
 
-.nc-expanded-cell-header > :first-child {
+.atm-expanded-cell-header > :first-child {
   font-size: 13px !important;
   @apply pl-2 xs:(pl-0 -ml-0.5);
 }
 
-.nc-expanded-cell-header:not(.nc-cell-expanded-form-header) > :first-child {
+.atm-expanded-cell-header:not(.atm-cell-expanded-form-header) > :first-child {
   @apply pl-0;
 }
 
-.nc-drawer-expanded-form .nc-modal {
+.atm-drawer-expanded-form .atm-modal {
   @apply !p-0;
 }
 
-.nc-drawer-expanded-form .nc-data-cell .nc-cell .nc-cell-field,
-.nc-drawer-expanded-form .nc-data-cell .nc-cell .nc-cell-field-link,
-.nc-drawer-expanded-form .nc-data-cell .nc-cell input,
-.nc-drawer-expanded-form .nc-data-cell .nc-cell textarea,
-.nc-drawer-expanded-form .nc-data-cell .nc-cell select,
-.nc-drawer-expanded-form .nc-data-cell .nc-virtual-cell .nc-cell-field,
-.nc-drawer-expanded-form .nc-data-cell .nc-virtual-cell input {
+.atm-drawer-expanded-form .atm-data-cell .atm-cell .atm-cell-field,
+.atm-drawer-expanded-form .atm-data-cell .atm-cell .atm-cell-field-link,
+.atm-drawer-expanded-form .atm-data-cell .atm-cell input,
+.atm-drawer-expanded-form .atm-data-cell .atm-cell textarea,
+.atm-drawer-expanded-form .atm-data-cell .atm-cell select,
+.atm-drawer-expanded-form .atm-data-cell .atm-virtual-cell .atm-cell-field,
+.atm-drawer-expanded-form .atm-data-cell .atm-virtual-cell input {
   font-size: 13px !important;
 }
 </style>

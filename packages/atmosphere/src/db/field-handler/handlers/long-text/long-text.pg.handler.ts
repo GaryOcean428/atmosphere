@@ -3,7 +3,7 @@ import { LongTextGeneralHandler } from './long-text.general.handler';
 
 /**
  * On Postgres `LIKE` is case-sensitive, whereas every other supported dialect's
- * `LIKE` (and NocoDB's intent for the "contains" filter) is case-insensitive.
+ * `LIKE` (and Atmosphere's intent for the "contains" filter) is case-insensitive.
  * LongText routes through FieldHandler, so without a PG-specific handler it
  * inherits `GenericFieldHandler`'s plain `LIKE` and the filter becomes
  * case-sensitive on PG.

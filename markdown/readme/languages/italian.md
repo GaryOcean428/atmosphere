@@ -1,6 +1,6 @@
 <h1 align="center" style="border-bottom: none">
     <b>
-        <a href="https://www.nocodb.com">NocoDB </a><br>
+        <a href="https://www.atmosphere.dev">Atmosphere </a><br>
     </b>
     ✨ Free & Self-hostable Airtable alternative ✨ <br>
 
@@ -10,18 +10,18 @@ Trasforma qualsiasi MySQL, PostgreSQL, SQL Server, SQLite & Mariadb in un foglio
 </p>
 <div align="center">
  
-[![Build Status](https://travis-ci.org/dwyl/esta.svg?branch=master)](https://travis-ci.com/github/NocoDB/NocoDB) 
+[![Build Status](https://travis-ci.org/dwyl/esta.svg?branch=master)](https://travis-ci.com/github/Atmosphere/Atmosphere) 
 [![Node version](https://img.shields.io/badge/node-%3E%3D%2014.18.0-brightgreen)](http://nodejs.org/download/)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-green.svg)](https://conventionalcommits.org)
 
 </div>
 
 <p align="center">
-    <a href="http://www.nocodb.com"><b>Website</b></a> •
+    <a href="http://www.atmosphere.dev"><b>Website</b></a> •
     <a href="https://discord.gg/c7GEYrvFtT"><b>Discord</b></a> •
-    <a href="https://twitter.com/nocodb"><b>Twitter</b></a> •
-    <a href="https://www.reddit.com/r/NocoDB/"><b>Reddit</b></a> •
-    <a href="https://docs.nocodb.com/"><b>Documentation</b></a>
+    <a href="https://twitter.com/atmosphere"><b>Twitter</b></a> •
+    <a href="https://www.reddit.com/r/Atmosphere/"><b>Reddit</b></a> •
+    <a href="https://docs.atmosphere.dev/"><b>Documentation</b></a>
 </p>
 
 ![OpenSourceAirtableAlternative](https://user-images.githubusercontent.com/5435402/133762127-e94da292-a1c3-4458-b09a-02cd5b57be53.png)
@@ -29,7 +29,7 @@ Trasforma qualsiasi MySQL, PostgreSQL, SQL Server, SQLite & Mariadb in un foglio
 <img src="https://static.scarf.sh/a.png?x-pxid=c12a77cc-855e-4602-8a0f-614b2d0da56a" />
 
 <p align="center">
-  <a href="https://www.producthunt.com/posts/nocodb?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-nocodb" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=297536&theme=dark" alt="NocoDB - Free & Self-hostable Airtable alternative | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+  <a href="https://www.producthunt.com/posts/atmosphere?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-atmosphere" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=297536&theme=dark" alt="Atmosphere - Free & Self-hostable Airtable alternative | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 </p>
 
 # Prova veloce
@@ -38,25 +38,25 @@ Trasforma qualsiasi MySQL, PostgreSQL, SQL Server, SQLite & Mariadb in un foglio
 
 ```bash
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  nocodb/nocodb:latest
+  atmosphere/atmosphere:latest
   ```
 
-- NocoDB needs a database as input : See [Production Setup](https://github.com/nocodb/nocodb/blob/master/README.md#production-setup).
+- Atmosphere needs a database as input : See [Production Setup](https://github.com/GaryOcean428/atmosphere/blob/master/README.md#production-setup).
 - Per rendere persistenti i dati puoi montare il volume su `/usr/app/data/`.
 
   Example:
 
 ```
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  -e NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
-  -e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-  nocodb/nocodb:latest
+  -e ATMOSPHERE_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
+  -e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+  atmosphere/atmosphere:latest
   ```
 
 
@@ -69,7 +69,7 @@ Accedi al Pannello di Controllo visitando: [http://localhost:8080/dashboard](htt
 <a href="https://discord.gg/c7GEYrvFtT">
     <img 
     src="https://invidget.switchblade.xyz/c7GEYrvFtT" 
-    alt="Unisciti a NocoDB: Free & Self-hostable Airtable alternative"
+    alt="Unisciti a Atmosphere: Free & Self-hostable Airtable alternative"
     >
 </a>
 <br>
@@ -138,7 +138,7 @@ Accedi al Pannello di Controllo visitando: [http://localhost:8080/dashboard](htt
 
 # Impostazione in produzione
 
-NocoDB richiede un database per memorizzare i metadati delle viste dei fogli di calcolo e dei database esterni. I parametri di connessione per questo database possono essere specificati nella variabile di ambiente NC_DB.
+Atmosphere richiede un database per memorizzare i metadati delle viste dei fogli di calcolo e dei database esterni. I parametri di connessione per questo database possono essere specificati nella variabile di ambiente ATMOSPHERE_DB.
 
 ## Docker
 
@@ -147,17 +147,17 @@ NocoDB richiede un database per memorizzare i metadati delle viste dei fogli di 
 
 ```
 docker run -d -p 8080:8080 \
-    -e NC_DB="pg://host:port?u=user&p=password&d=database" \
-    -e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-    nocodb/nocodb:latest
+    -e ATMOSPHERE_DB="pg://host:port?u=user&p=password&d=database" \
+    -e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+    atmosphere/atmosphere:latest
 ```
 
 
 ## Docker Compose
 
 ```
-git clone https://github.com/nocodb/nocodb
-cd nocodb
+git clone https://github.com/GaryOcean428/atmosphere
+cd atmosphere
 cd docker-compose
 cd pg 
 docker compose up -d
@@ -165,16 +165,16 @@ docker compose up -d
 
 ## Variabili d'ambiente
 
-Please refer to [Environment variables](https://docs.nocodb.com/getting-started/self-hosted/environment-variables)
+Please refer to [Environment variables](https://docs.atmosphere.dev/getting-started/self-hosted/environment-variables)
 
 
 # Setup di sviluppo
 
-Please refer to [Development Setup](https://docs.nocodb.com/engineering/development-setup)
+Please refer to [Development Setup](https://docs.atmosphere.dev/engineering/development-setup)
 
 # Contributi
 
-Please refer to [Contribution Guide](https://github.com/nocodb/nocodb/blob/master/.github/CONTRIBUTING.md).
+Please refer to [Contribution Guide](https://github.com/GaryOcean428/atmosphere/blob/master/.github/CONTRIBUTING.md).
 
 # Perché lo abbiamo creato?
 

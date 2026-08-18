@@ -3,18 +3,18 @@ const fs = require('fs').promises;
 const semver = require('semver');
 
 /**
- * Synchronizes dependencies between nocodb and integration packages
+ * Synchronizes dependencies between atmosphere and integration packages
  *
  * @param {Object} options - Sync options
  * @param {boolean} options.bidirectional - Whether to sync in both directions (default: true)
- * @param {string} options.direction - Direction of sync: 'normal' (integrations → nocodb) or 'reverse' (nocodb → integrations)
+ * @param {string} options.direction - Direction of sync: 'normal' (integrations → atmosphere) or 'reverse' (atmosphere → integrations)
  * @returns {Promise<void>}
  */
 async function syncDependencies(
   options = { bidirectional: true, direction: 'normal' },
 ) {
   console.log(
-    'Syncing dependencies between nocodb and integration packages...',
+    'Syncing dependencies between atmosphere and integration packages...',
   );
 
   // Set defaults
@@ -24,22 +24,22 @@ async function syncDependencies(
     ...options,
   };
 
-  // If direction is 'reverse', we're only doing nocodb → integrations
-  const syncIntegrationsToNocodb =
+  // If direction is 'reverse', we're only doing atmosphere → integrations
+  const syncIntegrationsToAtmosphere =
     options.bidirectional || options.direction === 'normal';
-  const syncNocodbToIntegrations =
+  const syncAtmosphereToIntegrations =
     options.bidirectional || options.direction === 'reverse';
 
-  // Read the nocodb package.json
-  const nocodbPackageJsonPath = path.join(__dirname, '..', 'package.json');
-  const nocodbPackageJson = JSON.parse(
-    await fs.readFile(nocodbPackageJsonPath, 'utf-8'),
+  // Read the atmosphere package.json
+  const atmospherePackageJsonPath = path.join(__dirname, '..', 'package.json');
+  const atmospherePackageJson = JSON.parse(
+    await fs.readFile(atmospherePackageJsonPath, 'utf-8'),
   );
 
-  // Collect all dependencies and their versions from nocodb
-  const nocodbDeps = {
-    ...(nocodbPackageJson.dependencies || {}),
-    ...(nocodbPackageJson.devDependencies || {}),
+  // Collect all dependencies and their versions from atmosphere
+  const atmosphereDeps = {
+    ...(atmospherePackageJson.dependencies || {}),
+    ...(atmospherePackageJson.devDependencies || {}),
   };
 
   // Track dependencies to be added or updated
@@ -56,7 +56,7 @@ async function syncDependencies(
       __dirname,
       '..',
       '..',
-      'noco-integrations',
+      'atmosphere-integrations',
       'packages',
     );
 
@@ -80,7 +80,7 @@ async function syncDependencies(
       );
 
       // Store the integration package json for updates
-      if (syncNocodbToIntegrations) {
+      if (syncAtmosphereToIntegrations) {
         integrationsToUpdate.set(integrationName, {
           path: integrationPackageJsonPath,
           json: integrationPackageJson,
@@ -89,15 +89,15 @@ async function syncDependencies(
       }
 
       // Only process dependencies from integrations if we're syncing that direction
-      if (syncIntegrationsToNocodb) {
+      if (syncIntegrationsToAtmosphere) {
         // Process dependencies from this integration
         const dependencies = integrationPackageJson.dependencies || {};
 
         for (const [dep, version] of Object.entries(dependencies)) {
-          // Skip workspace dependencies and noco-integrations
+          // Skip workspace dependencies and atmosphere-integrations
           if (
             version === 'workspace:*' ||
-            dep.startsWith('@noco-integrations/')
+            dep.startsWith('@atmosphere-integrations/')
           ) {
             continue;
           }
@@ -111,10 +111,10 @@ async function syncDependencies(
             version,
           });
 
-          if (!nocodbDeps[dep]) {
+          if (!atmosphereDeps[dep]) {
             // This is a new dependency to add
             depsToAdd[dep] = version;
-          } else if (nocodbDeps[dep] !== version) {
+          } else if (atmosphereDeps[dep] !== version) {
             // This dependency exists but with a different version
             // Determine which version is newer
             try {
@@ -133,13 +133,13 @@ async function syncDependencies(
                 continue;
               }
 
-              const currentVersion = nocodbDeps[dep].replace(/[\^~]/, '');
+              const currentVersion = atmosphereDeps[dep].replace(/[\^~]/, '');
               const newVersion = version.replace(/[\^~]/, '');
 
               if (semver.gt(newVersion, currentVersion)) {
                 depsToUpdate[dep] = version;
                 console.log(
-                  `Updating ${dep}: ${nocodbDeps[dep]} → ${version} (from ${integrationName})`,
+                  `Updating ${dep}: ${atmosphereDeps[dep]} → ${version} (from ${integrationName})`,
                 );
               }
             } catch (e) {
@@ -154,20 +154,20 @@ async function syncDependencies(
 
     let hasChanges = false;
 
-    // First direction: Integrations → NocoDB
-    if (syncIntegrationsToNocodb) {
-      console.log('\nSyncing from integrations to nocodb...');
+    // First direction: Integrations → Atmosphere
+    if (syncIntegrationsToAtmosphere) {
+      console.log('\nSyncing from integrations to atmosphere...');
 
       // Add new dependencies
       for (const [dep, version] of Object.entries(depsToAdd)) {
         console.log(
-          `Adding new dependency ${dep}@${version} to nocodb, used by: ${integrationDepsMap[
+          `Adding new dependency ${dep}@${version} to atmosphere, used by: ${integrationDepsMap[
             dep
           ]
             .map((d) => d.integration)
             .join(', ')}`,
         );
-        nocodbPackageJson.dependencies[dep] = version;
+        atmospherePackageJson.dependencies[dep] = version;
         hasChanges = true;
       }
 
@@ -179,38 +179,38 @@ async function syncDependencies(
 
         // Check if it's in dependencies or devDependencies
         if (
-          nocodbPackageJson.dependencies &&
-          nocodbPackageJson.dependencies[dep]
+          atmospherePackageJson.dependencies &&
+          atmospherePackageJson.dependencies[dep]
         ) {
-          nocodbPackageJson.dependencies[dep] = version;
+          atmospherePackageJson.dependencies[dep] = version;
           console.log(
-            `Updated dependency ${dep}@${version} in nocodb, used by: ${usedBy}`,
+            `Updated dependency ${dep}@${version} in atmosphere, used by: ${usedBy}`,
           );
           hasChanges = true;
         } else if (
-          nocodbPackageJson.devDependencies &&
-          nocodbPackageJson.devDependencies[dep]
+          atmospherePackageJson.devDependencies &&
+          atmospherePackageJson.devDependencies[dep]
         ) {
-          nocodbPackageJson.devDependencies[dep] = version;
+          atmospherePackageJson.devDependencies[dep] = version;
           console.log(
-            `Updated devDependency ${dep}@${version} in nocodb, used by: ${usedBy}`,
+            `Updated devDependency ${dep}@${version} in atmosphere, used by: ${usedBy}`,
           );
           hasChanges = true;
         }
       }
 
       // Sort dependencies alphabetically
-      if (nocodbPackageJson.dependencies) {
-        nocodbPackageJson.dependencies = Object.fromEntries(
-          Object.entries(nocodbPackageJson.dependencies).sort((a, b) =>
+      if (atmospherePackageJson.dependencies) {
+        atmospherePackageJson.dependencies = Object.fromEntries(
+          Object.entries(atmospherePackageJson.dependencies).sort((a, b) =>
             a[0].localeCompare(b[0]),
           ),
         );
       }
 
-      if (nocodbPackageJson.devDependencies) {
-        nocodbPackageJson.devDependencies = Object.fromEntries(
-          Object.entries(nocodbPackageJson.devDependencies).sort((a, b) =>
+      if (atmospherePackageJson.devDependencies) {
+        atmospherePackageJson.devDependencies = Object.fromEntries(
+          Object.entries(atmospherePackageJson.devDependencies).sort((a, b) =>
             a[0].localeCompare(b[0]),
           ),
         );
@@ -219,72 +219,72 @@ async function syncDependencies(
       // Write back the updated package.json if there were changes
       if (hasChanges) {
         await fs.writeFile(
-          nocodbPackageJsonPath,
-          JSON.stringify(nocodbPackageJson, null, 2),
+          atmospherePackageJsonPath,
+          JSON.stringify(atmospherePackageJson, null, 2),
         );
         console.log(
-          'Updated nocodb package.json with synchronized dependencies',
+          'Updated atmosphere package.json with synchronized dependencies',
         );
       } else {
-        console.log('No dependency changes needed for nocodb');
+        console.log('No dependency changes needed for atmosphere');
       }
     }
 
     let integrationUpdates = 0;
 
-    // Second direction: NocoDB → Integrations
-    if (syncNocodbToIntegrations) {
-      console.log('\nSyncing from nocodb to integration packages...');
+    // Second direction: Atmosphere → Integrations
+    if (syncAtmosphereToIntegrations) {
+      console.log('\nSyncing from atmosphere to integration packages...');
 
-      // Update dependencies in nocodb if we didn't already do it
-      if (!syncIntegrationsToNocodb && hasChanges) {
-        const updatedNocodb = JSON.parse(
-          await fs.readFile(nocodbPackageJsonPath, 'utf-8'),
+      // Update dependencies in atmosphere if we didn't already do it
+      if (!syncIntegrationsToAtmosphere && hasChanges) {
+        const updatedAtmosphere = JSON.parse(
+          await fs.readFile(atmospherePackageJsonPath, 'utf-8'),
         );
         Object.assign(
-          nocodbDeps,
-          updatedNocodb.dependencies || {},
-          updatedNocodb.devDependencies || {},
+          atmosphereDeps,
+          updatedAtmosphere.dependencies || {},
+          updatedAtmosphere.devDependencies || {},
         );
       }
 
-      // Now update all integrations based on nocodb dependencies
+      // Now update all integrations based on atmosphere dependencies
       for (const [integrationName, integration] of integrationsToUpdate) {
         const integrationPackageJson = integration.json;
         let integrationChanged = false;
 
-        // Update integration dependencies based on nocodb
+        // Update integration dependencies based on atmosphere
         for (const [dep, version] of Object.entries(
           integrationPackageJson.dependencies || {},
         )) {
-          // Skip workspace dependencies and noco-integrations
+          // Skip workspace dependencies and atmosphere-integrations
           if (
             version === 'workspace:*' ||
-            dep.startsWith('@noco-integrations/')
+            dep.startsWith('@atmosphere-integrations/')
           ) {
             continue;
           }
 
-          // If nocodb has this dependency, check if we need to update
-          if (nocodbDeps[dep] && nocodbDeps[dep] !== version) {
+          // If atmosphere has this dependency, check if we need to update
+          if (atmosphereDeps[dep] && atmosphereDeps[dep] !== version) {
             try {
               // Handle non-semver versions
               if (
-                !nocodbDeps[dep].startsWith('^') &&
-                !nocodbDeps[dep].startsWith('~') &&
-                !semver.valid(semver.clean(nocodbDeps[dep]))
+                !atmosphereDeps[dep].startsWith('^') &&
+                !atmosphereDeps[dep].startsWith('~') &&
+                !semver.valid(semver.clean(atmosphereDeps[dep]))
               ) {
                 console.log(
-                  `Warning: Skipping non-standard version for ${dep}: ${nocodbDeps[dep]}`,
+                  `Warning: Skipping non-standard version for ${dep}: ${atmosphereDeps[dep]}`,
                 );
                 continue;
               }
 
-              // Update integration dependency to match nocodb
+              // Update integration dependency to match atmosphere
               console.log(
-                `Updating ${dep} in ${integrationName}: ${version} → ${nocodbDeps[dep]}`,
+                `Updating ${dep} in ${integrationName}: ${version} → ${atmosphereDeps[dep]}`,
               );
-              integrationPackageJson.dependencies[dep] = nocodbDeps[dep];
+              integrationPackageJson.dependencies[dep] = atmosphereDeps[dep];
               integrationChanged = true;
             } catch (e) {
               console.log(

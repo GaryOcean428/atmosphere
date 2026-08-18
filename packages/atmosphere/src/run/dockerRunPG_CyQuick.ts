@@ -1,7 +1,7 @@
 import dns from 'node:dns';
 import cors from 'cors';
 import express from 'express';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { handleUncaughtErrors } from '~/utils';
 handleUncaughtErrors(process);
 
@@ -21,13 +21,13 @@ server.use(
 
 server.set('view engine', 'ejs');
 process.env[
-  `NC_DB`
+  `ATMOSPHERE_DB`
 ] = `pg://localhost:5432?u=postgres&p=password&d=meta_v2_2022_06_13`;
 
 //process.env[`DEBUG`] = 'xc*';
 
 (async () => {
   const httpServer = server.listen(process.env.PORT || 8080, async () => {
-    server.use(await Noco.init({}, httpServer, server));
+    server.use(await Atmosphere.init({}, httpServer, server));
   });
 })().catch((e) => console.log(e));

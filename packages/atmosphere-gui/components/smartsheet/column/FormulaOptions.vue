@@ -9,8 +9,8 @@ import {
   isHiddenCol,
   substituteColumnIdWithAliasInFormula,
   validateFormulaAndExtractTreeWithType,
-} from 'nocodb-sdk'
-import type { ColumnType, FormulaType, UnifiedMetaType } from 'nocodb-sdk'
+} from 'atmosphere-sdk'
+import type { ColumnType, FormulaType, UnifiedMetaType } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -238,7 +238,7 @@ watch(
 
 <template>
   <div class="formula-wrapper relative">
-    <NcTabs v-model:active-key="activeKey">
+    <AtTabs v-model:active-key="activeKey">
       <a-tab-pane key="formula">
         <template #tab>
           <div class="tab">
@@ -262,9 +262,9 @@ watch(
         </template>
         <div class="flex flex-col px-0.5 gap-4 pb-0.5">
           <a-form-item class="mt-4" :label="$t('general.format')">
-            <NcSelect
+            <AtSelect
               v-model:value="vModel.meta.display_type"
-              class="w-full nc-select-shadow"
+              class="w-full atm-select-shadow"
               :placeholder="$t('labels.selectAFormatType')"
               allow-clear
               @change="
@@ -276,18 +276,18 @@ watch(
               <a-select-option v-for="option in supportedFormulaAlias" :key="option.value" :value="option.value">
                 <div class="flex w-full items-center gap-2 justify-between">
                   <div class="w-full">
-                    <component :is="option.icon" class="w-4 h-4" color="text-nc-content-gray-subtle2" />
+                    <component :is="option.icon" class="w-4 h-4" color="text-atm-content-gray-subtle2" />
                     {{ option.label }}
                   </div>
                   <component
                     :is="iconMap.check"
                     v-if="option.value === vModel.meta?.display_type"
-                    id="nc-selected-item-icon"
-                    class="text-nc-content-brand w-4 h-4"
+                    id="atm-selected-item-icon"
+                    class="text-atm-content-brand w-4 h-4"
                   />
                 </div>
               </a-select-option>
-            </NcSelect>
+            </AtSelect>
           </a-form-item>
 
           <template
@@ -336,7 +336,7 @@ watch(
           </template>
         </div>
       </a-tab-pane>
-    </NcTabs>
+    </AtTabs>
   </div>
 </template>
 

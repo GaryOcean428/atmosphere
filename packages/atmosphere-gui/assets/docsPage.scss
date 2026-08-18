@@ -1,4 +1,4 @@
-.nc-docs-page {
+.atm-docs-page {
   overflow-y: overlay;
   height: calc(100vh - var(--topbar-height));
 
@@ -15,7 +15,7 @@
     background: #f6f6f600;
   }
 }
-.nc-docs-page:hover {
+.atm-docs-page:hover {
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -30,7 +30,7 @@
   }
 }
 
-.nc-docs-page-title {
+.atm-docs-page-title {
   font-weight: 600;
   font-size: 3rem;
   line-height: 1.25;
@@ -40,7 +40,7 @@
   color: black;
 }
 
-.nc-docs-page-content {
+.atm-docs-page-content {
   @apply min-h-full;
   .ProseMirror {
     @apply min-h-full;
@@ -200,7 +200,7 @@
     color: #d6d6d6;
   }
 
-  .nc-docs-list-item > p {
+  .atm-docs-list-item > p {
     margin-top: 0.25rem !important;
     margin-bottom: 0.25rem !important;
   }
@@ -493,7 +493,7 @@
     [data-type='bullet'] {
       margin-left: 0.7rem;
     }
-    .nc-callout-emoji {
+    .atm-callout-emoji {
       @apply text-base;
     }
   }

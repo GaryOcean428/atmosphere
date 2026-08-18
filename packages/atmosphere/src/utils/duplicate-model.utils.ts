@@ -1,13 +1,13 @@
 import {
   appendToLength,
   AppendToLengthSuffix,
-  type NcContext,
+  type AtContext,
   ProjectRoles,
   SqlUiFactory,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { DuplicateModelJobData } from '~/interface/Jobs';
 import { Base, BaseUser, Model, Source } from '~/models';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 // need to use class to utilize inheritance
 export class DuplicateModelUtils {
@@ -16,15 +16,15 @@ export class DuplicateModelUtils {
   }
 
   async getTargetContext(
-    context: NcContext,
+    context: AtContext,
     _options?: DuplicateModelJobData['options'],
   ) {
     return { context, isDifferent: false };
   }
 
   async verifyTargetContext(
-    _sourceContext: NcContext,
-    _targetContext: NcContext,
+    _sourceContext: AtContext,
+    _targetContext: AtContext,
     _modelId: string,
     _options?: DuplicateModelJobData['options'],
   ) {
@@ -37,7 +37,7 @@ export class DuplicateModelUtils {
     modelId,
     body,
   }: {
-    context: NcContext;
+    context: AtContext;
     baseId: string;
     modelId?: string;
     body: {
@@ -48,13 +48,13 @@ export class DuplicateModelUtils {
     const base = await Base.get(context, baseId);
 
     if (!base) {
-      NcError.get(context).baseNotFound(baseId);
+      AtError.get(context).baseNotFound(baseId);
     }
 
     const model = await Model.get(context, modelId);
 
     if (!model) {
-      NcError.get(context).tableNotFound(modelId);
+      AtError.get(context).tableNotFound(modelId);
     }
     const sourceSource = await Source.get(context, model.source_id);
 
@@ -78,7 +78,7 @@ export class DuplicateModelUtils {
           baseUser.roles as ProjectRoles,
         )
       ) {
-        NcError.get(context).forbidden(
+        AtError.get(context).forbidden(
           `Only owner or creator can create table at specified base`,
         );
       }
@@ -93,10 +93,10 @@ export class DuplicateModelUtils {
 
     // if data/schema is readonly, then restrict duplication
     if (targetSource.is_schema_readonly) {
-      NcError.get(context).sourceMetaReadOnly(targetSource.alias);
+      AtError.get(context).sourceMetaReadOnly(targetSource.alias);
     }
     if (targetSource.is_data_readonly) {
-      NcError.get(context).sourceDataReadOnly(targetSource.alias);
+      AtError.get(context).sourceDataReadOnly(targetSource.alias);
     }
 
     const models = await targetSource.getModels(targetContext);

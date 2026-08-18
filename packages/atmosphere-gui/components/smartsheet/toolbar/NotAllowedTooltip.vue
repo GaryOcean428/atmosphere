@@ -21,7 +21,7 @@ withDefaults(
 </script>
 
 <template>
-  <NcTooltip
+  <AtTooltip
     :disabled="!enabled"
     :tooltip-style="{ 'min-width': 'max-content' }"
     :overlay-inner-style="{ 'min-width': 'max-content' }"
@@ -35,5 +35,5 @@ withDefaults(
       </slot>
     </template>
     <slot />
-  </NcTooltip>
+  </AtTooltip>
 </template>

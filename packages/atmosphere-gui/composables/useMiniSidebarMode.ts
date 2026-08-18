@@ -3,7 +3,7 @@ import { useStorage } from '@vueuse/core'
 export type MiniSidebarMode = 'rail' | 'dock'
 
 export const useMiniSidebarMode = createSharedComposable(() => {
-  const mode = useStorage<MiniSidebarMode>('nc-mini-sidebar-mode', 'rail')
+  const mode = useStorage<MiniSidebarMode>('atm-mini-sidebar-mode', 'rail')
 
   const isRail = computed(() => mode.value === 'rail')
 

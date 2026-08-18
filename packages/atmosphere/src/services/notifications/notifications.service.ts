@@ -1,15 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AppEvents, getCircularReplacer } from 'nocodb-sdk';
+import { AppEvents, getCircularReplacer } from 'atmosphere-sdk';
 import type {
   ProjectInviteEvent,
   WelcomeEvent,
 } from '~/services/app-hooks/interfaces';
 import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import type { UserType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+import type { UserType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import type { Response } from 'express';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { Notification } from '~/models';
 import { PubSubRedis } from '~/redis/pubsub-redis';
@@ -83,7 +83,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 
   protected async insertNotification(
     insertData: Partial<Notification>,
-    _req: NcRequest,
+    _req: AtRequest,
   ) {
     await Notification.insert(insertData);
 
@@ -154,7 +154,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     });
 
     if (!notification) {
-      NcError.unauthorized('Unauthorized to update notification');
+      AtError.unauthorized('Unauthorized to update notification');
     }
     await Notification.update(param.notificationId, param.body);
 
@@ -168,7 +168,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     });
 
     if (!notification) {
-      NcError.unauthorized('Unauthorized to delete notification');
+      AtError.unauthorized('Unauthorized to delete notification');
     }
 
     await Notification.update(param.notificationId, {
@@ -178,7 +178,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 
   async markAllRead(param: { user: UserType }) {
     if (!param.user?.id) {
-      NcError.badRequest('User id is required');
+      AtError.badRequest('User id is required');
     }
     await Notification.markAllAsRead(param.user.id);
     return true;

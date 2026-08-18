@@ -4,7 +4,7 @@ const props = withDefaults(
     workspaceId?: string | undefined
     modal?: boolean
     type?: string
-    size?: NcButtonSize
+    size?: AtButtonSize
     centered?: boolean
     innerClass?: string
     // isOpen: boolean
@@ -27,16 +27,16 @@ const size = computed(() => props.size || 'small')
 const centered = computed(() => props.centered ?? true)
 
 onMounted(() => {
-  baseCreateMode.value = NcBaseCreateMode.FROM_SCRATCH
+  baseCreateMode.value = AtBaseCreateMode.FROM_SCRATCH
 })
 </script>
 
 <template>
-  <NcButton
+  <AtButton
     v-if="isUIAllowed('baseCreate') && !isSharedBase"
     v-e="['c:base:create']"
     :type="type"
-    data-testid="nc-sidebar-create-base-btn"
+    data-testid="atm-sidebar-create-base-btn"
     :size="size"
     :centered="centered"
     :inner-class="innerClass"
@@ -49,13 +49,13 @@ onMounted(() => {
 
         <div class="flex flex-1">{{ $t('title.createBase') }}</div>
 
-        <div class="px-1 flex-none text-bodySmBold !leading-[18px] text-nc-content-gray-subtle bg-nc-bg-gray-medium rounded">
+        <div class="px-1 flex-none text-bodySmBold !leading-[18px] text-atm-content-gray-subtle bg-atm-bg-gray-medium rounded">
           {{ renderAltOrOptlKey(true) }} D
         </div>
       </div>
     </slot>
     <WorkspaceCreateProjectDlg v-model="baseCreateDlg" :default-base-create-mode="baseCreateMode" />
-  </NcButton>
+  </AtButton>
 </template>
 
 <style scoped></style>

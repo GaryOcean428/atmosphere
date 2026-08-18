@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { VNodeRef } from '@vue/runtime-core'
-import type { ViewType } from 'nocodb-sdk'
-import { viewTypeAlias } from 'nocodb-sdk'
+import type { ViewType } from 'atmosphere-sdk'
+import { viewTypeAlias } from 'atmosphere-sdk'
 import { LockType } from '#imports'
 
 const props = defineProps<{
@@ -116,16 +116,16 @@ watch(
 </script>
 
 <template>
-  <div v-if="isForm" class="nc-unlock-view-wrapper rounded-2xl bg-nc-bg-default p-6 w-full max-w-[384px] flex flex-col gap-5">
+  <div v-if="isForm" class="atm-unlock-view-wrapper rounded-2xl bg-atm-bg-default p-6 w-full max-w-[384px] flex flex-col gap-5">
     <div class="flex flex-col gap-2">
-      <div class="text-base font-bold text-nc-content-gray-emphasis">
+      <div class="text-base font-bold text-atm-content-gray-emphasis">
         {{ $t('title.thisFormIsLocked') }}
       </div>
-      <div v-if="view?.meta?.lockedViewDescription" class="text-sm bg-nc-bg-gray-light rounded-lg px-2 py-2">
+      <div v-if="view?.meta?.lockedViewDescription" class="text-sm bg-atm-bg-gray-light rounded-lg px-2 py-2">
         {{ view?.meta?.lockedViewDescription }}
       </div>
-      <div class="text-sm text-nc-content-gray">{{ $t('title.unlockThisVieToMakeChanges') }}</div>
-      <div class="text-sm text-nc-content-gray">
+      <div class="text-sm text-atm-content-gray">{{ $t('title.unlockThisVieToMakeChanges') }}</div>
+      <div class="text-sm text-atm-content-gray">
         {{ $t('title.unlockViewTitleSubtitle') }}
         <span v-if="idUserMap[view?.meta?.lockedByUserId]?.id === user?.id" class="font-bold"> {{ $t('general.you') }} </span>
         <span v-else class="font-bold">
@@ -134,7 +134,7 @@ watch(
       </div>
     </div>
 
-    <NcButton
+    <AtButton
       v-if="isUIAllowed('fieldAdd')"
       type="secondary"
       size="small"
@@ -147,23 +147,23 @@ watch(
         <GeneralIcon icon="ncUnlock" class="flex-none" />
       </template>
       {{ $t('labels.unlockView') }}
-    </NcButton>
+    </AtButton>
   </div>
-  <NcModal
+  <AtModal
     v-else
     v-model:visible="dialogShow"
     :show-separator="false"
     :header="$t('activity.createTable')"
     size="small"
-    wrap-class-name="nc-lock-view-modal-wrapper"
+    wrap-class-name="atm-lock-view-modal-wrapper"
     @keydown.esc="dialogShow = false"
   >
     <template v-if="changeType === LockType.Locked" #header>
       <div class="flex flex-col gap-2 w-full">
-        <div class="text-base font-bold text-nc-content-gray-emphasis">
+        <div class="text-base font-bold text-atm-content-gray-emphasis">
           {{ $t('title.lockThisView') }}
         </div>
-        <div class="text-sm font-normal text-nc-content-gray-subtle">
+        <div class="text-sm font-normal text-atm-content-gray-subtle">
           {{ $t('title.lockThisViewSubtle') }}
         </div>
       </div>
@@ -182,22 +182,22 @@ watch(
           <a-textarea
             :ref="focusInput"
             v-model:value="form.description"
-            class="!rounded-lg !text-sm nc-input-shadow !min-h-[120px] max-h-[500px] nc-scrollbar-thin"
+            class="!rounded-lg !text-sm atm-input-shadow !min-h-[120px] max-h-[500px] atm-scrollbar-thin"
             size="large"
             hide-details
-            data-testid="nc-lock-view-description-input"
+            data-testid="atm-lock-view-description-input"
             :placeholder="$t('placeholder.lockViewDescription')"
           />
         </a-form-item>
       </div>
       <div v-else class="flex flex-col gap-2">
-        <div class="text-base font-bold text-nc-content-gray-emphasis">
+        <div class="text-base font-bold text-atm-content-gray-emphasis">
           {{ $t('title.unlockViewTitle') }}
         </div>
-        <div v-if="view?.meta?.lockedViewDescription" class="text-sm bg-nc-bg-gray-light rounded-lg px-2 py-2">
+        <div v-if="view?.meta?.lockedViewDescription" class="text-sm bg-atm-bg-gray-light rounded-lg px-2 py-2">
           {{ view?.meta?.lockedViewDescription }}
         </div>
-        <div class="text-sm text-nc-content-gray">
+        <div class="text-sm text-atm-content-gray">
           {{ $t('title.unlockViewTitleSubtitle') }}
           <span v-if="idUserMap[view?.meta?.lockedByUserId]?.id === user.id" class="font-bold"> {{ $t('general.you') }} </span>
           <span v-else class="font-bold">
@@ -207,17 +207,17 @@ watch(
       </div>
 
       <div class="flex gap-2 items-center justify-end">
-        <NcButton type="secondary" size="small" :disabled="isLoading" data-testid="nc-cancel-btn" @click="dialogShow = false">{{
+        <AtButton type="secondary" size="small" :disabled="isLoading" data-testid="atm-cancel-btn" @click="dialogShow = false">{{
           $t('general.cancel')
-        }}</NcButton>
+        }}</AtButton>
 
-        <NcButton
+        <AtButton
           type="primary"
           html-type="submit"
           size="small"
           :loading="isLoading"
           :disabled="isLoading || isErrored"
-          data-testid="nc-lock-or-unlock-btn"
+          data-testid="atm-lock-or-unlock-btn"
         >
           <template #icon>
             <GeneralIcon :icon="changeType === LockType.Locked ? 'ncLock' : 'ncUnlock'" class="flex-none" />
@@ -230,10 +230,10 @@ watch(
           >
             {{ changeType === LockType.Locked ? $t('labels.lockView') : $t('labels.unlockView') }}
           </div>
-        </NcButton>
+        </AtButton>
       </div>
     </a-form>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style scoped lang="scss">
@@ -241,7 +241,7 @@ watch(
   @apply mb-0;
 }
 
-.nc-unlock-view-wrapper {
+.atm-unlock-view-wrapper {
   box-shadow: 0px 8px 8px -4px rgba(0, 0, 0, 0.04), 0px 20px 24px -4px rgba(0, 0, 0, 0.1);
 }
 </style>

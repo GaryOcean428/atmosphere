@@ -51,7 +51,7 @@ export default {
         v-bind="$attrs"
         :style="{ zIndex }"
         :class="[inline ? 'absolute' : 'fixed']"
-        class="inset-0 nc-general-overlay"
+        class="inset-0 atm-general-overlay"
       >
         <slot :is-open="vModel" />
       </div>

@@ -1,6 +1,6 @@
-import { PlanFeatureTypes } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import { NcError } from '~/helpers/catchError';
+import { PlanFeatureTypes } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import { AtError } from '~/helpers/catchError';
 
 /**
  * License gate for the per-lookup Sort + Limit feature (paid, EE-only).
@@ -17,15 +17,15 @@ import { NcError } from '~/helpers/catchError';
  * feature reverts at once (no display/filter divergence).
  */
 export async function isLookupSortLimitLicensed(
-  _context: NcContext,
+  _context: AtContext,
 ): Promise<boolean> {
   return false;
 }
 
 export async function assertLookupSortLimitLicensed(
-  context: NcContext,
+  context: AtContext,
 ): Promise<void> {
-  NcError.get(context).featureNotSupported({
+  AtError.get(context).featureNotSupported({
     feature: PlanFeatureTypes.FEATURE_LOOKUP_SORT_LIMIT,
   });
 }

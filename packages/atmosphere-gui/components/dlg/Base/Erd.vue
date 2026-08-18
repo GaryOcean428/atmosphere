@@ -51,7 +51,7 @@ onMounted(async () => {
 
         <a-button type="text" class="!rounded-md mr-1 -mt-1.5" @click="isOpen = false">
           <template #icon>
-            <MaterialSymbolsCloseRounded data-testid="nc-root-user-invite-modal-close" class="flex mx-auto" />
+            <MaterialSymbolsCloseRounded data-testid="atm-root-user-invite-modal-close" class="flex mx-auto" />
           </template>
         </a-button>
       </div>

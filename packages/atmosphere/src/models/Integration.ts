@@ -4,19 +4,19 @@ import {
   IntegrationsType,
   type IntegrationType,
   type SourceType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { Logger } from '@nestjs/common';
-import { setExternalDbSsrfEnforcement } from '@noco-local-integrations/core';
-import type { ClientType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import { setExternalDbSsrfEnforcement } from '@atmosphere-local-integrations/core';
+import type { ClientType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import type {
   IntegrationEntry,
   IntegrationWrapper,
-} from '@noco-local-integrations/core';
+} from '@atmosphere-local-integrations/core';
 import { MetaTable, RootScopes } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import {
   parseMetaProp,
   prepareForDb,
@@ -85,7 +85,7 @@ export default class Integration implements IntegrationType {
       is_encrypted?: BoolType;
       is_restricted?: BoolType;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(integration, [
       'title',
@@ -160,7 +160,7 @@ export default class Integration implements IntegrationType {
   }
 
   public static async updateIntegration(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     integrationId: string,
     integration: IntegrationType & {
       meta?: any;
@@ -168,7 +168,7 @@ export default class Integration implements IntegrationType {
       is_encrypted?: boolean;
       is_restricted?: BoolType;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const oldIntegration = await Integration.get(
       context,
@@ -177,7 +177,7 @@ export default class Integration implements IntegrationType {
       ncMeta,
     );
 
-    if (!oldIntegration) NcError.integrationNotFound(integrationId);
+    if (!oldIntegration) AtError.integrationNotFound(integrationId);
 
     const updateObj = extractProps(integration, [
       'title',
@@ -229,14 +229,14 @@ export default class Integration implements IntegrationType {
   }
 
   public static async setDefault(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     integrationId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const integration = await this.get(context, integrationId, false, ncMeta);
 
     if (!integration) {
-      NcError.integrationNotFound(integrationId);
+      AtError.integrationNotFound(integrationId);
     }
 
     // return if integration is already default
@@ -289,7 +289,7 @@ export default class Integration implements IntegrationType {
       includeSourceCount?: boolean;
       query?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<PagedResponseImpl<Integration>> {
     const qb = ncMeta.knex(MetaTable.INTEGRATIONS);
 
@@ -372,10 +372,10 @@ export default class Integration implements IntegrationType {
   }
 
   static async get(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     id: string,
     force = false,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Integration> {
     const integrationData = await ncMeta.metaGet2(
       context.workspace_id && context.workspace_id !== RootScopes.BYPASS
@@ -432,7 +432,7 @@ export default class Integration implements IntegrationType {
     return config;
   }
 
-  async delete(ncMeta = Noco.ncMeta) {
+  async delete(ncMeta = Atmosphere.ncMeta) {
     const sources = await this.getSources(ncMeta, true);
 
     for (const source of sources) {
@@ -480,7 +480,7 @@ export default class Integration implements IntegrationType {
     );
   }
 
-  async softDelete(ncMeta = Noco.ncMeta) {
+  async softDelete(ncMeta = Atmosphere.ncMeta) {
     const sources = await this.getSources(ncMeta, true);
 
     for (const source of sources) {
@@ -531,7 +531,7 @@ export default class Integration implements IntegrationType {
     );
   }
 
-  async getSources(ncMeta = Noco.ncMeta, force = false): Promise<Source[]> {
+  async getSources(ncMeta = Atmosphere.ncMeta, force = false): Promise<Source[]> {
     const qb = ncMeta.knex(MetaTable.SOURCES);
 
     qb.select(`${MetaTable.SOURCES}.id`)
@@ -563,13 +563,13 @@ export default class Integration implements IntegrationType {
   }
 
   static async getCategoryDefault(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     type: string,
     // Accepted for signature parity with the EE override, which uses
     // `preferGlobal` to prefer a global integration. CE has no global
     // integrations, so the option is ignored here.
     _opts: { preferGlobal?: boolean } = {},
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Integration> {
     const integrationData = await ncMeta.metaGet2(
       context.workspace_id ? context.workspace_id : RootScopes.WORKSPACE,
@@ -616,7 +616,7 @@ export default class Integration implements IntegrationType {
 
     if (!integrationWrapper) {
       logger.error('Integration not found');
-      NcError._.internalServerError('Integration not found');
+      AtError._.internalServerError('Integration not found');
     }
 
     return new integrationWrapper.wrapper(config.config, {}) as T;
@@ -640,7 +640,7 @@ export default class Integration implements IntegrationType {
 
       if (!integrationWrapper) {
         logger.error('Integration not found');
-        NcError._.internalServerError('Integration not found');
+        AtError._.internalServerError('Integration not found');
       }
 
       this.wrapper = new integrationWrapper.wrapper(this.getConfig(), {
@@ -688,17 +688,17 @@ export default class Integration implements IntegrationType {
 
     if (!integrationMeta) {
       logger.error('Integration meta not found');
-      NcError._.internalServerError('Integration meta not found');
+      AtError._.internalServerError('Integration meta not found');
     }
 
     return integrationMeta?.manifest;
   }
 
   async storeInsert(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     fk_user_id: string | null,
     data: Record<string, any>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return await IntegrationStore.insert(
       context,
@@ -710,10 +710,10 @@ export default class Integration implements IntegrationType {
   }
 
   async storeList(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     limit: number,
     offset: number,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return await IntegrationStore.list(
       context,
@@ -727,9 +727,9 @@ export default class Integration implements IntegrationType {
   }
 
   async storeSum(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     fields: string | string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (!Array.isArray(fields)) {
       fields = [fields];
@@ -739,8 +739,8 @@ export default class Integration implements IntegrationType {
   }
 
   async storeGetLatest(
-    context: Omit<NcContext, 'base_id'>,
-    ncMeta = Noco.ncMeta,
+    context: Omit<AtContext, 'base_id'>,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return await IntegrationStore.getLatest(context, this, ncMeta);
   }

@@ -79,9 +79,9 @@ const formFieldAutocomplete = inject(FormFieldAutocompleteInj, ref(undefined))
     v-bind="$attrs"
     :ref="focus"
     v-model="vModel"
-    class="nc-cell-field w-full outline-none py-1"
+    class="atm-cell-field w-full outline-none py-1"
     :class="{
-      'nc-text-transparent': showClicableLink,
+      'atm-text-transparent': showClicableLink,
     }"
     :disabled="readOnly"
     inputmode="tel"
@@ -99,7 +99,7 @@ const formFieldAutocomplete = inject(FormFieldAutocompleteInj, ref(undefined))
   />
   <div
     v-if="showClicableLink"
-    class="nc-cell-field nc-cell-link-preview absolute inset-0 flex items-center max-w-full overflow-hidden pointer-events-none"
+    class="atm-cell-field atm-cell-link-preview absolute inset-0 flex items-center max-w-full overflow-hidden pointer-events-none"
   >
     <a
       no-ref

@@ -1,5 +1,5 @@
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import LongTextColumn from '~/models/LongTextColumn';
 
 export default class AIColumn extends LongTextColumn {
@@ -16,12 +16,12 @@ export default class AIColumn extends LongTextColumn {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     aiColumn: Partial<AIColumn> & {
       fk_model_id: string;
       fk_column_id: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return this._insert(
       context,
@@ -32,10 +32,10 @@ export default class AIColumn extends LongTextColumn {
   }
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     aiColumn: Partial<AIColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return this._update(
       context,

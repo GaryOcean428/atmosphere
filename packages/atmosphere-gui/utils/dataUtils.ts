@@ -24,7 +24,7 @@ import {
   getLookupColumnType as sdkGetLookupColumnType,
   validateRowFilters as sdkValidateRowFilters,
   timeFormats,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type {
   AIRecordType,
   ButtonType,
@@ -34,7 +34,7 @@ import type {
   LookupType,
   RollupType,
   TableType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import dayjs from 'dayjs'
 import { decode as decodeHtmlEntities } from 'html-entities'
 import { isColumnRequiredAndNull } from './columnUtils'

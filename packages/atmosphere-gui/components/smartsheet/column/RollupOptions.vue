@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from '@vue/runtime-core'
-import type { ColumnType, FormulaType, LinkToAnotherRecordType, RollupType, TableType } from 'nocodb-sdk'
+import type { ColumnType, FormulaType, LinkToAnotherRecordType, RollupType, TableType } from 'atmosphere-sdk'
 import {
   ColumnHelper,
   FormulaDataTypes,
@@ -12,7 +12,7 @@ import {
   integerRollupFunctions,
   resolveColumnSeparator,
   rollupAllFunctions,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -326,35 +326,35 @@ const handleScrollIntoView = () => {
         <a-select
           v-model:value="vModel.fk_relation_column_id"
           :placeholder="$t('placeholder.select')"
-          dropdown-class-name="!w-64 nc-dropdown-relation-table !rounded-md"
+          dropdown-class-name="!w-64 atm-dropdown-relation-table !rounded-md"
           @change="onRelationColChange"
         >
           <template #suffixIcon>
-            <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+            <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
           </template>
           <a-select-option v-for="(table, i) of refTables" :key="i" :value="table.col.fk_column_id">
             <div class="flex gap-2 w-full justify-between truncate items-center">
               <div class="min-w-1/2 flex items-center gap-2">
-                <SmartsheetHeaderIcon :column="table.column" class="!mx-0" color="text-nc-content-gray-subtle2" />
+                <SmartsheetHeaderIcon :column="table.column" class="!mx-0" color="text-atm-content-gray-subtle2" />
 
-                <NcTooltip class="truncate min-w-[calc(100%_-_24px)]" show-on-truncate-only>
+                <AtTooltip class="truncate min-w-[calc(100%_-_24px)]" show-on-truncate-only>
                   <template #title>{{ table.column.title }}</template>
                   {{ table.column.title }}
-                </NcTooltip>
+                </AtTooltip>
               </div>
               <div class="inline-flex items-center truncate gap-2">
-                <div class="text-[0.65rem] leading-4 flex-1 truncate text-nc-content-gray-subtle2 nc-relation-details">
-                  <NcTooltip class="truncate" show-on-truncate-only>
+                <div class="text-[0.65rem] leading-4 flex-1 truncate text-atm-content-gray-subtle2 atm-relation-details">
+                  <AtTooltip class="truncate" show-on-truncate-only>
                     <template #title>{{ table.title || table.table_name }}</template>
                     {{ table.title || table.table_name }}
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
 
                 <component
                   :is="iconMap.check"
                   v-if="vModel.fk_relation_column_id === table.col.fk_column_id"
-                  id="nc-selected-item-icon"
-                  class="text-nc-content-brand w-4 h-4"
+                  id="atm-selected-item-icon"
+                  class="text-atm-content-brand w-4 h-4"
                 />
               </div>
             </div>
@@ -374,24 +374,24 @@ const handleScrollIntoView = () => {
           :disabled="!vModel.fk_relation_column_id"
           show-search
           :filter-option="antSelectFilterOption"
-          dropdown-class-name="nc-dropdown-relation-column !rounded-xl"
+          dropdown-class-name="atm-dropdown-relation-column !rounded-xl"
           @change="onDataTypeChange"
         >
           <template #suffixIcon>
-            <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+            <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
           </template>
           <a-select-option v-for="column of filteredColumns" :key="column.title" :value="column.id">
             <div class="w-full flex gap-2 truncate items-center justify-between">
               <div class="flex items-center gap-2 flex-1 truncate">
-                <SmartsheetHeaderIcon :column="column" class="!mx-0" color="text-nc-content-gray-subtle2" />
+                <SmartsheetHeaderIcon :column="column" class="!mx-0" color="text-atm-content-gray-subtle2" />
 
                 <div class="truncate flex-1">{{ column.title }}</div>
               </div>
               <component
                 :is="iconMap.check"
                 v-if="vModel.fk_rollup_column_id === column.id"
-                id="nc-selected-item-icon"
-                class="text-nc-content-brand w-4 h-4"
+                id="atm-selected-item-icon"
+                class="text-atm-content-brand w-4 h-4"
               />
             </div>
           </a-select-option>
@@ -407,12 +407,12 @@ const handleScrollIntoView = () => {
         v-model:value="vModel.rollup_function"
         :disabled="!vModel.fk_relation_column_id"
         :placeholder="$t('placeholder.select')"
-        dropdown-class-name="nc-dropdown-rollup-function"
+        dropdown-class-name="atm-dropdown-rollup-function"
         class="!mt-0.5"
         @change="onRollupFunctionChange"
       >
         <template #suffixIcon>
-          <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+          <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
         </template>
         <a-select-option v-for="(func, index) of aggFunctionsList" :key="index" :value="func.value">
           <div class="w-full flex gap-2 justify-between items-center">
@@ -420,8 +420,8 @@ const handleScrollIntoView = () => {
             <component
               :is="iconMap.check"
               v-if="vModel.rollup_function === func.value"
-              id="nc-selected-item-icon"
-              class="text-nc-content-brand w-4 h-4"
+              id="atm-selected-item-icon"
+              class="text-atm-content-brand w-4 h-4"
             />
           </div>
         </a-select-option>
@@ -430,11 +430,11 @@ const handleScrollIntoView = () => {
     <a-form-item v-if="enableFormattingOptions" :label="$t('placeholder.precision')">
       <a-select
         v-model:value="vModel.meta.precision"
-        dropdown-class-name="nc-dropdown-rollup-precision-format"
+        dropdown-class-name="atm-dropdown-rollup-precision-format"
         @change="onPrecisionChange"
       >
         <template #suffixIcon>
-          <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+          <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
         </template>
         <a-select-option v-for="(format, i) of precisionFormats" :key="i" :value="format">
           <div class="flex gap-2 w-full justify-between items-center">
@@ -442,8 +442,8 @@ const handleScrollIntoView = () => {
             <component
               :is="iconMap.check"
               v-if="vModel.meta.precision === format"
-              id="nc-selected-item-icon"
-              class="text-nc-content-brand w-4 h-4"
+              id="atm-selected-item-icon"
+              class="text-atm-content-brand w-4 h-4"
             />
           </div>
         </a-select-option>
@@ -452,7 +452,7 @@ const handleScrollIntoView = () => {
     <SmartsheetColumnSeparatorSelect
       v-if="enableFormattingOptions"
       v-model:value="vModel.meta.separator"
-      dropdown-class-name="nc-dropdown-rollup-separator-format"
+      dropdown-class-name="atm-dropdown-rollup-separator-format"
     />
 
     <div v-if="showEEFeatures" class="w-full flex flex-col gap-4">
@@ -460,11 +460,11 @@ const handleScrollIntoView = () => {
         <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_ROLLUP_LIMIT_RECORDS_BY_FILTER">
           <template #default="{ click }">
             <div class="flex gap-1 items-center whitespace-nowrap">
-              <NcSwitch
+              <AtSwitch
                 :checked="limitRecToCond"
                 :disabled="!selectedTable"
                 size="small"
-                data-testid="nc-rollup-limit-record-filters"
+                data-testid="atm-rollup-limit-record-filters"
                 @change="
                   (value) => {
                     if (value && click(PlanFeatureTypes.FEATURE_ROLLUP_LIMIT_RECORDS_BY_FILTER)) return
@@ -473,7 +473,7 @@ const handleScrollIntoView = () => {
                 "
               >
                 {{ $t('labels.onlyIncludeLinkedRecordsThatMeetSpecificConditions') }}
-              </NcSwitch>
+              </AtSwitch>
 
               <LazyPaymentUpgradeBadge
                 v-if="!limitRecToCond"
@@ -489,7 +489,7 @@ const handleScrollIntoView = () => {
           </template>
         </PaymentUpgradeBadgeProvider>
 
-        <div v-if="limitRecToCond" class="overflow-auto nc-scrollbar-thin">
+        <div v-if="limitRecToCond" class="overflow-auto atm-scrollbar-thin">
           <LazySmartsheetToolbarColumnFilter
             ref="filterRef"
             class="!pl-10 !p-0 max-w-620px"
@@ -522,11 +522,11 @@ const handleScrollIntoView = () => {
 </template>
 
 <style scoped lang="scss">
-:deep(.ant-select-selector .ant-select-selection-item .nc-relation-details) {
+:deep(.ant-select-selector .ant-select-selection-item .atm-relation-details) {
   @apply hidden;
 }
 
-:deep(.nc-filter-grid) {
+:deep(.atm-filter-grid) {
   @apply !pr-0;
 }
 </style>

@@ -12,26 +12,26 @@ const brandIcon = computed(() => {
 </script>
 
 <template>
-  <div class="nc-h-screen grid place-items-center text-center">
+  <div class="atm-h-screen grid place-items-center text-center">
     <div class="flex flex-col items-center gap-5 mx-4" :class="containerClass">
       <slot name="icon">
         <img v-if="brandIcon" width="48" :alt="productName" :src="brandIcon" class="object-contain" />
-        <img v-else width="48" alt="NocoDB" src="~/assets/img/icons/256x256.png" />
+        <img v-else width="48" alt="Atmosphere" src="~/assets/img/icons/256x256.png" />
       </slot>
 
-      <div class="text-xl text-nc-content-gray font-bold">
+      <div class="text-xl text-atm-content-gray font-bold">
         <slot name="title">
           {{ $t('title.thisPageDoesNotExist') }}
         </slot>
       </div>
-      <div class="text-xl text-nc-content-gray-subtle">
+      <div class="text-xl text-atm-content-gray-subtle">
         <slot name="subtitle"> {{ $t('title.thisPageDoesNotExistSubtile') }} </slot>
       </div>
 
       <slot name="actions">
-        <NcButton class="!text-base" :class="actionButtonClass" @click="navigateTo('/')">{{
+        <AtButton class="!text-base" :class="actionButtonClass" @click="navigateTo('/')">{{
           $t('activity.goBackHome')
-        }}</NcButton>
+        }}</AtButton>
       </slot>
     </div>
   </div>

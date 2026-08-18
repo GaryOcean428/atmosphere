@@ -1,5 +1,5 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import type { CreditBalanceType, CreditLedgerRowType, CreditPackType, CreditUsageDailyType } from 'nocodb-sdk'
+import type { CreditBalanceType, CreditLedgerRowType, CreditPackType, CreditUsageDailyType } from 'atmosphere-sdk'
 
 export const useCredits = defineStore('creditsStore', () => {
   const balance = ref<CreditBalanceType | null>(null)

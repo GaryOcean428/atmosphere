@@ -1,11 +1,11 @@
-import { NcContext } from '../ncTypes';
+import { AtContext } from '../ncTypes';
 import { UnifiedMetaType } from '../types';
 import { getColOptions } from './getColOptions';
 import { getColumns } from './getColumns';
 import { getLTARRelatedTable } from './getLTARRelatedTable';
 
 export const getRollupColumn = async (
-  context: NcContext,
+  context: AtContext,
   {
     column,
     columns,

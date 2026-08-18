@@ -1,5 +1,5 @@
 import type { FunctionalComponent, SVGAttributes } from 'vue'
-import type { ButtonType, ColumnType, FormulaType, IntegrationType, LinkToAnotherRecordType } from 'nocodb-sdk'
+import type { ButtonType, ColumnType, FormulaType, IntegrationType, LinkToAnotherRecordType } from 'atmosphere-sdk'
 import {
   ButtonActionsType,
   FormulaDataTypes,
@@ -19,7 +19,7 @@ import {
   ratingIconList,
   substituteColumnIdWithAliasInPrompt,
   validateEmail,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import isMobilePhone from 'validator/lib/isMobilePhone'
 
 export interface UiTypesType {
@@ -328,14 +328,14 @@ const isColumnInvalid = ({
   col,
   aiIntegrations = [],
   isReadOnly = false,
-  isNocoAiAvailable = false,
+  isAtmosphereAiAvailable = false,
   columns = [],
   isInterfaceUi = false,
 }: {
   col: ColumnType
   aiIntegrations?: Partial<IntegrationType>[]
   isReadOnly?: boolean
-  isNocoAiAvailable?: boolean
+  isAtmosphereAiAvailable?: boolean
   columns?: ColumnType[]
   isInterfaceUi?: boolean
 }): { isInvalid: boolean; tooltip: string; ignoreTooltip?: boolean } => {
@@ -382,7 +382,7 @@ const isColumnInvalid = ({
           (colOptions as Record<string, any>)?.formula_raw,
         ).missingIds
 
-        const isIntegrationMissing = isNocoAiAvailable
+        const isIntegrationMissing = isAtmosphereAiAvailable
           ? false
           : !colOptions.fk_integration_id ||
             (isReadOnly
@@ -412,7 +412,7 @@ const isColumnInvalid = ({
           (colOptions as Record<string, any>)?.prompt_raw,
         ).missingIds
 
-        const isIntegrationMissing = isNocoAiAvailable
+        const isIntegrationMissing = isAtmosphereAiAvailable
           ? false
           : !colOptions.fk_integration_id ||
             (isReadOnly

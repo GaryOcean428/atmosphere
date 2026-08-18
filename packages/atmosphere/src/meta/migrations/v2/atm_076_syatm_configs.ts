@@ -2,7 +2,7 @@ import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
 const up = async (knex: Knex) => {
-  await knex.schema.createTable(MetaTable.SYNC_CONFIGS, (table) => {
+  await knex.schema.createTable(MetaTable.SYATMOSPHERE_CONFIGS, (table) => {
     table.string('id', 20).primary().notNullable();
 
     table.string('fk_workspace_id', 20);
@@ -27,7 +27,7 @@ const up = async (knex: Knex) => {
       'sync_configs_integration_model',
     );
 
-    table.index(['base_id', 'fk_workspace_id'], 'nc_sync_configs_context');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_sync_configs_context');
   });
 
   await knex.schema.alterTable(MetaTable.MODELS, (table) => {
@@ -40,7 +40,7 @@ const up = async (knex: Knex) => {
 };
 
 const down = async (knex: Knex) => {
-  await knex.schema.dropTable(MetaTable.SYNC_CONFIGS);
+  await knex.schema.dropTable(MetaTable.SYATMOSPHERE_CONFIGS);
 
   await knex.schema.alterTable(MetaTable.MODELS, (table) => {
     table.dropColumn('synced');

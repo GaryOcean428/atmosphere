@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import NcTooltip from '~/components/nc/Tooltip.vue'
+import AtTooltip from '~/components/atm/Tooltip.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -117,13 +117,13 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
 </script>
 
 <template>
-  <div class="nc-pagination flex flex-row items-center gap-x-2">
+  <div class="atm-pagination flex flex-row items-center gap-x-2">
     <template v-if="totalPages > 1">
-      <component :is="props.firstPageTooltip && mode === 'full' ? NcTooltip : 'div'" v-if="mode === 'full'">
+      <component :is="props.firstPageTooltip && mode === 'full' ? AtTooltip : 'div'" v-if="mode === 'full'">
         <template v-if="props.firstPageTooltip" #title>
           {{ props.firstPageTooltip }}
         </template>
-        <NcButton
+        <AtButton
           v-e="[`a:pagination:${entityName}:first-page`]"
           class="first-page"
           type="secondary"
@@ -131,15 +131,15 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
           :disabled="current === 1"
           @click="goToFirstPage"
         >
-          <GeneralIcon icon="doubleLeftArrow" class="nc-pagination-icon" />
-        </NcButton>
+          <GeneralIcon icon="doubleLeftArrow" class="atm-pagination-icon" />
+        </AtButton>
       </component>
 
-      <component :is="props.prevPageTooltip && mode === 'full' ? NcTooltip : 'div'">
+      <component :is="props.prevPageTooltip && mode === 'full' ? AtTooltip : 'div'">
         <template v-if="props.prevPageTooltip" #title>
           {{ props.prevPageTooltip }}
         </template>
-        <NcButton
+        <AtButton
           v-e="[`a:pagination:${entityName}:prev-page`]"
           class="prev-page"
           type="secondary"
@@ -147,22 +147,22 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
           :disabled="current === 1"
           @click="changePage({ increase: false })"
         >
-          <GeneralIcon icon="arrowLeft" class="nc-pagination-icon" />
-        </NcButton>
+          <GeneralIcon icon="arrowLeft" class="atm-pagination-icon" />
+        </AtButton>
       </component>
 
-      <div v-if="!isMobileMode" class="text-nc-content-gray-muted">
+      <div v-if="!isMobileMode" class="text-atm-content-gray-muted">
         <a-select
           ref="pageListRef"
           v-model:value="current"
           class="!mr-[2px]"
           :options="pagesList"
           size="small"
-          dropdown-class-name="nc-pagination-dropdown"
+          dropdown-class-name="atm-pagination-dropdown"
           @dropdown-visible-change="pageListDropdownVisibleChange"
         >
           <template #suffixIcon>
-            <GeneralIcon icon="arrowDown" class="text-nc-content-gray-muted nc-select-expand-btn" />
+            <GeneralIcon icon="arrowDown" class="text-atm-content-gray-muted atm-select-expand-btn" />
           </template>
         </a-select>
         <span class="mx-1"> {{ mode !== 'full' ? '/' : 'of' }} </span>
@@ -171,11 +171,11 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
         </span>
       </div>
 
-      <component :is="props.nextPageTooltip && mode === 'full' ? NcTooltip : 'div'">
+      <component :is="props.nextPageTooltip && mode === 'full' ? AtTooltip : 'div'">
         <template v-if="props.nextPageTooltip" #title>
           {{ props.nextPageTooltip }}
         </template>
-        <NcButton
+        <AtButton
           v-e="[`a:pagination:${entityName}:next-page`]"
           class="next-page"
           type="secondary"
@@ -183,15 +183,15 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
           :disabled="current === totalPages"
           @click="changePage({ increase: true })"
         >
-          <GeneralIcon icon="arrowRight" class="nc-pagination-icon" />
-        </NcButton>
+          <GeneralIcon icon="arrowRight" class="atm-pagination-icon" />
+        </AtButton>
       </component>
 
-      <component :is="props.lastPageTooltip && mode === 'full' ? NcTooltip : 'div'" v-if="mode === 'full'">
+      <component :is="props.lastPageTooltip && mode === 'full' ? AtTooltip : 'div'" v-if="mode === 'full'">
         <template v-if="props.lastPageTooltip" #title>
           {{ props.lastPageTooltip }}
         </template>
-        <NcButton
+        <AtButton
           v-e="[`a:pagination:${entityName}:last-page`]"
           class="last-page"
           type="secondary"
@@ -199,22 +199,22 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
           :disabled="current === totalPages"
           @click="goToLastPage"
         >
-          <GeneralIcon icon="doubleRightArrow" class="nc-pagination-icon" />
-        </NcButton>
+          <GeneralIcon icon="doubleRightArrow" class="atm-pagination-icon" />
+        </AtButton>
       </component>
     </template>
-    <div v-if="showSizeChanger && !isMobileMode" class="text-nc-content-gray-muted">
+    <div v-if="showSizeChanger && !isMobileMode" class="text-atm-content-gray-muted">
       <a-select
         ref="pageSizeRef"
         v-model:value="localPageSize"
         class="!min-w-[110px]"
         :options="pageSizeOptions"
         size="small"
-        dropdown-class-name="nc-pagination-dropdown"
+        dropdown-class-name="atm-pagination-dropdown"
         @dropdown-visible-change="pageSizeDropdownVisibleChange"
       >
         <template #suffixIcon>
-          <GeneralIcon icon="arrowDown" class="text-nc-content-gray-muted nc-select-page-size-expand-btn" />
+          <GeneralIcon icon="arrowDown" class="text-atm-content-gray-muted atm-select-page-size-expand-btn" />
         </template>
       </a-select>
     </div>
@@ -223,22 +223,22 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
 
 <style lang="scss" scoped>
 :deep(.ant-select-selector) {
-  @apply !border-nc-border-gray-medium !rounded-lg !h-[25px];
+  @apply !border-atm-border-gray-medium !rounded-lg !h-[25px];
 }
 
-.nc-pagination-icon {
+.atm-pagination-icon {
   @apply w-4 h-4;
 }
 
-:deep(.nc-button:not(:disabled)) {
-  .nc-pagination-icon {
-    @apply !text-nc-content-gray-muted;
+:deep(.atm-button:not(:disabled)) {
+  .atm-pagination-icon {
+    @apply !text-atm-content-gray-muted;
   }
 }
 </style>
 
 <style lang="scss">
-.nc-pagination-dropdown {
+.atm-pagination-dropdown {
   @apply !rounded-lg;
 }
 </style>

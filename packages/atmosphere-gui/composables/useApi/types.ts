@@ -1,4 +1,4 @@
-import type { Api } from 'nocodb-sdk'
+import type { Api } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import type { EventHook, MaybeRef } from '@vueuse/core'

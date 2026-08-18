@@ -1,13 +1,13 @@
-import * as nc_001_init from '~/meta/migrations/docs-content/nc_001_init';
-import * as nc_002_doc_revisions from '~/meta/migrations/docs-content/nc_002_doc_revisions';
-import * as nc_003_yjs_state from '~/meta/migrations/docs-content/nc_003_yjs_state';
+import * as atm_001_init from '~/meta/migrations/docs-content/atm_001_init';
+import * as atm_002_doc_revisions from '~/meta/migrations/docs-content/atm_002_doc_revisions';
+import * as atm_003_yjs_state from '~/meta/migrations/docs-content/atm_003_yjs_state';
 
 export default class XcMigrationSourceDocsContent {
   public getMigrations(): Promise<any> {
     return Promise.resolve([
-      'nc_001_init',
-      'nc_002_doc_revisions',
-      'nc_003_yjs_state',
+      'atm_001_init',
+      'atm_002_doc_revisions',
+      'atm_003_yjs_state',
     ]);
   }
 
@@ -17,12 +17,12 @@ export default class XcMigrationSourceDocsContent {
 
   public getMigration(migration): any {
     switch (migration) {
-      case 'nc_001_init':
-        return nc_001_init;
-      case 'nc_002_doc_revisions':
-        return nc_002_doc_revisions;
-      case 'nc_003_yjs_state':
-        return nc_003_yjs_state;
+      case 'atm_001_init':
+        return atm_001_init;
+      case 'atm_002_doc_revisions':
+        return atm_002_doc_revisions;
+      case 'atm_003_yjs_state':
+        return atm_003_yjs_state;
     }
   }
 }

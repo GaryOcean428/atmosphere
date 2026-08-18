@@ -1,8 +1,8 @@
 import debug from 'debug';
 import { Injectable } from '@nestjs/common';
-import { RelationTypes, UITypes } from 'nocodb-sdk';
+import { RelationTypes, UITypes } from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { isEE } from '~/utils';
 import { Column } from '~/models';
@@ -13,15 +13,15 @@ import { Column } from '~/models';
  */
 @Injectable()
 export class RecoverLinksMigration {
-  private readonly debugLog = debug('nc:migration-jobs:recover-links');
+  private readonly debugLog = debug('atm:migration-jobs:recover-links');
 
   log = (...msgs: string[]) => {
-    console.log('[nc_job_003_recover_links]: ', ...msgs);
+    console.log('[atm_job_003_recover_links]: ', ...msgs);
   };
 
   async job() {
     // start transaction
-    const ncMeta = await Noco.ncMeta.startTransaction();
+    const ncMeta = await Atmosphere.ncMeta.startTransaction();
 
     try {
       // Get all broken link columns which doesn't have colOptions

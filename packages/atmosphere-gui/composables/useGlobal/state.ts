@@ -1,10 +1,10 @@
 import { useStorage } from '@vueuse/core'
 import type { JwtPayload } from 'jwt-decode'
-import { MapProvider, NC_DEFAULT_ORG_ID } from 'nocodb-sdk'
+import { MapProvider, ATMOSPHERE_DEFAULT_ORG_ID } from 'atmosphere-sdk'
 import type { AppInfo, State, StoredState } from './types'
 import { INITIAL_LEFT_SIDEBAR_WIDTH } from '~/lib/constants'
 
-export function useGlobalState(storageKey = 'nocodb-gui-v2'): State {
+export function useGlobalState(storageKey = 'atmosphere-gui-v2'): State {
   /** get the preferred languages of a user, according to browser settings */
   const preferredLanguages = usePreferredLanguages()
   /** todo: reimplement; get the preferred dark mode setting, according to browser settings */
@@ -50,7 +50,7 @@ export function useGlobalState(storageKey = 'nocodb-gui-v2'): State {
 
   const { width } = useWindowSize()
   const isViewPortMobile = () => {
-    return width.value < NC_BREAKPOINTS.sm
+    return width.value < ATMOSPHERE_BREAKPOINTS.sm
   }
 
   /** State */
@@ -139,7 +139,7 @@ export function useGlobalState(storageKey = 'nocodb-gui-v2'): State {
     auditEnabled: true,
     undoRedoEnabled: true,
     docsRealtimeEnabled: true,
-    type: 'nocodb',
+    type: 'atmosphere',
     version: '0.0.0',
     ncAttachmentFieldSize: 20,
     ncMaxAttachmentsAllowed: 10,
@@ -163,7 +163,7 @@ export function useGlobalState(storageKey = 'nocodb-gui-v2'): State {
     defaultWorkspaceId: null,
     disableGroupByAggregation: false,
     mapProvider: MapProvider.OPENSTREETMAP,
-    defaultOrgId: NC_DEFAULT_ORG_ID,
+    defaultOrgId: ATMOSPHERE_DEFAULT_ORG_ID,
   })
 
   /** reactive token payload */

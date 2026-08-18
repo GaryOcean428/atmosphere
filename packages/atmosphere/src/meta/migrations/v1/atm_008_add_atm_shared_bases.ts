@@ -1,7 +1,7 @@
 import type { Knex } from 'knex';
 
 const up = async (knex: Knex) => {
-  await knex.schema.createTable('nc_shared_bases', (table) => {
+  await knex.schema.createTable('atm_shared_bases', (table) => {
     table.increments();
     table.string('project_id');
     table.string('db_alias');
@@ -14,7 +14,7 @@ const up = async (knex: Knex) => {
 };
 
 const down = async (knex) => {
-  await knex.schema.dropTable('nc_shared_bases');
+  await knex.schema.dropTable('atm_shared_bases');
 };
 
 export { up, down };

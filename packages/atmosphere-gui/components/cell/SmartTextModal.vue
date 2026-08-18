@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 
 interface Props {
   visible: boolean
@@ -24,5 +24,5 @@ defineEmits<{
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

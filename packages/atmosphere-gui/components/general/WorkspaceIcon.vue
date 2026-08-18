@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { IconType, type WorkspaceType } from 'nocodb-sdk'
+import { IconType, type WorkspaceType } from 'atmosphere-sdk'
 import 'emoji-mart-vue-fast/css/emoji-mart.css'
 import { Icon } from '@iconify/vue'
 import { isColorDark, stringToColor } from '#imports'
@@ -15,13 +15,13 @@ const props = withDefaults(
     size?: 'small' | 'medium' | 'large' | 'xlarge' | 'middle' | 'account-sidebar' | 'mini-sidebar'
     isRounded?: boolean
     iconBgColor?: string
-    showNocodbIcon?: boolean
+    showAtmosphereIcon?: boolean
     hideBgColor?: boolean
     initialsLength?: 1 | 2
   }>(),
   {
-    iconBgColor: 'var(--nc-bg-gray-light)',
-    showNocodbIcon: false,
+    iconBgColor: 'var(--atm-bg-gray-light)',
+    showAtmosphereIcon: false,
     initialsLength: 2,
   },
 )
@@ -74,17 +74,17 @@ const workspaceColor = computed(() => {
       }
 
       default: {
-        return props.showNocodbIcon && (blockWsImageLogoUpload.value || !workspace.value) ? undefined : color || '#0A1433'
+        return props.showAtmosphereIcon && (blockWsImageLogoUpload.value || !workspace.value) ? undefined : color || '#0A1433'
       }
     }
   }
 
-  return props.showNocodbIcon && (blockWsImageLogoUpload.value || !workspace.value) ? undefined : color || '#0A1433'
+  return props.showAtmosphereIcon && (blockWsImageLogoUpload.value || !workspace.value) ? undefined : color || '#0A1433'
 })
 
 const isRenderingInitials = computed(() => {
   if (props.hideLabel) return false
-  if (props.showNocodbIcon && (blockWsImageLogoUpload.value || !workspace.value)) return false
+  if (props.showAtmosphereIcon && (blockWsImageLogoUpload.value || !workspace.value)) return false
   return !workspaceIcon.value.icon
 })
 
@@ -95,7 +95,7 @@ const isMiniSidebarSize = computed(() => size.value === 'mini-sidebar')
 
 <template>
   <div
-    class="flex nc-workspace-avatar overflow-hidden"
+    class="flex atm-workspace-avatar overflow-hidden"
     :class="{
       'min-w-4 w-4 h-4 rounded': size === 'small',
       'min-w-6 w-6 h-6 rounded-md': size === 'medium',
@@ -139,7 +139,7 @@ const isMiniSidebarSize = computed(() => size.value === 'mini-sidebar')
         </template>
         <template v-else>
           <Icon
-            :data-testid="`nc-icon-${workspaceIcon.icon}`"
+            :data-testid="`atm-icon-${workspaceIcon.icon}`"
             class="!text-inherit flex-none"
             :class="{
               'w-3 h-3': size === 'small',
@@ -165,8 +165,8 @@ const isMiniSidebarSize = computed(() => size.value === 'mini-sidebar')
         }"
       />
       <template v-else>
-        <div v-if="props.showNocodbIcon && (blockWsImageLogoUpload || !workspace)" class="h-full w-full p-0.25">
-          <GeneralIcon icon="nocodb1" class="!h-full !w-full" />
+        <div v-if="props.showAtmosphereIcon && (blockWsImageLogoUpload || !workspace)" class="h-full w-full p-0.25">
+          <GeneralIcon icon="atmosphere1" class="!h-full !w-full" />
         </div>
         <div
           v-else
@@ -186,7 +186,7 @@ const isMiniSidebarSize = computed(() => size.value === 'mini-sidebar')
 </template>
 
 <style lang="scss" scoped>
-.nc-workspace-avatar {
+.atm-workspace-avatar {
   @apply text-xs flex items-center justify-center text-white uppercase;
 }
 </style>

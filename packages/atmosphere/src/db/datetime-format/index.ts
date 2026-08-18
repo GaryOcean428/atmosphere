@@ -1,6 +1,6 @@
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import type { DatetimeFormatHandler } from '~/db/datetime-format/datetime-format.interface';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { MysqlDatetimeFormatHandler } from '~/db/datetime-format/handlers/datetime-format.mysql.handler';
 import { PgDatetimeFormatHandler } from '~/db/datetime-format/handlers/datetime-format.pg.handler';
 import { SqliteDatetimeFormatHandler } from '~/db/datetime-format/handlers/datetime-format.sqlite.handler';
@@ -27,7 +27,7 @@ export function getDatetimeFormatHandler(
 ): DatetimeFormatHandler {
   const handler = DATETIME_FORMAT_HANDLERS[client];
   if (!handler) {
-    NcError.badRequest(
+    AtError.badRequest(
       `DATETIME_FORMAT is not supported for the "${client}" database`,
     );
   }

@@ -1,5 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
-import type { ColumnType, MapType, PaginatedType, TableType, ViewType } from 'nocodb-sdk'
+import type { ColumnType, MapType, PaginatedType, TableType, ViewType } from 'atmosphere-sdk'
 
 const formatData = (list: Record<string, any>[] = []) =>
   list.map(
@@ -57,7 +57,7 @@ const [useProvideMapViewStore, useMapViewStore] = useInjectionState(
 
     async function syncCount() {
       const { count } = await $api.dbViewRow.count(
-        NOCO,
+        ATMOSPHERE,
         meta.value?.base_id ?? (base?.value?.title as string),
         meta?.value?.id as string,
         viewMeta?.value?.id as string,
@@ -82,7 +82,7 @@ const [useProvideMapViewStore, useMapViewStore] = useInjectionState(
       if ((!base?.value?.id || !meta.value?.id || !viewMeta.value?.id) && !isPublic?.value) return
 
       const res = !isPublic.value
-        ? await api.dbViewRow.list('noco', base.value.id!, meta.value!.id!, viewMeta.value!.id!, {
+        ? await api.dbViewRow.list('atmosphere', base.value.id!, meta.value!.id!, viewMeta.value!.id!, {
             ...queryParams.value,
             ...(isUIAllowed('filterSync') ? {} : { filterArrJson: JSON.stringify(nestedFilters.value) }),
             where: where?.value,
@@ -155,7 +155,7 @@ const [useProvideMapViewStore, useMapViewStore] = useInjectionState(
         }
 
         const insertedData = await $api.dbViewRow.create(
-          NOCO,
+          ATMOSPHERE,
           metaValue?.base_id ?? (base?.value.id as string),
           metaValue?.id as string,
           viewMetaValue?.id as string,

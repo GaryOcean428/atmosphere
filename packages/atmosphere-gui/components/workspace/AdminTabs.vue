@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PlanFeatureTypes, PlanTitles } from 'nocodb-sdk'
+import { PlanFeatureTypes, PlanTitles } from 'atmosphere-sdk'
 
 const router = useRouter()
 const route = router.currentRoute
@@ -63,14 +63,14 @@ const activeTab = computed({
       return
     }
 
-    const typeOrId = route.value.params.typeOrId || activeWorkspaceId.value || 'nc'
+    const typeOrId = route.value.params.typeOrId || activeWorkspaceId.value || 'atm'
     router.push({ name: wsTabToRouteName[tabKey] || 'index-typeOrId-settings', params: { typeOrId } })
   },
 })
 </script>
 
 <template>
-  <NcTabs v-if="hasAdminTabBar" :key="`${tabItems.length}`" v-model:active-key="activeTab" class="nc-ws-admin-tabs">
+  <AtTabs v-if="hasAdminTabBar" :key="`${tabItems.length}`" v-model:active-key="activeTab" class="atm-ws-admin-tabs">
     <template #leftExtra>
       <div class="w-2 sm:w-4"></div>
     </template>
@@ -90,11 +90,11 @@ const activeTab = computed({
         </div>
       </template>
     </a-tab-pane>
-  </NcTabs>
+  </AtTabs>
 </template>
 
 <style lang="scss" scoped>
-.nc-ws-admin-tabs {
+.atm-ws-admin-tabs {
   @apply flex-none w-full;
 
   :deep(.ant-tabs-content-holder) {

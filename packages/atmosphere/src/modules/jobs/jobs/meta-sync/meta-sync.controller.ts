@@ -10,12 +10,12 @@ import {
 } from '@nestjs/common';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { JobTypes } from '~/interface/Jobs';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -34,9 +34,9 @@ export class MetaSyncController {
     blockOAuthTokenAccess: true,
   })
   async metaDiffSync(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const jobs = await this.jobsService.jobList();
     const fnd = jobs.find(
@@ -44,7 +44,7 @@ export class MetaSyncController {
     );
 
     if (fnd) {
-      NcError.badRequest('Meta sync already in progress for this base');
+      AtError.badRequest('Meta sync already in progress for this base');
     }
 
     const job = await this.jobsService.add(JobTypes.MetaSync, {
@@ -68,10 +68,10 @@ export class MetaSyncController {
     blockOAuthTokenAccess: true,
   })
   async baseMetaDiffSync(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Param('sourceId') sourceId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const jobs = await this.jobsService.jobList();
     const fnd = jobs.find(
@@ -82,7 +82,7 @@ export class MetaSyncController {
     );
 
     if (fnd) {
-      NcError.badRequest('Meta sync already in progress for this base');
+      AtError.badRequest('Meta sync already in progress for this base');
     }
 
     const job = await this.jobsService.add(JobTypes.MetaSync, {
@@ -105,9 +105,9 @@ export class MetaSyncController {
     blockOAuthTokenAccess: true,
   })
   async metaDiff(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const jobs = await this.jobsService.jobList();
     const fnd = jobs.find(
@@ -138,10 +138,10 @@ export class MetaSyncController {
     blockOAuthTokenAccess: true,
   })
   async baseMetaDiff(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Param('sourceId') sourceId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const jobs = await this.jobsService.jobList();
     const fnd = jobs.find(

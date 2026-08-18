@@ -1,6 +1,6 @@
 import isURL from 'validator/lib/isURL'
 import { decode } from 'html-entities'
-import { isValidURL } from 'nocodb-sdk'
+import { isValidURL } from 'atmosphere-sdk'
 import { formulaTextSegmentsCache, replaceUrlsWithLinkCache } from '../components/smartsheet/grid/canvas/utils/canvas'
 import { getI18n } from '../plugins/a.i18n'
 export { isValidURL }
@@ -62,7 +62,7 @@ const _replaceUrlsWithLink = (text: string, plainCellValue = false): boolean | s
       const a = document.createElement('a')
       a.textContent = anchorLabel
       a.setAttribute('href', decode(encodedUrl))
-      a.setAttribute('class', 'nc-cell-field-link')
+      a.setAttribute('class', 'atm-cell-field-link')
       a.setAttribute('target', '_blank')
       a.setAttribute('rel', 'noopener noreferrer')
       return a.outerHTML
@@ -179,7 +179,7 @@ export const openLinkUsingATag = (url: string, target?: '_blank') => {
 
 export const patchUrl = (url: string, user?: Record<string, any>): string => {
   // Only patch this exact URL
-  if (!url.startsWith('https://app.nocodb.com/p/nocodb-upvote-feature') || !user) {
+  if (!url.startsWith('https://app.atmosphere.dev/p/atmosphere-upvote-feature') || !user) {
     // if (!url.startsWith('http://localhost:8080/p/c') || !user) {
     return url
   }

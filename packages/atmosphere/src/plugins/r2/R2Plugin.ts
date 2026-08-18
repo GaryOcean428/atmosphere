@@ -1,6 +1,6 @@
 import R2 from './R2';
-import type { IStorageAdapterV2 } from '~/types/nc-plugin';
-import { XcStoragePlugin } from '~/types/nc-plugin';
+import type { IStorageAdapterV2 } from '~/types/atm-plugin';
+import { XcStoragePlugin } from '~/types/atm-plugin';
 
 class R2Plugin extends XcStoragePlugin {
   private static storageAdapter: R2;

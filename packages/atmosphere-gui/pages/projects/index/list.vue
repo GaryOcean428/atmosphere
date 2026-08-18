@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { BaseType } from 'nocodb-sdk'
+import type { BaseType } from 'atmosphere-sdk'
 
 interface Props {
   bases?: BaseType[]
@@ -12,7 +12,7 @@ const emit = defineEmits(['deleteBase'])
 const { $e } = useNuxtApp()
 
 const openProject = async (base: BaseType) => {
-  await navigateTo(`/nc/${base.id}`)
+  await navigateTo(`/atm/${base.id}`)
   $e('a:base:open', { count: bases.length })
 }
 </script>
@@ -29,7 +29,7 @@ const openProject = async (base: BaseType) => {
 
     <template v-for="base of bases" :key="base.id">
       <div
-        class="cursor-pointer grid grid-cols-3 gap-2 prose-md hover:(bg-nc-bg-gray-dark/30) p-2 transition-colors ease-in duration-100"
+        class="cursor-pointer grid grid-cols-3 gap-2 prose-md hover:(bg-atm-bg-gray-dark/30) p-2 transition-colors ease-in duration-100"
         @click="openProject(base)"
       >
         <div class="font-semibold capitalize">{{ base.title || 'Untitled' }}</div>
@@ -37,12 +37,12 @@ const openProject = async (base: BaseType) => {
         <div class="flex justify-center">
           <component
             :is="iconMap.delete"
-            class="text-nc-content-gray-muted hover:text-nc-content-red-medium mr-2"
+            class="text-atm-content-gray-muted hover:text-atm-content-red-medium mr-2"
             @click.stop="emit('deleteBase', base)"
           />
           <component
             :is="iconMap.edit"
-            class="text-nc-content-gray-muted hover:text-primary mr-2"
+            class="text-atm-content-gray-muted hover:text-primary mr-2"
             @click.stop="navigateTo(`/base/${base.id}`)"
           />
         </div>

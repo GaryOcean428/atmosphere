@@ -1,6 +1,6 @@
-import { ViewLockType } from 'nocodb-sdk'
+import { ViewLockType } from 'atmosphere-sdk'
 
-export { ClientType, IntegrationCategoryType, SyncDataType } from 'nocodb-sdk'
+export { ClientType, IntegrationCategoryType, SyncDataType } from 'atmosphere-sdk'
 
 export enum Language {
   ar = 'العربية',
@@ -227,7 +227,7 @@ export const EventBusEnum = {
   SmartsheetActions: Symbol('SmartSheetActions'),
 }
 
-export enum NcBaseCreateMode {
+export enum AtBaseCreateMode {
   FROM_SCRATCH = 'fromScratch',
   FROM_TEMPLATE = 'fromTemplate',
   BUILD_WITH_AI = 'buildWithAi',

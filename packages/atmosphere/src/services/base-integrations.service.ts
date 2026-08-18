@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { IntegrationsType as IntegrationsTypeEnum } from 'nocodb-sdk';
-import type { IntegrationReqType, IntegrationsType } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+import { IntegrationsType as IntegrationsTypeEnum } from 'atmosphere-sdk';
+import type { IntegrationReqType, IntegrationsType } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { MetaService } from '~/meta/meta.service';
 import { Base, Integration, IntegrationLink } from '~/models';
-import { NcBaseError, NcError } from '~/helpers/catchError';
+import { AtBaseError, AtError } from '~/helpers/catchError';
 import { MetaTable } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { IntegrationsService } from '~/services/integrations.service';
 import { maskKnexConfig } from '~/helpers/responseHelpers';
 
@@ -24,7 +24,7 @@ export class BaseIntegrationsService {
    *   - Are global (env var)
    */
   async listForBase(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       type?: IntegrationsType;
@@ -34,12 +34,12 @@ export class BaseIntegrationsService {
   ) {
     const base = await Base.get(context, param.baseId);
     if (!base) {
-      NcError.get(context).baseNotFound(param.baseId);
+      AtError.get(context).baseNotFound(param.baseId);
     }
 
     const workspaceId = base.fk_workspace_id;
 
-    const knex = Noco.ncMeta.knex;
+    const knex = Atmosphere.ncMeta.knex;
     const integrations = await knex(MetaTable.INTEGRATIONS)
       .select(
         `${MetaTable.INTEGRATIONS}.id`,
@@ -95,7 +95,7 @@ export class BaseIntegrationsService {
    * Only the creator can see the config; verifies the integration is available to the base.
    */
   async readFromBase(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       integrationId: string;
@@ -105,7 +105,7 @@ export class BaseIntegrationsService {
   ) {
     const integration = await Integration.get(context, param.integrationId);
     if (!integration) {
-      NcError.get(context).integrationNotFound(param.integrationId);
+      AtError.get(context).integrationNotFound(param.integrationId);
     }
 
     // Verify integration is available to this base
@@ -116,7 +116,7 @@ export class BaseIntegrationsService {
     });
 
     if (!isAvailable) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Integration is not available to this base.',
       );
     }
@@ -149,21 +149,21 @@ export class BaseIntegrationsService {
    * and auto-linked to this base only.
    */
   async createFromBase(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       integration: IntegrationReqType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const workspaceId = context.workspace_id;
     const userId = param.req.user?.id;
 
     if (!workspaceId) {
-      NcError.get(context).badRequest('Workspace ID is required');
+      AtError.get(context).badRequest('Workspace ID is required');
     }
 
-    const ncMeta = await (Noco.ncMeta as MetaService).startTransaction();
+    const ncMeta = await (Atmosphere.ncMeta as MetaService).startTransaction();
 
     try {
       // Delegate to integrationsService.integrationCreate which handles:
@@ -201,9 +201,9 @@ export class BaseIntegrationsService {
       return integration;
     } catch (e) {
       await ncMeta.rollback(e);
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error(e.message, e.stack);
-      NcError.get(context).internalServerError(
+      AtError.get(context).internalServerError(
         'Failed to create integration from base',
       );
     }
@@ -214,22 +214,22 @@ export class BaseIntegrationsService {
    * Only the creator of the integration can update it.
    */
   async updateFromBase(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       integrationId: string;
       integration: IntegrationReqType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const integration = await Integration.get(context, param.integrationId);
     if (!integration) {
-      NcError.get(context).integrationNotFound(param.integrationId);
+      AtError.get(context).integrationNotFound(param.integrationId);
     }
 
     // Only the creator can update from base context
     if (integration.created_by !== param.req.user?.id) {
-      NcError.get(context).unauthorized(
+      AtError.get(context).unauthorized(
         'Only the creator can update this integration.',
       );
     }
@@ -242,7 +242,7 @@ export class BaseIntegrationsService {
     });
 
     if (!isAvailable) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Integration is not available to this base.',
       );
     }
@@ -258,7 +258,7 @@ export class BaseIntegrationsService {
    * Link an existing integration to a base.
    */
   async link(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       integrationId: string;
@@ -267,24 +267,24 @@ export class BaseIntegrationsService {
   ) {
     const base = await Base.get(context, param.baseId);
     if (!base) {
-      NcError.get(context).baseNotFound(param.baseId);
+      AtError.get(context).baseNotFound(param.baseId);
     }
 
     const integration = await Integration.get(context, param.integrationId);
     if (!integration) {
-      NcError.get(context).integrationNotFound(param.integrationId);
+      AtError.get(context).integrationNotFound(param.integrationId);
     }
 
     // Verify integration belongs to the same workspace
     if (integration.fk_workspace_id !== base.fk_workspace_id) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Integration does not belong to this workspace.',
       );
     }
 
     // Check visibility: private integrations can only be linked by their creator
     if (integration.is_private && integration.created_by !== param.userId) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Cannot link a private integration created by another user.',
       );
     }
@@ -312,7 +312,7 @@ export class BaseIntegrationsService {
    * Unlink an integration from a base.
    */
   async unlink(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       integrationId: string;
@@ -325,7 +325,7 @@ export class BaseIntegrationsService {
     );
 
     if (!deleted) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Integration is not linked to this base.',
       );
     }
@@ -338,14 +338,14 @@ export class BaseIntegrationsService {
    * (Workspace-admin endpoint)
    */
   async linkedBaseList(
-    context: NcContext,
+    context: AtContext,
     param: {
       integrationId: string;
     },
   ) {
     const integration = await Integration.get(context, param.integrationId);
     if (!integration) {
-      NcError.get(context).integrationNotFound(param.integrationId);
+      AtError.get(context).integrationNotFound(param.integrationId);
     }
 
     if (!integration.is_restricted) {
@@ -362,7 +362,7 @@ export class BaseIntegrationsService {
     const bases: { id: string; title: string }[] = [];
 
     if (baseIds.length) {
-      const knex = Noco.ncMeta.knex;
+      const knex = Atmosphere.ncMeta.knex;
       const rows = await knex(MetaTable.PROJECT)
         .select('id', 'title')
         .whereIn('id', baseIds);
@@ -383,7 +383,7 @@ export class BaseIntegrationsService {
    * - { base_ids: [...] } → set is_restricted = true, replace links
    */
   async updateLinkedBases(
-    context: NcContext,
+    context: AtContext,
     param: {
       integrationId: string;
       allBases?: boolean;
@@ -393,18 +393,18 @@ export class BaseIntegrationsService {
   ) {
     const integration = await Integration.get(context, param.integrationId);
     if (!integration) {
-      NcError.get(context).integrationNotFound(param.integrationId);
+      AtError.get(context).integrationNotFound(param.integrationId);
     }
 
     // Validate before opening a transaction — otherwise falling through to
     // the bad-request throw below would leak an open trx.
     if (!param.allBases && !param.baseIds?.length) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Either all_bases or base_ids must be provided.',
       );
     }
 
-    const ncMeta = await (Noco.ncMeta as MetaService).startTransaction();
+    const ncMeta = await (Atmosphere.ncMeta as MetaService).startTransaction();
 
     try {
       if (param.allBases) {
@@ -445,9 +445,9 @@ export class BaseIntegrationsService {
       return { all_bases: false, base_ids: param.baseIds };
     } catch (e) {
       await ncMeta.rollback(e);
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error(e.message, e.stack);
-      NcError.get(context).internalServerError('Failed to update linked bases');
+      AtError.get(context).internalServerError('Failed to update linked bases');
     }
   }
 }

@@ -6,13 +6,13 @@
  *   node scripts/addMigration.js add my feature
  *
  * Output:
- *   Creates: packages/nocodb/src/meta/migrations/v0/nc_YYYYMMDDHHmm_add_my_feature.ts
+ *   Creates: packages/atmosphere/src/meta/migrations/v0/atm_YYYYMMDDHHmm_add_my_feature.ts
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const migrationPath = path.join(__dirname, '../packages/nocodb/src/meta/migrations/v0');
+const migrationPath = path.join(__dirname, '../packages/atmosphere/src/meta/migrations/v0');
 
 const toSnakeCase = (str) => {
   return str
@@ -53,7 +53,7 @@ export { up, down };
 const createMigration = (title) => {
   const timestamp = generateTimestamp();
   const snakeTitle = toSnakeCase(title);
-  const filename = `nc_${timestamp}_${snakeTitle}.ts`;
+  const filename = `atm_${timestamp}_${snakeTitle}.ts`;
   const filepath = path.join(migrationPath, filename);
 
   // Create the migration file
@@ -72,7 +72,7 @@ if (args.length === 0) {
   console.error('❌ Error: Migration title is required\n');
   console.log('Usage: node addMigration <Title>');
   console.log('Example: node addMigration Add My Feature');
-  console.log('  → generates nc_YYYYMMDDHHmm_add_my_feature.ts\n');
+  console.log('  → generates atm_YYYYMMDDHHmm_add_my_feature.ts\n');
   process.exit(1);
 }
 

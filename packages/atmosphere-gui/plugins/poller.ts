@@ -1,4 +1,4 @@
-import type { Api as BaseAPI } from 'nocodb-sdk'
+import type { Api as BaseAPI } from 'atmosphere-sdk'
 import { JobStatus } from '~/lib/enums'
 
 const pollPlugin = async (nuxtApp) => {

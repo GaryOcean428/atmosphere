@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnType } from 'nocodb-sdk'
-import { isSystemColumn } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
+import { isSystemColumn } from 'atmosphere-sdk'
 import { NavigateDir } from '#imports'
 
 interface Props {
@@ -79,7 +79,7 @@ const { currentRow, state } = useSmartsheetRowStoreOrThrow()
 
 const baseStore = useBase()
 
-const { generatingRows, generatingColumns } = useNocoAi()
+const { generatingRows, generatingColumns } = useAtmosphereAi()
 
 const { showNull } = useGlobal()
 
@@ -327,10 +327,10 @@ const showLockedOverlay = computed(() => {
 })
 
 const cellClassName = computed(() => {
-  let className = `nc-cell-${(column.value?.uidt || 'default').toLowerCase()}`
+  let className = `atm-cell-${(column.value?.uidt || 'default').toLowerCase()}`
 
   if (isPrimaryCol.value && !props.virtual && !isForm.value && !isCalendar.value) {
-    className += ' nc-display-value-cell'
+    className += ' atm-display-value-cell'
   }
 
   if (
@@ -342,7 +342,7 @@ const cellClassName = computed(() => {
     cellType.value !== 'rating' &&
     cellType.value !== 'yearPicker'
   ) {
-    className += ' nc-grid-numeric-cell-right'
+    className += ' atm-grid-numeric-cell-right'
   }
 
   if (
@@ -357,7 +357,7 @@ const cellClassName = computed(() => {
   }
 
   if ((isForm.value && isNumericField.value && isExpandedFormOpen.value) || isEditColumnMenu.value) {
-    className += ' nc-grid-numeric-cell-left'
+    className += ' atm-grid-numeric-cell-left'
   }
 
   if (cellType.value === 'textarea' && (isForm.value || isSurveyForm.value) && !isUnderLTAR.value && !isUnderLookup.value) {
@@ -365,7 +365,7 @@ const cellClassName = computed(() => {
   }
 
   if (cellType.value === 'ai') {
-    className += ' nc-cell-longtext-ai'
+    className += ' atm-cell-longtext-ai'
   }
 
   return className
@@ -374,19 +374,19 @@ const cellClassName = computed(() => {
 
 <template>
   <div
-    :class="[cellClassName, { 'nc-under-ltar': isUnderLTAR }]"
-    class="nc-cell w-full h-full relative"
+    :class="[cellClassName, { 'atm-under-ltar': isUnderLTAR }]"
+    class="atm-cell w-full h-full relative"
     @contextmenu="onContextmenu"
     @keydown.enter.exact="navigate(NavigateDir.NEXT, $event)"
     @keydown.shift.enter.exact="navigate(NavigateDir.PREV, $event)"
   >
     <template v-if="column">
-      <div v-if="isGenerating" class="nc-cell-field flex items-center gap-2 w-full">
+      <div v-if="isGenerating" class="atm-cell-field flex items-center gap-2 w-full">
         <GeneralLoader />
-        <NcTooltip class="truncate max-w-[calc(100%_-_24px)]" show-on-truncate-only>
+        <AtTooltip class="truncate max-w-[calc(100%_-_24px)]" show-on-truncate-only>
           <template #title> {{ $t('general.generating') }} </template>
           {{ $t('general.generating') }}
-        </NcTooltip>
+        </AtTooltip>
       </div>
       <CellNull v-else-if="showNullComponent" />
       <CellAI v-else-if="cellType === 'ai'" v-model="vModel" @save="emitSave" />
@@ -530,33 +530,33 @@ const cellClassName = computed(() => {
         <CellTextEditor v-else v-model="vModel" />
       </template>
 
-      <div v-if="showLockedOverlay" class="nc-locked-overlay" />
+      <div v-if="showLockedOverlay" class="atm-locked-overlay" />
     </template>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-grid-numeric-cell-left {
+.atm-grid-numeric-cell-left {
   text-align: left;
   :deep(input) {
     text-align: left;
   }
 }
-.nc-grid-numeric-cell-right {
+.atm-grid-numeric-cell-right {
   text-align: right;
   :deep(input) {
     text-align: right;
   }
 }
 
-.nc-cell {
-  @apply text-sm text-nc-content-gray-subtle2;
+.atm-cell {
+  @apply text-sm text-atm-content-gray-subtle2;
   font-weight: 500;
 
-  :deep(.nc-cell-field),
+  :deep(.atm-cell-field),
   :deep(input),
   :deep(textarea),
-  :deep(.nc-cell-field-link) {
+  :deep(.atm-cell-field-link) {
     &:not(.ant-select-selection-search-input) {
       @apply !text-sm;
       font-weight: 500;
@@ -565,22 +565,22 @@ const cellClassName = computed(() => {
 
   :deep(input::placeholder),
   :deep(textarea::placeholder) {
-    @apply text-nc-content-gray-disabled;
+    @apply text-atm-content-gray-disabled;
     font-weight: 300;
   }
 
-  &.nc-display-value-cell {
-    @apply !text-nc-content-brand !font-semibold;
+  &.atm-display-value-cell {
+    @apply !text-atm-content-brand !font-semibold;
 
-    :deep(.nc-cell-field),
+    :deep(.atm-cell-field),
     :deep(input),
     :deep(textarea),
-    :deep(.nc-cell-field-link) {
+    :deep(.atm-cell-field-link) {
       @apply !font-semibold;
     }
   }
 
-  &.nc-cell-longtext {
+  &.atm-cell-longtext {
     @apply leading-5;
   }
 
@@ -594,11 +594,11 @@ const cellClassName = computed(() => {
     }
   }
 
-  :deep(.nc-cell-field) {
+  :deep(.atm-cell-field) {
     @apply px-0;
   }
 
-  &:has(.nc-currency-code) {
+  &:has(.atm-currency-code) {
     @apply !py-0 !pl-0 flex items-stretch;
   }
 }

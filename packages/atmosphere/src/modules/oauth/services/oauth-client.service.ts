@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { NcContext, NcRequest } from 'nocodb-sdk';
+import type { AtContext, AtRequest } from 'atmosphere-sdk';
 import type {
   CreateOAuthClientDto,
   UpdateOAuthClientDto,
@@ -9,13 +9,13 @@ import {
   UpdateOAuthClientSchema,
 } from '~/modules/oauth/dto';
 import { OAuthAuthorizationCode, OAuthClient, OAuthToken } from '~/models';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 @Injectable()
 export class OauthClientService {
-  async listClients(context: NcContext, req: NcRequest) {
+  async listClients(context: AtContext, req: AtRequest) {
     if (!req.user?.id) {
-      NcError.get(context).badRequest('User not found');
+      AtError.get(context).badRequest('User not found');
     }
     const clients = await OAuthClient.list(req.user.id);
 
@@ -28,37 +28,37 @@ export class OauthClientService {
   }
 
   async getClient(
-    context: NcContext,
+    context: AtContext,
     {
       clientId,
       req,
     }: {
       clientId: string;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     if (!clientId || !req.user?.id) {
-      NcError.get(context).badRequest('Client ID or user not found');
+      AtError.get(context).badRequest('Client ID or user not found');
     }
 
     const client = await OAuthClient.getByClientId(clientId);
 
     if (!clientId || client.fk_user_id !== req.user.id) {
-      NcError.get(context).notFound(clientId);
+      AtError.get(context).notFound(clientId);
     }
 
     return client;
   }
 
   async createClient(
-    context: NcContext,
+    context: AtContext,
     body: CreateOAuthClientDto,
-    req: NcRequest,
+    req: AtRequest,
   ) {
     const validatedBody = CreateOAuthClientSchema.safeParse(body);
 
     if (validatedBody.error) {
-      NcError.get(context).zodError({
+      AtError.get(context).zodError({
         message: 'Request body is invalid',
         errors: validatedBody.error,
       });
@@ -70,7 +70,7 @@ export class OauthClientService {
   }
 
   async updateClient(
-    context: NcContext,
+    context: AtContext,
     {
       clientId,
       body,
@@ -78,13 +78,13 @@ export class OauthClientService {
     }: {
       clientId: string;
       body: UpdateOAuthClientDto;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const validatedBody = UpdateOAuthClientSchema.safeParse(body);
 
     if (validatedBody.error) {
-      NcError.get(context).zodError({
+      AtError.get(context).zodError({
         message: 'Request body is invalid',
         errors: validatedBody.error,
       });
@@ -93,15 +93,15 @@ export class OauthClientService {
     const client = await OAuthClient.getByClientId(clientId);
 
     if (!client || client.fk_user_id !== req.user.id) {
-      NcError.get(context).apiClientNotFound(clientId);
+      AtError.get(context).apiClientNotFound(clientId);
     }
 
     return await OAuthClient.update(clientId, body);
   }
 
   async deleteClient(
-    context: NcContext,
-    { clientId, req }: { clientId: string; req: NcRequest },
+    context: AtContext,
+    { clientId, req }: { clientId: string; req: AtRequest },
   ) {
     await this.getClient(context, {
       clientId,
@@ -116,8 +116,8 @@ export class OauthClientService {
   }
 
   async regenerateClientSecret(
-    context: NcContext,
-    { clientId, req }: { clientId: string; req: NcRequest },
+    context: AtContext,
+    { clientId, req }: { clientId: string; req: AtRequest },
   ) {
     const client = await this.getClient(context, {
       clientId,
@@ -125,11 +125,11 @@ export class OauthClientService {
     });
 
     if (!client || client.fk_user_id !== req.user.id) {
-      NcError.get(context).apiClientNotFound(clientId);
+      AtError.get(context).apiClientNotFound(clientId);
     }
 
     if (client.client_type !== 'confidential') {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Only confidential clients can have secrets',
       );
     }

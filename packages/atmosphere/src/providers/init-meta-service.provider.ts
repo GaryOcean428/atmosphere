@@ -1,18 +1,18 @@
-import { NcDebug } from 'nc-gui/utils/debug';
+import { AtDebug } from 'atmosphere-gui/utils/debug';
 import type { FactoryProvider } from '@nestjs/common';
 import type { IEventEmitter } from '~/modules/event-emitter/event-emitter.interface';
 import { verifyDefaultWorkspace } from '~/helpers/verifyDefaultWorkspace';
 import { isEE, T } from '~/utils';
 import { populatePluginsForCloud } from '~/utils/cloud/populateCloudPlugins';
 import { MetaService } from '~/meta/meta.service';
-import Noco from '~/Noco';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
-import NcUpgrader from '~/version-upgrader/NcUpgrader';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
+import AtUpgrader from '~/version-upgrader/AtUpgrader';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import getInstance from '~/utils/getInstance';
 import initAdminFromEnv from '~/helpers/initAdminFromEnv';
 import { User } from '~/models';
-import { NcConfig, prepareEnv } from '~/utils/nc-config';
+import { AtConfig, prepareEnv } from '~/utils/atm-config';
 import { MetaTable, RootScopes } from '~/utils/globals';
 import { updateMigrationJobsState } from '~/helpers/migrationJobs';
 import { initBaseBehavior } from '~/helpers/initBaseBehaviour';
@@ -23,7 +23,7 @@ export const InitMetaServiceProvider: FactoryProvider = {
   // initialize app,
   // 1. init cache
   // 2. init db connection and create if not exist
-  // 3. init meta and set to Noco
+  // 3. init meta and set to Atmosphere
   // 4. init jwt
   // 5. init plugin manager
   // 6. run upgrader
@@ -31,26 +31,26 @@ export const InitMetaServiceProvider: FactoryProvider = {
     eventEmitter: IEventEmitter,
     appHooksService: AppHooksService,
   ) => {
-    // NC_DATABASE_URL_FILE, DATABASE_URL_FILE, DATABASE_URL, NC_DATABASE_URL to NC_DB
+    // ATMOSPHERE_DATABASE_URL_FILE, DATABASE_URL_FILE, DATABASE_URL, ATMOSPHERE_DATABASE_URL to ATMOSPHERE_DB
     await prepareEnv();
 
-    const config = await NcConfig.createByEnv();
-    NcDebug.log('Config prepared using environment variables');
+    const config = await AtConfig.createByEnv();
+    AtDebug.log('Config prepared using environment variables');
 
     // set version
-    process.env.NC_VERSION = '0258003';
+    process.env.ATMOSPHERE_VERSION = '0258003';
 
     // set migration jobs version
-    process.env.NC_MIGRATION_JOBS_VERSION = '14';
+    process.env.ATMOSPHERE_MIGRATION_JOBS_VERSION = '14';
 
     // init cache
-    await NocoCache.init();
-    NcDebug.log('Cache initialized');
+    await AtmosphereCache.init();
+    AtDebug.log('Cache initialized');
 
     // init meta service
     const metaService = new MetaService(config);
 
-    // check if nc_store exists
+    // check if atm_store exists
     const ncStoreExists = await metaService.knexConnection.schema.hasTable(
       MetaTable.STORE,
     );
@@ -62,18 +62,18 @@ export const InitMetaServiceProvider: FactoryProvider = {
           RootScopes.ROOT,
           MetaTable.STORE,
           {
-            key: 'NC_CONFIG_MAIN',
+            key: 'ATMOSPHERE_CONFIG_MAIN',
           },
         )
       : null;
 
-    // Avoid upgrading directly from versions lower than 0100002 (NC_VERSION)
+    // Avoid upgrading directly from versions lower than 0100002 (ATMOSPHERE_VERSION)
     if (instanceConfig) {
-      const configObj: NcConfig = JSON.parse(instanceConfig.value);
+      const configObj: AtConfig = JSON.parse(instanceConfig.value);
 
       if (+configObj.version < 100002) {
         throw new Error(
-          `You are trying to upgrade from an old version of NocoDB. Please upgrade to 0.207.3 first and then you can upgrade to the latest version.`,
+          `You are trying to upgrade from an old version of Atmosphere. Please upgrade to 0.207.3 first and then you can upgrade to the latest version.`,
         );
       }
     } else {
@@ -81,7 +81,7 @@ export const InitMetaServiceProvider: FactoryProvider = {
       const isOld = (await metaService.legacyProjectList())?.length;
       if (isOld) {
         throw new Error(
-          `You are trying to upgrade from an old version of NocoDB. Please upgrade to 0.207.3 first and then you can upgrade to the latest version.`,
+          `You are trying to upgrade from an old version of Atmosphere. Please upgrade to 0.207.3 first and then you can upgrade to the latest version.`,
         );
       }
     }
@@ -96,64 +96,64 @@ export const InitMetaServiceProvider: FactoryProvider = {
       'xc_knex_migrationsv3',
     );
 
-    Noco.firstEeLoad =
+    Atmosphere.firstEeLoad =
       isEE && !v0TableExists && v2TableExists && !v3TableExists;
 
     await metaService.init();
 
-    NcDebug.log('Meta service initialized');
+    AtDebug.log('Meta service initialized');
 
-    // provide meta and config to Noco
-    Noco._ncMeta = metaService;
-    Noco.appHooksService = appHooksService;
-    Noco.config = config;
-    Noco.eventEmitter = eventEmitter;
+    // provide meta and config to Atmosphere
+    Atmosphere._ncMeta = metaService;
+    Atmosphere.appHooksService = appHooksService;
+    Atmosphere.config = config;
+    Atmosphere.eventEmitter = eventEmitter;
 
-    await Noco.prepareAuditService();
-    await Noco.prepareChatMessagesService();
-    await Noco.prepareDocsContentService();
-    await Noco.prepareOperationLogsService();
+    await Atmosphere.prepareAuditService();
+    await Atmosphere.prepareChatMessagesService();
+    await Atmosphere.prepareDocsContentService();
+    await Atmosphere.prepareOperationLogsService();
 
     if (!instanceConfig) {
-      NcDebug.log('Inserting instance config');
+      AtDebug.log('Inserting instance config');
       // bump to latest version for fresh install
       await updateMigrationJobsState({
-        version: process.env.NC_MIGRATION_JOBS_VERSION,
+        version: process.env.ATMOSPHERE_MIGRATION_JOBS_VERSION,
       });
-      NcDebug.log('Migration jobs state updated');
+      AtDebug.log('Migration jobs state updated');
     }
 
     // init jwt secret
-    await Noco.initJwt();
-    NcDebug.log('JWT initialized');
+    await Atmosphere.initJwt();
+    AtDebug.log('JWT initialized');
 
     // load super admin user from env if env is set
     await initAdminFromEnv(metaService);
-    NcDebug.log('Admin user from environment initialized');
-    await Noco.loadEEState();
+    AtDebug.log('Admin user from environment initialized');
+    await Atmosphere.loadEEState();
 
-    if (process.env.NC_LICENSE_KEY) {
+    if (process.env.ATMOSPHERE_LICENSE_KEY) {
       try {
-        await populatePluginsForCloud({ ncMeta: Noco.ncMeta });
-        NcDebug.log('Cloud plugins initialized from env');
+        await populatePluginsForCloud({ ncMeta: Atmosphere.ncMeta });
+        AtDebug.log('Cloud plugins initialized from env');
       } catch (e) {
-        if (process.env.NC_CLOUD === 'true') throw e;
+        if (process.env.ATMOSPHERE_CLOUD === 'true') throw e;
         console.error('Plugin init failed', e?.message);
       }
     }
 
-    NcDebug.log('Upgrader starting');
+    AtDebug.log('Upgrader starting');
     // run upgrader
-    await NcUpgrader.upgrade({ ncMeta: Noco._ncMeta });
-    NcDebug.log('Upgrader finished');
+    await AtUpgrader.upgrade({ ncMeta: Atmosphere._ncMeta });
+    AtDebug.log('Upgrader finished');
 
     // init plugin manager
-    await NcPluginMgrv2.init(Noco.ncMeta);
-    NcDebug.log('Plugin manager initialized');
+    await AtPluginMgrv2.init(Atmosphere.ncMeta);
+    AtDebug.log('Plugin manager initialized');
 
-    if (process.env.NC_CLOUD === 'true') {
+    if (process.env.ATMOSPHERE_CLOUD === 'true') {
       try {
-        await populatePluginsForCloud({ ncMeta: Noco.ncMeta });
+        await populatePluginsForCloud({ ncMeta: Atmosphere.ncMeta });
       } catch (e) {
         if (process.env.NODE_ENV !== 'test') throw e;
       }
@@ -165,11 +165,11 @@ export const InitMetaServiceProvider: FactoryProvider = {
 
     // decide base behavior based on env and database permissions
     await initBaseBehavior();
-    NcDebug.log('Base behavior initialized');
+    AtDebug.log('Base behavior initialized');
 
     // encrypt datasource if secret is set
     await initDataSourceEncryption(metaService);
-    NcDebug.log('Datasource encryption initialized');
+    AtDebug.log('Datasource encryption initialized');
 
     await verifyDefaultWorkspace();
 

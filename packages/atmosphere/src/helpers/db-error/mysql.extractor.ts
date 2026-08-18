@@ -1,4 +1,4 @@
-import { NcErrorType } from 'nocodb-sdk';
+import { AtErrorType } from 'atmosphere-sdk';
 import { DBError } from './utils';
 import type { Logger } from '@nestjs/common';
 import type { DBErrorExtractResult, IClientDbErrorExtractor } from './utils';
@@ -186,7 +186,7 @@ export class MysqlDBErrorExtractor implements IClientDbErrorExtractor {
     }
 
     return {
-      error: NcErrorType.ERR_DATABASE_OP_FAILED,
+      error: AtErrorType.ERR_DATABASE_OP_FAILED,
       message,
       code: error.code,
       httpStatus,

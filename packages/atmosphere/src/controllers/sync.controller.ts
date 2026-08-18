@@ -15,7 +15,7 @@ import { SyncService } from '~/services/sync.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -30,7 +30,7 @@ export class SyncController {
   ])
   @Acl('syncSourceList')
   async syncSourceList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Param('sourceId') sourceId?: string,
   ) {
@@ -49,10 +49,10 @@ export class SyncController {
   @HttpCode(200)
   @Acl('syncSourceCreate')
   async syncCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Body() body: any,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('sourceId') sourceId?: string,
   ) {
     return await this.syncService.syncCreate(context, {
@@ -67,9 +67,9 @@ export class SyncController {
   @Delete(['/api/v1/db/meta/syncs/:syncId', '/api/v2/meta/syncs/:syncId'])
   @Acl('syncSourceDelete')
   async syncDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('syncId') syncId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.syncService.syncDelete(context, {
       syncId: syncId,
@@ -80,10 +80,10 @@ export class SyncController {
   @Patch(['/api/v1/db/meta/syncs/:syncId', '/api/v2/meta/syncs/:syncId'])
   @Acl('syncSourceUpdate')
   async syncUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('syncId') syncId: string,
     @Body() body: any,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.syncService.syncUpdate(context, {
       syncId: syncId,

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 useProjectsShortcuts()
 
-useSidebar('nc-left-sidebar')
+useSidebar('atm-left-sidebar')
 </script>
 
 <template>
-  <div class="h-full w-full nc-container">
+  <div class="h-full w-full atm-container">
     <div class="h-full w-full flex flex-col">
       <div class="w-full min-h-[300px] flex-auto">
         <NuxtPage />
@@ -15,7 +15,7 @@ useSidebar('nc-left-sidebar')
 </template>
 
 <style scoped lang="scss">
-.nc-container {
+.atm-container {
   height: 100vh;
   flex: 1 1 100%;
 
@@ -24,12 +24,12 @@ useSidebar('nc-left-sidebar')
   }
 }
 
-:deep(.nc-root-tabs) {
+:deep(.atm-root-tabs) {
   & > .ant-tabs-nav {
     @apply !mb-0 before:(!border-b-0);
 
     .ant-tabs-extra-content {
-      @apply !bg-nc-bg-default/0;
+      @apply !bg-atm-bg-default/0;
     }
 
     .ant-tabs-nav-add {
@@ -53,7 +53,7 @@ useSidebar('nc-left-sidebar')
       }
 
       & > .ant-tabs-tab-active {
-        @apply relative bg-nc-bg-default w-full h-full overflow-y-visible;
+        @apply relative bg-atm-bg-default w-full h-full overflow-y-visible;
 
         border-top: 1px solid white;
         border-left: 1px solid white;
@@ -66,7 +66,7 @@ useSidebar('nc-left-sidebar')
       }
 
       & > .ant-tabs-tab:not(.ant-tabs-tab-active) {
-        @apply bg-nc-bg-gray-extralight text-nc-content-gray-muted;
+        @apply bg-atm-bg-gray-extralight text-atm-content-gray-muted;
 
         .ant-tabs-tab-remove {
           @apply !text-default;
@@ -86,8 +86,8 @@ useSidebar('nc-left-sidebar')
   @apply !border-none;
 }
 
-.nc-tab-bar {
-  @apply border-nc-border-gray-medium !bg-nc-bg-gray-extralight relative z-1;
+.atm-tab-bar {
+  @apply border-atm-border-gray-medium !bg-atm-bg-gray-extralight relative z-1;
 
   :deep(.ant-tabs-tab-remove) {
     @apply flex mt-[2px];

@@ -40,7 +40,7 @@ export function useSortable(
   // todo: replace with vuedraggable
   const initSortable = (el: HTMLElement) => {
     sortable = new Sortable(el, {
-      handle: '.nc-attachment',
+      handle: '.atm-attachment',
       ghostClass: 'ghost',
       animation: 70,
       onStart: onSortStart,

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import type { NcApiVersion, NcRequest } from 'nocodb-sdk';
+import type { AtApiVersion, AtRequest } from 'atmosphere-sdk';
 import type { PathParams } from '~/helpers/dataHelpers';
 import type { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import {
   getViewAndModelByAliasOrId,
   validateV1V2DataPayloadLimit,
 } from '~/helpers/dataHelpers';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { Model, Source } from '~/models';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
@@ -22,7 +22,7 @@ type BulkOperation =
 
 @Injectable()
 export class BulkDataAliasService {
-  async getModelViewBase(context: NcContext, param: PathParams) {
+  async getModelViewBase(context: AtContext, param: PathParams) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
 
     const source = await Source.get(context, model.source_id);
@@ -30,7 +30,7 @@ export class BulkDataAliasService {
   }
 
   async executeBulkOperation<T extends BulkOperation>(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       operation: T;
       options: Parameters<(typeof BaseModelSqlv2.prototype)[T]>;
@@ -40,7 +40,7 @@ export class BulkDataAliasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
     return await baseModel[param.operation].apply(null, param.options);
   }
@@ -48,10 +48,10 @@ export class BulkDataAliasService {
   // todo: Integrate with filterArrJson bulkDataUpdateAll
   @TraceCommand(OperationName.recordBulkInsert)
   async bulkDataInsert(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       body: any;
-      cookie: NcRequest;
+      cookie: AtRequest;
       chunkSize?: number;
       foreign_key_checks?: boolean;
       skip_hooks?: boolean;
@@ -88,13 +88,13 @@ export class BulkDataAliasService {
   // todo: Integrate with filterArrJson bulkDataUpdateAll
   @TraceCommand(OperationName.recordBulkUpdate)
   async bulkDataUpdate(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       body: any;
-      cookie: NcRequest;
+      cookie: AtRequest;
       raw?: boolean;
       allowSystemColumn?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
     },
   ) {
     validateV1V2DataPayloadLimit(context, param);
@@ -117,10 +117,10 @@ export class BulkDataAliasService {
 
   // todo: Integrate with filterArrJson bulkDataUpdateAll
   async bulkDataUpdateAll(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       body: any;
-      cookie: NcRequest;
+      cookie: AtRequest;
       query: any;
       internalFlags?: {
         skipHooks?: boolean;
@@ -145,10 +145,10 @@ export class BulkDataAliasService {
 
   @TraceCommand(OperationName.recordBulkDelete)
   async bulkDataDelete(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       body: any;
-      cookie: NcRequest;
+      cookie: AtRequest;
       internalFlags?: {
         allowSystemColumn?: boolean;
       };
@@ -171,10 +171,10 @@ export class BulkDataAliasService {
 
   // todo: Integrate with filterArrJson bulkDataDeleteAll
   async bulkDataDeleteAll(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       query: any;
-      req: NcRequest;
+      req: AtRequest;
       internalFlags?: {
         skipHooks?: boolean;
       };
@@ -192,10 +192,10 @@ export class BulkDataAliasService {
 
   @TraceCommand(OperationName.recordBulkUpsert)
   async bulkDataUpsert(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       body: any;
-      cookie: NcRequest;
+      cookie: AtRequest;
       undo: boolean;
     },
   ) {

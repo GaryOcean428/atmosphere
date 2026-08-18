@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 await generateApi({
-  input: resolve(__dirname, '../../nocodb/src/schema/swagger-v3.json'),
+  input: resolve(__dirname, '../../atmosphere/src/schema/swagger-v3.json'),
   output: resolve(cwd(), 'src/lib'),
   apiClassName: 'InternalApi',
   unwrapResponseData: true,

@@ -2,17 +2,17 @@ import path from 'path';
 import fs from 'fs';
 import mime from 'mime/lite';
 import slash from 'slash';
-import { PublicAttachmentScope } from 'nocodb-sdk';
+import { PublicAttachmentScope } from 'atmosphere-sdk';
 import { nanoid } from 'nanoid';
 import moment from 'dayjs';
 import hash from 'object-hash';
 import type { Response } from 'express';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { Column } from '~/models';
 import type { AttachmentsService } from '~/services/attachments.service';
-import { getToolDir } from '~/utils/nc-config';
-import { NcError } from '~/helpers/catchError';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import { getToolDir } from '~/utils/atm-config';
+import { AtError } from '~/helpers/catchError';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import { PresignedUrl } from '~/models';
 import { isSecureAttachmentEnabled } from '~/utils';
 
@@ -137,7 +137,7 @@ export function validateAndNormaliseLocalPath(
   const toolDir = getToolDir();
 
   // Get the absolute path to the base directory
-  const absoluteBasePath = path.resolve(toolDir, 'nc');
+  const absoluteBasePath = path.resolve(toolDir, 'atm');
 
   // Get the absolute path to the file
   const absolutePath = path.resolve(
@@ -146,7 +146,7 @@ export function validateAndNormaliseLocalPath(
 
   // Check if the resolved path is within the intended directory
   // Split by separator and rejoin for equivalence to prevent prefix bypass
-  // e.g. /app/data/nc_minimal_dbs would incorrectly pass startsWith('/app/data/nc')
+  // e.g. /app/data/atm_minimal_dbs would incorrectly pass startsWith('/app/data/atm')
   const baseParts = absoluteBasePath.split(path.sep);
   const targetPrefix = absolutePath
     .split(path.sep)
@@ -155,9 +155,9 @@ export function validateAndNormaliseLocalPath(
 
   if (targetPrefix !== absoluteBasePath) {
     if (throw404) {
-      NcError.notFound();
+      AtError.notFound();
     } else {
-      NcError.badRequest('Invalid path');
+      AtError.badRequest('Invalid path');
     }
   }
 
@@ -168,7 +168,7 @@ export function getPathFromUrl(url: string, removePrefix = false) {
   const newUrl = new URL(encodeURI(url));
 
   const pathName = removePrefix
-    ? newUrl.pathname.replace(/.*?nc\/uploads\//, '')
+    ? newUrl.pathname.replace(/.*?atm\/uploads\//, '')
     : newUrl.pathname;
 
   return decodeURI(`${pathName}${newUrl.search}${newUrl.hash}`);
@@ -180,7 +180,7 @@ export function resolveAttachmentFilePath(attachment: {
 }): string {
   if (attachment.path) {
     return path.join(
-      'nc',
+      'atm',
       'uploads',
       attachment.path.replace(/^download[/\\]/i, ''),
     );
@@ -207,7 +207,7 @@ export const ATTACHMENT_ROOTS = [
 ];
 
 export const validateNumberOfFilesInCell = async (
-  _context: NcContext,
+  _context: AtContext,
   _number: number,
   _column: Column,
 ) => {};
@@ -245,7 +245,7 @@ export interface AttachmentFilePathConstructed {
 }
 
 export const constructFilePath = (
-  context: NcContext,
+  context: AtContext,
   param: {
     fileName: string;
     originalFileName: string;
@@ -257,7 +257,7 @@ export const constructFilePath = (
   let filePath = path.join(
     ...[
       // somehow, even in production gui upload doesn't use workspace id
-      'noco', // context.workspace_id,
+      'atmosphere', // context.workspace_id,
       context.base_id,
       param.modelId,
       param.columnId,
@@ -271,7 +271,7 @@ export const constructFilePath = (
     filePath = `${moment().format('YYYY/MM/DD')}/${hash(context.user.id)}`;
   }
 
-  const destPath = path.join(...['nc', param.scope ?? 'uploads', filePath]);
+  const destPath = path.join(...['atm', param.scope ?? 'uploads', filePath]);
 
   return {
     workspaceId: context.workspace_id,
@@ -290,7 +290,7 @@ export const constructFilePath = (
 // path.join normalises ".." but doesn't prevent escape — verify explicitly.
 export function sanitizeAttachmentStoragePath(joined: string): string {
   const resolved = path.resolve(joined);
-  const base = path.resolve('nc', 'uploads');
+  const base = path.resolve('atm', 'uploads');
   if (!resolved.startsWith(base + path.sep) && resolved !== base) {
     throw new Error('Invalid attachment path');
   }
@@ -315,7 +315,7 @@ export async function serveStoredAttachment(
   fileUrl: string,
   opts: ServeStoredAttachmentOptions,
 ): Promise<void | Response> {
-  const storageAdapter = await NcPluginMgrv2.storageAdapter();
+  const storageAdapter = await AtPluginMgrv2.storageAdapter();
   const isExternalStorage =
     typeof (storageAdapter as any).getSignedUrl === 'function';
   const isUrl = /^https?:\/\//i.test(fileUrl);
@@ -342,7 +342,7 @@ export async function serveStoredAttachment(
 
   try {
     const file = await opts.attachmentsService.getFile({
-      path: sanitizeAttachmentStoragePath(path.join('nc', 'uploads', stripped)),
+      path: sanitizeAttachmentStoragePath(path.join('atm', 'uploads', stripped)),
     });
 
     if (!(await localFileExists(file.path))) {

@@ -1,10 +1,10 @@
-import { PlanLimitTypes } from 'nocodb-sdk';
+import { PlanLimitTypes } from 'atmosphere-sdk';
 import { Logger } from '@nestjs/common';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { CacheScope, MetaTable } from '~/utils/globals';
 import { extractProps } from '~/helpers/extractProps';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 
 const logger = new Logger('FileReference');
 
@@ -35,9 +35,9 @@ export default class FileReference {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     fileRefObj: Partial<FileReference>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(fileRefObj, [
       'id',
@@ -77,9 +77,9 @@ export default class FileReference {
    * avoid N sequential inserts when a cell contains many attachments.
    */
   public static async bulkInsert(
-    context: NcContext,
+    context: AtContext,
     fileRefObjs: Partial<FileReference>[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<{ id: string }[]> {
     if (!fileRefObjs?.length) return [];
 
@@ -123,10 +123,10 @@ export default class FileReference {
 
   // used when url downloaded
   public static async updateById(
-    context: NcContext,
+    context: AtContext,
     id: string,
     fileRefObj: Partial<FileReference>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(fileRefObj, [
       'storage',
@@ -161,9 +161,9 @@ export default class FileReference {
   }
 
   public static async delete(
-    context: NcContext,
+    context: AtContext,
     fileReferenceId: string | string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (
       !fileReferenceId ||
@@ -217,7 +217,7 @@ export default class FileReference {
   }
 
   public static async bulkDelete(
-    context: NcContext,
+    context: AtContext,
     condition: {
       workspace_id?: string;
       base_id?: string;
@@ -225,7 +225,7 @@ export default class FileReference {
       fk_column_id?: string;
       fk_doc_id?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let fileReferencesSize = 0;
 
@@ -259,9 +259,9 @@ export default class FileReference {
    * Physical files preserved; excluded from workspace storage count.
    */
   public static async softDelete(
-    context: NcContext,
+    context: AtContext,
     fileReferenceId: string | string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (
       !fileReferenceId ||
@@ -309,9 +309,9 @@ export default class FileReference {
    * Re-counted in workspace storage.
    */
   public static async softRestore(
-    context: NcContext,
+    context: AtContext,
     fileReferenceId: string | string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (
       !fileReferenceId ||
@@ -358,13 +358,13 @@ export default class FileReference {
    * Restore soft-deleted file references by condition (parent record restored from trash).
    */
   public static async bulkSoftRestore(
-    context: NcContext,
+    context: AtContext,
     condition: {
       fk_model_id?: string;
       fk_column_id?: string;
       fk_doc_id?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let fileReferencesSize = 0;
 
@@ -396,7 +396,7 @@ export default class FileReference {
     await this.updateWorkspaceCache(context, fileReferencesSize, false);
   }
 
-  public static async get(context: NcContext, id: any, ncMeta = Noco.ncMeta) {
+  public static async get(context: AtContext, id: any, ncMeta = Atmosphere.ncMeta) {
     const fileReferenceData = await ncMeta.metaGet2(
       context.workspace_id,
       context.base_id,
@@ -412,9 +412,9 @@ export default class FileReference {
    * reconcile to validate pre-existing IDs without N round-trips.
    */
   public static async listByIds(
-    context: NcContext,
+    context: AtContext,
     ids: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<FileReference[]> {
     if (!ids?.length) return [];
     const rows = await ncMeta
@@ -426,18 +426,18 @@ export default class FileReference {
   }
 
   public static async updateWorkspaceCache(
-    context: NcContext,
+    context: AtContext,
     size: number,
     decrement: boolean = false,
   ) {
     if (context.workspace_id) {
       if (size === -1) {
-        await NocoCache.del(
+        await AtmosphereCache.del(
           'root',
           `${CacheScope.STORAGE_STATS}:workspace:${context.workspace_id}`,
         );
       } else {
-        await NocoCache.incrHashField(
+        await AtmosphereCache.incrHashField(
           'root',
           `${CacheScope.STORAGE_STATS}:workspace:${context.workspace_id}`,
           PlanLimitTypes.LIMIT_STORAGE_PER_WORKSPACE,
@@ -452,9 +452,9 @@ export default class FileReference {
    * snapshots so reconcile only diffs against what's currently embedded.
    */
   public static async listIdsForDoc(
-    context: NcContext,
+    context: AtContext,
     docId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<string[]> {
     const rows = await ncMeta
       .knexConnection(MetaTable.FILE_REFERENCES)
@@ -476,9 +476,9 @@ export default class FileReference {
    * without parsing the driver-returned timestamp in JS.
    */
   public static async listIdRecordsForDoc(
-    context: NcContext,
+    context: AtContext,
     docId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
     createdBefore?: Date,
   ): Promise<{ id: string; created_at: Date }[]> {
     const qb = ncMeta
@@ -503,14 +503,14 @@ export default class FileReference {
    * Idempotent — safe on coalesce.
    */
   public static async syncSnapshotForRevision(
-    context: NcContext,
+    context: AtContext,
     params: {
       docId: string;
       revisionId: string;
       attachmentIds: string[];
       fkUserId?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     const uniqueIds = Array.from(new Set(params.attachmentIds ?? []));
 
@@ -577,10 +577,10 @@ export default class FileReference {
    * revision snapshot) references the given file_url.
    */
   public static async existsActiveByFileUrlInDoc(
-    context: NcContext,
+    context: AtContext,
     docId: string,
     fileUrl: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<boolean> {
     const row = await ncMeta
       .knexConnection(MetaTable.FILE_REFERENCES)
@@ -602,10 +602,10 @@ export default class FileReference {
    * a retried request must not create duplicate refs for the same node.
    */
   public static async getActiveIdByFileUrlInDoc(
-    context: NcContext,
+    context: AtContext,
     docId: string,
     fileUrl: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<string | null> {
     const row = await ncMeta
       .knexConnection(MetaTable.FILE_REFERENCES)
@@ -628,10 +628,10 @@ export default class FileReference {
    * after restore and the proxy 404s.
    */
   public static async reviveForDoc(
-    context: NcContext,
+    context: AtContext,
     docId: string,
     ids: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     if (!ids?.length) return;
 
@@ -662,9 +662,9 @@ export default class FileReference {
    * workspace cache update needed.
    */
   public static async bulkDeleteForRevisions(
-    context: NcContext,
+    context: AtContext,
     revisionIds: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     if (!revisionIds?.length) return;
 
@@ -681,16 +681,16 @@ export default class FileReference {
 
   /**
    * List non-deleted FileReference IDs for a SmartText cell (model + column + row).
-   * Uses nc_fr_row_idx (base_id, fk_column_id, fk_row_id).
+   * Uses atm_fr_row_idx (base_id, fk_column_id, fk_row_id).
    */
   /**
    * Active FileReference IDs for a comment's attachments. Used by the comment
    * attachment reconcile to soft-delete refs that were removed from the comment.
    */
   public static async listIdsForComment(
-    context: NcContext,
+    context: AtContext,
     commentId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<string[]> {
     const rows = await ncMeta
       .knexConnection(MetaTable.FILE_REFERENCES)
@@ -705,11 +705,11 @@ export default class FileReference {
   }
 
   public static async listIdsForCell(
-    context: NcContext,
+    context: AtContext,
     modelId: string,
     columnId: string,
     rowId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<string[]> {
     const rows = await ncMeta
       .knexConnection(MetaTable.FILE_REFERENCES)
@@ -729,14 +729,14 @@ export default class FileReference {
    * Bulk-delete FileReferences for SmartText cells when their parent rows are
    * deleted. Hard-deletes (matches the row-delete attachment cleanup contract
    * in BaseModelSqlv2/delete.ts which uses FileReference.delete, not soft).
-   * Uses nc_fr_row_idx (base_id, fk_column_id, fk_row_id).
+   * Uses atm_fr_row_idx (base_id, fk_column_id, fk_row_id).
    */
   public static async bulkDeleteForCells(
-    context: NcContext,
+    context: AtContext,
     modelId: string,
     columnIds: string[],
     rowIds: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (!columnIds.length || !rowIds.length) return;
 
@@ -782,11 +782,11 @@ export default class FileReference {
    * `soft_deleted` flag set, `deleted` left intact, physical files preserved.
    */
   public static async bulkSoftDeleteForCells(
-    context: NcContext,
+    context: AtContext,
     modelId: string,
     columnIds: string[],
     rowIds: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (!columnIds.length || !rowIds.length) return;
 
@@ -829,12 +829,12 @@ export default class FileReference {
 
   /**
    * Bulk soft-delete FileReferences for multiple docs in a single query.
-   * Uses nc_fr_doc_idx (base_id, fk_doc_id) with WHERE IN for doc tree cascade.
+   * Uses atm_fr_doc_idx (base_id, fk_doc_id) with WHERE IN for doc tree cascade.
    */
   public static async bulkDeleteForDocs(
-    context: NcContext,
+    context: AtContext,
     docIds: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (!docIds.length) return;
 
@@ -864,12 +864,12 @@ export default class FileReference {
 
   /**
    * Return all active FileReferences for a chat session.
-   * Uses nc_fr_session_idx (fk_workspace_id, fk_session_id).
+   * Uses atm_fr_session_idx (fk_workspace_id, fk_session_id).
    */
   public static async listBySessionId(
-    context: NcContext,
+    context: AtContext,
     sessionId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<FileReference[]> {
     const rows = await ncMeta
       .knexConnection(MetaTable.FILE_REFERENCES)
@@ -887,9 +887,9 @@ export default class FileReference {
    * Soft-delete all FileReferences for a chat session.
    */
   public static async bulkDeleteBySessionId(
-    context: NcContext,
+    context: AtContext,
     sessionId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let totalSize = 0;
 
@@ -923,7 +923,7 @@ export default class FileReference {
   }
 
   public static async sumSize(
-    context: NcContext,
+    context: AtContext,
     condition: {
       workspace_id?: string;
       base_id?: string;
@@ -931,7 +931,7 @@ export default class FileReference {
       fk_column_id?: string;
     },
     pkIn?: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const fileReferenceQb = ncMeta
       .knexConnection(MetaTable.FILE_REFERENCES)

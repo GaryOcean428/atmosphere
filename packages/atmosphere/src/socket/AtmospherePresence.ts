@@ -1,8 +1,8 @@
 import type { Server } from 'socket.io';
-import type { NcSocket } from '~/interface/config';
+import type { AtSocket } from '~/interface/config';
 
-export default class NocoPresence {
-  public static setupHandlers(_socket: NcSocket) {}
+export default class AtmospherePresence {
+  public static setupHandlers(_socket: AtSocket) {}
 
-  public static handleDisconnect(_socket: NcSocket, _ioServer: Server) {}
+  public static handleDisconnect(_socket: AtSocket, _ioServer: Server) {}
 }

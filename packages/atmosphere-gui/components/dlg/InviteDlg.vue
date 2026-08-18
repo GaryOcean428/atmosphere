@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {
   NON_SEAT_ROLES,
-  NcErrorType,
+  AtErrorType,
   type OrgUserListItemType,
   type PlanLimitExceededDetailsType,
   ProjectRoles,
@@ -10,7 +10,7 @@ import {
   type UserType,
   type WorkspaceType,
   WorkspaceUserRoles,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 import { extractEmail } from '../../helpers/parsers/parserHelpers'
 
@@ -423,7 +423,7 @@ const inviteCollaborator = async () => {
   } catch (e: any) {
     const errorInfo = await extractSdkResponseErrorMsgv2(e)
 
-    if (isPaymentEnabled.value && errorInfo.error === NcErrorType.ERR_PLAN_LIMIT_EXCEEDED) {
+    if (isPaymentEnabled.value && errorInfo.error === AtErrorType.ERR_PLAN_LIMIT_EXCEEDED) {
       let errorWsId
       if (props.type === 'workspace' && props.workspaceId) {
         errorWsId = props.workspaceId
@@ -446,7 +446,7 @@ const inviteCollaborator = async () => {
         isAdminPanel: props.type === 'organization',
       })
     } else {
-      if (errorInfo.error === NcErrorType.ERR_UNKNOWN) {
+      if (errorInfo.error === AtErrorType.ERR_UNKNOWN) {
         errorInfo.message = await extractSdkResponseErrorMsg(e)
       }
       message.error(errorInfo.message)
@@ -575,12 +575,12 @@ const onTeamChange = async (_teamIds: RawValueType) => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="dialogShow"
     :header="$t('activity.createTable')"
     :show-separator="false"
     size="medium"
-    class="nc-invite-dlg"
+    class="atm-invite-dlg"
     @keydown.esc="dialogShow = false"
   >
     <template #header>
@@ -608,7 +608,7 @@ const onTeamChange = async (_teamIds: RawValueType) => {
                 'border-primary/100 shadow-selected': isDivFocused,
                 'p-1': emailBadges?.length > 0,
               }"
-              class="flex items-center flex-wrap border-1 gap-1 w-full overflow-x-scroll nc-scrollbar-x-md min-h-10 rounded-lg md:!min-w-96"
+              class="flex items-center flex-wrap border-1 gap-1 w-full overflow-x-scroll atm-scrollbar-x-md min-h-10 rounded-lg md:!min-w-96"
               tabindex="0"
               @blur="isDivFocused = false"
               @click="focusOnDiv"
@@ -616,12 +616,12 @@ const onTeamChange = async (_teamIds: RawValueType) => {
               <span
                 v-for="(email, index) in emailBadges"
                 :key="email"
-                class="border-1 text-nc-content-gray bg-nc-bg-gray-light rounded-md flex items-center px-1 whitespace-nowrap"
+                class="border-1 text-atm-content-gray bg-atm-bg-gray-light rounded-md flex items-center px-1 whitespace-nowrap"
               >
                 {{ email }}
                 <component
                   :is="iconMap.close"
-                  class="ml-0.5 hover:(cursor-pointer text-nc-content-gray-subtle) mt-0.5 w-4 h-4 text-nc-content-gray-subtle2"
+                  class="ml-0.5 hover:(cursor-pointer text-atm-content-gray-subtle) mt-0.5 w-4 h-4 text-atm-content-gray-subtle2"
                   @click="removeEmail(index)"
                 />
               </span>
@@ -651,37 +651,37 @@ const onTeamChange = async (_teamIds: RawValueType) => {
 
             <div
               v-if="isOrgUserPickerVisible"
-              class="nc-invite-org-user-picker absolute z-50 left-0 right-0 top-full mt-1 p-1 bg-white dark:bg-nc-bg-gray-extralight border-1 border-nc-border-gray-medium rounded-lg shadow-md max-h-64 overflow-y-auto nc-scrollbar-thin"
-              data-testid="nc-invite-org-user-picker"
+              class="atm-invite-org-user-picker absolute z-50 left-0 right-0 top-full mt-1 p-1 bg-white dark:bg-atm-bg-gray-extralight border-1 border-atm-border-gray-medium rounded-lg shadow-md max-h-64 overflow-y-auto atm-scrollbar-thin"
+              data-testid="atm-invite-org-user-picker"
               @mousedown.prevent
             >
               <div
                 v-for="(orgUser, i) in filteredOrgUsers"
                 :key="orgUser.id"
-                :class="{ 'bg-nc-bg-gray-light': i === pickerSelectedIndex }"
-                class="px-3 py-2 cursor-pointer rounded-md hover:bg-nc-bg-gray-light"
-                :data-testid="`nc-invite-org-user-${orgUser.email}`"
+                :class="{ 'bg-atm-bg-gray-light': i === pickerSelectedIndex }"
+                class="px-3 py-2 cursor-pointer rounded-md hover:bg-atm-bg-gray-light"
+                :data-testid="`atm-invite-org-user-${orgUser.email}`"
                 @click="selectOrgUser(orgUser)"
                 @mouseenter="pickerSelectedIndex = i"
               >
-                <NcUserInfo :user="(orgUser as any)" />
+                <AtUserInfo :user="(orgUser as any)" />
               </div>
             </div>
           </div>
-          <NcListTeamSelector
+          <AtListTeamSelector
             v-else
             :on-change="onTeamChange"
             :value="inviteData.selectedTeamIds || []"
             is-multi-select
             :teams="teams"
             :existing-team-ids="existingTeamIds"
-            class="!min-w-[152px] nc-add-team-selector"
+            class="!min-w-[152px] atm-add-team-selector"
             size="lg"
             placement="bottomLeft"
           />
 
           <div class="flex items-center justify-between gap-4">
-            <div class="md:hidden text-nc-content-gray text-bodyLg">{{ $t('labels.selectRole') }}:</div>
+            <div class="md:hidden text-atm-content-gray text-bodyLg">{{ $t('labels.selectRole') }}:</div>
             <div class="flex items-center">
               <RolesSelectorV2
                 :on-role-change="onRoleChange"
@@ -689,7 +689,7 @@ const onTeamChange = async (_teamIds: RawValueType) => {
                 :disabled-roles="disabledRoles"
                 :disabled-roles-tooltip="disabledRolesTooltip"
                 :roles="allowedRoles"
-                class="!min-w-[152px] nc-invite-role-selector"
+                class="!min-w-[152px] atm-invite-role-selector"
                 size="lg"
                 placement="bottomRight"
               />
@@ -697,22 +697,22 @@ const onTeamChange = async (_teamIds: RawValueType) => {
           </div>
         </div>
         <!-- show warning if validation fails and warningMsg defined -->
-        <span v-if="warningMsg" class="ml-2 text-nc-content-red-medium -mt-2">{{ warningMsg }}</span>
+        <span v-if="warningMsg" class="ml-2 text-atm-content-red-medium -mt-2">{{ warningMsg }}</span>
 
-        <span v-if="emailValidation.isError && emailValidation.message" class="ml-2 text-nc-content-red-medium -mt-2">{{
+        <span v-if="emailValidation.isError && emailValidation.message" class="ml-2 text-atm-content-red-medium -mt-2">{{
           emailValidation.message
         }}</span>
 
         <template v-if="type === 'organization'">
-          <NcDropdown v-model:visible="isOrgSelectMenuOpen">
-            <NcButton class="!justify-between" full-width size="medium" type="secondary">
+          <AtDropdown v-model:visible="isOrgSelectMenuOpen">
+            <AtButton class="!justify-between" full-width size="medium" type="secondary">
               <div
                 :class="{
-                  '!text-nc-content-gray-subtle2': selectedWorkspaces.length > 0,
+                  '!text-atm-content-gray-subtle2': selectedWorkspaces.length > 0,
                 }"
-                class="flex text-nc-content-gray-muted justify-between items-center w-full"
+                class="flex text-atm-content-gray-muted justify-between items-center w-full"
               >
-                <NcTooltip class="!max-w-130 truncate" show-on-truncate-only>
+                <AtTooltip class="!max-w-130 truncate" show-on-truncate-only>
                   <span class="">
                     {{
                       selectedWorkspaces.length > 0
@@ -727,34 +727,34 @@ const onTeamChange = async (_teamIds: RawValueType) => {
                         : '-select workspaces to invite to-'
                     }}
                   </template>
-                </NcTooltip>
+                </AtTooltip>
 
                 <component :is="iconMap.chevronDown" />
               </div>
-            </NcButton>
+            </AtButton>
             <template #overlay>
               <div class="py-2">
                 <div class="mx-2">
                   <a-input
                     v-model:value="searchQuery"
                     :class="{
-                      '!border-nc-border-brand': searchQuery.length > 0,
+                      '!border-atm-border-brand': searchQuery.length > 0,
                     }"
-                    class="!rounded-lg !h-8 !ring-0 !placeholder:text-nc-content-gray-muted !border-nc-border-gray-medium !px-4"
-                    data-testid="nc-ws-search"
+                    class="!rounded-lg !h-8 !ring-0 !placeholder:text-atm-content-gray-muted !border-atm-border-gray-medium !px-4"
+                    data-testid="atm-ws-search"
                     placeholder="Search workspace"
                   >
                     <template #prefix>
-                      <component :is="iconMap.search" class="h-4 w-4 mr-1 text-nc-content-gray-muted" />
+                      <component :is="iconMap.search" class="h-4 w-4 mr-1 text-atm-content-gray-muted" />
                     </template>
                   </a-input>
                 </div>
 
-                <div class="flex flex-col max-h-64 overflow-y-auto nc-scrollbar-md mt-2 px-2">
+                <div class="flex flex-col max-h-64 overflow-y-auto atm-scrollbar-md mt-2 px-2">
                   <div
                     v-for="ws in workSpaceSelectList"
                     :key="ws.id"
-                    class="px-2 cursor-pointer hover:bg-nc-bg-gray-light rounded-lg h-9.5 py-2 w-full flex gap-2"
+                    class="px-2 cursor-pointer hover:bg-atm-bg-gray-light rounded-lg h-9.5 py-2 w-full flex gap-2"
                     @click="checked[ws.id!] = !checked[ws.id!]"
                   >
                     <div class="flex gap-2 capitalize items-center">
@@ -762,18 +762,18 @@ const onTeamChange = async (_teamIds: RawValueType) => {
                       {{ ws.title }}
                     </div>
                     <div class="flex-1" />
-                    <NcCheckbox v-model:checked="checked[ws.id!]" size="large" />
+                    <AtCheckbox v-model:checked="checked[ws.id!]" size="large" />
                   </div>
                 </div>
               </div>
             </template>
             />
-          </NcDropdown>
+          </AtDropdown>
         </template>
       </div>
     </div>
 
-    <NcAlert
+    <AtAlert
       :visible="showUserWillChargedWarning"
       type="warning"
       :message="$t('upgrade.newEditorWillBeChanged')"
@@ -783,13 +783,13 @@ const onTeamChange = async (_teamIds: RawValueType) => {
 
     <div class="flex mt-8 justify-end">
       <div class="flex gap-2">
-        <NcButton type="secondary" @click="dialogShow = false"> {{ $t('labels.cancel') }}</NcButton>
-        <NcButton
+        <AtButton type="secondary" @click="dialogShow = false"> {{ $t('labels.cancel') }}</AtButton>
+        <AtButton
           :disabled="isInviteButtonDisabled || emailValidation.isError || isLoading || !!warningMsg"
           :loading="isLoading"
           size="medium"
           type="primary"
-          class="nc-invite-btn"
+          class="atm-invite-btn"
           @click="inviteCollaborator"
         >
           {{
@@ -801,14 +801,14 @@ const onTeamChange = async (_teamIds: RawValueType) => {
               ? $t('activity.inviteToBase')
               : $t('activity.inviteToWorkspace')
           }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-invite-role-selector .nc-role-badge) {
+:deep(.atm-invite-role-selector .atm-role-badge) {
   @apply w-full;
 }
 </style>
@@ -818,8 +818,8 @@ const onTeamChange = async (_teamIds: RawValueType) => {
 // but ant-modal's body clips overflow by default. Allow visible overflow only
 // for this dialog so the dropdown isn't cut off when it extends past the
 // modal's inner edge.
-.nc-invite-dlg .ant-modal-body,
-.nc-invite-dlg .ant-modal-content {
+.atm-invite-dlg .ant-modal-body,
+.atm-invite-dlg .ant-modal-content {
   overflow: visible !important;
 }
 </style>

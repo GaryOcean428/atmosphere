@@ -1,12 +1,12 @@
 import { UnifiedMetaType } from '~/lib/types';
-import { NcContext } from '../ncTypes';
+import { AtContext } from '../ncTypes';
 import { getLTARRelatedTable } from './getLTARRelatedTable';
 import { getContextFromObject } from './getContextFromObject';
 import { getColOptions } from './getColOptions';
 import { getColumns } from './getColumns';
 
 export const getLookupRelatedInfo = async (
-  context: NcContext,
+  context: AtContext,
   {
     colOptions,
     columns,

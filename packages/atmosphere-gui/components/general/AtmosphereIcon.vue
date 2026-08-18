@@ -43,10 +43,10 @@ const onClick = useThrottleFn(() => {
           class="hidden dark:block"
           :width="size"
           :height="size"
-          alt="NocoDB"
+          alt="Atmosphere"
           src="~/assets/img/icons/256x256-trans.png"
         />
-        <img v-else :width="size" :height="size" alt="NocoDB" src="~/assets/img/icons/256x256.png" />
+        <img v-else :width="size" :height="size" alt="Atmosphere" src="~/assets/img/icons/256x256.png" />
       </template>
 
       <TransitionGroup name="layout" :duration="500">

@@ -1,7 +1,7 @@
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type { DBQueryClient as DBQueryClientType } from '~/dbQueryClient/types';
-import { DriverClient } from '~/utils/nc-config';
+import { DriverClient } from '~/utils/atm-config';
 import { PGDBQueryClient } from '~/dbQueryClient/pg';
 import { MySqlDBQueryClient } from '~/dbQueryClient/mysql';
 import { SqliteDBQueryClient } from '~/dbQueryClient/sqlite';

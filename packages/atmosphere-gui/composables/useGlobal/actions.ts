@@ -1,6 +1,6 @@
 import { getActivePinia } from 'pinia'
 import type { Actions, AppInfo, Getters, State } from './types'
-import type { NcBreakpoint } from '~/lib/constants'
+import type { AtBreakpoint } from '~/lib/constants'
 
 export function useGlobalActions(state: State, _getters: Getters): Actions {
   const isTokenUpdatedTab = useState('isTokenUpdatedTab', () => false)
@@ -9,7 +9,7 @@ export function useGlobalActions(state: State, _getters: Getters): Actions {
     state.isMobileMode.value = isMobileMode
   }
 
-  const setActiveBreakpoint = (breakpoint: NcBreakpoint) => {
+  const setActiveBreakpoint = (breakpoint: AtBreakpoint) => {
     state.activeBreakpoint.value = breakpoint
   }
 
@@ -128,7 +128,7 @@ export function useGlobalActions(state: State, _getters: Getters): Actions {
     baseId?: string
     query?: any
   }) => {
-    const workspaceId = _workspaceId || 'nc'
+    const workspaceId = _workspaceId || 'atm'
     let path: string
 
     const queryParams = query ? `?${new URLSearchParams(query).toString()}` : ''
@@ -173,7 +173,7 @@ export function useGlobalActions(state: State, _getters: Getters): Actions {
         }`
       : ''
 
-    const workspaceId = _workspaceId || 'nc'
+    const workspaceId = _workspaceId || 'atm'
     let path: string
 
     const queryParams = query ? `?${new URLSearchParams(query).toString()}` : ''

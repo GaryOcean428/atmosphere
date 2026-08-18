@@ -12,7 +12,7 @@ const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.DEPENDENCY_TRACKER, (table) => {
     table.index(
       'queryable_field_2',
-      'nc_dependency_tracker_queryable_field_2_idx',
+      'atm_dependency_tracker_queryable_field_2_idx',
     );
   });
 };
@@ -22,7 +22,7 @@ const down = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.DEPENDENCY_TRACKER, (table) => {
     table.dropIndex(
       'queryable_field_2',
-      'nc_dependency_tracker_queryable_field_2_idx',
+      'atm_dependency_tracker_queryable_field_2_idx',
     );
   });
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { UserType } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
 
 interface Props {
   user?: Partial<UserType> | Record<string, any> | null
@@ -20,8 +20,8 @@ const displayName = computed(() => extractUserDisplayNameOrEmail(user.value ?? u
 </script>
 
 <template>
-  <NcTooltip v-if="tooltip" class="nc-user-name truncate" show-on-truncate-only :title="displayName">
+  <AtTooltip v-if="tooltip" class="atm-user-name truncate" show-on-truncate-only :title="displayName">
     {{ displayName }}
-  </NcTooltip>
-  <span v-else class="nc-user-name truncate">{{ displayName }}</span>
+  </AtTooltip>
+  <span v-else class="atm-user-name truncate">{{ displayName }}</span>
 </template>

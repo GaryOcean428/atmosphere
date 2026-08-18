@@ -27,7 +27,7 @@ const ratingMeta = computed(() => {
   }
 
   if (isDark.value) {
-    result.color = getOppositeColorOfBackground(getColor('var(--nc-bg-default)'), result.color, ['#4a5268', '#d5dce8'])
+    result.color = getOppositeColorOfBackground(getColor('var(--atm-bg-default)'), result.color, ['#4a5268', '#d5dce8'])
   }
 
   return result

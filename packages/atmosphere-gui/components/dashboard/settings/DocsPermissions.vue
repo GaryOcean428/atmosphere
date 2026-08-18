@@ -10,5 +10,5 @@ defineEmits(['update:state'])
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

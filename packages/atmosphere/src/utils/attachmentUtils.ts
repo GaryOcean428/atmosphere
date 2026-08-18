@@ -1,6 +1,6 @@
-import { ncIsNumber } from 'nocodb-sdk';
+import { ncIsNumber } from 'atmosphere-sdk';
 import { imageMimeTypes } from '~/helpers/attachmentHelpers';
-import { getThumbnailMaxSize } from '~/utils/nc-config/constants';
+import { getThumbnailMaxSize } from '~/utils/atm-config/constants';
 
 export const isOfficeDocument = (..._args) => {
   return false;

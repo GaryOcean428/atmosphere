@@ -16,8 +16,8 @@ import { Base } from '~/models';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
-import { NcError } from '~/helpers/ncError';
+import { AtContext, AtRequest } from '~/interface/config';
+import { AtError } from '~/helpers/ncError';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -32,9 +32,9 @@ export class MigrateController {
   @HttpCode(200)
   @Acl('migrateBase')
   async migrateBase(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Body()
     body: {
       migrationUrl: string;
@@ -43,24 +43,24 @@ export class MigrateController {
     const base = await Base.get(context, baseId);
 
     if (!base) {
-      NcError.get(context).baseNotFound(baseId);
+      AtError.get(context).baseNotFound(baseId);
     }
 
     const source = (await base.getSources())[0];
 
     if (!source) {
-      NcError.get(context).noSourcesFound();
+      AtError.get(context).noSourcesFound();
     }
 
     let url: URL;
     try {
       url = new URL(body.migrationUrl);
     } catch {
-      NcError.get(context).badRequest('Invalid migration url');
+      AtError.get(context).badRequest('Invalid migration url');
     }
 
     if (url.protocol !== 'https:' && url.protocol !== 'http:') {
-      NcError.get(context).badRequest('Invalid migration url protocol');
+      AtError.get(context).badRequest('Invalid migration url protocol');
     }
 
     const instanceUrl = url.origin;
@@ -69,7 +69,7 @@ export class MigrateController {
     const secret = url.searchParams.get('secret');
 
     if (!instanceUrl || !secret) {
-      NcError.get(context).badRequest('Invalid migration url');
+      AtError.get(context).badRequest('Invalid migration url');
     }
 
     return await this.migrateService.migrateBase({

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IntegrationCategoryType, SyncDataType } from 'nocodb-sdk'
+import type { IntegrationCategoryType, SyncDataType } from 'atmosphere-sdk'
 
 const props = defineProps<{
   open: boolean
@@ -42,32 +42,32 @@ onMounted(async () => {
 <template>
   <WorkspaceIntegrationsFormsEditOrAddCommonWrapper v-bind="props" @update:open="emits('update:open', $event)">
     <template v-if="dataReflectionEnabled" #headerRightExtra>
-      <NcButton type="secondary" size="small" :disabled="isRefreshing" @click="onRefreshConnection"
+      <AtButton type="secondary" size="small" :disabled="isRefreshing" @click="onRefreshConnection"
         ><GeneralIcon icon="refresh"
-      /></NcButton>
-      <NcButton type="danger" size="small" @click="deleteConnectionDetails">Disable connection</NcButton>
+      /></AtButton>
+      <AtButton type="danger" size="small" @click="deleteConnectionDetails">Disable connection</AtButton>
     </template>
     <template #leftPanel="{ class: leftPanelClass }">
       <div :class="leftPanelClass">
         <div
           v-if="!dataReflectionEnabled"
-          class="nc-nocodb-connection-details-placeholder flex flex-col gap-8 w-full h-full items-center justify-center text-center mt-10"
+          class="atm-atmosphere-connection-details-placeholder flex flex-col gap-8 w-full h-full items-center justify-center text-center mt-10"
         >
           <img
-            src="~assets/img/placeholder/nocodb-pg-integration.png"
+            src="~assets/img/placeholder/atmosphere-pg-integration.png"
             class="!w-full !max-w-[864px] flex-none"
-            alt="NocoDb X Pg integration"
+            alt="Atmosphere X Pg integration"
           />
           <span class="text-base font-bold">Connect with your favorite tools</span>
-          <span class="text-sm text-nc-content-gray-subtle2">Integrate with your favourite tools by bypassing our APIs</span>
-          <NcButton size="small" type="primary" @click="createConnectionDetails"> Get connection details </NcButton>
+          <span class="text-sm text-atm-content-gray-subtle2">Integrate with your favourite tools by bypassing our APIs</span>
+          <AtButton size="small" type="primary" @click="createConnectionDetails"> Get connection details </AtButton>
           <div>
             <!-- For spacing  -->
           </div>
         </div>
-        <div v-else class="connection-details bg-nc-bg-default relative h-full flex flex-col w-full">
+        <div v-else class="connection-details bg-atm-bg-default relative h-full flex flex-col w-full">
           <div class="h-full max-h-[calc(100%_-_65px)] flex">
-            <div class="connection-details-left-panel nc-scrollbar-thin relative">
+            <div class="connection-details-left-panel atm-scrollbar-thin relative">
               <div v-if="connectionDetails" class="h-full w-[768px] mx-auto">
                 <a-form
                   ref="form"
@@ -78,28 +78,28 @@ onMounted(async () => {
                   no-style
                   class="flex flex-col gap-5.5"
                 >
-                  <div class="nc-form-section">
-                    <div class="nc-form-section-title">{{ $t('general.general') }}</div>
-                    <div class="nc-form-section-body">
+                  <div class="atm-form-section">
+                    <div class="atm-form-section-title">{{ $t('general.general') }}</div>
+                    <div class="atm-form-section-body">
                       <a-row :gutter="24">
                         <a-col :span="12">
                           <a-form-item label="Connection name">
-                            <a-input value="NocoDB" disabled />
+                            <a-input value="Atmosphere" disabled />
                           </a-form-item>
                         </a-col>
                       </a-row>
                     </div>
                   </div>
-                  <div class="nc-form-section">
+                  <div class="atm-form-section">
                     <div class="flex items-center justify-between">
-                      <div class="nc-form-section-title">Connection details</div>
+                      <div class="atm-form-section-title">Connection details</div>
                     </div>
 
-                    <div class="nc-form-section-body">
+                    <div class="atm-form-section-body">
                       <a-row :gutter="24">
                         <a-col :span="24">
                           <a-form-item label="Connection URL">
-                            <LazyGeneralCopyInput v-model="connectionUrl" class="nc-connection-url" />
+                            <LazyGeneralCopyInput v-model="connectionUrl" class="atm-connection-url" />
                           </a-form-item>
                         </a-col>
                       </a-row>
@@ -107,12 +107,12 @@ onMounted(async () => {
                       <a-row :gutter="24">
                         <a-col :span="12">
                           <a-form-item label="Host">
-                            <LazyGeneralCopyInput v-model="connectionHost" class="nc-connection-host" />
+                            <LazyGeneralCopyInput v-model="connectionHost" class="atm-connection-host" />
                           </a-form-item>
                         </a-col>
                         <a-col :span="12">
                           <a-form-item label="Port">
-                            <LazyGeneralCopyInput v-model="connectionDetails.port" class="nc-connection-port" />
+                            <LazyGeneralCopyInput v-model="connectionDetails.port" class="atm-connection-port" />
                           </a-form-item>
                         </a-col>
                       </a-row>
@@ -120,12 +120,12 @@ onMounted(async () => {
                       <a-row :gutter="24">
                         <a-col :span="12">
                           <a-form-item :label="$t('labels.username')">
-                            <LazyGeneralCopyInput v-model="connectionDetails.username" class="nc-connection-username" />
+                            <LazyGeneralCopyInput v-model="connectionDetails.username" class="atm-connection-username" />
                           </a-form-item>
                         </a-col>
                         <a-col :span="12">
                           <a-form-item :label="$t('labels.password')">
-                            <LazyGeneralCopyInput v-model="connectionDetails.password" password class="nc-connection-password" />
+                            <LazyGeneralCopyInput v-model="connectionDetails.password" password class="atm-connection-password" />
                           </a-form-item>
                         </a-col>
                       </a-row>
@@ -133,12 +133,12 @@ onMounted(async () => {
                       <a-row :gutter="24">
                         <a-col :span="12">
                           <a-form-item :label="$t('labels.database')">
-                            <LazyGeneralCopyInput v-model="connectionDetails.database" class="nc-connection-database" />
+                            <LazyGeneralCopyInput v-model="connectionDetails.database" class="atm-connection-database" />
                           </a-form-item>
                         </a-col>
                         <a-col :span="12">
                           <a-form-item :label="$t('labels.schema')">
-                            <LazyWorkspaceIntegrationsConnectSchemaInput v-model="selectedBase" class="nc-connection-schema" />
+                            <LazyWorkspaceIntegrationsConnectSchemaInput v-model="selectedBase" class="atm-connection-schema" />
                           </a-form-item>
                         </a-col>
                       </a-row>
@@ -151,7 +151,7 @@ onMounted(async () => {
                 </a-form>
               </div>
               <general-overlay v-else :model-value="true" inline transition class="!bg-opacity-15">
-                <div class="flex items-center justify-center h-full w-full !bg-nc-bg-default !bg-opacity-85 z-1000">
+                <div class="flex items-center justify-center h-full w-full !bg-atm-bg-default !bg-opacity-85 z-1000">
                   <a-spin size="large" />
                 </div>
               </general-overlay>
@@ -207,7 +207,7 @@ onMounted(async () => {
     @apply !appearance-none border-solid rounded-md;
 
     &:disabled {
-      @apply bg-nc-bg-gray-extralight text-nc-content-gray-muted border-nc-border-gray-medium;
+      @apply bg-atm-bg-gray-extralight text-atm-content-gray-muted border-atm-border-gray-medium;
     }
   }
 
@@ -217,14 +217,14 @@ onMounted(async () => {
     }
   }
 
-  .nc-connection-json-editor {
+  .atm-connection-json-editor {
     @apply min-h-[300px] max-h-[600px];
     resize: vertical;
     overflow-y: auto;
   }
 
   :deep(.ant-form-item-label > label.ant-form-item-required:after) {
-    @apply content-['*'] inline-block text-inherit text-nc-content-red-medium ml-1;
+    @apply content-['*'] inline-block text-inherit text-atm-content-red-medium ml-1;
   }
 
   :deep(.ant-form-item) {
@@ -257,10 +257,10 @@ onMounted(async () => {
     &:not(.ant-form-item-has-error) {
       &:not(:has(.ant-input-password)) .ant-input {
         &:not(:hover):not(:focus):not(:disabled) {
-          @apply shadow-default border-nc-border-gray-medium;
+          @apply shadow-default border-atm-border-gray-medium;
         }
         &:hover:not(:focus):not(:disabled) {
-          @apply border-nc-border-gray-medium shadow-hover;
+          @apply border-atm-border-gray-medium shadow-hover;
         }
         &:focus {
           @apply shadow-selected ring-0;
@@ -269,10 +269,10 @@ onMounted(async () => {
       .ant-input-number,
       .ant-input-affix-wrapper.ant-input-password {
         &:not(:hover):not(:focus-within):not(:disabled) {
-          @apply shadow-default border-nc-border-gray-medium;
+          @apply shadow-default border-atm-border-gray-medium;
         }
         &:hover:not(:focus-within):not(:disabled) {
-          @apply border-nc-border-gray-medium shadow-hover;
+          @apply border-atm-border-gray-medium shadow-hover;
         }
         &:focus-within {
           @apply shadow-selected ring-0;
@@ -291,9 +291,9 @@ onMounted(async () => {
 </style>
 
 <style lang="scss">
-.nc-edit-or-add-integration-left-panel {
-  &:has(.nc-nocodb-connection-details-placeholder) {
-    @apply bg-nc-bg-gray-extralight;
+.atm-edit-or-add-integration-left-panel {
+  &:has(.atm-atmosphere-connection-details-placeholder) {
+    @apply bg-atm-bg-gray-extralight;
   }
 }
 </style>

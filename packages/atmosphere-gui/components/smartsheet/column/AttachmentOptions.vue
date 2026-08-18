@@ -84,13 +84,13 @@ watch(searchValue, (value) => {
   <a-row class="my-2" :gutter="8">
     <a-col :span="12">
       <a-form-item v-bind="validateInfos['meta.maxNumberOfAttachments']" :label="$t('labels.maxNumberOfAttachments')">
-        <a-input-number v-model:value="vModel.meta.maxNumberOfAttachments" :min="1" class="!w-full nc-attachment-max-count" />
+        <a-input-number v-model:value="vModel.meta.maxNumberOfAttachments" :min="1" class="!w-full atm-attachment-max-count" />
       </a-form-item>
     </a-col>
 
     <a-col :span="12">
       <a-form-item v-bind="validateInfos['meta.maxAttachmentSize']" :label="$t('labels.maxAttachmentSizeMb')">
-        <a-input-number v-model:value="vModel.meta.maxAttachmentSize" :min="1" class="!w-full nc-attachment-max-size" />
+        <a-input-number v-model:value="vModel.meta.maxAttachmentSize" :min="1" class="!w-full atm-attachment-max-size" />
       </a-form-item>
     </a-col>
 
@@ -98,7 +98,7 @@ watch(searchValue, (value) => {
       <a-form-item v-bind="validateInfos['meta.supportedAttachmentMimeTypes']" class="!p-[10px] border-2">
         <a-checkbox
           v-model:checked="allowAllMimeTypeCheckbox"
-          class="nc-allow-all-mime-type-checkbox"
+          class="atm-allow-all-mime-type-checkbox"
           name="virtual"
           @change="allowAllMimeTypeCheckboxOnChange"
         >
@@ -113,7 +113,7 @@ watch(searchValue, (value) => {
             :height="250"
             :tree-data="fileMimeTypes"
             :auto-expand-parent="autoExpandParent"
-            class="!bg-nc-bg-gray-extralight my-[10px]"
+            class="!bg-atm-bg-gray-extralight my-[10px]"
           >
             <template #title="{ title }">
               <span v-if="title.indexOf(searchValue) > -1">

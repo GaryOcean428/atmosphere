@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { PlanFeatureTypes } from 'nocodb-sdk'
+import type { PlanFeatureTypes } from 'atmosphere-sdk'
 
 interface Props {
   /** Feature to check */

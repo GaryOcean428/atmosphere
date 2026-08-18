@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ExpandedFormMode, type ViewType } from 'nocodb-sdk'
+import { ExpandedFormMode, type ViewType } from 'atmosphere-sdk'
 
 interface ItemType {
   icon: IconMapKey
@@ -95,37 +95,37 @@ onMounted(() => {
 <template>
   <div
     v-if="isViewModeEnabled && items.length > 1"
-    class="tab-wrapper flex flex-row rounded-lg border-1 border-nc-border-gray-medium bg-nc-bg-default h-7 overflow-hidden"
+    class="tab-wrapper flex flex-row rounded-lg border-1 border-atm-border-gray-medium bg-atm-bg-default h-7 overflow-hidden"
   >
-    <NcTooltip v-for="(item, idx) of items" :key="item.value" :disabled="!item.tooltip">
+    <AtTooltip v-for="(item, idx) of items" :key="item.value" :disabled="!item.tooltip">
       <template #title>{{ item.tooltip }}</template>
       <div
         v-e="[`c:project:mode:${item.value}`]"
         class="tab"
         :class="[
-          `nc-tab-${modelValue}`,
+          `atm-tab-${modelValue}`,
           {
             'active': modelValue === item.value && !item.locked,
             'first-tab': idx === 0,
             'last-tab': idx === items.length - 1,
-            'nc-tab-locked': item.locked,
+            'atm-tab-locked': item.locked,
           },
         ]"
         @click="onTabClick(item)"
       >
         <GeneralIcon :icon="item.icon" class="tab-icon" />
         <GeneralIcon v-if="item.locked" icon="ncUpgradeSparkle" class="tab-lock-icon" />
-        <div v-if="item.title" class="tab-title nc-tab">
+        <div v-if="item.title" class="tab-title atm-tab">
           {{ $t(item.title) }}
         </div>
       </div>
-    </NcTooltip>
+    </AtTooltip>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .tab {
-  @apply flex flex-row items-center h-full justify-center px-2 border-1 border-t-0 border-b-0 border-nc-border-gray-medium text-nc-content-gray-subtle2 cursor-pointer transition-all duration-300 select-none;
+  @apply flex flex-row items-center h-full justify-center px-2 border-1 border-t-0 border-b-0 border-atm-border-gray-medium text-atm-content-gray-subtle2 cursor-pointer transition-all duration-300 select-none;
 
   &.first-tab {
     @apply border-0;
@@ -134,7 +134,7 @@ onMounted(() => {
     @apply border-0;
   }
 
-  &.nc-tab-field.active {
+  &.atm-tab-field.active {
     :deep(svg.tab-icon) {
       path {
         @apply stroke-2;
@@ -143,13 +143,13 @@ onMounted(() => {
   }
 
   &.active {
-    @apply bg-nc-bg-brand-inverted text-nc-content-brand-disabled;
+    @apply bg-atm-bg-brand-inverted text-atm-content-brand-disabled;
 
     box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.06), 0px 5px 3px -2px rgba(0, 0, 0, 0.02);
   }
 
   &:not(.active) {
-    @apply hover:text-nc-content-gray-extreme;
+    @apply hover:text-atm-content-gray-extreme;
   }
 }
 
@@ -158,10 +158,10 @@ onMounted(() => {
   @apply w-4;
 }
 .tab-lock-icon {
-  @apply w-2.5 h-2.5 ml-0.5 text-nc-content-gray-muted;
+  @apply w-2.5 h-2.5 ml-0.5 text-atm-content-gray-muted;
 }
-.tab.nc-tab-locked {
-  @apply text-nc-content-gray-muted;
+.tab.atm-tab-locked {
+  @apply text-atm-content-gray-muted;
 }
 .tab .tab-title {
   @apply min-w-0;

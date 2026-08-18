@@ -6,7 +6,7 @@ import {
   FormulaDataTypes,
   NumericalAggregations,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Knex } from '~/db/CustomKnex';
 import type { AggregationGeneratorParams } from '~/dbQueryClient/types';
 import type { AggregationSqlContext } from '~/dbQueryClient/aggregations/aggregation-handler.interface';
@@ -26,7 +26,7 @@ export class MysqlAggregationHandler extends GenericAggregationHandler {
     } = params;
     const knex = baseModelSqlv2.dbDriver;
 
-    // Filtered derived table exposing the column value as a plain `nc_val` column.
+    // Filtered derived table exposing the column value as a plain `atm_val` column.
     // Used as the FROM source for the self-contained-subquery aggregates below so
     // they honor filters; falls back to the raw table only when no baseQuery was
     // supplied. (Inline aggregates keep using `column_query` over the outer query.)
@@ -34,13 +34,13 @@ export class MysqlAggregationHandler extends GenericAggregationHandler {
       ? baseQuery
           .clone()
           .clearSelect()
-          .select(knex.raw(`(??) as nc_val`, [column_query]))
+          .select(knex.raw(`(??) as atm_val`, [column_query]))
       : undefined;
     const subAggFrom: string | Knex.Raw = derivedInner
-      ? knex.raw(`(??) as nc_agg_sub`, [derivedInner])
+      ? knex.raw(`(??) as atm_agg_sub`, [derivedInner])
       : baseModelSqlv2.tnPath;
     const subAggCol: string | Knex.QueryBuilder = derivedInner
-      ? 'nc_val'
+      ? 'atm_val'
       : column_query;
 
     let condnValue: any = "''";
@@ -335,18 +335,18 @@ export class MysqlAggregationHandler extends GenericAggregationHandler {
         aggregationSql = knex.raw(
           `
   (
-    SELECT AVG(nc_med_val)
+    SELECT AVG(atm_med_val)
     FROM (
       SELECT
-        (??) AS nc_med_val,
-        ROW_NUMBER() OVER (ORDER BY (??)) AS nc_med_rn,
-        COUNT(*) OVER () AS nc_med_cnt
+        (??) AS atm_med_val,
+        ROW_NUMBER() OVER (ORDER BY (??)) AS atm_med_rn,
+        COUNT(*) OVER () AS atm_med_cnt
       FROM ??
       WHERE (??) IS NOT NULL
-    ) AS nc_med_q
-    WHERE nc_med_rn IN (
-      FLOOR((nc_med_cnt + 1) / 2),
-      FLOOR((nc_med_cnt + 2) / 2)
+    ) AS atm_med_q
+    WHERE atm_med_rn IN (
+      FLOOR((atm_med_cnt + 1) / 2),
+      FLOOR((atm_med_cnt + 2) / 2)
     )
   )`,
           [subAggCol, subAggCol, subAggFrom, subAggCol],

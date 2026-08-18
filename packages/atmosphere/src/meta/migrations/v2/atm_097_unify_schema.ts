@@ -41,8 +41,8 @@ const up = async (knex: Knex) => {
     MetaTable.MODELS,
     MetaTable.SORT,
     MetaTable.SOURCES,
-    MetaTable.SYNC_LOGS,
-    MetaTable.SYNC_SOURCE,
+    MetaTable.SYATMOSPHERE_LOGS,
+    MetaTable.SYATMOSPHERE_SOURCE,
     MetaTable.USER_COMMENTS_NOTIFICATIONS_PREFERENCE,
     MetaTable.VIEWS,
   ];
@@ -94,126 +94,126 @@ const up = async (knex: Knex) => {
   const tablesToDropOldBaseIdIndex = [
     {
       tableName: MetaTable.PROJECT_USERS,
-      indexName: 'nc_base_users_v2_base_id_index',
+      indexName: 'atm_base_users_v2_base_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW_COLUMNS,
-      indexName: 'nc_calendar_view_columns_v2_base_id_index',
+      indexName: 'atm_calendar_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW_RANGE,
-      indexName: 'nc_calendar_view_range_v2_base_id_index',
+      indexName: 'atm_calendar_view_range_v2_base_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW,
-      indexName: 'nc_calendar_view_v2_base_id_index',
+      indexName: 'atm_calendar_view_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_BARCODE,
-      indexName: 'nc_col_barcode_v2_base_id_index',
+      indexName: 'atm_col_barcode_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_FORMULA,
-      indexName: 'nc_col_formula_v2_base_id_index',
+      indexName: 'atm_col_formula_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_LOOKUP,
-      indexName: 'nc_col_lookup_v2_base_id_index',
+      indexName: 'atm_col_lookup_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_QRCODE,
-      indexName: 'nc_col_qrcode_v2_base_id_index',
+      indexName: 'atm_col_qrcode_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_RELATIONS,
-      indexName: 'nc_col_relations_v2_base_id_index',
+      indexName: 'atm_col_relations_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_ROLLUP,
-      indexName: 'nc_col_rollup_v2_base_id_index',
+      indexName: 'atm_col_rollup_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_SELECT_OPTIONS,
-      indexName: 'nc_col_select_options_v2_base_id_index',
+      indexName: 'atm_col_select_options_v2_base_id_index',
     },
-    { tableName: MetaTable.COLUMNS, indexName: 'nc_columns_v2_base_id_index' },
+    { tableName: MetaTable.COLUMNS, indexName: 'atm_columns_v2_base_id_index' },
     {
       tableName: MetaTable.COMMENTS_REACTIONS,
-      indexName: 'nc_comment_reactions_base_id_index',
+      indexName: 'atm_comment_reactions_base_id_index',
     },
-    { tableName: MetaTable.COMMENTS, indexName: 'nc_comments_base_id_index' },
+    { tableName: MetaTable.COMMENTS, indexName: 'atm_comments_base_id_index' },
     {
       tableName: MetaTable.MODEL_ROLE_VISIBILITY,
-      indexName: 'nc_disabled_models_for_role_v2_base_id_index',
+      indexName: 'atm_disabled_models_for_role_v2_base_id_index',
     },
     {
       tableName: MetaTable.EXTENSIONS,
-      indexName: 'nc_extensions_base_id_index',
+      indexName: 'atm_extensions_base_id_index',
     },
     {
       tableName: MetaTable.FILTER_EXP,
-      indexName: 'nc_filter_exp_v2_base_id_index',
+      indexName: 'atm_filter_exp_v2_base_id_index',
     },
     {
       tableName: MetaTable.FORM_VIEW_COLUMNS,
-      indexName: 'nc_form_view_columns_v2_base_id_index',
+      indexName: 'atm_form_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.FORM_VIEW,
-      indexName: 'nc_form_view_v2_base_id_index',
+      indexName: 'atm_form_view_v2_base_id_index',
     },
     {
       tableName: MetaTable.GALLERY_VIEW_COLUMNS,
-      indexName: 'nc_gallery_view_columns_v2_base_id_index',
+      indexName: 'atm_gallery_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.GALLERY_VIEW,
-      indexName: 'nc_gallery_view_v2_base_id_index',
+      indexName: 'atm_gallery_view_v2_base_id_index',
     },
     {
       tableName: MetaTable.GRID_VIEW_COLUMNS,
-      indexName: 'nc_grid_view_columns_v2_base_id_index',
+      indexName: 'atm_grid_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.GRID_VIEW,
-      indexName: 'nc_grid_view_v2_base_id_index',
+      indexName: 'atm_grid_view_v2_base_id_index',
     },
     {
       tableName: MetaTable.HOOK_LOGS,
-      indexName: 'nc_hook_logs_v2_base_id_index',
+      indexName: 'atm_hook_logs_v2_base_id_index',
     },
-    { tableName: MetaTable.HOOKS, indexName: 'nc_hooks_v2_base_id_index' },
+    { tableName: MetaTable.HOOKS, indexName: 'atm_hooks_v2_base_id_index' },
     {
       tableName: MetaTable.KANBAN_VIEW_COLUMNS,
-      indexName: 'nc_kanban_view_columns_v2_base_id_index',
+      indexName: 'atm_kanban_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.KANBAN_VIEW,
-      indexName: 'nc_kanban_view_v2_base_id_index',
+      indexName: 'atm_kanban_view_v2_base_id_index',
     },
     {
       tableName: MetaTable.MAP_VIEW_COLUMNS,
-      indexName: 'nc_map_view_columns_v2_base_id_index',
+      indexName: 'atm_map_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.MAP_VIEW,
-      indexName: 'nc_map_view_v2_base_id_index',
+      indexName: 'atm_map_view_v2_base_id_index',
     },
-    { tableName: MetaTable.MODELS, indexName: 'nc_models_v2_base_id_index' },
-    { tableName: MetaTable.SORT, indexName: 'nc_sort_v2_base_id_index' },
+    { tableName: MetaTable.MODELS, indexName: 'atm_models_v2_base_id_index' },
+    { tableName: MetaTable.SORT, indexName: 'atm_sort_v2_base_id_index' },
     {
-      tableName: MetaTable.SYNC_LOGS,
-      indexName: 'nc_sync_logs_v2_base_id_index',
+      tableName: MetaTable.SYATMOSPHERE_LOGS,
+      indexName: 'atm_sync_logs_v2_base_id_index',
     },
     {
-      tableName: MetaTable.SYNC_SOURCE,
-      indexName: 'nc_sync_source_v2_base_id_index',
+      tableName: MetaTable.SYATMOSPHERE_SOURCE,
+      indexName: 'atm_sync_source_v2_base_id_index',
     },
     {
       tableName: MetaTable.USER_COMMENTS_NOTIFICATIONS_PREFERENCE,
-      indexName: 'nc_user_comment_notifications_preference_base_id_index',
+      indexName: 'atm_user_comment_notifications_preference_base_id_index',
     },
-    { tableName: MetaTable.VIEWS, indexName: 'nc_views_v2_base_id_index' },
+    { tableName: MetaTable.VIEWS, indexName: 'atm_views_v2_base_id_index' },
   ];
 
   for (const { tableName, indexName } of tablesToDropOldBaseIdIndex) {
@@ -224,10 +224,10 @@ const up = async (knex: Knex) => {
 
   // Sources table has multiple indexes to drop
   await knex.schema.table(MetaTable.SOURCES, (table) => {
-    table.dropIndex(['base_id'], 'nc_sources_v2_base_id_index');
+    table.dropIndex(['base_id'], 'atm_sources_v2_base_id_index');
     table.dropIndex(
       ['fk_integration_id'],
-      'nc_sources_v2_fk_integration_id_index',
+      'atm_sources_v2_fk_integration_id_index',
     );
   });
 
@@ -235,148 +235,148 @@ const up = async (knex: Knex) => {
   const tablesBaseIdWorkspaceIdx = [
     {
       tableName: MetaTable.PROJECT_USERS,
-      indexName: 'nc_base_users_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_base_users_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW_COLUMNS,
-      indexName: 'nc_calendar_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_calendar_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW_RANGE,
-      indexName: 'nc_calendar_view_range_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_calendar_view_range_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW,
-      indexName: 'nc_calendar_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_calendar_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_BARCODE,
-      indexName: 'nc_col_barcode_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_barcode_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_FORMULA,
-      indexName: 'nc_col_formula_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_formula_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_LOOKUP,
-      indexName: 'nc_col_lookup_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_lookup_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_QRCODE,
-      indexName: 'nc_col_qrcode_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_qrcode_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_RELATIONS,
-      indexName: 'nc_col_relations_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_relations_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_ROLLUP,
-      indexName: 'nc_col_rollup_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_rollup_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_SELECT_OPTIONS,
-      indexName: 'nc_col_select_options_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_select_options_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COLUMNS,
-      indexName: 'nc_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COMMENTS_REACTIONS,
-      indexName: 'nc_comment_reactions_base_id_fk_workspace_id_index',
+      indexName: 'atm_comment_reactions_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COMMENTS,
-      indexName: 'nc_comments_base_id_fk_workspace_id_index',
+      indexName: 'atm_comments_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.MODEL_ROLE_VISIBILITY,
-      indexName: 'nc_disabled_models_for_role_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_disabled_models_for_role_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.EXTENSIONS,
-      indexName: 'nc_extensions_base_id_fk_workspace_id_index',
+      indexName: 'atm_extensions_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.FILTER_EXP,
-      indexName: 'nc_filter_exp_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_filter_exp_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.FORM_VIEW_COLUMNS,
-      indexName: 'nc_form_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_form_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.FORM_VIEW,
-      indexName: 'nc_form_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_form_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.GALLERY_VIEW_COLUMNS,
-      indexName: 'nc_gallery_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_gallery_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.GALLERY_VIEW,
-      indexName: 'nc_gallery_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_gallery_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.GRID_VIEW_COLUMNS,
-      indexName: 'nc_grid_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_grid_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.GRID_VIEW,
-      indexName: 'nc_grid_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_grid_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.HOOK_LOGS,
-      indexName: 'nc_hook_logs_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_hook_logs_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.HOOKS,
-      indexName: 'nc_hooks_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_hooks_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.KANBAN_VIEW_COLUMNS,
-      indexName: 'nc_kanban_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_kanban_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.KANBAN_VIEW,
-      indexName: 'nc_kanban_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_kanban_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.MAP_VIEW_COLUMNS,
-      indexName: 'nc_map_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_map_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.MAP_VIEW,
-      indexName: 'nc_map_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_map_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.MODELS,
-      indexName: 'nc_models_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_models_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.SORT,
-      indexName: 'nc_sort_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_sort_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.SOURCES,
-      indexName: 'nc_source_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_source_v2_base_id_fk_workspace_id_index',
     },
     {
-      tableName: MetaTable.SYNC_LOGS,
-      indexName: 'nc_sync_logs_v2_base_id_fk_workspace_id_index',
+      tableName: MetaTable.SYATMOSPHERE_LOGS,
+      indexName: 'atm_sync_logs_v2_base_id_fk_workspace_id_index',
     },
     {
-      tableName: MetaTable.SYNC_SOURCE,
-      indexName: 'nc_sync_source_v2_base_id_fk_workspace_id_index',
+      tableName: MetaTable.SYATMOSPHERE_SOURCE,
+      indexName: 'atm_sync_source_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.USER_COMMENTS_NOTIFICATIONS_PREFERENCE,
       indexName:
-        'nc_user_comment_notifications_preference_base_id_fk_workspace_i',
+        'atm_user_comment_notifications_preference_base_id_fk_workspace_i',
     },
     {
       tableName: MetaTable.VIEWS,
-      indexName: 'nc_views_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_views_v2_base_id_fk_workspace_id_index',
     },
   ];
 
@@ -388,27 +388,27 @@ const up = async (knex: Knex) => {
 
   // Tables with additional indexes
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
-    table.index(['fk_custom_url_id'], 'nc_bases_v2_fk_custom_url_id_index');
-    table.index(['fk_workspace_id'], 'nc_bases_v2_fk_workspace_id_index');
+    table.index(['fk_custom_url_id'], 'atm_bases_v2_fk_custom_url_id_index');
+    table.index(['fk_workspace_id'], 'atm_bases_v2_fk_workspace_id_index');
   });
 
   await knex.schema.alterTable(MetaTable.INTEGRATIONS, (table) => {
     table.index(
       ['fk_workspace_id'],
-      'nc_integrations_v2_fk_workspace_id_index',
+      'atm_integrations_v2_fk_workspace_id_index',
     );
   });
 
   await knex.schema.alterTable(MetaTable.SOURCES, (table) => {
-    table.index(['fk_integration_id'], 'nc_source_v2_fk_integration_id_index');
+    table.index(['fk_integration_id'], 'atm_source_v2_fk_integration_id_index');
     table.index(
       ['fk_sql_executor_id'],
-      'nc_source_v2_fk_sql_executor_id_index',
+      'atm_source_v2_fk_sql_executor_id_index',
     );
   });
 
   await knex.schema.alterTable(MetaTable.VIEWS, (table) => {
-    table.index(['fk_custom_url_id'], 'nc_views_v2_fk_custom_url_id_index');
+    table.index(['fk_custom_url_id'], 'atm_views_v2_fk_custom_url_id_index');
   });
 
   // Add missing tables
@@ -486,10 +486,10 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.SSO_CLIENT, (table) => {
-    table.index('domain_name', 'nc_sso_client_domain_name_index');
-    table.index('fk_user_id', 'nc_sso_client_fk_user_id_index');
+    table.index('domain_name', 'atm_sso_client_domain_name_index');
+    table.index('fk_user_id', 'atm_sso_client_fk_user_id_index');
     table.index(['fk_workspace_id'], 'sso_client_fk_workspace_id_idx');
-    table.index('fk_org_id', 'nc_sso_client_fk_workspace_id_index');
+    table.index('fk_org_id', 'atm_sso_client_fk_workspace_id_index');
   });
 
   await knex.schema.createTable(MetaTable.DB_MUX, (table) => {
@@ -517,8 +517,8 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTableOldV2.SCRIPTS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_scripts_context');
-    table.index(['id'], 'nc_scripts_oldpk_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_scripts_context');
+    table.index(['id'], 'atm_scripts_oldpk_idx');
   });
 
   await knex.schema.createTable(MetaTable.SNAPSHOT, (table) => {
@@ -533,7 +533,7 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.SNAPSHOT, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_snapshot_context');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_snapshot_context');
   });
 
   await knex.schema.createTable(MetaTable.ORG, (table) => {
@@ -552,8 +552,8 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.ORG, (table) => {
-    table.index(['fk_user_id'], 'nc_org_fk_user_id_index');
-    table.index(['slug'], 'nc_org_slug_index');
+    table.index(['fk_user_id'], 'atm_org_fk_user_id_index');
+    table.index(['slug'], 'atm_org_slug_index');
   });
 
   await knex.schema.createTable(MetaTable.ORG_DOMAIN, (table) => {
@@ -570,9 +570,9 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.ORG_DOMAIN, (table) => {
-    table.index(['domain'], 'nc_org_domain_domain_index');
-    table.index(['fk_org_id'], 'nc_org_domain_fk_org_id_index');
-    table.index(['fk_user_id'], 'nc_org_domain_fk_user_id_index');
+    table.index(['domain'], 'atm_org_domain_domain_index');
+    table.index(['fk_org_id'], 'atm_org_domain_fk_org_id_index');
+    table.index(['fk_user_id'], 'atm_org_domain_fk_user_id_index');
     table.index(['fk_workspace_id'], 'org_domain_fk_workspace_id_idx');
   });
 
@@ -597,12 +597,12 @@ const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.MODEL_STAT, (table) => {
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_model_stats_v2_base_id_fk_workspace_id_index',
+      'atm_model_stats_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_workspace_id'], 'nc_model_stats_v2_fk_workspace_id_index');
+    table.index(['fk_workspace_id'], 'atm_model_stats_v2_fk_workspace_id_index');
     table.index(
       ['fk_workspace_id', 'fk_model_id'],
-      'nc_model_stats_v2_oldpk_idx',
+      'atm_model_stats_v2_oldpk_idx',
     );
   });
 
@@ -614,8 +614,8 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.FOLLOWER, (table) => {
-    table.index('fk_follower_id', 'nc_follower_fk_follower_id_index');
-    table.index('fk_user_id', 'nc_follower_fk_user_id_index');
+    table.index('fk_follower_id', 'atm_follower_fk_follower_id_index');
+    table.index('fk_user_id', 'atm_follower_fk_user_id_index');
   });
 
   await knex.schema.createTable(MetaTable.CUSTOM_URLS, (table) => {
@@ -632,10 +632,10 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.CUSTOM_URLS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_custom_urls_context');
-    table.index(['custom_path'], 'nc_custom_urls_v2_custom_path_index');
-    table.index(['fk_dashboard_id'], 'nc_custom_urls_v2_fk_dashboard_id_index');
-    table.index(['id'], 'nc_custom_urls_v2_oldpk_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_custom_urls_context');
+    table.index(['custom_path'], 'atm_custom_urls_v2_custom_path_index');
+    table.index(['fk_dashboard_id'], 'atm_custom_urls_v2_fk_dashboard_id_index');
+    table.index(['id'], 'atm_custom_urls_v2_oldpk_idx');
   });
 
   await knex.schema.createTable(MetaTable.PLANS, (table) => {
@@ -653,7 +653,7 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.PLANS, (table) => {
-    table.index('stripe_product_id', 'nc_plans_stripe_product_idx');
+    table.index('stripe_product_id', 'atm_plans_stripe_product_idx');
   });
 
   await knex.schema.createTable(MetaTable.SUBSCRIPTIONS, (table) => {
@@ -697,11 +697,11 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.SUBSCRIPTIONS, (table) => {
-    table.index('fk_workspace_id', 'nc_subscriptions_ws_idx');
-    table.index('fk_org_id', 'nc_subscriptions_org_idx');
+    table.index('fk_workspace_id', 'atm_subscriptions_ws_idx');
+    table.index('fk_org_id', 'atm_subscriptions_org_idx');
     table.index(
       'stripe_subscription_id',
-      'nc_subscriptions_stripe_subscription_idx',
+      'atm_subscriptions_stripe_subscription_idx',
     );
   });
 
@@ -721,7 +721,7 @@ const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.USAGE_STATS, (table) => {
     table.index(
       ['fk_workspace_id', 'period_start'],
-      'nc_usage_stats_ws_period_idx',
+      'atm_usage_stats_ws_period_idx',
     );
   });
 
@@ -743,126 +743,126 @@ const down = async (knex: Knex) => {
   const tablesToRecreateOldBaseIdIndex = [
     {
       tableName: MetaTable.PROJECT_USERS,
-      indexName: 'nc_base_users_v2_base_id_index',
+      indexName: 'atm_base_users_v2_base_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW_COLUMNS,
-      indexName: 'nc_calendar_view_columns_v2_base_id_index',
+      indexName: 'atm_calendar_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW_RANGE,
-      indexName: 'nc_calendar_view_range_v2_base_id_index',
+      indexName: 'atm_calendar_view_range_v2_base_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW,
-      indexName: 'nc_calendar_view_v2_base_id_index',
+      indexName: 'atm_calendar_view_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_BARCODE,
-      indexName: 'nc_col_barcode_v2_base_id_index',
+      indexName: 'atm_col_barcode_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_FORMULA,
-      indexName: 'nc_col_formula_v2_base_id_index',
+      indexName: 'atm_col_formula_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_LOOKUP,
-      indexName: 'nc_col_lookup_v2_base_id_index',
+      indexName: 'atm_col_lookup_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_QRCODE,
-      indexName: 'nc_col_qrcode_v2_base_id_index',
+      indexName: 'atm_col_qrcode_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_RELATIONS,
-      indexName: 'nc_col_relations_v2_base_id_index',
+      indexName: 'atm_col_relations_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_ROLLUP,
-      indexName: 'nc_col_rollup_v2_base_id_index',
+      indexName: 'atm_col_rollup_v2_base_id_index',
     },
     {
       tableName: MetaTable.COL_SELECT_OPTIONS,
-      indexName: 'nc_col_select_options_v2_base_id_index',
+      indexName: 'atm_col_select_options_v2_base_id_index',
     },
-    { tableName: MetaTable.COLUMNS, indexName: 'nc_columns_v2_base_id_index' },
+    { tableName: MetaTable.COLUMNS, indexName: 'atm_columns_v2_base_id_index' },
     {
       tableName: MetaTable.COMMENTS_REACTIONS,
-      indexName: 'nc_comment_reactions_base_id_index',
+      indexName: 'atm_comment_reactions_base_id_index',
     },
-    { tableName: MetaTable.COMMENTS, indexName: 'nc_comments_base_id_index' },
+    { tableName: MetaTable.COMMENTS, indexName: 'atm_comments_base_id_index' },
     {
       tableName: MetaTable.MODEL_ROLE_VISIBILITY,
-      indexName: 'nc_disabled_models_for_role_v2_base_id_index',
+      indexName: 'atm_disabled_models_for_role_v2_base_id_index',
     },
     {
       tableName: MetaTable.EXTENSIONS,
-      indexName: 'nc_extensions_base_id_index',
+      indexName: 'atm_extensions_base_id_index',
     },
     {
       tableName: MetaTable.FILTER_EXP,
-      indexName: 'nc_filter_exp_v2_base_id_index',
+      indexName: 'atm_filter_exp_v2_base_id_index',
     },
     {
       tableName: MetaTable.FORM_VIEW_COLUMNS,
-      indexName: 'nc_form_view_columns_v2_base_id_index',
+      indexName: 'atm_form_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.FORM_VIEW,
-      indexName: 'nc_form_view_v2_base_id_index',
+      indexName: 'atm_form_view_v2_base_id_index',
     },
     {
       tableName: MetaTable.GALLERY_VIEW_COLUMNS,
-      indexName: 'nc_gallery_view_columns_v2_base_id_index',
+      indexName: 'atm_gallery_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.GALLERY_VIEW,
-      indexName: 'nc_gallery_view_v2_base_id_index',
+      indexName: 'atm_gallery_view_v2_base_id_index',
     },
     {
       tableName: MetaTable.GRID_VIEW_COLUMNS,
-      indexName: 'nc_grid_view_columns_v2_base_id_index',
+      indexName: 'atm_grid_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.GRID_VIEW,
-      indexName: 'nc_grid_view_v2_base_id_index',
+      indexName: 'atm_grid_view_v2_base_id_index',
     },
     {
       tableName: MetaTable.HOOK_LOGS,
-      indexName: 'nc_hook_logs_v2_base_id_index',
+      indexName: 'atm_hook_logs_v2_base_id_index',
     },
-    { tableName: MetaTable.HOOKS, indexName: 'nc_hooks_v2_base_id_index' },
+    { tableName: MetaTable.HOOKS, indexName: 'atm_hooks_v2_base_id_index' },
     {
       tableName: MetaTable.KANBAN_VIEW_COLUMNS,
-      indexName: 'nc_kanban_view_columns_v2_base_id_index',
+      indexName: 'atm_kanban_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.KANBAN_VIEW,
-      indexName: 'nc_kanban_view_v2_base_id_index',
+      indexName: 'atm_kanban_view_v2_base_id_index',
     },
     {
       tableName: MetaTable.MAP_VIEW_COLUMNS,
-      indexName: 'nc_map_view_columns_v2_base_id_index',
+      indexName: 'atm_map_view_columns_v2_base_id_index',
     },
     {
       tableName: MetaTable.MAP_VIEW,
-      indexName: 'nc_map_view_v2_base_id_index',
+      indexName: 'atm_map_view_v2_base_id_index',
     },
-    { tableName: MetaTable.MODELS, indexName: 'nc_models_v2_base_id_index' },
-    { tableName: MetaTable.SORT, indexName: 'nc_sort_v2_base_id_index' },
+    { tableName: MetaTable.MODELS, indexName: 'atm_models_v2_base_id_index' },
+    { tableName: MetaTable.SORT, indexName: 'atm_sort_v2_base_id_index' },
     {
-      tableName: MetaTable.SYNC_LOGS,
-      indexName: 'nc_sync_logs_v2_base_id_index',
+      tableName: MetaTable.SYATMOSPHERE_LOGS,
+      indexName: 'atm_sync_logs_v2_base_id_index',
     },
     {
-      tableName: MetaTable.SYNC_SOURCE,
-      indexName: 'nc_sync_source_v2_base_id_index',
+      tableName: MetaTable.SYATMOSPHERE_SOURCE,
+      indexName: 'atm_sync_source_v2_base_id_index',
     },
     {
       tableName: MetaTable.USER_COMMENTS_NOTIFICATIONS_PREFERENCE,
-      indexName: 'nc_user_comment_notifications_preference_base_id_index',
+      indexName: 'atm_user_comment_notifications_preference_base_id_index',
     },
-    { tableName: MetaTable.VIEWS, indexName: 'nc_views_v2_base_id_index' },
+    { tableName: MetaTable.VIEWS, indexName: 'atm_views_v2_base_id_index' },
   ];
 
   for (const { tableName, indexName } of tablesToRecreateOldBaseIdIndex) {
@@ -873,156 +873,156 @@ const down = async (knex: Knex) => {
 
   // SOURCES table had additional old indexes
   await knex.schema.table(MetaTable.SOURCES, (table) => {
-    table.index(['base_id'], 'nc_sources_v2_base_id_index');
-    table.index(['fk_integration_id'], 'nc_sources_v2_fk_integration_id_index');
+    table.index(['base_id'], 'atm_sources_v2_base_id_index');
+    table.index(['fk_integration_id'], 'atm_sources_v2_fk_integration_id_index');
   });
 
   // Drop the new indexes that were added in `up()`.
   const tablesBaseIdWorkspaceIdx = [
     {
       tableName: MetaTable.PROJECT_USERS,
-      indexName: 'nc_base_users_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_base_users_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW_COLUMNS,
-      indexName: 'nc_calendar_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_calendar_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW_RANGE,
-      indexName: 'nc_calendar_view_range_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_calendar_view_range_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.CALENDAR_VIEW,
-      indexName: 'nc_calendar_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_calendar_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_BARCODE,
-      indexName: 'nc_col_barcode_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_barcode_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_FORMULA,
-      indexName: 'nc_col_formula_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_formula_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_LOOKUP,
-      indexName: 'nc_col_lookup_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_lookup_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_QRCODE,
-      indexName: 'nc_col_qrcode_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_qrcode_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_RELATIONS,
-      indexName: 'nc_col_relations_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_relations_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_ROLLUP,
-      indexName: 'nc_col_rollup_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_rollup_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COL_SELECT_OPTIONS,
-      indexName: 'nc_col_select_options_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_col_select_options_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COLUMNS,
-      indexName: 'nc_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COMMENTS_REACTIONS,
-      indexName: 'nc_comment_reactions_base_id_fk_workspace_id_index',
+      indexName: 'atm_comment_reactions_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.COMMENTS,
-      indexName: 'nc_comments_base_id_fk_workspace_id_index',
+      indexName: 'atm_comments_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.MODEL_ROLE_VISIBILITY,
-      indexName: 'nc_disabled_models_for_role_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_disabled_models_for_role_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.EXTENSIONS,
-      indexName: 'nc_extensions_base_id_fk_workspace_id_index',
+      indexName: 'atm_extensions_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.FILTER_EXP,
-      indexName: 'nc_filter_exp_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_filter_exp_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.FORM_VIEW_COLUMNS,
-      indexName: 'nc_form_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_form_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.FORM_VIEW,
-      indexName: 'nc_form_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_form_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.GALLERY_VIEW_COLUMNS,
-      indexName: 'nc_gallery_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_gallery_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.GALLERY_VIEW,
-      indexName: 'nc_gallery_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_gallery_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.GRID_VIEW_COLUMNS,
-      indexName: 'nc_grid_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_grid_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.GRID_VIEW,
-      indexName: 'nc_grid_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_grid_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.HOOK_LOGS,
-      indexName: 'nc_hook_logs_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_hook_logs_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.HOOKS,
-      indexName: 'nc_hooks_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_hooks_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.KANBAN_VIEW_COLUMNS,
-      indexName: 'nc_kanban_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_kanban_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.KANBAN_VIEW,
-      indexName: 'nc_kanban_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_kanban_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.MAP_VIEW_COLUMNS,
-      indexName: 'nc_map_view_columns_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_map_view_columns_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.MAP_VIEW,
-      indexName: 'nc_map_view_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_map_view_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.MODELS,
-      indexName: 'nc_models_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_models_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.SORT,
-      indexName: 'nc_sort_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_sort_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.SOURCES,
-      indexName: 'nc_source_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_source_v2_base_id_fk_workspace_id_index',
     },
     {
-      tableName: MetaTable.SYNC_LOGS,
-      indexName: 'nc_sync_logs_v2_base_id_fk_workspace_id_index',
+      tableName: MetaTable.SYATMOSPHERE_LOGS,
+      indexName: 'atm_sync_logs_v2_base_id_fk_workspace_id_index',
     },
     {
-      tableName: MetaTable.SYNC_SOURCE,
-      indexName: 'nc_sync_source_v2_base_id_fk_workspace_id_index',
+      tableName: MetaTable.SYATMOSPHERE_SOURCE,
+      indexName: 'atm_sync_source_v2_base_id_fk_workspace_id_index',
     },
     {
       tableName: MetaTable.USER_COMMENTS_NOTIFICATIONS_PREFERENCE,
       indexName:
-        'nc_user_comment_notifications_preference_base_id_fk_workspace_i',
+        'atm_user_comment_notifications_preference_base_id_fk_workspace_i',
     },
     {
       tableName: MetaTable.VIEWS,
-      indexName: 'nc_views_v2_base_id_fk_workspace_id_index',
+      indexName: 'atm_views_v2_base_id_fk_workspace_id_index',
     },
   ];
 
@@ -1035,26 +1035,26 @@ const down = async (knex: Knex) => {
 
   // Drop the other unique indexes created in `up()`
   await knex.schema.table(MetaTable.PROJECT, (table) => {
-    table.dropIndex(['fk_custom_url_id'], 'nc_bases_v2_fk_custom_url_id_index');
-    table.dropIndex(['fk_workspace_id'], 'nc_bases_v2_fk_workspace_id_index');
+    table.dropIndex(['fk_custom_url_id'], 'atm_bases_v2_fk_custom_url_id_index');
+    table.dropIndex(['fk_workspace_id'], 'atm_bases_v2_fk_workspace_id_index');
   });
 
   await knex.schema.table(MetaTable.INTEGRATIONS, (table) => {
     table.dropIndex(
       ['fk_workspace_id'],
-      'nc_integrations_v2_fk_workspace_id_index',
+      'atm_integrations_v2_fk_workspace_id_index',
     );
   });
 
   await knex.schema.table(MetaTable.SOURCES, (table) => {
     table.dropIndex(
       ['fk_integration_id'],
-      'nc_sources_v2_fk_integration_id_index',
+      'atm_sources_v2_fk_integration_id_index',
     );
   });
 
   await knex.schema.table(MetaTable.VIEWS, (table) => {
-    table.dropIndex(['fk_custom_url_id'], 'nc_views_v2_fk_custom_url_id_index');
+    table.dropIndex(['fk_custom_url_id'], 'atm_views_v2_fk_custom_url_id_index');
   });
 
   // Drop the new columns added in `up()`
@@ -1092,8 +1092,8 @@ const down = async (knex: Knex) => {
     MetaTable.MODELS,
     MetaTable.SORT,
     MetaTable.SOURCES,
-    MetaTable.SYNC_LOGS,
-    MetaTable.SYNC_SOURCE,
+    MetaTable.SYATMOSPHERE_LOGS,
+    MetaTable.SYATMOSPHERE_SOURCE,
     MetaTable.USER_COMMENTS_NOTIFICATIONS_PREFERENCE,
     MetaTable.VIEWS,
   ];

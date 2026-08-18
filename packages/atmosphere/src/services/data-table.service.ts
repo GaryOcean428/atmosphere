@@ -6,29 +6,29 @@ import {
   ncIsNumber,
   RelationTypes,
   ViewTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { validatePayload } from 'src/helpers';
-import type { NcApiVersion } from 'nocodb-sdk';
-import type { NcRequest } from 'nocodb-sdk';
+import type { AtApiVersion } from 'atmosphere-sdk';
+import type { AtRequest } from 'atmosphere-sdk';
 import type { LinkToAnotherRecordColumn } from '~/models';
 import type { LtarDisplayValueContext } from '~/helpers/ltarDisplayValueResolver';
 import { DBQueryClient } from '~/dbQueryClient';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { validateV1V2DataPayloadLimit } from '~/helpers/dataHelpers';
 import { restrictNestedLinkQuery } from '~/helpers/nestedLinkQueryHelpers';
 import { parseFilterArrJson } from '~/helpers/filterArrJsonHelper';
 import { Column, Model, Source, View } from '~/models';
-import { nocoExecute, processConcurrently } from '~/utils';
+import { atmosphereExecute, processConcurrently } from '~/utils';
 import { DatasService } from '~/services/datas.service';
 import {
   captureForTrace,
   TraceCommand,
 } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import getAst from '~/helpers/getAst';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { dataWrapper } from '~/helpers/dbHelpers';
 import { Profiler } from '~/helpers/profiler';
 import {
@@ -42,14 +42,14 @@ export class DataTableService {
   logger = new Logger(DataTableService.name);
 
   async dataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       modelId: string;
       query: any;
       viewId?: string;
       ignorePagination?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       includeSortAndFilterColumns?: boolean;
       getHiddenColumns?: boolean;
       user?: any;
@@ -73,14 +73,14 @@ export class DataTableService {
   }
 
   async dataRead(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       modelId: string;
       rowId: string;
       viewId?: string;
       query: any;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       user?: any;
     },
   ) {
@@ -91,7 +91,7 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -101,14 +101,14 @@ export class DataTableService {
     });
 
     if (!row) {
-      NcError.get(context).recordNotFound(param.rowId);
+      AtError.get(context).recordNotFound(param.rowId);
     }
 
     return row;
   }
 
   async dataAggregate(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       modelId: string;
@@ -122,7 +122,7 @@ export class DataTableService {
     const source = await Source.get(context, model.source_id);
 
     if (view && view.type !== ViewTypes.GRID) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Aggregation is only supported on grid views',
       );
     }
@@ -151,7 +151,7 @@ export class DataTableService {
       : OperationName.recordInsert,
   )
   async dataInsert(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       viewId?: string;
@@ -159,13 +159,13 @@ export class DataTableService {
       body: any;
       cookie: any;
       undo?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       internalFlags?: {
         allowSystemColumn?: boolean;
         skipHooks?: boolean;
       };
       user?: any;
-      req?: NcRequest;
+      req?: AtRequest;
     },
   ) {
     validateV1V2DataPayloadLimit(context, param);
@@ -176,7 +176,7 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     // if array then do bulk insert
@@ -199,7 +199,7 @@ export class DataTableService {
 
   @TraceCommand(OperationName.recordMove)
   async dataMove(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       modelId: string;
@@ -216,7 +216,7 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     await baseModel.moveRecord({
@@ -234,7 +234,7 @@ export class DataTableService {
       : OperationName.recordUpdate,
   )
   async dataUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       modelId: string;
@@ -242,7 +242,7 @@ export class DataTableService {
       // rowId: string;
       body: any;
       cookie: any;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       internalFlags?: {
         allowSystemColumn?: boolean;
         skipHooks?: boolean;
@@ -263,7 +263,7 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     await baseModel.bulkUpdate(
@@ -290,7 +290,7 @@ export class DataTableService {
       : OperationName.recordDelete,
   )
   async dataDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       modelId: string;
@@ -314,7 +314,7 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     await baseModel.bulkDelete(
@@ -331,13 +331,13 @@ export class DataTableService {
   }
 
   async dataCount(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       viewId?: string;
       modelId: string;
       query: any;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       user?: any;
     },
   ) {
@@ -348,7 +348,7 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const countArgs: any = { ...param.query };
@@ -360,7 +360,7 @@ export class DataTableService {
   }
 
   async getModelAndView(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       viewId?: string;
@@ -370,11 +370,11 @@ export class DataTableService {
   ) {
     const model = await Model.get(context, param.modelId);
     if (!model) {
-      NcError.get(context).tableNotFound(param.modelId);
+      AtError.get(context).tableNotFound(param.modelId);
     }
 
     if (param.baseId && model.base_id !== param.baseId) {
-      NcError.get(context).tableNotFound(param.modelId);
+      AtError.get(context).tableNotFound(param.modelId);
     }
 
     // Table visibility permission is checked in extract-ids middleware
@@ -385,7 +385,7 @@ export class DataTableService {
     if (param.viewId) {
       view = await View.get(context, param.viewId);
       if (!view || (view.fk_model_id && view.fk_model_id !== param.modelId)) {
-        NcError.get(context).viewNotFound(param.viewId);
+        AtError.get(context).viewNotFound(param.viewId);
       }
     }
 
@@ -393,7 +393,7 @@ export class DataTableService {
   }
 
   private async extractIdObj(
-    context: NcContext,
+    context: AtContext,
     {
       model,
       body,
@@ -417,7 +417,7 @@ export class DataTableService {
   }
 
   private async checkForDuplicateRow(
-    context: NcContext,
+    context: AtContext,
     {
       rows,
       model,
@@ -455,27 +455,27 @@ export class DataTableService {
           .join('___');
       // if duplicate then throw error
       if (keys.has(pk)) {
-        NcError.get(context).unprocessableEntity(
+        AtError.get(context).unprocessableEntity(
           'Duplicate record with id ' + pk,
         );
       }
 
       if (pk === undefined || pk === null) {
-        NcError.get(context).unprocessableEntity('Primary key is required');
+        AtError.get(context).unprocessableEntity('Primary key is required');
       }
       keys.add(pk);
     }
   }
 
   async nestedDataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       modelId: string;
       query: any;
       rowId: string | string[] | number | number[];
       columnId: string;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       user?: any;
     },
   ) {
@@ -485,11 +485,11 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     if (!(await baseModel.exist(param.rowId))) {
-      NcError.get(context).recordNotFound(`${param.rowId}`);
+      AtError.get(context).recordNotFound(`${param.rowId}`);
     }
 
     const column = await this.getColumn(context, param);
@@ -500,7 +500,7 @@ export class DataTableService {
 
     // The related table may live in another base (cross-base link). Build the
     // projection in the related table's own context — otherwise `getAst` loads its
-    // columns under the parent base, resolves none, and `nocoExecute` below strips
+    // columns under the parent base, resolves none, and `atmosphereExecute` below strips
     // every field (returning empty `{}` records). Mirrors `getLinkedDataList`.
     const { refContext } = colOptions.getRelContext(context);
 
@@ -551,7 +551,7 @@ export class DataTableService {
         },
         listArgs as any,
       );
-      data = await nocoExecute(ast, data, {}, listArgs);
+      data = await atmosphereExecute(ast, data, {}, listArgs);
       return data;
     }
 
@@ -611,7 +611,7 @@ export class DataTableService {
       );
     }
 
-    data = await nocoExecute(ast, data, {}, listArgs);
+    data = await atmosphereExecute(ast, data, {}, listArgs);
 
     if (colOptions.type === RelationTypes.BELONGS_TO) return data;
 
@@ -622,24 +622,24 @@ export class DataTableService {
   }
 
   async getColumn(
-    context: NcContext,
+    context: AtContext,
     param: { modelId: string; columnId: string },
   ) {
     const column = await Column.get(context, { colId: param.columnId });
 
-    if (!column) NcError.get(context).fieldNotFound(param.columnId);
+    if (!column) AtError.get(context).fieldNotFound(param.columnId);
 
     if (column.fk_model_id !== param.modelId)
-      NcError.get(context).badRequest('Column not belong to model');
+      AtError.get(context).badRequest('Column not belong to model');
 
     if (!isLinksOrLTAR(column))
-      NcError.get(context).badRequest('Column is not LTAR');
+      AtError.get(context).badRequest('Column is not LTAR');
     return column;
   }
 
   @TraceCommand(OperationName.recordLinkAdd)
   async nestedLink(
-    context: NcContext,
+    context: AtContext,
     param: {
       cookie: any;
       viewId: string;
@@ -666,7 +666,7 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const column = await this.getColumn(context, param);
@@ -687,7 +687,7 @@ export class DataTableService {
   // end when `before` is null.
   @TraceCommand(OperationName.recordLinkReorder)
   async nestedReorder(
-    context: NcContext,
+    context: AtContext,
     param: {
       cookie: any;
       viewId: string;
@@ -707,7 +707,7 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const column = await this.getColumn(context, param);
@@ -724,7 +724,7 @@ export class DataTableService {
 
   @TraceCommand(OperationName.recordLinkRemove)
   async nestedUnlink(
-    context: NcContext,
+    context: AtContext,
     param: {
       cookie: any;
       viewId: string;
@@ -739,14 +739,14 @@ export class DataTableService {
     this.validateIds(context, param.refRowIds);
 
     const { model, view } = await this.getModelAndView(context, param);
-    if (!model) NcError.get(context).tableNotFound(param.modelId);
+    if (!model) AtError.get(context).tableNotFound(param.modelId);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const column = await this.getColumn(context, param);
@@ -765,7 +765,7 @@ export class DataTableService {
 
   // todo: naming & optimizing
   async nestedListCopyPasteOrDeleteAll(
-    context: NcContext,
+    context: AtContext,
     param: {
       cookie: any;
       viewId: string;
@@ -811,7 +811,7 @@ export class DataTableService {
    *  multi-column paste records as a single `recordLinkSwapBulk` op
    *  instead of one `recordLinkSwap` per column. */
   private async computeListCopyPasteOrDeleteAllDiff(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       modelId: string;
@@ -860,7 +860,7 @@ export class DataTableService {
       operationMap.copy.fk_related_model_id !==
         operationMap.paste.fk_related_model_id
     ) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'The operation is not supported on different fk_related_model_id',
       );
     }
@@ -870,14 +870,14 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     if (
       operationMap.deleteAll &&
       !(await baseModel.exist(operationMap.deleteAll.rowId))
     ) {
-      NcError.get(context).recordNotFound(operationMap.deleteAll.rowId);
+      AtError.get(context).recordNotFound(operationMap.deleteAll.rowId);
     } else if (operationMap.copy && operationMap.paste) {
       const [existsCopyRow, existsPasteRow] = await Promise.all([
         baseModel.exist(operationMap.copy.rowId),
@@ -885,13 +885,13 @@ export class DataTableService {
       ]);
 
       if (!existsCopyRow && !existsPasteRow) {
-        NcError.get(context).recordNotFound(
+        AtError.get(context).recordNotFound(
           `'${operationMap.copy.rowId}' and '${operationMap.paste.rowId}'`,
         );
       } else if (!existsCopyRow) {
-        NcError.get(context).recordNotFound(operationMap.copy.rowId);
+        AtError.get(context).recordNotFound(operationMap.copy.rowId);
       } else if (!existsPasteRow) {
-        NcError.get(context).recordNotFound(operationMap.paste.rowId);
+        AtError.get(context).recordNotFound(operationMap.paste.rowId);
       }
     }
 
@@ -1044,7 +1044,7 @@ export class DataTableService {
    *  pks (replay can't drift). */
   @TraceCommand(OperationName.recordLinkSwap)
   async _traceApplyLinkSwap(
-    context: NcContext,
+    context: AtContext,
     param: {
       modelId: string;
       baseId?: string;
@@ -1064,7 +1064,7 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
     if (param.unlink.length) {
       await baseModel.removeLinks({
@@ -1089,7 +1089,7 @@ export class DataTableService {
    *  per-(rowId, columnId) diffs in a single recorded op. */
   @TraceCommand(OperationName.recordLinkSwapBulk)
   async _traceApplyLinkSwapBulk(
-    context: NcContext,
+    context: AtContext,
     param: {
       modelId: string;
       baseId?: string;
@@ -1132,7 +1132,7 @@ export class DataTableService {
    *  as a separate op so audit/UI can distinguish the two flows. */
   @TraceCommand(OperationName.recordLinkByDisplay)
   async _traceApplyLinkByDisplay(
-    context: NcContext,
+    context: AtContext,
     param: {
       modelId: string;
       baseId?: string;
@@ -1152,7 +1152,7 @@ export class DataTableService {
   }
 
   async nestedListBulkCopyPasteOrDeleteAll(
-    context: NcContext,
+    context: AtContext,
     param: {
       cookie: any;
       viewId: string;
@@ -1171,7 +1171,7 @@ export class DataTableService {
     },
   ) {
     if (!Array.isArray(param.data) || !param.data.length) {
-      NcError.get(context).badRequest('Invalid bulk operation payload');
+      AtError.get(context).badRequest('Invalid bulk operation payload');
     }
 
     const results: { link: any[]; unlink: any[] }[] = [];
@@ -1184,7 +1184,7 @@ export class DataTableService {
 
     for (const entry of param.data) {
       if (!entry.columnId || !Array.isArray(entry.data)) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'Each bulk entry must have columnId and data array',
         );
       }
@@ -1220,7 +1220,7 @@ export class DataTableService {
   }
 
   async nestedBulkLinkByDisplayValue(
-    context: NcContext,
+    context: AtContext,
     param: {
       cookie: any;
       viewId: string;
@@ -1245,7 +1245,7 @@ export class DataTableService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const groups = this.groupEntriesByColumn(param.data);
@@ -1356,7 +1356,7 @@ export class DataTableService {
    * (nothing to link).
    */
   private async resolveColumnGroupContext(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string; modelId: string; query: any; user?: any },
     columnId: string,
   ): Promise<LtarDisplayValueContext | null> {
@@ -1411,7 +1411,7 @@ export class DataTableService {
    *  `recordLinkByDisplay` log entry — this function does NOT call
    *  `addLinks`/`removeLinks`. */
   private async collectLinkDiffsForGroup(
-    context: NcContext,
+    context: AtContext,
     baseModel: Awaited<ReturnType<typeof Model.getBaseModelSQL>>,
     groupCtx: LtarDisplayValueContext,
     entries: {
@@ -1432,7 +1432,7 @@ export class DataTableService {
 
     for (const { index, entry } of entries) {
       if (!(await baseModel.exist(entry.rowId))) {
-        NcError.get(context).recordNotFound(entry.rowId);
+        AtError.get(context).recordNotFound(entry.rowId);
       }
 
       const seenPks = new Set<string>();
@@ -1486,13 +1486,13 @@ export class DataTableService {
     }
   }
 
-  validateIds(context: NcContext, rowIds: any[] | any) {
+  validateIds(context: AtContext, rowIds: any[] | any) {
     if (Array.isArray(rowIds)) {
       const map = new Map<string, boolean>();
       const set = new Set<string>();
       for (const rowId of rowIds) {
         if (rowId === undefined || rowId === null)
-          NcError.get(context).recordNotFound(rowId);
+          AtError.get(context).recordNotFound(rowId);
         if (map.has(rowId)) {
           set.add(rowId);
         } else {
@@ -1500,9 +1500,9 @@ export class DataTableService {
         }
       }
 
-      if (set.size > 0) NcError.get(context).duplicateRecord([...set]);
+      if (set.size > 0) AtError.get(context).duplicateRecord([...set]);
     } else if (rowIds === undefined || rowIds === null) {
-      NcError.get(context).recordNotFound(rowIds);
+      AtError.get(context).recordNotFound(rowIds);
     }
   }
 
@@ -1528,7 +1528,7 @@ export class DataTableService {
   }
 
   async bulkDataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       modelId: string;
@@ -1547,14 +1547,14 @@ export class DataTableService {
     } catch (e) {}
 
     if (!bulkFilterList?.length) {
-      NcError.get(context).badRequest('Invalid bulkFilterList');
+      AtError.get(context).badRequest('Invalid bulkFilterList');
     }
 
     const source = await Source.get(context, model.source_id);
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1582,7 +1582,7 @@ export class DataTableService {
   }
 
   async bulkAggregate(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId?: string;
       modelId: string;
@@ -1596,7 +1596,7 @@ export class DataTableService {
     const source = await Source.get(context, model.source_id);
 
     if (view && view.type !== ViewTypes.GRID) {
-      NcError.badRequest('Aggregation is only supported on grid views');
+      AtError.badRequest('Aggregation is only supported on grid views');
     }
 
     const listArgs: any = { ...param.query };
@@ -1625,9 +1625,9 @@ export class DataTableService {
   }
 
   async getLinkedDataList(
-    context: NcContext,
+    context: AtContext,
     params: {
-      req: NcRequest;
+      req: AtRequest;
       linkColumnId: string;
     },
   ): Promise<any> {
@@ -1636,7 +1636,7 @@ export class DataTableService {
     const relationColumn = await Column.get(context, { colId: linkColumnId });
 
     if (!relationColumn || !isLinksOrLTAR(relationColumn)) {
-      NcError.get(context).fieldNotFound(linkColumnId);
+      AtError.get(context).fieldNotFound(linkColumnId);
     }
 
     const { refContext } = (

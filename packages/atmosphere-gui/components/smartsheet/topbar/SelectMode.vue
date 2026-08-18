@@ -15,7 +15,7 @@ const onClickDetails = () => {
 </script>
 
 <template>
-  <div class="flex flex-row p-1 bg-nc-bg-gray-medium rounded-lg gap-x-0.5 nc-view-sidebar-tab">
+  <div class="flex flex-row p-1 bg-atm-bg-gray-medium rounded-lg gap-x-0.5 atm-view-sidebar-tab">
     <div
       v-e="['c:project:mode:data']"
       class="tab"
@@ -26,7 +26,7 @@ const onClickDetails = () => {
     >
       <GeneralViewIcon v-if="activeView?.type" :meta="{ type: activeView?.type }" class="tab-icon" ignore-color />
       <GeneralLoader v-else class="tab-icon" />
-      <div class="tab-title nc-tab">{{ $t('general.data') }}</div>
+      <div class="tab-title atm-tab">{{ $t('general.data') }}</div>
     </div>
     <div
       v-e="['c:project:mode:details']"
@@ -44,14 +44,14 @@ const onClickDetails = () => {
           fontWeight: 500,
         }"
       />
-      <div class="tab-title nc-tab">{{ $t('general.details') }}</div>
+      <div class="tab-title atm-tab">{{ $t('general.details') }}</div>
     </div>
   </div>
 </template>
 
 <style scoped>
 .tab {
-  @apply flex flex-row items-center h-6 justify-center px-2 py-1 rounded-md gap-x-2 text-nc-content-gray-subtle2 hover:text-nc-content-gray-extreme cursor-pointer transition-all duration-300 select-none;
+  @apply flex flex-row items-center h-6 justify-center px-2 py-1 rounded-md gap-x-2 text-atm-content-gray-subtle2 hover:text-atm-content-gray-extreme cursor-pointer transition-all duration-300 select-none;
 }
 
 .tab-icon {
@@ -67,7 +67,7 @@ const onClickDetails = () => {
 }
 
 .active {
-  @apply bg-nc-bg-default text-nc-content-brand-disabled hover:text-nc-content-brand-disabled;
+  @apply bg-atm-bg-default text-atm-content-brand-disabled hover:text-atm-content-brand-disabled;
 
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.06), 0px 5px 3px -2px rgba(0, 0, 0, 0.02);
 }

@@ -1,8 +1,8 @@
 import type { DefaultOptionType } from 'ant-design-vue/lib/select'
 import type { SortableOptions } from 'sortablejs'
 import type { AutoScrollOptions } from 'sortablejs/plugins'
-import type { UserType } from 'nocodb-sdk'
-import { NOCO_SERVICE_USERS, ncIsArray } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
+import { ATMOSPHERE_SERVICE_USERS, ncIsArray } from 'atmosphere-sdk'
 import GraphemeSplitter from 'grapheme-splitter'
 
 export const modalSizes = {
@@ -207,8 +207,8 @@ export const searchCompare = (
  */
 export const antSelectFilterOption = (
   inputValue: string,
-  option?: DefaultOptionType | NcListItemType,
-  searchKey: keyof DefaultOptionType | keyof NcListItemType | (keyof NcListItemType)[] | (keyof DefaultOptionType)[] = 'key',
+  option?: DefaultOptionType | AtListItemType,
+  searchKey: keyof DefaultOptionType | keyof AtListItemType | (keyof AtListItemType)[] | (keyof DefaultOptionType)[] = 'key',
 ) => {
   if (!option) return false
 
@@ -240,7 +240,7 @@ export const extractNameFromEmail = (email?: string) => {
  * fallback when a user has no `display_name` set.
  *
  * Takes the local part (before `@`), splits on common separators (`.`, `_`,
- * `-`, `+`), and capitalises each word — so `kalp.soni@nocodb.com` becomes
+ * `-`, `+`), and capitalises each word — so `kalp.soni@atmosphere.dev` becomes
  * `Kalp Soni`. This keeps user names consistent across the app instead of
  * showing raw `firstname.lastname` or full email addresses.
  *
@@ -249,7 +249,7 @@ export const extractNameFromEmail = (email?: string) => {
  *
  * @example
  * ```typescript
- * formatUserNameFromEmail('kalp.soni@nocodb.com'); // => 'Kalp Soni'
+ * formatUserNameFromEmail('kalp.soni@atmosphere.dev'); // => 'Kalp Soni'
  * ```
  */
 export const formatUserNameFromEmail = (email?: string) => {
@@ -294,7 +294,7 @@ export const extractUserDisplayNameOrEmail = (user?: UserType | Record<string, s
 
 /**
  * The subset of `UserType` audit/comment feeds read off a resolved user.
- * `meta` is included even though `NOCO_SERVICE_USERS` literals never carry
+ * `meta` is included even though `ATMOSPHERE_SERVICE_USERS` literals never carry
  * one — `meta?: MetaType` is optional on `UserType`, so the literal still
  * structurally satisfies this type, AND it lets callers `?.meta` without
  * a cast when unioning with a real `baseUsers` entry.
@@ -302,17 +302,17 @@ export const extractUserDisplayNameOrEmail = (user?: UserType | Record<string, s
 export type ResolvedUserLike = Pick<UserType, 'id' | 'email' | 'display_name' | 'meta'>
 
 /**
- * Resolves a built-in NocoDB service user (sync, automation, workflow, trash-cleanup)
+ * Resolves a built-in Atmosphere service user (sync, automation, workflow, trash-cleanup)
  * by id or email. Returns `undefined` if no match.
  *
  * Service users do not appear in `baseUsers`/collaborator lists, so audit and comment
- * feeds need this fallback to render `display_name` (e.g. "NocoDB Sync") instead of
- * the raw service email (e.g. "sync-service@nocodb.com").
+ * feeds need this fallback to render `display_name` (e.g. "Atmosphere Sync") instead of
+ * the raw service email (e.g. "sync-service@atmosphere.dev").
  */
 export const findServiceUser = (idOrEmail?: string | null): ResolvedUserLike | undefined => {
   if (!idOrEmail) return undefined
 
-  return Object.values(NOCO_SERVICE_USERS).find((su) => su.id === idOrEmail || su.email === idOrEmail)
+  return Object.values(ATMOSPHERE_SERVICE_USERS).find((su) => su.id === idOrEmail || su.email === idOrEmail)
 }
 
 /**

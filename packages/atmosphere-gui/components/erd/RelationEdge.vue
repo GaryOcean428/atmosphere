@@ -72,7 +72,7 @@ export default {
       v-if="selected || isHovering"
       style="color: blue"
       color="blue"
-      stroke="var(--nc-brand-accent, #3366FF)"
+      stroke="var(--atm-brand-accent, #3366FF)"
       :stroke-width="(showSkeleton ? baseStroke * 12 : baseStroke * 3) / (selected || isHovering ? 2 : 1)"
       fill="none"
       :d="edgePath[0]"
@@ -108,7 +108,7 @@ export default {
       :class="[
         selected || isHovering ? 'opacity-100' : 'opacity-0 !pointer-events-none',
         showSkeleton ? '!text-6xl' : '!text-xs',
-        `nc-erd-table-label-${data.label?.toLowerCase()?.replace(' ', '-')?.replace('\(', '')?.replace(')', '')}`,
+        `atm-erd-table-label-${data.label?.toLowerCase()?.replace(' ', '-')?.replace('\(', '')?.replace(')', '')}`,
       ]"
     >
       <!-- Show only simple label which is `sourceTable relationType targetTable` -->
@@ -119,7 +119,7 @@ export default {
   <template v-if="!showSkeleton">
     <circle
       v-if="data.isOneToOne"
-      class="nc-erd-edge-circle"
+      class="atm-erd-edge-circle"
       :cx="sourceX"
       :cy="sourceY"
       fill="#fff"
@@ -130,7 +130,7 @@ export default {
 
     <rect
       v-else
-      class="nc-erd-edge-rect"
+      class="atm-erd-edge-rect"
       :x="sourceX"
       :y="sourceY - 4"
       :width="8"
@@ -143,7 +143,7 @@ export default {
 
     <rect
       v-if="data.isManyToMany"
-      class="nc-erd-edge-rect"
+      class="atm-erd-edge-rect"
       :x="targetX"
       :y="targetY - 4"
       :width="8"
@@ -153,6 +153,6 @@ export default {
       :stroke-width="2"
       :transform="`rotate(45,${targetX + 2},${targetY - 4})`"
     />
-    <circle v-else class="nc-erd-edge-circle" :cx="targetX" :cy="targetY" fill="#fff" :r="5" stroke="#898E99" :stroke-width="2" />
+    <circle v-else class="atm-erd-edge-circle" :cx="targetX" :cy="targetY" fill="#fff" :r="5" stroke="#898E99" :stroke-width="2" />
   </template>
 </template>

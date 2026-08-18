@@ -8,27 +8,27 @@ import {
   getFirstNonPersonalView,
   isBcryptHash,
   isSystemColumn,
-  NC_VIEW_PASSWORD_PROTECTED_SENTINEL,
-  NcBaseError,
+  ATMOSPHERE_VIEW_PASSWORD_PROTECTED_SENTINEL,
+  AtBaseError,
   parseProp,
   UITypes,
   ViewLockType,
   ViewTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import bcrypt from 'bcryptjs';
 import { Logger } from '@nestjs/common';
-import { isSupportedDisplayValueColumn } from 'nocodb-sdk';
+import { isSupportedDisplayValueColumn } from 'atmosphere-sdk';
 import type {
   BoolType,
   ColumnReqType,
   ExpandedFormModeType,
   FilterType,
-  NcRequest,
+  AtRequest,
   ROW_COLORING_MODE,
   ViewType,
-} from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import { NcError } from '~/helpers/ncError';
+} from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import { AtError } from '~/helpers/ncError';
 import { notDeletedXcCondition } from '~/utils/trashUtils';
 import { RowColorViewHelpers } from '~/helpers/rowColorViewHelpers';
 import Model from '~/models/Model';
@@ -59,7 +59,7 @@ import ListView from '~/models/ListView';
 import ListViewColumn from '~/models/ListViewColumn';
 import ListViewLevel from '~/models/ListViewLevel';
 import { extractProps } from '~/helpers/extractProps';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import {
   CacheDelDirection,
   CacheGetType,
@@ -67,7 +67,7 @@ import {
   MetaTable,
   RootScopes,
 } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   parseMetaProp,
   prepareForDb,
@@ -78,7 +78,7 @@ import { CustomUrl, LinkToAnotherRecordColumn } from '~/models';
 import { cleanCommandPaletteCache } from '~/helpers/commandPaletteHelpers';
 import { isEE } from '~/utils';
 import { cleanBaseSchemaCacheForBase } from '~/helpers/scriptHelper';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 import {
   SINGLE_QUERY_DEFAULT_VIEW,
   singleQueryCacheKey,
@@ -156,14 +156,14 @@ export default class View implements ViewType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
     includeDeleted = false,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let view =
       viewId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.VIEW}:${viewId}`,
         CacheGetType.TYPE_OBJECT,
@@ -177,7 +177,7 @@ export default class View implements ViewType {
       );
       if (view) {
         view.meta = parseMetaProp(view);
-        await NocoCache.set(context, `${CacheScope.VIEW}:${view.id}`, view);
+        await AtmosphereCache.set(context, `${CacheScope.VIEW}:${view.id}`, view);
       }
     }
 
@@ -189,13 +189,13 @@ export default class View implements ViewType {
   }
 
   public static async getByTitleOrId(
-    context: NcContext,
+    context: AtContext,
     { fk_model_id, titleOrId }: { titleOrId: string; fk_model_id: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const viewId =
       titleOrId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.VIEW_ALIAS}:${fk_model_id}:${titleOrId}`,
         CacheGetType.TYPE_STRING,
@@ -218,14 +218,14 @@ export default class View implements ViewType {
       );
 
       if (view) {
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.VIEW}:${fk_model_id}:${view.id}`,
           view,
         );
         view.meta = parseMetaProp(view);
         // todo: cache - titleOrId can be viewId so we need a different scope here
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.VIEW_ALIAS}:${fk_model_id}:${titleOrId}`,
           view.id,
@@ -237,13 +237,13 @@ export default class View implements ViewType {
   }
 
   public static async getFirstCollaborativeView(
-    context: NcContext,
+    context: AtContext,
     fk_model_id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let view =
       fk_model_id &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.VIEW}:${fk_model_id}:default`,
         CacheGetType.TYPE_OBJECT,
@@ -259,7 +259,7 @@ export default class View implements ViewType {
       if (view) {
         view.meta = parseMetaProp(view);
 
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.VIEW}:${fk_model_id}:default`,
           view,
@@ -270,12 +270,12 @@ export default class View implements ViewType {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     modelId: string,
     includeDeleted = false,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    const cachedList = await NocoCache.getList(context, CacheScope.VIEW, [
+    const cachedList = await AtmosphereCache.getList(context, CacheScope.VIEW, [
       modelId,
     ]);
     let { list: viewsList } = cachedList;
@@ -297,7 +297,7 @@ export default class View implements ViewType {
       for (const view of viewsList) {
         view.meta = parseMetaProp(view);
       }
-      await NocoCache.setList(context, CacheScope.VIEW, [modelId], viewsList);
+      await AtmosphereCache.setList(context, CacheScope.VIEW, [modelId], viewsList);
     }
 
     if (!includeDeleted) {
@@ -314,7 +314,7 @@ export default class View implements ViewType {
 
   // todo: refactor and move duplicate logic to service
   static async insert(
-    context: NcContext,
+    context: AtContext,
     {
       view,
       req,
@@ -335,9 +335,9 @@ export default class View implements ViewType {
           calendar_range?: Partial<CalendarRange>[];
           timeline_range?: Partial<TimelineRange>[];
         };
-      req: NcRequest;
+      req: AtRequest;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let copyFromView: View;
     try {
@@ -397,7 +397,7 @@ export default class View implements ViewType {
         ncMeta,
       );
       if (!parentModel) {
-        NcError.get(context).tableNotFound(view.fk_model_id);
+        AtError.get(context).tableNotFound(view.fk_model_id);
       }
       let columns: any[] = await parentModel.getColumns(
         context,
@@ -622,9 +622,9 @@ export default class View implements ViewType {
 
       if (copyFromView) {
         // generate parent audit id and add it to req object
-        const eventId = await Noco.ncAudit.genNanoid(MetaTable.AUDIT);
+        const eventId = await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT);
         req.ncParentAuditId = eventId;
-        Noco.appHooksService.emit(AppEvents.VIEW_DUPLICATE_START, {
+        Atmosphere.appHooksService.emit(AppEvents.VIEW_DUPLICATE_START, {
           sourceView: copyFromView,
           destView: view as ViewType,
           req,
@@ -659,7 +659,7 @@ export default class View implements ViewType {
             },
             ncMeta,
           );
-          Noco.appHooksService.emit(AppEvents.SORT_CREATE, {
+          Atmosphere.appHooksService.emit(AppEvents.SORT_CREATE, {
             sort,
             view: view as ViewType,
             column: await Column.get(context, {
@@ -701,7 +701,7 @@ export default class View implements ViewType {
             ncMeta,
           );
 
-          Noco.appHooksService.emit(AppEvents.FILTER_CREATE, {
+          Atmosphere.appHooksService.emit(AppEvents.FILTER_CREATE, {
             filter: createdFilter as FilterType,
             column: await Column.get(context, {
               colId: filter.fk_column_id,
@@ -878,7 +878,7 @@ export default class View implements ViewType {
       });
 
       if (copyFromView) {
-        Noco.appHooksService.emit(AppEvents.VIEW_DUPLICATE_COMPLETE, {
+        Atmosphere.appHooksService.emit(AppEvents.VIEW_DUPLICATE_COMPLETE, {
           sourceView: copyFromView,
           destView: view as ViewType,
           req,
@@ -886,7 +886,7 @@ export default class View implements ViewType {
         });
       }
       return View.get(context, view_id, false, ncMeta).then(async (v) => {
-        await NocoCache.appendToList(
+        await AtmosphereCache.appendToList(
           context,
           CacheScope.VIEW,
           [view.fk_model_id],
@@ -896,25 +896,25 @@ export default class View implements ViewType {
       });
     } catch (e) {
       if (copyFromView) {
-        Noco.appHooksService.emit(AppEvents.VIEW_DUPLICATE_FAIL, {
+        Atmosphere.appHooksService.emit(AppEvents.VIEW_DUPLICATE_FAIL, {
           sourceView: copyFromView,
           destView: view as ViewType,
           error: e,
           req,
           context,
         });
-        if (e instanceof NcError || e instanceof NcBaseError) throw e;
+        if (e instanceof AtError || e instanceof AtBaseError) throw e;
         logger.error('Failed to Duplicate View', e);
-        NcError.get(context).internalServerError('Failed to Duplicate View');
+        AtError.get(context).internalServerError('Failed to Duplicate View');
       }
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       logger.error('Failed to Duplicate View', e);
-      NcError.get(context).internalServerError('Failed to Create View');
+      AtError.get(context).internalServerError('Failed to Create View');
     }
   }
 
   static async getRangeColumnsAsArray(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
     ncMeta,
   ) {
@@ -942,7 +942,7 @@ export default class View implements ViewType {
   }
 
   static async insertColumnToAllViews(
-    context: NcContext,
+    context: AtContext,
     param: {
       fk_column_id: any;
       fk_model_id: any;
@@ -952,7 +952,7 @@ export default class View implements ViewType {
         view_id?: any;
       };
     } & Pick<ColumnReqType, 'column_order'>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = {
       fk_column_id: param.fk_column_id,
@@ -1098,7 +1098,7 @@ export default class View implements ViewType {
   }
 
   static async insertColumn(
-    context: NcContext,
+    context: AtContext,
     param: {
       view_id: any;
       order;
@@ -1110,7 +1110,7 @@ export default class View implements ViewType {
       id?: string;
     } & Partial<FormViewColumn> &
       Partial<CalendarViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const view = await this.get(context, param.view_id, false, ncMeta);
 
@@ -1230,9 +1230,9 @@ export default class View implements ViewType {
   }
 
   static async listWithInfo(
-    context: NcContext,
+    context: AtContext,
     id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const list = await this.list(context, id, false, ncMeta);
     for (const item of list) {
@@ -1242,9 +1242,9 @@ export default class View implements ViewType {
   }
 
   static async getColumns(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<
     Array<
       | GridViewColumn
@@ -1303,7 +1303,7 @@ export default class View implements ViewType {
   }
 
   static async getViewColumnId(
-    context: NcContext,
+    context: AtContext,
     {
       viewId,
       colId,
@@ -1311,7 +1311,7 @@ export default class View implements ViewType {
       viewId: string;
       colId: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const view = await this.get(context, viewId);
     if (!view) return undefined;
@@ -1367,7 +1367,7 @@ export default class View implements ViewType {
     }
 
     const key = `${cacheScope}:viewColumnId:${colId}`;
-    const o = await NocoCache.get(context, key, CacheGetType.TYPE_STRING);
+    const o = await AtmosphereCache.get(context, key, CacheGetType.TYPE_STRING);
     if (o) return o;
 
     const viewColumn = await ncMeta.metaGet2(
@@ -1381,13 +1381,13 @@ export default class View implements ViewType {
     );
     if (!viewColumn) return undefined;
 
-    await NocoCache.set(context, key, viewColumn.id);
+    await AtmosphereCache.set(context, key, viewColumn.id);
 
     return viewColumn.id;
   }
 
   static async updateColumn(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
     colId: string,
     colData: {
@@ -1397,10 +1397,10 @@ export default class View implements ViewType {
       bold?: BoolType;
       italic?: BoolType;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const view = await this.get(context, viewId, false, ncMeta);
-    if (!view) NcError.viewNotFound(viewId);
+    if (!view) AtError.viewNotFound(viewId);
     let table;
     let cacheScope;
     switch (view.type) {
@@ -1482,7 +1482,7 @@ export default class View implements ViewType {
             isSupportedDisplayValueColumn(col),
           );
           if (!primary_value_column_meta) {
-            NcError.get(context).internalServerError(
+            AtError.get(context).internalServerError(
               `No display field setup for table`,
             );
           }
@@ -1527,7 +1527,7 @@ export default class View implements ViewType {
       colId,
     );
 
-    await NocoCache.update(context, `${cacheScope}:${colId}`, updateObj);
+    await AtmosphereCache.update(context, `${cacheScope}:${colId}`, updateObj);
 
     // on view column update, delete corresponding single query cache
     await View.clearSingleQueryCache(context, view.fk_model_id, [view], ncMeta);
@@ -1536,10 +1536,10 @@ export default class View implements ViewType {
   }
 
   static async getColumn(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
     colId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const view = await this.get(context, viewId, false, ncMeta);
     switch (view.type) {
@@ -1566,14 +1566,14 @@ export default class View implements ViewType {
   }
 
   static async insertOrUpdateColumn(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
     fkColId: string,
     colData: {
       order?: number;
       show?: BoolType;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<
     | GridViewColumn
     | FormViewColumn
@@ -1583,7 +1583,7 @@ export default class View implements ViewType {
     | any
   > {
     const view = await this.get(context, viewId, false, ncMeta);
-    if (!view) NcError.viewNotFound(viewId);
+    if (!view) AtError.viewNotFound(viewId);
     const table = this.extractViewColumnsTableName(view);
 
     const existingCol = await ncMeta.metaGet2(
@@ -1736,9 +1736,9 @@ export default class View implements ViewType {
 
   // todo: cache
   static async getByUUID(
-    context: NcContext,
+    context: AtContext,
     uuid: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const view = await ncMeta.metaGet2(
       RootScopes.FULL_BYPASS,
@@ -1758,7 +1758,7 @@ export default class View implements ViewType {
     return view && new View(view);
   }
 
-  static async share(context: NcContext, viewId, ncMeta = Noco.ncMeta) {
+  static async share(context: AtContext, viewId, ncMeta = Atmosphere.ncMeta) {
     const view = await this.get(context, viewId);
     if (!view.uuid) {
       const uuid = uuidv4();
@@ -1775,7 +1775,7 @@ export default class View implements ViewType {
         viewId,
       );
 
-      await NocoCache.update(context, `${CacheScope.VIEW}:${view.id}`, {
+      await AtmosphereCache.update(context, `${CacheScope.VIEW}:${view.id}`, {
         uuid: view.uuid,
       });
     }
@@ -1797,7 +1797,7 @@ export default class View implements ViewType {
         viewId,
       );
 
-      await NocoCache.update(
+      await AtmosphereCache.update(
         context,
         `${CacheScope.VIEW}:${view.id}`,
         prepareForResponse({
@@ -1809,16 +1809,16 @@ export default class View implements ViewType {
   }
 
   static async passwordUpdate(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
     { password }: { password: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // Sentinel: client signals "password unchanged" — skip update entirely.
     // Pre-hashed input: refuse to re-hash (defends against stale clients that
     // echo the stored hash back to us).
     if (
-      password === NC_VIEW_PASSWORD_PROTECTED_SENTINEL ||
+      password === ATMOSPHERE_VIEW_PASSWORD_PROTECTED_SENTINEL ||
       isBcryptHash(password)
     ) {
       return;
@@ -1839,7 +1839,7 @@ export default class View implements ViewType {
       viewId,
     );
 
-    await NocoCache.update(context, `${CacheScope.VIEW}:${viewId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.VIEW}:${viewId}`, {
       password: hashedPassword,
     });
   }
@@ -1865,7 +1865,7 @@ export default class View implements ViewType {
     if (!view || !view.password) return view;
     if (!isBcryptHash(view.password)) return view;
     return Object.assign(Object.create(Object.getPrototypeOf(view)), view, {
-      password: NC_VIEW_PASSWORD_PROTECTED_SENTINEL,
+      password: ATMOSPHERE_VIEW_PASSWORD_PROTECTED_SENTINEL,
     });
   }
 
@@ -1892,9 +1892,9 @@ export default class View implements ViewType {
   }
 
   static async sharedViewDelete(
-    context: NcContext,
+    context: AtContext,
     viewId,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // set meta
     await ncMeta.metaUpdate(
@@ -1910,14 +1910,14 @@ export default class View implements ViewType {
 
     await CustomUrl.delete({ view_id: viewId });
 
-    await NocoCache.update(context, `${CacheScope.VIEW}:${viewId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.VIEW}:${viewId}`, {
       uuid: null,
       ...(isEE ? { fk_custom_url_id: null } : {}),
     });
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
     body: {
       title?: string;
@@ -1937,7 +1937,7 @@ export default class View implements ViewType {
       allow_sync?: BoolType;
     },
     includeCreatedByAndUpdateBy = false,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, [
       'title',
@@ -1962,7 +1962,7 @@ export default class View implements ViewType {
     //    so we never re-hash an existing hash and invalidate the password.
     //  - Plaintext → hash with bcrypt before storage.
     if (
-      updateObj.password === NC_VIEW_PASSWORD_PROTECTED_SENTINEL ||
+      updateObj.password === ATMOSPHERE_VIEW_PASSWORD_PROTECTED_SENTINEL ||
       isBcryptHash(updateObj.password)
     ) {
       delete updateObj.password;
@@ -1990,12 +1990,12 @@ export default class View implements ViewType {
     );
 
     // reset alias cache
-    await NocoCache.del(
+    await AtmosphereCache.del(
       context,
       `${CacheScope.VIEW}:${oldView.fk_model_id}:${oldView.title}`,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.VIEW}:${viewId}`,
       prepareForResponse(updateObj),
@@ -2007,7 +2007,7 @@ export default class View implements ViewType {
       workspace_id: RootScopes.BYPASS,
       base_id: RootScopes.BYPASS,
     };
-    await NocoCache.del(bypassContext, `${CacheScope.VIEW}:${viewId}`);
+    await AtmosphereCache.del(bypassContext, `${CacheScope.VIEW}:${viewId}`);
 
     // Get the first collaborative grid view to update default view cache
     const defaultView = getFirstNonPersonalView(
@@ -2019,7 +2019,7 @@ export default class View implements ViewType {
 
     // Update the default view cache if the first collaborative grid view has changed
     if (defaultView) {
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.VIEW}:${oldView.fk_model_id}:default`,
         defaultView,
@@ -2049,10 +2049,10 @@ export default class View implements ViewType {
   }
 
   static async softDelete(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
     deleted: boolean,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaUpdate(
       context.workspace_id,
@@ -2061,14 +2061,14 @@ export default class View implements ViewType {
       { deleted },
       viewId,
     );
-    await NocoCache.update(context, `${CacheScope.VIEW}:${viewId}`, {
+    await AtmosphereCache.update(context, `${CacheScope.VIEW}:${viewId}`, {
       deleted,
     });
     cleanCommandPaletteCache(context.workspace_id).catch(() => {});
   }
 
   // @ts-ignore
-  static async delete(context: NcContext, viewId, ncMeta = Noco.ncMeta) {
+  static async delete(context: AtContext, viewId, ncMeta = Atmosphere.ncMeta) {
     const view = await this.get(context, viewId, false, ncMeta);
     await Sort.deleteAll(context, viewId, ncMeta);
     await Filter.deleteAll(context, viewId, ncMeta);
@@ -2097,7 +2097,7 @@ export default class View implements ViewType {
       MetaTable.VIEWS,
       viewId,
     );
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${tableScope}:${viewId}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -2113,7 +2113,7 @@ export default class View implements ViewType {
           fk_view_id: viewId,
         },
       );
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         context,
         `${CacheScope.CALENDAR_VIEW_RANGE}:${viewId}`,
         CacheDelDirection.CHILD_TO_PARENT,
@@ -2130,7 +2130,7 @@ export default class View implements ViewType {
           fk_view_id: viewId,
         },
       );
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         context,
         `${CacheScope.LIST_VIEW_LEVEL}:${viewId}`,
         CacheDelDirection.CHILD_TO_PARENT,
@@ -2147,7 +2147,7 @@ export default class View implements ViewType {
           fk_view_id: viewId,
         },
       );
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         context,
         `${CacheScope.TIMELINE_VIEW_RANGE}:${viewId}`,
         CacheDelDirection.CHILD_TO_PARENT,
@@ -2155,11 +2155,11 @@ export default class View implements ViewType {
     }
 
     // For Gantt View, delete the per-view DateDependency rule (if any) — each
-    // Gantt view owns its own rule via nc_date_dependency.fk_gantt_view_id.
+    // Gantt view owns its own rule via atm_date_dependency.fk_gantt_view_id.
     // The table-level default rule (fk_gantt_view_id IS NULL) is untouched.
     //
     // Route through the DateDependency model (instead of a raw metaDelete) so
-    // we also (a) clean up nc_dependency_tracker rows that reference this
+    // we also (a) clean up atm_dependency_tracker rows that reference this
     // rule's id, and (b) invalidate the per-rule cache key
     // `${CacheScope.DATE_DEPENDENCY}:${rule.id}` — CHILD_TO_PARENT from
     // `:list` does NOT walk to child id-keys, so the previous flow left
@@ -2181,17 +2181,17 @@ export default class View implements ViewType {
       }
     }
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${columnTableScope}:${viewId}`,
       CacheDelDirection.CHILD_TO_PARENT,
     );
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.VIEW}:${viewId}`,
       CacheDelDirection.CHILD_TO_PARENT,
     );
-    await NocoCache.del(context, [
+    await AtmosphereCache.del(context, [
       `${CacheScope.VIEW_ALIAS}:${view.fk_model_id}:${view.title}`,
       `${CacheScope.VIEW_ALIAS}:${view.fk_model_id}:${view.id}`,
     ]);
@@ -2217,7 +2217,7 @@ export default class View implements ViewType {
 
         // notify all sockets of the change in the related column
         (async (l) => {
-          NocoSocket.broadcastEvent(contextRef, {
+          AtmosphereSocket.broadcastEvent(contextRef, {
             event: EventType.META_EVENT,
             payload: {
               action: 'column_update',
@@ -2263,10 +2263,10 @@ export default class View implements ViewType {
   }
 
   static async showAllColumns(
-    context: NcContext,
+    context: AtContext,
     viewId,
     ignoreColdIds = [],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
     levelId?: string,
   ) {
     const view = await this.get(context, viewId);
@@ -2282,7 +2282,7 @@ export default class View implements ViewType {
     );
 
     // get existing cache
-    const cachedList = await NocoCache.getList(context, scope, [viewId]);
+    const cachedList = await AtmosphereCache.getList(context, scope, [viewId]);
     const { list: dataList } = cachedList;
     const { isNoneList } = cachedList;
     if (!isNoneList && dataList?.length) {
@@ -2292,7 +2292,7 @@ export default class View implements ViewType {
           // set data
           o.show = true;
           // set cache
-          await NocoCache.set(context, `${scope}:${o.id}`, o);
+          await AtmosphereCache.set(context, `${scope}:${o.id}`, o);
         }
       }
     }
@@ -2352,10 +2352,10 @@ export default class View implements ViewType {
   }
 
   static async hideAllColumns(
-    context: NcContext,
+    context: AtContext,
     viewId,
     ignoreColdIds = [],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
     levelId?: string,
   ) {
     const view = await this.get(context, viewId, false, ncMeta);
@@ -2382,7 +2382,7 @@ export default class View implements ViewType {
     }
 
     // get existing cache
-    const cachedList = await NocoCache.getList(context, scope, [viewId]);
+    const cachedList = await AtmosphereCache.getList(context, scope, [viewId]);
     const { list: dataList } = cachedList;
     const { isNoneList } = cachedList;
 
@@ -2403,7 +2403,7 @@ export default class View implements ViewType {
           // set data
           o.show = false;
           // set cache
-          await NocoCache.set(context, `${scope}:${o.id}`, o);
+          await AtmosphereCache.set(context, `${scope}:${o.id}`, o);
         }
       }
     }
@@ -2435,9 +2435,9 @@ export default class View implements ViewType {
   }
 
   static async getSharedViewPath(
-    context: NcContext,
+    context: AtContext,
     viewId,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const view = await this.get(context, viewId, false, ncMeta);
     if (!view.uuid) return null;
@@ -2473,16 +2473,16 @@ export default class View implements ViewType {
     }
 
     return `${encodeURI(
-      `/nc/${viewType}/${view.uuid}${
+      `/atm/${viewType}/${view.uuid}${
         parseProp(view.meta)?.surveyMode ? '/survey' : ''
       }`,
     )}`;
   }
 
   static async shareViewList(
-    context: NcContext,
+    context: AtContext,
     tableId,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // Reuse the full view list and filter — must NOT write to
     // `view:{tableId}:list` ourselves, since that's the same key
@@ -2495,9 +2495,9 @@ export default class View implements ViewType {
   }
 
   static async fixPVColumnForView(
-    context: NcContext,
+    context: AtContext,
     viewId,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // get a list of view columns sorted by order
     const view_columns = await ncMeta.metaList2(
@@ -2549,7 +2549,7 @@ export default class View implements ViewType {
           { show: true },
           primary_value_column.id,
         );
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.GRID_VIEW_COLUMN}:${primary_value_column.id}`,
           primary_value_column,
@@ -2578,7 +2578,7 @@ export default class View implements ViewType {
             { order: i + 1 },
             view_columns[i].id,
           );
-          await NocoCache.set(
+          await AtmosphereCache.set(
             context,
             `${CacheScope.GRID_VIEW_COLUMN}:${view_columns[i].id}`,
             view_columns[i],
@@ -2600,7 +2600,7 @@ export default class View implements ViewType {
         },
       },
     );
-    await NocoCache.setList(
+    await AtmosphereCache.setList(
       context,
       CacheScope.GRID_VIEW_COLUMN,
       [viewId],
@@ -2609,17 +2609,17 @@ export default class View implements ViewType {
   }
 
   public static async clearSingleQueryCache(
-    context: NcContext,
+    context: AtContext,
     modelId: string,
     views?: { id?: string }[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    if (!Noco.isEE()) return;
+    if (!Atmosphere.isEE()) return;
 
     // get all views of the model
     let viewsList =
       views ||
-      (await NocoCache.getList(context, CacheScope.VIEW, [modelId])).list;
+      (await AtmosphereCache.getList(context, CacheScope.VIEW, [modelId])).list;
 
     if (!views && !viewsList?.length) {
       viewsList = await ncMeta.metaList2(
@@ -2641,16 +2641,16 @@ export default class View implements ViewType {
     // atomically. There is no separate index to expire or race against, so an
     // entry can never be orphaned and replay stale SQL after a schema change.
     for (const view of viewsList) {
-      await NocoCache.del(context, singleQueryCacheKey(modelId, view.id));
+      await AtmosphereCache.del(context, singleQueryCacheKey(modelId, view.id));
     }
-    await NocoCache.del(
+    await AtmosphereCache.del(
       context,
       singleQueryCacheKey(modelId, SINGLE_QUERY_DEFAULT_VIEW),
     );
   }
 
   static async bulkColumnInsertToViews(
-    context: NcContext,
+    context: AtContext,
     {
       columns,
       viewColumns,
@@ -2673,7 +2673,7 @@ export default class View implements ViewType {
       )[];
     },
     view: View,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObjs = [];
 
@@ -2952,7 +2952,7 @@ export default class View implements ViewType {
   }
 
   static async insertMetaOnly(
-    context: NcContext,
+    context: AtContext,
     {
       view,
       model,
@@ -2980,11 +2980,11 @@ export default class View implements ViewType {
           attachment_mode_column_id?: string;
         };
       model: {
-        getColumns: (context: NcContext, ncMeta?) => Promise<Column[]>;
+        getColumns: (context: AtContext, ncMeta?) => Promise<Column[]>;
       };
-      req: NcRequest;
+      req: AtRequest;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(view, [
       'id',
@@ -3286,9 +3286,9 @@ export default class View implements ViewType {
       // copy from view
       if (copyFromView) {
         // generate parent audit id and add it to req object
-        const eventId = await Noco.ncAudit.genNanoid(MetaTable.AUDIT);
+        const eventId = await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT);
         req.ncParentAuditId = eventId;
-        Noco.appHooksService.emit(AppEvents.VIEW_DUPLICATE_START, {
+        Atmosphere.appHooksService.emit(AppEvents.VIEW_DUPLICATE_START, {
           sourceView: copyFromView,
           destView: view as ViewType,
           req,
@@ -3334,7 +3334,7 @@ export default class View implements ViewType {
             id: undefined,
           });
 
-          Noco.appHooksService.emit(AppEvents.SORT_CREATE, {
+          Atmosphere.appHooksService.emit(AppEvents.SORT_CREATE, {
             sort: {
               ...sort,
               id: undefined,
@@ -3388,7 +3388,7 @@ export default class View implements ViewType {
                 ),
               );
 
-            Noco.appHooksService.emit(AppEvents.FILTER_CREATE, {
+            Atmosphere.appHooksService.emit(AppEvents.FILTER_CREATE, {
               filter: { ...filter, id: undefined } as FilterType,
               column: await Column.get(context, {
                 colId: filter.fk_column_id,
@@ -3476,7 +3476,7 @@ export default class View implements ViewType {
       }
 
       if (copyFromView) {
-        Noco.appHooksService.emit(AppEvents.VIEW_DUPLICATE_COMPLETE, {
+        Atmosphere.appHooksService.emit(AppEvents.VIEW_DUPLICATE_COMPLETE, {
           sourceView: copyFromView,
           destView: view as ViewType,
           req,
@@ -3486,20 +3486,20 @@ export default class View implements ViewType {
       return insertedView;
     } catch (e) {
       if (copyFromView) {
-        Noco.appHooksService.emit(AppEvents.VIEW_DUPLICATE_FAIL, {
+        Atmosphere.appHooksService.emit(AppEvents.VIEW_DUPLICATE_FAIL, {
           sourceView: copyFromView,
           destView: view as ViewType,
           error: e,
           req,
           context,
         });
-        if (e instanceof NcError || e instanceof NcBaseError) throw e;
+        if (e instanceof AtError || e instanceof AtBaseError) throw e;
         logger.error('Failed to Duplicate View', e);
-        NcError.get(context).internalServerError('Failed to Duplicate View');
+        AtError.get(context).internalServerError('Failed to Duplicate View');
       }
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       logger.error('Failed to create View', e);
-      NcError.get(context).internalServerError('Failed to create View');
+      AtError.get(context).internalServerError('Failed to create View');
     }
   }
 
@@ -3639,7 +3639,7 @@ export default class View implements ViewType {
     return scope;
   }
 
-  async getModel(context: NcContext, ncMeta = Noco.ncMeta): Promise<Model> {
+  async getModel(context: AtContext, ncMeta = Atmosphere.ncMeta): Promise<Model> {
     return (this.model = await Model.getByIdOrName(
       context,
       { id: this.fk_model_id },
@@ -3648,8 +3648,8 @@ export default class View implements ViewType {
   }
 
   async getModelWithInfo(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model> {
     return (this.model = await Model.getWithInfo(
       context,
@@ -3658,7 +3658,7 @@ export default class View implements ViewType {
     ));
   }
 
-  async getView<T>(context: NcContext, ncMeta = Noco.ncMeta): Promise<T> {
+  async getView<T>(context: AtContext, ncMeta = Atmosphere.ncMeta): Promise<T> {
     switch (this.type) {
       case ViewTypes.GRID:
         this.view = await GridView.get(context, this.id, ncMeta);
@@ -3692,8 +3692,8 @@ export default class View implements ViewType {
   }
 
   async getViewWithInfo(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<FormView | GridView | KanbanView | GalleryView> {
     switch (this.type) {
       case ViewTypes.GRID:
@@ -3727,7 +3727,7 @@ export default class View implements ViewType {
     return this.view;
   }
 
-  public async getFilters(context: NcContext, ncMeta = Noco.ncMeta) {
+  public async getFilters(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     return (this.filter = (await Filter.getFilterObject(
       context,
       {
@@ -3737,23 +3737,23 @@ export default class View implements ViewType {
     )) as any);
   }
 
-  public async getSorts(context: NcContext, ncMeta = Noco.ncMeta) {
+  public async getSorts(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     return (this.sorts = await Sort.list(context, { viewId: this.id }, ncMeta));
   }
 
-  async getColumns(context: NcContext, ncMeta = Noco.ncMeta) {
+  async getColumns(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     return (this.columns = await View.getColumns(context, this.id, ncMeta));
   }
 
-  async delete(context: NcContext, ncMeta = Noco.ncMeta) {
+  async delete(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     await View.delete(context, this.id, ncMeta);
   }
 
   static async updateIfColumnUsedAsExpandedMode(
-    _context: NcContext,
+    _context: AtContext,
     _columnId: string,
     _modelId: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return;
   }

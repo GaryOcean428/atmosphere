@@ -2,7 +2,7 @@ import type { Knex } from 'knex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import { FieldHandler } from '~/db/field-handler';
 import { Sort } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { sanitize } from '~/helpers/sqlSanitize';
 import { getRefColumnIfAlias } from '~/helpers';
 
@@ -56,7 +56,7 @@ export default async function sortV2(
 
     if (!column) {
       if (throwErrorIfInvalid) {
-        NcError.get(context).fieldNotFound(sort.fk_column_id);
+        AtError.get(context).fieldNotFound(sort.fk_column_id);
       }
       continue;
     }

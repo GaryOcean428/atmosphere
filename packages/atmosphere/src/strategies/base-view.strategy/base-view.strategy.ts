@@ -1,14 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-custom';
-import { extractRolesObj } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+import { extractRolesObj } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import { Base } from '~/models';
 
 @Injectable()
 export class BaseViewStrategy extends PassportStrategy(Strategy, 'base-view') {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  async validate(req: NcRequest, callback: Function) {
+  async validate(req: AtRequest, callback: Function) {
     try {
       let user;
       if (req.headers['xc-shared-base-id']) {

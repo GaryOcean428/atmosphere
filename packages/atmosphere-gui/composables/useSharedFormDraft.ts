@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
-import type { ColumnType, SelectOptionsType } from 'nocodb-sdk'
-import { UITypes, isSystemColumn, isVirtualCol } from 'nocodb-sdk'
+import type { ColumnType, SelectOptionsType } from 'atmosphere-sdk'
+import { UITypes, isSystemColumn, isVirtualCol } from 'atmosphere-sdk'
 import type { FormDraft, FormDraftField } from '../helpers/FormDraftStorageManager'
 import { formDraftStorageManager } from '../helpers/FormDraftStorageManager'
 

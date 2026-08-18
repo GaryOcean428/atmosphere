@@ -1,6 +1,6 @@
 /**
  * Per-layout page config shapes (draft + published), discriminated by
- * `InterfacePageLayoutTypes`. Stored as JSON in `nc_interface_pages.config` /
+ * `InterfacePageLayoutTypes`. Stored as JSON in `atm_interface_pages.config` /
  * `published_config`. All fields snake_case.
  */
 import type {
@@ -175,7 +175,7 @@ export interface InterfaceKanbanVizConfig
 }
 
 /**
- * Aligns with the nocohub List view meta (levels over link fields).
+ * Aligns with the atmospherehub List view meta (levels over link fields).
  * `InterfaceListVizConfig.levels` is ordered bottom-up: index 0 is the page's
  * source table (the records), each higher entry a parent table.
  */
@@ -463,7 +463,7 @@ export interface InterfaceDashboardWidgetConfig {
   fk_model_id?: string | null;
   fk_view_id?: string | null;
   /**
-   * Widget-level filters — inline (NOT nc_filter_exp rows), composed with the
+   * Widget-level filters — inline (NOT atm_filter_exp rows), composed with the
    * group's root filters at query time.
    */
   filters?: InterfaceFilterGroup | null;
@@ -524,7 +524,7 @@ export type InterfaceFormPageConfig = InterfaceFormConfig;
 export type InterfaceRecordDetailPageConfig = InterfaceRecordDetailConfig;
 
 // ────────────────────────────────────────────────────────────────────────────
-// Layout: CUSTOM (sandboxed custom-code page — @nocodb/blocks interface mode)
+// Layout: CUSTOM (sandboxed custom-code page — @atmosphere/blocks interface mode)
 // ────────────────────────────────────────────────────────────────────────────
 
 interface InterfaceCustomPropertyBase {

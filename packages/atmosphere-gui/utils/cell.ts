@@ -1,5 +1,5 @@
-import type { ColumnType, TableType } from 'nocodb-sdk'
-import { UITypes, ncIsNaN, roundUpToPrecision } from 'nocodb-sdk'
+import type { ColumnType, TableType } from 'atmosphere-sdk'
+import { UITypes, ncIsNaN, roundUpToPrecision } from 'atmosphere-sdk'
 import tinycolor from 'tinycolor2'
 import type { HTMLAttributes } from 'vue'
 
@@ -50,7 +50,7 @@ export {
   isPrimaryKey,
   renderValue,
   isNumericFieldType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 export const rowHeightInPx: Record<string, number> = {
   1: 32,
@@ -129,13 +129,13 @@ export const getSelectTypeOptionTextColor = (
   getColor: GetColorType,
   disableGetColor = false,
 ): string => {
-  color = color ?? disableGetColor ? color || '#ccc' : getColor('var(--nc-bg-gray-medium)', 'var(--nc-bg-gray-light)') // Set default only if color is null or undefined
+  color = color ?? disableGetColor ? color || '#ccc' : getColor('var(--atm-bg-gray-medium)', 'var(--atm-bg-gray-light)') // Set default only if color is null or undefined
 
   return tinycolor.isReadable(color, '#fff', { level: 'AA', size: 'large' })
     ? '#fff'
     : tinycolor
         .mostReadable(color, [
-          disableGetColor ? '#0b1d05' : getColor('var(--nc-content-gray)', 'var(--nc-content-gray-subtle2)'),
+          disableGetColor ? '#0b1d05' : getColor('var(--atm-content-gray)', 'var(--atm-content-gray-subtle2)'),
           '#fff',
         ])
         .toHex8String()
@@ -155,7 +155,7 @@ export const getSelectTypeFieldOptionBgColor = ({
   isColorCodeEnabled?: boolean
 }) => {
   if (!isColorCodeEnabled && getColor) {
-    return getColor('var(--nc-bg-gray-medium)', 'var(--nc-bg-gray-light)')
+    return getColor('var(--atm-bg-gray-medium)', 'var(--atm-bg-gray-light)')
   }
 
   if (isDark) {
@@ -181,7 +181,7 @@ export const getSelectTypeFieldOptionTextColor = ({
   isColorCodeEnabled?: boolean
 }) => {
   if (!isColorCodeEnabled) {
-    return getColor('var(--nc-content-gray)')
+    return getColor('var(--atm-content-gray)')
   }
 
   return getOppositeColorOfBackground(getSelectTypeFieldOptionBgColor({ color, isDark }), color)

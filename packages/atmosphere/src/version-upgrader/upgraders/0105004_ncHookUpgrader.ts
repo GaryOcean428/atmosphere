@@ -1,7 +1,7 @@
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
 import { MetaTable } from '~/utils/globals';
 
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   const actions = [];
   const hooks = await ncMeta.knexConnection(MetaTable.HOOKS);
   for (const hook of hooks) {

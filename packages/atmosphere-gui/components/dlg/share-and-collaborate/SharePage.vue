@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnType, KanbanType, ViewType } from 'nocodb-sdk'
-import { NC_VIEW_PASSWORD_PROTECTED_SENTINEL, PlanFeatureTypes, PlanTitles, ViewTypes } from 'nocodb-sdk'
+import type { ColumnType, KanbanType, ViewType } from 'atmosphere-sdk'
+import { ATMOSPHERE_VIEW_PASSWORD_PROTECTED_SENTINEL, PlanFeatureTypes, PlanTitles, ViewTypes } from 'atmosphere-sdk'
 
 const { view: _view, $api } = useSmartsheetStoreOrThrow()
 const { $e } = useNuxtApp()
@@ -113,7 +113,7 @@ const passwordProtected = computed(() => {
 /**
  * `true` when the backend has confirmed a password is stored for this view.
  * The actual hash never reaches the frontend — we receive the sentinel
- * `NC_VIEW_PASSWORD_PROTECTED_SENTINEL` instead and render a masked state.
+ * `ATMOSPHERE_VIEW_PASSWORD_PROTECTED_SENTINEL` instead and render a masked state.
  */
 const hasStoredPassword = computed(() => {
   const value = activeView.value?.password
@@ -129,7 +129,7 @@ const hasStoredPassword = computed(() => {
  */
 const isLegacyPlaintextPassword = computed(() => {
   const value = activeView.value?.password
-  return typeof value === 'string' && value.length > 0 && value !== NC_VIEW_PASSWORD_PROTECTED_SENTINEL
+  return typeof value === 'string' && value.length > 0 && value !== ATMOSPHERE_VIEW_PASSWORD_PROTECTED_SENTINEL
 })
 
 // Local buffer for first-time password entry (after toggling the switch on).
@@ -199,7 +199,7 @@ const saveNewPassword = async (newValue: string): Promise<boolean> => {
     // so the UI immediately switches to the masked/locked state.
     activeView.value = {
       ...(activeView.value as any),
-      password: NC_VIEW_PASSWORD_PROTECTED_SENTINEL,
+      password: ATMOSPHERE_VIEW_PASSWORD_PROTECTED_SENTINEL,
     }
     newPasswordDraft.value = ''
     passwordProtectedLocal.value = false
@@ -389,7 +389,7 @@ function sharedViewUrl(withPrefill = true) {
       viewType = 'view'
   }
 
-  const baseUrl = `${dashboardUrl.value}/nc/${viewType}/${activeView.value.uuid}${surveyMode.value ? '/survey' : ''}`
+  const baseUrl = `${dashboardUrl.value}/atm/${viewType}/${activeView.value.uuid}${surveyMode.value ? '/survey' : ''}`
   const queryParams = []
 
   // Add prefill parameters
@@ -398,9 +398,9 @@ function sharedViewUrl(withPrefill = true) {
   }
 
   // Add theme parameter if defaultTheme is set
-  // Use 'nc-theme' to avoid conflicts with user form fields named 'theme'
+  // Use 'atm-theme' to avoid conflicts with user form fields named 'theme'
   if (defaultTheme.value) {
-    queryParams.push(`nc-theme=${defaultTheme.value}`)
+    queryParams.push(`atm-theme=${defaultTheme.value}`)
   }
 
   return `${encodeURI(baseUrl)}${queryParams.length > 0 ? `?${queryParams.join('&')}` : ''}`
@@ -550,9 +550,9 @@ const copyCustomUrl = async (custUrl = '') => {
 
 <template>
   <div class="flex flex-col py-2 px-3 mb-1">
-    <div class="flex flex-col w-full mt-2.5 px-3 py-2.5 border-nc-border-gray-medium border-1 rounded-md gap-y-2">
+    <div class="flex flex-col w-full mt-2.5 px-3 py-2.5 border-atm-border-gray-medium border-1 rounded-md gap-y-2">
       <div class="flex flex-row w-full justify-between py-0.5">
-        <div class="text-nc-content-gray-emphasis font-medium">
+        <div class="text-atm-content-gray-emphasis font-medium">
           {{ $t('activity.enabledPublicViewing') }}
         </div>
         <a-switch
@@ -565,10 +565,10 @@ const copyCustomUrl = async (custUrl = '') => {
           data-testid="share-view-toggle"
           @click="toggleShare"
         />
-        <div v-else class="text-nc-content-gray-muted">{{ $t('labels.sharingRestricted') }}</div>
+        <div v-else class="text-atm-content-gray-muted">{{ $t('labels.sharingRestricted') }}</div>
       </div>
       <template v-if="isPublicShared">
-        <div class="mt-0.5 border-t-1 border-nc-border-gray-light pt-3">
+        <div class="mt-0.5 border-t-1 border-atm-border-gray-light pt-3">
           <GeneralCopyUrl v-model:url="url" />
         </div>
 
@@ -581,9 +581,9 @@ const copyCustomUrl = async (custUrl = '') => {
           :disabled="isReadOnly"
           @update-custom-url="(custUrl) => updateSharedView({ custUrl })"
         />
-        <div class="flex flex-col justify-between mt-1 py-2 px-3 bg-nc-bg-gray-extralight rounded-md">
+        <div class="flex flex-col justify-between mt-1 py-2 px-3 bg-atm-bg-gray-extralight rounded-md">
           <div class="flex flex-row items-center justify-between">
-            <div class="flex text-nc-content-gray-extreme">
+            <div class="flex text-atm-content-gray-extreme">
               {{ $t('activity.restrictAccessWithPassword') }}
             </div>
             <a-switch
@@ -603,43 +603,43 @@ const copyCustomUrl = async (custUrl = '') => {
               <div v-if="isLegacyPlaintextPassword" class="flex items-center gap-2">
                 <a-input-password
                   :value="activeView?.password"
-                  class="!rounded-lg !py-1 !bg-nc-bg-default flex-1"
-                  data-testid="nc-share-view-password-legacy"
+                  class="!rounded-lg !py-1 !bg-atm-bg-default flex-1"
+                  data-testid="atm-share-view-password-legacy"
                   size="small"
                   readonly
                   autocomplete="off"
-                  name="nc-share-view-password-legacy"
+                  name="atm-share-view-password-legacy"
                 />
-                <NcButton
+                <AtButton
                   v-e="['c:share:view:password:change-open']"
                   :disabled="isReadOnly"
-                  data-testid="nc-share-view-password-change-btn"
+                  data-testid="atm-share-view-password-change-btn"
                   size="small"
                   type="secondary"
                   @click="openChangePasswordModal"
                 >
                   {{ $t('labels.changePassword') }}
-                </NcButton>
+                </AtButton>
               </div>
               <!-- Stored password (bcrypt-hashed): show masked locked state + dedicated change action -->
               <div v-else-if="hasStoredPassword" class="flex items-center gap-2">
                 <div
-                  class="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-nc-bg-default border-1 border-nc-border-gray-medium"
-                  data-testid="nc-share-view-password-locked"
+                  class="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-atm-bg-default border-1 border-atm-border-gray-medium"
+                  data-testid="atm-share-view-password-locked"
                 >
-                  <GeneralIcon icon="ncLock" class="text-nc-content-gray-subtle !w-3.5 !h-3.5" />
-                  <span class="text-nc-content-gray-subtle text-bodySm tracking-widest">••••••••</span>
+                  <GeneralIcon icon="ncLock" class="text-atm-content-gray-subtle !w-3.5 !h-3.5" />
+                  <span class="text-atm-content-gray-subtle text-bodySm tracking-widest">••••••••</span>
                 </div>
-                <NcButton
+                <AtButton
                   v-e="['c:share:view:password:change-open']"
                   :disabled="isReadOnly"
-                  data-testid="nc-share-view-password-change-btn"
+                  data-testid="atm-share-view-password-change-btn"
                   size="small"
                   type="secondary"
                   @click="openChangePasswordModal"
                 >
                   {{ $t('labels.changePassword') }}
-                </NcButton>
+                </AtButton>
               </div>
               <!-- First-time entry: inline input + explicit Save button -->
               <div v-else class="flex flex-col gap-1.5">
@@ -647,28 +647,28 @@ const copyCustomUrl = async (custUrl = '') => {
                   <a-input-password
                     v-model:value="newPasswordDraft"
                     :placeholder="$t('placeholder.password.enter')"
-                    class="!rounded-lg !py-1 !bg-nc-bg-default flex-1"
-                    data-testid="nc-modal-share-view__password"
+                    class="!rounded-lg !py-1 !bg-atm-bg-default flex-1"
+                    data-testid="atm-modal-share-view__password"
                     size="small"
                     type="password"
                     autocomplete="new-password"
-                    name="nc-share-view-password-new"
+                    name="atm-share-view-password-new"
                     :readonly="isReadOnly"
                     @press-enter="saveNewPassword(newPasswordDraft)"
                   />
-                  <NcButton
+                  <AtButton
                     v-e="['c:share:view:password:save-new']"
                     :disabled="!newPasswordDraft.trim() || isReadOnly"
                     :loading="isUpdating.password"
-                    data-testid="nc-share-view-password-save-btn"
+                    data-testid="atm-share-view-password-save-btn"
                     size="small"
                     type="primary"
                     @click="saveNewPassword(newPasswordDraft)"
                   >
                     {{ $t('general.save') }}
-                  </NcButton>
+                  </AtButton>
                 </div>
-                <span class="text-bodySm text-nc-content-gray-subtle leading-snug">
+                <span class="text-bodySm text-atm-content-gray-subtle leading-snug">
                   {{ $t('msg.info.viewPasswordNotVisibleAfterSave') }}
                 </span>
               </div>
@@ -687,10 +687,10 @@ const copyCustomUrl = async (custUrl = '') => {
             activeView &&
             [ViewTypes.GRID, ViewTypes.KANBAN, ViewTypes.GALLERY, ViewTypes.MAP, ViewTypes.CALENDAR].includes(activeView.type)
           "
-          class="flex flex-col justify-between gap-y-3 mt-1 py-2 px-3 bg-nc-bg-gray-extralight rounded-md"
+          class="flex flex-col justify-between gap-y-3 mt-1 py-2 px-3 bg-atm-bg-gray-extralight rounded-md"
         >
           <div class="flex flex-row items-center justify-between">
-            <div class="flex text-nc-content-gray-extreme">{{ $t('activity.allowDownload') }}</div>
+            <div class="flex text-atm-content-gray-extreme">{{ $t('activity.allowDownload') }}</div>
             <a-switch
               v-model:checked="allowCSVDownload"
               v-e="['c:share:view:allow-csv-download:toggle']"
@@ -705,12 +705,12 @@ const copyCustomUrl = async (custUrl = '') => {
 
         <div
           v-if="showEEFeatures && activeView?.type === ViewTypes.GRID"
-          class="flex flex-col justify-between gap-y-3 mt-1 py-2 px-3 bg-nc-bg-gray-extralight rounded-md"
+          class="flex flex-col justify-between gap-y-3 mt-1 py-2 px-3 bg-atm-bg-gray-extralight rounded-md"
         >
           <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_TABLE_SYNC">
             <template #default="{ click }">
               <div class="flex flex-row items-center justify-between">
-                <div class="text-nc-content-gray-extreme flex items-center space-x-1">
+                <div class="text-atm-content-gray-extreme flex items-center space-x-1">
                   <div>{{ $t('activity.allowSync') }}</div>
                   <LazyPaymentUpgradeBadge
                     :feature="PlanFeatureTypes.FEATURE_TABLE_SYNC"
@@ -720,10 +720,10 @@ const copyCustomUrl = async (custUrl = '') => {
                       })
                     "
                   />
-                  <NcTooltip class="flex items-center">
+                  <AtTooltip class="flex items-center">
                     <template #title>{{ $t('tooltip.allowSyncDescription') }}</template>
                     <GeneralIcon icon="info" class="flex-none text-gray-400 cursor-pointer" />
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
                 <a-switch
                   v-e="['c:share:view:allow-sync:toggle']"
@@ -746,9 +746,9 @@ const copyCustomUrl = async (custUrl = '') => {
           </PaymentUpgradeBadgeProvider>
         </div>
 
-        <div class="flex flex-col justify-between mt-1 py-2 px-3 bg-nc-bg-gray-extralight rounded-md">
+        <div class="flex flex-col justify-between mt-1 py-2 px-3 bg-atm-bg-gray-extralight rounded-md">
           <div class="flex flex-row items-center justify-between">
-            <div class="flex text-nc-content-gray-extreme">
+            <div class="flex text-atm-content-gray-extreme">
               {{ $t('labels.language') }}
             </div>
             <a-switch
@@ -764,11 +764,11 @@ const copyCustomUrl = async (custUrl = '') => {
           </div>
           <Transition mode="out-in" name="layout">
             <div v-if="languageSet" class="flex gap-2 mt-2 w-2/3">
-              <NcSelect
+              <AtSelect
                 v-model:value="withLanguage"
-                data-testid="nc-modal-share-view__Language"
+                data-testid="atm-modal-share-view__Language"
                 :options="languageOptions"
-                class="nc-modal-share-view-language-select w-full nc-select-shadow"
+                class="atm-modal-share-view-language-select w-full atm-select-shadow"
                 :disabled="isReadOnly"
               />
             </div>
@@ -777,22 +777,22 @@ const copyCustomUrl = async (custUrl = '') => {
 
         <div
           v-if="activeView?.type === ViewTypes.FORM"
-          class="flex flex-col justify-between gap-y-3 mt-1 py-2 px-3 bg-nc-bg-gray-extralight rounded-md"
+          class="flex flex-col justify-between gap-y-3 mt-1 py-2 px-3 bg-atm-bg-gray-extralight rounded-md"
         >
           <div class="flex flex-row items-center justify-between">
-            <div class="text-nc-content-gray-extreme flex items-center space-x-1">
+            <div class="text-atm-content-gray-extreme flex items-center space-x-1">
               <div>
                 {{ $t('activity.surveyMode') }}
               </div>
-              <NcTooltip class="flex items-center">
+              <AtTooltip class="flex items-center">
                 <template #title> {{ $t('tooltip.surveyFormInfo') }}</template>
                 <GeneralIcon icon="info" class="flex-none text-gray-400 cursor-pointer"></GeneralIcon>
-              </NcTooltip>
+              </AtTooltip>
             </div>
             <a-switch
               v-model:checked="surveyMode"
               v-e="['c:share:view:surver-mode:toggle']"
-              data-testid="nc-modal-share-view__surveyMode"
+              data-testid="atm-modal-share-view__surveyMode"
               size="small"
             >
             </a-switch>
@@ -801,24 +801,24 @@ const copyCustomUrl = async (custUrl = '') => {
 
         <div
           v-if="activeView?.type === ViewTypes.FORM"
-          class="flex flex-col justify-between gap-y-3 mt-1 py-2 px-3 bg-nc-bg-gray-extralight rounded-md"
+          class="flex flex-col justify-between gap-y-3 mt-1 py-2 px-3 bg-atm-bg-gray-extralight rounded-md"
         >
           <div class="flex flex-row items-center justify-between">
-            <div class="text-nc-content-gray-extreme flex items-center space-x-1">
+            <div class="text-atm-content-gray-extreme flex items-center space-x-1">
               <div>Default Theme</div>
-              <NcTooltip class="flex items-center">
+              <AtTooltip class="flex items-center">
                 <template #title
-                  >Set the default theme (light or dark) for this shared form. Adds ?nc-theme=light or ?nc-theme=dark to the
+                  >Set the default theme (light or dark) for this shared form. Adds ?atm-theme=light or ?atm-theme=dark to the
                   URL.</template
                 >
                 <GeneralIcon icon="info" class="flex-none text-gray-400 cursor-pointer"></GeneralIcon>
-              </NcTooltip>
+              </AtTooltip>
             </div>
             <a-switch
               v-e="['c:share:view:theme:toggle']"
               :checked="themeSet"
               :loading="isUpdating.language"
-              data-testid="nc-modal-share-view__themeToggle"
+              data-testid="atm-modal-share-view__themeToggle"
               size="small"
               :disabled="isReadOnly"
               @click="toggleThemeSet"
@@ -826,11 +826,11 @@ const copyCustomUrl = async (custUrl = '') => {
           </div>
           <Transition mode="out-in" name="layout">
             <div v-if="themeSet" class="flex gap-2 mt-2 w-2/3">
-              <NcSelect
+              <AtSelect
                 v-model:value="defaultTheme"
-                data-testid="nc-modal-share-view__themeSelect"
+                data-testid="atm-modal-share-view__themeSelect"
                 :options="themeOptions"
-                class="nc-modal-share-view-theme-select w-full nc-select-shadow"
+                class="atm-modal-share-view-theme-select w-full atm-select-shadow"
                 :disabled="isReadOnly"
               />
             </div>
@@ -839,27 +839,27 @@ const copyCustomUrl = async (custUrl = '') => {
 
         <div
           v-if="activeView?.type === ViewTypes.FORM"
-          class="nc-pre-filled-mode-wrapper flex flex-col justify-between gap-y-3 mt-1 py-2 px-3 bg-nc-bg-gray-extralight rounded-md"
+          class="atm-pre-filled-mode-wrapper flex flex-col justify-between gap-y-3 mt-1 py-2 px-3 bg-atm-bg-gray-extralight rounded-md"
         >
           <div class="flex flex-row items-center justify-between">
-            <div class="text-nc-content-gray-extreme flex items-center space-x-1">
+            <div class="text-atm-content-gray-extreme flex items-center space-x-1">
               <div>
                 {{ $t('activity.preFilledFields.title') }}
               </div>
 
-              <NcTooltip class="flex items-center">
+              <AtTooltip class="flex items-center">
                 <template #title>
                   <div class="text-center">
                     {{ $t('tooltip.preFillFormInfo') }}
                   </div>
                 </template>
                 <GeneralIcon icon="info" class="flex-none text-gray-400 cursor-pointer"></GeneralIcon>
-              </NcTooltip>
+              </AtTooltip>
             </div>
             <a-switch
               v-e="['c:share:view:surver-mode:toggle']"
               :checked="formPreFill.preFillEnabled"
-              data-testid="nc-modal-share-view__preFill"
+              data-testid="atm-modal-share-view__preFill"
               size="small"
               @update:checked="handleChangeFormPreFill({ preFillEnabled: $event as boolean })"
             >
@@ -869,8 +869,8 @@ const copyCustomUrl = async (custUrl = '') => {
           <a-radio-group
             v-if="formPreFill.preFillEnabled"
             :value="formPreFill.preFilledMode"
-            class="nc-modal-share-view-preFillMode"
-            data-testid="nc-modal-share-view__preFillMode"
+            class="atm-modal-share-view-preFillMode"
+            data-testid="atm-modal-share-view__preFillMode"
             @update:value="handleChangeFormPreFill({ preFilledMode: $event })"
           >
             <a-radio v-for="mode of Object.values(PreFilledMode)" :key="mode" :value="mode">
@@ -902,11 +902,11 @@ const copyCustomUrl = async (custUrl = '') => {
   }
 }
 
-.nc-modal-share-view-preFillMode {
+.atm-modal-share-view-preFillMode {
   @apply flex flex-col;
 
   .ant-radio-wrapper {
-    @apply !m-0 !flex !items-center w-full px-2 py-1 rounded-lg hover:bg-nc-bg-gray-light;
+    @apply !m-0 !flex !items-center w-full px-2 py-1 rounded-lg hover:bg-atm-bg-gray-light;
     .ant-radio {
       @apply !top-0;
     }
@@ -916,8 +916,8 @@ const copyCustomUrl = async (custUrl = '') => {
   }
 }
 
-.nc-modal-share-view-language-select.ant-select,
-.nc-modal-share-view-theme-select.ant-select {
+.atm-modal-share-view-language-select.ant-select,
+.atm-modal-share-view-theme-select.ant-select {
   .ant-select-selector {
     @apply !rounded-lg;
   }

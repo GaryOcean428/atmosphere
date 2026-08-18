@@ -9,7 +9,7 @@ const up = async (knex: Knex) => {
     table.string('fk_workspace_id', 20);
     table.string('base_id', 20);
     table.string('fk_user_id', 20);
-    // Per-tab UUID sourced from the `x-nc-tab-id` request header. Generated
+    // Per-tab UUID sourced from the `x-atm-tab-id` request header. Generated
     // fresh per page load on the GUI side, so undo doesn't survive reloads.
     table.string('tab_id', 100);
 
@@ -59,9 +59,9 @@ const up = async (knex: Knex) => {
     // (user, tab, scope). `seq DESC` is the order we pop from.
     table.index(
       ['fk_user_id', 'tab_id', 'scope_type', 'scope_id', 'status', 'seq'],
-      'nc_op_logs_user_tab_scope_status_seq_idx',
+      'atm_op_logs_user_tab_scope_status_seq_idx',
     );
-    table.index(['cleanup_due_at'], 'nc_op_logs_cleanup_due_at_idx');
+    table.index(['cleanup_due_at'], 'atm_op_logs_cleanup_due_at_idx');
   });
 };
 

@@ -1,7 +1,7 @@
 import { createSharedComposable, useStorage } from '@vueuse/core'
 
 /**
- * Width of the right-side drawer (`.nc-comments-drawer`) in the expanded
+ * Width of the right-side drawer (`.atm-comments-drawer`) in the expanded
  * record's Field / File / Discussion presenters. Replaces the previous
  * `w-1/3 max-w-[400px] min-w-[240px]` with a user-resizable value persisted
  * across sessions via localStorage.
@@ -14,7 +14,7 @@ export const useExpandedRecordSidebarWidth = createSharedComposable(() => {
   const MAX_WIDTH = 600
   const DEFAULT_WIDTH = 280
 
-  const sidebarWidth = useStorage<number>('nc-expanded-record-sidebar-width', DEFAULT_WIDTH)
+  const sidebarWidth = useStorage<number>('atm-expanded-record-sidebar-width', DEFAULT_WIDTH)
 
   // Guard against stale localStorage values outside the new bounds.
   if (sidebarWidth.value < MIN_WIDTH) sidebarWidth.value = MIN_WIDTH

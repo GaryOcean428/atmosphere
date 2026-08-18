@@ -9,8 +9,8 @@ import {
   isOrderCol,
   isSystemColumn,
   isVirtualCol,
-  NcApiVersion,
-  type NcContext,
+  AtApiVersion,
+  type AtContext,
   ncIsNull,
   ncIsNullOrUndefined,
   ncIsNumber,
@@ -18,12 +18,12 @@ import {
   parseProp,
   RelationTypes,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { v4 as uuidv4 } from 'uuid';
 import Validator from 'validator';
 import type { MetaService } from '~/meta/meta.service';
 import type { Knex } from 'knex';
-import type { SortType } from 'nocodb-sdk';
+import type { SortType } from 'atmosphere-sdk';
 import type { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type CustomKnex from '~/db/CustomKnex';
@@ -34,7 +34,7 @@ import type {
 } from '~/db/sql-data-mapper/lib/BaseModel';
 import type { Filter, GridViewColumn } from '~/models';
 import { swaggerSanitizeSchemaName } from '~/helpers/stringHelpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { defaultLimitConfig } from '~/helpers/extractLimitAndOffset';
 import {
   Column,
@@ -45,7 +45,7 @@ import {
   View,
 } from '~/models';
 import { excludeAttachmentProps } from '~/utils';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 
 /**
  * Effective schema for metadata introspection (tableList / columnList /
@@ -58,9 +58,9 @@ import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
  * silently falls back to `public` and ignores the configured schema.
  *
  * Gate on `isMeta()` (`is_meta || is_local`), NOT `isMeta(true, 1)` (which is
- * `is_local` only): an `is_meta` pg/mssql source (e.g. NC_DISABLE_PG_DATA_
+ * `is_local` only): an `is_meta` pg/mssql source (e.g. ATMOSPHERE_DISABLE_PG_DATA_
  * REFLECTION) has `getConfig()` return the META db config, whose schema lives
- * on `.schema` (from `NC_DB ?schema=`), not `searchPath` — so it must take the
+ * on `.schema` (from `ATMOSPHERE_DB ?schema=`), not `searchPath` — so it must take the
  * `.schema` branch, exactly as it did before this change.
  */
 export function getSourceIntrospectionSchema(
@@ -103,7 +103,7 @@ export function _wherePk(
       } else if (pk.column_name in id) {
         key = pk.column_name;
       } else {
-        NcError.badRequest(
+        AtError.badRequest(
           `Primary key column ${pk.title} not found in id object`,
         );
       }
@@ -111,7 +111,7 @@ export function _wherePk(
       // validate value if auto-increment column
       // todo: add more validation based on column constraints
       if (!skipPkValidation && pk.ai && !/^\d+$/.test(id[key])) {
-        NcError.invalidPrimaryKey(id[key], pk.title);
+        AtError.invalidPrimaryKey(id[key], pk.title);
       }
     }
 
@@ -131,7 +131,7 @@ export function _wherePk(
   // Reject incomplete composite ids up-front — otherwise knex builds a
   // WHERE with `undefined` bindings and throws a generic 500.
   if (!skipPkValidation && (ids as unknown[]).length < primaryKeys.length) {
-    NcError.invalidPrimaryKey(id, primaryKeys.map((pk) => pk.title).join(','));
+    AtError.invalidPrimaryKey(id, primaryKeys.map((pk) => pk.title).join(','));
   }
 
   for (let i = 0; i < primaryKeys.length; ++i) {
@@ -154,7 +154,7 @@ export function _wherePk(
     ) {
       if (!ncIsNumber(Number(ids[i]))) {
         if (!skipPkValidation) {
-          NcError.invalidPrimaryKey(ids[i], primaryKeys[i].title);
+          AtError.invalidPrimaryKey(ids[i], primaryKeys[i].title);
         }
       }
       where[primaryKeys[i].column_name] = ids[i];
@@ -199,7 +199,7 @@ export function getCompositePkValue(
   },
 ) {
   if (row === null || row === undefined) {
-    NcError.requiredFieldMissing(
+    AtError.requiredFieldMissing(
       primaryKeys
         .map((c) => (option?.skipSubstitutingColumnIds ? c.id : c.title))
         .join(','),
@@ -263,7 +263,7 @@ export function getOppositeRelationType(
 }
 
 /**
- * Decide whether NocoDB must proactively cascade a link-cleanup query
+ * Decide whether Atmosphere must proactively cascade a link-cleanup query
  * before deleting a row, based on the FK's stored `dr` (ON DELETE).
  *
  * - Meta sources: always cascade (no DB-level FK enforcement).
@@ -285,12 +285,12 @@ export function normalizeDr(dr: string | null | undefined): string | null {
 }
 
 export async function shouldCascadeLinkCleanup(
-  context: NcContext,
+  context: AtContext,
   params: {
     isMeta: boolean;
     relationType: 'hm' | 'mm' | 'bt' | string;
     colOptions: LinkToAnotherRecordColumn;
-    mmContext: NcContext;
+    mmContext: AtContext;
   },
 ): Promise<boolean> {
   const { isMeta, relationType, colOptions, mmContext } = params;
@@ -334,7 +334,7 @@ export async function getBaseModelSqlFromModelId({
   context,
   options = {},
 }: {
-  context: NcContext;
+  context: AtContext;
   modelId: string;
   options?: {
     transaction?: XKnex | Knex.Transaction;
@@ -345,22 +345,22 @@ export async function getBaseModelSqlFromModelId({
   const source = await Source.get(context, model.source_id);
   return await Model.getBaseModelSQL(context, {
     id: model.id,
-    dbDriver: await NcConnectionMgrv2.get(source),
+    dbDriver: await AtConnectionMgrv2.get(source),
     transaction: options?.transaction,
     viewId: options?.viewId,
     source,
   });
 }
 
-// Audit logging is enabled by default unless explicitly disabled using NC_DISABLE_AUDIT=true
+// Audit logging is enabled by default unless explicitly disabled using ATMOSPHERE_DISABLE_AUDIT=true
 export function isDataAuditEnabled() {
-  return process.env.NC_DISABLE_AUDIT !== 'true';
+  return process.env.ATMOSPHERE_DISABLE_AUDIT !== 'true';
 }
 
 // Collaborative (Yjs) realtime editing of docs is enabled by default; set
-// NC_DOCS_REALTIME=false to disable and fall back to debounced REST saves.
+// ATMOSPHERE_DOCS_REALTIME=false to disable and fall back to debounced REST saves.
 export function isDocsRealtimeEnabled() {
-  return process.env.NC_DOCS_REALTIME !== 'false';
+  return process.env.ATMOSPHERE_DOCS_REALTIME !== 'false';
 }
 
 export function getRelatedLinksColumn(
@@ -421,7 +421,7 @@ export const nanoidv2 = customAlphabet(
 );
 
 export async function populatePk(
-  context: NcContext,
+  context: AtContext,
   model: Model,
   insertObj: any,
 ) {
@@ -429,7 +429,7 @@ export async function populatePk(
   for (const pkCol of model.primaryKeys) {
     if (!pkCol.meta?.ag || insertObj[pkCol.title]) continue;
     insertObj[pkCol.title] =
-      pkCol.meta?.ag === 'nc' ? `rc_${nanoidv2()}` : uuidv4();
+      pkCol.meta?.ag === 'atm' ? `rc_${nanoidv2()}` : uuidv4();
   }
 }
 
@@ -459,7 +459,7 @@ export function checkColumnRequired(
 }
 
 export async function getColumnName(
-  context: NcContext,
+  context: AtContext,
   column: Column<any>,
   columns?: Column[],
 ) {
@@ -508,7 +508,7 @@ export async function getColumnName(
         (col) => col.system && col.uidt === UITypes.Order,
       );
       if (orderSystemCol) return orderSystemCol.column_name;
-      return column.column_name || 'nc_order';
+      return column.column_name || 'atm_order';
     }
     default:
       return column.column_name;
@@ -564,15 +564,15 @@ export function transformObject(value, idToAliasMap) {
 }
 
 export function extractSortsObject(
-  context: NcContext,
+  context: AtContext,
   _sorts: string | string[] | { direction: string; field: string }[],
   aliasColObjMap: { [columnAlias: string]: Column },
   throwErrorIfInvalid = false,
-  apiVersion?: NcApiVersion,
+  apiVersion?: AtApiVersion,
 ): Sort[] {
   if (!_sorts?.length) return;
   // Handle API V3 format: [{"direction": "asc", "field": "field_name"}, {"direction": "desc", "field": "field_id"}]
-  if (apiVersion === NcApiVersion.V3) {
+  if (apiVersion === AtApiVersion.V3) {
     try {
       _sorts = JSON.parse(_sorts as string);
     } catch (_e) {}
@@ -583,7 +583,7 @@ export function extractSortsObject(
         fk_column_id: aliasColObjMap[s.field]?.id,
       };
       if (throwErrorIfInvalid && !sort.fk_column_id) {
-        NcError.get(context).fieldNotFound(s.field);
+        AtError.get(context).fieldNotFound(s.field);
       }
       return new Sort(sort);
     });
@@ -612,7 +612,7 @@ export function extractSortsObject(
 
     if (throwErrorIfInvalid && !sort.fk_column_id) {
       const fieldNameOrId = s.replace(/^~?[+-]/, '');
-      NcError.get(context).fieldNotFound(fieldNameOrId);
+      AtError.get(context).fieldNotFound(fieldNameOrId);
     }
     return new Sort(sort);
   });
@@ -715,7 +715,7 @@ export function shouldSkipField(
 }
 
 export async function getQueriedColumns(
-  context: NcContext,
+  context: AtContext,
   {
     model,
     fieldsSet,
@@ -765,7 +765,7 @@ export function getListArgs(
   model: Model,
   {
     ignoreAssigningWildcardSelect = false,
-    apiVersion = NcApiVersion.V2,
+    apiVersion = AtApiVersion.V2,
     nested = false,
   } = {},
 ): XcFilter {
@@ -776,7 +776,7 @@ export function getListArgs(
   obj.condition = args.condition || args.c || {};
   obj.conditionGraph = args.conditionGraph || {};
   obj.page = args.page || args.p;
-  if (apiVersion === NcApiVersion.V3 && nested) {
+  if (apiVersion === AtApiVersion.V3 && nested) {
     if (args.nestedLimit) {
       obj.limit = obj.limit = Math.max(
         Math.min(
@@ -803,7 +803,7 @@ export function getListArgs(
     obj.offset = (+obj.page - 1) * +obj.limit;
   }
   if (!ncIsNumber(Number(obj.offset)) || Number(obj.offset) < 0) {
-    NcError.invalidOffsetValue(obj.offset);
+    AtError.invalidOffsetValue(obj.offset);
   }
   obj.fields =
     args?.fields || args?.f || (ignoreAssigningWildcardSelect ? null : '*');
@@ -865,12 +865,12 @@ export function formatDataForAudit(
 export const validateFuncOnColumn = async ({
   value,
   column,
-  apiVersion = NcApiVersion.V2,
+  apiVersion = AtApiVersion.V2,
   customValidators = {},
 }: {
   value: any;
   column: Column;
-  apiVersion?: NcApiVersion;
+  apiVersion?: AtApiVersion;
   customValidators?: Record<
     string,
     (str: string, options?: validator.IsFloatOptions) => boolean
@@ -895,14 +895,14 @@ export const validateFuncOnColumn = async ({
           ![null, undefined, ''].includes(columnValue) &&
           !(fn.constructor.name === 'AsyncFunction' ? await fn(arg) : fn(arg))
         ) {
-          if (apiVersion === NcApiVersion.V3) {
-            NcError.invalidValueForField({
+          if (apiVersion === AtApiVersion.V3) {
+            AtError.invalidValueForField({
               value: columnValue,
               type: column.uidt,
               column: column.title,
             });
           }
-          NcError.badRequest(
+          AtError.badRequest(
             msg[j]
               .replace(/\{VALUE}/g, columnValue)
               .replace(/\{cn}/g, columnTitle),

@@ -52,7 +52,7 @@ const onDelete = async () => {
     <template #entity-preview>
       <div
         v-if="workspace"
-        class="flex flex-row items-center py-2.25 px-2.75 bg-nc-bg-gray-extralight rounded-lg text-nc-content-gray-subtle"
+        class="flex flex-row items-center py-2.25 px-2.75 bg-atm-bg-gray-extralight rounded-lg text-atm-content-gray-subtle"
       >
         <GeneralIcon icon="workspace" />
         <div

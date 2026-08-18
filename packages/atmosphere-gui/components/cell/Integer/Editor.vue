@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { VNodeRef } from '@vue/runtime-core'
-import { toSafeInteger } from 'nocodb-sdk'
+import { toSafeInteger } from 'atmosphere-sdk'
 
 interface Props {
   // when we set a number, then it is number type
@@ -108,7 +108,7 @@ onMounted(() => {
   <input
     :ref="focus"
     v-model="vModel"
-    class="nc-cell-field outline-none py-1 border-none w-full h-full"
+    class="atm-cell-field outline-none py-1 border-none w-full h-full"
     :type="inputType"
     style="letter-spacing: 0.06rem"
     :disabled="readOnly"

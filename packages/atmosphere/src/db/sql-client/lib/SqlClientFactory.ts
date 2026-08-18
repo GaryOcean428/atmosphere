@@ -1,4 +1,4 @@
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { resolveSslFileConfig } from '~/helpers/resolveSslFileConfig';
 import MySqlClient from '~/db/sql-client/lib/mysql/MysqlClient';
 import SqliteClient from '~/db/sql-client/lib/sqlite/SqliteClient';
@@ -29,7 +29,7 @@ export class SqlClientFactory {
       return new PgClient(connectionConfig);
     }
 
-    NcError.notImplemented(
+    AtError.notImplemented(
       `Database ${connectionConfig?.meta?.dbtype || ''} is not supported`,
     );
   }

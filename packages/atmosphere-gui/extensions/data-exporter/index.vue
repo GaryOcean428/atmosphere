@@ -7,7 +7,7 @@ import {
   charsetOptions,
   csvColumnSeparatorOptions,
   getFirstNonPersonalView,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { extensionUserPrefsManager } from '~/helpers/extensionUserPrefsManager'
 
 const jobStatusTooltip = {
@@ -319,30 +319,30 @@ onMounted(async () => {
     :style="fullscreen ? {} : { height: exportedFiles.length ? (width <= 325 ? '172px' : '130px') : '100%' }"
   >
     <template v-if="fullscreen" #headerExtra>
-      <NcTooltip class="flex" placement="topRight" :disabled="!isExporting">
+      <AtTooltip class="flex" placement="topRight" :disabled="!isExporting">
         <template #title> The CSV file is being prepared in the background. You'll be notified once it's ready. </template>
-        <NcButton :disabled="!exportPayload?.viewId" :loading="isExporting" size="small" @click="exportDataAsync">{{
+        <AtButton :disabled="!exportPayload?.viewId" :loading="isExporting" size="small" @click="exportDataAsync">{{
           isExporting ? 'Generating' : 'Export'
-        }}</NcButton>
-      </NcTooltip>
+        }}</AtButton>
+      </AtTooltip>
     </template>
     <div
       ref="dataExporterRef"
       class="data-exporter"
       :class="{
-        'bg-nc-bg-gray-extralight': fullscreen,
+        'bg-atm-bg-gray-extralight': fullscreen,
       }"
     >
       <div
         v-if="!fullscreen"
         class="p-3 flex flex-col gap-3"
         :class="{
-          'bg-nc-bg-default': fullscreen,
+          'bg-atm-bg-default': fullscreen,
         }"
       >
         <div class="flex items-center justify-between gap-2.5 flex-wrap">
           <div
-            class="nc-data-exporter-select-wrapper flex-1 flex items-center border-1 border-nc-border-gray-medium rounded-lg relative shadow-default"
+            class="atm-data-exporter-select-wrapper flex-1 flex items-center border-1 border-atm-border-gray-medium rounded-lg relative shadow-default"
             :class="{
               'max-w-[min(350px,calc(100%-124px))]': isExporting && !fullscreen && width > 325,
               'max-w-[min(350px,calc(100%_-_76px))]': !isExporting && !fullscreen && width > 325,
@@ -357,11 +357,11 @@ onMounted(async () => {
                 'min-w-1/2 max-w-[175px]': !fullscreen,
               }"
             >
-              <NcSelect
+              <AtSelect
                 v-model:value="exportPayload.tableId"
                 placeholder="-select table-"
                 :disabled="isExporting"
-                class="nc-data-exporter-table-select nc-select-shadow"
+                class="atm-data-exporter-table-select atm-select-shadow"
                 :filter-option="filterOption"
                 dropdown-class-name="w-[250px]"
                 show-search
@@ -373,22 +373,22 @@ onMounted(async () => {
                       <GeneralTableIcon
                         size="xsmall"
                         :meta="{ meta: table.meta, synced: table.synced }"
-                        class="text-nc-content-gray-muted"
+                        class="text-atm-content-gray-muted"
                       />
                     </div>
-                    <NcTooltip class="flex-1 truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 truncate" show-on-truncate-only>
                       <template #title>{{ table.label }}</template>
                       <span>{{ table.label }}</span>
-                    </NcTooltip>
+                    </AtTooltip>
                     <component
                       :is="iconMap.check"
                       v-if="exportPayload.tableId === table.value"
-                      id="nc-selected-item-icon"
-                      class="flex-none text-nc-content-brand w-4 h-4"
+                      id="atm-selected-item-icon"
+                      class="flex-none text-atm-content-brand w-4 h-4"
                     />
                   </div>
                 </a-select-option>
-              </NcSelect>
+              </AtSelect>
             </a-form-item>
 
             <a-form-item
@@ -398,11 +398,11 @@ onMounted(async () => {
                 'min-w-1/2 max-w-[175px]': !fullscreen,
               }"
             >
-              <NcSelect
+              <AtSelect
                 v-model:value="exportPayload.viewId"
                 placeholder="-select view-"
                 :disabled="isExporting"
-                class="nc-data-exporter-view-select nc-select-shadow"
+                class="atm-data-exporter-view-select atm-select-shadow"
                 dropdown-class-name="w-[250px]"
                 :filter-option="filterOption"
                 show-search
@@ -414,30 +414,30 @@ onMounted(async () => {
                     <div class="min-w-5 flex items-center justify-center">
                       <GeneralViewIcon
                         :meta="{ meta: view.meta, type: view.type }"
-                        class="flex-none text-nc-content-gray-muted"
+                        class="flex-none text-atm-content-gray-muted"
                       />
                     </div>
-                    <NcTooltip class="flex-1 truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 truncate" show-on-truncate-only>
                       <template #title>{{ view.label }}</template>
                       <span>{{ view.label }}</span>
-                    </NcTooltip>
+                    </AtTooltip>
                     <component
                       :is="iconMap.check"
                       v-if="exportPayload.viewId === view.value"
-                      id="nc-selected-item-icon"
-                      class="flex-none text-nc-content-brand w-4 h-4"
+                      id="atm-selected-item-icon"
+                      class="flex-none text-atm-content-brand w-4 h-4"
                     />
                   </div> </a-select-option
-              ></NcSelect>
+              ></AtSelect>
             </a-form-item>
           </div>
           <div class="flex-none flex justify-end">
-            <NcTooltip class="flex" placement="topRight" :disabled="!isExporting">
+            <AtTooltip class="flex" placement="topRight" :disabled="!isExporting">
               <template #title> The CSV file is being prepared in the background. You'll be notified once it's ready. </template>
-              <NcButton :disabled="!exportPayload?.viewId" :loading="isExporting" size="small" @click="exportDataAsync">{{
+              <AtButton :disabled="!exportPayload?.viewId" :loading="isExporting" size="small" @click="exportDataAsync">{{
                 isExporting ? 'Generating' : 'Export'
-              }}</NcButton>
-            </NcTooltip>
+              }}</AtButton>
+            </AtTooltip>
           </div>
         </div>
       </div>
@@ -450,17 +450,17 @@ onMounted(async () => {
       >
         <div
           v-if="fullscreen"
-          class="w-[320px] border-r-1 border-r-nc-border-gray-medium bg-nc-bg-default p-4 pt-t flex flex-col gap-5 nc-scrollbar-thin"
+          class="w-[320px] border-r-1 border-r-atm-border-gray-medium bg-atm-bg-default p-4 pt-t flex flex-col gap-5 atm-scrollbar-thin"
         >
-          <div class="text-base font-bold text-nc-content-gray-extreme">Settings</div>
+          <div class="text-base font-bold text-atm-content-gray-extreme">Settings</div>
           <div class="flex flex-col gap-2">
-            <div class="text-nc-content-gray font-medium">Table</div>
+            <div class="text-atm-content-gray font-medium">Table</div>
             <a-form-item class="!my-0">
-              <NcSelect
+              <AtSelect
                 v-model:value="exportPayload.tableId"
                 placeholder="-select table-"
                 :disabled="isExporting"
-                class="nc-data-exporter-table-select-sidebar nc-select-shadow"
+                class="atm-data-exporter-table-select-sidebar atm-select-shadow"
                 :filter-option="filterOption"
                 dropdown-class-name="w-[250px]"
                 show-search
@@ -472,32 +472,32 @@ onMounted(async () => {
                       <GeneralTableIcon
                         size="xsmall"
                         :meta="{ meta: table.meta, synced: table.synced }"
-                        class="text-nc-content-gray-muted"
+                        class="text-atm-content-gray-muted"
                       />
                     </div>
-                    <NcTooltip class="flex-1 truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 truncate" show-on-truncate-only>
                       <template #title>{{ table.label }}</template>
                       <span>{{ table.label }}</span>
-                    </NcTooltip>
+                    </AtTooltip>
                     <component
                       :is="iconMap.check"
                       v-if="exportPayload.tableId === table.value"
-                      id="nc-selected-item-icon"
-                      class="flex-none text-nc-content-brand w-4 h-4"
+                      id="atm-selected-item-icon"
+                      class="flex-none text-atm-content-brand w-4 h-4"
                     />
                   </div>
                 </a-select-option>
-              </NcSelect>
+              </AtSelect>
             </a-form-item>
           </div>
           <div class="flex flex-col gap-2">
-            <div class="text-nc-content-gray font-medium">View</div>
+            <div class="text-atm-content-gray font-medium">View</div>
             <a-form-item class="!my-0 min-w-1/2">
-              <NcSelect
+              <AtSelect
                 v-model:value="exportPayload.viewId"
                 placeholder="-select view-"
                 :disabled="isExporting"
-                class="nc-data-exporter-view-select-sidebar nc-select-shadow"
+                class="atm-data-exporter-view-select-sidebar atm-select-shadow"
                 dropdown-class-name="w-[250px]"
                 :filter-option="filterOption"
                 show-search
@@ -509,59 +509,59 @@ onMounted(async () => {
                     <div class="min-w-5 flex items-center justify-center">
                       <GeneralViewIcon
                         :meta="{ meta: view.meta, type: view.type }"
-                        class="flex-none text-nc-content-gray-muted"
+                        class="flex-none text-atm-content-gray-muted"
                       />
                     </div>
-                    <NcTooltip class="flex-1 truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 truncate" show-on-truncate-only>
                       <template #title>{{ view.label }}</template>
                       <span>{{ view.label }}</span>
-                    </NcTooltip>
+                    </AtTooltip>
                     <component
                       :is="iconMap.check"
                       v-if="exportPayload.viewId === view.value"
-                      id="nc-selected-item-icon"
-                      class="flex-none text-nc-content-brand w-4 h-4"
+                      id="atm-selected-item-icon"
+                      class="flex-none text-atm-content-brand w-4 h-4"
                     />
                   </div>
                 </a-select-option>
-              </NcSelect>
+              </AtSelect>
             </a-form-item>
           </div>
           <div class="flex flex-col gap-2">
             <div>Separator</div>
             <a-form-item class="!my-0 flex-1">
-              <NcSelect
+              <AtSelect
                 v-model:value="exportPayload.delimiter"
                 placeholder="-select separator-"
                 :disabled="isExporting"
-                class="nc-data-exporter-separator nc-select-shadow"
+                class="atm-data-exporter-separator atm-select-shadow"
                 dropdown-class-name="w-[180px]"
                 @change="saveChanges"
               >
                 <a-select-option v-for="delimiter of csvColumnSeparatorOptions" :key="delimiter.value" :value="delimiter.value">
                   <div class="w-full flex items-center gap-2">
-                    <NcTooltip class="flex-1 truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 truncate" show-on-truncate-only>
                       <template #title>{{ delimiter.label }}</template>
                       <span>{{ delimiter.label }}</span>
-                    </NcTooltip>
+                    </AtTooltip>
                     <component
                       :is="iconMap.check"
                       v-if="exportPayload.delimiter === delimiter.value"
-                      id="nc-selected-item-icon"
-                      class="flex-none text-nc-content-brand w-4 h-4"
+                      id="atm-selected-item-icon"
+                      class="flex-none text-atm-content-brand w-4 h-4"
                     />
                   </div>
                 </a-select-option>
-              </NcSelect>
+              </AtSelect>
             </a-form-item>
           </div>
           <div class="flex flex-col gap-2">
             <div class="min-w-[65px]">Encoding</div>
             <a-form-item class="!my-0 flex-1">
-              <NcSelect
+              <AtSelect
                 v-model:value="exportPayload.encoding"
                 placeholder="-select encoding-"
-                class="nc-data-exporter-encoding nc-select-shadow"
+                class="atm-data-exporter-encoding atm-select-shadow"
                 dropdown-class-name="w-[190px]"
                 :filter-option="filterOption"
                 show-search
@@ -569,23 +569,23 @@ onMounted(async () => {
               >
                 <a-select-option v-for="encoding of charsetOptions" :key="encoding.label" :value="encoding.value">
                   <div class="w-full flex items-center gap-2">
-                    <NcTooltip class="flex-1 truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 truncate" show-on-truncate-only>
                       <template #title>{{ encoding.label }}</template>
                       <span>{{ encoding.label }}</span>
-                    </NcTooltip>
+                    </AtTooltip>
                     <component
                       :is="iconMap.check"
                       v-if="exportPayload.encoding === encoding.value"
-                      id="nc-selected-item-icon"
-                      class="flex-none text-nc-content-brand w-4 h-4"
+                      id="atm-selected-item-icon"
+                      class="flex-none text-atm-content-brand w-4 h-4"
                     />
                   </div>
                 </a-select-option>
-              </NcSelect>
+              </AtSelect>
             </a-form-item>
           </div>
         </div>
-        <div class="flex flex-col flex-1 nc-scrollbar-thin">
+        <div class="flex flex-col flex-1 atm-scrollbar-thin">
           <div v-if="fullscreen" class="data-exporter-header sticky top-0 z-100">Recent Exports</div>
           <div v-if="exportedFiles.length" class="flex-1 flex flex-col max-h-[calc(100%_-_25px)]">
             <template v-for="exp of exportedFiles">
@@ -595,9 +595,9 @@ onMounted(async () => {
                 class="p-3 flex gap-2 justify-between border-b-1"
                 :class="{
                   'px-4 py-3': fullscreen,
-                  'px-3 py-2 border-1 border-nc-border-gray-medium mx-3 rounded-lg': !fullscreen,
-                  'bg-nc-bg-default hover:bg-nc-bg-gray-extralight': exp.status === JobStatus.COMPLETED,
-                  'bg-nc-bg-red-light': exp.status !== JobStatus.COMPLETED,
+                  'px-3 py-2 border-1 border-atm-border-gray-medium mx-3 rounded-lg': !fullscreen,
+                  'bg-atm-bg-default hover:bg-atm-bg-gray-extralight': exp.status === JobStatus.COMPLETED,
+                  'bg-atm-bg-red-light': exp.status !== JobStatus.COMPLETED,
                 }"
               >
                 <div
@@ -609,7 +609,7 @@ onMounted(async () => {
                     'max-w-[calc(100%_-_85px)]': exp.status !== JobStatus.COMPLETED && exp.result.isNew,
                   }"
                 >
-                  <NcTooltip v-if="[JobStatus.COMPLETED, JobStatus.FAILED].includes(exp.status)" class="flex">
+                  <AtTooltip v-if="[JobStatus.COMPLETED, JobStatus.FAILED].includes(exp.status)" class="flex">
                     <template #title>
                       {{ jobStatusTooltip[exp.status] }}
                     </template>
@@ -621,54 +621,54 @@ onMounted(async () => {
                         '!text-red-700': exp.status === JobStatus.FAILED,
                       }"
                     />
-                  </NcTooltip>
+                  </AtTooltip>
                   <div v-else class="h-5 flex items-center">
                     <GeneralLoader size="regular" class="flex-none" />
                   </div>
 
                   <div class="flex-1 max-w-[calc(100%_-_28px)] flex flex-col gap-1">
-                    <div class="inline-flex gap-1 text-sm text-nc-content-gray -ml-[1px]">
+                    <div class="inline-flex gap-1 text-sm text-atm-content-gray -ml-[1px]">
                       <span class="inline-flex items-center h-5">
                         <GeneralIcon
                           icon="file"
-                          class="flex-none text-nc-content-gray-subtle2/80 dark:text-nc-content-gray-subtle2 h-3.5 w-3.5"
+                          class="flex-none text-atm-content-gray-subtle2/80 dark:text-atm-content-gray-subtle2 h-3.5 w-3.5"
                         />
                       </span>
-                      <NcTooltip class="truncate max-w-[calc(100%_-_20px)]" show-on-truncate-only>
+                      <AtTooltip class="truncate max-w-[calc(100%_-_20px)]" show-on-truncate-only>
                         <template #title>
                           {{ exp.result.title || titleHelper() }}
                         </template>
                         {{ exp.result.title || titleHelper() }}
-                      </NcTooltip>
+                      </AtTooltip>
                     </div>
 
-                    <div v-if="exp.result.timestamp" name="error" class="text-small leading-[18px] text-nc-content-gray-muted">
+                    <div v-if="exp.result.timestamp" name="error" class="text-small leading-[18px] text-atm-content-gray-muted">
                       {{ timeAgo(dayjs(exp.result.timestamp).toString()) }}
                     </div>
                   </div>
                 </div>
 
                 <div v-if="exp.result.isNew" class="flex h-7 flex items-center">
-                  <NcBadge color="green" :border="false" class="!bg-nc-bg-green-light !text-nc-content-green-dark">{{
+                  <AtBadge color="green" :border="false" class="!bg-atm-bg-green-light !text-atm-content-green-dark">{{
                     $t('general.new')
-                  }}</NcBadge>
+                  }}</AtBadge>
                 </div>
                 <div v-if="exp.status === JobStatus.COMPLETED" class="flex" @click="handleDownload(urlHelper(exp.result.url))">
-                  <NcTooltip class="flex">
+                  <AtTooltip class="flex">
                     <template #title>
                       {{ $t('general.download') }}
                     </template>
 
-                    <NcButton type="secondary" size="xs" class="!px-[5px]">
+                    <AtButton type="secondary" size="xs" class="!px-[5px]">
                       <div class="flex items-center gap-2">
                         <GeneralIcon icon="download" />
                       </div>
-                    </NcButton>
-                  </NcTooltip>
+                    </AtButton>
+                  </AtTooltip>
                 </div>
 
                 <div class="flex">
-                  <NcTooltip class="flex" :placement="extensionAccess.update ? 'top' : 'left'">
+                  <AtTooltip class="flex" :placement="extensionAccess.update ? 'top' : 'left'">
                     <template #title>
                       {{
                         extensionAccess.update
@@ -677,7 +677,7 @@ onMounted(async () => {
                       }}
                     </template>
 
-                    <NcButton
+                    <AtButton
                       :disabled="!extensionAccess.update"
                       type="text"
                       size="xs"
@@ -685,13 +685,13 @@ onMounted(async () => {
                       @click="onRemoveExportedFile(exp.id)"
                     >
                       <GeneralIcon icon="close" />
-                    </NcButton>
-                  </NcTooltip>
+                    </AtButton>
+                  </AtTooltip>
                 </div>
               </div>
             </template>
           </div>
-          <div v-else-if="fullscreen" class="px-3 py-2 flex-1 flex items-center justify-center text-nc-content-gray">
+          <div v-else-if="fullscreen" class="px-3 py-2 flex-1 flex items-center justify-center text-atm-content-gray">
             <a-empty
               :image-style="{
                 height: '24px',
@@ -711,18 +711,18 @@ onMounted(async () => {
 .data-exporter {
   @apply flex flex-col overflow-hidden h-full;
   .data-exporter-header {
-    @apply px-3 py-1 bg-nc-bg-gray-light text-[11px] leading-4 text-nc-content-gray-subtle2 border-b-1;
+    @apply px-3 py-1 bg-atm-bg-gray-light text-[11px] leading-4 text-atm-content-gray-subtle2 border-b-1;
   }
 
-  .nc-data-exporter-select-wrapper {
+  .atm-data-exporter-select-wrapper {
     &:not(:focus-within) {
       &::after {
-        @apply absolute left-1/2 h-full content-[''] border-r-1 border-nc-border-gray-medium;
+        @apply absolute left-1/2 h-full content-[''] border-r-1 border-atm-border-gray-medium;
       }
     }
   }
 
-  :deep(.nc-data-exporter-table-select.ant-select) {
+  :deep(.atm-data-exporter-table-select.ant-select) {
     &.ant-select-focused {
       .ant-select-selector {
         @apply z-10 !rounded-r-lg;
@@ -740,7 +740,7 @@ onMounted(async () => {
     }
   }
 
-  :deep(.nc-data-exporter-view-select.ant-select) {
+  :deep(.atm-data-exporter-view-select.ant-select) {
     &.ant-select-focused {
       .ant-select-selector {
         @apply z-10 !rounded-l-lg;
@@ -758,8 +758,8 @@ onMounted(async () => {
     }
   }
 
-  :deep(.nc-data-exporter-separator.ant-select),
-  :deep(.nc-data-exporter-encoding.ant-select) {
+  :deep(.atm-data-exporter-separator.ant-select),
+  :deep(.atm-data-exporter-encoding.ant-select) {
     .ant-select-selector {
       @apply !rounded-lg h-8;
     }
@@ -770,13 +770,13 @@ onMounted(async () => {
   }
 
   .data-exporter-footer {
-    @apply flex items-center justify-end bg-nc-bg-gray-light;
+    @apply flex items-center justify-end bg-atm-bg-gray-light;
   }
 }
 </style>
 
 <style lang="scss">
-.nc-nc-data-exporter .extension-content {
+.atm-atm-data-exporter .extension-content {
   @apply !p-0;
 }
 </style>

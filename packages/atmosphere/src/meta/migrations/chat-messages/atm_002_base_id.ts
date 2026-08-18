@@ -3,7 +3,7 @@ import { MetaTable } from '~/utils/globals';
 
 const up = async (knex: Knex) => {
   // Drop all messages — existing ones lack base_id.
-  // The v0 migration (nc_202603110001) already drops sessions too.
+  // The v0 migration (atm_202603110001) already drops sessions too.
   await knex(MetaTable.CHAT_MESSAGES).del();
 
   await knex.schema.alterTable(MetaTable.CHAT_MESSAGES, (table) => {

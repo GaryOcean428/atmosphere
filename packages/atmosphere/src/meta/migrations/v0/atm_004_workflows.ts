@@ -28,7 +28,7 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
 
     // Indexes for fast lookups
-    table.index(['base_id', 'fk_workspace_id'], 'nc_workflows_context_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_workflows_context_idx');
   });
 
   await knex.schema.createTable(MetaTableOldV2.WORKFLOW_EXECUTIONS, (table) => {
@@ -50,9 +50,9 @@ const up = async (knex: Knex) => {
     // Indexes for fast lookups
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_workflow_executions_context_idx',
+      'atm_workflow_executions_context_idx',
     );
-    table.index(['fk_workflow_id'], 'nc_workflow_executions_workflow_idx');
+    table.index(['fk_workflow_id'], 'atm_workflow_executions_workflow_idx');
   });
 
   await knex.schema.createTable(MetaTable.DEPENDENCY_TRACKER, (table) => {
@@ -70,15 +70,15 @@ const up = async (knex: Knex) => {
     // Indexes for fast lookups
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_dependency_tracker_context_idx',
+      'atm_dependency_tracker_context_idx',
     );
     table.index(
       ['source_type', 'source_id'],
-      'nc_dependency_tracker_source_idx',
+      'atm_dependency_tracker_source_idx',
     );
     table.index(
       ['dependent_type', 'dependent_id'],
-      'nc_dependency_tracker_dependent_idx',
+      'atm_dependency_tracker_dependent_idx',
     );
   });
 };

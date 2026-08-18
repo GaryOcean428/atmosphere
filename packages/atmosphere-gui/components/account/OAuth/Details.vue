@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { OAuthClientType, PublicAttachmentScope } from 'nocodb-sdk'
+import { OAuthClientType, PublicAttachmentScope } from 'atmosphere-sdk'
 
 const props = defineProps<{
   visible: boolean
@@ -167,82 +167,82 @@ function copyToClipboard(text: string, label: string) {
 </script>
 
 <template>
-  <NcModal v-model:visible="modalVisible" :show-separator="true" size="large" wrap-class-name="nc-modal-oauth-client-details">
+  <AtModal v-model:visible="modalVisible" :show-separator="true" size="large" wrap-class-name="atm-modal-oauth-client-details">
     <template #header>
       <div class="flex w-full items-center p-2 justify-between">
         <div class="flex items-center gap-3 pl-1 flex-1">
-          <GeneralIcon class="text-nc-content-gray-emphasis h-5 w-5" icon="ncLock" />
-          <span class="text-nc-content-gray-emphasis truncate font-semibold text-xl"> Edit OAuth Client </span>
+          <GeneralIcon class="text-atm-content-gray-emphasis h-5 w-5" icon="ncLock" />
+          <span class="text-atm-content-gray-emphasis truncate font-semibold text-xl"> Edit OAuth Client </span>
         </div>
 
         <div class="flex justify-end items-center gap-3 pr-0.5 flex-1">
-          <NcButton type="primary" size="small" :loading="loading" @click="handleSave">
+          <AtButton type="primary" size="small" :loading="loading" @click="handleSave">
             {{ loading ? 'Saving...' : 'Save Changes' }}
-          </NcButton>
-          <NcButton type="text" size="small" data-testid="nc-close-oauth-modal" @click.stop="modalVisible = false">
+          </AtButton>
+          <AtButton type="text" size="small" data-testid="atm-close-oauth-modal" @click.stop="modalVisible = false">
             <GeneralIcon icon="close" />
-          </NcButton>
+          </AtButton>
         </div>
       </div>
     </template>
 
-    <div class="flex bg-nc-bg-default rounded-b-2xl h-[calc(100%_-_66px)]">
+    <div class="flex bg-atm-bg-default rounded-b-2xl h-[calc(100%_-_66px)]">
       <div
         ref="containerElem"
-        class="h-full flex-1 flex flex-col overflow-y-auto scroll-smooth nc-scrollbar-thin px-24 py-6 mx-auto"
+        class="h-full flex-1 flex flex-col overflow-y-auto scroll-smooth atm-scrollbar-thin px-24 py-6 mx-auto"
       >
         <div class="flex flex-col max-w-[640px] w-full mx-auto gap-3">
           <a-form :model="clientRef" name="edit-oauth-client" layout="vertical" class="flex flex-col gap-6">
             <!-- Application Name -->
             <a-form-item v-bind="validateInfos.client_name" class="!mb-0 flex-1">
               <template #label>
-                <span class="text-nc-content-gray-subtle font-medium"
-                  >Application Name <span class="text-nc-content-red-medium">*</span></span
+                <span class="text-atm-content-gray-subtle font-medium"
+                  >Application Name <span class="text-atm-content-red-medium">*</span></span
                 >
               </template>
               <template #extra>
-                <span class="text-xs text-nc-content-gray-muted">Shown to users during authorization</span>
+                <span class="text-xs text-atm-content-gray-muted">Shown to users during authorization</span>
               </template>
-              <a-input v-model:value="clientRef.client_name" placeholder="My Application" class="nc-input-shadow !rounded-lg" />
+              <a-input v-model:value="clientRef.client_name" placeholder="My Application" class="atm-input-shadow !rounded-lg" />
             </a-form-item>
 
             <!-- Application Description -->
             <a-form-item v-bind="validateInfos.client_description" class="!mb-0 flex-1">
               <template #label>
-                <span class="text-nc-content-gray-subtle font-medium">Application Description</span>
+                <span class="text-atm-content-gray-subtle font-medium">Application Description</span>
               </template>
               <template #extra>
-                <span class="text-xs text-nc-content-gray-muted">Brief description shown when users grant access</span>
+                <span class="text-xs text-atm-content-gray-muted">Brief description shown when users grant access</span>
               </template>
               <a-textarea
                 v-model:value="clientRef.client_description"
                 placeholder="This application helps you manage your data..."
                 :rows="3"
-                class="nc-input-shadow !rounded-lg"
+                class="atm-input-shadow !rounded-lg"
               />
             </a-form-item>
 
             <!-- Homepage URL -->
             <a-form-item label="Homepage URL" v-bind="validateInfos.client_uri" class="!mb-0 flex-1">
               <template #label>
-                <span class="text-nc-content-gray-subtle font-medium">Homepage URL</span>
+                <span class="text-atm-content-gray-subtle font-medium">Homepage URL</span>
               </template>
               <a-input
                 v-model:value="clientRef.client_uri"
                 placeholder="https://example.com"
-                class="nc-input-shadow !rounded-lg"
+                class="atm-input-shadow !rounded-lg"
               />
             </a-form-item>
 
             <!-- Logo -->
             <a-form-item :label="$t('general.logo')" class="items-start !mb-0">
               <template #label>
-                <span class="text-nc-content-gray-subtle font-medium">{{ $t('general.logo') }}</span>
+                <span class="text-atm-content-gray-subtle font-medium">{{ $t('general.logo') }}</span>
               </template>
               <template #extra>
-                <span class="text-xs text-nc-content-gray-muted">Image shown during authorization (square recommended)</span>
+                <span class="text-xs text-atm-content-gray-muted">Image shown during authorization (square recommended)</span>
               </template>
-              <NcFileUpload
+              <AtFileUpload
                 v-model:attachment="clientRef.logo_uri"
                 :upload-scope="PublicAttachmentScope.OAUTHCLIENTS"
                 upload-path="clients/logos"
@@ -257,20 +257,20 @@ function copyToClipboard(text: string, label: string) {
                     />
                   </div>
                 </template>
-              </NcFileUpload>
+              </AtFileUpload>
             </a-form-item>
 
             <!-- Client Type (Read-only) -->
             <a-form-item class="!mb-0 flex-1">
               <template #label>
-                <span class="text-nc-content-gray-subtle font-medium">Client Type</span>
+                <span class="text-atm-content-gray-subtle font-medium">Client Type</span>
               </template>
               <template #extra>
-                <span class="text-xs text-nc-content-gray-muted">
+                <span class="text-xs text-atm-content-gray-muted">
                   Public: mobile/web apps (PKCE required). Confidential: secure servers (can store secrets)
                 </span>
               </template>
-              <a-radio-group v-model:value="clientRef.client_type" disabled class="nc-input-shadow">
+              <a-radio-group v-model:value="clientRef.client_type" disabled class="atm-input-shadow">
                 <a-radio value="public">Public</a-radio>
                 <a-radio value="confidential">Confidential</a-radio>
               </a-radio-group>
@@ -279,12 +279,12 @@ function copyToClipboard(text: string, label: string) {
             <!-- Authorization Callback URLs -->
             <a-form-item label="Authorization Callback URLs" v-bind="validateInfos.redirect_uris" class="mb-0">
               <template #label>
-                <span class="text-nc-content-gray-subtle font-medium"
-                  >Authorization Callback URLs <span class="text-nc-content-red-medium">*</span></span
+                <span class="text-atm-content-gray-subtle font-medium"
+                  >Authorization Callback URLs <span class="text-atm-content-red-medium">*</span></span
                 >
               </template>
               <template #extra>
-                <span class="text-xs text-nc-content-gray-muted">
+                <span class="text-xs text-atm-content-gray-muted">
                   HTTPS URLs for redirecting after authorization (localhost/127.0.0.1 allowed). One per line
                 </span>
               </template>
@@ -292,7 +292,7 @@ function copyToClipboard(text: string, label: string) {
                 v-model:value="clientRef.redirect_uris"
                 :rows="4"
                 placeholder="https://example.com/auth/callback&#10;http://localhost:3000/callback&#10;http://127.0.0.1:3000/callback"
-                class="nc-input-shadow !rounded-lg"
+                class="atm-input-shadow !rounded-lg"
               />
             </a-form-item>
           </a-form>
@@ -301,87 +301,87 @@ function copyToClipboard(text: string, label: string) {
 
           <!-- Client ID (Read-only) -->
           <div class="flex flex-col gap-2">
-            <label class="text-nc-content-gray-subtle font-medium text-sm">Client ID</label>
+            <label class="text-atm-content-gray-subtle font-medium text-sm">Client ID</label>
             <div class="flex items-center gap-2">
-              <a-input :value="clientRef.client_id" readonly class="nc-input-shadow !rounded-lg flex-1" />
-              <NcButton type="secondary" size="small" @click="copyToClipboard(clientRef.client_id, 'Client ID')">
+              <a-input :value="clientRef.client_id" readonly class="atm-input-shadow !rounded-lg flex-1" />
+              <AtButton type="secondary" size="small" @click="copyToClipboard(clientRef.client_id, 'Client ID')">
                 <GeneralIcon icon="copy" />
-              </NcButton>
+              </AtButton>
             </div>
           </div>
 
           <!-- Client Secret (Read-only, with show/hide) -->
           <div v-if="clientRef.client_type === 'confidential'" class="flex flex-col gap-2">
-            <label class="text-nc-content-gray-subtle font-medium text-sm">Client Secret</label>
+            <label class="text-atm-content-gray-subtle font-medium text-sm">Client Secret</label>
             <div v-if="clientRef.client_secret" class="flex items-center gap-2">
               <a-input
                 :value="showSecret ? clientRef.client_secret : '••••••••••••••••••••••••••••••••'"
                 readonly
-                class="nc-input-shadow !rounded-lg flex-1"
+                class="atm-input-shadow !rounded-lg flex-1"
               />
-              <NcButton type="secondary" size="small" @click="showSecret = !showSecret">
+              <AtButton type="secondary" size="small" @click="showSecret = !showSecret">
                 <GeneralIcon :icon="showSecret ? 'eye' : 'eyeSlash'" />
-              </NcButton>
-              <NcButton
+              </AtButton>
+              <AtButton
                 v-if="showSecret"
                 type="secondary"
                 size="small"
                 @click="copyToClipboard(clientRef.client_secret, 'Client Secret')"
               >
                 <GeneralIcon icon="copy" />
-              </NcButton>
+              </AtButton>
             </div>
             <div v-if="secretJustRegenerated" class="text-xs text-orange-600">
               ⚠️ Make sure to copy your client secret now. You won't be able to see it again!
             </div>
-            <div v-else class="text-xs text-nc-content-gray-muted">
+            <div v-else class="text-xs text-atm-content-gray-muted">
               The secret is hidden for security and is not visible again. You can regenerate it if needed.
             </div>
-            <NcButton type="secondary" size="small" class="mt-2 w-fit" @click="handleRegenerateSecret">
+            <AtButton type="secondary" size="small" class="mt-2 w-fit" @click="handleRegenerateSecret">
               <div class="flex gap-2">
                 <GeneralIcon icon="refresh" />
                 Regenerate Secret
               </div>
-            </NcButton>
+            </AtButton>
           </div>
         </div>
       </div>
-      <div class="h-full bg-nc-bg-gray-extralight border-l-1 w-80 p-5 rounded-br-2xl border-nc-border-gray-medium">
+      <div class="h-full bg-atm-bg-gray-extralight border-l-1 w-80 p-5 rounded-br-2xl border-atm-border-gray-medium">
         <div class="w-full flex flex-col gap-3">
-          <h2 class="text-sm text-nc-content-gray-subtle font-semibold !my-0">{{ $t('labels.supportDocs') }}</h2>
+          <h2 class="text-sm text-atm-content-gray-subtle font-semibold !my-0">{{ $t('labels.supportDocs') }}</h2>
           <div>
             <div class="flex items-center gap-1">
               <div class="h-7 w-7 flex items-center justify-center">
-                <GeneralIcon icon="bookOpen" class="flex-none w-4 h-4 text-nc-content-gray-muted" />
+                <GeneralIcon icon="bookOpen" class="flex-none w-4 h-4 text-atm-content-gray-muted" />
               </div>
               <NuxtLink
-                href="https://nocodb.com/docs/product-docs/developer-resources/oauth-clients"
+                href="https://atmosphere.dev/docs/product-docs/developer-resources/oauth-clients"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="!text-nc-content-gray-muted text-sm !no-underline !hover:underline"
+                class="!text-atm-content-gray-muted text-sm !no-underline !hover:underline"
               >
                 Create OAuth Clients
               </NuxtLink>
             </div>
             <div class="flex items-center gap-1">
               <div class="h-7 w-7 flex items-center justify-center">
-                <GeneralIcon icon="bookOpen" class="flex-none w-4 h-4 text-nc-content-gray-muted" />
+                <GeneralIcon icon="bookOpen" class="flex-none w-4 h-4 text-atm-content-gray-muted" />
               </div>
               <NuxtLink
-                href="https://nocodb.com/docs/product-docs/developer-resources/oauth-clients/manage"
+                href="https://atmosphere.dev/docs/product-docs/developer-resources/oauth-clients/manage"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="!text-nc-content-gray-muted text-sm !no-underline !hover:underline"
+                class="!text-atm-content-gray-muted text-sm !no-underline !hover:underline"
               >
                 Managing OAuth Clients
               </NuxtLink>
             </div>
           </div>
-          <NcDivider />
+          <AtDivider />
 
           <div v-if="clientRef.client_id" class="flex flex-col gap-2">
-            <h3 class="text-sm text-nc-content-gray-subtle font-semibold !my-0">Client Information</h3>
-            <div class="text-xs text-nc-content-gray-muted space-y-1">
+            <h3 class="text-sm text-atm-content-gray-subtle font-semibold !my-0">Client Information</h3>
+            <div class="text-xs text-atm-content-gray-muted space-y-1">
               <div>
                 <span class="font-medium">Type:</span> {{ clientRef.client_type === 'public' ? 'Public' : 'Confidential' }}
               </div>
@@ -391,7 +391,7 @@ function copyToClipboard(text: string, label: string) {
         </div>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 
   <DlgOAuthClientRegenerateSecret
     v-if="clientRef.client_id"
@@ -402,15 +402,15 @@ function copyToClipboard(text: string, label: string) {
 </template>
 
 <style lang="scss">
-.nc-modal-oauth-client-details {
+.atm-modal-oauth-client-details {
   z-index: 1050;
-  .nc-modal {
+  .atm-modal {
     @apply !p-0;
     height: min(calc(100vh - 100px), 1024px);
     max-height: min(calc(100vh - 100px), 1024px) !important;
   }
 
-  .nc-modal-header {
+  .atm-modal-header {
     @apply !mb-0 !pb-0;
   }
 }

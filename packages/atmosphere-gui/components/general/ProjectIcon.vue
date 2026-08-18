@@ -69,9 +69,9 @@ const gradientId = computed(() => {
   <!-- Custom base icon (base.meta.icon) on a tinted tile -->
   <div
     v-if="customBaseIcon"
-    class="w-5 h-5 nc-base-icon nc-base-custom-icon flex-none flex items-center justify-center rounded-md"
+    class="w-5 h-5 atm-base-icon atm-base-custom-icon flex-none flex items-center justify-center rounded-md"
     :class="{
-      'nc-base-icon-hoverable': hoverable,
+      'atm-base-icon-hoverable': hoverable,
     }"
     :style="{ backgroundColor: iconTileTint.bg }"
   >
@@ -84,9 +84,9 @@ const gradientId = computed(() => {
     height="20"
     viewBox="0 0 24 24"
     fill="none"
-    class="text-[#2824FB] nc-base-icon"
+    class="text-[#2824FB] atm-base-icon"
     :class="{
-      'nc-base-icon-hoverable': hoverable,
+      'atm-base-icon-hoverable': hoverable,
     }"
   >
     <path
@@ -102,9 +102,9 @@ const gradientId = computed(() => {
   <GeneralIcon
     v-else-if="managedAppInfo.isMaster"
     icon="ncBox"
-    class="h-4.5 w-4.5 nc-base-icon text-nc-content-gray-subtle2"
+    class="h-4.5 w-4.5 atm-base-icon text-atm-content-gray-subtle2"
     :class="{
-      'nc-base-icon-hoverable': hoverable,
+      'atm-base-icon-hoverable': hoverable,
     }"
   />
   <!-- 3D Sphere icon for installed managed apps -->
@@ -115,9 +115,9 @@ const gradientId = computed(() => {
     height="20"
     viewBox="0 0 20 20"
     fill="none"
-    class="nc-base-icon"
+    class="atm-base-icon"
     :class="{
-      'nc-base-icon-hoverable': hoverable,
+      'atm-base-icon-hoverable': hoverable,
     }"
   >
     <defs>
@@ -133,10 +133,10 @@ const gradientId = computed(() => {
 </template>
 
 <style scoped>
-.nc-base-icon {
+.atm-base-icon {
   @apply flex-none text-xl;
 }
-.nc-base-icon-hoverable {
-  @apply cursor-pointer !hover:bg-nc-bg-gray-medium !hover:bg-opacity-50;
+.atm-base-icon-hoverable {
+  @apply cursor-pointer !hover:bg-atm-bg-gray-medium !hover:bg-opacity-50;
 }
 </style>

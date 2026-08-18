@@ -1,4 +1,4 @@
-// Type definitions for nc-plugin
+// Type definitions for atm-plugin
 
 export {
   IEmailAdapter,

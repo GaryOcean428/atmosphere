@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 defineProps<{
   table: TableType
 }>()

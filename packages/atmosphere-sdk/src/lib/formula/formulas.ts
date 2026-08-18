@@ -8,7 +8,7 @@ import {
 } from './types';
 import UITypes, { isVirtualCol } from '~/lib/UITypes';
 import { isSystemColumn } from '~/lib/helperFunctions';
-export const API_DOC_PREFIX = 'https://nocodb.com/docs/product-docs/fields';
+export const API_DOC_PREFIX = 'https://atmosphere.dev/docs/product-docs/fields';
 
 const customValidationArray: FormulaMetaCustomValidation = (
   _argTypes: FormulaDataTypes[],
@@ -370,7 +370,7 @@ export const formulas: Record<string, FormulaMeta> = {
     },
     description: 'Converts the input parameter to an upper-case string.',
     syntax: 'UPPER(str)',
-    examples: ['UPPER("nocodb") => "NOCODB"', 'UPPER({column1})'],
+    examples: ['UPPER("atmosphere") => "ATMOSPHERE"', 'UPPER({column1})'],
     returnType: FormulaDataTypes.STRING,
   },
   LOWER: {
@@ -384,7 +384,7 @@ export const formulas: Record<string, FormulaMeta> = {
     },
     description: 'Converts the input parameter to an lower-case string.',
     syntax: 'LOWER(str)',
-    examples: ['LOWER("NOCODB") => "nocodb"', 'LOWER({column1})'],
+    examples: ['LOWER("ATMOSPHERE") => "atmosphere"', 'LOWER({column1})'],
     returnType: FormulaDataTypes.STRING,
   },
   LEN: {
@@ -398,7 +398,7 @@ export const formulas: Record<string, FormulaMeta> = {
     },
     description: 'Calculate the character length of the input parameter.',
     syntax: 'LEN(value)',
-    examples: ['LEN("NocoDB") => 6', 'LEN({column1})'],
+    examples: ['LEN("Atmosphere") => 6', 'LEN({column1})'],
     returnType: FormulaDataTypes.NUMERIC,
   },
   MIN: {
@@ -722,7 +722,7 @@ export const formulas: Record<string, FormulaMeta> = {
     },
     description: 'Extracts a substring; an alias for SUBSTR.',
     syntax: 'MID(str, position, [count])',
-    examples: ['MID("NocoDB", 3, 2) => "co"', 'MID({column1}, 3, 2)'],
+    examples: ['MID("Atmosphere", 3, 2) => "co"', 'MID({column1}, 3, 2)'],
     returnType: FormulaDataTypes.STRING,
   },
   ISBLANK: {
@@ -850,9 +850,9 @@ export const formulas: Record<string, FormulaMeta> = {
       'Verify and convert to a hyperlink if the input is a valid URL.',
     syntax: 'URL(string, [label])',
     examples: [
-      'URL("https://github.com/nocodb/nocodb")',
+      'URL("https://github.com/GaryOcean428/atmosphere")',
       'URL({column1})',
-      'URL("https://github.com/nocodb/nocodb", "NocoDB")',
+      'URL("https://github.com/GaryOcean428/atmosphere", "Atmosphere")',
       'URL({column1}, {column1})',
     ],
     returnType: FormulaDataTypes.STRING,
@@ -1123,7 +1123,7 @@ export const formulas: Record<string, FormulaMeta> = {
     syntax: 'MD5(value)',
     examples: [
       'MD5({title})',
-      'MD5("nocodb") => "d867ba3554696af54e71a5b42ccd4947"',
+      'MD5("atmosphere") => "d867ba3554696af54e71a5b42ccd4947"',
     ],
     returnType: FormulaDataTypes.STRING,
     docsUrl: `${API_DOC_PREFIX}/field-types/formula/string-functions#md5`,
@@ -1138,7 +1138,7 @@ export const formulas: Record<string, FormulaMeta> = {
     description:
       'Computes the SHA-256 hash (as a 64-character hexadecimal string) of the input value. Useful for checksums and verifying data integrity.',
     syntax: 'SHA256(value)',
-    examples: ['SHA256({title})', 'SHA256("nocodb")'],
+    examples: ['SHA256({title})', 'SHA256("atmosphere")'],
     returnType: FormulaDataTypes.STRING,
     docsUrl: `${API_DOC_PREFIX}/field-types/formula/string-functions#sha256`,
   },
@@ -1152,7 +1152,7 @@ export const formulas: Record<string, FormulaMeta> = {
     description:
       'Computes the SHA-512 hash (as a 128-character hexadecimal string) of the input value. Useful for checksums and verifying data integrity.',
     syntax: 'SHA512(value)',
-    examples: ['SHA512({title})', 'SHA512("nocodb")'],
+    examples: ['SHA512({title})', 'SHA512("atmosphere")'],
     returnType: FormulaDataTypes.STRING,
     docsUrl: `${API_DOC_PREFIX}/field-types/formula/string-functions#sha512`,
   },

@@ -157,22 +157,22 @@ watch(
     width="max(90vw, 600px)"
     :closable="false"
     class="!top-50px !bottom-50px"
-    wrap-class-name="nc-modal-settings"
+    wrap-class-name="atm-modal-settings"
     @cancel="emits('update:modelValue', false)"
   >
-    <div class="nc-modal-settings-content">
+    <div class="atm-modal-settings-content">
       <!--    Settings -->
-      <div class="flex flex-row justify-between w-full items-center p-4 border-b-1 border-nc-border-gray-medium">
+      <div class="flex flex-row justify-between w-full items-center p-4 border-b-1 border-atm-border-gray-medium">
         <h5 class="!my-0 text-2xl font-bold">{{ $t('objects.project') }} {{ $t('activity.settings') }}</h5>
 
-        <NcButton type="text" size="small" data-testid="settings-modal-close-button" @click="vModel = false">
-          <component :is="iconMap.close" class="cursor-pointer nc-modal-close w-4" />
-        </NcButton>
+        <AtButton type="text" size="small" data-testid="settings-modal-close-button" @click="vModel = false">
+          <component :is="iconMap.close" class="cursor-pointer atm-modal-close w-4" />
+        </AtButton>
       </div>
 
       <a-layout class="overflow-y-auto flex !h-[calc(100%_-_66px)]">
         <!-- Side tabs -->
-        <a-layout-sider class="!bg-nc-bg-default">
+        <a-layout-sider class="!bg-atm-bg-default">
           <a-menu v-model:selected-keys="selectedTabKeys" class="tabs-menu h-full" :open-keys="[]">
             <template v-for="(tab, key) of tabsInfo" :key="key">
               <a-menu-item
@@ -224,7 +224,7 @@ watch(
               v-model:state="vDataState"
               v-model:reload="dataSourcesReload"
               class="h-full"
-              :data-testid="`nc-settings-subtab-${selectedSubTab.key}`"
+              :data-testid="`atm-settings-subtab-${selectedSubTab.key}`"
               :base-id="baseId"
             />
             <component
@@ -232,7 +232,7 @@ watch(
               v-else
               class="px-2 py-6"
               :base-id="baseId"
-              :data-testid="`nc-settings-subtab-${selectedSubTab.key}`"
+              :data-testid="`atm-settings-subtab-${selectedSubTab.key}`"
             />
           </div>
         </a-layout-content>
@@ -256,12 +256,12 @@ watch(
 </style>
 
 <style lang="scss">
-.nc-modal-settings {
+.atm-modal-settings {
   .ant-modal-content {
     @apply !p-0 overflow-hidden;
   }
 
-  .nc-modal-settings-content {
+  .atm-modal-settings-content {
     height: min(calc(100vh - 100px), 1124px);
     max-height: min(calc(100vh - 100px), 1124px) !important;
   }

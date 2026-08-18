@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ProjectRoles, RoleColors, RoleIcons, RoleLabels, WorkspaceUserRoles } from 'nocodb-sdk'
+import { ProjectRoles, RoleColors, RoleIcons, RoleLabels, WorkspaceUserRoles } from 'atmosphere-sdk'
 
 const props = withDefaults(
   defineProps<{
@@ -55,9 +55,9 @@ const roleProperties = computed(() => {
 </script>
 
 <template>
-  <NcTooltip
+  <AtTooltip
     :disabled="!showTooltip"
-    class="flex items-start rounded-md w-[fit-content] nc-role-badge"
+    class="flex items-start rounded-md w-[fit-content] atm-role-badge"
     :class="{
       'cursor-pointer': clickableRef,
     }"
@@ -68,7 +68,7 @@ const roleProperties = computed(() => {
       </slot>
     </template>
 
-    <NcBadge
+    <AtBadge
       class="!px-2 w-full"
       :class="[ncBadgeClass, roleColorsMapping[roleProperties.color]?.badgeClass ?? '']"
       :color="roleProperties.color === 'disabled' ? 'gray' : roleProperties.color"
@@ -80,7 +80,7 @@ const roleProperties = computed(() => {
         :class="
           roleColorsMapping[roleProperties.color]?.badgeContent ??
           roleColorsMapping[roleProperties.color]?.content ??
-          'text-nc-content-brand-hover'
+          'text-atm-content-brand-hover'
         "
       >
         <div class="flex items-center gap-2">
@@ -93,12 +93,12 @@ const roleProperties = computed(() => {
         </div>
         <GeneralIcon v-if="clickableRef" icon="arrowDown" class="flex-none" />
       </div>
-    </NcBadge>
+    </AtBadge>
 
     <!--
     <a-tooltip v-if="inheritRef" placement="bottom">
       <div class="text-gray-400 text-xs p-1 rounded-md">Workspace Role</div>
     </a-tooltip>
     -->
-  </NcTooltip>
+  </AtTooltip>
 </template>

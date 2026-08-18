@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CURRENT_USER_TOKEN, type ColumnType, type FilterType, ViewLockType, ViewSettingOverrideOptions } from 'nocodb-sdk'
+import { CURRENT_USER_TOKEN, type ColumnType, type FilterType, ViewLockType, ViewSettingOverrideOptions } from 'atmosphere-sdk'
 import type ColumnFilter from './ColumnFilter.vue'
 
 interface Props {
@@ -297,21 +297,21 @@ watch(
 </script>
 
 <template>
-  <NcDropDrawer
+  <AtDropDrawer
     v-model:visible="open"
     :scrollable-body="false"
-    drawer-body-class-name="nc-dropdown-filter-menu nc-toolbar-dropdown !px-0 !pb-0 h-full"
-    :overlay-class-name="`nc-dropdown-filter-menu overflow-hidden${interfacePageDataApi ? ' nc-interface-toolbar-filter' : ''}`"
+    drawer-body-class-name="atm-dropdown-filter-menu atm-toolbar-dropdown !px-0 !pb-0 h-full"
+    :overlay-class-name="`atm-dropdown-filter-menu overflow-hidden${interfacePageDataApi ? ' atm-interface-toolbar-filter' : ''}`"
   >
     <template #default="{ onClick }">
-      <NcTooltip :disabled="(!isMobileMode || props.keepLabelOnMobile) && !isToolbarIconMode">
+      <AtTooltip :disabled="(!isMobileMode || props.keepLabelOnMobile) && !isToolbarIconMode">
         <template #title>
           {{ $t('activity.filter') }}
         </template>
 
-        <NcButton
+        <AtButton
           v-e="['c:filter']"
-          class="nc-filter-menu-btn nc-toolbar-btn !border-0 !h-7 group"
+          class="atm-filter-menu-btn atm-toolbar-btn !border-0 !h-7 group"
           size="small"
           type="secondary"
           :show-as-disabled="isLocked"
@@ -332,12 +332,12 @@ watch(
               </span>
             </div>
 
-            <NcTooltip v-if="combinedFilterLength" :disabled="!isCurrentUserFilterPresent" class="flex">
+            <AtTooltip v-if="combinedFilterLength" :disabled="!isCurrentUserFilterPresent" class="flex">
               <template #title>
                 {{ $t('tooltip.filteredByCurrentUser') }}
               </template>
               <span
-                class="nc-toolbar-btn-chip inline-flex items-center"
+                class="atm-toolbar-btn-chip inline-flex items-center"
                 :class="{
                   [filteredOrSortedAppearanceConfig.FILTERED.toolbarChipBgClass]: true,
                   [filteredOrSortedAppearanceConfig.FILTERED.toolbarTextClass]: true,
@@ -346,17 +346,17 @@ watch(
                 {{ combinedFilterLength }}
                 <span v-if="isCurrentUserFilterPresent" class="ml-1 pb-0.6">{{ '@' }}</span>
               </span>
-            </NcTooltip>
+            </AtTooltip>
 
             <!-- show a warning icon with tooltip if query filter error is there -->
             <template v-if="filtersFromUrlParams?.errors?.length">
-              <NcTooltip :title="$t('msg.urlFilterError')" placement="top">
-                <GeneralIcon icon="ncAlertCircle" class="nc-error-icon w-3.5" />
-              </NcTooltip>
+              <AtTooltip :title="$t('msg.urlFilterError')" placement="top">
+                <GeneralIcon icon="ncAlertCircle" class="atm-error-icon w-3.5" />
+              </AtTooltip>
             </template>
           </div>
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
     </template>
 
     <!-- Tab bar in drawer header (mobile only, when multiple tabs) -->
@@ -380,16 +380,16 @@ watch(
         <div
           v-if="!isRestrictedEditor"
           v-show="!showFilterTabs || activeFilterTab === 'filters'"
-          class="xs:(overflow-y-auto nc-scrollbar-thin)"
+          class="xs:(overflow-y-auto atm-scrollbar-thin)"
           :style="{ height: sectionHeight }"
         >
           <SmartsheetToolbarColumnFilter
             ref="filterComp"
             v-model:draft-filter="draftFilter"
             v-model:is-open="open"
-            class="nc-table-toolbar-menu"
+            class="atm-table-toolbar-menu"
             :auto-save="true"
-            data-testid="nc-filter-menu"
+            data-testid="atm-filter-menu"
             :is-view-filter="true"
             @update:filters-length="filtersLength = $event"
           >
@@ -400,14 +400,14 @@ watch(
         <div
           v-if="isRestrictedEditor"
           v-show="!showFilterTabs || activeFilterTab === 'viewFilters'"
-          class="xs:(overflow-y-auto nc-scrollbar-thin)"
+          class="xs:(overflow-y-auto atm-scrollbar-thin)"
           :style="{ height: sectionHeight }"
         >
           <SmartsheetToolbarColumnFilter
             v-if="filtersLength"
             :key="`existing-${filterKey}`"
             v-model:is-open="open"
-            class="nc-table-toolbar-menu !w-full"
+            class="atm-table-toolbar-menu !w-full"
             :model-value="existingFilters"
             :auto-save="false"
             :is-view-filter="!isPersonalViewNonOwner && !isLocked"
@@ -415,7 +415,7 @@ watch(
             @update:filters-length="filtersLength = $event || 0"
           >
           </SmartsheetToolbarColumnFilter>
-          <div v-else class="px-4 py-6 text-center text-xs text-nc-content-gray-subtle2">
+          <div v-else class="px-4 py-6 text-center text-xs text-atm-content-gray-subtle2">
             {{ $t('msg.info.noFiltersApplied') }}
           </div>
         </div>
@@ -424,7 +424,7 @@ watch(
         <div
           v-if="filtersFromUrlParams"
           v-show="!showFilterTabs || activeFilterTab === 'urlFilters'"
-          class="xs:(overflow-y-auto nc-scrollbar-thin)"
+          class="xs:(overflow-y-auto atm-scrollbar-thin)"
           :style="{ height: sectionHeight }"
         >
           <SmartsheetToolbarColumnFilter
@@ -433,7 +433,7 @@ watch(
             ref="filterComp"
             v-model="filtersFromUrlParams.filters"
             v-model:is-open="open"
-            class="nc-query-filter readonly"
+            class="atm-query-filter readonly"
             :auto-save="false"
             :is-view-filter="false"
             read-only
@@ -442,7 +442,7 @@ watch(
           </SmartsheetToolbarColumnFilter>
 
           <div v-else-if="filtersFromUrlParams?.errors?.length">
-            <NcAlert
+            <AtAlert
               type="error"
               :message="$t('objects.ncMessage.error')"
               :description="$t('msg.urlFilterError')"
@@ -458,29 +458,29 @@ watch(
         </div>
       </div>
     </template>
-  </NcDropDrawer>
+  </AtDropDrawer>
 </template>
 
 <style lang="scss">
-.nc-query-filter.readonly .nc-cell-field,
-.nc-query-filter.readonly {
+.atm-query-filter.readonly .atm-cell-field,
+.atm-query-filter.readonly {
   input,
-  .text-nc-content-gray-muted {
-    @apply !text-nc-content-gray-disabled;
+  .text-atm-content-gray-muted {
+    @apply !text-atm-content-gray-disabled;
   }
 }
 </style>
 
 <style lang="scss" scoped>
-.nc-error-icon {
-  color: var(--nc-content-red-dark);
+.atm-error-icon {
+  color: var(--atm-content-red-dark);
 }
 
-.nc-info-icon {
-  color: var(--nc-content-gray-muted);
+.atm-info-icon {
+  color: var(--atm-content-gray-muted);
 }
 
-.nc-chevron-icon {
-  color: var(--nc-content-gray-subtle);
+.atm-chevron-icon {
+  color: var(--atm-content-gray-subtle);
 }
 </style>

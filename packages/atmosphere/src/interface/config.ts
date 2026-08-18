@@ -2,7 +2,7 @@ import type { Socket } from 'socket.io';
 import type { Handler } from 'express';
 import type * as e from 'express';
 import type { Knex } from 'knex';
-import type { NcContext, NcRequest, UserType } from 'nocodb-sdk';
+import type { AtContext, AtRequest, UserType } from 'atmosphere-sdk';
 
 export interface Route {
   path: string;
@@ -67,7 +67,7 @@ export interface DbConfig extends Knex.Config {
 
     migrations?: {
       disabled: boolean;
-      name: 'nc_evolutions';
+      name: 'atm_evolutions';
     };
 
     api: {
@@ -162,7 +162,7 @@ export interface ServerlessConfig {
   };
 }
 
-export interface NcGui {
+export interface AtGui {
   path?: string;
   disabled?: boolean;
   favicon?: string;
@@ -170,7 +170,7 @@ export interface NcGui {
 }
 
 // @ts-ignore
-export interface NcConfig {
+export interface AtConfig {
   title?: string;
   version?: string;
 
@@ -192,7 +192,7 @@ export interface NcConfig {
   cluster?: number;
 
   mailer?: MailerConfig;
-  make?: () => NcConfig;
+  make?: () => AtConfig;
   serverless?: ServerlessConfig;
 
   toolDir?: string;
@@ -209,7 +209,7 @@ export interface NcConfig {
     db?: any;
   };
   api?: any;
-  gui?: NcGui;
+  gui?: AtGui;
   try?: boolean;
 
   dashboardPath?: string;
@@ -330,8 +330,8 @@ export interface AppConfig {
   dashboardPath: string;
 }
 
-interface NcSocket extends Socket {
+interface AtSocket extends Socket {
   user?: UserType;
 }
 
-export { NcContext, NcRequest, NcSocket };
+export { AtContext, AtRequest, AtSocket };

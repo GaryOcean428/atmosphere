@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnType, LinkToAnotherRecordType } from 'nocodb-sdk'
-import { DependencyTableType, RelationTypes, isLinkV2, isLinksOrLTAR } from 'nocodb-sdk'
+import type { ColumnType, LinkToAnotherRecordType } from 'atmosphere-sdk'
+import { DependencyTableType, RelationTypes, isLinkV2, isLinksOrLTAR } from 'atmosphere-sdk'
 
 const props = defineProps<{
   visible: boolean
@@ -135,9 +135,9 @@ const onDelete = async () => {
     <template #entity-preview>
       <div
         v-if="column"
-        class="flex flex-row items-center py-2 px-3 bg-nc-bg-gray-extralight rounded-lg text-nc-content-gray-subtle2 mb-4"
+        class="flex flex-row items-center py-2 px-3 bg-atm-bg-gray-extralight rounded-lg text-atm-content-gray-subtle2 mb-4"
       >
-        <SmartsheetHeaderIcon :column="column" class="nc-view-icon" />
+        <SmartsheetHeaderIcon :column="column" class="atm-view-icon" />
 
         <div
           class="capitalize text-ellipsis overflow-hidden select-none w-full pl-1.5"
@@ -147,7 +147,7 @@ const onDelete = async () => {
         </div>
       </div>
       <div class="mt-4">
-        <NcDependencyList
+        <AtDependencyList
           :status="status"
           :has-breaking-changes="dependency.hasBreakingChanges"
           :entities="dependency.entities"

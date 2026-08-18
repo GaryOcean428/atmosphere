@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { UITypes } from 'nocodb-sdk'
+import { UITypes } from 'atmosphere-sdk'
 import { defaultOffscreen2DContext } from './grid/canvas/utils/canvas'
 
 interface Props {
@@ -53,9 +53,9 @@ provide(ColumnInj, column)
 <template>
   <div
     ref="wapperRef"
-    class="nc-cell-formula-wrapper nc-cell w-full relative nc-cell-field"
+    class="atm-cell-formula-wrapper atm-cell w-full relative atm-cell-field"
     :class="{
-      'nc-grid-numeric-cell-right': isGrid && isNumericField && !isExpandedFormOpen && !isRating(column),
+      'atm-grid-numeric-cell-right': isGrid && isNumericField && !isExpandedFormOpen && !isRating(column),
     }"
   >
     <template v-if="showNull && (ncIsNull(cellValue) || ncIsUndefined(cellValue))">
@@ -82,42 +82,42 @@ provide(ColumnInj, column)
 </template>
 
 <style scoped lang="scss">
-.nc-grid-numeric-cell-left {
+.atm-grid-numeric-cell-left {
   text-align: left;
   :deep(input) {
     text-align: left;
   }
 }
-.nc-grid-numeric-cell-right {
+.atm-grid-numeric-cell-right {
   text-align: right;
   :deep(input) {
     text-align: right;
   }
 }
 
-.nc-cell {
+.atm-cell {
   @apply text-sm;
   font-weight: 500;
 
-  :deep(.nc-cell-field) {
+  :deep(.atm-cell-field) {
     @apply !text-sm;
     font-weight: 500;
   }
 
-  &.nc-display-value-cell {
-    @apply !text-nc-content-brand !font-semibold;
+  &.atm-display-value-cell {
+    @apply !text-atm-content-brand !font-semibold;
 
-    :deep(.nc-cell-field) {
+    :deep(.atm-cell-field) {
       @apply !font-semibold;
     }
   }
 
-  :deep(.nc-cell-field) {
+  :deep(.atm-cell-field) {
     @apply px-0;
   }
 }
 
-.nc-cell-formula-wrapper {
+.atm-cell-formula-wrapper {
   &:has(.long-text-wrapper) {
     @apply !px-0;
   }

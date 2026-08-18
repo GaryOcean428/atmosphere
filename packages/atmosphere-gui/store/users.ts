@@ -1,4 +1,4 @@
-import type { UserType } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 
 export const useUsers = defineStore('userStore', () => {

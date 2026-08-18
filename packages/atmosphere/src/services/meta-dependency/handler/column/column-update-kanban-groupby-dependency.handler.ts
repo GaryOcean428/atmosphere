@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EventType, MetaEventType, parseProp, UITypes } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import { EventType, MetaEventType, parseProp, UITypes } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type {
   AffectedDependencyResult,
   MetaDependencyEventRequest,
@@ -9,8 +9,8 @@ import type {
 import { Column, KanbanView, View } from '~/models';
 import { MetaTable } from '~/utils/globals';
 import { parseMetaProp } from '~/utils/modelUtils';
-import NocoSocket from '~/socket/NocoSocket';
-import Noco from '~/Noco';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
+import Atmosphere from '~/Atmosphere';
 
 const UNCATEGORIZED_STACK = {
   id: 'uncategorized',
@@ -42,9 +42,9 @@ export class ColumnUpdateKanbanGroupByDependencyHandler
   triggerMetaEvents: MetaEventType[] = [MetaEventType.COLUMN_UPDATED];
 
   async getAffectedDependency(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<AffectedDependencyResult | undefined> {
     const oldCol = param.oldEntity;
     const newCol = param.newEntity;
@@ -65,11 +65,11 @@ export class ColumnUpdateKanbanGroupByDependencyHandler
   }
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest & {
       affectedDependencyResult: AffectedDependencyResult;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     const oldCol = param.oldEntity as Column;
     const newCol = param.newEntity as Column;
@@ -193,14 +193,14 @@ export class ColumnUpdateKanbanGroupByDependencyHandler
   }
 
   private async broadcastViewUpdates(
-    context: NcContext,
+    context: AtContext,
     viewIds: Set<string>,
   ): Promise<void> {
     for (const viewId of viewIds) {
-      const view = await View.get(context, viewId, false, Noco.ncMeta);
+      const view = await View.get(context, viewId, false, Atmosphere.ncMeta);
       if (!view) continue;
-      await view.getView(context, Noco.ncMeta);
-      NocoSocket.broadcastEvent(context, {
+      await view.getView(context, Atmosphere.ncMeta);
+      AtmosphereSocket.broadcastEvent(context, {
         event: EventType.META_EVENT,
         payload: { action: 'view_update', payload: view },
       });

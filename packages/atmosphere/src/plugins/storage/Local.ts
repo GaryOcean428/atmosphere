@@ -4,14 +4,14 @@ import { promisify } from 'util';
 import { Readable } from 'stream';
 import mkdirp from 'mkdirp';
 import axios from 'axios';
-import { OperationSource } from 'nocodb-sdk';
+import { OperationSource } from 'atmosphere-sdk';
 import { globStream } from 'glob';
 import { Logger } from '@nestjs/common';
-import type { IStorageAdapterV2, XcFile } from '~/types/nc-plugin';
+import type { IStorageAdapterV2, XcFile } from '~/types/atm-plugin';
 import { getFilteredAgents } from '~/utils/ssrf';
 import { validateAndNormaliseLocalPath } from '~/helpers/attachmentHelpers';
-import { NcError } from '~/helpers/ncError';
-import { NC_ATTACHMENT_FIELD_SIZE } from '~/constants';
+import { AtError } from '~/helpers/ncError';
+import { ATMOSPHERE_ATTACHMENT_FIELD_SIZE } from '~/constants';
 
 export default class Local implements IStorageAdapterV2 {
   name = 'Local';
@@ -26,7 +26,7 @@ export default class Local implements IStorageAdapterV2 {
       await promisify(fs.unlink)(file.path);
       // await fs.promises.rename(file.path, destPath);
     } catch (e) {
-      NcError._.storageFileCreateError(e.message);
+      AtError._.storageFileCreateError(e.message);
     }
   }
 
@@ -39,7 +39,7 @@ export default class Local implements IStorageAdapterV2 {
       const destPath = validateAndNormaliseLocalPath(key);
       const response = await axios.get(url, {
         responseType: buffer ? 'arraybuffer' : 'stream',
-        maxContentLength: NC_ATTACHMENT_FIELD_SIZE,
+        maxContentLength: ATMOSPHERE_ATTACHMENT_FIELD_SIZE,
         headers: {
           accept:
             'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -68,7 +68,7 @@ export default class Local implements IStorageAdapterV2 {
         };
       }
     } catch (err) {
-      NcError._.storageFileCreateError(
+      AtError._.storageFileCreateError(
         `Failed to create file from URL: ${err.message}`,
       );
     }
@@ -98,7 +98,7 @@ export default class Local implements IStorageAdapterV2 {
 
       return null;
     } catch (e) {
-      NcError._.storageFileStreamError(e.message);
+      AtError._.storageFileStreamError(e.message);
     }
   }
 
@@ -118,7 +118,7 @@ export default class Local implements IStorageAdapterV2 {
         }),
       });
     } catch (e) {
-      NcError._.storageFileStreamError(e.message);
+      AtError._.storageFileStreamError(e.message);
     }
   }
 
@@ -127,7 +127,7 @@ export default class Local implements IStorageAdapterV2 {
       const destDir = validateAndNormaliseLocalPath(key);
       return await fs.promises.readdir(destDir);
     } catch (e) {
-      NcError._.storageFileReadError(`Failed to list directory: ${e.message}`);
+      AtError._.storageFileReadError(`Failed to list directory: ${e.message}`);
     }
   }
 
@@ -135,7 +135,7 @@ export default class Local implements IStorageAdapterV2 {
     try {
       return await fs.promises.unlink(validateAndNormaliseLocalPath(path));
     } catch (e) {
-      NcError._.storageFileDeleteError(e.message);
+      AtError._.storageFileDeleteError(e.message);
     }
   }
 
@@ -146,7 +146,7 @@ export default class Local implements IStorageAdapterV2 {
       );
       return fileData;
     } catch (e) {
-      NcError._.storageFileReadError(e.message);
+      AtError._.storageFileReadError(e.message);
     }
   }
 
@@ -161,9 +161,9 @@ export default class Local implements IStorageAdapterV2 {
       // remove the leading slash
       globPattern = globPattern.replace(/^\//, '');
 
-      // Ensure the pattern starts with 'nc/uploads/'
-      if (!globPattern.startsWith(path.join('nc', 'uploads'))) {
-        globPattern = path.join('nc', 'uploads', globPattern);
+      // Ensure the pattern starts with 'atm/uploads/'
+      if (!globPattern.startsWith(path.join('atm', 'uploads'))) {
+        globPattern = path.join('atm', 'uploads', globPattern);
       }
 
       const globStreamInstance = globStream(globPattern, {
@@ -179,7 +179,7 @@ export default class Local implements IStorageAdapterV2 {
 
       return stream;
     } catch (e) {
-      NcError._.storageFileReadError(`Failed to scan files: ${e.message}`);
+      AtError._.storageFileReadError(`Failed to scan files: ${e.message}`);
     }
   }
 

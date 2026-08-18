@@ -1,5 +1,5 @@
 import { acceptHMRUpdate } from 'pinia'
-import type { IntegrationsType, SyncConfig } from 'nocodb-sdk'
+import type { IntegrationsType, SyncConfig } from 'atmosphere-sdk'
 // import { ProjectSyncCreate, ProjectSyncProgressModal } from '#components'
 
 export interface SyncIntegrationConfig {

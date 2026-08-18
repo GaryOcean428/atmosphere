@@ -10,20 +10,20 @@ const visible = useVModel(props, 'visible', emit)
 </script>
 
 <template>
-  <NcModal v-model:visible="visible" size="small" :show-separator="false" :centered="false">
+  <AtModal v-model:visible="visible" size="small" :show-separator="false" :centered="false">
     <template #header>
       <div class="flex flex-row items-center gap-x-2">Field Type Change</div>
     </template>
 
     <div class="flex flex-col" @click.stop>
       <div
-        class="text-nc-content-gray"
+        class="text-atm-content-gray"
         :class="{
           'mb-3': $slots['entity-preview'],
         }"
       >
         <div class="flex item-center gap-2">
-          <GeneralIcon id="nc-selected-item-icon" icon="alertTriangle" class="h-10 w-10 text-nc-content-yellow-medium" />
+          <GeneralIcon id="atm-selected-item-icon" icon="alertTriangle" class="h-10 w-10 text-atm-content-yellow-medium" />
           Converting data types may result in data loss; any incompatible filters will be removed.
         </div>
       </div>
@@ -31,24 +31,24 @@ const visible = useVModel(props, 'visible', emit)
       <slot name="entity-preview"></slot>
 
       <div class="flex flex-row gap-x-2 mt-2.5 pt-2.5 justify-end">
-        <NcButton size="small" type="secondary" @click="visible = false">
+        <AtButton size="small" type="secondary" @click="visible = false">
           {{ $t('general.cancel') }}
-        </NcButton>
+        </AtButton>
 
-        <NcButton
+        <AtButton
           key="submit"
           autofocus
           size="small"
           type="primary"
           html-type="submit"
           :loading="saving"
-          data-testid="nc-delete-modal-delete-btn"
+          data-testid="atm-delete-modal-delete-btn"
           @click="emit('submit')"
         >
           {{ $t('general.update') }}
           <template #loading> Saving... </template>
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>

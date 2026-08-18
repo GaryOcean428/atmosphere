@@ -2,16 +2,16 @@ import {
   extractFilterFromXwhere,
   isLinksOrLTAR,
   isSystemColumn,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Logger } from '@nestjs/common';
 import type { Knex } from 'knex';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { Column, View } from '~/models';
 import type { AggregateCtx, DBQueryClient } from '~/dbQueryClient/types';
 import { applyAggregation } from '~/dbQueryClient/cross-db-utils/applyAggregation';
 import conditionV2 from '~/db/conditionV2';
 import { Filter, GridViewColumn, Model } from '~/models';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 
 export interface AggregateColumnSpec {
   col: Column;
@@ -24,13 +24,13 @@ export interface AggregateColumnSpec {
 export const aggregate =
   (_client: DBQueryClient, logger?: Logger) =>
   async (
-    context: NcContext,
+    context: AtContext,
     ctx: AggregateCtx,
   ): Promise<Record<string, unknown>> => {
     const { model, view, source, args } = ctx;
 
     try {
-      const knex = await NcConnectionMgrv2.get(source);
+      const knex = await AtConnectionMgrv2.get(source);
       const baseModel = await Model.getBaseModelSQL(context, {
         id: model.id,
         viewId: view?.id,

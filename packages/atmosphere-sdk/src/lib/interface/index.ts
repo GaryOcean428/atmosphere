@@ -16,7 +16,7 @@ export interface InterfaceThemeConfig {
   style?: InterfaceThemeStyle | null;
 }
 
-/** Interface meta (icon/color etc.) — stored as JSON in `nc_interfaces.meta`. */
+/** Interface meta (icon/color etc.) — stored as JSON in `atm_interfaces.meta`. */
 export interface InterfaceMetaType {
   icon?: string | null;
   color?: string | null;

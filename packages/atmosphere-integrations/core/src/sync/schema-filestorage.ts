@@ -1,4 +1,4 @@
-import { UITypes, TARGET_TABLES, TARGET_TABLES_META } from 'nocodb-sdk';
+import { UITypes, TARGET_TABLES, TARGET_TABLES_META } from 'atmosphere-sdk';
 import { SyncSchema, SyncRecord, SyncValue } from './types';
 
 export const SCHEMA_FILE_STORAGE: SyncSchema = {

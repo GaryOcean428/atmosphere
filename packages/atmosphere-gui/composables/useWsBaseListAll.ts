@@ -1,4 +1,4 @@
-import { NO_SCOPE } from 'nocodb-sdk'
+import { NO_SCOPE } from 'atmosphere-sdk'
 
 export interface BaseListAllData {
   workspaces: {

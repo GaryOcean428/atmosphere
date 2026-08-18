@@ -4,17 +4,17 @@ import {
   isNumericCol,
   isVirtualCol,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { FieldHandler } from './field-handler';
 import type { FilterOperationResult } from './field-handler/field-handler.interface';
-import type { FilterType, NcContext } from 'nocodb-sdk';
+import type { FilterType, AtContext } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { BarcodeColumn, QrCodeColumn } from '~/models';
 import { Column, Model } from '~/models';
 import generateLookupSelectQuery from '~/db/generateLookupSelectQuery';
 import { getRefColumnIfAlias } from '~/helpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import {
   _wherePk,
   getAliasedSoftDeleteFilter,
@@ -61,7 +61,7 @@ export default async function conditionV2(
 // (`<> ''` / `= ''`) survive when the underlying type isn't text — JSON_EXTRACT
 // returns jsonb on PG and JSON on MySQL, which would otherwise produce a type-
 // mismatch error. SQLite is already typeless-text for these expressions, but
-// the explicit cast is a no-op there. See nocodb/nocodb#12695.
+// the explicit cast is a no-op there. See atmosphere/atmosphere#12695.
 function formulaToTextCast(knex: any, expr: any) {
   const client = knex.clientType();
   if (client === 'pg') {
@@ -259,7 +259,7 @@ const parseConditionV2 = async (
 
       if (!column) {
         if (throwErrorIfInvalid) {
-          NcError.get(context).fieldNotFound(filter.fk_column_id);
+          AtError.get(context).fieldNotFound(filter.fk_column_id);
         }
         return { clause: () => {}, rootApply: () => {} };
       }
@@ -302,14 +302,14 @@ const parseConditionV2 = async (
     const filterColumn = await filter.getColumn(context);
     if (!filterColumn) {
       if (throwErrorIfInvalid) {
-        NcError.get(context).fieldNotFound(filter.fk_column_id);
+        AtError.get(context).fieldNotFound(filter.fk_column_id);
       }
       return { clause: () => {}, rootApply: () => {} };
     }
     const column = await getRefColumnIfAlias(context, filterColumn);
     if (!column) {
       if (throwErrorIfInvalid) {
-        NcError.get(context).fieldNotFound(filter.fk_column_id);
+        AtError.get(context).fieldNotFound(filter.fk_column_id);
       }
       return { clause: () => {}, rootApply: () => {} };
     }
@@ -797,7 +797,7 @@ const parseConditionV2 = async (
                   // JSON_EXTRACT yields jsonb on PG and JSON on MySQL. A direct
                   // `<> ''` then errors with a type mismatch. Cast to text so
                   // the empty-string check is type-safe regardless of the
-                  // underlying SQL type. Cf. nocodb/nocodb#12695.
+                  // underlying SQL type. Cf. atmosphere/atmosphere#12695.
                   qb = qb.orWhere(
                     formulaToTextCast(knex, customWhereClause || field),
                     '',
@@ -899,7 +899,7 @@ const parseConditionV2 = async (
  * Virtual columns (Lookup, Rollup, Formula, etc.) are not supported.
  */
 async function resolveDynamicFilterValue(
-  context: NcContext,
+  context: AtContext,
   knex: Knex,
   filter: Filter,
   filterColumn: Column,
@@ -963,7 +963,7 @@ async function resolveDynamicFilterValue(
  * in the related table satisfies: relatedTable.valueCol <op> sourceTable.filterCol.
  */
 async function resolveCrossTableDynamicFilter(
-  context: NcContext,
+  context: AtContext,
   knex: Knex,
   filter: Filter,
   filterColumn: Column,
@@ -1071,7 +1071,7 @@ export async function extractLinkRelFiltersAndApply(_: {
   column: Column<any>;
   alias?: string;
   table: Model;
-  context: NcContext;
+  context: AtContext;
   baseModel: IBaseModelSqlV2;
 }) {
   // do nothing, it's just a placeholder

@@ -3,7 +3,7 @@ import StarterKit from '@tiptap/starter-kit'
 import { EditorContent, useEditor } from '@tiptap/vue-3'
 import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
-import { NcMarkdownParser } from '~/helpers/tiptap'
+import { AtMarkdownParser } from '~/helpers/tiptap'
 import { Markdown } from '~/helpers/tiptap-markdown'
 import { HardBreak, Italic, Link, Strike } from '~/helpers/tiptap-markdown/extensions'
 
@@ -41,7 +41,7 @@ const richTextLinkOptionRef = ref<HTMLElement | null>(null)
 
 const vModel = computed({
   get: () => {
-    return NcMarkdownParser.preprocessMarkdown(props.value, true)
+    return AtMarkdownParser.preprocessMarkdown(props.value, true)
   },
   set: (v: any) => {
     emits('update:value', v)
@@ -114,7 +114,7 @@ const editor = useEditor({
 
     if (
       !targetEl?.closest(
-        '.comment-bubble-menu, .nc-rich-text-comment, .tippy-box, .nc-comment-save-btn, .rich-text-bottom-bar, .mention, .nc-mention-list, .tippy-content, .nc-comment-rich-editor',
+        '.comment-bubble-menu, .atm-rich-text-comment, .tippy-box, .atm-comment-save-btn, .rich-text-bottom-bar, .mention, .atm-mention-list, .tippy-content, .atm-comment-rich-editor',
       )
     ) {
       isFocused.value = false
@@ -166,7 +166,7 @@ useEventListener(
     if (
       targetEl?.classList?.contains('tiptap') ||
       !targetEl?.closest(
-        '.comment-bubble-menu, .nc-rich-text-comment, .tippy-box, .nc-comment-save-btn, .rich-text-bottom-bar, .mention, .nc-mention-list, .tippy-content, .nc-comment-rich-editor',
+        '.comment-bubble-menu, .atm-rich-text-comment, .tippy-box, .atm-comment-save-btn, .rich-text-bottom-bar, .mention, .atm-mention-list, .tippy-content, .atm-comment-rich-editor',
       )
     ) {
       isFocused.value = false
@@ -184,14 +184,14 @@ useEventListener(
     if (
       !targetEl &&
       (e.target as HTMLElement)?.closest(
-        '.comment-bubble-menu, .nc-comment-save-btn, .nc-mention-list, .mention, .rich-text-bottom-bar, .tippy-content, .nc-comment-rich-editor',
+        '.comment-bubble-menu, .atm-comment-save-btn, .atm-mention-list, .mention, .rich-text-bottom-bar, .tippy-content, .atm-comment-rich-editor',
       )
     )
       return
 
     if (
       !targetEl?.closest(
-        '.comment-bubble-menu, .nc-comment-save-btn, .rich-text-bottom-bar, .mention, .tippy-content, .nc-mention-list, .nc-comment-rich-editor',
+        '.comment-bubble-menu, .atm-comment-save-btn, .rich-text-bottom-bar, .mention, .tippy-content, .atm-mention-list, .atm-comment-rich-editor',
       )
     ) {
       isFocused.value = false
@@ -209,7 +209,7 @@ onClickOutside(editorDom, (e) => {
 
   if (
     !targetEl?.closest(
-      '.tippy-content, .nc-rich-text-comment, .nc-comment-save-btn, .nc-mention-list, .rich-text-bottom-bar, .mention, .comment-bubble-menu, .nc-comment-rich-editor',
+      '.tippy-content, .atm-rich-text-comment, .atm-comment-save-btn, .atm-mention-list, .rich-text-bottom-bar, .mention, .comment-bubble-menu, .atm-comment-rich-editor',
     )
   ) {
     isFocused.value = false
@@ -268,7 +268,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     isFocused.value = false
     emits('blur')
 
-    document.querySelector('.nc-drawer-expanded-form.active > div[tabindex="0"]')?.focus?.()
+    document.querySelector('.atm-drawer-expanded-form.active > div[tabindex="0"]')?.focus?.()
   }
 }
 
@@ -288,10 +288,10 @@ defineExpose({
   <div
     :class="{
       'readonly': readOnly,
-      'nc-rich-text-grid': isGrid,
+      'atm-rich-text-grid': isGrid,
     }"
     :tabindex="1"
-    class="nc-rich-text-comment flex flex-col w-full h-full"
+    class="atm-rich-text-comment flex flex-col w-full h-full"
     @focus="onFocusWrapper"
   >
     <div v-if="renderAsText" class="truncate">
@@ -315,13 +315,13 @@ defineExpose({
           'px-[0.25rem]': props.readOnly,
           'min-h-[2.5rem]': !hideOptions,
         }"
-        class="nc-rich-text-content flex flex-col nc-comment-rich-editor w-full scrollbar-thin scrollbar-thumb-gray-200 nc-rich-truncate scrollbar-track-transparent"
+        class="atm-rich-text-content flex flex-col atm-comment-rich-editor w-full scrollbar-thin scrollbar-thumb-gray-200 atm-rich-truncate scrollbar-track-transparent"
         @keydown.stop="handleKeyPress"
       />
 
       <div
         v-if="$slots.attachments"
-        class="nc-comment-attachments-wrap flex-none max-h-[124px] overflow-y-auto nc-scrollbar-thin"
+        class="atm-comment-attachments-wrap flex-none max-h-[124px] overflow-y-auto atm-scrollbar-thin"
       >
         <slot name="attachments" />
       </div>
@@ -331,24 +331,24 @@ defineExpose({
           <LazySmartsheetExpandedFormRichTextOptions :editor="editor" class="!bg-transparent" />
           <slot name="bottom-bar-start" />
         </div>
-        <NcButton
+        <AtButton
           v-e="['a:row-expand:comment:save']"
           :disabled="!vModel?.length && !extraSaveEnabled"
-          class="!disabled:bg-nc-bg-gray-light nc-comment-save-btn !h-7 !w-7 !shadow-none"
+          class="!disabled:bg-atm-bg-gray-light atm-comment-save-btn !h-7 !w-7 !shadow-none"
           size="xsmall"
           @click="saveComment"
         >
           <GeneralIcon icon="ncSendAlt" />
-        </NcButton>
+        </AtButton>
       </div>
     </template>
   </div>
 </template>
 
 <style lang="scss">
-.nc-rich-text-comment {
+.atm-rich-text-comment {
   .readonly {
-    .nc-comment-rich-editor {
+    .atm-comment-rich-editor {
       .ProseMirror {
         resize: none;
         white-space: pre-line;
@@ -356,12 +356,12 @@ defineExpose({
     }
   }
 
-  .nc-rich-link-tooltip {
-    @apply text-nc-content-gray-muted;
+  .atm-rich-link-tooltip {
+    @apply text-atm-content-gray-muted;
   }
 
-  .nc-comment-rich-editor {
-    &.nc-rich-truncate {
+  .atm-comment-rich-editor {
+    &.atm-rich-truncate {
       .tiptap.ProseMirror {
         display: -webkit-box;
         max-width: 100%;
@@ -369,21 +369,21 @@ defineExpose({
         -webkit-box-orient: vertical;
         word-break: break-word;
       }
-      &.nc-line-clamp-1 .tiptap.ProseMirror {
+      &.atm-line-clamp-1 .tiptap.ProseMirror {
         -webkit-line-clamp: 1;
       }
-      &.nc-line-clamp-2 .tiptap.ProseMirror {
+      &.atm-line-clamp-2 .tiptap.ProseMirror {
         -webkit-line-clamp: 2;
       }
-      &.nc-line-clamp-3 .tiptap.ProseMirror {
+      &.atm-line-clamp-3 .tiptap.ProseMirror {
         -webkit-line-clamp: 3;
       }
-      &.nc-line-clamp-4 .tiptap.ProseMirror {
+      &.atm-line-clamp-4 .tiptap.ProseMirror {
         -webkit-line-clamp: 4;
       }
     }
     .tiptap p.is-editor-empty:first-child::before {
-      @apply text-nc-content-gray-muted;
+      @apply text-atm-content-gray-muted;
       content: attr(data-placeholder);
       float: left;
       height: 0;
@@ -392,7 +392,7 @@ defineExpose({
 
     .ProseMirror {
       @apply flex-grow !border-0 rounded-lg;
-      caret-color: var(--nc-brand-accent);
+      caret-color: var(--atm-brand-accent);
     }
 
     p {

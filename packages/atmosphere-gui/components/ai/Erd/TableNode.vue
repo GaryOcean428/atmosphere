@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import type { NodeProps } from '@vue-flow/core'
 import { Handle, Position, useVueFlow } from '@vue-flow/core'
-import type { LinkToAnotherRecordType } from 'nocodb-sdk'
-import { isVirtualCol } from 'nocodb-sdk'
+import type { LinkToAnotherRecordType } from 'atmosphere-sdk'
+import { isVirtualCol } from 'atmosphere-sdk'
 import type { AiNodeData } from './utils'
 
 interface Props extends Pick<NodeProps<AiNodeData>, 'data' | 'dragging'> {
@@ -43,13 +43,13 @@ watch(
     </template>
 
     <div
-      class="relative h-full max-w-76 flex flex-col justify-center bg-nc-bg-default min-w-16 min-h-8 rounded-lg nc-erd-table-node"
-      :class="[`nc-erd-table-node-${data.table}`, showSkeleton ? 'cursor-pointer items-center min-h-200px min-w-300px' : '']"
+      class="relative h-full max-w-76 flex flex-col justify-center bg-atm-bg-default min-w-16 min-h-8 rounded-lg atm-erd-table-node"
+      :class="[`atm-erd-table-node-${data.table}`, showSkeleton ? 'cursor-pointer items-center min-h-200px min-w-300px' : '']"
       @click="$e('c:erd:node-click')"
     >
       <div
         :class="[showSkeleton ? '' : '', hasColumns ? '' : '']"
-        class="text-nc-content-gray text-sm py-4 border-b-1 border-nc-border-gray-medium rounded-t-lg w-full h-full px-3 font-medium flex items-center"
+        class="text-atm-content-gray text-sm py-4 border-b-1 border-atm-border-gray-medium rounded-t-lg w-full h-full px-3 font-medium flex items-center"
       >
         <GeneralTableIcon class="text-primary" :class="{ '!text-6xl !w-auto mr-2 !h-18': showSkeleton }" :meta="{ meta: {} }" />
         <div :class="showSkeleton ? 'text-6xl' : ''" class="flex pr-2 pl-1">
@@ -71,7 +71,7 @@ watch(
             <div
               v-if="col.relationType"
               class="flex w-full"
-              :class="`nc-erd-table-node-${data.table}-column-${col.title?.toLowerCase().replace(' ', '_')}`"
+              :class="`atm-erd-table-node-${data.table}-column-${col.title?.toLowerCase().replace(' ', '_')}`"
             >
               <Handle
                 :id="`s-${relatedColumnId(col.colOptions)}-${data.table}`"
@@ -89,7 +89,7 @@ watch(
                 :connectable="false"
               />
 
-              <div class="nc-erd-table-node-column flex items-center gap-2">
+              <div class="atm-erd-table-node-column flex items-center gap-2">
                 <SmartsheetHeaderVirtualCellIcon
                   :column-meta="{
                     uidt: 'Links',
@@ -98,49 +98,49 @@ watch(
                     },
                   }"
                 />
-                <NcTooltip show-on-truncate-only class="truncate text-sm">
+                <AtTooltip show-on-truncate-only class="truncate text-sm">
                   <template #title>
                     {{ col.title }}
                   </template>
                   {{ col.title }}
-                </NcTooltip>
+                </AtTooltip>
               </div>
             </div>
 
             <div
               v-else-if="isVirtualCol(col.type)"
-              class="nc-erd-table-node-column flex items-center gap-2"
-              :class="`nc-erd-table-node-${data.table}-column-${col.title}`"
+              class="atm-erd-table-node-column flex items-center gap-2"
+              :class="`atm-erd-table-node-${data.table}-column-${col.title}`"
             >
               <SmartsheetHeaderVirtualCellIcon
                 :column-meta="{
                   uidt: col.type,
                 }"
               />
-              <NcTooltip show-on-truncate-only class="truncate text-sm">
+              <AtTooltip show-on-truncate-only class="truncate text-sm">
                 <template #title>
                   {{ col.title }}
                 </template>
                 {{ col.title }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
 
             <div
               v-else
-              class="nc-erd-table-node-column flex items-center gap-2"
-              :class="`nc-erd-table-node-${data.table}-column-${col.title}`"
+              class="atm-erd-table-node-column flex items-center gap-2"
+              :class="`atm-erd-table-node-${data.table}-column-${col.title}`"
             >
               <SmartsheetHeaderIcon
                 :column="{
                   uidt: col.type,
                 }"
               />
-              <NcTooltip show-on-truncate-only class="truncate text-sm">
+              <AtTooltip show-on-truncate-only class="truncate text-sm">
                 <template #title>
                   {{ col.title }}
                 </template>
                 {{ col.title }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
           </div>
         </div>
@@ -150,7 +150,7 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-.nc-erd-table-node-column {
-  @apply py-0.5 px-2 text-nc-content-gray-subtle;
+.atm-erd-table-node-column {
+  @apply py-0.5 px-2 text-atm-content-gray-subtle;
 }
 </style>

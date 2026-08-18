@@ -122,7 +122,7 @@ const getDefaultConfig = (
       return getDefaultChartConfig(chartType, columns);
     case WidgetTypes.IFRAME:
       return {
-        url: 'https://nocodb.com',
+        url: 'https://atmosphere.dev',
         allowFullScreen: false,
       };
     case WidgetTypes.TEXT:

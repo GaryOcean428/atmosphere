@@ -146,7 +146,7 @@ export class MysqlUi implements SqlUi {
       },
       {
         column_name: 'created_by',
-        title: 'nc_created_by',
+        title: 'atm_created_by',
         dt: 'varchar',
         dtx: 'specificType',
         ct: 'varchar(45)',
@@ -169,7 +169,7 @@ export class MysqlUi implements SqlUi {
       },
       {
         column_name: 'updated_by',
-        title: 'nc_updated_by',
+        title: 'atm_updated_by',
         dt: 'varchar',
         dtx: 'specificType',
         ct: 'varchar(45)',
@@ -191,8 +191,8 @@ export class MysqlUi implements SqlUi {
         system: true,
       },
       {
-        column_name: 'nc_order',
-        title: 'nc_order',
+        column_name: 'atm_order',
+        title: 'atm_order',
         dt: 'decimal',
         dtx: 'decimal',
         ct: 'decimal(40,20)',
@@ -751,7 +751,7 @@ export class MysqlUi implements SqlUi {
   }
 
   static columnEditable(colObj) {
-    return colObj.tn !== '_evolutions' || colObj.tn !== 'nc_evolutions';
+    return colObj.tn !== '_evolutions' || colObj.tn !== 'atm_evolutions';
   }
   /*
 
@@ -1137,7 +1137,7 @@ export class MysqlUi implements SqlUi {
           colProp.un = isAutoIncId;
           colProp.ai = isAutoIncId;
           colProp.rqd = true;
-          colProp.meta = isAutoGenId ? { ag: 'nc' } : undefined;
+          colProp.meta = isAutoGenId ? { ag: 'atm' } : undefined;
         }
         break;
       case 'ForeignKey':

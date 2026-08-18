@@ -43,24 +43,24 @@ watch(activeMenu, (newVal, oldValue) => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="dialogShow"
     :show-separator="false"
     size="medium"
     width="50rem"
-    wrap-class-name="nc-modal-attachment-create"
+    wrap-class-name="atm-modal-attachment-create"
     class="!rounded-md"
     @keydown.esc="dialogShow = false"
   >
     <div class="flex h-full" :class="isMobileMode ? 'flex-col' : 'flex-row'">
       <div
         style="border-top-left-radius: 1rem; border-bottom-left-radius: 1rem"
-        class="px-2 !-full flex-grow bg-nc-bg-gray-extralight"
+        class="px-2 !-full flex-grow bg-atm-bg-gray-extralight"
       >
-        <NcMenu class="!h-full !bg-nc-bg-gray-extralight flex flex-col" :class="{ '!flex-row overflow-x-scroll': isMobileMode }">
-          <NcMenuItem
+        <AtMenu class="!h-full !bg-atm-bg-gray-extralight flex flex-col" :class="{ '!flex-row overflow-x-scroll': isMobileMode }">
+          <AtMenuItem
             key="local"
-            class="!hover:bg-nc-bg-gray-medium !hover:text-nc-content-gray rounded-md"
+            class="!hover:bg-atm-bg-gray-medium !hover:text-atm-content-gray rounded-md"
             :class="{
               'active-menu': activeMenu === 'local',
             }"
@@ -70,11 +70,11 @@ watch(activeMenu, (newVal, oldValue) => {
               <GeneralIcon icon="file" />
               {{ $t('title.localFiles') }}
             </div>
-          </NcMenuItem>
-          <NcMenuItem
+          </AtMenuItem>
+          <AtMenuItem
             v-if="!isPublic"
             key="url"
-            class="!hover:bg-nc-bg-gray-medium !hover:text-nc-content-gray rounded-md"
+            class="!hover:bg-atm-bg-gray-medium !hover:text-atm-content-gray rounded-md"
             :class="{
               'active-menu': activeMenu === 'url',
             }"
@@ -84,10 +84,10 @@ watch(activeMenu, (newVal, oldValue) => {
               <GeneralIcon icon="link2" />
               {{ $t('title.uploadViaUrl') }}
             </div>
-          </NcMenuItem>
-          <NcMenuItem
+          </AtMenuItem>
+          <AtMenuItem
             key="webcam"
-            class="!hover:bg-nc-bg-gray-medium !hover:text-nc-content-gray rounded-md"
+            class="!hover:bg-atm-bg-gray-medium !hover:text-atm-content-gray rounded-md"
             :class="{
               'active-menu': activeMenu === 'webcam',
             }"
@@ -97,8 +97,8 @@ watch(activeMenu, (newVal, oldValue) => {
               <GeneralIcon icon="camera" />
               {{ $t('title.webcam') }}
             </div>
-          </NcMenuItem>
-        </NcMenu>
+          </AtMenuItem>
+        </AtMenu>
       </div>
 
       <div style="height: 425px" class="w-full p-2">
@@ -121,18 +121,18 @@ watch(activeMenu, (newVal, oldValue) => {
         />
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss">
-.nc-modal-attachment-create {
+.atm-modal-attachment-create {
   .active-menu {
-    @apply bg-nc-bg-brand-inverted font-semibold text-nc-content-brand rounded-md;
+    @apply bg-atm-bg-brand-inverted font-semibold text-atm-content-brand rounded-md;
   }
 }
 
-.nc-modal-attachment-create {
-  .nc-modal {
+.atm-modal-attachment-create {
+  .atm-modal {
     @apply !p-0;
   }
 }

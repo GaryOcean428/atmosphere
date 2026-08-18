@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { NcContext, NcRequest } from '~/interface/config';
+import type { AtContext, AtRequest } from '~/interface/config';
 
 export interface WebBookmarkMetadata {
   url: string;
@@ -24,8 +24,8 @@ export interface WebBookmarkMetadata {
 @Injectable()
 export class WebBookmarkService {
   async fetchMetadata(
-    _context: NcContext,
-    _param: { url: unknown; req: NcRequest },
+    _context: AtContext,
+    _param: { url: unknown; req: AtRequest },
   ): Promise<WebBookmarkMetadata> {
     return null;
   }

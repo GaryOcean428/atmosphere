@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { UITypes } from 'nocodb-sdk'
-import type { ColumnType } from 'nocodb-sdk'
+import { UITypes } from 'atmosphere-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 import SingleSelect from '~/components/cell/SingleSelect/index.vue'
 import MultiSelect from '~/components/cell/MultiSelect/index.vue'
 import DatePicker from '~/components/cell/Date/index.vue'
@@ -215,8 +215,8 @@ const isSingleOrMultiSelect = computed(() => {
   />
   <div
     v-else
-    class="bg-nc-bg-default border-1 flex flex-grow min-w-0 min-h-4 h-full px-1 items-center nc-filter-input-wrapper !rounded-lg"
-    :class="{ 'px-2': hasExtraPadding, 'border-nc-border-brand': isInputBoxOnFocus, '!max-w-100': isSingleOrMultiSelect }"
+    class="bg-atm-bg-default border-1 flex flex-grow min-w-0 min-h-4 h-full px-1 items-center atm-filter-input-wrapper !rounded-lg"
+    :class="{ 'px-2': hasExtraPadding, 'border-atm-border-brand': isInputBoxOnFocus, '!max-w-100': isSingleOrMultiSelect }"
     @mouseup.stop
   >
     <component
@@ -227,7 +227,7 @@ const isSingleOrMultiSelect = computed(() => {
       :column="column"
       class="flex !rounded-lg"
       :class="{
-        'text-nc-content-gray-muted pointer-events-none': props.disabled,
+        'text-atm-content-gray-muted pointer-events-none': props.disabled,
       }"
       v-bind="componentProps"
       location="filter"
@@ -246,7 +246,7 @@ const isSingleOrMultiSelect = computed(() => {
   @apply !py-0;
 }
 
-:deep(.nc-cell-field) {
+:deep(.atm-cell-field) {
   @apply flex items-center;
 }
 </style>

@@ -1,4 +1,4 @@
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { ColumnBackupRef } from '~/services/column-data-backup-handler';
 import type { Column } from '~/models';
 
@@ -13,11 +13,11 @@ import type { Column } from '~/models';
 export interface IColumnDataBackupHandler {
   /**
    * Snapshot the source column's data into a sibling backup column. Returns
-   * a ref the caller persists (e.g., onto `nc_operation_logs.meta`)
+   * a ref the caller persists (e.g., onto `atm_operation_logs.meta`)
    * so undo/redo handlers and the cleanup job can find the backup later.
    */
   backup(
-    context: NcContext,
+    context: AtContext,
     param: {
       sourceColumn: Column<any>;
       backupUid: string;
@@ -32,7 +32,7 @@ export interface IColumnDataBackupHandler {
    * outside this handler).
    */
   restore(
-    context: NcContext,
+    context: AtContext,
     param: {
       destinationColumn: Column<any>;
       backupRef: ColumnBackupRef;
@@ -45,7 +45,7 @@ export interface IColumnDataBackupHandler {
    * source table / column.
    */
   drop(
-    context: NcContext,
+    context: AtContext,
     param: { backupRef: ColumnBackupRef },
   ): Promise<void>;
 }

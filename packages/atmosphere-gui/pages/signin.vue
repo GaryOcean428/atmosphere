@@ -14,7 +14,7 @@ const { api, isLoading, error } = useApi({ useGlobalInstance: true })
 
 const { t } = useI18n()
 
-useSidebar('nc-left-sidebar', { hasSidebar: false })
+useSidebar('atm-left-sidebar', { hasSidebar: false })
 
 const formValidator = ref()
 
@@ -83,13 +83,13 @@ function navigateForgotPassword() {
   <div>
     <NuxtLayout>
       <div
-        data-testid="nc-form-signin"
-        class="md:bg-primary bg-opacity-5 signin h-full min-h-[600px] flex flex-col justify-center items-center nc-form-signin"
+        data-testid="atm-form-signin"
+        class="md:bg-primary bg-opacity-5 signin h-full min-h-[600px] flex flex-col justify-center items-center atm-form-signin"
       >
         <div
-          class="bg-nc-bg-default md:mt-[60px] relative flex flex-col justify-center gap-2 w-full max-w-[500px] mx-auto p-8 md:(rounded-lg border-1 border-nc-border-gray-medium shadow-xl)"
+          class="bg-atm-bg-default md:mt-[60px] relative flex flex-col justify-center gap-2 w-full max-w-[500px] mx-auto p-8 md:(rounded-lg border-1 border-atm-border-gray-medium shadow-xl)"
         >
-          <GeneralNocoIcon class="color-transition hover:(ring ring-accent ring-opacity-100)" :animate="isLoading" />
+          <GeneralAtmosphereIcon class="color-transition hover:(ring ring-accent ring-opacity-100)" :animate="isLoading" />
 
           <h1 class="prose-2xl font-bold self-center my-4">{{ $t('general.signIn') }}</h1>
 
@@ -109,7 +109,7 @@ function navigateForgotPassword() {
                   v-model:value="form.email"
                   type="email"
                   autocomplete="email"
-                  data-testid="nc-form-signin__email"
+                  data-testid="atm-form-signin__email"
                   size="large"
                   :placeholder="$t('msg.info.signUp.workEmail')"
                   @focus="resetError"
@@ -120,7 +120,7 @@ function navigateForgotPassword() {
                 <a-input-password
                   v-model:value="form.password"
                   autocomplete="current-password"
-                  data-testid="nc-form-signin__password"
+                  data-testid="atm-form-signin__password"
                   size="large"
                   class="password"
                   :placeholder="$t('msg.info.signUp.enterPassword')"
@@ -137,7 +137,7 @@ function navigateForgotPassword() {
 
             <div class="self-center flex flex-col flex-wrap gap-4 items-center mt-4 justify-center">
               <template v-if="!appInfo.disableEmailAuth">
-                <button data-testid="nc-form-signin__submit" class="scaling-btn bg-opacity-100" type="submit">
+                <button data-testid="atm-form-signin__submit" class="scaling-btn bg-opacity-100" type="submit">
                   <span class="flex items-center gap-2">
                     <component :is="iconMap.signin" />
                     {{ $t('general.signIn') }}
@@ -147,7 +147,7 @@ function navigateForgotPassword() {
               <a
                 v-if="appInfo.googleAuthEnabled"
                 :href="`${appInfo.ncSiteUrl}/auth/google`"
-                class="scaling-btn bg-opacity-100 after:(!bg-nc-bg-default) !text-primary !no-underline"
+                class="scaling-btn bg-opacity-100 after:(!bg-atm-bg-default) !text-primary !no-underline"
               >
                 <span class="flex items-center gap-2">
                   <LogosGoogleGmail />

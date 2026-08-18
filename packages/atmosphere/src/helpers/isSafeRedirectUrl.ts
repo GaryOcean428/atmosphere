@@ -5,11 +5,11 @@
  * stored on the form view and later assigned to `window.location.href` in every
  * submitter's browser. A naive scheme test is bypassed by smuggling an ASCII
  * control char into the scheme (`java\tscript:alert(1)`) — the browser strips
- * the tab and executes it as `javascript:` in the nocodb origin (stored XSS).
+ * the tab and executes it as `javascript:` in the atmosphere origin (stored XSS).
  *
  * This rejects any URL containing ASCII control chars and allows only http(s)
  * schemed URLs (judged on the normalized protocol) plus scheme-less (relative)
- * URLs. Mirrors the frontend guard in `nc-gui/utils/redirectUrl.ts`.
+ * URLs. Mirrors the frontend guard in `atmosphere-gui/utils/redirectUrl.ts`.
  */
 export function isSafeRedirectUrl(rawUrl: unknown): boolean {
   if (typeof rawUrl !== 'string') return false;

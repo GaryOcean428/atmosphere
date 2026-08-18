@@ -8,7 +8,7 @@ import {
   UITypes,
   isLinksOrLTAR,
   isVirtualCol,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { fieldMatchesSearch, isBlankFieldValue } from './searchUtils'
 
 const props = defineProps<{
@@ -178,13 +178,13 @@ function onCellValueChange(colTitle: string | undefined) {
     v-for="col of fields"
     v-show="showCol(col)"
     :key="col.title"
-    :class="[`nc-expand-col-${col.title}`, { 'nc-row-compact': compactMode }]"
+    :class="[`atm-expand-col-${col.title}`, { 'atm-row-compact': compactMode }]"
     :col-id="col.id"
-    :data-testid="`nc-expand-col-${col.title}`"
-    class="nc-expanded-form-row w-full"
+    :data-testid="`atm-expand-col-${col.title}`"
+    class="atm-expanded-form-row w-full"
   >
     <div
-      class="flex items-start nc-expanded-cell min-h-[32px]"
+      class="flex items-start atm-expanded-cell min-h-[32px]"
       :class="{
         'flex-row <lg:(flex-col w-full)': !props.forceVerticalMode,
         'flex-col w-full': props.forceVerticalMode,
@@ -200,7 +200,7 @@ function onCellValueChange(colTitle: string | undefined) {
         <LazySmartsheetHeaderVirtualCell
           v-if="isVirtualCol(col)"
           :column="col"
-          class="nc-expanded-cell-header h-full flex-none"
+          class="atm-expanded-cell-header h-full flex-none"
           :is-hidden-col="isHiddenCol"
           show-lock-icon
           show-menu-mobile
@@ -208,7 +208,7 @@ function onCellValueChange(colTitle: string | undefined) {
         <LazySmartsheetHeaderCell
           v-else
           :column="col"
-          class="nc-expanded-cell-header flex-none"
+          class="atm-expanded-cell-header flex-none"
           :is-hidden-col="isHiddenCol"
           show-lock-icon
           show-menu-mobile
@@ -229,7 +229,7 @@ function onCellValueChange(colTitle: string | undefined) {
         }"
         size="small"
       />
-      <NcTooltip
+      <AtTooltip
         v-else
         :tooltip-style="{ zIndex: '1049' }"
         class="<lg:(!w-full !flex-none) lg:flex-1 flex"
@@ -262,19 +262,19 @@ function onCellValueChange(colTitle: string | undefined) {
               :class="[
                 compactMode
                   ? 'min-h-4 items-start !bg-transparent pl-1 pr-1 -mt-0.5'
-                  : 'min-h-8 items-center bg-nc-bg-default px-1',
+                  : 'min-h-8 items-center bg-atm-bg-default px-1',
                 {
                   'w-full': props.forceVerticalMode,
-                  '!select-text nc-system-field !bg-nc-bg-gray-extralight !text-nc-content-inverted-primary-disabled':
+                  '!select-text atm-system-field !bg-atm-bg-gray-extralight !text-atm-content-inverted-primary-disabled':
                     showReadonlyColumnTooltip(col) || isParentLtarColumn(col),
-                  '!select-text nc-readonly-div-data-cell': readOnly || !isAllowed || isSyncedColumn(col),
-                  'nc-data-cell-compact': compactMode,
+                  '!select-text atm-readonly-div-data-cell': readOnly || !isAllowed || isSyncedColumn(col),
+                  'atm-data-cell-compact': compactMode,
                 },
               ]"
             >
               <span
                 v-if="compactMode && col.title && isBlankFieldValue(_row.row[col.title]) && showCompactEmptyHint(col, isAllowed)"
-                class="nc-compact-empty-placeholder absolute left-1 inset-y-0 z-10 flex items-center text-nc-content-gray-muted text-[13px] pointer-events-none select-none"
+                class="atm-compact-empty-placeholder absolute left-1 inset-y-0 z-10 flex items-center text-atm-content-gray-muted text-[13px] pointer-events-none select-none"
               >
                 --
               </span>
@@ -304,14 +304,14 @@ function onCellValueChange(colTitle: string | undefined) {
             </SmartsheetDivDataCell>
           </template>
         </PermissionsTooltip>
-      </NcTooltip>
+      </AtTooltip>
       <div
         v-if="col.title && localOnlyChanges[col.title]"
         class="flex items-center justify-center cursor-pointer relative"
         @click="revertLocalOnlyChanges(col.title)"
       >
         <GeneralIcon
-          class="absolute right-1 top-2 text-nc-content-gray-muted hover:text-nc-content-gray-subtle my-auto"
+          class="absolute right-1 top-2 text-atm-content-gray-muted hover:text-atm-content-gray-subtle my-auto"
           icon="reload"
         />
       </div>
@@ -328,20 +328,20 @@ function onCellValueChange(colTitle: string | undefined) {
     >
       <div v-if="!props.forceVerticalMode" class="flex-none w-45 <lg:hidden sm:mx-2" />
       <div class="flex flex-col gap-1.5 mt-3">
-        <span class="text-[11px] text-nc-content-gray-muted">{{ $t('labels.orCreateAndLinkNewRecord') }}</span>
+        <span class="text-[11px] text-atm-content-gray-muted">{{ $t('labels.orCreateAndLinkNewRecord') }}</span>
         <div class="flex items-center gap-2">
-          <NcButton type="secondary" size="small" @click.stop="addBlueprintForColumn(col)">
+          <AtButton type="secondary" size="small" @click.stop="addBlueprintForColumn(col)">
             <div class="flex items-center gap-1">
               <GeneralIcon icon="plus" class="h-3.5 w-3.5" />
               <span>{{ $t('labels.newRecordForTable', { tableName: getRelatedTableName(col) }) }}</span>
             </div>
-          </NcButton>
-          <NcTooltip placement="bottom" class="flex items-center">
+          </AtButton>
+          <AtTooltip placement="bottom" class="flex items-center">
             <template #title>
               {{ $t('tooltip.newRecordCreatedEachTemplateUse', { tableName: getRelatedTableName(col) }) }}
             </template>
-            <GeneralIcon icon="info" class="h-3.5 w-3.5 text-nc-content-gray-subtle" />
-          </NcTooltip>
+            <GeneralIcon icon="info" class="h-3.5 w-3.5 text-atm-content-gray-subtle" />
+          </AtTooltip>
         </div>
       </div>
     </div>
@@ -353,62 +353,62 @@ function onCellValueChange(colTitle: string | undefined) {
   @apply !xs:(h-full);
 }
 
-.nc-data-cell {
+.atm-data-cell {
   @apply !rounded-lg;
   transition: all 0.3s;
 
-  &:not(:focus-within):not(.nc-data-cell-compact):hover:not(.nc-readonly-div-data-cell):not(.nc-system-field):not(
-      .nc-virtual-cell-button
+  &:not(:focus-within):not(.atm-data-cell-compact):hover:not(.atm-readonly-div-data-cell):not(.atm-system-field):not(
+      .atm-virtual-cell-button
     ) {
     @apply !border-1;
 
-    &:not(.nc-attachment-cell):not(.nc-virtual-cell-button) {
+    &:not(.atm-attachment-cell):not(.atm-virtual-cell-button) {
       box-shadow: 0px 0px 4px 0px rgba(var(--rgb-base), 0.12);
     }
   }
 
-  .nc-cell,
-  .nc-virtual-cell {
+  .atm-cell,
+  .atm-virtual-cell {
     @apply h-auto;
   }
 
-  &.nc-readonly-div-data-cell,
-  &.nc-system-field {
-    @apply !border-nc-border-gray-medium;
+  &.atm-readonly-div-data-cell,
+  &.atm-system-field {
+    @apply !border-atm-border-gray-medium;
 
-    .nc-cell,
-    .nc-virtual-cell {
-      @apply text-nc-content-gray-muted;
+    .atm-cell,
+    .atm-virtual-cell {
+      @apply text-atm-content-gray-muted;
     }
   }
 
-  &.nc-readonly-div-data-cell:focus-within,
-  &.nc-system-field:focus-within {
-    @apply !border-nc-border-gray-medium;
+  &.atm-readonly-div-data-cell:focus-within,
+  &.atm-system-field:focus-within {
+    @apply !border-atm-border-gray-medium;
   }
 
-  &:focus-within:not(.nc-readonly-div-data-cell):not(.nc-system-field):not(.nc-data-cell-compact) {
+  &:focus-within:not(.atm-readonly-div-data-cell):not(.atm-system-field):not(.atm-data-cell-compact) {
     @apply !shadow-selected;
   }
 
-  :deep(.nc-lookup-cell) {
-    .nc-qrcode-container {
+  :deep(.atm-lookup-cell) {
+    .atm-qrcode-container {
       height: 100%;
     }
 
-    .nc-multi-select {
+    .atm-multi-select {
       > div {
         margin-top: 3px;
       }
     }
   }
 
-  &:has(.nc-virtual-cell-qrcode .nc-qrcode-container),
-  &:has(.nc-virtual-cell-barcode .nc-barcode-container) {
+  &:has(.atm-virtual-cell-qrcode .atm-qrcode-container),
+  &:has(.atm-virtual-cell-barcode .atm-barcode-container) {
     @apply !border-none px-0 !rounded-none;
 
-    :deep(.nc-virtual-cell-qrcode),
-    :deep(.nc-virtual-cell-barcode) {
+    :deep(.atm-virtual-cell-qrcode),
+    :deep(.atm-virtual-cell-barcode) {
       @apply px-0;
 
       & > div {
@@ -420,15 +420,15 @@ function onCellValueChange(colTitle: string | undefined) {
       }
     }
 
-    :deep(.nc-virtual-cell-qrcode) {
+    :deep(.atm-virtual-cell-qrcode) {
       img {
-        @apply !h-full border-1 border-solid border-nc-border-gray-medium rounded;
+        @apply !h-full border-1 border-solid border-atm-border-gray-medium rounded;
       }
     }
 
-    :deep(.nc-virtual-cell-barcode) {
-      .nc-barcode-container {
-        @apply border-1 rounded-lg border-nc-border-gray-medium h-[64px] max-w-full p-2 dark:bg-white;
+    :deep(.atm-virtual-cell-barcode) {
+      .atm-barcode-container {
+        @apply border-1 rounded-lg border-atm-border-gray-medium h-[64px] max-w-full p-2 dark:bg-white;
 
         svg {
           @apply !h-full;
@@ -437,33 +437,33 @@ function onCellValueChange(colTitle: string | undefined) {
     }
   }
 
-  .nc-cell-json {
+  .atm-cell-json {
     @apply;
   }
 }
 
-.nc-mentioned-cell {
+.atm-mentioned-cell {
   box-shadow: 0px 0px 0px 2px var(--ant-primary-color-outline) !important;
-  @apply !border-nc-border-brand !border-1;
+  @apply !border-atm-border-brand !border-1;
 }
 
-.nc-data-cell:focus-within:not(.nc-data-cell-compact) {
-  @apply !border-1 !border-nc-border-brand;
+.atm-data-cell:focus-within:not(.atm-data-cell-compact) {
+  @apply !border-1 !border-atm-border-brand;
 }
 
-:deep(.nc-system-field input) {
+:deep(.atm-system-field input) {
   @apply bg-transparent;
 }
 
-:deep(.nc-data-cell .nc-cell .nc-cell-field) {
+:deep(.atm-data-cell .atm-cell .atm-cell-field) {
   @apply px-2;
 }
 
-:deep(.nc-data-cell .nc-virtual-cell .nc-cell-field) {
+:deep(.atm-data-cell .atm-virtual-cell .atm-cell-field) {
   @apply px-2;
 }
 
-:deep(.nc-data-cell .nc-cell-field.nc-lookup-cell .nc-cell-field) {
+:deep(.atm-data-cell .atm-cell-field.atm-lookup-cell .atm-cell-field) {
   @apply px-0;
 }
 
@@ -471,41 +471,41 @@ function onCellValueChange(colTitle: string | undefined) {
    tighter. Horizontal padding (px-2) is preserved so values still have left
    breathing room. Targets the textarea/input/select widgets that have their
    own hardcoded !py-1 (e.g. cell/Text/index.vue). */
-:deep(.nc-data-cell-compact textarea),
-:deep(.nc-data-cell-compact input),
-:deep(.nc-data-cell-compact .ant-select-selector),
-:deep(.nc-data-cell-compact .nc-cell-field) {
+:deep(.atm-data-cell-compact textarea),
+:deep(.atm-data-cell-compact input),
+:deep(.atm-data-cell-compact .ant-select-selector),
+:deep(.atm-data-cell-compact .atm-cell-field) {
   @apply !py-0 !pl-0;
 }
 
 /* Compact view — make the inner widgets' background transparent so the
    absolute-positioned empty-state '--' placeholder behind them remains
    visible. */
-:deep(.nc-data-cell-compact textarea),
-:deep(.nc-data-cell-compact input) {
+:deep(.atm-data-cell-compact textarea),
+:deep(.atm-data-cell-compact input) {
   background: transparent !important;
 }
 
 /* Compact view — flatten the field label too: remove its own pt-0.5 (added by
    SmartsheetHeaderCell in expanded-form mode) and the label-container's mb-2
    so the label sits flush with the value below. */
-.nc-row-compact .nc-expanded-cell-header {
+.atm-row-compact .atm-expanded-cell-header {
   @apply !py-0;
 }
-.nc-row-compact .nc-expanded-cell > :first-child {
+.atm-row-compact .atm-expanded-cell > :first-child {
   @apply !mb-0;
 }
 
 /* Compact view — drop the field-type icon (T / calendar / link / etc.) from
    the label line so the label text starts at the wrapper edge. */
-.nc-row-compact :deep(.nc-cell-icon),
-.nc-row-compact :deep(.nc-virtual-cell-icon) {
+.atm-row-compact :deep(.atm-cell-icon),
+.atm-row-compact :deep(.atm-virtual-cell-icon) {
   display: none !important;
 }
 
 /* Compact view — hide the empty-cell '--' placeholder once the user clicks
    into the cell to edit. */
-.nc-data-cell-compact:focus-within .nc-compact-empty-placeholder {
+.atm-data-cell-compact:focus-within .atm-compact-empty-placeholder {
   display: none !important;
 }
 </style>

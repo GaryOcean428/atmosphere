@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { NcDropdownPlacement } from '#imports'
+import type { AtDropdownPlacement } from '#imports'
 
 interface Props {
   visible?: boolean | undefined
@@ -9,7 +9,7 @@ interface Props {
   trigger?: Array<'click' | 'hover' | 'contextmenu'>
   overlayClassName?: string
   overlayStyle?: Record<string, any>
-  placement?: NcDropdownPlacement
+  placement?: AtDropdownPlacement
   align?: {
     points?: [string, string]
     offset?: [number, number]
@@ -108,7 +108,7 @@ const drawerProps = computed(() => ({
   <template v-if="isMobileMode">
     <slot :visible="visible" :on-change="(v: boolean) => (visible = v)" :on-click="() => (visible = !visible)" />
 
-    <NcDrawer v-model:visible="visible" v-bind="drawerProps">
+    <AtDrawer v-model:visible="visible" v-bind="drawerProps">
       <template v-if="$slots['drawer-header']" #header>
         <slot name="drawer-header" />
       </template>
@@ -118,15 +118,15 @@ const drawerProps = computed(() => ({
       <template v-if="$slots['drawer-footer']" #footer>
         <slot name="drawer-footer" />
       </template>
-    </NcDrawer>
+    </AtDrawer>
   </template>
 
   <!-- Desktop: Dropdown -->
-  <NcDropdown v-else v-model:visible="visible" v-bind="dropdownProps">
+  <AtDropdown v-else v-model:visible="visible" v-bind="dropdownProps">
     <slot :visible="visible" :on-change="(v: boolean) => (visible = v)" :on-click="() => undefined" />
 
     <template #overlay>
       <slot name="overlay" :visible="visible" :on-change="(v: boolean) => (visible = v)" />
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

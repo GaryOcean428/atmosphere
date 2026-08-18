@@ -4,8 +4,8 @@ import type {
   SortReqType,
   SortType,
   SortUpdateV3Type,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { type ViewWebhookManager } from '~/utils/view-webhook-manager';
 import { Column, Sort } from '~/models';
 import { SortsService } from '~/services/sorts.service';
@@ -13,9 +13,9 @@ import {
   builderGenerator,
   sortBuilder,
 } from '~/utils/api-v3-data-transformation.builder';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { validatePayload } from '~/helpers';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 @Injectable()
 export class SortsV3Service {
@@ -31,24 +31,24 @@ export class SortsV3Service {
 
   constructor(protected readonly sortsService: SortsService) {}
 
-  async sortGet(context: NcContext, param: { sortId: string }) {
+  async sortGet(context: AtContext, param: { sortId: string }) {
     return sortBuilder().build(await this.sortsService.sortGet(context, param));
   }
 
   async sortDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       sortId: string;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const sort = await Sort.get(context, param.sortId ?? '', ncMeta);
 
     if (!sort || sort.fk_view_id !== param.viewId) {
-      NcError.notFound('Sort not found');
+      AtError.notFound('Sort not found');
     }
 
     // Pass only the keys the v2 sortDelete consumes. `viewId` isn't used there
@@ -68,15 +68,15 @@ export class SortsV3Service {
   }
 
   async sortUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       sortId: string;
       sort: SortUpdateV3Type;
-      req: NcRequest;
+      req: AtRequest;
       viewId: string;
       viewWebhookManager?: ViewWebhookManager;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload(
       'swagger-v3.json#/components/schemas/SortUpdate',
@@ -94,7 +94,7 @@ export class SortsV3Service {
     }
 
     if (!sort || sort.fk_view_id !== param.viewId) {
-      NcError.notFound('Sort not found');
+      AtError.notFound('Sort not found');
     }
 
     if (param.sort.field_id) {
@@ -104,7 +104,7 @@ export class SortsV3Service {
         ncMeta,
       );
       if (column?.colOptions?.error) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           `Cannot use column '${column.title}' in sort: ${column.colOptions.error}`,
         );
       }
@@ -129,15 +129,15 @@ export class SortsV3Service {
   }
 
   async sortCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       sort: SortCreateV3Type;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
       fkLevelId?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload(
       'swagger-v3.json#/components/schemas/SortCreate',
@@ -156,7 +156,7 @@ export class SortsV3Service {
         (param.fkLevelId ? s.fk_level_id === param.fkLevelId : true),
     );
     if (existingSort) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Sort already exists for this field',
       );
     }
@@ -169,11 +169,11 @@ export class SortsV3Service {
     );
 
     if (!column) {
-      NcError.get(context).notFound('Column not found');
+      AtError.get(context).notFound('Column not found');
     }
 
     if (column.colOptions?.error) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         `Cannot use column '${column.title}' in sort: ${column.colOptions.error}`,
       );
     }
@@ -196,9 +196,9 @@ export class SortsV3Service {
   }
 
   async sortList(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return sortBuilder().build(
       await Sort.list(context, { viewId: param.viewId }, ncMeta),
@@ -207,9 +207,9 @@ export class SortsV3Service {
 
   /** Sorts scoped to a single list level (`fk_level_id`). */
   async sortListByLevel(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string; levelId: string },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const sorts = (
       await Sort.list(context, { viewId: param.viewId }, ncMeta)

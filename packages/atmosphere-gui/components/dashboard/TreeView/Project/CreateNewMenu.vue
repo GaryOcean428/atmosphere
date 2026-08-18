@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SourceType } from 'nocodb-sdk'
+import type { SourceType } from 'atmosphere-sdk'
 
 interface Props {
   visible: boolean
@@ -28,8 +28,8 @@ const showBaseOption = (source: SourceType) => {
 </script>
 
 <template>
-  <NcMenu variant="large" data-testid="nc-home-create-new-menu" @click="vVisible = false">
-    <NcMenuItem inner-class="w-full" class="nc-menu-item-combo" data-testid="create-new-table" @click="emits('newTable')">
+  <AtMenu variant="large" data-testid="atm-home-create-new-menu" @click="vVisible = false">
+    <AtMenuItem inner-class="w-full" class="atm-menu-item-combo" data-testid="create-new-table" @click="emits('newTable')">
       <div class="w-full flex items-center">
         <div class="flex-1 flex items-center gap-2 cursor-pointer">
           <GeneralIcon icon="table" class="!w-4 !h-4" />
@@ -37,42 +37,42 @@ const showBaseOption = (source: SourceType) => {
         </div>
         <template v-if="source && showBaseOption(source)">
           <div class="px-1 cursor-default flex items-center h-9 -my-2" @click.stop>
-            <div class="h-7 w-px flex-none bg-nc-border-gray-medium" />
+            <div class="h-7 w-px flex-none bg-atm-border-gray-medium" />
           </div>
 
           <DashboardTreeViewBaseOptions
             v-model:base="base"
             :source="source"
             variant="large"
-            submenu-class="nc-sub-menu-item-icon-only"
-            title-class="!p-0 hover:bg-nc-bg-brand dark:hover:bg-nc-bg-gray-medium group"
-            show-noco-db-import
+            submenu-class="atm-sub-menu-item-icon-only"
+            title-class="!p-0 hover:bg-atm-bg-brand dark:hover:bg-atm-bg-gray-medium group"
+            show-atmosphere-db-import
             :popup-offset="[8, -2]"
           >
             <template #title>
-              <div class="w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer group-hover:text-nc-content-brand">
+              <div class="w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer group-hover:text-atm-content-brand">
                 <GeneralIcon icon="ncChevronRight" />
               </div>
             </template>
             <template #expandIcon> </template>
             <template #label>
-              <NcMenuItemLabel>
+              <AtMenuItemLabel>
                 <span class="normal-case min-w-[180px]"> {{ $t('labels.importOptions') }} </span>
-              </NcMenuItemLabel>
+              </AtMenuItemLabel>
             </template>
           </DashboardTreeViewBaseOptions>
         </template>
       </div>
-    </NcMenuItem>
-  </NcMenu>
+    </AtMenuItem>
+  </AtMenu>
 </template>
 
 <style lang="scss">
-.nc-menu-item-combo {
+.atm-menu-item-combo {
   @apply !pr-1;
 }
 
-.nc-sub-menu-item-icon-only {
+.atm-sub-menu-item-icon-only {
   @apply !mx-0 -my-1;
 
   .ant-dropdown-menu-submenu-title {

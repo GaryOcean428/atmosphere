@@ -14,11 +14,11 @@ import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { PluginsService } from '~/services/plugins.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
-import { NcRequest } from '~/interface/config';
+import { AtRequest } from '~/interface/config';
 
 // todo: move to a interceptor
 // const blockInCloudMw = (_req, res, next) => {
-//   if (process.env.NC_CLOUD === 'true') {
+//   if (process.env.ATMOSPHERE_CLOUD === 'true') {
 //     res.status(403).send('Not allowed');
 //   } else next();
 // };
@@ -49,7 +49,7 @@ export class PluginsController {
   @Acl('pluginTest', {
     scope: 'org',
   })
-  async pluginTest(@Body() body: any, @Req() req: NcRequest) {
+  async pluginTest(@Body() body: any, @Req() req: AtRequest) {
     return await this.pluginsService.pluginTest({ body: body, req });
   }
 
@@ -71,7 +71,7 @@ export class PluginsController {
   async pluginUpdate(
     @Body() body: any,
     @Param('pluginId') pluginId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const plugin = await this.pluginsService.pluginUpdate({
       pluginId: pluginId,

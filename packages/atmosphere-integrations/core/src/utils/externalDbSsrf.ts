@@ -7,14 +7,14 @@ import ipaddr from 'ipaddr.js';
  * (MSSQL, PostgreSQL, MySQL, …).
  *
  * Mirrors the backend's `validateDbConnectionHost` helper, but lives in
- * `@noco-integrations/core` because integration packages cannot import from
- * the nocodb backend. Rejects hosts that resolve to non-routable ranges
+ * `@atmosphere-integrations/core` because integration packages cannot import from
+ * the atmosphere backend. Rejects hosts that resolve to non-routable ranges
  * (private, loopback, link-local incl. cloud-metadata 169.254.0.0/16,
  * unique-local, reserved). Handles IPv6 transition encodings that wrap an
  * IPv4 (`::ffff:a.b.c.d`, 6to4, NAT64) and unbracketed literals like `::1`.
  *
- * Self-hosted deployments can bypass via `NC_ALLOW_LOCAL_EXTERNAL_DBS=true`
- * (or `NC_DISABLE_SSRF_PROTECTION=true`) to connect to localhost / private
+ * Self-hosted deployments can bypass via `ATMOSPHERE_ALLOW_LOCAL_EXTERNAL_DBS=true`
+ * (or `ATMOSPHERE_DISABLE_SSRF_PROTECTION=true`) to connect to localhost / private
  * databases. The backend calls `setExternalDbSsrfEnforcement(isCloud)` at
  * bootstrap so cloud always enforces regardless of those env vars.
  */
@@ -35,11 +35,11 @@ function isDbSsrfProtectionEnabled(): boolean {
   if (forceEnforce) return true;
 
   // Global override — disables all SSRF protection for self-hosted.
-  if (process.env.NC_DISABLE_SSRF_PROTECTION === 'true') return false;
+  if (process.env.ATMOSPHERE_DISABLE_SSRF_PROTECTION === 'true') return false;
 
   // External-DB-specific override for self-hosted deployments that
   // intentionally connect to localhost or private-network databases.
-  if (process.env.NC_ALLOW_LOCAL_EXTERNAL_DBS === 'true') return false;
+  if (process.env.ATMOSPHERE_ALLOW_LOCAL_EXTERNAL_DBS === 'true') return false;
 
   return true;
 }
@@ -75,7 +75,7 @@ const NAT64_LOCAL_USE = ipaddr.parseCIDR('64:ff9b:1::/48') as [
 
 /**
  * Collapse IPv6 forms embedding an IPv4 so the blocklist catches an internal
- * target wrapped in a transition encoding. Mirror of `isBlockedIp` in nocodb's
+ * target wrapped in a transition encoding. Mirror of `isBlockedIp` in atmosphere's
  * `helpers/dbSsrfLookup.ts` — keep the two in sync.
  */
 function normaliseEmbeddedIpv4(parsed: ipaddr.IPv4 | ipaddr.IPv6) {

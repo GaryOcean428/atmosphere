@@ -1,4 +1,4 @@
-import { RelationTypes, UITypes } from 'nocodb-sdk'
+import { RelationTypes, UITypes } from 'atmosphere-sdk'
 import { FormFilters, buildFormConditionSourceColumns } from '~/lib/form'
 
 // Main-table columns as they appear in `meta.columns`

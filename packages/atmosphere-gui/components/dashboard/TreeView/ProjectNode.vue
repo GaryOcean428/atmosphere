@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { nextTick } from '@vue/runtime-core'
-import { ProjectRoles, RoleColors, RoleIcons, RoleLabels, WorkspaceRolesToProjectRoles } from 'nocodb-sdk'
-import type { BaseType, SourceType, WorkspaceUserRoles } from 'nocodb-sdk'
+import { ProjectRoles, RoleColors, RoleIcons, RoleLabels, WorkspaceRolesToProjectRoles } from 'atmosphere-sdk'
+import type { BaseType, SourceType, WorkspaceUserRoles } from 'atmosphere-sdk'
 import { LoadingOutlined } from '@ant-design/icons-vue'
 
 interface Props {
@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<Props>(), {})
 const { isProjectHeader } = toRefs(props)
 
 const indicator = h(LoadingOutlined, {
-  class: '!text-nc-content-gray-disabled',
+  class: '!text-atm-content-gray-disabled',
   style: {
     fontSize: '0.85rem',
   },
@@ -229,7 +229,7 @@ async function addNewProjectChildEntity(showSourceSelector = true) {
   }
 }
 
-const onProjectClick = async (base: NcProject, ignoreNavigation?: boolean, toggleIsExpanded?: boolean) => {
+const onProjectClick = async (base: AtProject, ignoreNavigation?: boolean, toggleIsExpanded?: boolean) => {
   if (!base || isProjectHeader.value) {
     return
   }
@@ -395,11 +395,11 @@ watch(
 )
 
 const openBaseSettings = async (baseId: string) => {
-  await navigateTo(`/nc/${baseId}/settings/settings`)
+  await navigateTo(`/atm/${baseId}/settings/settings`)
 }
 
 const openMcpSettings = async (baseId: string) => {
-  await navigateTo(`/nc/${baseId}/settings/mcp`)
+  await navigateTo(`/atm/${baseId}/settings/mcp`)
 }
 
 const showNodeTooltip = ref(true)
@@ -435,20 +435,20 @@ defineExpose({
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="isProjectNodeContextMenuOpen"
     :trigger="[isProjectHeader ? 'click' : 'contextmenu']"
-    overlay-class-name="nc-dropdown-tree-view-context-menu"
+    overlay-class-name="atm-dropdown-tree-view-context-menu"
     :disabled="isProjectHeader ? editMode || isSharedBase || !!isMobileMode : undefined"
   >
     <div
       ref="labelEl"
-      class="nc-base-sub-menu rounded-md"
+      class="atm-base-sub-menu rounded-md"
       :class="{ active: base.isExpanded }"
-      :data-testid="`nc-sidebar-base-${base.title}`"
+      :data-testid="`atm-sidebar-base-${base.title}`"
       :data-base-id="base.id"
     >
-      <NcTooltip
+      <AtTooltip
         :tooltip-style="{ width: '300px', zIndex: '1049' }"
         :overlay-inner-style="{ width: '300px' }"
         trigger="hover"
@@ -468,13 +468,13 @@ defineExpose({
         <template #title>
           <div class="flex flex-col gap-3">
             <div>
-              <div class="text-[10px] leading-[14px] text-nc-content-brand-hover dark:text-nc-content-gray-muted uppercase mb-1">
+              <div class="text-[10px] leading-[14px] text-atm-content-brand-hover dark:text-atm-content-gray-muted uppercase mb-1">
                 {{ $t('labels.projName') }}
               </div>
               <div class="text-small leading-[18px] mb-1">{{ base.title }}</div>
             </div>
             <div v-if="currentUserRole">
-              <div class="text-[10px] leading-[14px] text-nc-content-brand-hover dark:text-nc-content-gray-muted uppercase mb-1">
+              <div class="text-[10px] leading-[14px] text-atm-content-brand-hover dark:text-atm-content-gray-muted uppercase mb-1">
                 {{ $t('title.yourBaseRole') }}
               </div>
               <div
@@ -497,18 +497,18 @@ defineExpose({
           <div
             ref="baseNodeRefs"
             :class="{
-              'nc-project-header': isProjectHeader,
-              'text-subHeading2 gap-2 hover:bg-nc-bg-gray-medium h-8 cursor-pointer px-1 max-w-full': isProjectHeader,
+              'atm-project-header': isProjectHeader,
+              'text-subHeading2 gap-2 hover:bg-atm-bg-gray-medium h-8 cursor-pointer px-1 max-w-full': isProjectHeader,
               'flex-grow w-full': isProjectHeader && editMode,
-              'bg-nc-bg-gray-medium': isProjectHeader && isProjectNodeContextMenuOpen,
+              'bg-atm-bg-gray-medium': isProjectHeader && isProjectNodeContextMenuOpen,
               'h-7 pr-1 pl-2.5 xs:(pl-0) rtl:(pr-2.5 pl-1) rtl:xs:(pr-0) flex-grow w-full': !isProjectHeader,
-              'bg-primary-selected dark:bg-nc-bg-gray-medium active':
+              'bg-primary-selected dark:bg-atm-bg-gray-medium active':
                 activeProjectId === base.id && !isMobileMode && !isProjectHeader,
-              'hover:bg-nc-bg-gray-medium': !(activeProjectId === base.id) && !isProjectHeader,
+              'hover:bg-atm-bg-gray-medium': !(activeProjectId === base.id) && !isProjectHeader,
             }"
             :data-id="base.id"
-            :data-testid="`nc-sidebar-base-title-${base.title}`"
-            class="nc-sidebar-node base-title-node flex-grow rounded-md group flex items-center w-full"
+            :data-testid="`atm-sidebar-base-title-${base.title}`"
+            class="atm-sidebar-node base-title-node flex-grow rounded-md group flex items-center w-full"
           >
             <!-- Mobile: plain chevron before icon -->
             <div
@@ -518,17 +518,17 @@ defineExpose({
             >
               <GeneralIcon
                 icon="chevronRight"
-                class="transform transition-transform duration-200 !text-nc-content-gray-subtle2 text-[16px]"
+                class="transform transition-transform duration-200 !text-atm-content-gray-subtle2 text-[16px]"
                 :class="{ '!rotate-90': base.isExpanded }"
               />
             </div>
-            <div v-if="!isProjectHeader" class="flex items-center mr-1 nc-base-icon-wrapper min-w-6 h-6 relative" @click.stop>
+            <div v-if="!isProjectHeader" class="flex items-center mr-1 atm-base-icon-wrapper min-w-6 h-6 relative" @click.stop>
               <!-- Desktop: combo chevron overlay -->
-              <NcButton
+              <AtButton
                 v-e="['c:base:toggle-expand']"
                 type="text"
                 size="xxsmall"
-                class="nc-base-chevron-btn !absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10 text-nc-content-gray-subtle2 hover:text-nc-content-gray !rounded-md !xs:hidden"
+                class="atm-base-chevron-btn !absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10 text-atm-content-gray-subtle2 hover:text-atm-content-gray !rounded-md !xs:hidden"
                 @click.stop="onProjectClick(base, true, true)"
                 @mouseenter="showNodeTooltip = false"
                 @mouseleave="showNodeTooltip = true"
@@ -538,7 +538,7 @@ defineExpose({
                   class="cursor-pointer transform transition-transform duration-200 !text-current text-[16px]"
                   :class="{ '!rotate-90': base.isExpanded }"
                 />
-              </NcButton>
+              </AtButton>
               <div
                 class="flex items-center select-none w-6 h-full group-hover:opacity-0 xs:group-hover:opacity-100 transition-opacity duration-150"
                 @click="onProjectClick(base)"
@@ -584,8 +584,8 @@ defineExpose({
               class="capitalize !bg-transparent !flex-1 mr-4 !rounded-md !pr-1.5 !h-6 animate-sidebar-node-input-padding"
               :class="
                 activeProjectId === base.id && baseViewOpen && !isProjectHeader
-                  ? '!text-nc-content-brand-disabled !font-semibold'
-                  : '!text-nc-content-gray-subtle'
+                  ? '!text-atm-content-brand-disabled !font-semibold'
+                  : '!text-atm-content-gray-subtle'
               "
               :style="{
                 fontWeight: 'inherit',
@@ -596,15 +596,15 @@ defineExpose({
               @blur="updateProjectTitle"
               @keydown.stop
             />
-            <NcTooltip
+            <AtTooltip
               v-else
               :disabled="!!collaborators.length"
-              class="nc-sidebar-node-title capitalize text-ellipsis overflow-hidden select-none flex-1"
+              class="atm-sidebar-node-title capitalize text-ellipsis overflow-hidden select-none flex-1"
               :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap', display: 'inline' }"
               :class="[
                 activeProjectId === base.id && baseViewOpen && !isProjectHeader
-                  ? 'text-nc-content-gray-subtle2 font-semibold'
-                  : 'text-nc-content-gray-subtle',
+                  ? 'text-atm-content-gray-subtle2 font-semibold'
+                  : 'text-atm-content-gray-subtle',
                 {
                   'flex-1': !isProjectHeader,
                 },
@@ -616,19 +616,19 @@ defineExpose({
               <span @dblclick.stop="enableEditMode()">
                 {{ base.title }}
               </span>
-            </NcTooltip>
+            </AtTooltip>
 
             <template v-if="!editMode">
               <template v-if="isProjectHeader">
-                <GeneralIcon v-if="!isMobileMode" icon="chevronDown" class="flex-none text-nc-content-gray-muted" />
+                <GeneralIcon v-if="!isMobileMode" icon="chevronDown" class="flex-none text-atm-content-gray-muted" />
               </template>
               <template v-else>
-                <NcDropdown v-if="!isSharedBase" v-model:visible="isOptionsOpen" :trigger="['click']">
-                  <NcButton
+                <AtDropdown v-if="!isSharedBase" v-model:visible="isOptionsOpen" :trigger="['click']">
+                  <AtButton
                     v-e="['c:base:options']"
-                    class="nc-sidebar-node-btn"
-                    :class="{ '!text-nc-content-gray-extreme !opacity-100 !inline-block': isOptionsOpen }"
-                    data-testid="nc-sidebar-context-menu"
+                    class="atm-sidebar-node-btn"
+                    :class="{ '!text-atm-content-gray-extreme !opacity-100 !inline-block': isOptionsOpen }"
+                    data-testid="atm-sidebar-context-menu"
                     type="text"
                     :size="isProjectHeader ? 'small' : 'xxsmall'"
                     @click.stop
@@ -639,10 +639,10 @@ defineExpose({
                       :icon="isProjectHeader ? 'threeDotVertical' : 'threeDotHorizontal'"
                       class="text-xl w-4.75"
                       :class="{
-                        'text-nc-content-gray-subtle': isProjectHeader,
+                        'text-atm-content-gray-subtle': isProjectHeader,
                       }"
                     />
-                  </NcButton>
+                  </AtButton>
                   <template #overlay>
                     <DashboardTreeViewProjectActionMenu
                       :show-base-option="(source) => showBaseOption(source)"
@@ -656,18 +656,18 @@ defineExpose({
                       @delete="projectDelete"
                     />
                   </template>
-                </NcDropdown>
+                </AtDropdown>
 
-                <NcButton
+                <AtButton
                   v-if="isUIAllowed('tableCreate', { roles: baseRole, source: base?.sources?.[0] })"
                   v-e="['c:base:create-table']"
                   :disabled="!base?.sources?.[0]?.enabled && base?.sources?.length === 1"
-                  class="nc-sidebar-node-btn"
+                  class="atm-sidebar-node-btn"
                   size="xxsmall"
                   type="text"
-                  data-testid="nc-sidebar-add-base-entity"
+                  data-testid="atm-sidebar-add-base-entity"
                   :class="{
-                    '!text-nc-content-gray-extreme !inline-block !opacity-100': isAddNewProjectChildEntityLoading,
+                    '!text-atm-content-gray-extreme !inline-block !opacity-100': isAddNewProjectChildEntityLoading,
                     '!inline-block !opacity-100': isOptionsOpen,
                   }"
                   :loading="isAddNewProjectChildEntityLoading"
@@ -675,15 +675,15 @@ defineExpose({
                   @mouseenter="showNodeTooltip = false"
                   @mouseleave="showNodeTooltip = true"
                 >
-                  <NcTooltip :title="$t('activity.createTable')" hide-on-click>
+                  <AtTooltip :title="$t('activity.createTable')" hide-on-click>
                     <GeneralIcon icon="plus" class="text-xl leading-5" style="-webkit-text-stroke: 0.15px" />
-                  </NcTooltip>
-                </NcButton>
+                  </AtTooltip>
+                </AtButton>
               </template>
             </template>
           </div>
         </div>
-      </NcTooltip>
+      </AtTooltip>
     </div>
     <template v-if="shouldOpenContextMenu || isProjectHeader" #overlay>
       <DashboardTreeViewProjectActionMenu
@@ -698,7 +698,7 @@ defineExpose({
         @open-mcp-server="openMcpSettings($event)"
         @delete="projectDelete"
       />
-      <NcMenu
+      <AtMenu
         v-else
         class="!py-0 rounded text-sm"
         :class="{
@@ -712,7 +712,7 @@ defineExpose({
         <template v-else-if="contextMenuTarget.type === 'source'"></template>
 
         <template v-else-if="contextMenuTarget.type === 'table'">
-          <NcMenuItemCopyId
+          <AtMenuItemCopyId
             v-if="contextMenuTarget.value"
             :id="contextMenuTarget.value.id"
             :tooltip="$t('labels.clickToCopyTableID')"
@@ -731,8 +731,8 @@ defineExpose({
               !!tableActionReason('tableDelete')
             "
           >
-            <NcDivider />
-            <NcTooltip
+            <AtDivider />
+            <AtTooltip
               v-if="
                 isUIAllowed('tableRename', { source: getSource(contextMenuTarget.value?.source_id) }) ||
                 !!tableActionReason('tableRename')
@@ -740,18 +740,18 @@ defineExpose({
               :title="tableActionReason('tableRename') ? $t(tableActionReason('tableRename')!) : ''"
               :disabled="!tableActionReason('tableRename')"
             >
-              <NcMenuItem
+              <AtMenuItem
                 :disabled="!!tableActionReason('tableRename')"
                 @click="tableRenameId = `${contextMenuTarget.value?.id}:${contextMenuTarget.value?.source_id}`"
               >
-                <div v-e="['c:table:rename']" class="nc-base-option-item flex gap-2 items-center">
+                <div v-e="['c:table:rename']" class="atm-base-option-item flex gap-2 items-center">
                   <GeneralIcon icon="rename" />
                   {{ $t('general.rename') }} {{ $t('objects.table') }}
                 </div>
-              </NcMenuItem>
-            </NcTooltip>
+              </AtMenuItem>
+            </AtTooltip>
 
-            <NcTooltip
+            <AtTooltip
               v-if="
                 (isUIAllowed('tableDuplicate', { source: getSource(contextMenuTarget.value?.source_id) }) ||
                   !!tableActionReason('tableDuplicate')) &&
@@ -760,15 +760,15 @@ defineExpose({
               :title="tableActionReason('tableDuplicate') ? $t(tableActionReason('tableDuplicate')!) : ''"
               :disabled="!tableActionReason('tableDuplicate')"
             >
-              <NcMenuItem :disabled="!!tableActionReason('tableDuplicate')" @click="duplicateTable(contextMenuTarget.value)">
-                <div v-e="['c:table:duplicate']" class="nc-base-option-item flex gap-2 items-center">
+              <AtMenuItem :disabled="!!tableActionReason('tableDuplicate')" @click="duplicateTable(contextMenuTarget.value)">
+                <div v-e="['c:table:duplicate']" class="atm-base-option-item flex gap-2 items-center">
                   <GeneralIcon icon="duplicate" />
                   {{ $t('general.duplicate') }} {{ $t('objects.table') }}
                 </div>
-              </NcMenuItem>
-            </NcTooltip>
-            <NcDivider />
-            <NcTooltip
+              </AtMenuItem>
+            </AtTooltip>
+            <AtDivider />
+            <AtTooltip
               v-if="
                 isUIAllowed('tableDelete', { source: getSource(contextMenuTarget.value?.source_id) }) ||
                 !!tableActionReason('tableDelete')
@@ -776,18 +776,18 @@ defineExpose({
               :title="tableActionReason('tableDelete') ? $t(tableActionReason('tableDelete')!) : ''"
               :disabled="!tableActionReason('tableDelete')"
             >
-              <NcMenuItem danger :disabled="!!tableActionReason('tableDelete')" @click="tableDelete">
-                <div class="nc-base-option-item flex gap-2 items-center">
+              <AtMenuItem danger :disabled="!!tableActionReason('tableDelete')" @click="tableDelete">
+                <div class="atm-base-option-item flex gap-2 items-center">
                   <GeneralIcon icon="delete" />
                   {{ $t('general.delete') }} {{ $t('objects.table') }}
                 </div>
-              </NcMenuItem>
-            </NcTooltip>
+              </AtMenuItem>
+            </AtTooltip>
           </template>
         </template>
-      </NcMenu>
+      </AtMenu>
     </template>
-  </NcDropdown>
+  </AtDropdown>
   <DlgTableDelete
     v-if="contextMenuTarget.value?.id && base?.id"
     v-model:visible="isTableDeleteDialogVisible"
@@ -805,10 +805,10 @@ defineExpose({
 
 <style lang="scss" scoped>
 :deep(.ant-collapse-header) {
-  @apply !mx-0 !pl-7.5 h-7 !xs:(pl-6 h-[3rem]) !pr-0.5 !py-0 hover:bg-nc-bg-gray-medium xs:(hover:bg-nc-bg-gray-extralight) !rounded-md;
+  @apply !mx-0 !pl-7.5 h-7 !xs:(pl-6 h-[3rem]) !pr-0.5 !py-0 hover:bg-atm-bg-gray-medium xs:(hover:bg-atm-bg-gray-extralight) !rounded-md;
 
   .ant-collapse-arrow {
-    @apply !right-1 !xs:(flex-none border-1 border-nc-border-gray-medium w-6.5 h-6.5 mr-1);
+    @apply !right-1 !xs:(flex-none border-1 border-atm-border-gray-medium w-6.5 h-6.5 mr-1);
   }
 }
 
@@ -821,10 +821,10 @@ defineExpose({
 }
 
 :deep(.ant-collapse-header:hover) {
-  .nc-sidebar-node-btn {
+  .atm-sidebar-node-btn {
     @apply !opacity-100 !inline-block;
 
-    &:not(.nc-sidebar-expand) {
+    &:not(.atm-sidebar-expand) {
       @apply !xs:hidden;
     }
   }

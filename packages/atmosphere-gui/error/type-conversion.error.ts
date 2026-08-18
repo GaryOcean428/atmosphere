@@ -1,1 +1,1 @@
-export { TypeConversionError } from 'nocodb-sdk'
+export { TypeConversionError } from 'atmosphere-sdk'

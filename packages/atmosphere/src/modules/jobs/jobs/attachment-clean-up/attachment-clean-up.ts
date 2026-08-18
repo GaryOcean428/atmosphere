@@ -1,15 +1,15 @@
 import path from 'path';
 import debug from 'debug';
 import type { Job } from 'bull';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import { getPathFromUrl } from '~/helpers/attachmentHelpers';
 
-const retentionDays = process.env.NC_ATTACHMENT_RETENTION_DAYS || 10;
+const retentionDays = process.env.ATMOSPHERE_ATTACHMENT_RETENTION_DAYS || 10;
 
 export class AttachmentCleanUpProcessor {
-  private readonly debugLog = debug('nc:jobs:attachment-clean-up');
+  private readonly debugLog = debug('atm:jobs:attachment-clean-up');
 
   async job(job: Job) {
     // if retentionDays is set to 0, clean up is disabled
@@ -19,9 +19,9 @@ export class AttachmentCleanUpProcessor {
 
     this.debugLog(`job started for ${job.id}`);
 
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
 
-    const storageAdapter = await NcPluginMgrv2.storageAdapter();
+    const storageAdapter = await AtPluginMgrv2.storageAdapter();
 
     const storageAdapterName = storageAdapter.name;
 
@@ -69,14 +69,14 @@ export class AttachmentCleanUpProcessor {
 
       try {
         await storageAdapter.fileDelete(
-          path.join('nc', 'uploads', relativePath),
+          path.join('atm', 'uploads', relativePath),
         );
 
         const thumbnails = ['tiny.jpg', 'small.jpg', 'card_cover.jpg'];
 
         for (const thumb of thumbnails) {
           await storageAdapter.fileDelete(
-            path.join('nc', 'thumbnails', relativePath, thumb),
+            path.join('atm', 'thumbnails', relativePath, thumb),
           );
         }
 

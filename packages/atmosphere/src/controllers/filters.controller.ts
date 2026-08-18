@@ -11,14 +11,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { FilterReqType } from 'nocodb-sdk';
+import { FilterReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { FiltersService } from '~/services/filters.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -31,7 +31,7 @@ export class FiltersController {
   ])
   @Acl('filterList')
   async filterList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Query('includeAllFilters') includeAllFilters: string,
   ) {
@@ -50,10 +50,10 @@ export class FiltersController {
   @HttpCode(200)
   @Acl('filterCreate')
   async filterCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Body() body: FilterReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const filter = await this.filtersService.filterCreate(context, {
       filter: body,
@@ -71,10 +71,10 @@ export class FiltersController {
   @HttpCode(200)
   @Acl('hookFilterCreate')
   async hookFilterCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('hookId') hookId: string,
     @Body() body: FilterReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const filter = await this.filtersService.hookFilterCreate(context, {
       filter: body,
@@ -88,9 +88,9 @@ export class FiltersController {
   @Get(['/api/v1/db/meta/filters/:filterId', '/api/v2/meta/filters/:filterId'])
   @Acl('filterGet')
   async filterGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('filterId') filterId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.filtersService.filterGet(context, { filterId, req });
   }
@@ -101,9 +101,9 @@ export class FiltersController {
   ])
   @Acl('filterChildrenList')
   async filterChildrenList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('filterParentId') filterParentId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return new PagedResponseImpl(
       await this.filtersService.filterChildrenList(context, {
@@ -119,10 +119,10 @@ export class FiltersController {
   ])
   @Acl('filterUpdate')
   async filterUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('filterId') filterId: string,
     @Body() body: FilterReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const filter = await this.filtersService.filterUpdate(context, {
       filterId: filterId,
@@ -139,9 +139,9 @@ export class FiltersController {
   ])
   @Acl('filterDelete')
   async filterDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('filterId') filterId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const filter = await this.filtersService.filterDelete(context, {
       req,
@@ -156,7 +156,7 @@ export class FiltersController {
   ])
   @Acl('hookFilterList')
   async hookFilterList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('hookId') hookId: string,
   ) {
     return new PagedResponseImpl(

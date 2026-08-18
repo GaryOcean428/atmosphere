@@ -7,13 +7,13 @@ import {
   type UserType,
   WorkspaceRolesToProjectRoles,
   WorkspaceUserRoles,
-} from 'nocodb-sdk';
-import type { MetaType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import { NcError } from '~/helpers/catchError';
-import Noco from '~/Noco';
+} from 'atmosphere-sdk';
+import type { MetaType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import { AtError } from '~/helpers/catchError';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import {
   CacheDelDirection,
   CacheGetType,
@@ -69,7 +69,7 @@ export default class User implements UserType {
     return user && new User(user);
   }
 
-  public static async insert(user: Partial<User>, ncMeta = Noco.ncMeta) {
+  public static async insert(user: Partial<User>, ncMeta = Atmosphere.ncMeta) {
     const insertObj = extractProps(user, [
       'id',
       'email',
@@ -108,12 +108,12 @@ export default class User implements UserType {
       prepareForDb(insertObj),
     );
 
-    await NocoCache.del('root', CacheScope.INSTANCE_META);
+    await AtmosphereCache.del('root', CacheScope.INSTANCE_META);
 
     // clear all base user related cache for instance
     const bases = await Base.list(null, ncMeta);
     for (const base of bases) {
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         { workspace_id: base.fk_workspace_id, base_id: base.id },
         `${CacheScope.BASE_USER}:${base.id}:list`,
         CacheDelDirection.PARENT_TO_CHILD,
@@ -123,7 +123,7 @@ export default class User implements UserType {
     return this.get(id, ncMeta);
   }
 
-  public static async update(id, user: Partial<User>, ncMeta = Noco.ncMeta) {
+  public static async update(id, user: Partial<User>, ncMeta = Atmosphere.ncMeta) {
     const updateObj = extractProps(user, [
       'email',
       'canonical_email',
@@ -153,7 +153,7 @@ export default class User implements UserType {
       // check if the target email addr is in use or not
       const targetUser = await this.getByEmail(updateObj.email, ncMeta);
       if (targetUser && targetUser.id !== id) {
-        NcError.badRequest('email is in use');
+        AtError.badRequest('email is in use');
       }
 
       // check if a user with the same canonical email already exists
@@ -162,7 +162,7 @@ export default class User implements UserType {
         ncMeta,
       );
       if (canonicalUser && canonicalUser.id !== id) {
-        NcError.badRequest('email is in use');
+        AtError.badRequest('email is in use');
       }
     } else {
       // set email prop to avoid generation of invalid cache key
@@ -173,7 +173,7 @@ export default class User implements UserType {
     const existingUser = await this.get(id, ncMeta);
 
     // delete the email-based cache to avoid unexpected behaviour since we can update email as well
-    await NocoCache.del('root', `${CacheScope.USER}:${existingUser.email}`);
+    await AtmosphereCache.del('root', `${CacheScope.USER}:${existingUser.email}`);
 
     await ncMeta.metaUpdate(
       RootScopes.ROOT,
@@ -201,7 +201,7 @@ export default class User implements UserType {
     token: string,
     user: Pick<User, 'id' | 'email'>,
     update: Pick<User, 'salt' | 'password' | 'token_version'>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<number> {
     // A blank token would match every already-reset user, and metaUpdate writes
     // EVERY matching row — unlike the metaGet this replaces.
@@ -231,18 +231,18 @@ export default class User implements UserType {
     const rowsAffected = Number(affected) || 0;
 
     if (rowsAffected) {
-      await NocoCache.del('root', `${CacheScope.USER}:${user.email}`);
+      await AtmosphereCache.del('root', `${CacheScope.USER}:${user.email}`);
       await this.clearCache(user.id, ncMeta);
     }
 
     return rowsAffected;
   }
 
-  public static async getByEmail(_email: string, ncMeta = Noco.ncMeta) {
+  public static async getByEmail(_email: string, ncMeta = Atmosphere.ncMeta) {
     const email = sanitizeEmail(_email)?.toLowerCase();
     let user =
       email &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         'root',
         `${CacheScope.USER}:${email}`,
         CacheGetType.TYPE_OBJECT,
@@ -271,7 +271,7 @@ export default class User implements UserType {
 
       if (user) {
         user.meta = parseMetaProp(user);
-        await NocoCache.set('root', `${CacheScope.USER}:${email}`, user);
+        await AtmosphereCache.set('root', `${CacheScope.USER}:${email}`, user);
       }
     }
 
@@ -288,14 +288,14 @@ export default class User implements UserType {
    */
   public static async getByCanonicalEmail(
     _email: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (!_email || _email === '') return null;
 
     const canonical = normalizeEmail(_email);
     let user =
       canonical &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         'root',
         `${CacheScope.USER}:canonical:${canonical}`,
         CacheGetType.TYPE_OBJECT,
@@ -319,7 +319,7 @@ export default class User implements UserType {
 
       if (user) {
         user.meta = parseMetaProp(user);
-        await NocoCache.set(
+        await AtmosphereCache.set(
           'root',
           `${CacheScope.USER}:canonical:${canonical}`,
           user,
@@ -334,7 +334,7 @@ export default class User implements UserType {
     return this.castType(user);
   }
 
-  static async isFirst(ncMeta = Noco.ncMeta) {
+  static async isFirst(ncMeta = Atmosphere.ncMeta) {
     return !(await ncMeta.metaGet2(
       RootScopes.ROOT,
       RootScopes.ROOT,
@@ -349,7 +349,7 @@ export default class User implements UserType {
     }: {
       query?: string;
     } = {},
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<number> {
     const qb = ncMeta.knex(MetaTable.USERS);
 
@@ -364,10 +364,10 @@ export default class User implements UserType {
     return (await qb.count('id', { as: 'count' }).first()).count;
   }
 
-  static async get(userId, ncMeta = Noco.ncMeta): Promise<User> {
+  static async get(userId, ncMeta = Atmosphere.ncMeta): Promise<User> {
     let user =
       userId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         'root',
         `${CacheScope.USER}:${userId}`,
         CacheGetType.TYPE_OBJECT,
@@ -382,7 +382,7 @@ export default class User implements UserType {
 
       if (user) {
         user.meta = parseMetaProp(user);
-        await NocoCache.set('root', `${CacheScope.USER}:${userId}`, user);
+        await AtmosphereCache.set('root', `${CacheScope.USER}:${userId}`, user);
       }
     }
 
@@ -399,7 +399,7 @@ export default class User implements UserType {
    */
   static async getByIds(
     userIds: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Map<string, User>> {
     const result = new Map<string, User>();
     if (!userIds.length) return result;
@@ -408,7 +408,7 @@ export default class User implements UserType {
     const uncachedIds: string[] = [];
 
     for (const id of uniqueIds) {
-      const cached = await NocoCache.get(
+      const cached = await AtmosphereCache.get(
         'root',
         `${CacheScope.USER}:${id}`,
         CacheGetType.TYPE_OBJECT,
@@ -442,7 +442,7 @@ export default class User implements UserType {
 
       for (const row of rows) {
         row.meta = parseMetaProp(row);
-        await NocoCache.set('root', `${CacheScope.USER}:${row.id}`, row);
+        await AtmosphereCache.set('root', `${CacheScope.USER}:${row.id}`, row);
         result.set(row.id, this.castType(row));
       }
     }
@@ -450,7 +450,7 @@ export default class User implements UserType {
     return result;
   }
 
-  static async getByRefreshToken(refresh_token, ncMeta = Noco.ncMeta) {
+  static async getByRefreshToken(refresh_token, ncMeta = Atmosphere.ncMeta) {
     const userRefreshToken = await UserRefreshToken.getByToken(
       refresh_token,
       ncMeta,
@@ -488,7 +488,7 @@ export default class User implements UserType {
       offset?: number | undefined;
       query?: string;
     } = {},
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let queryBuilder = ncMeta.knex(MetaTable.USERS);
 
@@ -538,12 +538,12 @@ export default class User implements UserType {
     return queryBuilder;
   }
 
-  static async delete(userId: string, ncMeta = Noco.ncMeta) {
-    if (!userId) NcError.badRequest('userId is required');
+  static async delete(userId: string, ncMeta = Atmosphere.ncMeta) {
+    if (!userId) AtError.badRequest('userId is required');
 
     const user = await this.get(userId, ncMeta);
 
-    if (!user) NcError.userNotFound(userId);
+    if (!user) AtError.userNotFound(userId);
 
     // clear all user related cache
     await this.clearCache(userId, ncMeta);
@@ -556,10 +556,10 @@ export default class User implements UserType {
     );
   }
 
-  public static async softDelete(userId: string, ncMeta = Noco.ncMeta) {
+  public static async softDelete(userId: string, ncMeta = Atmosphere.ncMeta) {
     const user = await this.get(userId, ncMeta);
 
-    if (!user) NcError.userNotFound(userId);
+    if (!user) AtError.userNotFound(userId);
 
     await ncMeta.metaUpdate(
       RootScopes.ROOT,
@@ -589,7 +589,7 @@ export default class User implements UserType {
   }
 
   static async getWithRoles(
-    context: NcContext,
+    context: AtContext,
     userId: string,
     args: {
       user?: User;
@@ -597,11 +597,11 @@ export default class User implements UserType {
       orgId?: string;
       workspaceId?: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const user = args.user ?? (await this.get(userId, ncMeta));
 
-    if (!user) NcError.userNotFound(userId);
+    if (!user) AtError.userNotFound(userId);
 
     // Super admin is treated as owner of all workspaces and bases
     if (extractRolesObj(user.roles)?.[OrgUserRoles.SUPER_ADMIN]) {
@@ -684,15 +684,15 @@ export default class User implements UserType {
     };
   }
 
-  protected static async clearCache(userId: string, ncMeta = Noco.ncMeta) {
+  protected static async clearCache(userId: string, ncMeta = Atmosphere.ncMeta) {
     const user = await this.get(userId, ncMeta);
-    if (!user) NcError.userNotFound(userId);
+    if (!user) AtError.userNotFound(userId);
 
     // todo: skip base user cache delete based on flag
     const bases = await BaseUser.getProjectsList(userId, {}, ncMeta);
 
     for (const base of bases) {
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         { workspace_id: base.fk_workspace_id, base_id: base.id },
         `${CacheScope.BASE_USER}:${base.id}:list`,
         CacheDelDirection.PARENT_TO_CHILD,
@@ -700,10 +700,10 @@ export default class User implements UserType {
     }
 
     // clear all user related cache
-    await NocoCache.del('root', `${CacheScope.USER}:${userId}`);
-    await NocoCache.del('root', `${CacheScope.USER}:${user.email}`);
+    await AtmosphereCache.del('root', `${CacheScope.USER}:${userId}`);
+    await AtmosphereCache.del('root', `${CacheScope.USER}:${user.email}`);
     if (user.email) {
-      await NocoCache.del(
+      await AtmosphereCache.del(
         'root',
         `${CacheScope.USER}:canonical:${normalizeEmail(user.email)}`,
       );

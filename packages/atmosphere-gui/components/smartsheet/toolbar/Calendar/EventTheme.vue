@@ -5,5 +5,5 @@
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 import { type Ref, ref } from 'vue'
 import { forcedNextTick } from '../../utils/browserUtils'
 
@@ -140,7 +140,7 @@ onMounted(() => {
 
     if (getElementAtMouse('.unlink-icon', clientMousePosition)) {
       unlinkRef(value.value)
-    } else if (getElementAtMouse('.nc-canvas-table-editable-cell-wrapper .nc-plus.nc-action-icon', clientMousePosition)) {
+    } else if (getElementAtMouse('.atm-canvas-table-editable-cell-wrapper .atm-plus.atm-action-icon', clientMousePosition)) {
       listItemsDlg.value = true
     } else {
       listItemsDlg.value = true
@@ -157,7 +157,7 @@ onUnmounted(() => {
 
 <template>
   <LazyVirtualCellComponentsLinkRecordDropdown v-model:is-open="isOpen" :variant="isSimpleLinkRecordList ? 'simple' : 'classic'">
-    <div class="nc-cell-field flex w-full chips-wrapper items-center min-h-6.5 relative" :class="{ active }">
+    <div class="atm-cell-field flex w-full chips-wrapper items-center min-h-6.5 relative" :class="{ active }">
       <div class="chips flex items-center flex-1 max-w-[calc(100%_-_16px)] min-h-[28px]">
         <template v-if="value && (relatedTableDisplayValueProp || relatedTableDisplayValuePropId)">
           <VirtualCellComponentsItemChip
@@ -182,10 +182,10 @@ onUnmounted(() => {
       >
         <GeneralIcon
           :icon="isSimpleLinkRecordList ? 'chevronDown' : addIcon"
-          class="!text-md select-none text-nc-content-gray-subtle nc-action-icon nc-plus invisible group-hover:visible group-focus:visible"
+          class="!text-md select-none text-atm-content-gray-subtle atm-action-icon atm-plus invisible group-hover:visible group-focus:visible"
           :class="{
-            '!visible !text-nc-content-gray-subtle2': isCanvasInjected && active && !isSimpleLinkRecordList,
-            '!text-nc-content-gray-muted': isSimpleLinkRecordList,
+            '!visible !text-atm-content-gray-subtle2': isCanvasInjected && active && !isSimpleLinkRecordList,
+            '!text-atm-content-gray-muted': isSimpleLinkRecordList,
             '!visible': isCanvasInjected && active,
           }"
           @click.stop="listItemsDlg = true"
@@ -214,19 +214,19 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-.nc-action-icon {
+.atm-action-icon {
   @apply cursor-pointer;
 }
 
 .chips-wrapper:hover,
 .chips-wrapper.active {
-  .nc-action-icon {
+  .atm-action-icon {
     @apply inline-block;
   }
 }
 
 .chips-wrapper:hover {
-  .nc-action-icon {
+  .atm-action-icon {
     @apply visible;
   }
 }

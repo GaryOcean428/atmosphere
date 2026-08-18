@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type ColumnType, handleTZ } from 'nocodb-sdk'
+import { type ColumnType, handleTZ } from 'atmosphere-sdk'
 
 const props = defineProps<{
   column: ColumnType
@@ -9,7 +9,7 @@ const props = defineProps<{
 
 const emits = defineEmits(['update:modelVisible'])
 
-const STORAGE_KEY = 'nc-long-text-expanded-modal-size'
+const STORAGE_KEY = 'atm-long-text-expanded-modal-size'
 const isVisible = useVModel(props, 'modelVisible', emits)
 const inputWrapperRef = ref<HTMLElement | null>(null)
 const inputRef = ref<HTMLElement | null>(null)
@@ -60,7 +60,7 @@ const onMouseUp = (e: MouseEvent) => {
 }
 
 const dragStart = (e: MouseEvent) => {
-  const dom = document.querySelector('.nc-long-text-expanded .ant-modal-content') as HTMLElement
+  const dom = document.querySelector('.atm-long-text-expanded .ant-modal-content') as HTMLElement
   if (!dom) return
 
   mousePosition.value = {
@@ -76,7 +76,7 @@ const dragStart = (e: MouseEvent) => {
 watch(
   position,
   () => {
-    const dom = document.querySelector('.nc-long-text-expanded .ant-modal-content') as HTMLElement
+    const dom = document.querySelector('.atm-long-text-expanded .ant-modal-content') as HTMLElement
     if (!dom || !position.value) return
 
     dom.style.transform = 'none'
@@ -96,11 +96,11 @@ watch(isVisible, (open) => {
 onClickOutside(inputWrapperRef, (e) => {
   const targetEl = e?.target as HTMLElement
 
-  if (isDragging.value || targetEl?.className.includes('nc-long-text-toggle-expand') || targetEl.tagName === 'CANVAS') return
+  if (isDragging.value || targetEl?.className.includes('atm-long-text-toggle-expand') || targetEl.tagName === 'CANVAS') return
 
   if (
     targetEl?.closest(
-      '.bubble-menu, .tippy-content, .nc-textarea-rich-editor, .tippy-box, .mention, .nc-mention-list, .tippy-content',
+      '.bubble-menu, .tippy-content, .atm-textarea-rich-editor, .tippy-box, .mention, .atm-mention-list, .tippy-content',
     )
   ) {
     return
@@ -116,7 +116,7 @@ onClickOutside(inputWrapperRef, (e) => {
 const updateSize = () => {
   try {
     const size = localStorage.getItem(STORAGE_KEY)
-    const elem = document.querySelector('.nc-long-text-expanded-textarea') as HTMLElement
+    const elem = document.querySelector('.atm-long-text-expanded-textarea') as HTMLElement
     const parsedJSON = size ? JSON.parse(size) : null
 
     if (parsedJSON && elem) {
@@ -135,7 +135,7 @@ const updateSize = () => {
 const getResizeEl = () => {
   if (!inputWrapperRef.value) return null
 
-  return inputWrapperRef.value.querySelector('.nc-long-text-expanded-textarea') as HTMLElement
+  return inputWrapperRef.value.querySelector('.atm-long-text-expanded-textarea') as HTMLElement
 }
 
 useResizeObserver(inputWrapperRef, () => {
@@ -193,7 +193,7 @@ const urls = replaceUrlsWithLink(result)
     :closable="false"
     :footer="null"
     :class="{ active: isVisible }"
-    wrap-class-name="nc-long-text-expanded"
+    wrap-class-name="atm-long-text-expanded"
     :mask="true"
     :mask-closable="false"
     :mask-style="{ zIndex: 1051 }"
@@ -207,7 +207,7 @@ const urls = replaceUrlsWithLink(result)
     >
       <div
         v-if="column"
-        class="flex flex-row gap-x-1 items-center font-medium pl-3 pb-2.5 pt-3 border-b-1 border-nc-border-gray-light overflow-hidden cursor-move select-none"
+        class="flex flex-row gap-x-1 items-center font-medium pl-3 pb-2.5 pt-3 border-b-1 border-atm-border-gray-light overflow-hidden cursor-move select-none"
         @mousedown="dragStart"
       >
         <SmartsheetHeaderIcon :column="column" class="flex" />
@@ -218,9 +218,9 @@ const urls = replaceUrlsWithLink(result)
           </span>
         </div>
         <div class="flex-1" />
-        <NcButton class="mr-2" type="text" size="small" @click="isVisible = false">
+        <AtButton class="mr-2" type="text" size="small" @click="isVisible = false">
           <GeneralIcon icon="close" />
-        </NcButton>
+        </AtButton>
       </div>
       <div class="p-3 pb-0 h-full">
         <div
@@ -232,7 +232,7 @@ const urls = replaceUrlsWithLink(result)
             maxHeight: 'min(795px, 100vh - 170px)',
             width: 'min(1256px, 100vw - 124px)',
           }"
-          class="nc-long-text-expanded-textarea border-1 border-nc-border-gray-medium bg-nc-bg-gray-extralight !py-1 !px-3 !text-nc-content-gray-extreme !transition-none !cursor-text !min-h-[210px] !rounded-lg focus:border-nc-border-brand disabled:!bg-nc-bg-gray-extralight nc-longtext-scrollbar"
+          class="atm-long-text-expanded-textarea border-1 border-atm-border-gray-medium bg-atm-bg-gray-extralight !py-1 !px-3 !text-atm-content-gray-extreme !transition-none !cursor-text !min-h-[210px] !rounded-lg focus:border-atm-border-brand disabled:!bg-atm-bg-gray-extralight atm-longtext-scrollbar"
           @click="handleDompurifyLinkClick"
         ></div>
 
@@ -241,7 +241,7 @@ const urls = replaceUrlsWithLink(result)
           ref="inputRef"
           disabled
           :value="modelValue"
-          class="nc-long-text-expanded-textarea !py-1 !px-3 !text-nc-content-gray-extreme !transition-none !cursor-text !min-h-[210px] !rounded-lg focus:border-nc-border-brand disabled:!bg-nc-bg-gray-extralight nc-longtext-scrollbar"
+          class="atm-long-text-expanded-textarea !py-1 !px-3 !text-atm-content-gray-extreme !transition-none !cursor-text !min-h-[210px] !rounded-lg focus:border-atm-border-brand disabled:!bg-atm-bg-gray-extralight atm-longtext-scrollbar"
           :placeholder="$t('activity.enterText')"
           :style="{
             resize: 'both',
@@ -257,7 +257,7 @@ const urls = replaceUrlsWithLink(result)
 </template>
 
 <style lang="scss">
-.nc-long-text-expanded {
+.atm-long-text-expanded {
   .ant-modal {
     @apply !w-full h-full !top-0 !mx-auto !my-0;
 
@@ -270,14 +270,14 @@ const urls = replaceUrlsWithLink(result)
       max-width: min(1280px, 100vw - 100px);
       max-height: min(864px, 100vh - 100px);
 
-      .nc-longtext-scrollbar {
+      .atm-longtext-scrollbar {
         @apply scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent;
       }
     }
   }
 }
 
-.nc-long-text-expanded-textarea {
+.atm-long-text-expanded-textarea {
   min-width: -webkit-fill-available;
   max-width: min(1256px, 100vw - 126px);
   transition-property: shadow, colors, border;

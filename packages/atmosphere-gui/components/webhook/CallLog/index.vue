@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { HookLogType, HookType, PaginatedType } from 'nocodb-sdk'
+import type { HookLogType, HookType, PaginatedType } from 'atmosphere-sdk'
 
 interface Props {
   hook: HookType
@@ -95,7 +95,7 @@ onBeforeMount(async () => {
         <div class="min-w-80 border-r-1 h-full">
           <div
             v-if="isLoading"
-            class="p-3 h-full flex flex-col gap-3 children:(border-b-1 border-nc-border-medium) overflow-auto nc-scrollbar-thin"
+            class="p-3 h-full flex flex-col gap-3 children:(border-b-1 border-atm-border-medium) overflow-auto atm-scrollbar-thin"
           >
             <a-skeleton
               v-for="idx in 7"
@@ -119,7 +119,7 @@ onBeforeMount(async () => {
           />
         </div>
         <div class="flex-grow min-w-100">
-          <div v-if="isLoading" class="h-full p-3 overflow-auto nc-scrollbar-thin flex flex-col gap-6">
+          <div v-if="isLoading" class="h-full p-3 overflow-auto atm-scrollbar-thin flex flex-col gap-6">
             <a-skeleton
               active
               :paragraph="false"
@@ -172,12 +172,12 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped lang="scss">
-.nc-hook-log-collapse {
-  .nc-hook-pre-title {
+.atm-hook-log-collapse {
+  .atm-hook-pre-title {
     @apply font-bold mb-2;
   }
-  .nc-hook-pre {
-    @apply bg-nc-bg-gray-light;
+  .atm-hook-pre {
+    @apply bg-atm-bg-gray-light;
     padding: 10px;
   }
 }

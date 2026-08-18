@@ -1,4 +1,4 @@
-import type { RequestParams } from 'nocodb-sdk'
+import type { RequestParams } from 'atmosphere-sdk'
 
 const [setup, use] = useInjectionState(() => {
   const { api } = useApi()

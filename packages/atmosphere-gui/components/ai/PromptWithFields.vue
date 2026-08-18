@@ -4,7 +4,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Mention from '@tiptap/extension-mention'
 import { EditorContent, useEditor } from '@tiptap/vue-3'
 import tippy from 'tippy.js'
-import { type ColumnType, UITypes } from 'nocodb-sdk'
+import { type ColumnType, UITypes } from 'atmosphere-sdk'
 import { suggestion } from '~/helpers/tiptap'
 import { FieldMentionList, Paragraph } from '~/helpers/tiptap-markdown/extensions'
 
@@ -208,7 +208,7 @@ onMounted(async () => {
 const tooltipInstances: any[] = []
 
 function loadMentionFieldTagTooltip() {
-  document.querySelectorAll('.nc-ai-prompt-with-fields .prompt-field-tag').forEach((el) => {
+  document.querySelectorAll('.atm-ai-prompt-with-fields .prompt-field-tag').forEach((el) => {
     const tooltip = Object.values(el.attributes).find((attr) => attr.name === 'data-tooltip')
     const deletedTooltip = Object.values(el.attributes).find((attr) => attr.name === 'data-deleted-tooltip')
 
@@ -217,7 +217,7 @@ function loadMentionFieldTagTooltip() {
     // Build content as a styled element with text-only content so a user-controlled
     // field name can't inject HTML (XSS). Class is kept on the element to preserve styling.
     const content = document.createElement('div')
-    content.className = 'tooltip nc-ai-prompt-with-fields-tooltip'
+    content.className = 'tooltip atm-ai-prompt-with-fields-tooltip'
     content.textContent = deletedTooltip?.value ? deletedTooltip.value : tooltip.value
 
     // Show tooltip only on truncate
@@ -260,7 +260,7 @@ useEventListener(el, 'focusPromptWithFields', () => {
 </script>
 
 <template>
-  <div class="nc-ai-prompt-with-fields w-full">
+  <div class="atm-ai-prompt-with-fields w-full">
     <EditorContent
       ref="editorDom"
       :editor="editor"
@@ -270,23 +270,23 @@ useEventListener(el, 'focusPromptWithFields', () => {
       @keydown.esc="handleOnEscRichTextEditor"
     />
 
-    <NcTooltip
+    <AtTooltip
       hide-on-click
       :disabled="!showPlusIconTooltip || readOnly"
       title="Mention fields"
-      class="nc-prompt-with-field-suggestion-btn-wrapper flex"
+      class="atm-prompt-with-field-suggestion-btn-wrapper flex"
     >
-      <NcButton
+      <AtButton
         size="xs"
         type="text"
-        class="nc-prompt-with-field-suggestion-btn !px-1 flex-none"
+        class="atm-prompt-with-field-suggestion-btn !px-1 flex-none"
         :disabled="readOnly"
         @click.stop="newFieldSuggestionNode"
       >
         <slot name="triggerIcon">
           <GeneralIcon
             icon="ncPlusSquareSolid"
-            class="text-nc-content-brand flex-none"
+            class="text-atm-content-brand flex-none"
             :class="[
               `${suggestionIconClassName}`,
               {
@@ -295,25 +295,25 @@ useEventListener(el, 'focusPromptWithFields', () => {
             ]"
           />
         </slot>
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
   </div>
 </template>
 
 <style lang="scss">
-.nc-ai-prompt-with-fields {
+.atm-ai-prompt-with-fields {
   @apply relative;
 
-  .nc-prompt-with-field-suggestion-btn-wrapper {
+  .atm-prompt-with-field-suggestion-btn-wrapper {
     @apply absolute top-[2px] right-[1px];
   }
 
   .prompt-field-tag {
-    @apply bg-nc-bg-gray-light rounded-md px-1 align-middle;
+    @apply bg-atm-bg-gray-light rounded-md px-1 align-middle;
   }
 
   .ProseMirror {
-    @apply px-3 pb-3 pt-2 h-[120px] min-h-[120px] overflow-y-auto nc-scrollbar-thin outline-none border-1 border-nc-border-gray-medium bg-nc-bg-default text-nc-content-gray rounded-lg !rounded-b-none transition-shadow ease-linear -mx-[1px] -mt-[1px];
+    @apply px-3 pb-3 pt-2 h-[120px] min-h-[120px] overflow-y-auto atm-scrollbar-thin outline-none border-1 border-atm-border-gray-medium bg-atm-bg-default text-atm-content-gray rounded-lg !rounded-b-none transition-shadow ease-linear -mx-[1px] -mt-[1px];
     resize: vertical;
     min-width: 100%;
     max-height: min(800px, calc(100vh - 200px)) !important;
@@ -324,11 +324,11 @@ useEventListener(el, 'focusPromptWithFields', () => {
   }
 
   .ProseMirror-focused {
-    @apply !rounded-b-lg outline-none border-nc-fill-purple-medium shadow-selected-ai;
+    @apply !rounded-b-lg outline-none border-atm-fill-purple-medium shadow-selected-ai;
   }
 
   .tiptap p.is-editor-empty:first-child::before {
-    @apply text-nc-content-gray-muted;
+    @apply text-atm-content-gray-muted;
     content: attr(data-placeholder);
     white-space: pre-line; /* Preserve line breaks */
     float: left;
@@ -341,7 +341,7 @@ useEventListener(el, 'focusPromptWithFields', () => {
   }
 }
 
-.nc-ai-prompt-with-fields-tooltip {
-  @apply text-xs bg-nc-content-gray text-nc-content-inverted-primary px-2 py-1 rounded-lg;
+.atm-ai-prompt-with-fields-tooltip {
+  @apply text-xs bg-atm-content-gray text-atm-content-inverted-primary px-2 py-1 rounded-lg;
 }
 </style>

@@ -9,17 +9,17 @@ import Result from '../../util/Result';
 import type Source from '~/models/Source';
 import type { XKnex } from '~/db/CustomKnex';
 import type { Knex } from 'knex';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import SqlClientFactory from '~/db/sql-client/lib/SqlClientFactory';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
-import Noco from '~/Noco';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
+import Atmosphere from '~/Atmosphere';
 import Base from '~/models/Base';
 
 const evt = new Emit();
 
 const log = new Debug('KnexMigrator');
 
-const NC_MIGRATION = 'nc_migrations';
+const ATMOSPHERE_MIGRATION = 'atm_migrations';
 /**
  * Class to create an instance of KnexMigrator
  *
@@ -27,7 +27,7 @@ const NC_MIGRATION = 'nc_migrations';
  * @extends {SqlMigrator}
  */
 export default class KnexMigratorv2 {
-  public context: NcContext;
+  public context: AtContext;
 
   //extends SqlMigrator {
   private baseId: string;
@@ -37,13 +37,13 @@ export default class KnexMigratorv2 {
    * Creates an instance of KnexMigrator.
    * @memberof KnexMigrator
    */
-  constructor(context: NcContext, base: { id: string }) {
+  constructor(context: AtContext, base: { id: string }) {
     this.baseId = base.id;
     this.context = context;
   }
 
   protected get metaDb(): XKnex {
-    return Noco.ncMeta.knex;
+    return Atmosphere.ncMeta.knex;
   }
 
   private async getProject(): Promise<Base> {
@@ -84,7 +84,7 @@ export default class KnexMigratorv2 {
   _getWorkingEnvDir(args) {
     return path.join(
       this.toolDir,
-      'nc',
+      'atm',
       this.baseId,
       args.dbAlias,
       'migrations',
@@ -122,7 +122,7 @@ export default class KnexMigratorv2 {
   async _initDbOnFs(source: Source) {
     // this.emit(
     //   'Creating folder: ',
-    //   path.join(this.toolDir, 'nc', this.baseId, args.dbAlias, 'migrations')
+    //   path.join(this.toolDir, 'atm', this.baseId, args.dbAlias, 'migrations')
     // );
     // try {
     //   // @ts-ignore
@@ -130,7 +130,7 @@ export default class KnexMigratorv2 {
     //   await promisify(mkdirp)(
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       args.dbAlias,
     //       'migrations'
@@ -140,7 +140,7 @@ export default class KnexMigratorv2 {
     //   const dirStat = await promisify(fs.stat)(
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       args.dbAlias,
     //       'migrations'
@@ -151,7 +151,7 @@ export default class KnexMigratorv2 {
     //   await promisify(mkdirp)(
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       args.dbAlias,
     //       this.base.meta.metaFolder || 'meta'
@@ -162,7 +162,7 @@ export default class KnexMigratorv2 {
     //     'Creating folder: ',
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       args.dbAlias,
     //       this.base.meta.seedsFolder
@@ -173,7 +173,7 @@ export default class KnexMigratorv2 {
     //   await promisify(mkdirp)(
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       args.dbAlias,
     //       this.base.meta.seedsFolder
@@ -183,7 +183,7 @@ export default class KnexMigratorv2 {
     //     'Creating folder: ',
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       args.dbAlias,
     //       this.base.meta.queriesFolder
@@ -194,7 +194,7 @@ export default class KnexMigratorv2 {
     //   await promisify(mkdirp)(
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       args.dbAlias,
     //       this.base.meta.queriesFolder
@@ -204,7 +204,7 @@ export default class KnexMigratorv2 {
     //     'Creating folder: ',
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       this.base.meta.apisFolder
     //     )
@@ -214,7 +214,7 @@ export default class KnexMigratorv2 {
     //   await promisify(mkdirp)(
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       this.base.meta.apisFolder
     //     )
@@ -224,7 +224,7 @@ export default class KnexMigratorv2 {
     //   await promisify(mkdirp)(
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       args.dbAlias,
     //       this.base.meta.metaFolder || 'meta'
@@ -235,7 +235,7 @@ export default class KnexMigratorv2 {
     //   const metaStat = await promisify(fs.stat)(
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       args.dbAlias,
     //       this.base.meta.metaFolder || 'meta'
@@ -246,7 +246,7 @@ export default class KnexMigratorv2 {
     //     'Error creating folders (migrations, apis, seeds, queries):',
     //     path.join(
     //       this.toolDir,
-    //       'nc',
+    //       'atm',
     //       this.baseId,
     //       args.dbAlias,
     //       'migrations'
@@ -258,17 +258,17 @@ export default class KnexMigratorv2 {
   // async _cleanFs(args) {
   //   this.emit(
   //     'Removing folder: ',
-  //     path.join(this.toolDir, 'nc', this.baseId, args.dbAlias)
+  //     path.join(this.toolDir, 'atm', this.baseId, args.dbAlias)
   //   );
   //
   //   try {
   //     await promisify(rmdir)(
-  //       path.join(this.toolDir, 'nc', this.baseId, args.dbAlias)
+  //       path.join(this.toolDir, 'atm', this.baseId, args.dbAlias)
   //     );
   //   } catch (e) {
   //     log.debug(
   //       'Error removing folder:',
-  //       path.join(this.toolDir, 'nc', this.baseId, args.dbAlias),
+  //       path.join(this.toolDir, 'atm', this.baseId, args.dbAlias),
   //       e
   //     );
   //   }
@@ -312,8 +312,8 @@ export default class KnexMigratorv2 {
   //     if (exists) {
   //       await this._readProjectJson(projJsonFilePath);
   //       this.emit('Migrator for base initalised successfully');
-  //     } else if (NcConfigFactory.hasDbUrl()) {
-  //       this.base = NcConfigFactory.make();
+  //     } else if (AtConfigFactory.hasDbUrl()) {
+  //       this.base = AtConfigFactory.make();
   //     } else {
   //       args.type = args.type || 'sqlite';
   //
@@ -432,9 +432,9 @@ export default class KnexMigratorv2 {
 
     // this.emit(`Creating Table if not exists in ${connectionConfig.meta.tn}`);
 
-    // if (!('NC_MIGRATIONS_DISABLED' in process.env)) {
+    // if (!('ATMOSPHERE_MIGRATIONS_DISABLED' in process.env)) {
     //   await sqlClient.createTableIfNotExists({
-    //     tn: 'nc_evolutions',
+    //     tn: 'atm_evolutions',
     //   });
     // }
     // if (connectionConfig.client === "pg") {
@@ -452,7 +452,7 @@ export default class KnexMigratorv2 {
   }
 
   protected async getSqlClient(source: Source) {
-    return NcConnectionMgrv2.getSqlClient(source);
+    return AtConnectionMgrv2.getSqlClient(source);
   }
 
   async _cleanDbWithSql(connectionConfig) {
@@ -561,7 +561,7 @@ export default class KnexMigratorv2 {
     result.data.object = {};
     result.data.object.list = [];
 
-    if (process.env.NC_MIGRATIONS_DISABLED) {
+    if (process.env.ATMOSPHERE_MIGRATIONS_DISABLED) {
       return result;
     }
     try {
@@ -586,7 +586,7 @@ export default class KnexMigratorv2 {
       let filesDown;
 
       if (this.metaDb) {
-        filesDown = files = await this.metaDb(NC_MIGRATION)
+        filesDown = files = await this.metaDb(ATMOSPHERE_MIGRATION)
           .where({
             base_id: this.baseId,
             db_alias: source.id,
@@ -606,7 +606,7 @@ export default class KnexMigratorv2 {
 
       let migrations = await sqlClient.selectAll(
         // todo: replace
-        sqlClient.getTnPath('nc_evolutions'),
+        sqlClient.getTnPath('atm_evolutions'),
       );
 
       if (this.suffix) {
@@ -781,7 +781,7 @@ export default class KnexMigratorv2 {
                 vm.emit(`'${query}' : Executed SQL query`);
               }
               for (const data of metaTableInserts) {
-                await trx(sqlClient.getTnPath('nc_evolutions')).insert(data);
+                await trx(sqlClient.getTnPath('atm_evolutions')).insert(data);
                 vm.emit(
                   `'${data.title}' : Updating bookkeeping of SQL UP migration - done`,
                 );
@@ -831,7 +831,7 @@ export default class KnexMigratorv2 {
     sqlContentMigrate: any;
     sqlClient?: any;
   }) {
-    if (process.env.NC_MIGRATIONS_DISABLED) {
+    if (process.env.ATMOSPHERE_MIGRATIONS_DISABLED) {
       return;
     }
 
@@ -854,7 +854,7 @@ export default class KnexMigratorv2 {
     try {
       let files;
       if (this.metaDb) {
-        files = await this.metaDb(NC_MIGRATION)
+        files = await this.metaDb(ATMOSPHERE_MIGRATION)
           .where({
             base_id: this.baseId,
             db_alias: source.id,
@@ -871,7 +871,7 @@ export default class KnexMigratorv2 {
       // );
       const sqlClient = await this.getSqlClient(source); // SqlClientFactory.create(connection);
       const migrations = await sqlClient.selectAll(
-        sqlClient.getTnPath('nc_evolutions'),
+        sqlClient.getTnPath('atm_evolutions'),
       );
 
       if (migrations.length) {
@@ -951,7 +951,7 @@ export default class KnexMigratorv2 {
               vm.emit(
                 `'${condition.titleDown}' : Updating bookkeeping of SQL DOWN migration - done`,
               );
-              await trx(sqlClient.getTnPath('nc_evolutions'))
+              await trx(sqlClient.getTnPath('atm_evolutions'))
                 .where(condition)
                 .del();
             }
@@ -1018,8 +1018,8 @@ export default class KnexMigratorv2 {
       //   await this._readProjectJson(path.join(args.folder, "config.xc.json"));
       // }
 
-      // if (NcConfigFactory.hasDbUrl()) {
-      //   this.base = NcConfigFactory.make();
+      // if (AtConfigFactory.hasDbUrl()) {
+      //   this.base = AtConfigFactory.make();
       // }
 
       /* if no env - init all envs */
@@ -1055,8 +1055,8 @@ export default class KnexMigratorv2 {
   //     //   await this._readProjectJson(path.join(args.folder, "config.xc.json"));
   //     // }
   //
-  //     // if (NcConfigFactory.hasDbUrl()) {
-  //     //   this.base = NcConfigFactory.make();
+  //     // if (AtConfigFactory.hasDbUrl()) {
+  //     //   this.base = AtConfigFactory.make();
   //     // }
   //     if (!args.env) {
   //       await this._cleanDbAliasOnFilesystem(args);
@@ -1090,8 +1090,8 @@ export default class KnexMigratorv2 {
       // if (!this.base) {
       //   await this._readProjectJson(path.join(args.folder, "config.xc.json"));
       // }
-      // if (NcConfigFactory.hasDbUrl()) {
-      //   this.base = NcConfigFactory.make();
+      // if (AtConfigFactory.hasDbUrl()) {
+      //   this.base = AtConfigFactory.make();
       // }
 
       // create filenames
@@ -1099,7 +1099,7 @@ export default class KnexMigratorv2 {
       const upFileName = fileHelp.getFilenameForUp(prefix);
       const downFileName = fileHelp.getFilenameForDown(prefix);
       // if (this.metaDb) {
-      await this.metaDb(NC_MIGRATION).insert({
+      await this.metaDb(ATMOSPHERE_MIGRATION).insert({
         base_id: source.base_id,
         db_alias: source.id,
         up: '',
@@ -1156,8 +1156,8 @@ export default class KnexMigratorv2 {
       //   await this._readProjectJson(path.join(args.folder, "config.xc.json"));
       // }
       //
-      // if (NcConfigFactory.hasDbUrl()) {
-      //   this.base = NcConfigFactory.make();
+      // if (AtConfigFactory.hasDbUrl()) {
+      //   this.base = AtConfigFactory.make();
       // }
       /**
        *
@@ -1206,8 +1206,8 @@ export default class KnexMigratorv2 {
     // if (!this.base) {
     //   await this._readProjectJson(path.join(args.folder, "config.xc.json"));
     // }
-    // if (NcConfigFactory.hasDbUrl()) {
-    //   this.base = NcConfigFactory.make();
+    // if (AtConfigFactory.hasDbUrl()) {
+    //   this.base = AtConfigFactory.make();
     // }
     // console.log(this.base);
 
@@ -1220,7 +1220,7 @@ export default class KnexMigratorv2 {
       onlyList: args.onlyList,
       // upFilesPattern: path.join(
       //   this.toolDir,
-      //   'nc',
+      //   'atm',
       //   this.baseId,
       //   args.dbAlias,
       //   'migrations',
@@ -1228,7 +1228,7 @@ export default class KnexMigratorv2 {
       // ),
       // downFilesPattern: path.join(
       //   this.toolDir,
-      //   'nc',
+      //   'atm',
       //   this.baseId,
       //   args.dbAlias,
       //   'migrations',
@@ -1273,8 +1273,8 @@ export default class KnexMigratorv2 {
     //   await this._readProjectJson(path.join(args.folder, "config.xc.json"));
     // }
     //
-    // if (NcConfigFactory.hasDbUrl()) {
-    //   this.base = NcConfigFactory.make();
+    // if (AtConfigFactory.hasDbUrl()) {
+    //   this.base = AtConfigFactory.make();
     // }
 
     await this._migrationsDown({
@@ -1286,7 +1286,7 @@ export default class KnexMigratorv2 {
       file: args.file,
       // upFilesPattern: path.join(
       //   this.toolDir,
-      //   'nc',
+      //   'atm',
       //   this.baseId,
       //   args.dbAlias,
       //   'migrations',
@@ -1294,13 +1294,13 @@ export default class KnexMigratorv2 {
       // ),
       // downFilesPattern: path.join(
       //   this.toolDir,
-      //   'nc',
+      //   'atm',
       //   this.baseId,
       //   args.dbAlias,
       //   'migrations',
       //   '*.down.sql'
       // ),
-      title: `nc_evolutions`,
+      title: `atm_evolutions`,
       sqlContentMigrate: args.sqlContentMigrate,
     });
   }
@@ -1339,8 +1339,8 @@ export default class KnexMigratorv2 {
       //   await this._readProjectJson(path.join(args.folder, "config.xc.json"));
       // }
       //
-      // if (NcConfigFactory.hasDbUrl()) {
-      //   this.base = NcConfigFactory.make();
+      // if (AtConfigFactory.hasDbUrl()) {
+      //   this.base = AtConfigFactory.make();
       // }
 
       let upStatement = '';
@@ -1357,7 +1357,7 @@ export default class KnexMigratorv2 {
       log.debug('migrationsWrite: created downStatement', downStatement);
       if (this.metaDb) {
         if (
-          await this.metaDb(NC_MIGRATION)
+          await this.metaDb(ATMOSPHERE_MIGRATION)
             .where({
               base_id: source.base_id,
               db_alias: source.id,
@@ -1365,7 +1365,7 @@ export default class KnexMigratorv2 {
             })
             .first()
         ) {
-          await this.metaDb(NC_MIGRATION)
+          await this.metaDb(ATMOSPHERE_MIGRATION)
             .update({
               up: upStatement,
               down: downStatement,
@@ -1376,7 +1376,7 @@ export default class KnexMigratorv2 {
               title: args.up,
             });
         } else {
-          await this.metaDb(NC_MIGRATION).insert({
+          await this.metaDb(ATMOSPHERE_MIGRATION).insert({
             base_id: this.baseId,
             db_alias: source.id,
             up: upStatement,
@@ -1452,11 +1452,11 @@ export default class KnexMigratorv2 {
       //   await this._readProjectJson(path.join(args.folder, "config.xc.json"));
       // }
       //
-      // if (NcConfigFactory.hasDbUrl()) {
-      //   this.base = NcConfigFactory.make();
+      // if (AtConfigFactory.hasDbUrl()) {
+      //   this.base = AtConfigFactory.make();
       // }
       if (this.metaDb) {
-        const migration = await this.metaDb(NC_MIGRATION)
+        const migration = await this.metaDb(ATMOSPHERE_MIGRATION)
           .where({
             db_alias: args.dbAlias,
             base_id: this.baseId,
@@ -1469,7 +1469,7 @@ export default class KnexMigratorv2 {
       } else {
         const upFilePath = path.join(
           this.toolDir,
-          'nc',
+          'atm',
           this.baseId,
           args.dbAlias,
           'migrations',
@@ -1477,7 +1477,7 @@ export default class KnexMigratorv2 {
         );
         const downFilePath = path.join(
           this.toolDir,
-          'nc',
+          'atm',
           this.baseId,
           args.dbAlias,
           'migrations',
@@ -1553,8 +1553,8 @@ export default class KnexMigratorv2 {
   //   //   }
   //   // }
   //   //
-  //   // if (NcConfigFactory.hasDbUrl()) {
-  //   //   this.base = NcConfigFactory.make();
+  //   // if (AtConfigFactory.hasDbUrl()) {
+  //   //   this.base = AtConfigFactory.make();
   //   // }
   //
   // }
@@ -1804,7 +1804,7 @@ export default class KnexMigratorv2 {
   //   if (config && config.meta && config.meta.tn) {
   //     return config.meta.tn;
   //   }
-  //   return 'nc_evolutions';
+  //   return 'atm_evolutions';
   // }
 
   private get suffix(): string {

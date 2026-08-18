@@ -1,5 +1,5 @@
 {
-  "id": "nc-data-exporter",
+  "id": "atm-data-exporter",
   "title": "Data Exporter",
   "subTitle": "Asynchronous CSV downloads with real-time notifications.",
   "description": "data-exporter/description.md",
@@ -7,9 +7,9 @@
   "version": "0.1",
   "iconUrl": "data-exporter/assets/icon.svg",
   "publisher": {
-    "name": "NocoDB",
-    "email": "contact@nocodb.com",
-    "url": "https://www.nocodb.com",
+    "name": "Atmosphere",
+    "email": "contact@atmosphere.dev",
+    "url": "https://www.atmosphere.dev",
     "icon": {
       "src": "data-exporter/assets/publisher-icon.svg",
       "width": 24,
@@ -19,7 +19,7 @@
   "links": [
     {
       "title": "Documentation",
-      "href": "https://nocodb.com/docs/product-docs/extensions/data-exporter"
+      "href": "https://atmosphere.dev/docs/product-docs/extensions/data-exporter"
     }
   ],
   "config": {

@@ -1,9 +1,9 @@
 import { Logger } from '@nestjs/common';
-import type { LookupType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { LookupType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import type Column from '~/models/Column';
 import type { LinksColumn } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { invalidateSingleQueryCacheForModels } from '~/helpers/metaCacheInvalidator';
 
@@ -31,7 +31,7 @@ const logger = new Logger('singleQueryCacheInvalidator');
  * referrers, which is sufficient when no physical name changed.
  *
  * Single-query caching is EE-only — `View.clearSingleQueryCache` no-ops in CE.
- * The public functions short-circuit on `!Noco.isEE()` so the discovery
+ * The public functions short-circuit on `!Atmosphere.isEE()` so the discovery
  * metaList2 queries don't run in CE either.
  *
  * Scope: only relation / Lookup / Rollup columns embed another model's physical
@@ -58,11 +58,11 @@ const logger = new Logger('singleQueryCacheInvalidator');
  * Repeat until the set stops growing, then map the columns to their models.
  */
 export async function clearSingleQueryCacheForReferencingModels(
-  context: NcContext,
+  context: AtContext,
   modelId: string,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ) {
-  if (!Noco.isEE()) return;
+  if (!Atmosphere.isEE()) return;
 
   // Seed: relation columns whose *related* (target) model is the renamed table.
   // The relation column (`fk_column_id`) lives on the referencing model, so its
@@ -124,11 +124,11 @@ export async function clearSingleQueryCacheForReferencingModels(
  * The column's own model cache is NOT cleared here; the caller clears it.
  */
 export async function clearSingleQueryCacheForRenamedColumnReferences(
-  context: NcContext,
+  context: AtContext,
   oldCol: Column,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ) {
-  if (!Noco.isEE()) return;
+  if (!Atmosphere.isEE()) return;
 
   // Far side of relations whose physical FK column is oldCol — their JOIN ON
   // clause embeds the column name. (FK-rename transitive propagation is out of
@@ -193,11 +193,11 @@ export async function clearSingleQueryCacheForRenamedColumnReferences(
  * separately.
  */
 export async function clearSingleQueryCacheForColumnReferences(
-  context: NcContext,
+  context: AtContext,
   oldCol: Column,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ) {
-  if (!Noco.isEE()) return;
+  if (!Atmosphere.isEE()) return;
 
   // Far side of relations whose physical FK column is oldCol — their JOIN
   // embeds the column name.
@@ -251,9 +251,9 @@ export async function clearSingleQueryCacheForColumnReferences(
  * Links that surface the renamed display value.
  */
 async function loadLinkColIdsTargetingModel(
-  context: NcContext,
+  context: AtContext,
   modelId: string,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<string[]> {
   const relations = await ncMeta.metaList2(
     context.workspace_id,
@@ -276,9 +276,9 @@ async function loadLinkColIdsTargetingModel(
  * only the direct far-side model is reached.)
  */
 async function loadFarSideModelIdsForFkColumn(
-  context: NcContext,
+  context: AtContext,
   column: Column,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<Set<string>> {
   const relations = await ncMeta.metaList2(
     context.workspace_id,
@@ -315,9 +315,9 @@ async function loadFarSideModelIdsForFkColumn(
  * chains are handled by `expandEmbeddingColumns` instead.
  */
 async function loadDependentRelationColIds(
-  context: NcContext,
+  context: AtContext,
   columnId: string,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<Set<string>> {
   const relationColIds = new Set<string>();
 
@@ -352,8 +352,8 @@ async function loadDependentRelationColIds(
  * `ncMeta` may be a single Knex transaction.
  */
 async function loadBaseLookupsAndRollups(
-  context: NcContext,
-  ncMeta = Noco.ncMeta,
+  context: AtContext,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<{ lookups: any[]; rollups: any[] }> {
   const lookups = await ncMeta.metaList2(
     context.workspace_id,
@@ -384,12 +384,12 @@ async function loadBaseLookupsAndRollups(
  * Best-effort: a failure here must never block the originating schema change.
  */
 async function clearCrossBaseReferringModels(
-  context: NcContext,
+  context: AtContext,
   changedModelId: string,
   seedColumnIds: Set<string>,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<void> {
-  if (!Noco.isEE()) return;
+  if (!Atmosphere.isEE()) return;
 
   let inbound: Array<Record<string, any>>;
   try {
@@ -422,7 +422,7 @@ async function clearCrossBaseReferringModels(
     // and 500 a rename that already succeeded. Log and continue to the next base
     // (a missed invalidation degrades to stale cache, not a failed rename).
     try {
-      const refCtx: NcContext = { ...context, base_id: refBaseId };
+      const refCtx: AtContext = { ...context, base_id: refBaseId };
       // Seed: the cross-base link columns (their SQL joins the changed model)
       // plus the changed column ids (so a Lookup reading one directly matches),
       // then expand the lookup/rollup closure within the referring base.
@@ -504,9 +504,9 @@ function expandEmbeddingColumns(
  * Returns an empty set for empty input (skips the metaList2 query).
  */
 async function resolveModelIdsFromColumnIds(
-  context: NcContext,
+  context: AtContext,
   columnIds: string[],
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ): Promise<Set<string>> {
   const modelIds = new Set<string>();
 

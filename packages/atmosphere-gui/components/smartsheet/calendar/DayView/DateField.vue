@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import dayjs from 'dayjs'
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 import { UseVirtualList } from '@vueuse/components'
 
 const emit = defineEmits(['expandRecord', 'newRecord', 'recordContextMenu'])
@@ -231,8 +231,8 @@ const newRecord = () => {
   <div
     v-if="recordsAcrossAllRange.length"
     ref="container"
-    class="w-full cursor-pointer relative overflow-y-auto nc-scrollbar-md"
-    data-testid="nc-calendar-day-view"
+    class="w-full cursor-pointer relative overflow-y-auto atm-scrollbar-md"
+    data-testid="atm-calendar-day-view"
     @dblclick="newRecord"
     @drop="dropEvent"
   >
@@ -242,7 +242,7 @@ const newRecord = () => {
           :key="record.rowMeta.id"
           class="mt-2"
           style="line-height: 18px"
-          data-testid="nc-calendar-day-record-card"
+          data-testid="atm-calendar-day-record-card"
           @mouseleave="hoverRecord = null"
           @click.prevent="emit('expandRecord', record)"
           @contextmenu="emit('recordContextMenu', $event, record)"
@@ -282,7 +282,7 @@ const newRecord = () => {
   <div
     v-else
     ref="container"
-    class="w-full h-full cursor-pointer flex text-md font-bold text-nc-content-gray-muted items-center justify-center"
+    class="w-full h-full cursor-pointer flex text-md font-bold text-atm-content-gray-muted items-center justify-center"
     @drop="dropEvent"
     @dblclick="newRecord"
   >

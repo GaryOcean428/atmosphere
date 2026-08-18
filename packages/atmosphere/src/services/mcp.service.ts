@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { nanoid } from 'nanoid';
-import type { MCPTokenType } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
-import { NcError } from '~/helpers/catchError';
+import type { MCPTokenType } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
+import { AtError } from '~/helpers/catchError';
 import { Base, MCPToken, Workspace } from '~/models';
 import { processConcurrently } from '~/utils/dataUtils';
 import { RootScopes } from '~/utils/globals';
@@ -11,15 +11,15 @@ import { RootScopes } from '~/utils/globals';
 export class McpTokenService {
   protected logger = new Logger(McpTokenService.name);
 
-  async list(context: NcContext, req: NcRequest) {
+  async list(context: AtContext, req: AtRequest) {
     const userId = req.user.id;
     return await MCPToken.list(context, userId);
   }
 
   async create(
-    context: NcContext,
+    context: AtContext,
     payload: Partial<MCPTokenType>,
-    req: NcRequest,
+    req: AtRequest,
   ) {
     // Set required fields
     payload.fk_user_id = req.user.id;
@@ -38,18 +38,18 @@ export class McpTokenService {
   }
 
   async regenerateToken(
-    context: NcContext,
+    context: AtContext,
     tokenId: string,
     payload: Pick<MCPTokenType, 'token'>,
-    req: NcRequest,
+    req: AtRequest,
   ) {
     const token = await MCPToken.get(context, tokenId);
     if (!token) {
-      NcError.get(context).notFound('MCP token not found');
+      AtError.get(context).notFound('MCP token not found');
     }
 
     if (token.fk_user_id !== req.user.id) {
-      NcError.get(context).forbidden('Not authorized to modify this token');
+      AtError.get(context).forbidden('Not authorized to modify this token');
     }
 
     payload.token = nanoid(32);
@@ -63,33 +63,33 @@ export class McpTokenService {
     };
   }
 
-  async delete(context: NcContext, tokenId: string, req: NcRequest) {
+  async delete(context: AtContext, tokenId: string, req: AtRequest) {
     const token = await MCPToken.get(context, tokenId);
 
     if (!token) {
-      NcError.get(context).notFound('MCP token not found');
+      AtError.get(context).notFound('MCP token not found');
     }
 
     if (token.fk_user_id !== req.user.id) {
-      NcError.get(context).forbidden('Not authorized to delete this token');
+      AtError.get(context).forbidden('Not authorized to delete this token');
     }
 
     const success = await MCPToken.delete(context, tokenId);
     if (!success) {
-      NcError.internalServerError('Failed to delete MCP token');
+      AtError.internalServerError('Failed to delete MCP token');
     }
 
     return true;
   }
 
-  async get(context: NcContext, tokenId: string, req: NcRequest) {
+  async get(context: AtContext, tokenId: string, req: AtRequest) {
     const token = await MCPToken.get(context, tokenId);
     if (!token) {
-      NcError.get(context).notFound('MCP token not found');
+      AtError.get(context).notFound('MCP token not found');
     }
 
     if (token.fk_user_id !== req.user.id) {
-      NcError.get(context).forbidden('Not authorized to access this token');
+      AtError.get(context).forbidden('Not authorized to access this token');
     }
 
     return {
@@ -99,7 +99,7 @@ export class McpTokenService {
     };
   }
 
-  async listByUserId(context: NcContext, req: NcRequest) {
+  async listByUserId(context: AtContext, req: AtRequest) {
     const userId = req.user.id;
     const tokens = await MCPToken.listByUser(context, userId);
 

@@ -1,6 +1,6 @@
 import { ILexingError, IRecognitionException } from 'chevrotain';
-import { NcSDKErrorV2 } from '../errorUtils';
-import { NcErrorType } from '../globals';
+import { AtSDKErrorV2 } from '../errorUtils';
+import { AtErrorType } from '../globals';
 import {
   parseLexingError,
   parseParsingError,
@@ -11,7 +11,7 @@ export interface InvalidFilterErrorInfo {
   message?: string;
 }
 
-export class InvalidFilterError extends NcSDKErrorV2 {
+export class InvalidFilterError extends AtSDKErrorV2 {
   constructor(info: InvalidFilterErrorInfo) {
     let message = info.message ?? 'Invalid filter';
     if (info.lexingError && info.lexingError.length > 0) {
@@ -27,7 +27,7 @@ export class InvalidFilterError extends NcSDKErrorV2 {
     }
     super({
       message,
-      error: NcErrorType.ERR_INVALID_FILTER,
+      error: AtErrorType.ERR_INVALID_FILTER,
       getStatus: () => 422,
     });
     this.innerInfo = info;

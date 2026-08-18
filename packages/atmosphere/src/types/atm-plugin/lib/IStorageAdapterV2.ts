@@ -3,7 +3,7 @@ import type { Readable } from 'stream';
 import type IStorageAdapter from './IStorageAdapter';
 
 /*
-  #ref: https://github.com/nocodb/nocodb/pull/5608
+  #ref: https://github.com/GaryOcean428/atmosphere/pull/5608
     fileCreateByStream: write file from a readable stream to the storage
     fileReadByStream: read file from the storage to a readable stream
     getDirectoryList: get files available in a directory

@@ -12,8 +12,8 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import type { ColumnType, FilterType } from 'nocodb-sdk'
-import { validateRowFilters } from 'nocodb-sdk'
+import type { ColumnType, FilterType } from 'atmosphere-sdk'
+import { validateRowFilters } from 'atmosphere-sdk'
 import { dataEventSubscriptionKey, flattenFiltersForEval } from '~/utils/realtimeUtils'
 import { interfaceDataEventSuffix } from '~/lib/interfaceData'
 

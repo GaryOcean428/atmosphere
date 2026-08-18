@@ -6,7 +6,7 @@ import {
   type ViewType,
   isAIPromptCol,
   isBtLikeV2Junction,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { renderSingleLineText, renderSpinner, renderTag, roundedRect } from '../utils/canvas'
 import type { ActionManager } from '../loaders/ActionManager'
 import type { ImageWindowLoader } from '../loaders/ImageLoader'

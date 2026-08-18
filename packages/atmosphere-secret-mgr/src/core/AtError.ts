@@ -1,1 +1,1 @@
-export class NcError extends Error {}
+export class AtError extends Error {}

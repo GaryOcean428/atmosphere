@@ -50,7 +50,7 @@ const isTooltipDisabled = computed(() => {
 </script>
 
 <template>
-  <NcTooltip
+  <AtTooltip
     class="w-full flex justify-center relative"
     placement="right"
     :arrow="false"
@@ -59,55 +59,55 @@ const isTooltipDisabled = computed(() => {
     <template #title>{{ tooltipText }}</template>
 
     <div
-      class="nc-rail-item"
+      class="atm-rail-item"
       :class="{ active, disabled, 'is-dropdown': isDropdown, 'plain-active': plainActive }"
       :data-panel="panelKey"
       @click="!disabled && emits('click')"
     >
       <!-- Active indicator bar -->
-      <span v-if="!plainActive" class="nc-rail-item-indicator" />
+      <span v-if="!plainActive" class="atm-rail-item-indicator" />
 
       <slot v-if="$slots.default" />
 
       <template v-else>
         <slot name="icon">
-          <GeneralIcon v-if="currentIcon" :icon="(currentIcon as any)" class="nc-rail-item-icon" />
+          <GeneralIcon v-if="currentIcon" :icon="(currentIcon as any)" class="atm-rail-item-icon" />
         </slot>
       </template>
 
-      <span v-if="label || $slots.label" class="nc-rail-item-label">
+      <span v-if="label || $slots.label" class="atm-rail-item-label">
         <slot name="label">{{ label }}</slot>
       </span>
     </div>
-  </NcTooltip>
+  </AtTooltip>
 </template>
 
 <style lang="scss" scoped>
-.nc-rail-item {
+.atm-rail-item {
   @apply flex flex-col items-center justify-center cursor-pointer transition-all duration-150 rounded-lg;
   width: 36px;
   height: 36px;
 
   &:not(.active) {
-    @apply text-nc-content-gray-muted;
+    @apply text-atm-content-gray-muted;
   }
 
-  .nc-rail-item-indicator {
+  .atm-rail-item-indicator {
     @apply absolute left-0 top-1/2 transform -translate-y-1/2 w-[3px] h-[28px] opacity-0 pointer-events-none rounded-r-sm;
-    @apply bg-nc-content-brand;
+    @apply bg-atm-content-brand;
     transition: opacity 0.2s;
   }
 
-  .nc-rail-item-icon {
+  .atm-rail-item-icon {
     @apply h-4 w-4 flex items-center justify-center;
   }
 
-  .nc-rail-item-label {
+  .atm-rail-item-label {
     @apply select-none text-captionXsBold leading-tight tracking-tight hidden;
   }
 
   &:hover:not(.active):not(.disabled) {
-    @apply text-nc-content-subtle2;
+    @apply text-atm-content-subtle2;
     background: rgba(0, 0, 0, 0.05);
 
     :root[theme='dark'] & {
@@ -117,14 +117,14 @@ const isTooltipDisabled = computed(() => {
 
   // Normal active state: brand color text + indicator
   &.active:not(.is-dropdown) {
-    @apply text-nc-content-brand;
+    @apply text-atm-content-brand;
     background: rgba(0, 0, 0, 0.08);
 
     :root[theme='dark'] & {
       background: rgba(255, 255, 255, 0.08);
     }
 
-    .nc-rail-item-indicator {
+    .atm-rail-item-indicator {
       opacity: 1;
     }
   }
@@ -136,7 +136,7 @@ const isTooltipDisabled = computed(() => {
 
   // Dropdown active state: hover bg only, no indicator or text color change
   &.is-dropdown.active {
-    @apply text-nc-content-gray-muted;
+    @apply text-atm-content-gray-muted;
     background: rgba(0, 0, 0, 0.05);
 
     :root[theme='dark'] & {
@@ -154,11 +154,11 @@ const isTooltipDisabled = computed(() => {
     width: 53px;
     height: auto;
 
-    .nc-rail-item-label {
+    .atm-rail-item-label {
       display: block;
     }
 
-    .nc-rail-item-indicator {
+    .atm-rail-item-indicator {
       @apply h-[36px];
     }
   }
@@ -166,17 +166,17 @@ const isTooltipDisabled = computed(() => {
 </style>
 
 <style lang="scss">
-.nc-rail-item:not(.active) .nc-rail-item-label,
-.nc-rail-item:not(.active) .nc-rail-item-icon {
+.atm-rail-item:not(.active) .atm-rail-item-label,
+.atm-rail-item:not(.active) .atm-rail-item-icon {
   color: rgba(0, 0, 0, 0.7);
 }
 
-[theme='dark'] .nc-rail-item:not(.active) .nc-rail-item-label,
-[theme='dark'] .nc-rail-item:not(.active) .nc-rail-item-icon {
+[theme='dark'] .atm-rail-item:not(.active) .atm-rail-item-label,
+[theme='dark'] .atm-rail-item:not(.active) .atm-rail-item-icon {
   color: rgba(255, 255, 255, 0.95);
 }
 
-.rtl .nc-rail-item .nc-rail-item-indicator {
+.rtl .atm-rail-item .atm-rail-item-indicator {
   left: auto;
   right: 0;
   border-radius: 2px 0 0 2px;

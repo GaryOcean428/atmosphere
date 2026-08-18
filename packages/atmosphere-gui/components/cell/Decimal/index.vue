@@ -6,7 +6,7 @@ import {
   getSeparatorChars,
   resolveColumnSeparator,
   roundUpToPrecision,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 interface Props {
   // when we set a number, then it is number type
@@ -129,7 +129,7 @@ const focus: VNodeRef = (el) =>
     v-if="!readOnly && editEnabled"
     :ref="focus"
     v-model="vModel"
-    class="nc-cell-field outline-none py-1 border-none rounded-md w-full h-full"
+    class="atm-cell-field outline-none py-1 border-none rounded-md w-full h-full"
     type="number"
     :step="precision"
     :placeholder="placeholder"
@@ -145,8 +145,8 @@ const focus: VNodeRef = (el) =>
     @selectstart.capture.stop
     @mousedown.stop
   />
-  <span v-else-if="vModel === null && showNull" class="nc-cell-field nc-null uppercase">{{ $t('general.null') }}</span>
-  <span v-else class="nc-cell-field">{{ displayValue }}</span>
+  <span v-else-if="vModel === null && showNull" class="atm-cell-field atm-null uppercase">{{ $t('general.null') }}</span>
+  <span v-else class="atm-cell-field">{{ displayValue }}</span>
 </template>
 
 <style scoped lang="scss">

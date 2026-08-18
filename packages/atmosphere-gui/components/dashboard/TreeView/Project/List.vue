@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TableType, ViewType } from 'nocodb-sdk'
+import type { TableType, ViewType } from 'atmosphere-sdk'
 import ProjectWrapper from '../ProjectWrapper.vue'
 
 const { isUIAllowed } = useRoles()
@@ -270,7 +270,7 @@ provide(TreeViewInj, {
 useEventListener(document, 'contextmenu', handleContext, true)
 
 const scrollTableNode = () => {
-  const activeTableDom = document.querySelector(`.nc-treeview [data-table-id="${_activeTable.value?.id}"]`)
+  const activeTableDom = document.querySelector(`.atm-treeview [data-table-id="${_activeTable.value?.id}"]`)
   if (!activeTableDom) return
 
   // Scroll to the table node
@@ -294,7 +294,7 @@ watch(
 </script>
 
 <template>
-  <div class="nc-treeview-container relative w-full h-full overflow-hidden flex items-stretch nc-treeview-container-active-base">
+  <div class="atm-treeview-container relative w-full h-full overflow-hidden flex items-stretch atm-treeview-container-active-base">
     <!-- Project Home -->
     <div v-if="resolvedProject?.id && !resolvedProject.isLoading" class="absolute w-full h-full top-0 left-0 z-5 flex flex-col">
       <ProjectWrapper :base-role="resolvedProject?.project_role" :base="resolvedProject">
@@ -308,24 +308,24 @@ watch(
 
     <div
       v-else-if="isProjectsLoaded && !isProjectsLoading && !basesList.length && activeSidebarTab === 'settings'"
-      class="nc-treeview-active-base flex flex-col h-full"
+      class="atm-treeview-active-base flex flex-col h-full"
     >
       <div>
         <DashboardSidebarHeaderWrapper>
-          <NcTooltip class="truncate font-semibold text-sm text-nc-content-gray" show-on-truncate-only>
+          <AtTooltip class="truncate font-semibold text-sm text-atm-content-gray" show-on-truncate-only>
             <template #title>{{ activeWorkspace?.title }}</template>
             {{ activeWorkspace?.title }}
-          </NcTooltip>
+          </AtTooltip>
         </DashboardSidebarHeaderWrapper>
       </div>
 
-      <div class="flex-1 relative overflow-y-auto nc-scrollbar-thin">
+      <div class="flex-1 relative overflow-y-auto atm-scrollbar-thin">
         <DashboardTreeViewProjectWsSettingsMenu v-if="showWsSettingsInBase" />
       </div>
 
       <slot name="footer" />
     </div>
-    <div v-else-if="isProjectsLoaded && !isProjectsLoading && !basesList.length" class="nc-treeview-empty-state">
+    <div v-else-if="isProjectsLoaded && !isProjectsLoading && !basesList.length" class="atm-treeview-empty-state">
       <a-empty :image="Empty.PRESENTED_IMAGE_SIMPLE" :description="$t('activity.noBasesFound')" class="!mb-1" />
 
       <WorkspaceCreateProjectBtn type="primary">
@@ -347,14 +347,14 @@ watch(
   @apply pointer-events-none;
 }
 .ghost {
-  @apply bg-primary-selected dark:bg-nc-bg-gray-medium;
+  @apply bg-primary-selected dark:bg-atm-bg-gray-medium;
 }
 
-.nc-treeview-empty-state {
-  @apply w-full h-full flex flex-col items-center justify-center p-6 text-nc-content-gray-muted;
+.atm-treeview-empty-state {
+  @apply w-full h-full flex flex-col items-center justify-center p-6 text-atm-content-gray-muted;
 }
 
-:deep(.nc-sidebar-create-base-btn.nc-button.ant-btn-text.theme-default) {
-  @apply hover:bg-nc-bg-brand pl-[15px];
+:deep(.atm-sidebar-create-base-btn.atm-button.ant-btn-text.theme-default) {
+  @apply hover:bg-atm-bg-brand pl-[15px];
 }
 </style>

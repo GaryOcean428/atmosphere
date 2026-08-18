@@ -117,7 +117,7 @@ const compareYear = (date1: dayjs.Dayjs, date2: dayjs.Dayjs) => {
 <template>
   <div class="flex flex-col">
     <div
-      class="flex border-b-1 nc-month-picker-pagination justify-between items-center"
+      class="flex border-b-1 atm-month-picker-pagination justify-between items-center"
       :class="{
         'px-2 py-1 h-10': isCellInputField,
         'px-2 py-2': !isCellInputField,
@@ -125,20 +125,20 @@ const compareYear = (date1: dayjs.Dayjs, date2: dayjs.Dayjs) => {
     >
       <template v-if="header === 'v1'">
         <div class="flex">
-          <NcTooltip hide-on-click>
-            <NcButton class="nc-prev-page-btn !border-0" size="small" type="text" @click="paginate('prev')">
+          <AtTooltip hide-on-click>
+            <AtButton class="atm-prev-page-btn !border-0" size="small" type="text" @click="paginate('prev')">
               <component :is="iconMap.arrowLeft" class="h-4 w-4" />
-            </NcButton>
+            </AtButton>
             <template #title>
               <span>{{ $t('labels.previous') }}</span>
             </template>
-          </NcTooltip>
+          </AtTooltip>
         </div>
 
         <span
-          class="nc-year-picker-btn text-nc-content-gray-subtle font-semibold"
+          class="atm-year-picker-btn text-atm-content-gray-subtle font-semibold"
           :class="{
-            'cursor-pointer hover:text-nc-content-brand': isCellInputField && !isYearPicker,
+            'cursor-pointer hover:text-atm-content-brand': isCellInputField && !isYearPicker,
           }"
           @click="!isYearPicker ? (pickerType = 'year') : () => undefined"
           >{{
@@ -156,19 +156,19 @@ const compareYear = (date1: dayjs.Dayjs, date2: dayjs.Dayjs) => {
           }}</span
         >
         <div class="flex">
-          <NcTooltip hide-on-click>
-            <NcButton class="nc-next-page-btn !border-0" size="small" type="text" @click="paginate('next')">
+          <AtTooltip hide-on-click>
+            <AtButton class="atm-next-page-btn !border-0" size="small" type="text" @click="paginate('next')">
               <component :is="iconMap.arrowRight" class="h-4 w-4" />
-            </NcButton>
+            </AtButton>
             <template #title>
               <span>{{ $t('labels.next') }}</span>
             </template>
-          </NcTooltip>
+          </AtTooltip>
         </div>
       </template>
       <template v-else>
-        <div class="text-nc-content-gray-subtle text-sm font-semibold">
-          <span class="px-1 font-bold leading-6 text-sm text-nc-content-gray-subtle py-2">
+        <div class="text-atm-content-gray-subtle text-sm font-semibold">
+          <span class="px-1 font-bold leading-6 text-sm text-atm-content-gray-subtle py-2">
             {{
               isYearPicker
                 ? isJalali
@@ -180,28 +180,28 @@ const compareYear = (date1: dayjs.Dayjs, date2: dayjs.Dayjs) => {
         </div>
 
         <div class="flex items-center justify-center">
-          <NcTooltip hide-on-click>
-            <NcButton class="!border-0" size="small" type="text" @click="paginate('prev')">
+          <AtTooltip hide-on-click>
+            <AtButton class="!border-0" size="small" type="text" @click="paginate('prev')">
               <GeneralIcon icon="ncChevronLeft" class="h-4 w-4" />
-            </NcButton>
+            </AtButton>
             <template #title>
               <span>{{ $t('labels.previous') }}</span>
             </template>
-          </NcTooltip>
-          <NcTooltip hide-on-click>
-            <NcButton class="!border-0" data-testid="nc-calendar-next-btn" size="small" type="text" @click="paginate('next')">
+          </AtTooltip>
+          <AtTooltip hide-on-click>
+            <AtButton class="!border-0" data-testid="atm-calendar-next-btn" size="small" type="text" @click="paginate('next')">
               <GeneralIcon icon="ncChevronRight" class="h-4 w-4" />
-            </NcButton>
+            </AtButton>
             <template #title>
               <span>{{ $t('labels.next') }}</span>
             </template>
-          </NcTooltip>
+          </AtTooltip>
         </div>
       </template>
     </div>
     <div
       v-if="!hideCalendar"
-      class="nc-month-year-grid rounded-y-xl max-w-[350px]"
+      class="atm-month-year-grid rounded-y-xl max-w-[350px]"
       :class="{
         'px-2 py-1': isCellInputField,
         'px-2.5 py-1': !isCellInputField,
@@ -213,16 +213,16 @@ const compareYear = (date1: dayjs.Dayjs, date2: dayjs.Dayjs) => {
             v-for="(month, id) in months"
             :key="id"
             :class="{
-              'bg-nc-bg-gray-medium !text-nc-brand-900 !font-bold': isMonthSelected(month) && !isCellInputField,
-              'bg-nc-bg-gray-dark !font-weight-600 ': isMonthSelected(month) && isCellInputField,
-              'hover:(border-1 border-nc-border-gray-medium bg-nc-bg-gray-light)': !isMonthSelected(month),
-              '!text-nc-content-brand': isJalali
+              'bg-atm-bg-gray-medium !text-atm-brand-900 !font-bold': isMonthSelected(month) && !isCellInputField,
+              'bg-atm-bg-gray-dark !font-weight-600 ': isMonthSelected(month) && isCellInputField,
+              'hover:(border-1 border-atm-border-gray-medium bg-atm-bg-gray-light)': !isMonthSelected(month),
+              '!text-atm-content-brand': isJalali
                 ? isSameJalaliMonth(timezoneDayjs.dayjsTz(), month)
                 : timezoneDayjs.dayjsTz().isSame(month, 'month'),
               'font-weight-400': isCellInputField,
               'font-medium': !isCellInputField,
             }"
-            class="nc-month-item h-8 flex items-center rounded transition-all justify-center text-nc-content-gray-subtle cursor-pointer"
+            class="atm-month-item h-8 flex items-center rounded transition-all justify-center text-atm-content-gray-subtle cursor-pointer"
             :title="isCellInputField ? month.format(isJalali ? 'jYYYY-jMM' : 'YYYY-MM') : undefined"
             @click="selectedDate = month"
           >
@@ -234,16 +234,16 @@ const compareYear = (date1: dayjs.Dayjs, date2: dayjs.Dayjs) => {
             v-for="(year, id) in years"
             :key="id"
             :class="{
-              'bg-nc-bg-gray-medium !font-bold ': compareYear(year, selectedDate) && !isCellInputField,
-              'bg-nc-bg-gray-dark !text-nc-content-brand !font-weight-600 ': compareYear(year, selectedDate) && isCellInputField,
-              'hover:(border-1 border-nc-border-gray-medium bg-nc-bg-gray-light)': !compareYear(year, selectedDate),
-              '!text-nc-content-brand': isJalali
+              'bg-atm-bg-gray-medium !font-bold ': compareYear(year, selectedDate) && !isCellInputField,
+              'bg-atm-bg-gray-dark !text-atm-content-brand !font-weight-600 ': compareYear(year, selectedDate) && isCellInputField,
+              'hover:(border-1 border-atm-border-gray-medium bg-atm-bg-gray-light)': !compareYear(year, selectedDate),
+              '!text-atm-content-brand': isJalali
                 ? isSameJalaliYear(timezoneDayjs.dayjsTz(), year)
                 : timezoneDayjs.dayjsTz().format('YYYY') === year.format('YYYY'),
-              'font-weight-400 text-nc-content-gray-subtle': isCellInputField,
-              'font-medium text-nc-content-gray-emphasis': !isCellInputField,
+              'font-weight-400 text-atm-content-gray-subtle': isCellInputField,
+              'font-medium text-atm-content-gray-emphasis': !isCellInputField,
             }"
-            class="nc-year-item h-8 flex items-center rounded transition-all justify-center cursor-pointer"
+            class="atm-year-item h-8 flex items-center rounded transition-all justify-center cursor-pointer"
             :title="isCellInputField ? year.format(isJalali ? 'jYYYY' : 'YYYY') : undefined"
             @click="selectedDate = year"
           >
@@ -253,20 +253,20 @@ const compareYear = (date1: dayjs.Dayjs, date2: dayjs.Dayjs) => {
       </div>
 
       <div v-if="showCurrentDateOption" class="flex items-center justify-center px-2 pb-2 pt-1">
-        <NcTooltip :disabled="showCurrentDateOption !== 'disabled'">
+        <AtTooltip :disabled="showCurrentDateOption !== 'disabled'">
           <template #title>
             {{ $t('tooltip.currentDateNotAvail') }}
           </template>
-          <NcButton
-            class="nc-date-picker-now-btn !h-7"
+          <AtButton
+            class="atm-date-picker-now-btn !h-7"
             size="small"
             type="secondary"
             :disabled="showCurrentDateOption === 'disabled'"
             @click="emit('currentDate')"
           >
             <span class="text-small"> {{ $t('labels.currentDate') }} </span>
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
       </div>
     </div>
   </div>

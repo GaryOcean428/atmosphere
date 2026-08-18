@@ -1,7 +1,7 @@
-import type { Api as BaseAPI } from 'nocodb-sdk'
+import type { Api as BaseAPI } from 'atmosphere-sdk'
 import type { UseEventBusReturn } from '@vueuse/core'
 import type { UseGlobalReturn } from './composables/useGlobal/types'
-import type { NocoI18n } from './lib'
+import type { AtmosphereI18n } from './lib'
 import type { TabType } from './composables'
 
 declare module '#app' {
@@ -52,7 +52,7 @@ declare module '#app' {
 
 declare module '@vue/runtime-core' {
   interface App {
-    i18n: NocoI18n
+    i18n: AtmosphereI18n
   }
 }
 
@@ -67,7 +67,7 @@ declare module 'vue-router' {
 
   interface RouteParams {
     baseId: string
-    baseType: 'base' | 'nc' | string
+    baseType: 'base' | 'atm' | string
     type: TabType
     title: string
     viewId: string

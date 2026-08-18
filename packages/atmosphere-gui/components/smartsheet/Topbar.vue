@@ -43,9 +43,9 @@ const topbarBreadcrumbItemWidth = computed(() => {
 <template>
   <div
     :class="{
-      'bg-nc-bg-brand': isEditingDashboard || activeWorkflowHasDraftChanges,
+      'bg-atm-bg-brand': isEditingDashboard || activeWorkflowHasDraftChanges,
     }"
-    class="nc-table-topbar py-2 border-b-1 border-nc-border-gray-medium flex gap-3 items-center justify-between overflow-hidden relative h-[var(--topbar-height)] max-h-[var(--topbar-height)] min-h-[var(--topbar-height)] md:(px-2) xs:(px-1)"
+    class="atm-table-topbar py-2 border-b-1 border-atm-border-gray-medium flex gap-3 items-center justify-between overflow-hidden relative h-[var(--topbar-height)] max-h-[var(--topbar-height)] min-h-[var(--topbar-height)] md:(px-2) xs:(px-1)"
     style="z-index: 7"
   >
     <template v-if="isViewsLoading && !activeScriptId && !activeDashboardId && !activeWorkflowId">
@@ -89,7 +89,7 @@ const topbarBreadcrumbItemWidth = computed(() => {
 
         <LazySmartsheetTopbarHistory v-if="!isSharedBase && !isMobileMode && isEeUI" />
 
-        <NcTooltip
+        <AtTooltip
           v-if="
             (isEeUI || isFeatureEnabled(FEATURE_FLAG.EXTENSIONS)) &&
             !communityMode &&
@@ -103,13 +103,13 @@ const topbarBreadcrumbItemWidth = computed(() => {
           placement="bottom"
         >
           <template #title>{{ $t('general.extensions') }}</template>
-          <NcButton
+          <AtButton
             v-e="['c:extension-toggle']"
             type="text"
             size="small"
-            class="nc-topbar-extension-btn"
-            :class="{ '!bg-nc-bg-brand !text-nc-content-brand': isPanelExpanded }"
-            data-testid="nc-topbar-extension-btn"
+            class="atm-topbar-extension-btn"
+            :class="{ '!bg-atm-bg-brand !text-atm-content-brand': isPanelExpanded }"
+            data-testid="atm-topbar-extension-btn"
             @click="
               blockExtensions && !isPanelExpanded
                 ? showUpgradeToUseExtensions({ triggerSource: 'toolbar-extensions' })
@@ -117,10 +117,10 @@ const topbarBreadcrumbItemWidth = computed(() => {
             "
           >
             <GeneralIcon :icon="isPanelExpanded ? 'ncPuzzleSolid' : 'ncPuzzleOutline'" class="w-4 h-4 !stroke-transparent" />
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
 
-        <NcButton
+        <AtButton
           v-if="
             !isSharedBase &&
             !activeScriptId &&
@@ -134,9 +134,9 @@ const topbarBreadcrumbItemWidth = computed(() => {
           v-e="['c:action-toggle']"
           type="secondary"
           size="small"
-          class="nc-topbar-action-btn"
-          :class="{ '!bg-nc-bg-brand !hover:bg-nc-brand-100/70 !text-nc-content-brand': isActionPanelExpanded }"
-          data-testid="nc-topbar-action-btn"
+          class="atm-topbar-action-btn"
+          :class="{ '!bg-atm-bg-brand !hover:bg-atm-brand-100/70 !text-atm-content-brand': isActionPanelExpanded }"
+          data-testid="atm-topbar-action-btn"
           @click="toggleActionPanel"
         >
           <div class="flex items-center justify-center min-w-[28.69px]">
@@ -155,7 +155,7 @@ const topbarBreadcrumbItemWidth = computed(() => {
               {{ $t('general.actions') }}
             </span>
           </div>
-        </NcButton>
+        </AtButton>
 
         <div v-if="!isSharedBase" class="flex gap-2 items-center empty:hidden">
           <LazySmartsheetTopbarDashboardState v-if="activeDashboardId && isUIAllowed('dashboardEdit')" />
@@ -170,7 +170,7 @@ const topbarBreadcrumbItemWidth = computed(() => {
         <div v-if="isSharedBase">
           <LazyGeneralLanguage
             button
-            class="cursor-pointer text-lg hover:(text-nc-content-gray-extreme bg-nc-bg-gray-medium) mr-0 p-1.5 rounded-md"
+            class="cursor-pointer text-lg hover:(text-atm-content-gray-extreme bg-atm-bg-gray-medium) mr-0 p-1.5 rounded-md"
           />
         </div>
       </div>
@@ -179,7 +179,7 @@ const topbarBreadcrumbItemWidth = computed(() => {
 </template>
 
 <style scoped>
-.nc-table-toolbar-mobile {
+.atm-table-toolbar-mobile {
   @apply flex-wrap h-auto py-2;
 }
 </style>

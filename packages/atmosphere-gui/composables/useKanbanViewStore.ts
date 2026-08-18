@@ -1,5 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
-import { UITypes, ViewLockType, ViewTypes } from 'nocodb-sdk'
+import { UITypes, ViewLockType, ViewTypes } from 'atmosphere-sdk'
 import type {
   Api,
   ColumnType,
@@ -10,7 +10,7 @@ import type {
   SelectOptionsType,
   TableType,
   ViewType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { validateRowFilters } from '~/utils/dataUtils'
 import type { InterfacePageDataApi } from '~/lib/interfaceData'
 import { isInterfaceSyntheticViewId } from '~/lib/interfaceData'
@@ -370,7 +370,7 @@ const [useProvideKanbanViewStore, useKanbanViewStore] = useInjectionState(
         })
       } else {
         groupData = await api.dbViewRow.groupedDataList(
-          'noco',
+          'atmosphere',
           base.value.id!,
           meta.value!.id!,
           viewMeta.value!.id!,
@@ -478,7 +478,7 @@ const [useProvideKanbanViewStore, useKanbanViewStore] = useInjectionState(
           })
         } else {
           groupData = await api.dbViewRow.groupedDataList(
-            'noco',
+            'atmosphere',
             base.value.id!,
             meta.value!.id!,
             viewMeta.value!.id!,
@@ -543,7 +543,7 @@ const [useProvideKanbanViewStore, useKanbanViewStore] = useInjectionState(
             filtersArr: nestedFilters.value,
           })
         : !isPublic.value
-        ? await api.dbViewRow.list('noco', base.value.id!, meta.value!.id!, viewMeta.value!.id!, {
+        ? await api.dbViewRow.list('atmosphere', base.value.id!, meta.value!.id!, viewMeta.value!.id!, {
             ...params,
             ...(isUIAllowed('sortSync') ? {} : { sortArrJson: JSON.stringify(sorts.value) }),
             ...(isUIAllowed('filterSync') ? {} : { filterArrJson: JSON.stringify(nestedFilters.value) }),
@@ -635,7 +635,7 @@ const [useProvideKanbanViewStore, useKanbanViewStore] = useInjectionState(
         const insertedData = interfaceDataApi
           ? await interfaceDataApi.insertRow(insertObj)
           : await $api.dbViewRow.create(
-              NOCO,
+              ATMOSPHERE,
               metaValue?.base_id ?? (base?.value.id as string),
               meta.value?.id as string,
               viewMeta?.value?.id as string,
@@ -664,7 +664,7 @@ const [useProvideKanbanViewStore, useKanbanViewStore] = useInjectionState(
         const updatedRowData = interfaceDataApi
           ? await interfaceDataApi.updateRow(id, { [property]: toUpdate.row[property] })
           : await $api.dbViewRow.update(
-              NOCO,
+              ATMOSPHERE,
               meta.value?.base_id ?? (base?.value.id as string),
               meta.value?.id as string,
               viewMeta?.value?.id as string,
@@ -860,7 +860,7 @@ const [useProvideKanbanViewStore, useKanbanViewStore] = useInjectionState(
       const res: any = interfaceDataApi
         ? await interfaceDataApi.deleteRow(id)
         : await $api.dbViewRow.delete(
-            'noco',
+            'atmosphere',
             meta.value?.base_id ?? (base.value.id as string),
             meta.value?.id as string,
             viewMeta.value?.id as string,

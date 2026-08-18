@@ -1,10 +1,10 @@
 import { S3 as S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import type { S3ClientConfig } from '@aws-sdk/client-s3';
-import type { IStorageAdapterV2 } from '~/types/nc-plugin';
+import type { IStorageAdapterV2 } from '~/types/atm-plugin';
 import GenericS3 from '~/plugins/GenericS3/GenericS3';
 import { S3_PATCH_KEYS } from '~/constants';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 interface S3Input {
   bucket: string;
@@ -38,7 +38,7 @@ export default class S3 extends GenericS3 implements IStorageAdapterV2 {
     }
 
     if (
-      S3_PATCH_KEYS.some((k) => key.startsWith(`${this.input.bucket}/nc/${k}`))
+      S3_PATCH_KEYS.some((k) => key.startsWith(`${this.input.bucket}/atm/${k}`))
     ) {
       key = key.replace(`${this.input.bucket}/`, '');
     }
@@ -86,10 +86,10 @@ export default class S3 extends GenericS3 implements IStorageAdapterV2 {
 
         return `https://${this.input.bucket}.${endpoint}/${uploadParams.Key}`;
       } else {
-        NcError._.storageFileCreateError('Upload failed or no data returned.');
+        AtError._.storageFileCreateError('Upload failed or no data returned.');
       }
     } catch (error) {
-      NcError._.storageFileCreateError(error.message);
+      AtError._.storageFileCreateError(error.message);
     }
   }
 

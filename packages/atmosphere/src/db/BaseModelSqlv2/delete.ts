@@ -7,9 +7,9 @@ import {
   isMMOrMMLike,
   isSmartText,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Knex } from 'knex';
-import type { NcRequest } from 'nocodb-sdk';
+import type { AtRequest } from 'atmosphere-sdk';
 import type CustomKnex from '~/db/CustomKnex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { LinkToAnotherRecordColumn } from '~/models';
@@ -19,7 +19,7 @@ import {
   getCompositePkValue,
   shouldCascadeLinkCleanup,
 } from '~/helpers/dbHelpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import conditionV2 from '~/db/conditionV2';
 import { Column, FileReference, Filter, Model } from '~/models';
 
@@ -49,7 +49,7 @@ export class BaseModelDelete {
     args = {},
     cookie,
   }: {
-    cookie: NcRequest;
+    cookie: AtRequest;
     skip_hooks?: boolean;
     args: {
       where?: string;
@@ -469,7 +469,7 @@ export class BaseModelDelete {
     // SmartText image / file refs are scoped by (fk_model_id, fk_column_id,
     // fk_row_id) — the cell-keyed attachment proxy resolves them by that triple.
     // The attachment-column path above doesn't visit them because the refs
-    // live in `nc_row_meta` (PM JSON), not in the cell column. Without this
+    // live in `atm_row_meta` (PM JSON), not in the cell column. Without this
     // block, deleting rows leaks both the FileReference rows and the
     // underlying storage objects.
     const smartTextColumns = columns.filter((c) => isSmartText(c));
@@ -620,7 +620,7 @@ export class BaseModelDelete {
   }
 
   async bulkAll(params: {
-    cookie: NcRequest;
+    cookie: AtRequest;
     skip_hooks?: boolean;
     args: {
       where?: string;
@@ -790,7 +790,7 @@ export class BaseModelDelete {
 
   async permanentDeleteByIds(
     rowIds: string[],
-    cookie: NcRequest,
+    cookie: AtRequest,
     isBulkAllOperation = false,
   ) {
     const columns = await this.baseModel.model.getColumns(
@@ -956,7 +956,7 @@ export class BaseModelDelete {
     });
 
     // remove FileReferences for SmartText cells (permanent-delete path).
-    // SmartText image / file refs live in nc_row_meta keyed by
+    // SmartText image / file refs live in atm_row_meta keyed by
     // (fk_model_id, fk_column_id, fk_row_id) — not on the cell column —
     // so the attachment block above doesn't visit them.
     const permSmartTextColumns = columns.filter((c) => isSmartText(c));
@@ -1033,7 +1033,7 @@ export class BaseModelDelete {
     // and the caller (handler.permanentDelete) should bubble it up so the
     // trash entry's cleanup_retry_count records the dead-end state.
     if (oldRecords.length === 0) {
-      NcError.get(this.baseModel.context).recordNotTrashed();
+      AtError.get(this.baseModel.context).recordNotTrashed();
     }
     if (oldRecords.length !== rowIds.length) {
       this.logger.warn(

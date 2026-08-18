@@ -31,42 +31,42 @@ const up = async (knex: Knex) => {
     // Drop old indexes
     table.dropUnique(
       ['fk_sandbox_id', 'version'],
-      'nc_sandbox_versions_unique_idx',
+      'atm_sandbox_versions_unique_idx',
     );
     table.dropUnique(
       ['fk_sandbox_id', 'version_number'],
-      'nc_sandbox_versions_number_unique_idx',
+      'atm_sandbox_versions_number_unique_idx',
     );
-    table.dropIndex(['fk_sandbox_id'], 'nc_sandbox_versions_sandbox_id_idx');
+    table.dropIndex(['fk_sandbox_id'], 'atm_sandbox_versions_sandbox_id_idx');
     table.dropIndex(
       ['fk_sandbox_id', 'status'],
-      'nc_sandbox_versions_status_idx',
+      'atm_sandbox_versions_status_idx',
     );
     table.dropIndex(
       ['fk_sandbox_id', 'version_number'],
-      'nc_sandbox_versions_ordering_idx',
+      'atm_sandbox_versions_ordering_idx',
     );
   });
 
   await knex.schema.alterTable(MetaTable.MANAGED_APP_VERSIONS, (table) => {
     // Create new indexes with updated names
     table.unique(['fk_managed_app_id', 'version'], {
-      indexName: 'nc_managed_app_versions_unique_idx',
+      indexName: 'atm_managed_app_versions_unique_idx',
     });
     table.unique(['fk_managed_app_id', 'version_number'], {
-      indexName: 'nc_managed_app_versions_number_unique_idx',
+      indexName: 'atm_managed_app_versions_number_unique_idx',
     });
     table.index(
       ['fk_managed_app_id'],
-      'nc_managed_app_versions_managed_app_id_idx',
+      'atm_managed_app_versions_managed_app_id_idx',
     );
     table.index(
       ['fk_managed_app_id', 'status'],
-      'nc_managed_app_versions_status_idx',
+      'atm_managed_app_versions_status_idx',
     );
     table.index(
       ['fk_managed_app_id', 'version_number'],
-      'nc_managed_app_versions_ordering_idx',
+      'atm_managed_app_versions_ordering_idx',
     );
   });
 
@@ -85,7 +85,7 @@ const up = async (knex: Knex) => {
       // Drop old indexes
       table.dropIndex(
         ['fk_sandbox_id'],
-        'nc_sandbox_deployment_logs_sandbox_id_idx',
+        'atm_sandbox_deployment_logs_sandbox_id_idx',
       );
     },
   );
@@ -96,7 +96,7 @@ const up = async (knex: Knex) => {
       // Create new indexes
       table.index(
         ['fk_managed_app_id'],
-        'nc_managed_app_deployment_logs_managed_app_id_idx',
+        'atm_managed_app_deployment_logs_managed_app_id_idx',
       );
     },
   );
@@ -106,11 +106,11 @@ const up = async (knex: Knex) => {
     // Drop old indexes first
     table.dropIndex(
       ['sandbox_id', 'auto_update'],
-      'nc_bases_sandbox_auto_update_idx',
+      'atm_bases_sandbox_auto_update_idx',
     );
-    table.dropIndex(['sandbox_version_id'], 'nc_bases_sandbox_version_id_idx');
-    table.dropIndex(['sandbox_id'], 'nc_bases_sandbox_id_idx');
-    table.dropIndex(['sandbox_master'], 'nc_bases_sandbox_master_idx');
+    table.dropIndex(['sandbox_version_id'], 'atm_bases_sandbox_version_id_idx');
+    table.dropIndex(['sandbox_id'], 'atm_bases_sandbox_id_idx');
+    table.dropIndex(['sandbox_master'], 'atm_bases_sandbox_master_idx');
   });
 
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
@@ -122,15 +122,15 @@ const up = async (knex: Knex) => {
 
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
     // Create new indexes
-    table.index(['managed_app_master'], 'nc_bases_managed_app_master_idx');
-    table.index(['managed_app_id'], 'nc_bases_managed_app_id_idx');
+    table.index(['managed_app_master'], 'atm_bases_managed_app_master_idx');
+    table.index(['managed_app_id'], 'atm_bases_managed_app_id_idx');
     table.index(
       ['managed_app_version_id'],
-      'nc_bases_managed_app_version_id_idx',
+      'atm_bases_managed_app_version_id_idx',
     );
     table.index(
       ['managed_app_id', 'auto_update'],
-      'nc_bases_managed_app_auto_update_idx',
+      'atm_bases_managed_app_auto_update_idx',
     );
   });
 };
@@ -141,14 +141,14 @@ const down = async (knex: Knex) => {
     // Drop new indexes
     table.dropIndex(
       ['managed_app_id', 'auto_update'],
-      'nc_bases_managed_app_auto_update_idx',
+      'atm_bases_managed_app_auto_update_idx',
     );
     table.dropIndex(
       ['managed_app_version_id'],
-      'nc_bases_managed_app_version_id_idx',
+      'atm_bases_managed_app_version_id_idx',
     );
-    table.dropIndex(['managed_app_id'], 'nc_bases_managed_app_id_idx');
-    table.dropIndex(['managed_app_master'], 'nc_bases_managed_app_master_idx');
+    table.dropIndex(['managed_app_id'], 'atm_bases_managed_app_id_idx');
+    table.dropIndex(['managed_app_master'], 'atm_bases_managed_app_master_idx');
   });
 
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
@@ -160,12 +160,12 @@ const down = async (knex: Knex) => {
 
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
     // Recreate old indexes
-    table.index(['sandbox_master'], 'nc_bases_sandbox_master_idx');
-    table.index(['sandbox_id'], 'nc_bases_sandbox_id_idx');
-    table.index(['sandbox_version_id'], 'nc_bases_sandbox_version_id_idx');
+    table.index(['sandbox_master'], 'atm_bases_sandbox_master_idx');
+    table.index(['sandbox_id'], 'atm_bases_sandbox_id_idx');
+    table.index(['sandbox_version_id'], 'atm_bases_sandbox_version_id_idx');
     table.index(
       ['sandbox_id', 'auto_update'],
-      'nc_bases_sandbox_auto_update_idx',
+      'atm_bases_sandbox_auto_update_idx',
     );
   });
 
@@ -175,7 +175,7 @@ const down = async (knex: Knex) => {
     (table) => {
       table.dropIndex(
         ['fk_managed_app_id'],
-        'nc_managed_app_deployment_logs_managed_app_id_idx',
+        'atm_managed_app_deployment_logs_managed_app_id_idx',
       );
     },
   );
@@ -185,7 +185,7 @@ const down = async (knex: Knex) => {
     (table) => {
       table.index(
         ['fk_sandbox_id'],
-        'nc_sandbox_deployment_logs_sandbox_id_idx',
+        'atm_sandbox_deployment_logs_sandbox_id_idx',
       );
     },
   );
@@ -202,38 +202,38 @@ const down = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.MANAGED_APP_VERSIONS, (table) => {
     table.dropIndex(
       ['fk_managed_app_id', 'version_number'],
-      'nc_managed_app_versions_ordering_idx',
+      'atm_managed_app_versions_ordering_idx',
     );
     table.dropIndex(
       ['fk_managed_app_id', 'status'],
-      'nc_managed_app_versions_status_idx',
+      'atm_managed_app_versions_status_idx',
     );
     table.dropIndex(
       ['fk_managed_app_id'],
-      'nc_managed_app_versions_managed_app_id_idx',
+      'atm_managed_app_versions_managed_app_id_idx',
     );
     table.dropUnique(
       ['fk_managed_app_id', 'version_number'],
-      'nc_managed_app_versions_number_unique_idx',
+      'atm_managed_app_versions_number_unique_idx',
     );
     table.dropUnique(
       ['fk_managed_app_id', 'version'],
-      'nc_managed_app_versions_unique_idx',
+      'atm_managed_app_versions_unique_idx',
     );
   });
 
   await knex.schema.alterTable(MetaTable.MANAGED_APP_VERSIONS, (table) => {
     table.unique(['fk_sandbox_id', 'version'], {
-      indexName: 'nc_sandbox_versions_unique_idx',
+      indexName: 'atm_sandbox_versions_unique_idx',
     });
     table.unique(['fk_sandbox_id', 'version_number'], {
-      indexName: 'nc_sandbox_versions_number_unique_idx',
+      indexName: 'atm_sandbox_versions_number_unique_idx',
     });
-    table.index(['fk_sandbox_id'], 'nc_sandbox_versions_sandbox_id_idx');
-    table.index(['fk_sandbox_id', 'status'], 'nc_sandbox_versions_status_idx');
+    table.index(['fk_sandbox_id'], 'atm_sandbox_versions_sandbox_id_idx');
+    table.index(['fk_sandbox_id', 'status'], 'atm_sandbox_versions_status_idx');
     table.index(
       ['fk_sandbox_id', 'version_number'],
-      'nc_sandbox_versions_ordering_idx',
+      'atm_sandbox_versions_ordering_idx',
     );
   });
 

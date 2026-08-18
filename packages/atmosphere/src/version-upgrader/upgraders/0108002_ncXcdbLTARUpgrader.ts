@@ -1,12 +1,12 @@
-import { RelationTypes, UITypes } from 'nocodb-sdk';
+import { RelationTypes, UITypes } from 'atmosphere-sdk';
 import type { LinkToAnotherRecordColumn } from '~/models';
 import type { MetaService } from '~/meta/meta.service';
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
-import type { NcContext } from '~/interface/config';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
+import type { AtContext } from '~/interface/config';
 import { MetaTable } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { Source } from '~/models';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { CacheGetType, CacheScope } from '~/utils/globals';
 import { Model } from '~/models';
 
@@ -15,7 +15,7 @@ import { Model } from '~/models';
 // and treat all the LTAR as virtual
 
 async function upgradeModelRelations(
-  context: NcContext,
+  context: AtContext,
   {
     model,
     relations,
@@ -25,10 +25,10 @@ async function upgradeModelRelations(
     ncMeta: MetaService;
     model: Model;
     sqlClient: ReturnType<
-      (typeof NcConnectionMgrv2)['getSqlClient']
+      (typeof AtConnectionMgrv2)['getSqlClient']
     > extends Promise<infer U>
       ? U
-      : ReturnType<(typeof NcConnectionMgrv2)['getSqlClient']>;
+      : ReturnType<(typeof AtConnectionMgrv2)['getSqlClient']>;
     relations: {
       tn: string;
       rtn: string;
@@ -113,14 +113,14 @@ async function upgradeModelRelations(
     );
 
     // update the cache as well
-    const cachedData = await NocoCache.get(
+    const cachedData = await AtmosphereCache.get(
       context,
       `${CacheScope.COL_RELATION}:${colOptions.fk_column_id}`,
       CacheGetType.TYPE_OBJECT,
     );
     if (cachedData) {
       cachedData.virtual = true;
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.COL_RELATION}:${colOptions.fk_column_id}`,
         cachedData,
@@ -131,7 +131,7 @@ async function upgradeModelRelations(
 
 // An upgrader for upgrading any existing relation in xcdb
 async function upgradeBaseRelations(
-  context: NcContext,
+  context: AtContext,
   {
     ncMeta,
     source,
@@ -142,7 +142,7 @@ async function upgradeBaseRelations(
     relations: any;
   },
 ) {
-  const sqlClient = await NcConnectionMgrv2.getSqlClient(source, ncMeta.knex);
+  const sqlClient = await AtConnectionMgrv2.getSqlClient(source, ncMeta.knex);
 
   // get models for the base
   const models = await ncMeta.metaList2(
@@ -163,7 +163,7 @@ async function upgradeBaseRelations(
 }
 
 // database to virtual relation and create an index for it
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   // get all xcdb sources
   const sources = await ncMeta.knexConnection(MetaTable.SOURCES).where({
     is_meta: 1,
@@ -171,7 +171,7 @@ export default async function ({ ncMeta }: NcUpgraderCtx) {
 
   if (!sources.length) return;
 
-  const sqlClient = await NcConnectionMgrv2.getSqlClient(
+  const sqlClient = await AtConnectionMgrv2.getSqlClient(
     new Source(sources[0]),
     ncMeta.knex,
   );

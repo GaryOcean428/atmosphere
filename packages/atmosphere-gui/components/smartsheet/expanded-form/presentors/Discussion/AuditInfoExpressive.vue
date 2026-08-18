@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { AttachmentType, AuditType } from 'nocodb-sdk'
-import { checkboxIconListMap, isAIPromptCol, parseHelper, ratingIconListMap } from 'nocodb-sdk'
+import type { AttachmentType, AuditType } from 'atmosphere-sdk'
+import { checkboxIconListMap, isAIPromptCol, parseHelper, ratingIconListMap } from 'atmosphere-sdk'
 
 /* interface */
 
@@ -134,7 +134,7 @@ const isAiGeneratedText = (key: string) => {
   <div v-for="columnKey in columnKeys" :key="columnKey" class="relative not-last:mb-4">
     <GeneralIcon
       icon="ncNode"
-      class="w-[16px] h-[16px] text-nc-content-gray-muted bg-nc-bg-default absolute left-0 transform -translate-x-1/2"
+      class="w-[16px] h-[16px] text-atm-content-gray-muted bg-atm-bg-default absolute left-0 transform -translate-x-1/2"
       :class="[
         ['JSON', 'Attachment', 'SingleLineText', 'LongText'].includes(meta[columnKey]?.type)
           ? 'top-1'
@@ -143,9 +143,9 @@ const isAiGeneratedText = (key: string) => {
     />
     <div class="ml-6.5">
       <div class="text-small1 font-weight-500 inline-flex items-center flex-wrap gap-1 !w-full !max-w-full">
-        <span class="text-nc-content-gray-subtle2 text-xs"> {{ $t('activity.changed') }} </span>
+        <span class="text-atm-content-gray-subtle2 text-xs"> {{ $t('activity.changed') }} </span>
         <span
-          class="rounded-md px-1 !h-[20px] inline-flex items-center gap-1 text-nc-content-gray-emphasis border-1 border-nc-border-gray-medium max-w-full"
+          class="rounded-md px-1 !h-[20px] inline-flex items-center gap-1 text-atm-content-gray-emphasis border-1 border-atm-border-gray-medium max-w-full"
         >
           <SmartsheetHeaderIcon
             :column="{
@@ -154,47 +154,47 @@ const isAiGeneratedText = (key: string) => {
               meta: normalizeMeta(columnKey),
             }"
             class="!w-4 !h-4 !mx-0"
-            color="text-nc-content-gray-emphasis"
+            color="text-atm-content-gray-emphasis"
           />
 
-          <NcTooltip class="truncate" show-on-truncate-only>
+          <AtTooltip class="truncate" show-on-truncate-only>
             <template #title>
               {{ columnKey }}
             </template>
 
             {{ columnKey }}
-          </NcTooltip>
+          </AtTooltip>
 
-          <span v-if="isAiGeneratedText(columnKey)" class="whitespace-nowrap text-xs text-nc-content-purple-medium">
+          <span v-if="isAiGeneratedText(columnKey)" class="whitespace-nowrap text-xs text-atm-content-purple-medium">
             ({{ $t('labels.generatedByAi') }})
           </span>
         </span>
         <template v-if="meta[columnKey]?.type === 'Attachment'">
           <div v-if="processOldDataFor(columnKey)?.length > 0" class="w-full">
             <div
-              class="border-1 border-nc-red-200 rounded-md bg-nc-bg-red-light p-0.5 flex flex-col items-start gap-0.5 w-[284px]"
+              class="border-1 border-atm-red-200 rounded-md bg-atm-bg-red-light p-0.5 flex flex-col items-start gap-0.5 w-[284px]"
             >
               <div
                 v-for="(item, i) of processOldDataFor(columnKey)"
                 :key="item.url || item.title"
-                class="border-1 border-nc-border-gray-medium rounded-md bg-nc-bg-default w-full"
+                class="border-1 border-atm-border-gray-medium rounded-md bg-atm-bg-default w-full"
               >
                 <div class="flex items-center gap-2 w-full">
                   <div class="flex items-center justify-center w-8 aspect-square">
                     <LazyCellAttachmentPreviewImage
                       v-if="isImage(item.title, item.mimetype ?? item.type)"
                       :alt="item.title || `#${i}`"
-                      class="nc-attachment rounded !w-5.5 !h-5.5 object-cover overflow-hidden"
+                      class="atm-attachment rounded !w-5.5 !h-5.5 object-cover overflow-hidden"
                       :srcs="getPossibleAttachmentSrc(item, 'small')"
                     />
-                    <div v-else class="nc-attachment flex items-center justify-center">
+                    <div v-else class="atm-attachment flex items-center justify-center">
                       <CellAttachmentIconView :item="item" class="!w-8 !h-8" />
                     </div>
                   </div>
-                  <span class="w-0 flex-1 truncate text-small1 font-weight-500 text-nc-content-gray-subtle2">
+                  <span class="w-0 flex-1 truncate text-small1 font-weight-500 text-atm-content-gray-subtle2">
                     {{ item.title }}
                   </span>
-                  <span class="text-xs font-weight-500 p-2 text-nc-content-gray-muted">
+                  <span class="text-xs font-weight-500 p-2 text-atm-content-gray-muted">
                     {{ getReadableFileSize(item.size) }}
                   </span>
                 </div>
@@ -203,29 +203,29 @@ const isAiGeneratedText = (key: string) => {
           </div>
           <div v-if="processNewDataFor(columnKey)?.length > 0" class="w-full">
             <div
-              class="border-1 border-nc-green-200 rounded-md bg-nc-bg-green-light p-0.5 flex flex-col items-start gap-0.5 w-[284px]"
+              class="border-1 border-atm-green-200 rounded-md bg-atm-bg-green-light p-0.5 flex flex-col items-start gap-0.5 w-[284px]"
             >
               <div
                 v-for="(item, i) of processNewDataFor(columnKey)"
                 :key="item.url || item.title"
-                class="border-1 border-nc-border-gray-medium rounded-md bg-nc-bg-default w-full"
+                class="border-1 border-atm-border-gray-medium rounded-md bg-atm-bg-default w-full"
               >
                 <div class="flex items-center gap-2 w-full">
                   <div class="flex items-center justify-center w-8 aspect-square">
                     <LazyCellAttachmentPreviewImage
                       v-if="isImage(item.title, item.mimetype ?? item.type)"
                       :alt="item.title || `#${i}`"
-                      class="nc-attachment rounded !w-5.5 !h-5.5 object-cover overflow-hidden"
+                      class="atm-attachment rounded !w-5.5 !h-5.5 object-cover overflow-hidden"
                       :srcs="getPossibleAttachmentSrc(item, 'small')"
                     />
-                    <div v-else class="nc-attachment flex items-center justify-center">
+                    <div v-else class="atm-attachment flex items-center justify-center">
                       <CellAttachmentIconView :item="item" class="!w-8 !h-8" />
                     </div>
                   </div>
-                  <span class="w-0 flex-1 truncate text-small1 font-weight-500 text-nc-content-gray-subtle2">
+                  <span class="w-0 flex-1 truncate text-small1 font-weight-500 text-atm-content-gray-subtle2">
                     {{ item.title }}
                   </span>
-                  <span class="text-xs font-weight-500 p-2 text-nc-content-gray-muted">
+                  <span class="text-xs font-weight-500 p-2 text-atm-content-gray-muted">
                     {{ getReadableFileSize(item.size) }}
                   </span>
                 </div>
@@ -237,13 +237,13 @@ const isAiGeneratedText = (key: string) => {
           <template v-for="(block, i) of diffTextBlocks(oldData[columnKey] || '', newData[columnKey] || '')" :key="i">
             <span
               v-if="block.op === 'removed'"
-              class="max-w-full text-nc-content-red-dark border-1 border-nc-red-200 rounded-md px-1 bg-nc-bg-red-light line-through decoration-clone !leading-[18px]"
+              class="max-w-full text-atm-content-red-dark border-1 border-atm-red-200 rounded-md px-1 bg-atm-bg-red-light line-through decoration-clone !leading-[18px]"
             >
               {{ block.text }}
             </span>
             <span
               v-else-if="block.op === 'added'"
-              class="max-w-full text-nc-content-green-dark border-1 border-nc-green-200 rounded-md px-1 bg-nc-bg-green-light decoration-clone !leading-[18px]"
+              class="max-w-full text-atm-content-green-dark border-1 border-atm-green-200 rounded-md px-1 bg-atm-bg-green-light decoration-clone !leading-[18px]"
             >
               {{ block.text }}
             </span>
@@ -267,7 +267,7 @@ const isAiGeneratedText = (key: string) => {
             >
               <span
                 v-if="block.op === 'removed'"
-                class="max-w-full text-nc-content-red-dark px-1 bg-nc-bg-red-light rounded-md line-through decoration-clone !leading-[18px]"
+                class="max-w-full text-atm-content-red-dark px-1 bg-atm-bg-red-light rounded-md line-through decoration-clone !leading-[18px]"
                 :class="{
                   'whitespace-pre-wrap': meta[columnKey]?.type === 'LongText',
                 }"
@@ -276,7 +276,7 @@ const isAiGeneratedText = (key: string) => {
               </span>
               <span
                 v-else-if="block.op === 'added'"
-                class="max-w-full text-nc-content-green-dark px-1 bg-nc-bg-green-light rounded-md decoration-clone !leading-[18px]"
+                class="max-w-full text-atm-content-green-dark px-1 bg-atm-bg-green-light rounded-md decoration-clone !leading-[18px]"
                 :class="{
                   'whitespace-pre-wrap': meta[columnKey]?.type === 'LongText',
                 }"
@@ -299,14 +299,14 @@ const isAiGeneratedText = (key: string) => {
           <div class="w-full flex justify-start">
             <pre
               v-if="isShowableValue(processOldDataFor(columnKey))"
-              class="!text-nc-content-red-dark border-1 border-nc-red-200 rounded-md bg-nc-bg-red-light line-through !mb-0 mt-1 p-1 max-w-full nc-scrollbar-thin"
+              class="!text-atm-content-red-dark border-1 border-atm-red-200 rounded-md bg-atm-bg-red-light line-through !mb-0 mt-1 p-1 max-w-full atm-scrollbar-thin"
               >{{ processOldDataFor(columnKey) }}</pre
             >
           </div>
           <div class="w-full flex justify-start">
             <pre
               v-if="isShowableValue(processNewDataFor(columnKey))"
-              class="!text-nc-content-green-dark border-1 border-nc-green-200 rounded-md bg-nc-bg-green-light !mb-0 mt-1 p-1 max-w-full nc-scrollbar-thin"
+              class="!text-atm-content-green-dark border-1 border-atm-green-200 rounded-md bg-atm-bg-green-light !mb-0 mt-1 p-1 max-w-full atm-scrollbar-thin"
               >{{ processNewDataFor(columnKey) }}</pre
             >
           </div>
@@ -315,7 +315,7 @@ const isAiGeneratedText = (key: string) => {
           <div
             v-if="isShowableValue(processOldDataFor(columnKey))"
             :data-label="processOldDataFor(columnKey)"
-            class="max-w-full nc-expressive-mini-item-cell nc-audit-removal !text-nc-content-red-dark border-1 border-nc-red-200 rounded-md bg-nc-bg-red-light line-through"
+            class="max-w-full atm-expressive-mini-item-cell atm-audit-removal !text-atm-content-red-dark border-1 border-atm-red-200 rounded-md bg-atm-bg-red-light line-through"
             :class="{
               'px-1 py-0': shouldUseNormalizedPadding(columnKey),
               '!px-0.25 !py-0.25': shouldUseUniformPadding(columnKey),
@@ -331,7 +331,7 @@ const isAiGeneratedText = (key: string) => {
               :model-value="processOldDataFor(columnKey)"
               :edit-enabled="false"
               :read-only="true"
-              class="!text-nc-content-red-dark"
+              class="!text-atm-content-red-dark"
               :class="{
                 'min-w-[100px]': normalizeMeta(columnKey).is_progress,
               }"
@@ -340,7 +340,7 @@ const isAiGeneratedText = (key: string) => {
           <div
             v-if="isShowableValue(processNewDataFor(columnKey))"
             :data-label="processNewDataFor(columnKey)"
-            class="max-w-full nc-expressive-mini-item-cell nc-audit-addition border-1 border-nc-green-200 rounded-md bg-nc-bg-green-light"
+            class="max-w-full atm-expressive-mini-item-cell atm-audit-addition border-1 border-atm-green-200 rounded-md bg-atm-bg-green-light"
             :class="{
               'px-1 py-0': shouldUseNormalizedPadding(columnKey),
               '!px-0.25 !py-0.25': shouldUseUniformPadding(columnKey),
@@ -356,7 +356,7 @@ const isAiGeneratedText = (key: string) => {
               :model-value="processNewDataFor(columnKey)"
               :edit-enabled="false"
               :read-only="true"
-              class="!text-nc-content-green-dark"
+              class="!text-atm-content-green-dark"
               :class="{
                 'min-w-[100px]': normalizeMeta(columnKey).is_progress,
               }"
@@ -369,36 +369,36 @@ const isAiGeneratedText = (key: string) => {
 </template>
 
 <style lang="scss" scoped>
-.nc-expressive-mini-item-cell :deep(.nc-cell-checkbox > div:first-child) {
+.atm-expressive-mini-item-cell :deep(.atm-cell-checkbox > div:first-child) {
   @apply pl-0;
 }
-.nc-expressive-mini-item-cell :deep(.nc-cell-field.nc-multi-select > div) {
+.atm-expressive-mini-item-cell :deep(.atm-cell-field.atm-multi-select > div) {
   @apply !gap-1 !flex;
   & > span {
     @apply !m-0 flex items-center h-[18px];
   }
 }
-.nc-expressive-mini-item-cell :deep(.nc-cell-field.nc-single-select > div) {
+.atm-expressive-mini-item-cell :deep(.atm-cell-field.atm-single-select > div) {
   height: 20px !important;
   .ant-tag {
     height: 20px !important;
     @apply !m-0;
   }
 }
-.nc-expressive-mini-item-cell.nc-audit-removal :deep(.nc-cell-field.nc-multi-select > div) {
+.atm-expressive-mini-item-cell.atm-audit-removal :deep(.atm-cell-field.atm-multi-select > div) {
   span.ant-tag span.text-ellipsis {
     @apply line-through;
   }
 }
-.nc-expressive-mini-item-cell.nc-audit-removal :deep(.nc-cell-field.nc-single-select > div) {
+.atm-expressive-mini-item-cell.atm-audit-removal :deep(.atm-cell-field.atm-single-select > div) {
   span.ant-tag span.text-ellipsis {
     @apply line-through;
   }
 }
-.nc-expressive-mini-item-cell :deep(.nc-cell-rating .ant-rate) {
+.atm-expressive-mini-item-cell :deep(.atm-cell-rating .ant-rate) {
   @apply !p-0 transform -translate-y-[1px];
 }
-.nc-expressive-mini-item-cell :deep(.nc-cell-percent) {
+.atm-expressive-mini-item-cell :deep(.atm-cell-percent) {
   & > div > div {
     @apply !p-0;
     &,
@@ -410,8 +410,8 @@ const isAiGeneratedText = (key: string) => {
     }
   }
 }
-.nc-expressive-mini-item-cell :deep(.nc-cell-datetime) {
-  .nc-date-picker {
+.atm-expressive-mini-item-cell :deep(.atm-cell-datetime) {
+  .atm-date-picker {
     @apply !inline;
     & > div {
       @apply !inline !text-inherit text-small1;
@@ -425,26 +425,26 @@ const isAiGeneratedText = (key: string) => {
     }
   }
 }
-.nc-expressive-mini-item-cell.nc-audit-removal :deep(.nc-cell-time) {
-  .nc-time-picker span {
+.atm-expressive-mini-item-cell.atm-audit-removal :deep(.atm-cell-time) {
+  .atm-time-picker span {
     text-decoration: line-through;
   }
 }
-.nc-expressive-mini-item-cell.nc-audit-removal :deep(.nc-cell-year) {
-  .nc-year-picker span {
+.atm-expressive-mini-item-cell.atm-audit-removal :deep(.atm-cell-year) {
+  .atm-year-picker span {
     text-decoration: line-through;
   }
 }
-.nc-expressive-mini-item-cell.nc-audit-removal :deep(.nc-cell-date) {
-  .nc-date-picker span {
+.atm-expressive-mini-item-cell.atm-audit-removal :deep(.atm-cell-date) {
+  .atm-date-picker span {
     text-decoration: line-through;
   }
 }
-.nc-expressive-mini-item-cell :deep(.nc-cell-user) {
-  .nc-cell-field > div {
+.atm-expressive-mini-item-cell :deep(.atm-cell-user) {
+  .atm-cell-field > div {
     display: flex !important;
     & > .ant-tag {
-      @apply !m-0 !text-inherit !border-1 !border-nc-border-gray-dark !pr-1 !pl-0.5 !bg-nc-bg-gray-light !rounded-[17px];
+      @apply !m-0 !text-inherit !border-1 !border-atm-border-gray-dark !pr-1 !pl-0.5 !bg-atm-bg-gray-light !rounded-[17px];
       & > span > div + div {
         @apply flex items-center !text-small1 font-weight-500 !leading-[16px];
       }
@@ -452,83 +452,83 @@ const isAiGeneratedText = (key: string) => {
         @apply gap-1;
       }
     }
-    .nc-user-avatar {
-      @apply border-1 border-nc-border-gray-medium !text-[8px];
+    .atm-user-avatar {
+      @apply border-1 border-atm-border-gray-medium !text-[8px];
       height: 16px !important;
       width: 16px !important;
     }
   }
 }
-.nc-expressive-mini-item-cell.nc-audit-removal :deep(.nc-cell-user) {
+.atm-expressive-mini-item-cell.atm-audit-removal :deep(.atm-cell-user) {
   .ant-tag > span > div + div {
-    @apply !text-nc-content-red-dark;
+    @apply !text-atm-content-red-dark;
   }
 }
-.nc-expressive-mini-item-cell.nc-audit-addition :deep(.nc-cell-user) {
+.atm-expressive-mini-item-cell.atm-audit-addition :deep(.atm-cell-user) {
   .ant-tag > span > div + div {
-    @apply !text-nc-content-green-dark;
+    @apply !text-atm-content-green-dark;
   }
 }
 </style>
 
 <style lang="scss">
-.nc-expressive-mini-item-header {
+.atm-expressive-mini-item-header {
   svg {
     height: 12px;
   }
 }
-.nc-expressive-mini-item-cell:has(.nc-cell-user .ant-tag) {
+.atm-expressive-mini-item-cell:has(.atm-cell-user .ant-tag) {
   @apply !p-0.25;
-  .nc-cell-field > div {
+  .atm-cell-field > div {
     @apply gap-1;
   }
 }
-.nc-expressive-mini-item-cell.nc-audit-removal:has(.nc-cell-user) {
+.atm-expressive-mini-item-cell.atm-audit-removal:has(.atm-cell-user) {
   text-decoration: none;
   .ant-tag div + div {
     text-decoration: line-through;
   }
 }
-.nc-expressive-mini-item-cell :where(.nc-cell-email, .nc-cell-url, .nc-cell-phonenumber) a {
+.atm-expressive-mini-item-cell :where(.atm-cell-email, .atm-cell-url, .atm-cell-phonenumber) a {
   @apply text-inherit !no-underline !p-0;
 }
-.nc-expressive-mini-item-cell :where(.nc-cell-email, .nc-cell-url, .nc-cell-phonenumber) {
+.atm-expressive-mini-item-cell :where(.atm-cell-email, .atm-cell-url, .atm-cell-phonenumber) {
   @apply !h-[20px];
 }
-.nc-expressive-mini-item-cell :where(.nc-cell-email, .nc-cell-url, .nc-cell-phonenumber) span {
+.atm-expressive-mini-item-cell :where(.atm-cell-email, .atm-cell-url, .atm-cell-phonenumber) span {
   @apply !text-small1 !leading-[16px];
 }
-.nc-expressive-mini-item-cell .nc-cell-url > div > span {
+.atm-expressive-mini-item-cell .atm-cell-url > div > span {
   width: auto !important;
 }
-.nc-expressive-mini-item-cell.nc-audit-removal :where(.nc-cell-email, .nc-cell-url, .nc-cell-phonenumber) a {
+.atm-expressive-mini-item-cell.atm-audit-removal :where(.atm-cell-email, .atm-cell-url, .atm-cell-phonenumber) a {
   @apply !line-through !p-0;
 }
-.nc-expressive-mini-item-cell.nc-audit-removal :where(.nc-year-picker, .nc-time-picker, .nc-date-picker) {
+.atm-expressive-mini-item-cell.atm-audit-removal :where(.atm-year-picker, .atm-time-picker, .atm-date-picker) {
   @apply !line-through;
 }
-.nc-expressive-mini-item-cell :where(.nc-cell-year, .nc-cell-time, .nc-cell-datetime, .nc-cell-date) span {
+.atm-expressive-mini-item-cell :where(.atm-cell-year, .atm-cell-time, .atm-cell-datetime, .atm-cell-date) span {
   @apply !text-small1 !leading-[16px];
 }
-.nc-expressive-mini-item-cell.nc-expressive-mini-item-cell.nc-expressive-mini-item-cell.nc-expressive-mini-item-cell
+.atm-expressive-mini-item-cell.atm-expressive-mini-item-cell.atm-expressive-mini-item-cell.atm-expressive-mini-item-cell
   :where(
-    .nc-cell.nc-cell-percent .nc-cell-field,
-    .nc-cell.nc-cell-duration .nc-cell-field,
-    .nc-cell.nc-cell-currency .nc-cell-field,
-    .nc-cell.nc-cell-decimal .nc-cell-field,
-    .nc-cell.nc-cell-geometry .nc-cell-field,
-    .nc-cell.nc-cell-number .nc-cell-field
+    .atm-cell.atm-cell-percent .atm-cell-field,
+    .atm-cell.atm-cell-duration .atm-cell-field,
+    .atm-cell.atm-cell-currency .atm-cell-field,
+    .atm-cell.atm-cell-decimal .atm-cell-field,
+    .atm-cell.atm-cell-geometry .atm-cell-field,
+    .atm-cell.atm-cell-number .atm-cell-field
   ) {
   font-size: 13px !important;
   line-height: 16px !important;
 }
-.nc-expressive-mini-item-cell .nc-cell-field:not(.nc-single-select, .nc-multi-select),
-.nc-expressive-mini-item-cell .nc-cell:not(.nc-cell-singleselect, .nc-cell-multiselect) {
+.atm-expressive-mini-item-cell .atm-cell-field:not(.atm-single-select, .atm-multi-select),
+.atm-expressive-mini-item-cell .atm-cell:not(.atm-cell-singleselect, .atm-cell-multiselect) {
   @apply flex items-center h-[20px];
 }
-.nc-expressive-mini-item-cell
-  .nc-cell
-  :where(.nc-cell-field, input, textarea, .nc-cell-field-link):not(.ant-select-selection-search-input) {
+.atm-expressive-mini-item-cell
+  .atm-cell
+  :where(.atm-cell-field, input, textarea, .atm-cell-field-link):not(.ant-select-selection-search-input) {
   font-size: unset;
   line-height: unset;
 }

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { extractRolesObj, NcApiVersion, OrgUserRoles } from 'nocodb-sdk';
+import { extractRolesObj, AtApiVersion, OrgUserRoles } from 'atmosphere-sdk';
 import type {
   BaseUpdateV3Type,
   BaseV3Type,
   ProjectReqType,
   UserType,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { BaseMetaProps } from '~/types/metaProps/base-meta-props';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { Base, BaseUser, Source } from '~/models';
 import { BasesService } from '~/services/bases.service';
 import { RootScopes } from '~/utils/globals';
@@ -23,12 +23,12 @@ export class BasesV3Service {
   }
 
   protected async getBaseList(
-    context: NcContext,
+    context: AtContext,
     param: {
       user: { id: string; roles?: string | Record<string, boolean> };
       query?: any;
       workspaceId?: string;
-      req?: NcRequest;
+      req?: AtRequest;
     },
   ) {
     return extractRolesObj(param.user?.roles)[OrgUserRoles.SUPER_ADMIN]
@@ -42,12 +42,12 @@ export class BasesV3Service {
   baseMemberHelpers: BaseMemberHelpers;
 
   async baseList(
-    context: NcContext,
+    context: AtContext,
     param: {
       user: { id: string; roles?: string | Record<string, boolean> };
       query?: any;
       workspaceId: string;
-      req?: NcRequest;
+      req?: AtRequest;
     },
   ) {
     const bases = await this.getBaseList(context, param);
@@ -68,7 +68,7 @@ export class BasesV3Service {
     return formattedBases;
   }
 
-  async getProject(context: NcContext, param: { baseId: string }) {
+  async getProject(context: AtContext, param: { baseId: string }) {
     const base: Base | BaseV3Type = await Base.get(context, param.baseId);
 
     const sources = sourceBuilder().build(
@@ -83,12 +83,12 @@ export class BasesV3Service {
   }
 
   async getProjectWithInfo(
-    context: NcContext,
+    context: AtContext,
     param: { baseId: string; qsInclude?: string[]; includeConfig?: boolean },
   ) {
     const base = await this.basesService.getProjectWithInfo(context, param);
 
-    if (!base) NcError.notFound('Base not found');
+    if (!base) AtError.notFound('Base not found');
 
     // filter non-meta sources
     const sources = base.sources.filter((s) => !new Source(s).isMeta());
@@ -106,12 +106,12 @@ export class BasesV3Service {
   }
 
   async baseUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       base: BaseUpdateV3Type;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload(
@@ -119,7 +119,7 @@ export class BasesV3Service {
       param.base,
       true,
       {
-        api_version: NcApiVersion.V3,
+        api_version: AtApiVersion.V3,
       },
     );
     const meta = param.base.meta as unknown as Record<string, unknown>;
@@ -131,7 +131,7 @@ export class BasesV3Service {
     if (meta) {
       const metaParsed = BaseMetaProps.safeParse(meta);
       if (metaParsed.error) {
-        NcError.get({ api_version: NcApiVersion.V3 }).zodError({
+        AtError.get({ api_version: AtApiVersion.V3 }).zodError({
           message: `'meta' property invalid`,
           errors: metaParsed.error,
         });
@@ -144,7 +144,7 @@ export class BasesV3Service {
         ...param.base,
         ...(await this.parseBaseRequest(context, param.base)),
       },
-      apiVersion: NcApiVersion.V3,
+      apiVersion: AtApiVersion.V3,
     });
     return this.getProjectWithInfo(context, { baseId: param.baseId });
   }
@@ -160,7 +160,7 @@ export class BasesV3Service {
       param.base,
       true,
       {
-        api_version: NcApiVersion.V3,
+        api_version: AtApiVersion.V3,
       },
     );
 
@@ -183,7 +183,7 @@ export class BasesV3Service {
     if (meta) {
       const metaParsed = BaseMetaProps.safeParse(meta);
       if (metaParsed.error) {
-        NcError.get({ api_version: NcApiVersion.V3 }).zodError({
+        AtError.get({ api_version: AtApiVersion.V3 }).zodError({
           message: `'meta' property invalid`,
           errors: metaParsed.error,
         });
@@ -193,7 +193,7 @@ export class BasesV3Service {
     const res = await this.basesService.baseCreate({
       ...param,
       base,
-      apiVersion: NcApiVersion.V3,
+      apiVersion: AtApiVersion.V3,
     });
     return this.getProjectWithInfo(
       { workspace_id: res.fk_workspace_id, base_id: RootScopes.WORKSPACE },
@@ -202,8 +202,8 @@ export class BasesV3Service {
   }
 
   async baseSoftDelete(
-    context: NcContext,
-    param: { baseId: any; user: UserType; req: NcRequest },
+    context: AtContext,
+    param: { baseId: any; user: UserType; req: AtRequest },
   ) {
     await this.basesService.baseSoftDelete(context, param);
     return {};

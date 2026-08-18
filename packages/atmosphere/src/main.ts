@@ -1,6 +1,6 @@
 import cors from 'cors';
 import express from 'express';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 const server = express();
 server.enable('trust proxy');
@@ -17,7 +17,7 @@ server.set('view engine', 'ejs');
 
 async function bootstrap() {
   const httpServer = server.listen(process.env.PORT || 8080, async () => {
-    server.use(await Noco.init({}, httpServer, server));
+    server.use(await Atmosphere.init({}, httpServer, server));
   });
 }
 

@@ -1,5 +1,5 @@
 import type { Logger } from '@nestjs/common';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Knex } from '~/db/CustomKnex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
@@ -11,7 +11,7 @@ import { ncIsStringHasValue } from '~/db/field-handler/utils/handlerUtils';
 import { getColumnName } from '~/helpers/dbHelpers';
 import { sanitize } from '~/helpers/sqlSanitize';
 import { GenericFieldHandler } from '~/db/field-handler/handlers/generic';
-import { NcBaseErrorv2, NcError } from '~/helpers/catchError';
+import { AtBaseErrorv2, AtError } from '~/helpers/catchError';
 import { extractProps } from '~/helpers/extractProps';
 import { BaseUser, type Column } from '~/models';
 
@@ -119,7 +119,7 @@ export class UserGeneralHandler extends GenericFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       logger?: Logger;
     };
@@ -163,7 +163,7 @@ export class UserGeneralHandler extends GenericFieldHandler {
           if ('id' in user) {
             const u = baseUserById.get(user.id);
             if (!u) {
-              NcError.invalidValueForField({
+              AtError.invalidValueForField({
                 value: params.value,
                 column: params.column.title,
                 type: params.column.uidt,
@@ -180,7 +180,7 @@ export class UserGeneralHandler extends GenericFieldHandler {
             if (user.email.length === 0) continue;
             const u = baseUserByEmail.get(user.email);
             if (!u) {
-              NcError.invalidValueForField({
+              AtError.invalidValueForField({
                 value: params.value,
                 column: params.column.title,
                 type: params.column.uidt,
@@ -189,7 +189,7 @@ export class UserGeneralHandler extends GenericFieldHandler {
             }
             userIds.push(u.id);
           } else {
-            NcError.invalidValueForField({
+            AtError.invalidValueForField({
               value: params.value,
               column: params.column.title,
               type: params.column.uidt,
@@ -197,7 +197,7 @@ export class UserGeneralHandler extends GenericFieldHandler {
             });
           }
         } catch (e) {
-          NcError.invalidValueForField({
+          AtError.invalidValueForField({
             value: params.value,
             column: params.column.title,
             type: params.column.uidt,
@@ -213,7 +213,7 @@ export class UserGeneralHandler extends GenericFieldHandler {
           if (user.includes('@')) {
             const u = baseUserByEmail.get(user);
             if (!u) {
-              NcError.invalidValueForField({
+              AtError.invalidValueForField({
                 value: params.value,
                 column: params.column.title,
                 type: params.column.uidt,
@@ -224,7 +224,7 @@ export class UserGeneralHandler extends GenericFieldHandler {
           } else {
             const u = baseUserById.get(user);
             if (!u) {
-              NcError.invalidValueForField({
+              AtError.invalidValueForField({
                 value: params.value,
                 column: params.column.title,
                 type: params.column.uidt,
@@ -234,10 +234,10 @@ export class UserGeneralHandler extends GenericFieldHandler {
             userIds.push(u.id);
           }
         } catch (e) {
-          if (e instanceof NcBaseErrorv2) {
+          if (e instanceof AtBaseErrorv2) {
             throw e;
           }
-          NcError.invalidValueForField({
+          AtError.invalidValueForField({
             value: params.value,
             column: params.column.title,
             type: params.column.uidt,
@@ -247,7 +247,7 @@ export class UserGeneralHandler extends GenericFieldHandler {
       }
     } else {
       params.options.logger.error(`${evalValue} is not a valid user input`);
-      NcError.invalidValueForField({
+      AtError.invalidValueForField({
         value: params.value,
         column: params.column.title,
         type: params.column.uidt,
@@ -261,7 +261,7 @@ export class UserGeneralHandler extends GenericFieldHandler {
       const userSet = new Set(userIds);
 
       if (userSet.size !== userIds.length) {
-        NcError.invalidValueForField({
+        AtError.invalidValueForField({
           value: params.value,
           column: params.column.title,
           type: params.column.uidt,
@@ -273,7 +273,7 @@ export class UserGeneralHandler extends GenericFieldHandler {
         evalValue = userIds.join(',');
       } else {
         if (userIds.length > 1) {
-          NcError.invalidValueForField({
+          AtError.invalidValueForField({
             value: params.value,
             column: params.column.title,
             type: params.column.uidt,

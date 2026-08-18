@@ -1,4 +1,4 @@
-import { normalizeHexColourWithAlpha } from 'nocodb-sdk'
+import { normalizeHexColourWithAlpha } from 'atmosphere-sdk'
 
 /**
  * Shared colour-picker logic used by both the cell Editor and the

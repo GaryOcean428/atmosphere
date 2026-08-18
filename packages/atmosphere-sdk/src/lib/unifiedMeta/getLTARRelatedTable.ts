@@ -1,8 +1,8 @@
 import { UnifiedMetaType } from '~/lib/types';
-import { NcContext } from '../ncTypes';
+import { AtContext } from '../ncTypes';
 
 export const getLTARRelatedTable = async (
-  context: NcContext,
+  context: AtContext,
   {
     colOptions,
     getMeta,

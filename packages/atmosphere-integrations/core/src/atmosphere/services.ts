@@ -1,4 +1,4 @@
-import type { NocoSDK } from '../sdk';
+import type { AtmosphereSDK } from '../sdk';
 
 export interface RecordField {
   [key: string]: any;
@@ -45,7 +45,7 @@ export interface DataListParams {
   query: any;
   viewId?: string;
   ignorePagination?: boolean;
-  req: NocoSDK.NcRequest;
+  req: AtmosphereSDK.AtRequest;
 }
 
 export interface DataInsertParams {
@@ -79,7 +79,7 @@ export interface NestedDataListParams {
   query: any;
   viewId: string;
   columnId: string;
-  req: NocoSDK.NcRequest;
+  req: AtmosphereSDK.AtRequest;
 }
 
 export interface DataReadParams {
@@ -87,28 +87,28 @@ export interface DataReadParams {
   rowId: string;
   query: any;
   viewId?: string;
-  req: NocoSDK.NcRequest;
+  req: AtmosphereSDK.AtRequest;
 }
 
 export interface TransformRecordToV3Param {
-  context: NocoSDK.NcContext;
+  context: AtmosphereSDK.AtContext;
   record: any;
-  primaryKey: NocoSDK.ColumnType;
-  primaryKeys?: NocoSDK.ColumnType[];
+  primaryKey: AtmosphereSDK.ColumnType;
+  primaryKeys?: AtmosphereSDK.ColumnType[];
   requestedFields?: string[];
-  columns?: NocoSDK.ColumnType[];
+  columns?: AtmosphereSDK.ColumnType[];
   nestedLimit?: number;
   skipSubstitutingColumnIds?: boolean;
   depth?: number;
 }
 
 export interface TransformRecordsToV3FormatParam {
-  context: NocoSDK.NcContext;
+  context: AtmosphereSDK.AtContext;
   records: any[];
-  primaryKey: NocoSDK.ColumnType;
-  primaryKeys?: NocoSDK.ColumnType[];
+  primaryKey: AtmosphereSDK.ColumnType;
+  primaryKeys?: AtmosphereSDK.ColumnType[];
   requestedFields?: string[];
-  columns?: NocoSDK.ColumnType[];
+  columns?: AtmosphereSDK.ColumnType[];
   nestedLimit?: number;
   skipSubstitutingColumnIds?: boolean;
   depth?: number;
@@ -136,74 +136,74 @@ export interface IDataV3Service {
   ): Promise<DataRecord[]>;
 
   dataList<T extends boolean>(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: DataListParams,
     pagination?: T,
   ): Promise<T extends true ? DataListResponse : DataRecord[]>;
 
   dataInsert(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: DataInsertParams,
   ): Promise<{ records: DataRecord[] }>;
 
   dataDelete(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: DataDeleteParams,
   ): Promise<{ records: DataRecordWithDeleted[] }>;
 
   dataUpdate(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: DataUpdateParams,
   ): Promise<{ records: DataRecord[] }>;
 
   nestedDataList(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: NestedDataListParams,
   ): Promise<DataListResponse>;
 
   dataRead(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: DataReadParams,
   ): Promise<DataRecord>;
 
   nestedLink(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: NestedLinkParams,
   ): Promise<{ success: boolean }>;
 
   nestedUnlink(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: NestedLinkParams,
   ): Promise<{ success: boolean }>;
 }
 
 export interface ITablesService {
   list(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: { base_id: string },
   ): Promise<Array<{ id: string; title: string; table_name: string }>>;
 
   tableUpdate(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: {
       tableId: any;
-      table: Partial<NocoSDK.TableReqType> & { base_id?: string };
+      table: Partial<AtmosphereSDK.TableReqType> & { base_id?: string };
       baseId?: string;
-      user: NocoSDK.UserType;
-      req: NocoSDK.NcRequest;
+      user: AtmosphereSDK.UserType;
+      req: AtmosphereSDK.AtRequest;
     },
   ): Promise<boolean>;
 
   reorderTable(
-    context: NocoSDK.NcContext,
-    param: { tableId: string; order: any; req: NocoSDK.NcRequest },
+    context: AtmosphereSDK.AtContext,
+    param: { tableId: string; order: any; req: AtmosphereSDK.AtRequest },
   ): Promise<any>;
 
   tableDelete(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: {
       tableId: string;
-      user: NocoSDK.UserType;
+      user: AtmosphereSDK.UserType;
       forceDeleteRelations?: boolean;
       forceDeleteSyncs?: boolean;
       req?: any;
@@ -211,39 +211,39 @@ export interface ITablesService {
   ): Promise<any>;
 
   getTableWithAccessibleViews(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: {
       tableId: string;
-      user: NocoSDK.UserType;
+      user: AtmosphereSDK.UserType;
     },
-  ): Promise<NocoSDK.TableType & {
-    views: Array<NocoSDK.ViewType>
-    columns: Array<NocoSDK.ColumnType>
+  ): Promise<AtmosphereSDK.TableType & {
+    views: Array<AtmosphereSDK.ViewType>
+    columns: Array<AtmosphereSDK.ColumnType>
   }>;
 
   getAccessibleTables(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: {
       baseId: string;
       sourceId?: string;
       includeM2M?: boolean;
       roles: Record<string, boolean>;
-      user: NocoSDK.UserType;
+      user: AtmosphereSDK.UserType;
     },
-  ): Promise<NocoSDK.TableType[]>;
+  ): Promise<AtmosphereSDK.TableType[]>;
 
   tableCreate(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: {
       baseId: string;
       sourceId?: string;
-      table: NocoSDK.TableReqType;
-      user: NocoSDK.UserType;
-      req: NocoSDK.NcRequest;
+      table: AtmosphereSDK.TableReqType;
+      user: AtmosphereSDK.UserType;
+      req: AtmosphereSDK.AtRequest;
       synced?: boolean;
-      apiVersion?: NocoSDK.NcApiVersion;
+      apiVersion?: AtmosphereSDK.AtApiVersion;
     },
-  ): Promise<NocoSDK.TableType>;
+  ): Promise<AtmosphereSDK.TableType>;
 }
 
 interface XcEmailAttachment {
@@ -322,7 +322,7 @@ export interface ICommentsService {
    * comment trigger's "Test" action fetches a sample comment through this).
    */
   listByModel(
-    context: NocoSDK.NcContext,
+    context: AtmosphereSDK.AtContext,
     param: { modelId: string; limit?: number },
   ): Promise<CommentRecord[]>;
 }

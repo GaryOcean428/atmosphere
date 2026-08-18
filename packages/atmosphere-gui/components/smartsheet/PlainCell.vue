@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { BoolType, ColumnType, MetaType } from 'nocodb-sdk'
+import type { BoolType, ColumnType, MetaType } from 'atmosphere-sdk'
 
 interface Props {
   column: ColumnType
@@ -52,7 +52,7 @@ const parsedValue = computed(() => {
 </script>
 
 <template>
-  <NcTooltip v-if="showTooltip" class="truncate" show-on-truncate-only>
+  <AtTooltip v-if="showTooltip" class="truncate" show-on-truncate-only>
     <template #title>
       {{ parsedValue }}
     </template>
@@ -64,11 +64,11 @@ const parsedValue = computed(() => {
         '!italic': italic,
         'underline': underline,
       }"
-      data-testid="nc-plain-cell"
+      data-testid="atm-plain-cell"
     >
       {{ parsedValue }}
     </span>
-  </NcTooltip>
+  </AtTooltip>
   <span
     v-else
     class="plain-cell before:px-1"
@@ -77,7 +77,7 @@ const parsedValue = computed(() => {
       '!italic': italic,
       'underline': underline,
     }"
-    data-testid="nc-plain-cell"
+    data-testid="atm-plain-cell"
   >
     {{ parsedValue }}
   </span>

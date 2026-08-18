@@ -82,22 +82,22 @@ onMounted(generate)
     ></svg>
     <slot v-if="errorForCurrentInput" name="barcodeRenderError" />
 
-    <div v-if="showDownload" class="bg-nc-bg-gray-light mx-4 px-3 py-2 rounded-lg">
-      <NcTooltip show-on-truncate-only class="truncate">
+    <div v-if="showDownload" class="bg-atm-bg-gray-light mx-4 px-3 py-2 rounded-lg">
+      <AtTooltip show-on-truncate-only class="truncate">
         <template #title>
           {{ barcodeValue }}
         </template>
 
         {{ barcodeValue }}
-      </NcTooltip>
+      </AtTooltip>
     </div>
 
     <div v-if="showDownload" class="flex justify-end gap-2 py-2 px-3">
-      <NcTooltip>
+      <AtTooltip>
         <template #title>
           {{ $t('labels.clickToCopy') }}
         </template>
-        <NcButton size="small" type="secondary" @click="performCopy(copyAsPng)">
+        <AtButton size="small" type="secondary" @click="performCopy(copyAsPng)">
           <template #icon>
             <div class="flex children:flex-none relative h-4 w-4">
               <Transition name="icon-fade" :duration="200">
@@ -107,19 +107,19 @@ onMounted(generate)
             </div>
           </template>
           {{ isCopied ? $t('general.copied') : $t('general.copy') }}
-        </NcButton>
-      </NcTooltip>
-      <NcTooltip>
+        </AtButton>
+      </AtTooltip>
+      <AtTooltip>
         <template #title>
           {{ $t('labels.clickToDownload') }}
         </template>
-        <NcButton size="small" type="secondary" @click="downloadSvg">
+        <AtButton size="small" type="secondary" @click="downloadSvg">
           <template #icon>
             <GeneralIcon icon="download" class="w-4 h-4" />
           </template>
           {{ $t('general.download') }}
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
     </div>
   </div>
 </template>

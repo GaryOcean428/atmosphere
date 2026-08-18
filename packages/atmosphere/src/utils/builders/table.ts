@@ -1,5 +1,5 @@
-import { viewTypeAlias } from 'nocodb-sdk';
-import type { TableType, TableV3Type, ViewType } from 'nocodb-sdk';
+import { viewTypeAlias } from 'atmosphere-sdk';
+import type { TableType, TableV3Type, ViewType } from 'atmosphere-sdk';
 import { builderGenerator } from '~/utils/api-v3-data-transformation.builder';
 
 export const tableReadBuilder = builderGenerator<TableType, TableV3Type>({

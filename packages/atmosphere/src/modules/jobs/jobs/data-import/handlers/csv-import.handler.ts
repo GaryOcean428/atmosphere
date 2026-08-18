@@ -4,7 +4,7 @@ import type {
   FileImportColumn,
   FileImportParserConfig,
   ImportPreviewSheet,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type {
   DataImportHandler,
   ImportRow,

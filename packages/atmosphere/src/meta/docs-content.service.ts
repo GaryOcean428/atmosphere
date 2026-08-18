@@ -1,12 +1,12 @@
 import { Injectable, Optional } from '@nestjs/common';
 import type { knex } from 'knex';
 import { MetaService } from '~/meta/meta.service';
-import { NcConfig } from '~/utils/nc-config';
+import { AtConfig } from '~/utils/atm-config';
 
 @Injectable()
 export class DocsContentService extends MetaService {
   constructor(
-    config: NcConfig,
+    config: AtConfig,
     @Optional() trx = null,
     @Optional() nested = 0,
     @Optional() sharedKnex: knex.Knex | null = null,

@@ -11,7 +11,7 @@ const up = async (knex: Knex) => {
 
     table.string('base_id', 20);
     table.string('color', 20);
-    table.integer('nc_order');
+    table.integer('atm_order');
     table.boolean('is_set_as_background');
 
     table.index(['fk_workspace_id', 'base_id']);

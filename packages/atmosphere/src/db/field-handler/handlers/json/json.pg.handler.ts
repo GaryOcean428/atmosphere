@@ -5,7 +5,7 @@ import type { FilterOptions } from '~/db/field-handler/field-handler.interface';
 import type { Column, Filter } from '~/models';
 import { sanitize } from '~/helpers/sqlSanitize';
 import { ncIsStringHasValue } from '~/db/field-handler/utils/handlerUtils';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 const appendIsNull = ({
   qb,
@@ -152,7 +152,7 @@ export class JsonPgHandler extends JsonGeneralHandler {
             break;
 
           default:
-            NcError._.unsupportedFilterOperation(filter.comparison_op);
+            AtError._.unsupportedFilterOperation(filter.comparison_op);
         }
       },
     };

@@ -9,7 +9,7 @@ import {
   Text,
 } from '@react-email/components';
 import * as React from 'react';
-import type { WhiteLabelConfig } from 'nocodb-sdk';
+import type { WhiteLabelConfig } from 'atmosphere-sdk';
 import {
   ContentWrapper,
   Footer,
@@ -53,8 +53,8 @@ export const PasswordReset = ({ email, link, branding }: PasswordResetTemplatePr
 );
 
 PasswordReset.PreviewProps = {
-  email: 'janedoe@nocodb.com',
-  link: 'https://nocodb.com',
+  email: 'janedoe@atmosphere.dev',
+  link: 'https://atmosphere.dev',
 };
 
 export default PasswordReset;

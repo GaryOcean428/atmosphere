@@ -1,11 +1,11 @@
-import type { RollupType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { RollupType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import Column from '~/models/Column';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 
 export const ROLLUP_FUNCTIONS = <const>[
   'count',
@@ -33,9 +33,9 @@ export default class RollupColumn implements RollupType {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     data: Partial<RollupColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(data, [
       'fk_column_id',
@@ -54,7 +54,7 @@ export default class RollupColumn implements RollupType {
     );
 
     if (!column) {
-      NcError.fieldNotFound(insertObj.fk_column_id);
+      AtError.fieldNotFound(insertObj.fk_column_id);
     }
 
     await ncMeta.metaInsert2(
@@ -66,14 +66,14 @@ export default class RollupColumn implements RollupType {
 
     return this.read(context, data.fk_column_id, ncMeta).then(
       async (rollupColumn) => {
-        await NocoCache.appendToList(
+        await AtmosphereCache.appendToList(
           context,
           CacheScope.COL_ROLLUP,
           [data.fk_rollup_column_id],
           `${CacheScope.COL_ROLLUP}:${data.fk_column_id}`,
         );
 
-        await NocoCache.appendToList(
+        await AtmosphereCache.appendToList(
           context,
           CacheScope.COL_ROLLUP,
           [data.fk_relation_column_id],
@@ -86,13 +86,13 @@ export default class RollupColumn implements RollupType {
   }
 
   public static async read(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let column =
       columnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.COL_ROLLUP}:${columnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -104,7 +104,7 @@ export default class RollupColumn implements RollupType {
         MetaTable.COL_ROLLUP,
         { fk_column_id: columnId },
       );
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.COL_ROLLUP}:${columnId}`,
         column,
@@ -114,24 +114,24 @@ export default class RollupColumn implements RollupType {
   }
 
   public async getRollupColumn(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column> {
     return Column.get(context, { colId: this.fk_rollup_column_id }, ncMeta);
   }
 
   public async getRelationColumn(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column> {
     return Column.get(context, { colId: this.fk_relation_column_id }, ncMeta);
   }
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     data: Partial<RollupColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(data, [
       'fk_column_id',
@@ -151,7 +151,7 @@ export default class RollupColumn implements RollupType {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.COL_ROLLUP}:${columnId}`,
       updateObj,

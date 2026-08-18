@@ -1,38 +1,38 @@
 const { exec } = require('child_process');
 const path = require('path');
-const sdkPath = path.join(__dirname, '..', 'packages', 'nocodb-sdk');
-const guiPath = path.join(__dirname, '..', 'packages', 'nc-gui');
-const nocodbPath = path.join(__dirname, '..', 'packages', 'nocodb');
+const sdkPath = path.join(__dirname, '..', 'packages', 'atmosphere-sdk');
+const guiPath = path.join(__dirname, '..', 'packages', 'atmosphere-gui');
+const atmospherePath = path.join(__dirname, '..', 'packages', 'atmosphere');
 
 exec(`cd ${sdkPath} && pnpm i && npm run build`, (err, stdout, stderr) => {
     if (err) {
-      console.error(`Error installing dependencies and building nocodb-sdk: ${err}`);
+      console.error(`Error installing dependencies and building atmosphere-sdk: ${err}`);
       return;
     }
     
-    console.log(`Dependencies installed and nocodb-sdk built: ${stdout}`);
+    console.log(`Dependencies installed and atmosphere-sdk built: ${stdout}`);
 
     const guiPromise = new Promise((resolve, reject) => {
       exec(`cd ${guiPath} && pnpm i ${sdkPath}`, (err, stdout, stderr) => {
         if (err) {
-          reject(`Error installing dependencies for nc-gui: ${err}`);
+          reject(`Error installing dependencies for atmosphere-gui: ${err}`);
         } else {
-          resolve(`Dependencies installed for nc-gui: ${stdout}`);
+          resolve(`Dependencies installed for atmosphere-gui: ${stdout}`);
         }
       });
     });
   
-    const nocodbPromise = new Promise((resolve, reject) => {
-      exec(`cd ${nocodbPath} && pnpm i ${sdkPath}`, (err, stdout, stderr) => {
+    const atmospherePromise = new Promise((resolve, reject) => {
+      exec(`cd ${atmospherePath} && pnpm i ${sdkPath}`, (err, stdout, stderr) => {
         if (err) {
-          reject(`Error installing dependencies for nocodb: ${err}`);
+          reject(`Error installing dependencies for atmosphere: ${err}`);
         } else {
-          resolve(`Dependencies installed for nocodb: ${stdout}`);
+          resolve(`Dependencies installed for atmosphere: ${stdout}`);
         }
       });
     });
 
-    Promise.all([guiPromise, nocodbPromise])
+    Promise.all([guiPromise, atmospherePromise])
       .then((results) => {
         console.log(results.join('\n'));
       })

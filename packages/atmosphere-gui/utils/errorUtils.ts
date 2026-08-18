@@ -1,4 +1,4 @@
-import { NcErrorType } from 'nocodb-sdk'
+import { AtErrorType } from 'atmosphere-sdk'
 
 export async function extractSdkResponseErrorMsg(e: Error & { response?: any }) {
   if (!e || !e.response) {
@@ -36,12 +36,12 @@ export async function extractSdkResponseErrorMsg(e: Error & { response?: any }) 
 }
 
 export async function extractSdkResponseErrorMsgv2(e: Error & { response: any }): Promise<{
-  error: NcErrorType
+  error: AtErrorType
   message: string
   details?: any
 }> {
   const unknownError = {
-    error: NcErrorType.ERR_UNKNOWN,
+    error: AtErrorType.ERR_UNKNOWN,
     // TODO: `e.response?.data?.msg` is fallback for v1 error messages, remove after migrating all error messages to v2 format
     message: e.response?.data?.msg || 'Something went wrong',
   }
@@ -53,7 +53,7 @@ export async function extractSdkResponseErrorMsgv2(e: Error & { response: any })
   if (e.response.data instanceof Blob) {
     try {
       const parsedError = JSON.parse(await e.response.data.text())
-      if (parsedError.error && parsedError.error in NcErrorType) {
+      if (parsedError.error && parsedError.error in AtErrorType) {
         return parsedError
       }
       return unknownError
@@ -61,7 +61,7 @@ export async function extractSdkResponseErrorMsgv2(e: Error & { response: any })
       return unknownError
     }
   } else {
-    if (e.response.data.error && e.response.data.error in NcErrorType) {
+    if (e.response.data.error && e.response.data.error in AtErrorType) {
       return e.response.data
     }
     return unknownError
@@ -79,10 +79,10 @@ export function isUniqueConstraintViolationError(e: Error & { response?: any }):
   const errorData = e.response.data
   // Check for FIELD_UNIQUE_CONSTRAINT_VIOLATION error code
   return (
-    errorData.error === NcErrorType.FIELD_UNIQUE_CONSTRAINT_VIOLATION ||
+    errorData.error === AtErrorType.FIELD_UNIQUE_CONSTRAINT_VIOLATION ||
     (errorData.message ?? errorData.msg)?.includes('Duplicate value') ||
     (errorData.message ?? errorData.msg)?.includes('Unique constraint violation')
   )
 }
 
-export { NcErrorType }
+export { AtErrorType }

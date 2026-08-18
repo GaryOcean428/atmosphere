@@ -1,15 +1,15 @@
 import S3PluginConfig from '~/plugins/s3';
 import SESPluginConfig from '~/plugins/ses';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable, RootScopes } from '~/utils/globals';
 
-export const populatePluginsForCloud = async ({ ncMeta = Noco.ncMeta }) => {
+export const populatePluginsForCloud = async ({ ncMeta = Atmosphere.ncMeta }) => {
   if (
-    !process.env.NC_CLOUD_S3_ACCESS_KEY ||
-    !process.env.NC_CLOUD_S3_ACCESS_SECRET ||
-    !process.env.NC_CLOUD_S3_BUCKET_NAME ||
-    !process.env.NC_CLOUD_S3_REGION ||
-    !process.env.NC_CLOUD_S3_ACL
+    !process.env.ATMOSPHERE_CLOUD_S3_ACCESS_KEY ||
+    !process.env.ATMOSPHERE_CLOUD_S3_ACCESS_SECRET ||
+    !process.env.ATMOSPHERE_CLOUD_S3_BUCKET_NAME ||
+    !process.env.ATMOSPHERE_CLOUD_S3_REGION ||
+    !process.env.ATMOSPHERE_CLOUD_S3_ACL
   ) {
     throw new Error('S3 env variables not found');
   }
@@ -23,7 +23,7 @@ export const populatePluginsForCloud = async ({ ncMeta = Noco.ncMeta }) => {
     },
   );
 
-  if (!s3PluginData && !process.env.NC_LICENSE_KEY)
+  if (!s3PluginData && !process.env.ATMOSPHERE_LICENSE_KEY)
     throw new Error('S3 plugin not found');
 
   if (s3PluginData) {
@@ -32,11 +32,11 @@ export const populatePluginsForCloud = async ({ ncMeta = Noco.ncMeta }) => {
       : {};
 
     const s3PluginFromEnv = {
-      access_key: process.env.NC_CLOUD_S3_ACCESS_KEY,
-      access_secret: process.env.NC_CLOUD_S3_ACCESS_SECRET,
-      bucket: process.env.NC_CLOUD_S3_BUCKET_NAME,
-      region: process.env.NC_CLOUD_S3_REGION,
-      acl: process.env.NC_CLOUD_S3_ACL,
+      access_key: process.env.ATMOSPHERE_CLOUD_S3_ACCESS_KEY,
+      access_secret: process.env.ATMOSPHERE_CLOUD_S3_ACCESS_SECRET,
+      bucket: process.env.ATMOSPHERE_CLOUD_S3_BUCKET_NAME,
+      region: process.env.ATMOSPHERE_CLOUD_S3_REGION,
+      acl: process.env.ATMOSPHERE_CLOUD_S3_ACL,
     };
 
     const isS3PluginUpdateNeeded = Object.keys(s3PluginFromEnv).some(
@@ -58,10 +58,10 @@ export const populatePluginsForCloud = async ({ ncMeta = Noco.ncMeta }) => {
   }
   // // SES
   // if (
-  //   !process.env.NC_CLOUD_SES_ACCESS_KEY ||
-  //   !process.env.NC_CLOUD_SES_ACCESS_SECRET ||
-  //   !process.env.NC_CLOUD_SES_REGION ||
-  //   !process.env.NC_CLOUD_SES_FROM
+  //   !process.env.ATMOSPHERE_CLOUD_SES_ACCESS_KEY ||
+  //   !process.env.ATMOSPHERE_CLOUD_SES_ACCESS_SECRET ||
+  //   !process.env.ATMOSPHERE_CLOUD_SES_REGION ||
+  //   !process.env.ATMOSPHERE_CLOUD_SES_FROM
   // ) {
   //   throw new Error('SES env variables not found');
   // }
@@ -75,7 +75,7 @@ export const populatePluginsForCloud = async ({ ncMeta = Noco.ncMeta }) => {
     },
   );
 
-  if (!sesPluginData && !process.env.NC_LICENSE_KEY) {
+  if (!sesPluginData && !process.env.ATMOSPHERE_LICENSE_KEY) {
     throw new Error('SES plugin not found');
   }
 
@@ -85,10 +85,10 @@ export const populatePluginsForCloud = async ({ ncMeta = Noco.ncMeta }) => {
       : {};
 
     const sesPluginFromEnv = {
-      access_key: process.env.NC_CLOUD_SES_ACCESS_KEY,
-      access_secret: process.env.NC_CLOUD_SES_ACCESS_SECRET,
-      region: process.env.NC_CLOUD_SES_REGION,
-      from: process.env.NC_CLOUD_SES_FROM,
+      access_key: process.env.ATMOSPHERE_CLOUD_SES_ACCESS_KEY,
+      access_secret: process.env.ATMOSPHERE_CLOUD_SES_ACCESS_SECRET,
+      region: process.env.ATMOSPHERE_CLOUD_SES_REGION,
+      from: process.env.ATMOSPHERE_CLOUD_SES_FROM,
     };
 
     const isSESPluginUpdateNeeded = Object.keys(sesPluginFromEnv).some(

@@ -68,9 +68,9 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
 </script>
 
 <template>
-  <div class="nc-pagination-stripe flex flex-row items-center gap-x-2">
+  <div class="atm-pagination-stripe flex flex-row items-center gap-x-2">
     <div>
-      <NcButton
+      <AtButton
         v-e="[`a:pagination:${entityName}:prev-page`]"
         class="prev-page"
         type="secondary"
@@ -78,16 +78,16 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
         :disabled="current === 1"
         @click="changePage({ increase: false })"
       >
-        <GeneralIcon icon="arrowLeft" class="nc-pagination-icon" />
-      </NcButton>
+        <GeneralIcon icon="arrowLeft" class="atm-pagination-icon" />
+      </AtButton>
     </div>
 
-    <div v-if="!isMobileMode" class="text-nc-content-gray-muted">
+    <div v-if="!isMobileMode" class="text-atm-content-gray-muted">
       {{ current }}
     </div>
 
     <div>
-      <NcButton
+      <AtButton
         v-e="[`a:pagination:${entityName}:next-page`]"
         class="next-page"
         type="secondary"
@@ -95,22 +95,22 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
         :disabled="!hasMore"
         @click="changePage({ increase: true })"
       >
-        <GeneralIcon icon="arrowRight" class="nc-pagination-icon" />
-      </NcButton>
+        <GeneralIcon icon="arrowRight" class="atm-pagination-icon" />
+      </AtButton>
     </div>
 
-    <div v-if="showSizeChanger && !isMobileMode" class="text-nc-content-gray-muted">
+    <div v-if="showSizeChanger && !isMobileMode" class="text-atm-content-gray-muted">
       <a-select
         ref="pageSizeRef"
         v-model:value="pageSize"
         class="!min-w-[110px]"
         :options="pageSizeOptions"
         size="small"
-        dropdown-class-name="nc-pagination-dropdown"
+        dropdown-class-name="atm-pagination-dropdown"
         @dropdown-visible-change="pageSizeDropdownVisibleChange"
       >
         <template #suffixIcon>
-          <GeneralIcon icon="arrowDown" class="text-nc-content-gray-muted nc-select-page-size-expand-btn" />
+          <GeneralIcon icon="arrowDown" class="text-atm-content-gray-muted atm-select-page-size-expand-btn" />
         </template>
       </a-select>
     </div>
@@ -119,22 +119,22 @@ const pageSizeDropdownVisibleChange = (value: boolean) => {
 
 <style lang="scss" scoped>
 :deep(.ant-select-selector) {
-  @apply !border-nc-border-gray-medium !rounded-lg !h-[25px];
+  @apply !border-atm-border-gray-medium !rounded-lg !h-[25px];
 }
 
-.nc-pagination-icon {
+.atm-pagination-icon {
   @apply w-4 h-4;
 }
 
-:deep(.nc-button:not(:disabled)) {
-  .nc-pagination-icon {
-    @apply !text-nc-content-gray-muted;
+:deep(.atm-button:not(:disabled)) {
+  .atm-pagination-icon {
+    @apply !text-atm-content-gray-muted;
   }
 }
 </style>
 
 <style lang="scss">
-.nc-pagination-dropdown {
+.atm-pagination-dropdown {
   @apply !rounded-lg;
 }
 </style>

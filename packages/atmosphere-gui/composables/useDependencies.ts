@@ -1,4 +1,4 @@
-import type { DashboardType, DependencyTableType, TableType, WorkflowType } from 'nocodb-sdk'
+import type { DashboardType, DependencyTableType, TableType, WorkflowType } from 'atmosphere-sdk'
 
 export function useDependencies() {
   const { api } = useApi()

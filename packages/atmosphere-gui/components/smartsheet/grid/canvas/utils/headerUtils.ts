@@ -1,5 +1,5 @@
-import type { LinkToAnotherRecordType, TableType } from 'nocodb-sdk'
-import { RelationTypes, UITypes, UITypesName, isLinksOrLTAR } from 'nocodb-sdk'
+import type { LinkToAnotherRecordType, TableType } from 'atmosphere-sdk'
+import { RelationTypes, UITypes, UITypesName, isLinksOrLTAR } from 'atmosphere-sdk'
 import type { CanvasGridColumn } from '~/lib/types'
 
 /**
@@ -68,8 +68,8 @@ export function getCustomColumnTooltip({
     // MM table is always in the same base as the related table
     const mmMeta = getMetaByKey(relatedBaseId, relOptions.fk_mm_model_id)
     if (mmMeta) {
-      // skip if created by NocoDB
-      mmTable = mmMeta?.title?.includes('nc_m2m_') ? null : mmMeta
+      // skip if created by Atmosphere
+      mmTable = mmMeta?.title?.includes('atm_m2m_') ? null : mmMeta
     } else {
       // if metas not found in store, fetch it with correct base_id
       getMeta?.(relatedBaseId, relOptions.fk_mm_model_id).catch((_e) => {

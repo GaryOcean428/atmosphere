@@ -14,7 +14,7 @@ const { isMobileMode } = useGlobal()
 </script>
 
 <template>
-  <div v-if="isWorkspacesLoading && (!isMobileMode || showInMobile)" class="nc-mini-sidebar-btn-full-width">
+  <div v-if="isWorkspacesLoading && (!isMobileMode || showInMobile)" class="atm-mini-sidebar-btn-full-width">
     <div
       class="w-7"
       :class="{

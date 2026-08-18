@@ -88,7 +88,7 @@ watch(
         :key="`color-${colId}-${i}`"
         class="p-1 rounded-lg flex h-8"
         :class="{
-          'hover:bg-nc-bg-gray-medium': isNewDesign,
+          'hover:bg-atm-bg-gray-medium': isNewDesign,
         }"
       >
         <button
@@ -117,19 +117,19 @@ watch(
         v-if="props.advanced"
         class="p-1 rounded-lg h-8"
         :class="{
-          'hover:bg-nc-bg-gray-medium': isNewDesign,
+          'hover:bg-atm-bg-gray-medium': isNewDesign,
         }"
       >
         <button
-          class="nc-more-colors-trigger h-6 w-6 border-1 border-nc-border-gray-extra-dark rounded"
+          class="atm-more-colors-trigger h-6 w-6 border-1 border-atm-border-gray-extra-dark rounded"
           @click="isPickerOn = !isPickerOn"
         >
-          <NcTooltip>
+          <AtTooltip>
             <template #title>{{ $t('activity.moreColors') }}</template>
             <div class="flex items-center justify-center">
               <GeneralIcon :icon="isPickerOn ? 'minus' : 'plus'" class="w-4 h-4" />
             </div>
-          </NcTooltip>
+          </AtTooltip>
         </button>
       </div>
     </div>
@@ -149,7 +149,7 @@ watch(
 
 <style lang="scss" scoped>
 .color-picker {
-  @apply flex flex-col items-center justify-center bg-nc-bg-default p-2.5;
+  @apply flex flex-col items-center justify-center bg-atm-bg-default p-2.5;
 }
 .color-picker-row {
   @apply flex flex-row space-x-1;
@@ -157,7 +157,7 @@ watch(
 .color-selector {
   @apply h-6 w-6 rounded;
   -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: var(--nc-bg-default);
+  -webkit-text-stroke-color: var(--atm-bg-default);
 }
 .color-selector:hover {
   filter: brightness(90%);
@@ -165,9 +165,9 @@ watch(
 }
 .color-selector:focus,
 .color-selector.selected,
-.nc-more-colors-trigger:focus {
+.atm-more-colors-trigger:focus {
   outline: none;
-  box-shadow: 0px 0px 0px 2px var(--nc-bg-default), 0px 0px 0px 4px var(--nc-fill-primary);
+  box-shadow: 0px 0px 0px 2px var(--atm-bg-default), 0px 0px 0px 4px var(--atm-fill-primary);
 }
 
 :deep(.vc-chrome-toggle-icon) {

@@ -91,16 +91,16 @@ export interface SerializerOrParserFnProps {
     serializeLinkRecordSearchQuery?: boolean;
     t?: (key: string, params?: Record<string, any>) => string;
     isAggregation?: boolean;
-    clipboardItem?: NcClipboardItemType;
+    clipboardItem?: AtClipboardItemType;
   };
 }
 
-export type NcClipboardDataType = Record<string, NcClipboardItemType>;
+export type AtClipboardDataType = Record<string, AtClipboardItemType>;
 
-export interface NcClipboardItemType {
+export interface AtClipboardItemType {
   rowId: string;
   dbCellValue: any;
   column: Partial<ColumnType>;
 }
 
-export interface NcClipboardItemForColumnType {}
+export interface AtClipboardItemForColumnType {}

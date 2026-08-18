@@ -8,14 +8,14 @@ const managedApp = ref({
 </script>
 
 <template>
-  <div class="bg-nc-bg-gray-light">
+  <div class="bg-atm-bg-gray-light">
     <a-card>
       <h4>Simple</h4>
 
       Selected color: {{ color1 }}
 
       <div class="flex items-center gap-2">
-        <NcSwitch v-model:checked="managedApp.managed_app_master"> Toggle Managed App state </NcSwitch>
+        <AtSwitch v-model:checked="managedApp.managed_app_master"> Toggle Managed App state </AtSwitch>
       </div>
       <div class="inline-block min-h-[24px] min-w-[24px] h-[24px] w-[24px] rounded-md" :class="[`bg-${color1}`]"></div>
       <GeneralBaseIconColorPicker

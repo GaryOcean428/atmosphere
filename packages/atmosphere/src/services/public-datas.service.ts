@@ -1,21 +1,21 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import {
   isLinksOrLTAR,
-  NcBaseError,
+  AtBaseError,
   ncIsArray,
-  NOCO_SERVICE_USERS,
+  ATMOSPHERE_SERVICE_USERS,
   ServiceUserType,
   UITypes,
   ViewTypes,
-} from 'nocodb-sdk';
-import type { ClientType, NcRequest } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import type { ClientType, AtRequest } from 'atmosphere-sdk';
 import type { LinkToAnotherRecordColumn } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { DependantFields } from '~/helpers/getAst';
 import { DBQueryClient } from '~/dbQueryClient';
-import { nocoExecute } from '~/utils';
+import { atmosphereExecute } from '~/utils';
 import { Base, Column, FormView, Model, Source, View } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import getAst from '~/helpers/getAst';
 import { sanitizePublicQuery } from '~/helpers/publicQuerySanitizer';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
@@ -23,7 +23,7 @@ import { getColumnByIdOrName } from '~/helpers/dataHelpers';
 import { restrictNestedLinkQueryForColumn } from '~/helpers/nestedLinkQueryHelpers';
 import { parseFilterArrJson } from '~/helpers/filterArrJsonHelper';
 import { defaultGroupByLimitConfig } from '~/helpers/extractLimitAndOffset';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { replaceDynamicFieldWithValue } from '~/helpers/dbHelpers';
 import { Filter } from '~/models';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
@@ -42,7 +42,7 @@ export function sanitizeUrlPath(paths) {
 // (GROUP_CHUNK_SIZE = 100 in useInfiniteGroups).
 //
 // useViewGroupBy sizes its batch by `limitGroup` instead, which has a lower clamp
-// only — so raising NC_DB_QUERY_LIMIT_GROUP_BY_GROUP past the cap would 400 every
+// only — so raising ATMOSPHERE_DB_QUERY_LIMIT_GROUP_BY_GROUP past the cap would 400 every
 // shared-view request and blame this file. Track it rather than couple to it.
 const MAX_PUBLIC_BULK_ENTRIES = Math.max(
   200,
@@ -51,11 +51,11 @@ const MAX_PUBLIC_BULK_ENTRIES = Math.max(
 
 function assertBulkFilterListWithinLimit(bulkFilterList: unknown): void {
   if (!Array.isArray(bulkFilterList) || !bulkFilterList.length) {
-    NcError.badRequest('Invalid bulkFilterList');
+    AtError.badRequest('Invalid bulkFilterList');
   }
 
   if ((bulkFilterList as unknown[]).length > MAX_PUBLIC_BULK_ENTRIES) {
-    NcError.badRequest(
+    AtError.badRequest(
       `bulkFilterList exceeds the maximum of ${MAX_PUBLIC_BULK_ENTRIES} entries`,
     );
   }
@@ -119,7 +119,7 @@ export class PublicDatasService {
   ) {}
 
   async dataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       sharedViewUuid: string;
       password?: string;
@@ -129,7 +129,7 @@ export class PublicDatasService {
     const { sharedViewUuid, password, query = {} } = param;
     const view = await View.getByUUID(context, sharedViewUuid);
 
-    if (!view) NcError.get(context).viewNotFound(sharedViewUuid);
+    if (!view) AtError.get(context).viewNotFound(sharedViewUuid);
 
     if (
       view.type !== ViewTypes.GRID &&
@@ -140,7 +140,7 @@ export class PublicDatasService {
       view.type !== ViewTypes.TIMELINE &&
       view.type !== ViewTypes.GANTT
     ) {
-      NcError.get(context).notFound('Not found');
+      AtError.get(context).notFound('Not found');
     }
 
     const base = await Base.get(context, view.base_id);
@@ -148,29 +148,29 @@ export class PublicDatasService {
     this.publicMetasService.checkViewBaseType(view, base);
 
     if (!(await View.verifyPassword(view, password))) {
-      return NcError.get(context).invalidSharedViewPassword();
+      return AtError.get(context).invalidSharedViewPassword();
     }
 
     const model = await Model.getByIdOrName(context, {
       id: view?.fk_model_id,
     });
 
-    if (!model) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!model) AtError.get(context).tableNotFound(view.fk_model_id);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
     // For Gantt shared views the dep-link Links column must expand into
-    // nested LTAR rows in BOTH the AST (which drives nocoExecute's
+    // nested LTAR rows in BOTH the AST (which drives atmosphereExecute's
     // response shape) and listArgs (which drives baseModel.list's SQL).
     // Setting it on listArgs alone fetches the nested data but then
-    // nocoExecute strips it because the AST still says
+    // atmosphereExecute strips it because the AST still says
     // `Predecessor: 1` (count form).
     const isGanttShared = view.type === ViewTypes.GANTT;
 
@@ -198,7 +198,7 @@ export class PublicDatasService {
     let count = 0;
 
     try {
-      data = await nocoExecute(
+      data = await atmosphereExecute(
         ast,
         await baseModel.list(listArgs),
         {},
@@ -206,9 +206,9 @@ export class PublicDatasService {
       );
       count = await baseModel.count(listArgs);
     } catch (e) {
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       console.log(e);
-      NcError.get(context).internalServerError(
+      AtError.get(context).internalServerError(
         'Please check server log for more details',
       );
     }
@@ -217,7 +217,7 @@ export class PublicDatasService {
   }
 
   async dataCount(
-    context: NcContext,
+    context: AtContext,
     param: {
       sharedViewUuid: string;
       password?: string;
@@ -227,7 +227,7 @@ export class PublicDatasService {
     const { sharedViewUuid, password } = param;
     const view = await View.getByUUID(context, sharedViewUuid);
 
-    if (!view) NcError.get(context).viewNotFound(sharedViewUuid);
+    if (!view) AtError.get(context).viewNotFound(sharedViewUuid);
 
     if (
       view.type !== ViewTypes.GRID &&
@@ -238,7 +238,7 @@ export class PublicDatasService {
       view.type !== ViewTypes.TIMELINE &&
       view.type !== ViewTypes.GANTT
     ) {
-      NcError.notFound('Not found');
+      AtError.notFound('Not found');
     }
 
     const base = await Base.get(context, view.base_id);
@@ -246,21 +246,21 @@ export class PublicDatasService {
     this.publicMetasService.checkViewBaseType(view, base);
 
     if (!(await View.verifyPassword(view, password))) {
-      return NcError.invalidSharedViewPassword();
+      return AtError.invalidSharedViewPassword();
     }
 
     const model = await Model.getByIdOrName(context, {
       id: view?.fk_model_id,
     });
 
-    if (!model) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!model) AtError.get(context).tableNotFound(view.fk_model_id);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -273,7 +273,7 @@ export class PublicDatasService {
   }
 
   async dataAggregate(
-    context: NcContext,
+    context: AtContext,
     param: {
       sharedViewUuid: string;
       password?: string;
@@ -282,10 +282,10 @@ export class PublicDatasService {
   ) {
     const view = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(param.sharedViewUuid);
+    if (!view) AtError.viewNotFound(param.sharedViewUuid);
 
     if (view.type !== ViewTypes.GRID) {
-      NcError.notFound('Not found');
+      AtError.notFound('Not found');
     }
 
     const base = await Base.get(context, view.base_id);
@@ -293,14 +293,14 @@ export class PublicDatasService {
     this.publicMetasService.checkViewBaseType(view, base);
 
     if (!(await View.verifyPassword(view, param.password))) {
-      return NcError.invalidSharedViewPassword();
+      return AtError.invalidSharedViewPassword();
     }
 
     const model = await Model.getByIdOrName(context, {
       id: view?.fk_model_id,
     });
 
-    if (!model) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!model) AtError.get(context).tableNotFound(view.fk_model_id);
 
     const source = await Source.get(context, model.source_id);
 
@@ -321,7 +321,7 @@ export class PublicDatasService {
 
   // todo: Handle the error case where view doesnt belong to model
   async groupedDataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       sharedViewUuid: string;
       password?: string;
@@ -331,14 +331,14 @@ export class PublicDatasService {
   ) {
     const view = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(param.sharedViewUuid);
+    if (!view) AtError.viewNotFound(param.sharedViewUuid);
 
     if (
       view.type !== ViewTypes.GRID &&
       view.type !== ViewTypes.KANBAN &&
       view.type !== ViewTypes.GALLERY
     ) {
-      NcError.notFound('Not found');
+      AtError.notFound('Not found');
     }
 
     const base = await Base.get(context, view.base_id);
@@ -346,14 +346,14 @@ export class PublicDatasService {
     this.publicMetasService.checkViewBaseType(view, base);
 
     if (!(await View.verifyPassword(view, param.password))) {
-      return NcError.invalidSharedViewPassword();
+      return AtError.invalidSharedViewPassword();
     }
 
     const model = await Model.getByIdOrName(context, {
       id: view?.fk_model_id,
     });
 
-    if (!model) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!model) AtError.get(context).tableNotFound(view.fk_model_id);
 
     return await this.getGroupedDataList(context, {
       model,
@@ -364,7 +364,7 @@ export class PublicDatasService {
   }
 
   async getGroupedDataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       model: Model;
       view: View;
@@ -389,7 +389,7 @@ export class PublicDatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -423,7 +423,7 @@ export class PublicDatasService {
         ...listArgs,
         groupColumnId,
       });
-      data = await nocoExecute(
+      data = await atmosphereExecute(
         { key: 1, value: ast },
         groupedData,
         {},
@@ -447,13 +447,13 @@ export class PublicDatasService {
       });
     } catch (e) {
       console.log(e);
-      NcError.internalServerError('Please check server log for more details');
+      AtError.internalServerError('Please check server log for more details');
     }
     return data;
   }
 
   async dataGroupByCount(
-    context: NcContext,
+    context: AtContext,
     param: {
       sharedViewUuid: string;
       password?: string;
@@ -462,25 +462,25 @@ export class PublicDatasService {
   ) {
     const view = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(param.sharedViewUuid);
+    if (!view) AtError.viewNotFound(param.sharedViewUuid);
 
     if (
       view.type !== ViewTypes.GRID &&
       view.type !== ViewTypes.TIMELINE &&
       view.type !== ViewTypes.GANTT
     ) {
-      NcError.notFound('Not found');
+      AtError.notFound('Not found');
     }
 
     if (!(await View.verifyPassword(view, param.password))) {
-      return NcError.invalidSharedViewPassword();
+      return AtError.invalidSharedViewPassword();
     }
 
     const model = await Model.getByIdOrName(context, {
       id: view?.fk_model_id,
     });
 
-    if (!model) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!model) AtError.get(context).tableNotFound(view.fk_model_id);
 
     return await this.getDataGroupByCount(context, {
       model,
@@ -490,7 +490,7 @@ export class PublicDatasService {
   }
 
   async dataGroupBy(
-    context: NcContext,
+    context: AtContext,
     param: {
       sharedViewUuid: string;
       password?: string;
@@ -499,14 +499,14 @@ export class PublicDatasService {
   ) {
     const view = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(param.sharedViewUuid);
+    if (!view) AtError.viewNotFound(param.sharedViewUuid);
 
     if (
       view.type !== ViewTypes.GRID &&
       view.type !== ViewTypes.TIMELINE &&
       view.type !== ViewTypes.GANTT
     ) {
-      NcError.notFound('Not found');
+      AtError.notFound('Not found');
     }
 
     const base = await Base.get(context, view.base_id);
@@ -514,14 +514,14 @@ export class PublicDatasService {
     this.publicMetasService.checkViewBaseType(view, base);
 
     if (!(await View.verifyPassword(view, param.password))) {
-      return NcError.invalidSharedViewPassword();
+      return AtError.invalidSharedViewPassword();
     }
 
     const model = await Model.getByIdOrName(context, {
       id: view?.fk_model_id,
     });
 
-    if (!model) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!model) AtError.get(context).tableNotFound(view.fk_model_id);
 
     return await this.getDataGroupBy(context, {
       model,
@@ -531,7 +531,7 @@ export class PublicDatasService {
   }
 
   async getDataGroupByCount(
-    context: NcContext,
+    context: AtContext,
     param: { model: Model; view: View; query?: any },
   ) {
     const { model, view, query = {} } = param;
@@ -550,7 +550,7 @@ export class PublicDatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -568,7 +568,7 @@ export class PublicDatasService {
   }
 
   async getDataGroupBy(
-    context: NcContext,
+    context: AtContext,
     param: { model: Model; view: View; query?: any },
   ) {
     try {
@@ -588,7 +588,7 @@ export class PublicDatasService {
       const baseModel = await Model.getBaseModelSQL(context, {
         id: model.id,
         viewId: view?.id,
-        dbDriver: await NcConnectionMgrv2.get(source),
+        dbDriver: await AtConnectionMgrv2.get(source),
         source,
       });
 
@@ -618,32 +618,32 @@ export class PublicDatasService {
       });
     } catch (e) {
       console.log(e);
-      NcError.internalServerError('Please check server log for more details');
+      AtError.internalServerError('Please check server log for more details');
     }
   }
 
   async dataInsert(
-    context: NcContext,
+    context: AtContext,
     param: {
       sharedViewUuid: string;
       password?: string;
       body: any;
       files: any[];
       siteUrl: string;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const view = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(param.sharedViewUuid);
-    if (view.type !== ViewTypes.FORM) NcError.notFound();
+    if (!view) AtError.viewNotFound(param.sharedViewUuid);
+    if (view.type !== ViewTypes.FORM) AtError.notFound();
 
     const base = await Base.get(context, view.base_id);
 
     this.publicMetasService.checkViewBaseType(view, base);
 
     if (!(await View.verifyPassword(view, param.password))) {
-      return NcError.invalidSharedViewPassword();
+      return AtError.invalidSharedViewPassword();
     }
 
     // Check if form has started / expired
@@ -656,8 +656,8 @@ export class PublicDatasService {
     // the submission stays traceable.
     if (!param.req.user?.id) {
       param.req.user = {
-        ...NOCO_SERVICE_USERS[ServiceUserType.ANONYMOUS_USER],
-      } as NcRequest['user'];
+        ...ATMOSPHERE_SERVICE_USERS[ServiceUserType.ANONYMOUS_USER],
+      } as AtRequest['user'];
     }
     param.req.ncSharedViewId = view.id;
 
@@ -665,18 +665,18 @@ export class PublicDatasService {
       id: view?.fk_model_id,
     });
 
-    if (!model) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!model) AtError.get(context).tableNotFound(view.fk_model_id);
 
     const source = await Source.get(context, model.source_id);
 
     if (source?.is_data_readonly) {
-      NcError.sourceDataReadOnly(source.alias);
+      AtError.sourceDataReadOnly(source.alias);
     }
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -764,7 +764,7 @@ export class PublicDatasService {
   }
 
   async relDataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       query: any;
       sharedViewUuid: string;
@@ -775,22 +775,22 @@ export class PublicDatasService {
   ) {
     const view = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(param.sharedViewUuid);
+    if (!view) AtError.viewNotFound(param.sharedViewUuid);
 
     if (view.type !== ViewTypes.FORM && view.type !== ViewTypes.GALLERY) {
-      NcError.notFound('Not found');
+      AtError.notFound('Not found');
     }
 
     const base = await Base.get(context, view.base_id);
 
     this.publicMetasService.checkViewBaseType(view, base);
     if (!(await View.verifyPassword(view, param.password))) {
-      NcError.invalidSharedViewPassword();
+      AtError.invalidSharedViewPassword();
     }
 
     const column = await Column.get(context, { colId: param.columnId });
 
-    if (!column) NcError.get(context).fieldNotFound(param.columnId);
+    if (!column) AtError.get(context).fieldNotFound(param.columnId);
 
     const currentModel = await view.getModel(context);
 
@@ -798,10 +798,10 @@ export class PublicDatasService {
     // the model row (Model.softDelete), leaving the view + its share UUID intact.
     // View.getByUUID still resolves, but view.getModel returns null for the
     // soft-deleted model — guard before dereferencing.
-    if (!currentModel) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!currentModel) AtError.get(context).tableNotFound(view.fk_model_id);
 
     if (column.fk_model_id !== currentModel.id)
-      NcError.badRequest("Column doesn't belongs to the model");
+      AtError.badRequest("Column doesn't belongs to the model");
 
     // Block access to relation columns hidden from the shared view so the
     // /nested/ endpoint can't be used to read links the view owner stripped.
@@ -810,27 +810,27 @@ export class PublicDatasService {
       (vc) => vc.fk_column_id === column.id && vc.show,
     );
     if (!isVisible) {
-      NcError.badRequest('Column not accessible in this shared view');
+      AtError.badRequest('Column not accessible in this shared view');
     }
 
     await currentModel.getColumns(context);
 
     if (!isLinksOrLTAR(column))
-      NcError.get(context).badRequest('Column is not a relation column');
+      AtError.get(context).badRequest('Column is not a relation column');
 
     const colOptions = await column.getColOptions<LinkToAnotherRecordColumn>(
       context,
     );
 
     if (!colOptions)
-      NcError.get(context).badRequest('Relation column metadata is missing');
+      AtError.get(context).badRequest('Relation column metadata is missing');
 
     const model = await colOptions.getRelatedTable(context);
 
     // Related table may have been trashed (soft-deleted) while the link column
     // still references it — fail cleanly instead of dereferencing null below.
     if (!model)
-      NcError.get(context).tableNotFound(colOptions.fk_related_model_id);
+      AtError.get(context).tableNotFound(colOptions.fk_related_model_id);
 
     // Use refContext for cross-base links — the related table may belong
     // to a different base, so Source.get scoped to the original context
@@ -842,7 +842,7 @@ export class PublicDatasService {
     const baseModel = await Model.getBaseModelSQL(refContext, {
       id: model.id,
       viewId: colOptions.fk_target_view_id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -873,7 +873,7 @@ export class PublicDatasService {
       param.query.fields.forEach((f) => {
         // fields can be column IDs or titles, but AST uses titles as keys
         // (getAst with extractOnlyPrimaries returns early with title-keyed AST).
-        // Resolve to title so nocoExecute can match against data objects.
+        // Resolve to title so atmosphereExecute can match against data objects.
         const col = model.columns.find((c) => c.id === f || c.title === f);
         const key = col?.title ?? f;
         if (ast[key] === undefined) {
@@ -900,7 +900,7 @@ export class PublicDatasService {
           : []) || [],
       );
 
-      data = data = await nocoExecute(
+      data = data = await atmosphereExecute(
         ast,
         await baseModel.list({
           ...listArgs,
@@ -915,14 +915,14 @@ export class PublicDatasService {
       } as any);
     } catch (e) {
       console.log(e);
-      NcError.internalServerError('Please check server log for more details');
+      AtError.internalServerError('Please check server log for more details');
     }
 
     return new PagedResponseImpl(data, { ...param.query, count });
   }
 
   async publicMmList(
-    context: NcContext,
+    context: AtContext,
     param: {
       query: any;
       sharedViewUuid: string;
@@ -933,22 +933,22 @@ export class PublicDatasService {
   ) {
     const view = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(param.sharedViewUuid);
+    if (!view) AtError.viewNotFound(param.sharedViewUuid);
 
-    if (view.type === ViewTypes.FORM) NcError.notFound('Not found');
+    if (view.type === ViewTypes.FORM) AtError.notFound('Not found');
 
     const base = await Base.get(context, view.base_id);
 
     this.publicMetasService.checkViewBaseType(view, base);
     if (!(await View.verifyPassword(view, param.password))) {
-      NcError.invalidSharedViewPassword();
+      AtError.invalidSharedViewPassword();
     }
 
     const currentModel = await view.getModel(context);
 
     // Shared view can outlive its table (see relDataList) — a trashed table
     // soft-deletes only the model row, so getModel returns null here.
-    if (!currentModel) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!currentModel) AtError.get(context).tableNotFound(view.fk_model_id);
 
     const column = await getColumnByIdOrName(
       context,
@@ -957,7 +957,7 @@ export class PublicDatasService {
     );
 
     if (column.fk_model_id !== view.fk_model_id)
-      NcError.badRequest("Column doesn't belongs to the model");
+      AtError.badRequest("Column doesn't belongs to the model");
 
     // Block access to relation columns hidden from the shared view so the
     // /mm/ endpoint can't be used to read links the view owner stripped.
@@ -966,7 +966,7 @@ export class PublicDatasService {
       (vc) => vc.fk_column_id === column.id && vc.show,
     );
     if (!isVisible) {
-      NcError.badRequest('Column not accessible in this shared view');
+      AtError.badRequest('Column not accessible in this shared view');
     }
 
     const source = await Source.get(context, view.source_id);
@@ -974,7 +974,7 @@ export class PublicDatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: view.fk_model_id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -989,7 +989,7 @@ export class PublicDatasService {
       },
     );
     if (!parentRow) {
-      NcError.recordNotFound(param.rowId);
+      AtError.recordNotFound(param.rowId);
     }
 
     // Strip caller-supplied where/sort references to columns the link doesn't
@@ -1006,7 +1006,7 @@ export class PublicDatasService {
     };
 
     const data = (
-      await nocoExecute(
+      await atmosphereExecute(
         requestObj,
         {
           [key]: async (args) => {
@@ -1037,7 +1037,7 @@ export class PublicDatasService {
   }
 
   async publicHmList(
-    context: NcContext,
+    context: AtContext,
     param: {
       query: any;
       rowId: string;
@@ -1048,22 +1048,22 @@ export class PublicDatasService {
   ) {
     const view = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(param.sharedViewUuid);
+    if (!view) AtError.viewNotFound(param.sharedViewUuid);
 
-    if (view.type === ViewTypes.FORM) NcError.notFound('Not found');
+    if (view.type === ViewTypes.FORM) AtError.notFound('Not found');
 
     const base = await Base.get(context, view.base_id);
 
     this.publicMetasService.checkViewBaseType(view, base);
     if (!(await View.verifyPassword(view, param.password))) {
-      NcError.invalidSharedViewPassword();
+      AtError.invalidSharedViewPassword();
     }
 
     const currentModel = await view.getModel(context);
 
     // Shared view can outlive its table (see relDataList) — a trashed table
     // soft-deletes only the model row, so getModel returns null here.
-    if (!currentModel) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!currentModel) AtError.get(context).tableNotFound(view.fk_model_id);
 
     const column = await getColumnByIdOrName(
       context,
@@ -1072,7 +1072,7 @@ export class PublicDatasService {
     );
 
     if (column.fk_model_id !== view.fk_model_id)
-      NcError.badRequest("Column doesn't belongs to the model");
+      AtError.badRequest("Column doesn't belongs to the model");
 
     // Block access to relation columns hidden from the shared view so the
     // /hm/ endpoint can't be used to read links the view owner stripped.
@@ -1081,7 +1081,7 @@ export class PublicDatasService {
       (vc) => vc.fk_column_id === column.id && vc.show,
     );
     if (!isVisible) {
-      NcError.badRequest('Column not accessible in this shared view');
+      AtError.badRequest('Column not accessible in this shared view');
     }
 
     const source = await Source.get(context, view.source_id);
@@ -1089,7 +1089,7 @@ export class PublicDatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: view.fk_model_id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1104,7 +1104,7 @@ export class PublicDatasService {
       },
     );
     if (!parentRow) {
-      NcError.recordNotFound(param.rowId);
+      AtError.recordNotFound(param.rowId);
     }
 
     // Strip caller-supplied where/sort references to columns the link doesn't
@@ -1121,7 +1121,7 @@ export class PublicDatasService {
     };
 
     const data = (
-      await nocoExecute(
+      await atmosphereExecute(
         requestObj,
         {
           [key]: async (args) => {
@@ -1151,7 +1151,7 @@ export class PublicDatasService {
   }
 
   async dataRead(
-    context: NcContext,
+    context: AtContext,
     param: {
       sharedViewUuid: string;
       rowId: string;
@@ -1165,29 +1165,29 @@ export class PublicDatasService {
     const query = sanitizePublicQuery(param.query ?? {});
     const view = await View.getByUUID(context, sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(sharedViewUuid);
+    if (!view) AtError.viewNotFound(sharedViewUuid);
 
-    if (view.type === ViewTypes.FORM) NcError.notFound('Not found');
+    if (view.type === ViewTypes.FORM) AtError.notFound('Not found');
 
     const base = await Base.get(context, view.base_id);
 
     this.publicMetasService.checkViewBaseType(view, base);
     if (!(await View.verifyPassword(view, password))) {
-      return NcError.invalidSharedViewPassword();
+      return AtError.invalidSharedViewPassword();
     }
 
     const model = await Model.getByIdOrName(context, {
       id: view?.fk_model_id,
     });
 
-    if (!model) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!model) AtError.get(context).tableNotFound(view.fk_model_id);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1198,14 +1198,14 @@ export class PublicDatasService {
     });
 
     if (!row) {
-      NcError.recordNotFound(param.rowId);
+      AtError.recordNotFound(param.rowId);
     }
 
     return row;
   }
 
   async bulkDataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       sharedViewUuid: string;
       password?: string;
@@ -1215,24 +1215,24 @@ export class PublicDatasService {
   ) {
     const view = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(param.sharedViewUuid);
+    if (!view) AtError.viewNotFound(param.sharedViewUuid);
 
     if (view.type !== ViewTypes.GRID) {
-      NcError.notFound('Not found');
+      AtError.notFound('Not found');
     }
 
     const base = await Base.get(context, view.base_id);
 
     this.publicMetasService.checkViewBaseType(view, base);
     if (!(await View.verifyPassword(view, param.password))) {
-      return NcError.invalidSharedViewPassword();
+      return AtError.invalidSharedViewPassword();
     }
 
     const model = await Model.getByIdOrName(context, {
       id: view?.fk_model_id,
     });
 
-    if (!model) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!model) AtError.get(context).tableNotFound(view.fk_model_id);
 
     const listArgs: any = { ...param.query };
 
@@ -1284,7 +1284,7 @@ export class PublicDatasService {
   }
 
   async bulkAggregate(
-    context: NcContext,
+    context: AtContext,
     param: {
       sharedViewUuid: string;
       password?: string;
@@ -1294,10 +1294,10 @@ export class PublicDatasService {
   ) {
     const view = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(param.sharedViewUuid);
+    if (!view) AtError.viewNotFound(param.sharedViewUuid);
 
     if (view.type !== ViewTypes.GRID) {
-      NcError.notFound('Not found');
+      AtError.notFound('Not found');
     }
 
     const base = await Base.get(context, view.base_id);
@@ -1305,14 +1305,14 @@ export class PublicDatasService {
     this.publicMetasService.checkViewBaseType(view, base);
 
     if (!(await View.verifyPassword(view, param.password))) {
-      return NcError.invalidSharedViewPassword();
+      return AtError.invalidSharedViewPassword();
     }
 
     const model = await Model.getByIdOrName(context, {
       id: view?.fk_model_id,
     });
 
-    if (!model) NcError.get(context).tableNotFound(view.fk_model_id);
+    if (!model) AtError.get(context).tableNotFound(view.fk_model_id);
 
     let bulkFilterList = param.body;
 

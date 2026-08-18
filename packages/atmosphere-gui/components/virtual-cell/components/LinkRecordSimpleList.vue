@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 
 interface SimpleListItem {
   /**
@@ -413,7 +413,7 @@ function onFilterChange() {
 const { handleSearchKeydown } = useLTARListKeyNav({
   scrollContainerRef,
   filterQueryRef,
-  itemTestId: 'nc-simple-link-list-item',
+  itemTestId: 'atm-simple-link-list-item',
   expandedFormDlg: ref(false),
   closeModal: () => {
     vModel.value = false
@@ -493,25 +493,25 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="nc-simple-link-list flex-1 min-h-0 w-full flex flex-col overflow-hidden"
+    class="atm-simple-link-list flex-1 min-h-0 w-full flex flex-col overflow-hidden"
     :class="{ active: vModel }"
     @keydown.enter.stop
   >
-    <div class="nc-simple-link-list-header flex items-center px-3 py-2 border-b-1 border-nc-border-gray-light">
+    <div class="atm-simple-link-list-header flex items-center px-3 py-2 border-b-1 border-atm-border-gray-light">
       <a-input
         ref="filterQueryRef"
         v-model:value="searchQuery"
         :bordered="false"
         :placeholder="`${$t('placeholder.searchRecords')}...`"
-        class="nc-simple-link-search-input w-full min-h-4 !pl-0"
+        class="atm-simple-link-search-input w-full min-h-4 !pl-0"
         size="small"
         autocomplete="off"
-        data-testid="nc-simple-link-search"
+        data-testid="atm-simple-link-search"
         @change="onFilterChange"
         @keydown.capture.stop="handleSearchKeydown"
       >
         <template #prefix>
-          <GeneralIcon icon="search" class="nc-search-icon mr-2 h-4 w-4 text-nc-content-gray-muted" />
+          <GeneralIcon icon="search" class="atm-search-icon mr-2 h-4 w-4 text-atm-content-gray-muted" />
         </template>
       </a-input>
     </div>
@@ -519,8 +519,8 @@ onUnmounted(() => {
     <div
       v-if="isSingleTarget && linkedRecord && !readonly"
       v-e="['c:cell:links:simple-list:clear']"
-      class="nc-simple-link-clear-row flex items-center mx-1.5 mt-1 px-2 h-7 rounded-md flex-none cursor-pointer text-[13px] leading-5 text-nc-content-gray-muted hover:(bg-nc-bg-gray-light text-nc-content-gray-subtle)"
-      data-testid="nc-simple-link-clear-selection"
+      class="atm-simple-link-clear-row flex items-center mx-1.5 mt-1 px-2 h-7 rounded-md flex-none cursor-pointer text-[13px] leading-5 text-atm-content-gray-muted hover:(bg-atm-bg-gray-light text-atm-content-gray-subtle)"
+      data-testid="atm-simple-link-clear-selection"
       tabindex="0"
       @click="clearSelection"
       @keydown.enter.prevent.stop="clearSelection"
@@ -530,7 +530,7 @@ onUnmounted(() => {
 
     <!-- min-h-48 = 6 rows × 32px: the dropdown always reserves at least six record
          rows below the search header / clear-selection row, then grows to the cap -->
-    <div ref="scrollContainerRef" class="flex-1 min-h-48 overflow-auto nc-scrollbar-thin" @scroll="onListScroll">
+    <div ref="scrollContainerRef" class="flex-1 min-h-48 overflow-auto atm-scrollbar-thin" @scroll="onListScroll">
       <template v-if="combinedTotal > 0">
         <div :style="{ height: `${rowSlice.start * SIMPLE_ROW_HEIGHT}px` }" />
 
@@ -545,20 +545,20 @@ onUnmounted(() => {
           <div
             v-else
             :style="{ height: `${SIMPLE_ROW_HEIGHT}px` }"
-            class="nc-simple-link-list-item flex items-center gap-2 py-0.5"
-            :class="{ 'nc-simple-link-list-item-linked': item.checked, 'nc-simple-link-list-item-inert': isRowInert }"
-            data-testid="nc-simple-link-list-item"
+            class="atm-simple-link-list-item flex items-center gap-2 py-0.5"
+            :class="{ 'atm-simple-link-list-item-linked': item.checked, 'atm-simple-link-list-item-inert': isRowInert }"
+            data-testid="atm-simple-link-list-item"
             tabindex="0"
             @click="onRowClick(item)"
             @keydown.space.prevent.stop="onRowClick(item)"
             @keydown.enter.prevent.stop="onRowClick(item)"
           >
             <div
-              class="nc-simple-link-list-item-inner flex items-center gap-2 flex-1 min-w-0 h-full mx-1.5 px-2 rounded-md"
+              class="atm-simple-link-list-item-inner flex items-center gap-2 flex-1 min-w-0 h-full mx-1.5 px-2 rounded-md"
               :class="isRowInert ? 'cursor-default' : 'cursor-pointer'"
             >
-              <NcCheckbox v-if="!isSingleTarget && !readonly" :checked="item.checked" class="pointer-events-none flex-none" />
-              <div class="flex-1 truncate text-[13px] leading-5 text-nc-content-gray">
+              <AtCheckbox v-if="!isSingleTarget && !readonly" :checked="item.checked" class="pointer-events-none flex-none" />
+              <div class="flex-1 truncate text-[13px] leading-5 text-atm-content-gray">
                 <SmartsheetPlainCell
                   v-if="props.column"
                   :model-value="displayValueOf(item.row)"
@@ -567,30 +567,30 @@ onUnmounted(() => {
                 />
                 <template v-else>{{ displayValueOf(item.row) }}</template>
               </div>
-              <NcTooltip
+              <AtTooltip
                 v-if="canExpandRecords"
                 :title="$t('labels.expandRecord')"
                 placement="top"
                 :arrow="false"
                 class="flex-none"
               >
-                <NcButton
+                <AtButton
                   v-e="['c:cell:links:simple-list:expand']"
                   type="text"
                   size="xxsmall"
-                  class="nc-simple-link-list-item-expand opacity-0 text-nc-content-gray-subtle"
-                  data-testid="nc-simple-link-expand"
+                  class="atm-simple-link-list-item-expand opacity-0 text-atm-content-gray-subtle"
+                  data-testid="atm-simple-link-expand"
                   @click.stop="expandItem(item)"
                 >
                   <template #icon>
                     <GeneralIcon icon="maximize" class="h-3.5 w-3.5" />
                   </template>
-                </NcButton>
-              </NcTooltip>
+                </AtButton>
+              </AtTooltip>
               <GeneralIcon
                 v-if="isSingleTarget && item.checked && !readonly"
                 icon="check"
-                class="flex-none h-4 w-4 text-nc-content-brand"
+                class="flex-none h-4 w-4 text-atm-content-brand"
               />
             </div>
           </div>
@@ -602,14 +602,14 @@ onUnmounted(() => {
       <div
         v-else-if="readonly ? isChildrenLoading : isChildrenExcludedLoading"
         class="flex flex-col"
-        data-testid="nc-simple-link-list-loading"
+        data-testid="atm-simple-link-list-loading"
       >
         <div v-for="i in 5" :key="i" :style="{ height: `${SIMPLE_ROW_HEIGHT}px` }" class="flex items-center mx-1.5 px-2">
           <a-skeleton-input active class="!h-4 !w-40 !rounded-md overflow-hidden" size="small" />
         </div>
       </div>
 
-      <div v-else class="min-h-48 flex items-center justify-center text-nc-content-gray-muted text-bodySm px-3 text-center">
+      <div v-else class="min-h-48 flex items-center justify-center text-atm-content-gray-muted text-bodySm px-3 text-center">
         <template v-if="searchQuery">{{ $t('msg.noRecordsMatchYourSearchQuery') }}</template>
         <template v-else-if="readonly">{{ $t('msg.noRecordsLinked') }}</template>
         <template v-else>{{ $t('msg.noRecordsAvailForLinking') }}</template>
@@ -619,36 +619,36 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.nc-simple-link-list-header {
+.atm-simple-link-list-header {
   :deep(input) {
     @apply text-[13px] font-medium;
 
     &::placeholder {
-      @apply text-nc-content-gray-muted font-normal;
+      @apply text-atm-content-gray-muted font-normal;
     }
   }
 }
 
-.nc-simple-link-list-item {
-  .nc-simple-link-list-item-inner:hover {
-    @apply bg-nc-bg-gray-light;
+.atm-simple-link-list-item {
+  .atm-simple-link-list-item-inner:hover {
+    @apply bg-atm-bg-gray-light;
   }
 
   /* Browse mode with nothing to click — no hover highlight promising an action */
-  &.nc-simple-link-list-item-inert .nc-simple-link-list-item-inner:hover {
+  &.atm-simple-link-list-item-inert .atm-simple-link-list-item-inner:hover {
     @apply bg-transparent;
   }
 
-  &:hover .nc-simple-link-list-item-expand,
-  &:focus-visible .nc-simple-link-list-item-expand {
+  &:hover .atm-simple-link-list-item-expand,
+  &:focus-visible .atm-simple-link-list-item-expand {
     @apply opacity-100;
   }
 
   &:focus-visible {
     @apply outline-none;
 
-    .nc-simple-link-list-item-inner {
-      @apply bg-nc-bg-gray-light;
+    .atm-simple-link-list-item-inner {
+      @apply bg-atm-bg-gray-light;
     }
   }
 }

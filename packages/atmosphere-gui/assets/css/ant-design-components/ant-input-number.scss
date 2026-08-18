@@ -1,13 +1,13 @@
 [theme='dark'] {
   .ant-input-number-affix-wrapper {
     color: rgba(var(--rgb-base), 0.65);
-    border: 1px solid var(--nc-border-gray-medium);
+    border: 1px solid var(--atm-border-gray-medium);
     background-color: transparent;
     background-image: none;
   }
 
   .ant-input-number-affix-wrapper::placeholder {
-    color: var(--nc-content-gray-muted);
+    color: var(--atm-content-gray-muted);
   }
 
   // .ant-input-number-affix-wrapper:hover {
@@ -23,25 +23,25 @@
   }
 
   .ant-input-number-affix-wrapper-disabled {
-    color: var(--nc-content-gray-muted);
-    background-color: var(--nc-bg-gray-light);
-    border-color: var(--nc-border-gray-medium);
+    color: var(--atm-content-gray-muted);
+    background-color: var(--atm-bg-gray-light);
+    border-color: var(--atm-border-gray-medium);
     box-shadow: none;
   }
 
   .ant-input-number-affix-wrapper-disabled:hover {
-    border-color: var(--nc-border-gray-medium);
+    border-color: var(--atm-border-gray-medium);
   }
 
   .ant-input-number-affix-wrapper[disabled] {
-    color: var(--nc-content-gray-muted);
-    background-color: var(--nc-bg-gray-light);
-    border-color: var(--nc-border-gray-medium);
+    color: var(--atm-content-gray-muted);
+    background-color: var(--atm-bg-gray-light);
+    border-color: var(--atm-border-gray-medium);
     box-shadow: none;
   }
 
   .ant-input-number-affix-wrapper[disabled]:hover {
-    border-color: var(--nc-border-gray-medium);
+    border-color: var(--atm-border-gray-medium);
     border-right-width: 1px !important;
   }
 
@@ -66,13 +66,13 @@
 
   .ant-input-number {
     color: rgba(var(--rgb-base), 0.65);
-    border: 1px solid var(--nc-border-gray-medium);
+    border: 1px solid var(--atm-border-gray-medium);
     background-color: transparent;
     background-image: none;
   }
 
   .ant-input-number::placeholder {
-    color: var(--nc-content-gray-muted);
+    color: var(--atm-content-gray-muted);
   }
 
   .ant-input-number:focus,
@@ -83,14 +83,14 @@
   }
 
   .ant-input-number[disabled] {
-    color: var(--nc-content-gray-muted);
-    background-color: var(--nc-bg-gray-light);
-    border-color: var(--nc-border-gray-medium);
+    color: var(--atm-content-gray-muted);
+    background-color: var(--atm-bg-gray-light);
+    border-color: var(--atm-border-gray-medium);
     box-shadow: none;
   }
 
   .ant-input-number[disabled]:hover {
-    border-color: var(--nc-border-gray-medium);
+    border-color: var(--atm-border-gray-medium);
   }
 
   .ant-input-number-borderless,
@@ -111,7 +111,7 @@
   .ant-input-number-group-addon {
     color: rgba(var(--rgb-base), 0.65);
     background-color: rgba(var(--rgb-base), 0.04);
-    border: 1px solid var(--nc-border-gray-medium);
+    border: 1px solid var(--atm-border-gray-medium);
   }
 
   .ant-input-number-group-addon .ant-select-open .ant-select-selector,
@@ -121,16 +121,16 @@
 
   .ant-input-number-handler {
     color: rgba(var(--rgb-base), 0.45);
-    border-left: 1px solid var(--nc-border-gray-medium);
-    background: var(--nc-bg-gray-light);
+    border-left: 1px solid var(--atm-border-gray-medium);
+    background: var(--atm-bg-gray-light);
   }
 
   .ant-input-number-handler-down {
-    border-top: 1px solid var(--nc-border-gray-medium);
+    border-top: 1px solid var(--atm-border-gray-medium);
   }
 
   .ant-input-number-handler:active {
-    background: var(--nc-bg-gray-light);
+    background: var(--atm-bg-gray-light);
   }
 
   // .ant-input-number-handler:hover .ant-input-number-handler-up-inner,
@@ -153,18 +153,18 @@
   }
 
   .ant-input-number-disabled {
-    color: var(--nc-content-gray-muted);
-    background-color: var(--nc-bg-gray-light);
-    border-color: var(--nc-border-gray-medium);
+    color: var(--atm-content-gray-muted);
+    background-color: var(--atm-bg-gray-light);
+    border-color: var(--atm-border-gray-medium);
     box-shadow: none;
   }
 
   .ant-input-number-disabled:hover {
-    border-color: var(--nc-border-gray-medium);
+    border-color: var(--atm-border-gray-medium);
   }
 
   .ant-input-number-input::placeholder {
-    color: var(--nc-content-gray-muted);
+    color: var(--atm-content-gray-muted);
   }
 
   .ant-input-number-handler-wrap {
@@ -173,7 +173,7 @@
 
   .ant-input-number-handler-up-disabled:hover .ant-input-number-handler-up-inner,
   .ant-input-number-handler-down-disabled:hover .ant-input-number-handler-down-inner {
-    color: var(--nc-content-gray-muted);
+    color: var(--atm-content-gray-muted);
   }
 
   .ant-input-number-borderless {

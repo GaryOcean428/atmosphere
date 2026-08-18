@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { WorkflowType } from 'nocodb-sdk'
+import type { WorkflowType } from 'atmosphere-sdk'
 
 const props = defineProps<{
   workflow: WorkflowType
@@ -9,6 +9,6 @@ const icon = computed<string>(() => meta.value?.icon)
 </script>
 
 <template>
-  <LazyGeneralEmojiPicker v-if="icon" :data-testid="`nc-emoji-${icon}`" class="text-lg" size="small" :emoji="icon" readonly />
+  <LazyGeneralEmojiPicker v-if="icon" :data-testid="`atm-emoji-${icon}`" class="text-lg" size="small" :emoji="icon" readonly />
   <component :is="iconMap.ncAutomation" v-else class="w-4 mx-0.75" />
 </template>

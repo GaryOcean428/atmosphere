@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EntitySelectorMode, FormBuilderEntitySelectorElement, FormBuilderSelectOption } from 'nocodb-sdk'
+import type { EntitySelectorMode, FormBuilderEntitySelectorElement, FormBuilderSelectOption } from 'atmosphere-sdk'
 
 interface Props {
   element: FormBuilderEntitySelectorElement
@@ -140,20 +140,20 @@ watch(currentModeIndex, () => {
 </script>
 
 <template>
-  <div class="nc-entity-selector">
-    <div class="nc-entity-selector-container">
+  <div class="atm-entity-selector">
+    <div class="atm-entity-selector-container">
       <!-- Mode toggle button (only show if multiple modes) -->
-      <NcTooltip v-if="hasMultipleModes" placement="top">
+      <AtTooltip v-if="hasMultipleModes" placement="top">
         <template #title>
           {{ currentMode?.type === 'list' ? 'Switch to expression input' : 'Switch to dropdown' }}
         </template>
-        <NcButton type="text" size="small" class="nc-entity-selector-mode-toggle" :disabled="disabled" @click="toggleMode">
-          <GeneralIcon :icon="currentMode?.type === 'list' ? 'ncList' : 'ncCode'" class="text-nc-content-gray-muted" />
-        </NcButton>
-      </NcTooltip>
+        <AtButton type="text" size="small" class="atm-entity-selector-mode-toggle" :disabled="disabled" @click="toggleMode">
+          <GeneralIcon :icon="currentMode?.type === 'list' ? 'ncList' : 'ncCode'" class="text-atm-content-gray-muted" />
+        </AtButton>
+      </AtTooltip>
 
       <!-- Input container -->
-      <div class="nc-entity-selector-input-container">
+      <div class="atm-entity-selector-input-container">
         <!-- List mode (dropdown) -->
         <template v-if="currentMode?.type === 'list'">
           <a-select
@@ -162,7 +162,7 @@ watch(currentModeIndex, () => {
             :disabled="disabled"
             :loading="isLoadingOptions"
             :placeholder="currentMode.placeholder || element.placeholder || 'Select...'"
-            class="nc-select flex-1 nc-select-shadow"
+            class="atm-select flex-1 atm-select-shadow"
             show-search
             allow-clear
             :filter-option="currentMode.searchable ? false : (input: string, option: any) => option.label?.toLowerCase()?.includes(input.toLowerCase())"
@@ -170,14 +170,14 @@ watch(currentModeIndex, () => {
             @search="handleSearch"
           >
             <template #suffixIcon>
-              <GeneralIcon icon="ncChevronDown" class="text-nc-content-gray-muted" />
+              <GeneralIcon icon="ncChevronDown" class="text-atm-content-gray-muted" />
             </template>
           </a-select>
         </template>
 
         <!-- Manual mode (WorkflowInput) -->
         <template v-else>
-          <NcFormBuilderInputWorkflowInput
+          <AtFormBuilderInputWorkflowInput
             :model-value="vModel || ''"
             :placeholder="currentMode?.placeholder || element.placeholder || 'Enter value or expression...'"
             :variables="workflowVariables"
@@ -193,33 +193,33 @@ watch(currentModeIndex, () => {
 </template>
 
 <style scoped lang="scss">
-.nc-entity-selector {
+.atm-entity-selector {
   @apply w-full;
 
-  .nc-entity-selector-container {
+  .atm-entity-selector-container {
     @apply flex items-center gap-2;
   }
 
-  .nc-entity-selector-mode-toggle {
+  .atm-entity-selector-mode-toggle {
     @apply flex-shrink-0;
   }
 
-  .nc-entity-selector-input-container {
+  .atm-entity-selector-input-container {
     @apply flex-1 flex items-center gap-1 min-w-0;
 
-    :deep(.nc-workflow-input) {
+    :deep(.atm-workflow-input) {
       @apply min-w-0;
 
       .ProseMirror {
         @apply !h-8 !min-h-8 !py-1 !pr-8;
       }
 
-      .nc-workflow-insert-btn-tooltip {
+      .atm-workflow-insert-btn-tooltip {
         @apply !top-0.5;
       }
     }
 
-    :deep(.nc-select) {
+    :deep(.atm-select) {
       @apply min-w-0;
     }
   }

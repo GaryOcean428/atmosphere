@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type ButtonType, type ColumnType, isSystemColumn } from 'nocodb-sdk'
+import { type ButtonType, type ColumnType, isSystemColumn } from 'atmosphere-sdk'
 
 const props = withDefaults(
   defineProps<{
@@ -65,12 +65,12 @@ const configByToolbarMenu = computed(() => {
     case 'groupBy':
       return {
         selectOptionEvent: 'c:group-by:add:column:select',
-        optionClassName: 'nc-group-by-column-search-item',
+        optionClassName: 'atm-group-by-column-search-item',
       }
     case 'sort':
       return {
         selectOptionEvent: 'c:sort:add:column:select',
-        optionClassName: 'nc-sort-column-search-item',
+        optionClassName: 'atm-sort-column-search-item',
       }
     case 'globalSearch':
       return {
@@ -94,7 +94,7 @@ const handleSelect = (c: ColumnType) => {
 
 const isLocked = inject(IsLockedInj)
 
-const fieldSearchBasisOptions = computed<NcListSearchBasisOptionType[]>(() => [
+const fieldSearchBasisOptions = computed<AtListSearchBasisOptionType[]>(() => [
   {
     searchBasisInfo: t('msg.info.matchedByButtonLabel'),
     filterCallback: (query, option) => {
@@ -121,10 +121,10 @@ const fieldSearchBasisOptions = computed<NcListSearchBasisOptionType[]>(() => [
 </script>
 
 <template>
-  <NcList
+  <AtList
     class="field-list-with-search"
     :class="{
-      'nc-input-bordered': inputBordered,
+      'atm-input-bordered': inputBordered,
     }"
     :search-input-placeholder="searchInputPlaceholder"
     :show-selected-option="showSelectedOption"
@@ -146,20 +146,20 @@ const fieldSearchBasisOptions = computed<NcListSearchBasisOptionType[]>(() => [
       <SmartsheetHeaderIcon
         :column="option"
         :class="isCompact ? '!w-3 !h-3 opacity-75' : '!w-3.5 !h-3.5'"
-        color="text-nc-content-gray-muted"
+        color="text-atm-content-gray-muted"
       />
     </template>
-  </NcList>
+  </AtList>
 </template>
 
 <style lang="scss">
 .field-list-with-search {
-  &.nc-input-bordered .nc-toolbar-dropdown-search-field-input {
+  &.atm-input-bordered .atm-toolbar-dropdown-search-field-input {
     @apply rounded-lg mb-2;
   }
 
-  .nc-list-item {
-    @apply h-8 hover:bg-nc-bg-gray-light gap-x-1.5;
+  .atm-list-item {
+    @apply h-8 hover:bg-atm-bg-gray-light gap-x-1.5;
   }
 }
 </style>

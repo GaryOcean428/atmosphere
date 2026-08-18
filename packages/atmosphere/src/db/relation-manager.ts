@@ -6,9 +6,9 @@ import {
   isLinkV2,
   isMMOrMMLike,
   RelationTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { extractCorrespondingLinkColumn } from './BaseModelSqlv2/add-remove-links';
-import type { NcContext, NcRequest } from 'nocodb-sdk';
+import type { AtContext, AtRequest } from 'atmosphere-sdk';
 import type { LinkToAnotherRecordColumn } from '~/models';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { Knex } from 'knex';
@@ -16,7 +16,7 @@ import type { Column } from '~/models';
 import { deletedColValue, displayValueMapKey } from '~/helpers/dbHelpers';
 import { Model } from '~/models';
 import { RelationUpdateWebhookHandler } from '~/db/relation-update-webhook-handler';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import {
   _wherePk,
   getCompositePkValue,
@@ -42,7 +42,7 @@ interface AuditUpdateObj extends AuditUpdateLog {
   columnTitle: string;
   refColumnTitle?: string;
   columnId: string;
-  req: NcRequest;
+  req: AtRequest;
   model: Model;
   refModel?: Model;
 }
@@ -63,10 +63,10 @@ export class RelationManager {
       parentBaseModel: IBaseModelSqlV2;
       childId: any;
       parentId: any;
-      parentContext: NcContext;
-      childContext: NcContext;
-      mmContext: NcContext;
-      refContext: NcContext;
+      parentContext: AtContext;
+      childContext: AtContext;
+      mmContext: AtContext;
+      refContext: AtContext;
     },
   ) {}
 
@@ -117,7 +117,7 @@ export class RelationManager {
     const column = baseModel.model.columnsById[colId];
 
     if (!column || !isLinksOrLTAR(column.uidt))
-      NcError.get(baseModel.context).fieldNotFound(colId);
+      AtError.get(baseModel.context).fieldNotFound(colId);
 
     const colOptions = await column.getColOptions<LinkToAnotherRecordColumn>(
       baseModel.context,

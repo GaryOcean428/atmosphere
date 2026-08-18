@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ViewType } from 'nocodb-sdk'
+import type { ViewType } from 'atmosphere-sdk'
 
 interface Props {
   value?: string | string[] | null
@@ -58,15 +58,15 @@ const handleValueUpdate = (value: any) => {
 </script>
 
 <template>
-  <NcListDropdown v-model:is-open="isOpenViewSelectDropdown" :disabled="disabled" :has-error="!!selectedView?.ncItemDisabled">
+  <AtListDropdown v-model:is-open="isOpenViewSelectDropdown" :disabled="disabled" :has-error="!!selectedView?.ncItemDisabled">
     <div class="flex-1 flex items-center group gap-2 min-w-0">
       <div v-if="selectedView && !Array.isArray(selectedView)" class="min-w-5 flex items-center justify-center">
-        <NcIconView :view="selectedView.view as ViewType" class="text-nc-content-muted" />
+        <AtIconView :view="selectedView.view as ViewType" class="text-atm-content-muted" />
       </div>
-      <NcTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
+      <AtTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
         <span
           class="text-sm flex-1 truncate"
-          :class="{ 'text-nc-content-gray-muted': !selectedView || (Array.isArray(selectedView) && selectedView.length === 0) }"
+          :class="{ 'text-atm-content-gray-muted': !selectedView || (Array.isArray(selectedView) && selectedView.length === 0) }"
         >
           {{ selectedViewLabel }}
         </span>
@@ -74,11 +74,11 @@ const handleValueUpdate = (value: any) => {
         <template #title>
           {{ selectedViewLabel }}
         </template>
-      </NcTooltip>
+      </AtTooltip>
 
       <GeneralIcon
         v-if="selectedView"
-        class="!hidden text-nc-content-gray-muted transition group-hover:!block h-4 w-4 cursor-pointer"
+        class="!hidden text-atm-content-gray-muted transition group-hover:!block h-4 w-4 cursor-pointer"
         icon="ncXCircle"
         @click.stop="handleValueUpdate(null)"
       />
@@ -90,7 +90,7 @@ const handleValueUpdate = (value: any) => {
       />
     </div>
     <template #overlay="{ onEsc }">
-      <NcList
+      <AtList
         v-model:open="isOpenViewSelectDropdown"
         :value="multiple ? (Array.isArray(modelValue) ? modelValue : []) : modelValue || ''"
         :list="viewList"
@@ -104,10 +104,10 @@ const handleValueUpdate = (value: any) => {
       >
         <template #listItemExtraLeft="{ option }">
           <div class="min-w-5 flex items-center justify-center">
-            <NcIconView :view="option.view" class="text-nc-content-gray-muted" />
+            <AtIconView :view="option.view" class="text-atm-content-gray-muted" />
           </div>
         </template>
-      </NcList>
+      </AtList>
     </template>
-  </NcListDropdown>
+  </AtListDropdown>
 </template>

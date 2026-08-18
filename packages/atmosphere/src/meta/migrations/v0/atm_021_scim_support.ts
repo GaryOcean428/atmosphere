@@ -18,7 +18,7 @@ const up = async (knex: Knex) => {
     table.text('scim_meta').nullable();
   });
 
-  // Add SCIM-related columns to nc_teams table
+  // Add SCIM-related columns to atm_teams table
   await knex.schema.alterTable(MetaTable.TEAMS, (table) => {
     // External ID from SCIM provider (IdP Group ID)
     table.string('scim_external_id', 255).nullable().unique();
@@ -33,7 +33,7 @@ const up = async (knex: Knex) => {
     table.text('scim_meta').nullable();
   });
 
-  // Create nc_scim_config table for workspace-level SCIM configuration
+  // Create atm_scim_config table for workspace-level SCIM configuration
   await knex.schema.createTable(MetaTable.SCIM_CONFIG, (table) => {
     table.string('id', 20).primary().notNullable();
     table.string('fk_workspace_id', 20).notNullable().unique();
@@ -48,18 +48,18 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
 
     // Index for workspace lookup
-    table.index('fk_workspace_id', 'nc_scim_config_workspace_idx');
+    table.index('fk_workspace_id', 'atm_scim_config_workspace_idx');
   });
 
   // Add indexes for SCIM external ID lookups (for fast SCIM queries)
   await knex.schema.alterTable(MetaTable.WORKSPACE_USER, (table) => {
-    table.index('scim_external_id', 'nc_workspace_user_scim_external_id_idx');
-    table.index('scim_managed', 'nc_workspace_user_scim_managed_idx');
+    table.index('scim_external_id', 'atm_workspace_user_scim_external_id_idx');
+    table.index('scim_managed', 'atm_workspace_user_scim_managed_idx');
   });
 
   await knex.schema.alterTable(MetaTable.TEAMS, (table) => {
-    table.index('scim_external_id', 'nc_teams_scim_external_id_idx');
-    table.index('scim_managed', 'nc_teams_scim_managed_idx');
+    table.index('scim_external_id', 'atm_teams_scim_external_id_idx');
+    table.index('scim_managed', 'atm_teams_scim_managed_idx');
   });
 };
 
@@ -67,10 +67,10 @@ const down = async (knex: Knex) => {
   // Drop SCIM config table
   await knex.schema.dropTableIfExists(MetaTable.SCIM_CONFIG);
 
-  // Remove SCIM columns from nc_teams
+  // Remove SCIM columns from atm_teams
   await knex.schema.alterTable(MetaTable.TEAMS, (table) => {
-    table.dropIndex('scim_external_id', 'nc_teams_scim_external_id_idx');
-    table.dropIndex('scim_managed', 'nc_teams_scim_managed_idx');
+    table.dropIndex('scim_external_id', 'atm_teams_scim_external_id_idx');
+    table.dropIndex('scim_managed', 'atm_teams_scim_managed_idx');
     table.dropColumn('scim_external_id');
     table.dropColumn('scim_managed');
     table.dropColumn('scim_display_name');
@@ -81,9 +81,9 @@ const down = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.WORKSPACE_USER, (table) => {
     table.dropIndex(
       'scim_external_id',
-      'nc_workspace_user_scim_external_id_idx',
+      'atm_workspace_user_scim_external_id_idx',
     );
-    table.dropIndex('scim_managed', 'nc_workspace_user_scim_managed_idx');
+    table.dropIndex('scim_managed', 'atm_workspace_user_scim_managed_idx');
     table.dropColumn('scim_external_id');
     table.dropColumn('scim_managed');
     table.dropColumn('scim_user_name');

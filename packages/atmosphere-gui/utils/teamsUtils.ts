@@ -1,4 +1,4 @@
-import type { TeamV3V3Type } from 'nocodb-sdk'
+import type { TeamV3V3Type } from 'atmosphere-sdk'
 
 export const transformToTeamObject = (wsOrBaseTeamInfo: Record<string, any>, team?: TeamV3V3Type) => {
   const newObj: Record<string, any> = {}

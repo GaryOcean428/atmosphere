@@ -1,6 +1,6 @@
 import ScalewayObjectStorage from './ScalewayObjectStorage';
-import type { IStorageAdapterV2 } from '~/types/nc-plugin';
-import { XcStoragePlugin } from '~/types/nc-plugin';
+import type { IStorageAdapterV2 } from '~/types/atm-plugin';
+import { XcStoragePlugin } from '~/types/atm-plugin';
 
 class ScalewayObjectStoragePlugin extends XcStoragePlugin {
   private static storageAdapter: ScalewayObjectStorage;

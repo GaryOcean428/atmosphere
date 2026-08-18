@@ -4,7 +4,7 @@ import {
   convertToTargetFormat,
   getDateFormat,
   JSEPNode,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import commonFns, {
   extractDatetimeFormat,
   safeDateAddUnitSQL,
@@ -344,7 +344,7 @@ const sqlite3 = {
     // as a single parameter — avoids leaving `'$' ||` adjacent in the SQL,
     // which gets corrupted by JS String.prototype.replace special patterns
     // (the `$'` and `` $` `` pairs) when knex inlines this raw inside named-
-    // binding wrappers like VALUE(). See nocodb/nocodb#12695.
+    // binding wrappers like VALUE(). See atmosphere/atmosphere#12695.
     const pathArg = args.pt.arguments[1];
     if (
       pathArg?.type === JSEPNode.LITERAL &&

@@ -1,11 +1,11 @@
-import type { WhiteLabelConfig } from 'nocodb-sdk'
+import type { WhiteLabelConfig } from 'atmosphere-sdk'
 
 /**
- * Default (NocoDB) branding values. Exported so EE callers can fall back to
+ * Default (Atmosphere) branding values. Exported so EE callers can fall back to
  * these for any field the white-label config leaves null.
  */
 export const DEFAULT_BRANDING = {
-  productName: 'NocoDB',
+  productName: 'Atmosphere',
   logoUrl: null as string | null,
   logoDarkUrl: null as string | null,
   faviconUrl: null as string | null,
@@ -14,7 +14,7 @@ export const DEFAULT_BRANDING = {
 }
 
 /**
- * CE stub — white-label is EE-only, so CE always returns NocoDB defaults.
+ * CE stub — white-label is EE-only, so CE always returns Atmosphere defaults.
  * EE override at ee/composables/useBranding.ts reads appInfo.whiteLabel.
  */
 export const useBranding = createSharedComposable(() => {

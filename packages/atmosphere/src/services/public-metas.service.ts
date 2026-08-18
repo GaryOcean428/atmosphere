@@ -7,7 +7,7 @@ import {
   UITypes,
   ViewLockType,
   ViewTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type {
   CalendarView,
   LinkToAnotherRecordColumn,
@@ -16,7 +16,7 @@ import type {
   TimelineRange,
   TimelineView,
 } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import {
   Base,
   BaseUser,
@@ -27,7 +27,7 @@ import {
   Source,
   View,
 } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { extractProps } from '~/helpers/extractProps';
 import { extractDisplayNameFromEmail } from '~/utils/emailUtils';
 import { hasDefaultTableVisibility } from '~/helpers/tableHelpers';
@@ -35,7 +35,7 @@ import { hasDefaultTableVisibility } from '~/helpers/tableHelpers';
 @Injectable()
 export class PublicMetasService {
   async viewMetaGet(
-    context: NcContext,
+    context: AtContext,
     param: { sharedViewUuid: string; password: string },
   ) {
     const view: View & {
@@ -45,10 +45,10 @@ export class PublicMetasService {
       source?: Pick<Source, 'id' | 'type' | 'is_meta' | 'is_local'>;
     } = await View.getByUUID(context, param.sharedViewUuid);
 
-    if (!view) NcError.get(context).viewNotFound(param.sharedViewUuid);
+    if (!view) AtError.get(context).viewNotFound(param.sharedViewUuid);
 
     if (!(await View.verifyPassword(view, param.password))) {
-      NcError.get(context).invalidSharedViewPassword();
+      AtError.get(context).invalidSharedViewPassword();
     }
 
     const base = await Base.get(context, view.base_id);
@@ -74,7 +74,7 @@ export class PublicMetasService {
     // filters soft-deleted rows) → view.model is unset; on a cache-hit it returns
     // the cached row without re-checking the flag → view.model.deleted is true.
     if (!view.model || view.model.deleted) {
-      NcError.get(context).tableNotFound(view.fk_model_id);
+      AtError.get(context).tableNotFound(view.fk_model_id);
     }
 
     await view.model.getColumns(context);
@@ -213,7 +213,7 @@ export class PublicMetasService {
   }
 
   protected async extractRelatedMetas(
-    context: NcContext,
+    context: AtContext,
     {
       col,
       relatedMetas = {},
@@ -240,7 +240,7 @@ export class PublicMetasService {
   }
 
   protected async extractLTARRelatedMetas(
-    context: NcContext,
+    context: AtContext,
     {
       ltarColOption,
       relatedMetas = {},
@@ -278,7 +278,7 @@ export class PublicMetasService {
   }
 
   private filterIfLimitedAccess(
-    context: NcContext,
+    context: AtContext,
     relatedMetas: {
       [p: string]: Model;
     },
@@ -297,7 +297,7 @@ export class PublicMetasService {
   }
 
   protected async extractLookupRelatedMetas(
-    context: NcContext,
+    context: AtContext,
     {
       lookupColOption,
       relatedMetas = {},
@@ -361,13 +361,13 @@ export class PublicMetasService {
   }
 
   async publicSharedBaseGet(
-    context: NcContext,
+    context: AtContext,
     param: { sharedBaseUuid: string },
   ): Promise<any> {
     const base = await Base.getByUuid(context, param.sharedBaseUuid);
 
     if (!base) {
-      NcError.baseNotFound(param.sharedBaseUuid);
+      AtError.baseNotFound(param.sharedBaseUuid);
     }
 
     this.checkBaseType(base);

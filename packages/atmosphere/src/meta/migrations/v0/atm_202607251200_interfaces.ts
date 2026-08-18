@@ -28,8 +28,8 @@ const up = async (knex: Knex) => {
     // Base-scoped composite PK — lets the same id exist in two bases
     // (sandbox ↔ production), which sandbox-merge id preservation requires.
     table.primary(['base_id', 'id']);
-    table.index('id', 'nc_interfaces_id_idx');
-    table.index(['base_id', 'fk_workspace_id'], 'nc_interfaces_context');
+    table.index('id', 'atm_interfaces_id_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_interfaces_context');
   });
 
   await knex.schema.createTable(MetaTable.INTERFACE_PAGES, (table) => {
@@ -67,8 +67,8 @@ const up = async (knex: Knex) => {
     table.string('uuid', 255);
     table.string('password', 255);
     // Share links resolve by uuid alone (`InterfacePage.getByUUID`) on an
-    // unauthenticated route — index it like `nc_views_v2` does.
-    table.index('uuid', 'nc_interface_pages_uuid_idx');
+    // unauthenticated route — index it like `atm_views_v2` does.
+    table.index('uuid', 'atm_interface_pages_uuid_idx');
 
     table.float('order');
 
@@ -78,11 +78,11 @@ const up = async (knex: Knex) => {
 
     table.timestamps(true, true);
 
-    // Base-scoped composite PK (see nc_interfaces above).
+    // Base-scoped composite PK (see atm_interfaces above).
     table.primary(['base_id', 'id']);
-    table.index('id', 'nc_interface_pages_id_idx');
-    table.index(['base_id', 'fk_workspace_id'], 'nc_interface_pages_context');
-    table.index('fk_interface_id', 'nc_interface_pages_interface_idx');
+    table.index('id', 'atm_interface_pages_id_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_interface_pages_context');
+    table.index('fk_interface_id', 'atm_interface_pages_interface_idx');
   });
 
   // Team-grant descendant expansion for interface grants — same semantics as

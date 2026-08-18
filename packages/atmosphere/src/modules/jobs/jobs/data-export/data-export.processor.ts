@@ -14,8 +14,8 @@ import { elapsedTime, initTime } from '~/modules/jobs/helpers';
 import { ExportService } from '~/modules/jobs/jobs/export-import/export.service';
 import { createCharsetEncodeStream } from '~/modules/jobs/jobs/data-export/csv-encoding';
 import { Base, Model, PresignedUrl, View } from '~/models';
-import { NcError } from '~/helpers/catchError';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import { AtError } from '~/helpers/catchError';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 
 function getViewTitle(view: View) {
   return view?.title;
@@ -45,22 +45,22 @@ export class DataExportProcessor {
       exportAs !== 'excel' &&
       exportAs !== 'ics'
     )
-      NcError.notImplemented(`Export as ${exportAs}`);
+      AtError.notImplemented(`Export as ${exportAs}`);
 
     const hrTime = initTime();
 
     const model = await Model.get(context, modelId);
 
-    if (!model) NcError.tableNotFound(modelId);
+    if (!model) AtError.tableNotFound(modelId);
 
     const view = await View.get(context, viewId);
 
-    if (!view) NcError.viewNotFound(viewId);
+    if (!view) AtError.viewNotFound(viewId);
 
     // date time as containing folder YYYY-MM-DD/HH
     const dateFolder = dayjs().format('YYYY-MM-DD/HH');
 
-    const storageAdapter = await NcPluginMgrv2.storageAdapter();
+    const storageAdapter = await AtPluginMgrv2.storageAdapter();
 
     const base = await Base.get(context, model.base_id);
     const date = dayjs()
@@ -78,7 +78,7 @@ export class DataExportProcessor {
         : exportAs === 'ics'
         ? 'ics'
         : 'csv';
-    const destPath = `nc/uploads/data-export/${dateFolder}/${modelId}/${filename}.${fileExtension}`;
+    const destPath = `atm/uploads/data-export/${dateFolder}/${modelId}/${filename}.${fileExtension}`;
 
     let url = null;
 
@@ -225,7 +225,7 @@ export class DataExportProcessor {
 
       if (!url) {
         url = await PresignedUrl.getSignedUrl({
-          pathOrUrl: path.join(destPath.replace('nc/uploads/', '')),
+          pathOrUrl: path.join(destPath.replace('atm/uploads/', '')),
           filename: filenameWithExt,
           expireSeconds: 3 * 60 * 60, // 3 hours
           preview: false,

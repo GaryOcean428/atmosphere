@@ -8,7 +8,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { AppEvents } from 'nocodb-sdk';
+import { AppEvents } from 'atmosphere-sdk';
 import type { DataExportJobData } from '~/interface/Jobs';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
@@ -18,8 +18,8 @@ import { JobTypes } from '~/interface/Jobs';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
-import { NcError } from '~/helpers/catchError';
+import { AtContext, AtRequest } from '~/interface/config';
+import { AtError } from '~/helpers/catchError';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 
 @Controller()
@@ -36,15 +36,15 @@ export class DataExportController {
   // TODO add new ACL
   @Acl('dataList')
   async exportModelData(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
     @Param('exportAs') exportAs: 'csv' | 'json' | 'excel' | 'ics',
     @Body() options: DataExportJobData['options'],
   ) {
     const view = await View.get(context, viewId);
 
-    if (!view) NcError.viewNotFound(viewId);
+    if (!view) AtError.viewNotFound(viewId);
 
     const job = await this.jobsService.add(JobTypes.DataExport, {
       context,

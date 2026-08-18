@@ -1,6 +1,6 @@
 import { getTimeZones } from '@vvo/tzdb'
 import dayjs from 'dayjs'
-import { dateFormats, timeFormats, workerWithTimezone } from 'nocodb-sdk'
+import { dateFormats, timeFormats, workerWithTimezone } from 'atmosphere-sdk'
 
 export function parseStringDateTime(v: string, dateTimeFormat = `${dateFormats[0]} ${timeFormats[0]}`, toLocal = true) {
   const dayjsObj = toLocal ? dayjs(v).local() : dayjs(v)

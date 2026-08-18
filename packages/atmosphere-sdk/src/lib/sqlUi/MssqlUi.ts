@@ -52,7 +52,7 @@ const dbTypes = [
   // SQL Server 2025+ — k-NN / similarity search. Stored as a fixed-length
   // float vector; tedious returns as a string of comma-separated floats
   // wrapped in brackets (e.g. `[1.0, 2.0, 3.0]`). Treated as opaque string
-  // for read; column-create from NocoDB requires the user to specify
+  // for read; column-create from Atmosphere requires the user to specify
   // dimensions explicitly via dtxp (no sensible default).
   'vector',
 ];
@@ -155,7 +155,7 @@ export class MssqlUi implements SqlUi {
       },
       {
         column_name: 'created_by',
-        title: 'nc_created_by',
+        title: 'atm_created_by',
         dt: 'nvarchar',
         dtx: 'specificType',
         ct: 'nvarchar(45)',
@@ -178,7 +178,7 @@ export class MssqlUi implements SqlUi {
       },
       {
         column_name: 'updated_by',
-        title: 'nc_updated_by',
+        title: 'atm_updated_by',
         dt: 'nvarchar',
         dtx: 'specificType',
         ct: 'nvarchar(45)',
@@ -200,8 +200,8 @@ export class MssqlUi implements SqlUi {
         system: true,
       },
       {
-        column_name: 'nc_order',
-        title: 'nc_order',
+        column_name: 'atm_order',
+        title: 'atm_order',
         dt: 'decimal',
         dtx: 'specificType',
         ct: 'decimal(38,20)',
@@ -381,7 +381,7 @@ export class MssqlUi implements SqlUi {
   }
 
   static columnEditable(colObj) {
-    return colObj.tn !== '_evolutions' || colObj.tn !== 'nc_evolutions';
+    return colObj.tn !== '_evolutions' || colObj.tn !== 'atm_evolutions';
   }
 
   static colPropAuDisabled(col) {
@@ -410,7 +410,7 @@ export class MssqlUi implements SqlUi {
       case 'tinyint':
         return 'integer';
 
-      // SQL Server `bit` is a 0/1 boolean (NocoDB Checkbox), not an integer.
+      // SQL Server `bit` is a 0/1 boolean (Atmosphere Checkbox), not an integer.
       case 'bit':
         return 'boolean';
 
@@ -521,7 +521,7 @@ export class MssqlUi implements SqlUi {
           colProp.pk = true;
           colProp.ai = isAutoIncId;
           colProp.rqd = true;
-          colProp.meta = isAutoGenId ? { ag: 'nc' } : undefined;
+          colProp.meta = isAutoGenId ? { ag: 'atm' } : undefined;
         }
         break;
       case 'ForeignKey':
@@ -800,7 +800,7 @@ export class MssqlUi implements SqlUi {
       // patterns, which are only implemented for PG, MySQL and SQLite.
       'DATETIME_FORMAT',
       // T-SQL DATEADD(datepart, number, date) requires the unit as a bare
-      // datepart keyword, not a value — NocoDB passes it as a string literal
+      // datepart keyword, not a value — Atmosphere passes it as a string literal
       // ("day"), which compiles to N'day' and is not a valid datepart. Blocked
       // rather than wrong.
       'DATEADD',

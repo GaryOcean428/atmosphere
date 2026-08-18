@@ -27,8 +27,8 @@ const logout = async () => {
         <div class="h-full flex">
           <!-- Side tabs -->
 
-          <div class="h-full bg-nc-bg-gray-sidebar nc-user-sidebar overflow-y-auto nc-scrollbar-thin min-w-[312px]">
-            <NcMenu
+          <div class="h-full bg-atm-bg-gray-sidebar atm-user-sidebar overflow-y-auto atm-scrollbar-thin min-w-[312px]">
+            <AtMenu
               v-model:open-keys="openKeys"
               v-model:selected-keys="selectedKeys"
               :inline-indent="16"
@@ -36,26 +36,26 @@ const logout = async () => {
               mode="inline"
             >
               <div class="h-[var(--topbar-height)] flex items-center children:flex-none">
-                <NcButton
+                <AtButton
                   v-if="!$route.params.baseType"
                   v-e="['c:navbar:home']"
                   type="text"
                   size="small"
-                  class="transition-all duration-200 mx-2 cursor-pointer transform hover:bg-nc-bg-gray-light nc-noco-brand-icon"
-                  data-testid="nc-noco-brand-icon"
+                  class="transition-all duration-200 mx-2 cursor-pointer transform hover:bg-atm-bg-gray-light atm-atmosphere-brand-icon"
+                  data-testid="atm-atmosphere-brand-icon"
                   @click="navigateTo(backRoute)"
                 >
                   <div class="flex flex-row gap-x-2 items-center">
                     <GeneralIcon icon="ncArrowLeft" />
                     <div class="flex text-small leading-[18px] font-semibold">{{ $t('labels.back') }}</div>
                   </div>
-                </NcButton>
+                </AtButton>
               </div>
-              <NcDivider class="!mt-0" />
+              <AtDivider class="!mt-0" />
 
-              <div class="text-sm text-nc-content-gray-muted font-semibold ml-4 py-1.5 mt-2">{{ $t('labels.account') }}</div>
+              <div class="text-sm text-atm-content-gray-muted font-semibold ml-4 py-1.5 mt-2">{{ $t('labels.account') }}</div>
 
-              <NcMenuItem
+              <AtMenuItem
                 key="profile"
                 class="item"
                 :class="{
@@ -68,8 +68,8 @@ const logout = async () => {
 
                   <div class="select-none">{{ $t('labels.profile') }}</div>
                 </div>
-              </NcMenuItem>
-              <NcMenuItem
+              </AtMenuItem>
+              <AtMenuItem
                 key="tokens"
                 class="item"
                 :class="{
@@ -82,8 +82,8 @@ const logout = async () => {
 
                   <div class="select-none">{{ $t('title.apiTokens') }}</div>
                 </div>
-              </NcMenuItem>
-              <NcMenuItem
+              </AtMenuItem>
+              <AtMenuItem
                 key="mcp"
                 :class="{
                   active: $route.params.page === 'mcp',
@@ -96,8 +96,8 @@ const logout = async () => {
 
                   <div class="select-none">{{ $t('title.mcpServer') }}</div>
                 </div>
-              </NcMenuItem>
-              <NcMenuItem
+              </AtMenuItem>
+              <AtMenuItem
                 key="password-reset"
                 class="item"
                 :class="{
@@ -109,13 +109,13 @@ const logout = async () => {
                   <GeneralIcon icon="ncLock" class="!h-4 !w-4" />
                   <div class="select-none">{{ $t('title.resetPasswordMenu') }}</div>
                 </div>
-              </NcMenuItem>
-            </NcMenu>
+              </AtMenuItem>
+            </AtMenu>
           </div>
 
           <!-- Sub Tabs -->
 
-          <div class="h-full flex-1 flex flex-col overflow-y-auto nc-scrollbar-thin">
+          <div class="h-full flex-1 flex flex-col overflow-y-auto atm-scrollbar-thin">
             <div class="flex flex-row pt-2 px-2 items-center">
               <div class="flex-1">
                 <AccountBreadcrumb />
@@ -125,36 +125,36 @@ const logout = async () => {
 
               <GeneralReleaseInfo />
 
-              <NcTooltip placement="bottom" class="mr-3">
+              <AtTooltip placement="bottom" class="mr-3">
                 <template #title>{{ $t('labels.community.communityTranslated') }}</template>
 
                 <div class="flex items-center">
-                  <GeneralLanguage button class="cursor-pointer text-2xl hover:text-nc-content-gray" />
+                  <GeneralLanguage button class="cursor-pointer text-2xl hover:text-atm-content-gray" />
                 </div>
-              </NcTooltip>
+              </AtTooltip>
 
               <template v-if="signedIn">
-                <NcDropdown :trigger="['click']" overlay-class-name="nc-dropdown-user-accounts-menu">
-                  <NcButton type="text" size="small">
+                <AtDropdown :trigger="['click']" overlay-class-name="atm-dropdown-user-accounts-menu">
+                  <AtButton type="text" size="small">
                     <component
                       :is="iconMap.threeDotVertical"
-                      data-testid="nc-menu-accounts"
-                      class="md:text-lg cursor-pointer hover:text-nc-content-gray nc-menu-accounts"
+                      data-testid="atm-menu-accounts"
+                      class="md:text-lg cursor-pointer hover:text-atm-content-gray atm-menu-accounts"
                       @click.prevent
                     />
-                  </NcButton>
+                  </AtButton>
 
                   <template #overlay>
-                    <NcMenu variant="medium">
-                      <NcMenuItem data-testid="nc-menu-accounts__sign-out" class="group" @click="logout">
+                    <AtMenu variant="medium">
+                      <AtMenuItem data-testid="atm-menu-accounts__sign-out" class="group" @click="logout">
                         <component :is="iconMap.signout" class="group-hover:text-accent" />
                         <span class="group-hover:text-primary">
                           {{ $t('general.signOut') }}
                         </span>
-                      </NcMenuItem>
-                    </NcMenu>
+                      </AtMenuItem>
+                    </AtMenu>
                   </template>
-                </NcDropdown>
+                </AtDropdown>
               </template>
             </div>
             <div
@@ -175,39 +175,39 @@ const logout = async () => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-user-sidebar .ant-menu-sub.ant-menu-inline) {
+:deep(.atm-user-sidebar .ant-menu-sub.ant-menu-inline) {
   @apply bg-transparent;
 }
 
-:deep(.nc-user-sidebar .ant-menu-item-only-child),
+:deep(.atm-user-sidebar .ant-menu-item-only-child),
 :deep(.ant-menu-submenu-title) {
   @apply !h-[28px] !leading-[28px];
 }
 
 :deep(.ant-menu-submenu-arrow) {
-  @apply !text-nc-content-gray-disabled;
+  @apply !text-atm-content-gray-disabled;
 }
 
 :deep(.ant-menu-submenu-selected .ant-menu-submenu-arrow) {
   @apply !text-inherit;
 }
 .tabs-menu {
-  @apply bg-nc-bg-gray-sidebar;
+  @apply bg-atm-bg-gray-sidebar;
 
   :deep(.item) {
-    @apply select-none mx-2 !px-3 !text-bodyDefaultSm font-medium !rounded-md !mb-0.5 text-nc-content-gray-subtle !hover:(bg-nc-bg-gray-medium text-nc-content-gray-subtle) font-medium;
+    @apply select-none mx-2 !px-3 !text-bodyDefaultSm font-medium !rounded-md !mb-0.5 text-atm-content-gray-subtle !hover:(bg-atm-bg-gray-medium text-atm-content-gray-subtle) font-medium;
 
     width: calc(100% - 1rem);
   }
 
-  :deep(.nc-menu-item-inner),
-  :deep(.nc-submenu-title) {
+  :deep(.atm-menu-item-inner),
+  :deep(.atm-submenu-title) {
     @apply !text-bodyDefaultSm font-medium;
   }
 }
 
 :deep(.ant-menu-submenu-title) {
-  @apply select-none mx-2 !pl-3 !pr-1 !text-bodyDefaultSm font-medium !rounded-md !mb-0.5 !hover:(bg-nc-bg-gray-medium text-nc-content-gray-subtle);
+  @apply select-none mx-2 !pl-3 !pr-1 !text-bodyDefaultSm font-medium !rounded-md !mb-0.5 !hover:(bg-atm-bg-gray-medium text-atm-content-gray-subtle);
   width: calc(100% - 1rem);
 
   & + ul {
@@ -216,18 +216,18 @@ const logout = async () => {
 }
 
 :deep(.ant-menu) {
-  @apply !pt-0 !rounded-none !border-nc-border-gray-medium;
+  @apply !pt-0 !rounded-none !border-atm-border-gray-medium;
 }
 
-.nc-account-dropdown-item {
-  @apply flex flex-row px-4 items-center py-2 gap-x-2 hover:bg-nc-bg-gray-light cursor-pointer;
+.atm-account-dropdown-item {
+  @apply flex flex-row px-4 items-center py-2 gap-x-2 hover:bg-atm-bg-gray-light cursor-pointer;
 }
 </style>
 
 <style lang="scss">
-.nc-user-sidebar {
+.atm-user-sidebar {
   .tabs-menu .active {
-    @apply !bg-nc-bg-brand !text-nc-content-brand-disabled !hover:(bg-nc-bg-brand text-nc-content-brand-disabled) dark:(!bg-nc-bg-gray-medium !hover:bg-nc-bg-gray-medium) font-semibold;
+    @apply !bg-atm-bg-brand !text-atm-content-brand-disabled !hover:(bg-atm-bg-brand text-atm-content-brand-disabled) dark:(!bg-atm-bg-gray-medium !hover:bg-atm-bg-gray-medium) font-semibold;
   }
 }
 </style>

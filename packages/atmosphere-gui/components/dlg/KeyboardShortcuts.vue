@@ -218,43 +218,43 @@ const shortcutList = [
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="dialogShow"
     size="lg"
     width="min(calc(100vw - 32px), 540px)"
     :show-separator="false"
-    wrap-class-name="nc-modal-keyboard-shortcuts"
+    wrap-class-name="atm-modal-keyboard-shortcuts"
   >
     <div class="flex flex-col h-full">
       <!-- Header -->
-      <div class="p-2 w-full flex items-center gap-2 border-b-1 border-nc-border-gray-medium flex-none">
-        <GeneralIcon icon="ncKeyboard" class="text-xl text-nc-content-gray-subtle ml-1" />
-        <h3 class="flex-1 text-base font-semibold text-nc-content-gray m-0 rtl:text-right">
+      <div class="p-2 w-full flex items-center gap-2 border-b-1 border-atm-border-gray-medium flex-none">
+        <GeneralIcon icon="ncKeyboard" class="text-xl text-atm-content-gray-subtle ml-1" />
+        <h3 class="flex-1 text-base font-semibold text-atm-content-gray m-0 rtl:text-right">
           {{ $t('title.keyboardShortcut') }}
         </h3>
-        <NcButton size="small" type="text" @click="dialogShow = false">
+        <AtButton size="small" type="text" @click="dialogShow = false">
           <GeneralIcon icon="close" />
-        </NcButton>
+        </AtButton>
       </div>
 
       <!-- Content -->
-      <div class="flex-1 overflow-y-auto nc-scrollbar-thin p-4">
+      <div class="flex-1 overflow-y-auto atm-scrollbar-thin p-4">
         <div v-for="(section, sectionIdx) of shortcutList" :key="sectionIdx" class="mb-4 last:mb-0">
-          <div class="text-bodyBold font-semibold text-nc-content-gray-subtle mb-2 tracking-wide rtl:text-right">
+          <div class="text-bodyBold font-semibold text-atm-content-gray-subtle mb-2 tracking-wide rtl:text-right">
             {{ section.title }}
           </div>
-          <div class="flex flex-col rounded-lg border-1 border-nc-border-gray-medium overflow-hidden">
+          <div class="flex flex-col rounded-lg border-1 border-atm-border-gray-medium overflow-hidden">
             <div
               v-for="(item, itemIdx) of section.shortcuts"
               :key="itemIdx"
               class="flex items-center justify-between py-2 px-3 gap-4"
-              :class="{ 'border-t-1 border-nc-border-gray-light': itemIdx > 0 }"
+              :class="{ 'border-t-1 border-atm-border-gray-light': itemIdx > 0 }"
             >
-              <span class="text-bodyDefaultSm text-nc-content-gray-subtle2">
+              <span class="text-bodyDefaultSm text-atm-content-gray-subtle2">
                 {{ item.behaviour }}
               </span>
               <span class="flex items-center gap-1 flex-none">
-                <kbd v-for="(key, keyIdx) of item.keys" :key="keyIdx" class="nc-kbd">
+                <kbd v-for="(key, keyIdx) of item.keys" :key="keyIdx" class="atm-kbd">
                   {{ key }}
                 </kbd>
               </span>
@@ -263,19 +263,19 @@ const shortcutList = [
         </div>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss">
-.nc-modal-keyboard-shortcuts {
-  .nc-modal {
+.atm-modal-keyboard-shortcuts {
+  .atm-modal {
     @apply !p-0;
   }
 }
 </style>
 
 <style lang="scss" scoped>
-.nc-kbd {
-  @apply inline-flex items-center justify-center min-w-6 h-6 px-1.5 text-[12px] font-medium leading-none text-nc-content-gray-subtle bg-nc-bg-gray-light border-1 border-nc-border-gray-medium border-b-2 rounded-md;
+.atm-kbd {
+  @apply inline-flex items-center justify-center min-w-6 h-6 px-1.5 text-[12px] font-medium leading-none text-atm-content-gray-subtle bg-atm-bg-gray-light border-1 border-atm-border-gray-medium border-b-2 rounded-md;
 }
 </style>

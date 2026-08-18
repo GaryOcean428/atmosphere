@@ -142,45 +142,45 @@ const columns = [
     minWidth: 120,
     padding: '0px 12px',
   },
-] as NcTableColumnProps[]
+] as AtTableColumnProps[]
 </script>
 
 <template>
   <div class="h-full flex flex-row w-full items-center justify-center">
     <div class="w-full h-full flex flex-col">
-      <NcTooltip class="mb-4 first-letter:capital" show-on-truncate-only>
+      <AtTooltip class="mb-4 first-letter:capital" show-on-truncate-only>
         <template #title>{{ base.title }}</template>
         <span> Control view visibility for different roles to manage access efficiently. </span>
-      </NcTooltip>
+      </AtTooltip>
       <div class="flex flex-row items-center w-full mb-4 gap-2 justify-between">
         <a-input
           v-model:value="searchInput"
           :placeholder="$t('placeholder.searchModels')"
           allow-clear
-          class="nc-acl-search nc-input-border-on-value !w-[400px] nc-input-sm"
+          class="atm-acl-search atm-input-border-on-value !w-[400px] atm-input-sm"
         >
           <template #prefix>
-            <component :is="iconMap.search" class="text-nc-content-gray-subtle2" />
+            <component :is="iconMap.search" class="text-atm-content-gray-subtle2" />
           </template>
         </a-input>
         <div class="flex items-center gap-2.5">
-          <NcButton type="text" size="small" class="self-start !rounded-md nc-acl-reload" @click="loadTableList">
-            <div class="flex items-center gap-2 text-nc-content-gray-subtle2 font-light">
+          <AtButton type="text" size="small" class="self-start !rounded-md atm-acl-reload" @click="loadTableList">
+            <div class="flex items-center gap-2 text-atm-content-gray-subtle2 font-light">
               <component :is="iconMap.reload" :class="{ 'animate-infinite animate-spin !text-success': isLoading }" />
               {{ $t('general.reload') }}
             </div>
-          </NcButton>
+          </AtButton>
 
-          <NcButton size="small" class="z-10 !rounded-lg !px-2" type="primary" @click="saveUIAcl">
+          <AtButton size="small" class="z-10 !rounded-lg !px-2" type="primary" @click="saveUIAcl">
             <div class="flex flex-row items-center w-full gap-x-1">
               <component :is="iconMap.save" />
               <div class="flex">{{ $t('general.save') }}</div>
             </div>
-          </NcButton>
+          </AtButton>
         </div>
       </div>
 
-      <NcTable
+      <AtTable
         :columns="columns"
         :data="filteredTables"
         row-height="44px"
@@ -193,7 +193,7 @@ const columns = [
           </template>
           <template v-if="column.key === 'action'">
             <div class="flex flex-row gap-x-2">
-              <NcCheckbox
+              <AtCheckbox
                 v-model:checked="allSelected[column.name as Role]"
                 :disabled="!filteredTables.length"
                 class="!m-0 !top-0"
@@ -213,14 +213,14 @@ const columns = [
                 <GeneralTableIcon
                   size="xsmall"
                   :meta="{ meta: record.table_meta, type: record.ptype, synced: record.synced }"
-                  class="text-nc-content-gray-muted"
+                  class="text-atm-content-gray-muted"
                 />
               </div>
 
-              <NcTooltip class="truncate" show-on-truncate-only>
+              <AtTooltip class="truncate" show-on-truncate-only>
                 <template #title>{{ record._ptn }}</template>
                 {{ record._ptn }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
           </template>
           <template v-else-if="column.name === 'View Name'">
@@ -229,19 +229,19 @@ const columns = [
                 <GeneralTableIcon
                   v-if="record?.meta?.icon"
                   :meta="{ meta: record.meta, type: 'view' }"
-                  class="text-nc-content-gray-muted !text-sm children:(!w-5 !h-5)"
+                  class="text-atm-content-gray-muted !text-sm children:(!w-5 !h-5)"
                 />
-                <GeneralViewIcon v-else :meta="record" class="text-nc-content-gray-muted"></GeneralViewIcon>
+                <GeneralViewIcon v-else :meta="record" class="text-atm-content-gray-muted"></GeneralViewIcon>
               </div>
-              <NcTooltip class="truncate" show-on-truncate-only>
+              <AtTooltip class="truncate" show-on-truncate-only>
                 <template #title>{{ record.title }}</template>
                 {{ record.title }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
           </template>
           <template v-else>
             <div>
-              <NcTooltip>
+              <AtTooltip>
                 <template #title>
                   <span v-if="record.disabled[column.name]">
                     {{ $t('labels.clickToMake') }} '{{ record.title }}' {{ $t('labels.visibleForRole') }} {{ column.name }}
@@ -253,16 +253,16 @@ const columns = [
                   >
                 </template>
 
-                <NcCheckbox
+                <AtCheckbox
                   :checked="!record.disabled[column.name]"
-                  :class="`nc-acl-${record.title}-${column.name}-chkbox !ml-0.25`"
+                  :class="`atm-acl-${record.title}-${column.name}-chkbox !ml-0.25`"
                   @change="onRoleCheck(record, column.name as Role)"
                 />
-              </NcTooltip>
+              </AtTooltip>
             </div>
           </template>
         </template>
-      </NcTable>
+      </AtTable>
     </div>
   </div>
 </template>

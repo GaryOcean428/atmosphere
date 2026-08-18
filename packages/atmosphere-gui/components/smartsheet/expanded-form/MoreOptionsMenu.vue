@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ColumnType, ViewType } from 'nocodb-sdk'
-import { PermissionEntity, PermissionKey } from 'nocodb-sdk'
+import type { ColumnType, ViewType } from 'atmosphere-sdk'
+import { PermissionEntity, PermissionKey } from 'atmosphere-sdk'
 
 interface Props {
   isLoading?: boolean
@@ -192,37 +192,37 @@ const onConfirmDeleteRowClick = async () => {
 </script>
 
 <template>
-  <NcTooltip v-if="visibleMoreOptions.copyRecordUrl && !isMobileMode && !compact" class="!<lg:hidden">
+  <AtTooltip v-if="visibleMoreOptions.copyRecordUrl && !isMobileMode && !compact" class="!<lg:hidden">
     <template #title>
       {{ isRecordLinkCopied ? $t('labels.copiedRecordURL') : $t('labels.copyRecordURL') }}
     </template>
-    <NcButton
+    <AtButton
       :disabled="isLoading"
-      class="text-nc-content-inverted-secondary !h-7 !w-7"
+      class="text-atm-content-inverted-secondary !h-7 !w-7"
       type="text"
       size="xsmall"
       @click="copyRecordUrl()"
     >
-      <div v-e="['c:row-expand:copy-url']" data-testid="nc-expanded-form-copy-url" class="flex items-center relative h-4 w-4">
+      <div v-e="['c:row-expand:copy-url']" data-testid="atm-expanded-form-copy-url" class="flex items-center relative h-4 w-4">
         <Transition name="icon-fade" :duration="200">
-          <component :is="iconMap.check" v-if="isRecordLinkCopied" class="cursor-pointer nc-duplicate-row h-4 w-4" />
-          <component :is="iconMap.copy" v-else class="cursor-pointer nc-duplicate-row h-4 w-4" />
+          <component :is="iconMap.check" v-if="isRecordLinkCopied" class="cursor-pointer atm-duplicate-row h-4 w-4" />
+          <component :is="iconMap.copy" v-else class="cursor-pointer atm-duplicate-row h-4 w-4" />
         </Transition>
       </div>
-    </NcButton>
-  </NcTooltip>
+    </AtButton>
+  </AtTooltip>
 
-  <NcDropdown
+  <AtDropdown
     v-if="visibleMoreOptions.showMoreOptionsMenu"
     placement="bottomRight"
     :class="{
       '!lg:hidden': visibleMoreOptions.allHiddenExceptCopyRecordUrl,
     }"
   >
-    <NcButton
+    <AtButton
       :type="isMobileMode ? 'secondary' : 'text'"
       size="xsmall"
-      class="nc-expand-form-more-actions !w-7 !h-7"
+      class="atm-expand-form-more-actions !w-7 !h-7"
       :class="{
         '!lg:hidden': visibleMoreOptions.allHiddenExceptCopyRecordUrl,
       }"
@@ -231,48 +231,48 @@ const onConfirmDeleteRowClick = async () => {
       <GeneralIcon
         icon="threeDotVertical"
         class="text-md"
-        :class="isLoading ? 'text-nc-content-brand-hover' : 'text-nc-content-inverted-secondary'"
+        :class="isLoading ? 'text-atm-content-brand-hover' : 'text-atm-content-inverted-secondary'"
       />
-    </NcButton>
+    </AtButton>
     <template #overlay>
-      <NcMenu variant="small">
-        <NcMenuItem v-if="visibleMoreOptions.reloadRecord" @click="_loadRow()">
-          <div v-e="['c:row-expand:reload']" class="flex gap-2 items-center" data-testid="nc-expanded-form-reload">
+      <AtMenu variant="small">
+        <AtMenuItem v-if="visibleMoreOptions.reloadRecord" @click="_loadRow()">
+          <div v-e="['c:row-expand:reload']" class="flex gap-2 items-center" data-testid="atm-expanded-form-reload">
             <component :is="iconMap.reload" class="cursor-pointer" />
             {{ $t('general.reload') }} {{ $t('objects.record') }}
           </div>
-        </NcMenuItem>
-        <NcMenuItem
+        </AtMenuItem>
+        <AtMenuItem
           v-if="visibleMoreOptions.copyRecordUrl"
           type="secondary"
           :class="{ '!lg:hidden': !compact }"
           :disabled="isLoading"
           @click="copyRecordUrl()"
         >
-          <div v-e="['c:row-expand:copy-url']" data-testid="nc-expanded-form-copy-url" class="flex gap-2 items-center">
+          <div v-e="['c:row-expand:copy-url']" data-testid="atm-expanded-form-copy-url" class="flex gap-2 items-center">
             <component :is="iconMap.copy" class="cursor-pointer" />
             {{ $t('labels.copyRecordURL') }}
           </div>
-        </NcMenuItem>
-        <NcMenuItem v-if="visibleMoreOptions.sendRecord" :disabled="isLoading" @click="showSendRecordModal = true">
-          <div v-e="['c:row-expand:send-record']" data-testid="nc-expanded-form-send-record" class="flex gap-2 items-center">
+        </AtMenuItem>
+        <AtMenuItem v-if="visibleMoreOptions.sendRecord" :disabled="isLoading" @click="showSendRecordModal = true">
+          <div v-e="['c:row-expand:send-record']" data-testid="atm-expanded-form-send-record" class="flex gap-2 items-center">
             <GeneralIcon icon="mail" class="cursor-pointer" />
             {{ $t('activity.sendRecord') }}
           </div>
-        </NcMenuItem>
-        <NcTooltip v-if="visibleMoreOptions.duplicateRecord && meta?.synced" placement="left">
+        </AtMenuItem>
+        <AtTooltip v-if="visibleMoreOptions.duplicateRecord && meta?.synced" placement="left">
           <template #title>
             {{ $t('msg.info.duplicateNotAvailableForSyncedTable') }}
           </template>
-          <NcMenuItem disabled>
-            <div class="flex gap-2 items-center" data-testid="nc-expanded-form-duplicate">
-              <component :is="iconMap.duplicate" class="cursor-pointer nc-duplicate-row" />
+          <AtMenuItem disabled>
+            <div class="flex gap-2 items-center" data-testid="atm-expanded-form-duplicate">
+              <component :is="iconMap.duplicate" class="cursor-pointer atm-duplicate-row" />
               <span class="-ml-0.25">
                 {{ $t('labels.duplicateRecord') }}
               </span>
             </div>
-          </NcMenuItem>
-        </NcTooltip>
+          </AtMenuItem>
+        </AtTooltip>
         <PermissionsTooltip
           v-else-if="visibleMoreOptions.duplicateRecord"
           :entity="PermissionEntity.TABLE"
@@ -281,20 +281,20 @@ const onConfirmDeleteRowClick = async () => {
           placement="right"
         >
           <template #default="{ isAllowed }">
-            <NcMenuItem :disabled="!isAllowed" @click="!isNew ? onDuplicateRow() : () => {}">
-              <div v-e="['c:row-expand:duplicate']" class="flex gap-2 items-center" data-testid="nc-expanded-form-duplicate">
-                <component :is="iconMap.duplicate" class="cursor-pointer nc-duplicate-row" />
+            <AtMenuItem :disabled="!isAllowed" @click="!isNew ? onDuplicateRow() : () => {}">
+              <div v-e="['c:row-expand:duplicate']" class="flex gap-2 items-center" data-testid="atm-expanded-form-duplicate">
+                <component :is="iconMap.duplicate" class="cursor-pointer atm-duplicate-row" />
                 <span class="-ml-0.25">
                   {{ $t('labels.duplicateRecord') }}
                 </span>
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
           </template>
         </PermissionsTooltip>
-        <NcMenuItem
+        <AtMenuItem
           v-if="showCompactToggle"
           v-e="[compactMode ? 'c:row-expand-panel:compact:off' : 'c:row-expand-panel:compact:on']"
-          data-testid="nc-expanded-form-compact-toggle"
+          data-testid="atm-expanded-form-compact-toggle"
           @click="emits('update:compactMode', !compactMode)"
         >
           <div class="flex gap-2 items-center justify-between w-full">
@@ -302,17 +302,17 @@ const onConfirmDeleteRowClick = async () => {
               <component :is="iconMap.list" class="cursor-pointer" />
               <span>{{ $t('labels.compactView') }}</span>
             </div>
-            <component :is="iconMap.check" v-if="compactMode" class="!w-3.5 !h-3.5 text-nc-content-brand" />
+            <component :is="iconMap.check" v-if="compactMode" class="!w-3.5 !h-3.5 text-atm-content-brand" />
           </div>
-        </NcMenuItem>
-        <NcDivider v-if="visibleMoreOptions.showDeleteDivider" />
-        <NcTooltip v-if="visibleMoreOptions.deleteRecord && meta?.synced" placement="left">
+        </AtMenuItem>
+        <AtDivider v-if="visibleMoreOptions.showDeleteDivider" />
+        <AtTooltip v-if="visibleMoreOptions.deleteRecord && meta?.synced" placement="left">
           <template #title>
             {{ $t('msg.info.deleteNotAvailableForSyncedTable') }}
           </template>
-          <NcMenuItem danger disabled>
-            <div class="flex gap-2 items-center" data-testid="nc-expanded-form-delete">
-              <GeneralIcon icon="delete" class="cursor-pointer nc-delete-row" />
+          <AtMenuItem danger disabled>
+            <div class="flex gap-2 items-center" data-testid="atm-expanded-form-delete">
+              <GeneralIcon icon="delete" class="cursor-pointer atm-delete-row" />
               <span class="-ml-0.25">
                 {{
                   $t('general.deleteEntity', {
@@ -321,8 +321,8 @@ const onConfirmDeleteRowClick = async () => {
                 }}
               </span>
             </div>
-          </NcMenuItem>
-        </NcTooltip>
+          </AtMenuItem>
+        </AtTooltip>
         <PermissionsTooltip
           v-else-if="visibleMoreOptions.deleteRecord"
           :entity="PermissionEntity.TABLE"
@@ -331,9 +331,9 @@ const onConfirmDeleteRowClick = async () => {
           placement="right"
         >
           <template #default="{ isAllowed }">
-            <NcMenuItem danger :disabled="!isAllowed" @click="!isNew && onDeleteRowClick()">
-              <div v-e="['c:row-expand:delete']" class="flex gap-2 items-center" data-testid="nc-expanded-form-delete">
-                <GeneralIcon icon="delete" class="cursor-pointer nc-delete-row" />
+            <AtMenuItem danger :disabled="!isAllowed" @click="!isNew && onDeleteRowClick()">
+              <div v-e="['c:row-expand:delete']" class="flex gap-2 items-center" data-testid="atm-expanded-form-delete">
+                <GeneralIcon icon="delete" class="cursor-pointer atm-delete-row" />
                 <span class="-ml-0.25">
                   {{
                     $t('general.deleteEntity', {
@@ -342,12 +342,12 @@ const onConfirmDeleteRowClick = async () => {
                   }}
                 </span>
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
           </template>
         </PermissionsTooltip>
-      </NcMenu>
+      </AtMenu>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 
   <GeneralDeleteModal
     v-model:visible="showDeleteRowModal"
@@ -357,7 +357,7 @@ const onConfirmDeleteRowClick = async () => {
     <template #entity-preview>
       <span>
         <div
-          class="flex flex-row items-center py-2.25 px-2.5 bg-nc-bg-gray-extralight rounded-lg text-nc-content-inverted-secondary"
+          class="flex flex-row items-center py-2.25 px-2.5 bg-atm-bg-gray-extralight rounded-lg text-atm-content-inverted-secondary"
         >
           <div class="text-ellipsis overflow-hidden select-none w-full pl-1.75 break-keep whitespace-nowrap">
             <LazySmartsheetPlainCell v-if="displayField" v-model="displayValue" :column="displayField" />

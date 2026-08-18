@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
-import { type NcContext } from 'nocodb-sdk';
-import { NcError } from 'src/helpers/catchError';
+import { type AtContext } from 'atmosphere-sdk';
+import { AtError } from 'src/helpers/catchError';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
 import type { MetaService } from 'src/meta/meta.service';
 import type { Column, Filter } from 'src/models';
@@ -32,7 +32,7 @@ export class TimeGeneralHandler extends GenericFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
@@ -62,7 +62,7 @@ export class TimeGeneralHandler extends GenericFieldHandler {
 
     // If still invalid, throw an error
     if (!parsedTime.isValid()) {
-      NcError.invalidValueForField({
+      AtError.invalidValueForField({
         value: params.value,
         column: params.column.title,
         type: params.column.uidt,

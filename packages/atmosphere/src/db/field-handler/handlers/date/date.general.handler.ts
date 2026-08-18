@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc.js';
-import { type NcContext, ncIsUndefined } from 'nocodb-sdk';
+import { type AtContext, ncIsUndefined } from 'atmosphere-sdk';
 import debug from 'debug';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Knex } from '~/db/CustomKnex';
@@ -10,12 +10,12 @@ import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { MetaService } from '~/meta/meta.service';
 import type { Column, Filter } from '~/models';
 import { DateTimeGeneralHandler } from '~/db/field-handler/handlers/date-time/date-time.general.handler';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const dateHandlerDebug = debug('nc:DateGeneralHandler');
+const dateHandlerDebug = debug('atm:DateGeneralHandler');
 
 export class DateGeneralHandler extends DateTimeGeneralHandler {
   override async parseUserInput(params: {
@@ -24,7 +24,7 @@ export class DateGeneralHandler extends DateTimeGeneralHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
@@ -58,7 +58,7 @@ export class DateGeneralHandler extends DateTimeGeneralHandler {
       }
     }
     if (!dayjsUtcValue || !dayjsUtcValue.isValid()) {
-      NcError.invalidValueForField({
+      AtError.invalidValueForField({
         value: params.value,
         column: params.column.title,
         type: params.column.uidt,

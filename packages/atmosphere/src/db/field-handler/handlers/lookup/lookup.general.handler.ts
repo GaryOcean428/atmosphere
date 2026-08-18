@@ -1,7 +1,7 @@
-import { isMMOrMMLike, parseProp, RelationTypes } from 'nocodb-sdk';
+import { isMMOrMMLike, parseProp, RelationTypes } from 'atmosphere-sdk';
 import { ComputedFieldHandler } from '../computed';
 import type { Logger } from '@nestjs/common';
-import type { ClientType, NcContext } from 'nocodb-sdk';
+import type { ClientType, AtContext } from 'atmosphere-sdk';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Column, LinkToAnotherRecordColumn, LookupColumn } from '~/models';
 import type {
@@ -576,7 +576,7 @@ export class LookupGeneralHandler extends ComputedFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       logger?: Logger;
       fieldHandler?: IFieldHandler;

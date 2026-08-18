@@ -1,5 +1,5 @@
-import { type NcContext } from 'nocodb-sdk';
-import { NcError } from 'src/helpers/catchError';
+import { type AtContext } from 'atmosphere-sdk';
+import { AtError } from 'src/helpers/catchError';
 import { NumberGeneralHandler } from '../number/number.general.handler';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
 import type { MetaService } from 'src/meta/meta.service';
@@ -12,14 +12,14 @@ export class YearGeneralHandler extends NumberGeneralHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
     const value = (await super.parseUserInput(params))?.value;
     if (typeof value === 'number') {
       if (value < 1000 || value > 9999) {
-        NcError.invalidValueForField({
+        AtError.invalidValueForField({
           value: value.toString(),
           column: params.column.title,
           type: params.column.uidt,

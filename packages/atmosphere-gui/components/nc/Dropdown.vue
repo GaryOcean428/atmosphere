@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { NcDropdownPlacement } from '#imports'
+import type { AtDropdownPlacement } from '#imports'
 
 const props = withDefaults(
   defineProps<{
@@ -8,7 +8,7 @@ const props = withDefaults(
     overlayClassName?: string | undefined
     overlayStyle?: Record<string, any>
     disabled?: boolean
-    placement?: NcDropdownPlacement
+    placement?: AtDropdownPlacement
     align?: {
       points?: [string, string]
       offset?: [number, number]
@@ -16,7 +16,7 @@ const props = withDefaults(
       overflow?: { adjustX?: boolean; adjustY?: boolean }
     }
     autoClose?: boolean
-    // if true, the dropdown will not have the nc-dropdown class (used for blocking keyboard events)
+    // if true, the dropdown will not have the atm-dropdown class (used for blocking keyboard events)
     nonNcDropdown?: boolean
     // if true, renders a transparent backdrop behind the dropdown that stops click propagation.
     // Use when this dropdown is nested inside another dropdown to prevent the parent from closing.
@@ -59,7 +59,7 @@ const visible = useVModel(props, 'visible', emits)
 const localIsVisible = ref<boolean | undefined>(props.visible)
 
 const overlayClassNameComputed = computed(() => {
-  let className = `${props.nonNcDropdown ? '' : 'nc-dropdown '} rounded-lg border-1 border-nc-border-gray-medium shadow-lg`
+  let className = `${props.nonNcDropdown ? '' : 'atm-dropdown '} rounded-lg border-1 border-atm-border-gray-medium shadow-lg`
   if (overlayClassName.value) {
     className += ` ${overlayClassName.value}`
   }

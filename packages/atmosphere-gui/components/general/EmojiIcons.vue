@@ -36,11 +36,11 @@ const selectIcon = (icon?: string) => {
 
 <template>
   <div>
-    <div class="p-1 w-[280px] h-[280px] flex flex-col gap-1 justify-start nc-emoji" data-testid="nc-emoji-container">
+    <div class="p-1 w-[280px] h-[280px] flex flex-col gap-1 justify-start atm-emoji" data-testid="atm-emoji-container">
       <div @click.stop>
         <input
           v-model="search"
-          data-testid="nc-emoji-filter"
+          data-testid="atm-emoji-filter"
           class="p-1 text-xs border-1 w-full overflow-y-auto"
           :placeholder="$t('general.search')"
           @input="toIndex = 60"
@@ -48,7 +48,7 @@ const selectIcon = (icon?: string) => {
       </div>
       <div class="flex gap-1 flex-wrap w-full flex-shrink overflow-y-auto scrollbar-thin-dull">
         <div v-for="icon of filteredIcons" :key="icon" @click="selectIcon(icon)">
-          <span class="cursor-pointer nc-emoji-item">
+          <span class="cursor-pointer atm-emoji-item">
             <IconifyIcon class="text-xl iconify" :icon="`emojione:${icon}`"></IconifyIcon>
           </span>
         </div>
@@ -58,7 +58,7 @@ const selectIcon = (icon?: string) => {
     <div v-if="props.showReset" class="m-1">
       <a-divider class="!my-2 w-full" />
       <div
-        class="p-1 mt-1 cursor-pointer text-xs inline-block border-nc-border-gray-medium border-1 rounded"
+        class="p-1 mt-1 cursor-pointer text-xs inline-block border-atm-border-gray-medium border-1 rounded"
         @click="selectIcon()"
       >
         <PhXCircleLight class="text-sm" />
@@ -69,7 +69,7 @@ const selectIcon = (icon?: string) => {
 </template>
 
 <style scoped>
-.nc-emoji-item {
+.atm-emoji-item {
   @apply hover:(bg-primary bg-opacity-10) active:(bg-primary !bg-opacity-20) rounded-md w-[38px] h-[38px] block flex items-center justify-center;
 }
 </style>

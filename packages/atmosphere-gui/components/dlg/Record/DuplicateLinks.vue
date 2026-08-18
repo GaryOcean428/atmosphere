@@ -35,41 +35,41 @@ const close = () => {
 </script>
 
 <template>
-  <NcModal v-if="dialogShow" v-model:visible="dialogShow" :show-separator="false" size="small" @keydown.esc="dialogShow = false">
-    <div class="flex justify-between w-full text-base font-semibold mb-2 text-nc-content-gray-emphasis items-center">
+  <AtModal v-if="dialogShow" v-model:visible="dialogShow" :show-separator="false" size="small" @keydown.esc="dialogShow = false">
+    <div class="flex justify-between w-full text-base font-semibold mb-2 text-atm-content-gray-emphasis items-center">
       {{ $t('msg.info.duplicateLinks.title') }}
     </div>
-    <div data-testid="nc-duplicate-links-modal" class="flex flex-col">
-      <div class="mb-2 nc-content-gray">
+    <div data-testid="atm-duplicate-links-modal" class="flex flex-col">
+      <div class="mb-2 atm-content-gray">
         {{ $t('msg.info.duplicateLinks.subtitle') }}
       </div>
-      <div class="mb-3 font-bold nc-content-gray max-h-20 nc-scrollbar-thin">
+      <div class="mb-3 font-bold atm-content-gray max-h-20 atm-scrollbar-thin">
         {{ linkList }}
       </div>
 
       <a-radio-group v-model:value="keepLinks">
         <a-radio
-          data-testid="nc-duplicate-links-skip"
+          data-testid="atm-duplicate-links-skip"
           :style="{
             display: 'flex',
             lineHeight: '30px',
           }"
           :value="false"
         >
-          <div class="nc-content-gray leading-5">
+          <div class="atm-content-gray leading-5">
             <span class="font-semibold"> {{ $t('msg.info.duplicateLinks.skipLabel') }} </span>
             {{ $t('msg.info.duplicateLinks.skipHint') }}
           </div>
         </a-radio>
         <a-radio
-          data-testid="nc-duplicate-links-move"
+          data-testid="atm-duplicate-links-move"
           :style="{
             display: 'flex',
             lineHeight: '30px',
           }"
           :value="true"
         >
-          <div class="nc-content-gray leading-5">
+          <div class="atm-content-gray leading-5">
             <span class="font-semibold"> {{ $t('msg.info.duplicateLinks.moveLabel') }} </span>
             {{ $t('msg.info.duplicateLinks.moveHint') }}
           </div>
@@ -78,15 +78,15 @@ const close = () => {
     </div>
     <div class="flex flex-row mt-5 justify-end gap-x-2">
       <div class="flex gap-2 items-center">
-        <NcButton data-testid="nc-duplicate-links-cancel" type="secondary" size="small" @click="close">
+        <AtButton data-testid="atm-duplicate-links-cancel" type="secondary" size="small" @click="close">
           {{ $t('labels.cancel') }}
-        </NcButton>
+        </AtButton>
       </div>
       <div class="flex gap-2 items-center">
-        <NcButton data-testid="nc-duplicate-links-continue" type="primary" size="small" @click="updateKeepLinks">
+        <AtButton data-testid="atm-duplicate-links-continue" type="primary" size="small" @click="updateKeepLinks">
           {{ $t('labels.continue') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>

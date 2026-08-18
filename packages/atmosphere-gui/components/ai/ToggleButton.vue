@@ -20,7 +20,7 @@ const { t } = useI18n()
 
 const { aiLoading, aiMode, offTooltip } = toRefs(props)
 
-const onTooltip = computed(() => (ncIsUndefined(props.onTooltip) ? t('labels.disableNocoAI') : props.onTooltip))
+const onTooltip = computed(() => (ncIsUndefined(props.onTooltip) ? t('labels.disableAtmosphereAI') : props.onTooltip))
 
 const disableTooltip = computed(() => {
   if (aiLoading.value) return true
@@ -34,7 +34,7 @@ const disableTooltip = computed(() => {
 </script>
 
 <template>
-  <NcTooltip
+  <AtTooltip
     class="flex"
     :class="{
       'cursor-wait': aiLoading && showWrapperLoading,
@@ -43,13 +43,13 @@ const disableTooltip = computed(() => {
     :disabled="disableTooltip"
     hide-on-click
   >
-    <NcButton
+    <AtButton
       type="text"
       size="small"
-      class="-my-1 !text-nc-content-purple-dark hover:text-nc-content-purple-dark flex-none"
+      class="-my-1 !text-atm-content-purple-dark hover:text-atm-content-purple-dark flex-none"
       :class="{
         '!pointer-events-none !cursor-not-allowed': aiLoading,
-        '!bg-nc-bg-purple-dark hover:!bg-nc-bg-gray-light': aiMode,
+        '!bg-atm-bg-purple-dark hover:!bg-atm-bg-gray-light': aiMode,
       }"
       @click.stop="props.onClick"
     >
@@ -61,9 +61,9 @@ const disableTooltip = computed(() => {
           class="overflow-hidden trasition-all ease duration-200"
           :class="{ 'w-[0px] invisible': aiMode, 'ml-1 w-[78px]': !aiMode }"
         >
-          <slot name="text"> {{ t('labels.useNocoAI') }} </slot>
+          <slot name="text"> {{ t('labels.useAtmosphereAI') }} </slot>
         </span>
       </div>
-    </NcButton>
-  </NcTooltip>
+    </AtButton>
+  </AtTooltip>
 </template>

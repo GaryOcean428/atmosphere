@@ -1,7 +1,7 @@
 import { Container, Hr, Img, Section, Text } from '@react-email/components';
 import * as React from 'react';
-import type { WhiteLabelConfig } from 'nocodb-sdk';
-import { NC_EMAIL_ASSETS_BASE_URL } from '~/constants';
+import type { WhiteLabelConfig } from 'atmosphere-sdk';
+import { ATMOSPHERE_EMAIL_ASSETS_BASE_URL } from '~/constants';
 import { resolveProductName } from '~/services/mail/templates/components/productName';
 
 export interface ContentWrapperProps {
@@ -59,8 +59,8 @@ export const ContentWrapper = ({
           </Text>
         ) : (
           <Img
-            alt="NocoDB"
-            src={`${NC_EMAIL_ASSETS_BASE_URL}/nocodb-logo.png`}
+            alt="Atmosphere"
+            src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/atmosphere-logo.png`}
             width={40}
             style={{ display: 'block', margin: 'auto auto' }}
             height={40}

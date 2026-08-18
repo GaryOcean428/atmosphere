@@ -1,8 +1,8 @@
 {
   "packages": [
-    "packages/nc-gui",
-    "packages/nocodb",
-    "packages/nocodb-sdk"
+    "packages/atmosphere-gui",
+    "packages/atmosphere",
+    "packages/atmosphere-sdk"
   ],
   "version": "independent"
 }

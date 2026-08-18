@@ -1,5 +1,5 @@
-import type { ColumnType, PaginatedType, TableType, ViewType } from 'nocodb-sdk'
-import { UITypes, isAIPromptCol } from 'nocodb-sdk'
+import type { ColumnType, PaginatedType, TableType, ViewType } from 'atmosphere-sdk'
+import { UITypes, isAIPromptCol } from 'atmosphere-sdk'
 import type { ComputedRef, Ref } from 'vue'
 import type { CellRange } from '#imports'
 
@@ -95,7 +95,7 @@ export function useData(args: {
       }
 
       const insertedData = await $api.dbViewRow.create(
-        NOCO,
+        ATMOSPHERE,
         metaValue?.base_id ?? (base?.value.id as string),
         metaValue?.id as string,
         viewMetaValue?.id as string,
@@ -140,7 +140,7 @@ export function useData(args: {
       const id = extractPkFromRow(toUpdate.row, metaValue?.columns as ColumnType[])
 
       const updatedRowData: Record<string, any> = await $api.dbViewRow.update(
-        NOCO,
+        ATMOSPHERE,
         metaValue?.base_id ?? (base?.value.id as string),
         metaValue?.id as string,
         viewMetaValue?.id as string,
@@ -255,7 +255,7 @@ export function useData(args: {
       updateArray.push({ ...updateData, ...pk })
     }
 
-    await $api.dbTableRow.bulkUpdate(NOCO, metaValue?.base_id as string, metaValue?.id as string, updateArray, {
+    await $api.dbTableRow.bulkUpdate(ATMOSPHERE, metaValue?.base_id as string, metaValue?.id as string, updateArray, {
       typecast: 'true',
     })
     await reloadAggregate?.trigger({ fields: props.map((p) => ({ title: p })) })
@@ -290,7 +290,7 @@ export function useData(args: {
   ) {
     if (!viewMetaValue) return
 
-    await $api.dbTableRow.bulkUpdateAll(NOCO, metaValue?.base_id as string, metaValue?.id as string, data, {
+    await $api.dbTableRow.bulkUpdateAll(ATMOSPHERE, metaValue?.base_id as string, metaValue?.id as string, data, {
       viewId: viewMetaValue.id,
     })
 
@@ -309,7 +309,7 @@ export function useData(args: {
     }
 
     const res: any = await $api.dbViewRow.delete(
-      'noco',
+      'atmosphere',
       metaValue?.base_id ?? (base.value.id as string),
       metaValue?.id as string,
       viewMetaValue?.id as string,
@@ -336,7 +336,7 @@ export function useData(args: {
         const id = extractPkFromRow(row.row, meta?.value?.columns)
 
         const fullRecord = await $api.dbTableRow.read(
-          NOCO,
+          ATMOSPHERE,
           // todo: base_id missing on view type
           meta.value?.base_id ?? (base?.value.id as string),
           meta.value?.id as string,

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+import { AppEvents } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { Base, SyncSource } from '~/models';
 
@@ -11,7 +11,7 @@ export class SyncService {
   constructor(private readonly appHooksService: AppHooksService) {}
 
   async syncSourceList(
-    context: NcContext,
+    context: AtContext,
     param: { baseId: string; sourceId?: string },
   ) {
     return new PagedResponseImpl(
@@ -20,13 +20,13 @@ export class SyncService {
   }
 
   async syncCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       sourceId?: string;
       userId: string;
       syncPayload: Partial<SyncSource>;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const base = await Base.getWithInfo(context, param.baseId);
@@ -38,7 +38,7 @@ export class SyncService {
       base_id: param.baseId,
     });
 
-    this.appHooksService.emit(AppEvents.SYNC_SOURCE_CREATE, {
+    this.appHooksService.emit(AppEvents.SYATMOSPHERE_SOURCE_CREATE, {
       syncSource: sync,
       req: param.req,
       context,
@@ -48,18 +48,18 @@ export class SyncService {
   }
 
   async syncDelete(
-    context: NcContext,
-    param: { syncId: string; req: NcRequest },
+    context: AtContext,
+    param: { syncId: string; req: AtRequest },
   ) {
     const syncSource = await SyncSource.get(context, param.syncId);
 
     if (!syncSource) {
-      NcError.get(context).badRequest('Sync source not found');
+      AtError.get(context).badRequest('Sync source not found');
     }
 
     const res = await SyncSource.delete(context, param.syncId);
 
-    this.appHooksService.emit(AppEvents.SYNC_SOURCE_DELETE, {
+    this.appHooksService.emit(AppEvents.SYATMOSPHERE_SOURCE_DELETE, {
       syncSource,
       req: param.req,
       context,
@@ -68,17 +68,17 @@ export class SyncService {
   }
 
   async syncUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       syncId: string;
       syncPayload: Partial<SyncSource>;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const syncSource = await SyncSource.get(context, param.syncId);
 
     if (!syncSource) {
-      NcError.get(context).badRequest('Sync source not found');
+      AtError.get(context).badRequest('Sync source not found');
     }
 
     const res = await SyncSource.update(
@@ -87,7 +87,7 @@ export class SyncService {
       param.syncPayload,
     );
 
-    this.appHooksService.emit(AppEvents.SYNC_SOURCE_UPDATE, {
+    this.appHooksService.emit(AppEvents.SYATMOSPHERE_SOURCE_UPDATE, {
       syncSource,
       req: param.req,
       context,

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 interface Props {
   value?: string | string[] | null
   baseId?: string
@@ -59,16 +59,16 @@ const handleValueUpdate = (value: any) => {
 </script>
 
 <template>
-  <NcListDropdown v-model:is-open="isOpenTableSelectDropdown" :disabled="disabled" :has-error="!!selectedTable?.ncItemDisabled">
+  <AtListDropdown v-model:is-open="isOpenTableSelectDropdown" :disabled="disabled" :has-error="!!selectedTable?.ncItemDisabled">
     <div class="flex-1 flex items-center group gap-2 min-w-0">
       <div v-if="selectedTable && !Array.isArray(selectedTable)" class="min-w-5 flex items-center justify-center">
-        <NcIconTable :table="selectedTable.table as TableType" class="text-nc-content-muted" />
+        <AtIconTable :table="selectedTable.table as TableType" class="text-atm-content-muted" />
       </div>
-      <NcTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
+      <AtTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
         <span
           class="text-sm flex-1 truncate"
           :class="{
-            'text-nc-content-gray-muted': !selectedTable || (Array.isArray(selectedTable) && selectedTable.length === 0),
+            'text-atm-content-gray-muted': !selectedTable || (Array.isArray(selectedTable) && selectedTable.length === 0),
           }"
         >
           {{ selectedTableLabel }}
@@ -77,10 +77,10 @@ const handleValueUpdate = (value: any) => {
         <template #title>
           {{ selectedTableLabel }}
         </template>
-      </NcTooltip>
+      </AtTooltip>
       <GeneralIcon
         v-if="selectedTable"
-        class="!hidden text-nc-content-gray-muted transition group-hover:!block h-4 w-4 cursor-pointer"
+        class="!hidden text-atm-content-gray-muted transition group-hover:!block h-4 w-4 cursor-pointer"
         icon="ncXCircle"
         @click.stop="handleValueUpdate(null)"
       />
@@ -92,7 +92,7 @@ const handleValueUpdate = (value: any) => {
       />
     </div>
     <template #overlay="{ onEsc }">
-      <NcList
+      <AtList
         v-model:open="isOpenTableSelectDropdown"
         :value="multiple ? (Array.isArray(modelValue) ? modelValue : []) : modelValue || ''"
         :list="tableList"
@@ -106,10 +106,10 @@ const handleValueUpdate = (value: any) => {
       >
         <template #listItemExtraLeft="{ option }">
           <div class="min-w-5 flex items-center justify-center">
-            <NcIconTable :table="option.table as TableType" class="text-nc-content-muted" />
+            <AtIconTable :table="option.table as TableType" class="text-atm-content-muted" />
           </div>
         </template>
-      </NcList>
+      </AtList>
     </template>
-  </NcListDropdown>
+  </AtListDropdown>
 </template>

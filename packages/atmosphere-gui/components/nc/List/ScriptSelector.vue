@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ScriptType } from 'nocodb-sdk'
+import type { ScriptType } from 'atmosphere-sdk'
 
 interface Props {
   baseId?: string
@@ -122,8 +122,8 @@ defineExpose({
 <template>
   <a-form-item
     name="scriptId"
-    class="!mb-0 nc-script-selector"
-    :class="`nc-force-layout-${forceLayout}`"
+    class="!mb-0 atm-script-selector"
+    :class="`atm-force-layout-${forceLayout}`"
     :validate-status="selectedScript?.ncItemDisabled ? 'error' : ''"
     :help="selectedScript?.ncItemDisabled ? [selectedScript.ncItemTooltip] : []"
     @click.stop
@@ -134,30 +134,30 @@ defineExpose({
         <slot name="label">{{ t('general.script') }}</slot>
       </div>
     </template>
-    <NcListDropdown
+    <AtListDropdown
       v-model:is-open="isOpenScriptSelectDropdown"
       :disabled="disabled"
       :has-error="!!selectedScript?.ncItemDisabled"
     >
       <div class="flex-1 flex items-center gap-2 min-w-0">
         <div v-if="selectedScript" class="min-w-5 flex items-center justify-center">
-          <NcIconScript :script="selectedScript" />
+          <AtIconScript :script="selectedScript" />
         </div>
-        <NcTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
+        <AtTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
           <span
             v-if="selectedScript"
             :key="selectedScript?.value"
             class="text-sm flex-1 truncate"
-            :class="{ 'text-nc-content-gray-muted': !selectedScript }"
+            :class="{ 'text-atm-content-gray-muted': !selectedScript }"
           >
             {{ selectedScript?.label }}
           </span>
-          <span v-else class="text-sm flex-1 truncate text-nc-content-gray-muted">-- Select script --</span>
+          <span v-else class="text-sm flex-1 truncate text-atm-content-gray-muted">-- Select script --</span>
 
           <template #title>
             {{ selectedScript?.label || 'Select a script' }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
 
         <GeneralIcon
           icon="ncChevronDown"
@@ -166,7 +166,7 @@ defineExpose({
         />
       </div>
       <template #overlay="{ onEsc }">
-        <NcList
+        <AtList
           v-model:open="isOpenScriptSelectDropdown"
           :value="modelValue || selectedScript?.value || ''"
           :list="scriptList"
@@ -177,10 +177,10 @@ defineExpose({
           @escape="onEsc"
         >
           <template #listItemExtraLeft="{ option }">
-            <NcIconScript :script="option as ScriptType" />
+            <AtIconScript :script="option as ScriptType" />
           </template>
-        </NcList>
+        </AtList>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </a-form-item>
 </template>

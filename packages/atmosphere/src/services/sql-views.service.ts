@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { ModelTypes } from 'nocodb-sdk';
+import { ModelTypes } from 'atmosphere-sdk';
 import DOMPurify from 'isomorphic-dompurify';
-import type { UserType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import { NcError } from '~/helpers/catchError';
+import type { UserType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import { AtError } from '~/helpers/catchError';
 import getTableNameAlias, { getColumnNameAlias } from '~/helpers/getTableName';
 import ProjectMgrv2 from '~/db/sql-mgr/v2/ProjectMgrv2';
 import mapDefaultDisplayValue from '~/helpers/mapDefaultDisplayValue';
 import getColumnUiType from '~/helpers/getColumnUiType';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { Base, Column, Model } from '~/models';
 
 @Injectable()
 export class SqlViewsService {
   async sqlViewCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       clientIp: string;
       baseId: string;
@@ -27,7 +27,7 @@ export class SqlViewsService {
       user: UserType;
     },
   ) {
-    NcError.notImplemented();
+    AtError.notImplemented();
     return;
     const body = { ...param.body };
 
@@ -39,7 +39,7 @@ export class SqlViewsService {
     }
 
     if (!body.view_name || (base.prefix && base.prefix === body.view_name)) {
-      NcError.badRequest(
+      AtError.badRequest(
         'Missing table name `view_name` property in request body',
       );
     }
@@ -54,7 +54,7 @@ export class SqlViewsService {
 
     // validate table name
     if (/^\s+|\s+$/.test(body.view_name)) {
-      NcError.badRequest(
+      AtError.badRequest(
         'Leading or trailing whitespace not allowed in table names',
       );
     }
@@ -66,7 +66,7 @@ export class SqlViewsService {
         source_id: source.id,
       }))
     ) {
-      NcError.badRequest('Duplicate table name');
+      AtError.badRequest('Duplicate table name');
     }
 
     if (!body.title) {
@@ -80,12 +80,12 @@ export class SqlViewsService {
         source_id: source.id,
       }))
     ) {
-      NcError.badRequest('Duplicate table alias');
+      AtError.badRequest('Duplicate table alias');
     }
 
     const sqlMgr = await ProjectMgrv2.getSqlMgr(context, base);
 
-    const sqlClient = await NcConnectionMgrv2.getSqlClient(source);
+    const sqlClient = await AtConnectionMgrv2.getSqlClient(source);
 
     let tableNameLengthLimit = 255;
     const sqlClientType = sqlClient.knex.clientType();
@@ -98,7 +98,7 @@ export class SqlViewsService {
     }
 
     if (body.view_name.length > tableNameLengthLimit) {
-      NcError.badRequest(
+      AtError.badRequest(
         `Table name exceeds ${tableNameLengthLimit} characters`,
       );
     }

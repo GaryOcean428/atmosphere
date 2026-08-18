@@ -4,7 +4,7 @@ const buttonClass = 'flex-grow !inline-flex !border-none !shadow-none !rounded-[
 
 <template>
   <div
-    class="bg-nc-bg-default w-[320px] h-[132px] flex flex-col rounded-[8px] overflow-hidden py-2 animate-animated animate-fadeIn"
+    class="bg-atm-bg-default w-[320px] h-[132px] flex flex-col rounded-[8px] overflow-hidden py-2 animate-animated animate-fadeIn"
     style="animation-duration: 0.3s"
   >
     <a-button :class="[buttonClass]" type="text">
@@ -14,7 +14,7 @@ const buttonClass = 'flex-grow !inline-flex !border-none !shadow-none !rounded-[
           <span>{{ $t('objects.coloring.usingSingleSelectField') }}</span>
         </div>
         <div>
-          <span class="text-nc-content-gray-muted ml-[24px]" style="font-size: 13px">
+          <span class="text-atm-content-gray-muted ml-[24px]" style="font-size: 13px">
             {{ $t('objects.coloring.usingSingleSelectFieldDescription') }}
           </span>
         </div>
@@ -27,7 +27,7 @@ const buttonClass = 'flex-grow !inline-flex !border-none !shadow-none !rounded-[
           <span>{{ $t('objects.coloring.usingConditions') }}</span>
         </div>
         <div>
-          <span class="text-nc-content-gray-muted ml-[24px]" style="font-size: 13px">{{
+          <span class="text-atm-content-gray-muted ml-[24px]" style="font-size: 13px">{{
             $t('objects.coloring.usingConditionsDescriptionOss')
           }}</span>
         </div>

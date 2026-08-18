@@ -1,20 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { isLinksOrLTAR, isLinkV2, NcSDKErrorV2, ViewTypes } from 'nocodb-sdk';
-import { NcApiVersion } from 'nocodb-sdk';
+import { isLinksOrLTAR, isLinkV2, AtSDKErrorV2, ViewTypes } from 'atmosphere-sdk';
+import { AtApiVersion } from 'atmosphere-sdk';
 import type { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
 import type { PathParams } from '~/helpers/dataHelpers';
 import type { Filter } from '~/models';
 import type LinkToAnotherRecordColumn from '../models/LinkToAnotherRecordColumn';
-import { NcContext } from '~/interface/config';
-import { NcBaseError, NcError } from '~/helpers/catchError';
+import { AtContext } from '~/interface/config';
+import { AtBaseError, AtError } from '~/helpers/catchError';
 import { getViewAndModelByAliasOrId } from '~/helpers/dataHelpers';
 import { restrictNestedLinkQueryForColumn } from '~/helpers/nestedLinkQueryHelpers';
 import { parseFilterArrJson } from '~/helpers/filterArrJsonHelper';
 import getAst from '~/helpers/getAst';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { Base, Column, FormView, Model, Source, View } from '~/models';
-import { nocoExecute } from '~/utils';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import { atmosphereExecute } from '~/utils';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { QUERY_STRING_FIELD_ID_ON_RESULT } from '~/constants';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
@@ -26,7 +26,7 @@ export class DatasService {
   constructor() {}
 
   async dataList(
-    context: NcContext,
+    context: AtContext,
     param: (PathParams | { view?: View; model: Model }) & {
       query: any;
       disableOptimization?: boolean;
@@ -37,7 +37,7 @@ export class DatasService {
       includeSortAndFilterColumns?: boolean;
       includeRowColorColumns?: boolean;
       includeButtonFilterColumns?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       ignoreViewFilterAndSort?: boolean;
       baseModel?: BaseModelSqlv2;
       skipSortBasedOnOrderCol?: boolean;
@@ -67,7 +67,7 @@ export class DatasService {
         !linkColumn.colOptions ||
         linkColumn.colOptions.fk_related_model_id !== model.id
       ) {
-        NcError.get(context).fieldNotFound(param.query?.linkColumnId, {
+        AtError.get(context).fieldNotFound(param.query?.linkColumnId, {
           customMessage: `Link column with id ${param.query.linkColumnId} not found`,
         });
       }
@@ -95,12 +95,12 @@ export class DatasService {
     });
   }
 
-  async dataFindOne(context: NcContext, param: PathParams & { query: any }) {
+  async dataFindOne(context: AtContext, param: PathParams & { query: any }) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
     return await this.getFindOne(context, { model, view, query: param.query });
   }
 
-  async dataGroupBy(context: NcContext, param: PathParams & { query: any }) {
+  async dataGroupBy(context: AtContext, param: PathParams & { query: any }) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
     return await this.getDataGroupBy(context, {
       model,
@@ -110,7 +110,7 @@ export class DatasService {
   }
 
   async dataGroupByCount(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & { query: any },
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
@@ -121,7 +121,7 @@ export class DatasService {
     });
   }
 
-  async dataCount(context: NcContext, param: PathParams & { query: any }) {
+  async dataCount(context: AtContext, param: PathParams & { query: any }) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
 
     const source = await Source.get(context, model.source_id);
@@ -129,7 +129,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -143,7 +143,7 @@ export class DatasService {
 
   @TraceCommand(OperationName.recordInsert)
   async dataInsert(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       body: unknown;
       cookie: any;
@@ -163,7 +163,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -177,7 +177,7 @@ export class DatasService {
 
   @TraceCommand(OperationName.recordUpdate)
   async dataUpdate(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       body: unknown;
       cookie: any;
@@ -191,7 +191,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -207,7 +207,7 @@ export class DatasService {
 
   @TraceCommand(OperationName.recordDelete)
   async dataDelete(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & { rowId: string; cookie: any },
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
@@ -215,7 +215,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       model,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -229,7 +229,7 @@ export class DatasService {
   }
 
   async getDataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       model: Model;
       view?: View;
@@ -241,7 +241,7 @@ export class DatasService {
       limitOverride?: number;
       customConditions?: Filter[];
       getHiddenColumns?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       includeSortAndFilterColumns?: boolean;
       includeRowColorColumns?: boolean;
       includeButtonFilterColumns?: boolean;
@@ -267,7 +267,7 @@ export class DatasService {
       (await Model.getBaseModelSQL(context, {
         id: model.id,
         viewId: view?.id,
-        dbDriver: await NcConnectionMgrv2.get(source),
+        dbDriver: await AtConnectionMgrv2.get(source),
         source,
       }));
 
@@ -301,7 +301,7 @@ export class DatasService {
       (async () => {
         let data = [];
         try {
-          data = await nocoExecute(
+          data = await atmosphereExecute(
             ast,
             await baseModel.list(
               { ...listArgs, apiVersion: param.apiVersion },
@@ -311,7 +311,7 @@ export class DatasService {
                 ignorePagination: param.ignorePagination,
                 limitOverride: param.limitOverride,
                 skipSubstitutingColumnIds:
-                  context.api_version === NcApiVersion.V3 &&
+                  context.api_version === AtApiVersion.V3 &&
                   query?.[QUERY_STRING_FIELD_ID_ON_RESULT] === 'true',
                 skipSortBasedOnOrderCol,
               },
@@ -320,9 +320,9 @@ export class DatasService {
             listArgs,
           );
         } catch (e) {
-          if (e instanceof NcBaseError || e instanceof NcSDKErrorV2) throw e;
+          if (e instanceof AtBaseError || e instanceof AtSDKErrorV2) throw e;
           this.logger.error(`Error fetching data: ${e?.message}`, e?.stack);
-          NcError.get(context).internalServerError(
+          AtError.get(context).internalServerError(
             'Please check server log for more details',
           );
         }
@@ -337,7 +337,7 @@ export class DatasService {
   }
 
   async getFindOne(
-    context: NcContext,
+    context: AtContext,
     param: { model: Model; view: View; query: any },
   ) {
     const { model, view, query = {} } = param;
@@ -347,7 +347,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -366,11 +366,11 @@ export class DatasService {
     });
 
     const data = await baseModel.findOne({ ...args, ...dependencyFields });
-    return data ? await nocoExecute(ast, data, {}, dependencyFields) : {};
+    return data ? await atmosphereExecute(ast, data, {}, dependencyFields) : {};
   }
 
   async getDataGroupBy(
-    context: NcContext,
+    context: AtContext,
     param: { model: Model; view?: View; query?: any },
   ) {
     const { model, view, query = {} } = param;
@@ -380,7 +380,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -403,7 +403,7 @@ export class DatasService {
   }
 
   async getDataGroupByCount(
-    context: NcContext,
+    context: AtContext,
     param: { model: Model; view: View; query?: any },
   ) {
     const { model, view, query = {} } = param;
@@ -413,7 +413,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -430,7 +430,7 @@ export class DatasService {
   }
 
   async dataRead(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       query: any;
       rowId: string;
@@ -445,7 +445,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
     const row = await baseModel.readByPk(param.rowId, false, param.query, {
@@ -453,14 +453,14 @@ export class DatasService {
     });
 
     if (!row) {
-      NcError.get(context).recordNotFound(param.rowId);
+      AtError.get(context).recordNotFound(param.rowId);
     }
 
     return row;
   }
 
   async dataExist(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & { rowId: string; query: any },
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
@@ -470,7 +470,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -479,7 +479,7 @@ export class DatasService {
 
   // todo: Handle the error case where view doesnt belong to model
   async groupedDataList(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & { query: any; columnId: string },
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
@@ -493,7 +493,7 @@ export class DatasService {
   }
 
   async getGroupedDataList(
-    context: NcContext,
+    context: AtContext,
     param: {
       model;
       /** Optional — view-less callers (interface pages) scope via query.filterArrJson. */
@@ -506,7 +506,7 @@ export class DatasService {
 
     const source = await Source.get(context, model.source_id);
 
-    // Use singleQueryGroupedList for PostgreSQL to avoid nocoExecute
+    // Use singleQueryGroupedList for PostgreSQL to avoid atmosphereExecute
     // It handles nested columns/rollups directly in SQL
     if (source.type === 'pg' && param.query?.opt === 'true') {
       const { dependencyFields } = await getAst(context, {
@@ -532,7 +532,7 @@ export class DatasService {
       const baseModel = await Model.getBaseModelSQL(context, {
         id: model.id,
         viewId: view?.id,
-        dbDriver: await NcConnectionMgrv2.get(source),
+        dbDriver: await AtConnectionMgrv2.get(source),
         source,
       });
 
@@ -567,7 +567,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -600,7 +600,7 @@ export class DatasService {
       includeButtonFilterColumns:
         query?.include_button_filter_columns === 'true',
     });
-    data = await nocoExecute({ key: 1, value: ast }, groupedData, {}, listArgs);
+    data = await atmosphereExecute({ key: 1, value: ast }, groupedData, {}, listArgs);
     const countArr = await baseModel.groupedListCount({
       ...listArgs,
       groupColumnId: param.columnId,
@@ -622,8 +622,8 @@ export class DatasService {
   }
 
   async dataListByViewId(
-    context: NcContext,
-    param: { viewId: string; query: any; apiVersion?: NcApiVersion },
+    context: AtContext,
+    param: { viewId: string; query: any; apiVersion?: AtApiVersion },
   ) {
     const view = await View.get(context, param.viewId);
 
@@ -632,7 +632,7 @@ export class DatasService {
     });
 
     if (!model)
-      NcError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
+      AtError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
 
     return await this.getDataList(context, {
       model,
@@ -643,7 +643,7 @@ export class DatasService {
   }
 
   async mmList(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       colId: string;
@@ -665,14 +665,14 @@ export class DatasService {
     });
 
     if (!model)
-      NcError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
+      AtError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -691,7 +691,7 @@ export class DatasService {
     };
 
     const data = (
-      await nocoExecute(
+      await atmosphereExecute(
         requestObj,
         {
           [key]: async (args) => {
@@ -725,7 +725,7 @@ export class DatasService {
   }
 
   async mmExcludedList(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       colId: string;
@@ -740,14 +740,14 @@ export class DatasService {
     });
 
     if (!model)
-      NcError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
+      AtError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -770,7 +770,7 @@ export class DatasService {
     };
 
     const data = (
-      await nocoExecute(
+      await atmosphereExecute(
         requestObj,
         {
           [key]: async (args) => {
@@ -804,7 +804,7 @@ export class DatasService {
   }
 
   async hmExcludedList(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       colId: string;
@@ -819,14 +819,14 @@ export class DatasService {
     });
 
     if (!model)
-      NcError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
+      AtError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -849,7 +849,7 @@ export class DatasService {
     };
 
     const data = (
-      await nocoExecute(
+      await atmosphereExecute(
         requestObj,
         {
           [key]: async (args) => {
@@ -883,7 +883,7 @@ export class DatasService {
   }
 
   async btExcludedList(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       colId: string;
@@ -898,7 +898,7 @@ export class DatasService {
     });
 
     if (!model)
-      return NcError.get(context).tableNotFound(
+      return AtError.get(context).tableNotFound(
         view?.fk_model_id || param.viewId,
       );
 
@@ -907,7 +907,7 @@ export class DatasService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -930,7 +930,7 @@ export class DatasService {
     };
 
     const data = (
-      await nocoExecute(
+      await atmosphereExecute(
         requestObj,
         {
           [key]: async (args) => {
@@ -964,7 +964,7 @@ export class DatasService {
   }
 
   async ooExcludedList(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       colId: string;
@@ -979,14 +979,14 @@ export class DatasService {
     });
 
     if (!model)
-      NcError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
+      AtError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1011,7 +1011,7 @@ export class DatasService {
 
     if (isLinkV2(column)) {
       data = (
-        await nocoExecute(
+        await atmosphereExecute(
           requestObj,
           {
             [key]: async (args) => {
@@ -1039,7 +1039,7 @@ export class DatasService {
       );
     } else {
       data = (
-        await nocoExecute(
+        await atmosphereExecute(
           requestObj,
           {
             [key]: async (args) => {
@@ -1074,7 +1074,7 @@ export class DatasService {
   }
 
   async hmList(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       colId: string;
@@ -1089,14 +1089,14 @@ export class DatasService {
     });
 
     if (!model)
-      NcError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
+      AtError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1116,7 +1116,7 @@ export class DatasService {
     };
 
     const data = (
-      await nocoExecute(
+      await atmosphereExecute(
         requestObj,
         {
           [key]: async (args) => {
@@ -1148,20 +1148,20 @@ export class DatasService {
   }
 
   async dataReadByViewId(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string; rowId: string; query: any },
   ) {
     try {
       const model = await Model.getByIdOrName(context, {
         id: param.viewId,
       });
-      if (!model) NcError.get(context).tableNotFound(param.viewId);
+      if (!model) AtError.get(context).tableNotFound(param.viewId);
 
       const source = await Source.get(context, model.source_id);
 
       const baseModel = await Model.getBaseModelSQL(context, {
         id: model.id,
-        dbDriver: await NcConnectionMgrv2.get(source),
+        dbDriver: await AtConnectionMgrv2.get(source),
         source,
       });
 
@@ -1170,29 +1170,29 @@ export class DatasService {
         query: param.query,
       });
 
-      return await nocoExecute(
+      return await atmosphereExecute(
         ast,
         await baseModel.readByPk(param.rowId, false),
         {},
         dependencyFields,
       );
     } catch (e) {
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error('Please check server log for more details', e);
-      NcError.get(context).internalServerError(
+      AtError.get(context).internalServerError(
         'Please check server log for more details',
       );
     }
   }
 
   async dataInsertByViewId(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string; body: any; cookie: any },
   ) {
     const model = await Model.getByIdOrName(context, {
       id: param.viewId,
     });
-    if (!model) return NcError.get(context).tableNotFound(param.viewId);
+    if (!model) return AtError.get(context).tableNotFound(param.viewId);
 
     // Check form scheduling restrictions
     const view = await View.get(context, param.viewId);
@@ -1204,7 +1204,7 @@ export class DatasService {
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1212,7 +1212,7 @@ export class DatasService {
   }
 
   async dataUpdateByViewId(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       rowId: string;
@@ -1223,13 +1223,13 @@ export class DatasService {
     const model = await Model.getByIdOrName(context, {
       id: param.viewId,
     });
-    if (!model) NcError.get(context).tableNotFound(param.viewId);
+    if (!model) AtError.get(context).tableNotFound(param.viewId);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1242,7 +1242,7 @@ export class DatasService {
   }
 
   async dataDeleteByViewId(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       rowId: string;
@@ -1252,13 +1252,13 @@ export class DatasService {
     const model = await Model.getByIdOrName(context, {
       id: param.viewId,
     });
-    if (!model) NcError.get(context).tableNotFound(param.viewId);
+    if (!model) AtError.get(context).tableNotFound(param.viewId);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1266,7 +1266,7 @@ export class DatasService {
   }
 
   async relationDataDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       colId: string;
@@ -1282,14 +1282,14 @@ export class DatasService {
     });
 
     if (!model)
-      NcError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
+      AtError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1304,7 +1304,7 @@ export class DatasService {
   }
 
   async relationDataAdd(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       colId: string;
@@ -1320,14 +1320,14 @@ export class DatasService {
     });
 
     if (!model)
-      NcError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
+      AtError.get(context).tableNotFound(view?.fk_model_id || param.viewId);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1342,7 +1342,7 @@ export class DatasService {
   }
 
   async getViewAndModelFromRequestByAliasOrId(
-    context: NcContext,
+    context: AtContext,
     req,
     // :
     // | Request<{ baseName: string; tableName: string; viewName?: string }>
@@ -1363,12 +1363,12 @@ export class DatasService {
         titleOrId: req.params.viewName,
         fk_model_id: model.id,
       }));
-    if (!model) NcError.get(context).tableNotFound(req.params.tableName);
+    if (!model) AtError.get(context).tableNotFound(req.params.tableName);
     return { model, view };
   }
 
   async getColumnByIdOrName(
-    context: NcContext,
+    context: AtContext,
     columnNameOrId: string,
     model: Model,
   ) {
@@ -1379,7 +1379,7 @@ export class DatasService {
         c.column_name === columnNameOrId,
     );
 
-    if (!column) NcError.get(context).fieldNotFound(columnNameOrId);
+    if (!column) AtError.get(context).fieldNotFound(columnNameOrId);
 
     return column;
   }

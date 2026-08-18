@@ -1,29 +1,29 @@
-import { NcBaseErrorv2, NcErrorArgs } from '~/lib/error/nc-base.error';
-import { NcErrorType } from '~/lib/globals';
+import { AtBaseErrorv2, AtErrorArgs } from '~/lib/error/atm-base.error';
+import { AtErrorType } from '~/lib/globals';
 import { presetErrorCodexMap } from '~/lib/error-handler/preset-error-codex-map';
 
-export class NcErrorCodexManager {
+export class AtErrorCodexManager {
   constructor() {
     this.setErrorCodexes(presetErrorCodexMap);
   }
 
   errorCodexMap: Partial<
     Record<
-      NcErrorType,
+      AtErrorType,
       {
         message: string | ((...params: string[]) => string);
         code: number;
-        error_code?: NcErrorType;
+        error_code?: AtErrorType;
       }
     >
   > = {};
 
   setErrorCodex(
-    errorType: NcErrorType,
+    errorType: AtErrorType,
     handler: {
       message: string | ((...params: string[]) => string);
       code: number;
-      error_code?: NcErrorType;
+      error_code?: AtErrorType;
     }
   ) {
     this.errorCodexMap[errorType] = handler;
@@ -32,11 +32,11 @@ export class NcErrorCodexManager {
   setErrorCodexes(
     handlers: Partial<
       Record<
-        NcErrorType,
+        AtErrorType,
         {
           message: string | ((...params: string[]) => string);
           code: number;
-          error_code?: NcErrorType;
+          error_code?: AtErrorType;
         }
       >
     >
@@ -44,7 +44,7 @@ export class NcErrorCodexManager {
     this.errorCodexMap = { ...this.errorCodexMap, ...handlers };
   }
 
-  generateError(error: NcErrorType, args?: NcErrorArgs) {
+  generateError(error: AtErrorType, args?: AtErrorArgs) {
     const errorHelper = this.errorCodexMap[error];
     const { params, customMessage, details } = args || {};
 
@@ -65,7 +65,7 @@ export class NcErrorCodexManager {
       message = messageHelper;
     }
 
-    return new NcBaseErrorv2(message, errorHelper.code, error, {
+    return new AtBaseErrorv2(message, errorHelper.code, error, {
       details: details,
     });
   }

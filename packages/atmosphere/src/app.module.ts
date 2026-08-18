@@ -6,7 +6,7 @@ import { EventEmitterModule as NestJsEventEmitter } from '@nestjs/event-emitter'
 import { SentryModule } from '@sentry/nestjs/setup';
 
 import type { MiddlewareConsumer } from '@nestjs/common';
-import { NocoModule } from '~/modules/noco.module';
+import { AtmosphereModule } from '~/modules/atmosphere.module';
 import { AuthModule } from '~/modules/auth/auth.module';
 import { GlobalExceptionFilter } from '~/filters/global-exception/global-exception.filter';
 import { GlobalMiddleware } from '~/middlewares/global/global.middleware';
@@ -27,7 +27,7 @@ export const ceModuleConfig = {
   imports: [
     AuthModule,
     OAuthModule,
-    NocoModule,
+    AtmosphereModule,
     EventEmitterModule,
     JobsModule,
     NestJsEventEmitter.forRoot(),
@@ -35,7 +35,7 @@ export const ceModuleConfig = {
       load: [() => appConfig],
       isGlobal: true,
     }),
-    ...(process.env.NC_SENTRY_DSN ? [SentryModule.forRoot()] : []),
+    ...(process.env.ATMOSPHERE_SENTRY_DSN ? [SentryModule.forRoot()] : []),
   ],
   providers: [
     {

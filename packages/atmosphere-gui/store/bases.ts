@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import type { BaseType, ProjectUserReqType, RequestParams, SourceType } from 'nocodb-sdk'
-import { SqlUiFactory } from 'nocodb-sdk'
+import type { BaseType, ProjectUserReqType, RequestParams, SourceType } from 'atmosphere-sdk'
+import { SqlUiFactory } from 'atmosphere-sdk'
 import { isString } from '@vue/shared'
 import type Record from '~icons/*'
 import { extensionUserPrefsManager } from '~/helpers/extensionUserPrefsManager'
@@ -15,15 +15,15 @@ export const useBases = defineStore('basesStore', () => {
 
   const { isUIAllowed } = useRoles()
 
-  const baseCreateMode = ref<NcBaseCreateMode | null>(null)
+  const baseCreateMode = ref<AtBaseCreateMode | null>(null)
 
   const baseRoles = ref<Record<string, any>>({})
 
-  const workspaceBasesMap = ref<Map<string, Map<string, NcProject>>>(new Map())
+  const workspaceBasesMap = ref<Map<string, Map<string, AtProject>>>(new Map())
 
-  const bases = ref<Map<string, NcProject>>(new Map())
+  const bases = ref<Map<string, AtProject>>(new Map())
 
-  const basesList = computed<NcProject[]>(() =>
+  const basesList = computed<AtProject[]>(() =>
     Array.from(bases.value.values()).sort(
       (a, b) => (a.order != null ? a.order : Infinity) - (b.order != null ? b.order : Infinity),
     ),
@@ -295,7 +295,7 @@ export const useBases = defineStore('basesStore', () => {
         }),
       },
       {
-        baseURL: getBaseUrl('nc'),
+        baseURL: getBaseUrl('atm'),
       },
     )
 
@@ -330,7 +330,7 @@ export const useBases = defineStore('basesStore', () => {
     return await api.base.metaGet(baseId!, {})
   }
 
-  async function setProject(baseId: string, base: NcProject) {
+  async function setProject(baseId: string, base: AtProject) {
     bases.value.set(baseId, base)
   }
 
@@ -345,7 +345,7 @@ export const useBases = defineStore('basesStore', () => {
     if (!base) return
 
     return await navigateTo({
-      path: `/nc/${baseId}`,
+      path: `/atm/${baseId}`,
       query: {
         ...(page ? { page } : {}),
         ...(query || {}),

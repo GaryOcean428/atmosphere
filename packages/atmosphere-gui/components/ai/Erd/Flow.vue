@@ -81,21 +81,21 @@ onScopeDispose($destroy)
 </script>
 
 <template>
-  <VueFlow v-model="elements" class="nc-erd-flow">
+  <VueFlow v-model="elements" class="atm-erd-flow">
     <Controls
-      class="bg-transparent rounded-lg shadow-md border-1 border-nc-border-gray-medium !right-13 flex items-center"
+      class="bg-transparent rounded-lg shadow-md border-1 border-atm-border-gray-medium !right-13 flex items-center"
       :position="PanelPosition.TopRight"
       :show-fit-view="false"
       :show-interactive="false"
     >
       <template #control-zoom-in>
-        <div class="nc-erd-zoom-btn rounded-l-lg h-9 !px-2 flex items-center" @click="internalZoomIn">
+        <div class="atm-erd-zoom-btn rounded-l-lg h-9 !px-2 flex items-center" @click="internalZoomIn">
           <GeneralIcon icon="plus" />
         </div>
       </template>
       <template #control-zoom-out>
         <div
-          class="nc-erd-zoom-btn border-l-1 border-nc-border-gray-medium rounded-r-lg h-9 !px-2 flex items-center"
+          class="atm-erd-zoom-btn border-l-1 border-atm-border-gray-medium rounded-r-lg h-9 !px-2 flex items-center"
           @click="internalZoomOut"
         >
           <GeneralIcon icon="minus" />
@@ -117,7 +117,7 @@ onScopeDispose($destroy)
       <Panel
         v-if="showSkeleton && config.showAllColumns"
         :position="PanelPosition.BottomCenter"
-        class="color-transition z-5 cursor-pointer rounded shadow-sm text-nc-content-gray-muted font-semibold px-4 py-2 bg-nc-bg-gray-extralight hover:(text-nc-content-gray-emphasis ring ring-accent ring-opacity-100 bg-nc-bg-gray-light)"
+        class="color-transition z-5 cursor-pointer rounded shadow-sm text-atm-content-gray-muted font-semibold px-4 py-2 bg-atm-bg-gray-extralight hover:(text-atm-content-gray-emphasis ring ring-accent ring-opacity-100 bg-atm-bg-gray-light)"
         @click="zoomIn"
       >
         {{ $t('labels.zoomInToViewColumns') }}
@@ -133,16 +133,16 @@ onScopeDispose($destroy)
   @apply !bg-transparent;
 }
 
-.nc-erd-zoom-btn {
-  @apply bg-nc-bg-default px-1.5 py-1 hover:(bg-nc-bg-gray-light text-nc-content-gray) cursor-pointer text-nc-content-gray-subtle2;
+.atm-erd-zoom-btn {
+  @apply bg-atm-bg-default px-1.5 py-1 hover:(bg-atm-bg-gray-light text-atm-content-gray) cursor-pointer text-atm-content-gray-subtle2;
 }
 
-.nc-erd-flow {
+.atm-erd-flow {
   width: 100%;
   height: 100%;
 }
 
-.nc-erd-flow .vue-flow__viewport {
+.atm-erd-flow .vue-flow__viewport {
   /* Ensure the viewport uses the full space for proper centering */
   width: 100%;
   height: 100%;

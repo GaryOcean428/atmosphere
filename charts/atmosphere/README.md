@@ -1,15 +1,15 @@
-# NocoDB Helm Chart
+# Atmosphere Helm Chart
 
-Production-ready Helm chart for [NocoDB](https://nocodb.com) on Kubernetes, designed for
+Production-ready Helm chart for [Atmosphere](https://atmosphere.dev) on Kubernetes, designed for
 externally-managed Postgres and Redis. Object storage for attachments is configured from the
-NocoDB admin panel after install.
+Atmosphere admin panel after install.
 
 ## TL;DR
 
 ```bash
-helm install nocodb oci://ghcr.io/nocodb/charts/nocodb --version 1.0.0 \
-  --set externalDatabase.existingSecret=nocodb-secrets \
-  --set externalRedis.existingSecret=nocodb-secrets
+helm install atmosphere oci://ghcr.io/atmosphere/charts/atmosphere --version 1.0.0 \
+  --set externalDatabase.existingSecret=atmosphere-secrets \
+  --set externalRedis.existingSecret=atmosphere-secrets
 ```
 
 ## Prerequisites
@@ -25,10 +25,10 @@ Create one Secret and reference it from each `*.existingSecret`:
 
 | Key | Purpose | Example |
 |---|---|---|
-| `DATABASE_URL` | Postgres URL | `postgresql://user:pass@host:5432/nocodb?sslmode=require` |
-| `NC_REDIS_URL` | Redis URL | `rediss://:pass@host:6379` |
-| `NC_AUTH_JWT_SECRET` | JWT secret (optional; auto-generated) | random ≥32 chars |
-| `NC_CONNECTION_ENCRYPT_KEY` | Datasource encryption key (optional; auto-generated, never rotate) | random ≥32 chars |
+| `DATABASE_URL` | Postgres URL | `postgresql://user:pass@host:5432/atmosphere?sslmode=require` |
+| `ATMOSPHERE_REDIS_URL` | Redis URL | `rediss://:pass@host:6379` |
+| `ATMOSPHERE_AUTH_JWT_SECRET` | JWT secret (optional; auto-generated) | random ≥32 chars |
+| `ATMOSPHERE_CONNECTION_ENCRYPT_KEY` | Datasource encryption key (optional; auto-generated, never rotate) | random ≥32 chars |
 
 <!-- markdownlint-disable -->
 
@@ -64,8 +64,8 @@ Create one Secret and reference it from each `*.existingSecret`:
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `image.registry` | NocoDB image registry | `docker.io` |
-| `image.repository` | NocoDB image repository | `nocodb/nocodb` |
+| `image.registry` | Atmosphere image registry | `docker.io` |
+| `image.repository` | Atmosphere image repository | `atmosphere/atmosphere` |
 | `image.digest` | Image digest (takes precedence over tag), e.g. sha256:... | `""` |
 | `image.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `image.pullSecrets` | Image pull secrets | `[]` |
@@ -94,12 +94,12 @@ Create one Secret and reference it from each `*.existingSecret`:
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `nocodb.publicUrl` | NC_SITE_URL. If empty, derived from the first ingress host when TLS is set | `""` |
-| `nocodb.dashboardUrl` | NC_DASHBOARD_URL | `""` |
-| `nocodb.disableMux` | Set NC_DISABLE_MUX=true (recommended for self-hosted) | `true` |
-| `nocodb.disableTelemetry` | Set NC_DISABLE_TELE=true | `false` |
-| `nocodb.licenseKey` | NC_LICENSE_KEY (enterprise) | `""` |
-| `nocodb.extraEnvVars` | Extra raw env vars for the app (list of name/value or valueFrom) | `[]` |
+| `atmosphere.publicUrl` | ATMOSPHERE_SITE_URL. If empty, derived from the first ingress host when TLS is set | `""` |
+| `atmosphere.dashboardUrl` | ATMOSPHERE_DASHBOARD_URL | `""` |
+| `atmosphere.disableMux` | Set ATMOSPHERE_DISABLE_MUX=true (recommended for self-hosted) | `true` |
+| `atmosphere.disableTelemetry` | Set ATMOSPHERE_DISABLE_TELE=true | `false` |
+| `atmosphere.licenseKey` | ATMOSPHERE_LICENSE_KEY (enterprise) | `""` |
+| `atmosphere.extraEnvVars` | Extra raw env vars for the app (list of name/value or valueFrom) | `[]` |
 
 ### Worker workload
 
@@ -107,7 +107,7 @@ Create one Secret and reference it from each `*.existingSecret`:
 |------|-------------|-------|
 | `worker.enabled` | Deploy a dedicated background worker (requires Redis) | `true` |
 | `worker.replicaCount` | Worker replicas | `2` |
-| `worker.concurrency` | NC_WORKER_CONCURRENCY (empty = NocoDB default) | `""` |
+| `worker.concurrency` | ATMOSPHERE_WORKER_CONCURRENCY (empty = Atmosphere default) | `""` |
 | `worker.resources` | Worker container resources (2Gi memory recommended, 1Gi minimum) | `requests: {cpu: "1", memory: 2Gi}` |
 | `worker.podAnnotations` | Extra annotations for worker pods | `{}` |
 | `worker.nodeSelector` | Worker node selector | `{}` |
@@ -127,11 +127,11 @@ Create one Secret and reference it from each `*.existingSecret`:
 |------|-------------|-------|
 | `externalDatabase.host` | Postgres host (eval/inline path) | `""` |
 | `externalDatabase.port` | Postgres port | `5432` |
-| `externalDatabase.database` | Database name | `nocodb` |
-| `externalDatabase.username` | Database user | `nocodb` |
+| `externalDatabase.database` | Database name | `atmosphere` |
+| `externalDatabase.username` | Database user | `atmosphere` |
 | `externalDatabase.password` | Database password (eval only; use existingSecret in prod) | `""` |
 | `externalDatabase.sslMode` | sslmode appended to the assembled URL | `prefer` |
-| `externalDatabase.urlEnvVar` | Env var name for the connection URL (DATABASE_URL or NC_DB) | `DATABASE_URL` |
+| `externalDatabase.urlEnvVar` | Env var name for the connection URL (DATABASE_URL or ATMOSPHERE_DB) | `DATABASE_URL` |
 | `externalDatabase.existingSecret` | Secret holding the full connection URL | `""` |
 | `externalDatabase.existingSecretUrlKey` | Key in existingSecret holding the URL | `DATABASE_URL` |
 
@@ -143,8 +143,8 @@ Create one Secret and reference it from each `*.existingSecret`:
 | `externalRedis.port` | Redis port | `6379` |
 | `externalRedis.password` | Redis password (eval only) | `""` |
 | `externalRedis.tls` | Use rediss:// scheme | `false` |
-| `externalRedis.existingSecret` | Secret holding the full NC_REDIS_URL | `""` |
-| `externalRedis.existingSecretUrlKey` | Key in existingSecret holding NC_REDIS_URL | `NC_REDIS_URL` |
+| `externalRedis.existingSecret` | Secret holding the full ATMOSPHERE_REDIS_URL | `""` |
+| `externalRedis.existingSecretUrlKey` | Key in existingSecret holding ATMOSPHERE_REDIS_URL | `ATMOSPHERE_REDIS_URL` |
 
 ### SMTP (optional)
 
@@ -156,28 +156,28 @@ Create one Secret and reference it from each `*.existingSecret`:
 | `smtp.from` | From address | `""` |
 | `smtp.username` | SMTP username | `""` |
 | `smtp.password` | SMTP password (eval only) | `""` |
-| `smtp.secure` | NC_SMTP_SECURE | `false` |
+| `smtp.secure` | ATMOSPHERE_SMTP_SECURE | `false` |
 | `smtp.existingSecret` | Secret holding the SMTP password | `""` |
-| `smtp.passwordKey` | Key in existingSecret for the SMTP password | `NC_SMTP_PASSWORD` |
+| `smtp.passwordKey` | Key in existingSecret for the SMTP password | `ATMOSPHERE_SMTP_PASSWORD` |
 
 ### SSO (optional)
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `sso.oidc.enabled` | Enable OIDC (sets NC_SSO=oidc) | `false` |
+| `sso.oidc.enabled` | Enable OIDC (sets ATMOSPHERE_SSO=oidc) | `false` |
 | `sso.oidc.providerName` | Display name for the OIDC provider | `OpenID Connect` |
-| `sso.saml.enabled` | Enable SAML (sets NC_SSO=saml) | `false` |
+| `sso.saml.enabled` | Enable SAML (sets ATMOSPHERE_SSO=saml) | `false` |
 | `sso.saml.providerName` | Display name for the SAML provider | `SAML` |
 
 ### Auth keys
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `auth.jwtSecret` | NC_AUTH_JWT_SECRET (auto-generated+persisted if empty) | `""` |
-| `auth.encryptionKey` | NC_CONNECTION_ENCRYPT_KEY (auto-generated+persisted if empty; never rotated) | `""` |
+| `auth.jwtSecret` | ATMOSPHERE_AUTH_JWT_SECRET (auto-generated+persisted if empty) | `""` |
+| `auth.encryptionKey` | ATMOSPHERE_CONNECTION_ENCRYPT_KEY (auto-generated+persisted if empty; never rotated) | `""` |
 | `auth.existingSecret` | Secret holding both keys | `""` |
-| `auth.jwtSecretKey` | Key in existingSecret for the JWT secret | `NC_AUTH_JWT_SECRET` |
-| `auth.encryptionKeyKey` | Key in existingSecret for the encryption key | `NC_CONNECTION_ENCRYPT_KEY` |
+| `auth.jwtSecretKey` | Key in existingSecret for the JWT secret | `ATMOSPHERE_AUTH_JWT_SECRET` |
+| `auth.encryptionKeyKey` | Key in existingSecret for the encryption key | `ATMOSPHERE_CONNECTION_ENCRYPT_KEY` |
 
 ### Scaling & scheduling
 
@@ -229,10 +229,10 @@ Create one Secret and reference it from each `*.existingSecret`:
 
 | Name | Description | Value |
 |------|-------------|-------|
-| `monitoring.sentry.enabled` | Set NC_SENTRY_DSN | `false` |
+| `monitoring.sentry.enabled` | Set ATMOSPHERE_SENTRY_DSN | `false` |
 | `monitoring.sentry.dsn` | Sentry DSN (eval; use existingSecret in prod) | `""` |
 | `monitoring.sentry.existingSecret` | Secret holding the Sentry DSN | `""` |
-| `monitoring.sentry.dsnKey` | Key in existingSecret for the DSN | `NC_SENTRY_DSN` |
+| `monitoring.sentry.dsnKey` | Key in existingSecret for the DSN | `ATMOSPHERE_SENTRY_DSN` |
 
 ### Escape hatches
 

@@ -4,7 +4,7 @@ import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 import { JobsMetaService } from '~/services/jobs-meta.service';
 
 @Controller()
@@ -15,8 +15,8 @@ export class JobsMetaController {
   @Post(['/api/v2/jobs/:baseId'])
   @Acl('jobList')
   async jobList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Body()
     conditions?: {
       job?: JobTypes;

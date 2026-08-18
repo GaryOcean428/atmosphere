@@ -1,4 +1,4 @@
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 
 export class TableMetaLoader {
   private loadingCache = new Map<string, string>() // Cache for ongoing loading promises

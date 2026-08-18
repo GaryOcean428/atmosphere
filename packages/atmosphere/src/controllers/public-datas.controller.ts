@@ -13,10 +13,10 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { PublicDatasService } from '~/services/public-datas.service';
 import { PublicApiLimiterGuard } from '~/guards/public-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 import { Column, View } from '~/models';
 import { AttachmentsService } from '~/services/attachments.service';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 
 @UseGuards(PublicApiLimiterGuard)
 @Controller()
@@ -31,8 +31,8 @@ export class PublicDatasController {
     '/api/v2/public/shared-view/:sharedViewUuid/rows',
   ])
   async dataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
   ) {
     const pagedResponse = await this.publicDatasService.dataList(context, {
@@ -45,8 +45,8 @@ export class PublicDatasController {
 
   @Get(['/api/v2/public/shared-view/:sharedViewUuid/count'])
   async dataCount(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
   ) {
     const pagedResponse = await this.publicDatasService.dataCount(context, {
@@ -62,8 +62,8 @@ export class PublicDatasController {
     '/api/v2/public/shared-view/:sharedViewUuid/aggregate',
   ])
   async dataAggregate(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
   ) {
     const response = await this.publicDatasService.dataAggregate(context, {
@@ -80,8 +80,8 @@ export class PublicDatasController {
     '/api/v2/public/shared-view/:sharedViewUuid/groupby',
   ])
   async dataGroupBy(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
   ) {
     return await this.publicDatasService.dataGroupBy(context, {
@@ -93,8 +93,8 @@ export class PublicDatasController {
 
   @Get(['/api/v2/public/shared-view/:sharedViewUuid/groupby/count'])
   async dataGroupByCount(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
   ) {
     return await this.publicDatasService.dataGroupByCount(context, {
@@ -109,8 +109,8 @@ export class PublicDatasController {
     '/api/v2/public/shared-view/:sharedViewUuid/group/:columnId',
   ])
   async groupedDataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
     @Param('columnId') columnId: string,
   ) {
@@ -130,8 +130,8 @@ export class PublicDatasController {
   @HttpCode(200)
   @UseInterceptors(AnyFilesInterceptor())
   async dataInsert(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
   ) {
     const insertResult = await this.publicDatasService.dataInsert(context, {
@@ -151,8 +151,8 @@ export class PublicDatasController {
     '/api/v2/public/shared-view/:sharedViewUuid/nested/:columnId',
   ])
   async relDataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
     @Param('columnId') columnId: string,
   ) {
@@ -186,8 +186,8 @@ export class PublicDatasController {
     '/api/v2/public/shared-view/:sharedViewUuid/rows/:rowId/om/:columnId',
   ])
   async publicMmList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
     @Param('rowId') rowId: string,
     @Param('columnId') columnId: string,
@@ -210,8 +210,8 @@ export class PublicDatasController {
     '/api/v2/public/shared-view/:sharedViewUuid/rows/:rowId/hm/:columnId',
   ])
   async publicHmList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
     @Param('rowId') rowId: string,
     @Param('columnId') columnId: string,
@@ -233,8 +233,8 @@ export class PublicDatasController {
     '/api/v2/public/shared-view/:sharedViewUuid/downloadAttachment/:columnId/:rowId',
   )
   async downloadPublicAttachment(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
     @Param('columnId') columnId: string,
     @Param('rowId') rowId: string,
@@ -242,7 +242,7 @@ export class PublicDatasController {
   ) {
     const view = await View.getByUUID(context, sharedViewUuid);
 
-    if (!view) NcError.viewNotFound(sharedViewUuid);
+    if (!view) AtError.viewNotFound(sharedViewUuid);
 
     await view.getColumns(context);
 
@@ -251,7 +251,7 @@ export class PublicDatasController {
     );
 
     if (!isColumnVisible) {
-      NcError.fieldNotFound(columnId);
+      AtError.fieldNotFound(columnId);
     }
 
     const column = await Column.get(context, {
@@ -259,7 +259,7 @@ export class PublicDatasController {
     });
 
     if (!column) {
-      NcError.fieldNotFound(columnId);
+      AtError.fieldNotFound(columnId);
     }
 
     const record = await this.publicDatasService.dataRead(context, {
@@ -272,7 +272,7 @@ export class PublicDatasController {
     });
 
     if (!record) {
-      NcError.recordNotFound(rowId);
+      AtError.recordNotFound(rowId);
     }
 
     return this.attachmentsService.getAttachmentFromRecord({
@@ -284,8 +284,8 @@ export class PublicDatasController {
 
   @Post(['/api/v2/public/shared-view/:sharedViewUuid/bulk/dataList'])
   async bulkDataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
   ) {
     const response = await this.publicDatasService.bulkDataList(context, {
@@ -303,8 +303,8 @@ export class PublicDatasController {
     '/api/v2/public/shared-view/:sharedViewUuid/bulk/aggregate',
   ])
   async bulkDataAggregate(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
   ) {
     const response = await this.publicDatasService.bulkAggregate(context, {

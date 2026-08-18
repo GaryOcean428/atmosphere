@@ -1,7 +1,7 @@
 # Docs: https://litestream.io/reference/config/
 
 dbs:
-  - path: ${NC_TOOL_DIR}noco.db
+  - path: ${ATMOSPHERE_TOOL_DIR}atmosphere.db
     replicas:
       - type: s3
         endpoint: ${LITESTREAM_S3_ENDPOINT}
@@ -14,7 +14,7 @@ dbs:
         retention: ${LITESTREAM_RETENTION}
         retention-check-interval: ${LITESTREAM_RETENTION_CHECK_INTERVAL}
         snapshot-interval: ${LITESTREAM_SNAPSHOT_INTERVAL}
-        sync-interval: ${LITESTREAM_SYNC_INTERVAL}
+        sync-interval: ${LITESTREAM_SYATMOSPHERE_INTERVAL}
         # age:
         #   identities:
         #     - ${LITESTREAM_AGE_SECRET_KEY}

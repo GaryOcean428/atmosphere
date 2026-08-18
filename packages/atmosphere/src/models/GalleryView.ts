@@ -1,14 +1,14 @@
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import type {
   BoolType,
   GalleryColumnType,
   GalleryType,
   MetaType,
-} from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import View from '~/models/View';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import {
@@ -46,13 +46,13 @@ export default class GalleryView implements GalleryType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let view =
       viewId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.GALLERY_VIEW}:${viewId}`,
         CacheGetType.TYPE_OBJECT,
@@ -66,7 +66,7 @@ export default class GalleryView implements GalleryType {
           fk_view_id: viewId,
         },
       );
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.GALLERY_VIEW}:${viewId}`,
         view,
@@ -77,9 +77,9 @@ export default class GalleryView implements GalleryType {
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     view: Partial<GalleryView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const columns = await View.get(context, view.fk_view_id, false, ncMeta)
       .then((v) => v?.getModel(context, ncMeta))
@@ -134,10 +134,10 @@ export default class GalleryView implements GalleryType {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     galleryId: string,
     body: Partial<GalleryView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, ['fk_cover_image_col_id', 'meta']);
 
@@ -152,7 +152,7 @@ export default class GalleryView implements GalleryType {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.GALLERY_VIEW}:${galleryId}`,
       prepareForResponse(updateObj),

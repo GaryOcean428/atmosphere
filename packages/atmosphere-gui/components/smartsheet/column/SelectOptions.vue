@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Draggable from 'vuedraggable'
-import { type SelectOptionsType, UITypes } from 'nocodb-sdk'
+import { type SelectOptionsType, UITypes } from 'atmosphere-sdk'
 
 interface Option {
   color: string
@@ -34,11 +34,11 @@ const { setAdditionalValidations, validateInfos, column, isSyncedField } = useCo
 
 // const { base } = storeToRefs(useBase())
 
-const { isAiFeaturesEnabled, aiIntegrationAvailable, predictSelectOptions } = useNocoAi()
+const { isAiFeaturesEnabled, aiIntegrationAvailable, predictSelectOptions } = useAtmosphereAi()
 
 const { isAiModeFieldModal } = usePredictFields()
 
-// Interface pages get the redesigned colour panel (NcColorPanel); the classic
+// Interface pages get the redesigned colour panel (AtColorPanel); the classic
 // data app keeps the legacy picker.
 const isInterfaceContext = useIsInterfaceUi()
 
@@ -175,7 +175,7 @@ const addNewOption = () => {
   nextTick(() => {
     // Last child doesnt work for query selector
     setTimeout(() => {
-      const doms = document.querySelectorAll(`.nc-col-option-select-option .nc-select-col-option-select-option`)
+      const doms = document.querySelectorAll(`.atm-col-option-select-option .atm-select-col-option-select-option`)
       const dom = doms[doms.length - 1] as HTMLInputElement
 
       if (dom) {
@@ -508,7 +508,7 @@ onMounted(() => {
   } else if (isKanbanStack.value) {
     nextTick(() => {
       setTimeout(() => {
-        const doms = document.querySelectorAll(`.nc-col-option-select-option .nc-select-col-option-select-option`)
+        const doms = document.querySelectorAll(`.atm-col-option-select-option .atm-select-col-option-select-option`)
         const dom = doms[doms.length - 1] as HTMLInputElement
 
         if (dom) {
@@ -527,7 +527,7 @@ if (isKanbanStack.value) {
 
     if (
       (e.target as HTMLElement)?.closest(
-        `.nc-select-option-color-picker, .nc-add-select-option-auto-suggest, .nc-kanban-stack-header-${
+        `.atm-select-option-color-picker, .atm-add-select-option-auto-suggest, .atm-kanban-stack-header-${
           option?.id || 'new-stack'
         }`,
       )
@@ -566,43 +566,43 @@ defineExpose({
   <div class="w-full">
     <div v-if="!isKanbanStack" class="flex items-center justify-between mb-2">
       <div class="flex items-center select-none">
-        <NcSwitch v-model:checked="isColorCodeEnabled" v-e="['c:field:select:color-code:toggle']" size="xsmall">
+        <AtSwitch v-model:checked="isColorCodeEnabled" v-e="['c:field:select:color-code:toggle']" size="xsmall">
           {{ $t('labels.colorCodeOptions') }}
-        </NcSwitch>
+        </AtSwitch>
       </div>
 
       <div class="flex items-center">
-        <NcSwitch
+        <AtSwitch
           v-model:checked="isAlphabetized"
           size="xsmall"
           :disabled="isSyncedField"
           @change="(v) => $e('c:field:select:alphabetize:toggle', { enabled: v })"
         >
           {{ $t('labels.alphabetize') }}
-        </NcSwitch>
+        </AtSwitch>
       </div>
     </div>
 
     <div
       ref="optionsWrapperDomRef"
-      class="nc-col-option-select-option"
+      class="atm-col-option-select-option"
       :class="{
         'overflow-x-auto scrollbar-thin-dull rounded-lg': !isKanbanStack,
-        'border-1 border-nc-border-gray-medium': renderedOptions.length && !isKanbanStack,
-        'bg-nc-bg-default': isAiModeFieldModal,
+        'border-1 border-atm-border-gray-medium': renderedOptions.length && !isKanbanStack,
+        'bg-atm-bg-default': isAiModeFieldModal,
       }"
       :style="{
         maxHeight: props.fromTableExplorer ? 'calc(100vh - (var(--topbar-height) * 3.6) - 320px)' : 'calc(min(30vh, 250px))',
       }"
     >
       <template v-if="isKanbanStack">
-        <div v-if="kanbanStackOption" class="flex items-center nc-select-option">
+        <div v-if="kanbanStackOption" class="flex items-center atm-select-option">
           <div class="flex items-center w-full">
-            <NcDropdown
+            <AtDropdown
               v-if="isColorCodeEnabled"
               v-model:visible="colorMenus[kanbanStackOption.index!]"
               :auto-close="false"
-              overlay-class-name="nc-select-option-color-picker"
+              overlay-class-name="atm-select-option-color-picker"
               :disabled="isLoadingPredictOptions || isSyncedField"
               use-backdrop
             >
@@ -647,13 +647,13 @@ defineExpose({
                   ></LazyGeneralAdvanceColorPicker>
                 </div>
               </template>
-            </NcDropdown>
+            </AtDropdown>
 
             <a-input
               v-model:value="kanbanStackOption.title"
               :placeholder="$t('placeholder.enterOptionName')"
-              class="caption !rounded-lg nc-select-col-option-select-option nc-kanban-stack-input !bg-transparent"
-              data-testid="nc-kanban-stack-title-input"
+              class="caption !rounded-lg atm-select-col-option-select-option atm-kanban-stack-input !bg-transparent"
+              data-testid="atm-kanban-stack-title-input"
               :disabled="isLoadingPredictOptions || isSyncedField"
               @keydown="onKanbanStackInputKeydown"
               @change="() => {
@@ -665,7 +665,7 @@ defineExpose({
 
           <div
             v-if="isNewStack"
-            class="ml-1 hover:!text-nc-content-gray-subtle text-nc-content-gray-muted cursor-pointer hover:bg-nc-bg-gray-medium py-1 px-1.5 rounded-md h-7 flex items-center"
+            class="ml-1 hover:!text-atm-content-gray-subtle text-atm-content-gray-muted cursor-pointer hover:bg-atm-bg-gray-medium py-1 px-1.5 rounded-md h-7 flex items-center"
             @click="emit('saveChanges', true, false)"
           >
             <component :is="iconMap.close" class="-mt-0.25 w-4 h-4" />
@@ -677,12 +677,12 @@ defineExpose({
           v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 45 })"
           :list="renderedOptions"
           item-key="id"
-          handle=".nc-child-draggable-icon"
+          handle=".atm-child-draggable-icon"
           :disabled="isAlphabetized || isSyncedField"
           @change="onDragReorder"
         >
           <template #item="{ element, index }">
-            <div class="flex py-1 items-center nc-select-option hover:bg-nc-bg-gray-light group">
+            <div class="flex py-1 items-center atm-select-option hover:bg-atm-bg-gray-light group">
               <div
                 class="flex items-center w-full"
                 :data-testid="`select-column-option-${index}`"
@@ -690,14 +690,14 @@ defineExpose({
               >
                 <div
                   v-if="!isKanban"
-                  class="nc-child-draggable-icon p-2 flex text-nc-content-gray-subtle"
+                  class="atm-child-draggable-icon p-2 flex text-atm-content-gray-subtle"
                   :class="isAlphabetized ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'"
                   :data-testid="`select-option-column-handle-icon-${element.title}`"
                 >
                   <component :is="iconMap.dragVertical" small class="handle" />
                 </div>
 
-                <NcDropdown
+                <AtDropdown
                   v-if="isColorCodeEnabled"
                   v-model:visible="colorMenus[index]"
                   :auto-close="false"
@@ -741,11 +741,11 @@ defineExpose({
                       ></LazyGeneralAdvanceColorPicker>
                     </div>
                   </template>
-                </NcDropdown>
+                </AtDropdown>
 
                 <a-input
                   v-model:value="element.title"
-                  class="caption !rounded-lg nc-select-col-option-select-option !bg-transparent"
+                  class="caption !rounded-lg atm-select-col-option-select-option !bg-transparent"
                   :data-testid="`select-column-option-input-${index}`"
                   :disabled="element.status === 'remove' || isSyncedField"
                   @keydown.enter.prevent="element.title?.trim() && addNewOption()"
@@ -756,7 +756,7 @@ defineExpose({
               <div
                 v-if="element.status !== 'remove' && !isSyncedField"
                 :data-testid="`select-column-option-remove-${index}`"
-                class="mx-1 hover:!text-nc-content-gray-extreme-500 text-nc-content-gray-muted cursor-pointer hover:bg-nc-bg-gray-medium py-1 px-1.5 rounded-md h-7 flex items-center invisible group-hover:visible"
+                class="mx-1 hover:!text-atm-content-gray-extreme-500 text-atm-content-gray-muted cursor-pointer hover:bg-atm-bg-gray-medium py-1 px-1.5 rounded-md h-7 flex items-center invisible group-hover:visible"
                 @click="removeRenderedOption(index)"
               >
                 <component :is="iconMap.close" class="-mt-0.25 w-4 h-4" />
@@ -764,18 +764,18 @@ defineExpose({
               <div
                 v-else-if="element.status === 'remove' && !isSyncedField"
                 :data-testid="`select-column-option-remove-undo-${index}`"
-                class="mx-1 hover:!text-nc-content-gray-extreme-500 text-nc-content-gray-muted cursor-pointer hover:bg-nc-bg-gray-medium py-1 px-1.5 rounded-md h-7 flex items-center invisible group-hover:visible"
+                class="mx-1 hover:!text-atm-content-gray-extreme-500 text-atm-content-gray-muted cursor-pointer hover:bg-atm-bg-gray-medium py-1 px-1.5 rounded-md h-7 flex items-center invisible group-hover:visible"
                 @click="undoRemoveRenderedOption(index)"
               >
                 <MdiArrowULeftBottom
-                  class="hover:!text-nc-content-gray-extreme-500 text-nc-content-gray-muted cursor-pointer w-4 h-4"
+                  class="hover:!text-atm-content-gray-extreme-500 text-atm-content-gray-muted cursor-pointer w-4 h-4"
                   @click="undoRemoveRenderedOption(index)"
                 />
               </div>
             </div>
           </template>
           <template v-if="isLoadingPredictOptions" #footer>
-            <div class="flex py-1 items-center nc-select-option hover:bg-nc-bg-gray-light group">
+            <div class="flex py-1 items-center atm-select-option hover:bg-atm-bg-gray-light group">
               <div class="flex items-center w-full">
                 <div class="p-2 flex !cursor-disabled">
                   <component :is="iconMap.dragVertical" small class="handle opacity-75" />
@@ -811,17 +811,17 @@ defineExpose({
     </div>
     <div
       v-if="!isKanbanStack && !isSyncedField"
-      class="nc-add-select-option-btn-wrapper flex shadow-sm"
+      class="atm-add-select-option-btn-wrapper flex shadow-sm"
       :class="{
         'mt-2': renderedOptions.length,
-        'bg-nc-bg-default': isAiModeFieldModal,
+        'bg-atm-bg-default': isAiModeFieldModal,
       }"
     >
-      <NcButton
+      <AtButton
         type="text"
-        class="nc-add-select-option-btn flex-1 caption"
+        class="atm-add-select-option-btn flex-1 caption"
         size="small"
-        data-testid="nc-add-select-option-btn"
+        data-testid="atm-add-select-option-btn"
         @click.stop="addNewOption()"
       >
         <template #icon>
@@ -829,18 +829,18 @@ defineExpose({
         </template>
 
         {{ $t('labels.addOption') }}
-      </NcButton>
-      <NcTooltip v-if="isAiFeaturesEnabled && aiIntegrationAvailable" class="w-1/2">
+      </AtButton>
+      <AtTooltip v-if="isAiFeaturesEnabled && aiIntegrationAvailable" class="w-1/2">
         <template #title>
           {{
             !vModel.title?.trim() ? $t('tooltip.fieldNameIsRequriedToAutoSuggestOptions') : $t('tooltip.autoSuggestSelectOptions')
           }}
         </template>
 
-        <NcButton
+        <AtButton
           type="secondary"
           theme="ai"
-          class="nc-add-select-option-auto-suggest w-full caption"
+          class="atm-add-select-option-auto-suggest w-full caption"
           size="small"
           :bordered="false"
           :disabled="isLoadingPredictOptions || !vModel.title?.trim()"
@@ -852,19 +852,19 @@ defineExpose({
           </template>
           <template #loading> {{ $t('labels.suggesting') }} </template>
           {{ $t('labels.autoSuggest') }}
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
     </div>
     <div v-else-if="!kanbanStackOption?.id && !isSyncedField" class="mt-2 pl-1">
-      <NcTooltip v-if="isAiFeaturesEnabled && aiIntegrationAvailable" class="w-full" placement="bottom">
+      <AtTooltip v-if="isAiFeaturesEnabled && aiIntegrationAvailable" class="w-full" placement="bottom">
         <template #title>
           {{ $t('tooltip.autoSuggestSelectOptions') }}
         </template>
 
-        <NcButton
+        <AtButton
           type="secondary"
           theme="ai"
-          class="nc-add-select-option-auto-suggest caption w-full"
+          class="atm-add-select-option-auto-suggest caption w-full"
           size="small"
           :disabled="isLoadingPredictOptions"
           :loading="isLoadingPredictOptions"
@@ -875,8 +875,8 @@ defineExpose({
           </template>
           <template #loading> {{ $t('labels.suggesting') }} </template>
           {{ $t('labels.autoSuggest') }}
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
     </div>
   </div>
 </template>
@@ -896,14 +896,14 @@ defineExpose({
   display: block;
 }
 
-:deep(.nc-select-col-option-select-option) {
+:deep(.atm-select-col-option-select-option) {
   @apply !truncate;
 
-  &:not(.nc-kanban-stack-input):not(:focus):hover {
+  &:not(.atm-kanban-stack-input):not(:focus):hover {
     @apply !border-transparent;
   }
 
-  &:not(.nc-kanban-stack-input):not(:focus) {
+  &:not(.atm-kanban-stack-input):not(:focus) {
     @apply !border-transparent;
   }
 
@@ -913,14 +913,14 @@ defineExpose({
   }
 }
 
-.nc-add-select-option-btn-wrapper {
-  @apply border-1 border-nc-border-gray-medium rounded-lg overflow-hidden;
+.atm-add-select-option-btn-wrapper {
+  @apply border-1 border-atm-border-gray-medium rounded-lg overflow-hidden;
 
-  .nc-add-select-option-btn {
+  .atm-add-select-option-btn {
     @apply rounded-none;
   }
-  .nc-add-select-option-auto-suggest {
-    @apply -my-[1px] h-[34px] rounded-none !border-l-1 !border-l-nc-border-gray-medium;
+  .atm-add-select-option-auto-suggest {
+    @apply -my-[1px] h-[34px] rounded-none !border-l-1 !border-l-atm-border-gray-medium;
   }
 }
 </style>

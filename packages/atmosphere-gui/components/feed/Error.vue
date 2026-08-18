@@ -23,17 +23,17 @@ const triggerReload = async () => {
 <template>
   <div class="flex items-center justify-center">
     <div
-      class="w-[696px] error-box gap-6 border-1 border-nc-border-gray-medium py-6 rounded-xl flex flex-col items-center justify-center"
+      class="w-[696px] error-box gap-6 border-1 border-atm-border-gray-medium py-6 rounded-xl flex flex-col items-center justify-center"
     >
-      <GeneralIcon icon="alertTriangle" class="text-nc-content-gray-muted w-8 h-8" />
-      <span class="text-nc-content-gray-subtle2 text-base font-semibold"> {{ $t('msg.error.unableToLoadFeed') }} </span>
+      <GeneralIcon icon="alertTriangle" class="text-atm-content-gray-muted w-8 h-8" />
+      <span class="text-atm-content-gray-subtle2 text-base font-semibold"> {{ $t('msg.error.unableToLoadFeed') }} </span>
 
-      <NcButton type="secondary" size="small" @click="triggerReload">
-        <div class="flex items-center text-nc-content-gray-subtle gap-2">
+      <AtButton type="secondary" size="small" @click="triggerReload">
+        <div class="flex items-center text-atm-content-gray-subtle gap-2">
           <GeneralIcon icon="refreshCw" />
           <span class="text-sm"> {{ $t('general.refresh') }} </span>
         </div>
-      </NcButton>
+      </AtButton>
     </div>
   </div>
 </template>

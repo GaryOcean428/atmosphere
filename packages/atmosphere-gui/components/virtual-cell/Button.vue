@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ButtonActionsType, type ButtonType, type ColumnType, type FilterType } from 'nocodb-sdk'
+import { ButtonActionsType, type ButtonType, type ColumnType, type FilterType } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import { validateRowFilters } from '~/utils/dataUtils'
 
@@ -13,7 +13,7 @@ const cellValue = inject(CellValueInj, ref())
 
 const { currentRow, displayValue, changedColumns } = useSmartsheetRowStoreOrThrow()
 
-const { generateRows, generatingRows, generatingColumnRows, generatingColumns, aiIntegrations } = useNocoAi()
+const { generateRows, generatingRows, generatingColumnRows, generatingColumns, aiIntegrations } = useAtmosphereAi()
 
 const { appInfo } = useGlobal()
 
@@ -329,7 +329,7 @@ const triggerAction = async () => {
     }"
     class="w-full flex items-center"
   >
-    <NcTooltip
+    <AtTooltip
       :disabled="
         isAiButtonType
           ? (isFieldAiIntegrationAvailable || isPublic || !isUIAllowed('dataEdit')) && !filterDisabledTooltip
@@ -351,12 +351,12 @@ const triggerAction = async () => {
       <component
         :is="column.colOptions.type === ButtonActionsType.Url ? 'a' : 'button'"
         v-bind="componentProps"
-        data-testid="nc-button-cell"
+        data-testid="atm-button-cell"
         :class="[
           `${column.colOptions.color ?? 'brand'} ${column.colOptions.theme ?? 'solid'}`,
           { '!w-6': !column.colOptions.label, 'disabled': componentProps.disabled, 'is-expanded-form': isExpandedForm },
         ]"
-        class="nc-cell-button nc-button-cell-link btn-cell-colors truncate flex items-center"
+        class="atm-cell-button atm-button-cell-link btn-cell-colors truncate flex items-center"
         :style="buttonColors"
         @click.prevent="triggerAction"
       >
@@ -375,46 +375,46 @@ const triggerAction = async () => {
           size="medium"
         />
         <GeneralIcon v-else-if="column.colOptions.icon" :icon="column.colOptions.icon" class="!w-4 min-w-4 min-h-4 !h-4" />
-        <NcTooltip v-if="column.colOptions.label" class="!truncate" show-on-truncate-only>
+        <AtTooltip v-if="column.colOptions.label" class="!truncate" show-on-truncate-only>
           <span class="truncate font-medium" :class="{ 'text-sm': isExpandedForm, 'text-[13px]': !isExpandedForm }">
             {{ column.colOptions.label }}
           </span>
           <template #title>
             {{ column.colOptions.label }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
       </component>
-    </NcTooltip>
+    </AtTooltip>
   </div>
 </template>
 
 <style lang="scss">
-.nc-data-cell {
-  &:has(.nc-virtual-cell-button) {
+.atm-data-cell {
+  &:has(.atm-virtual-cell-button) {
     @apply !border-none;
     box-shadow: none !important;
 
-    &:focus-within:not(.nc-readonly-div-data-cell):not(.nc-system-field) {
+    &:focus-within:not(.atm-readonly-div-data-cell):not(.atm-system-field) {
       box-shadow: none !important;
     }
   }
 
-  &:has(.nc-cell-button.is-expanded-form) {
+  &:has(.atm-cell-button.is-expanded-form) {
     @apply -mt-1 -ml-1;
   }
 
-  .nc-cell-attachment {
+  .atm-cell-attachment {
     @apply !border-none;
   }
 }
 
-.nc-button-cell-link {
+.atm-button-cell-link {
   @apply !no-underline;
 }
 </style>
 
 <style scoped lang="scss">
-.nc-cell-button {
+.atm-cell-button {
   @apply px-2 flex items-center gap-2 transition-all justify-center;
   &:not([class*='text']) {
     box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.06), 0px 5px 3px -2px rgba(0, 0, 0, 0.02);

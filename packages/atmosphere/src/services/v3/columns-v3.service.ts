@@ -3,10 +3,10 @@ import {
   enumColors,
   isLinksOrLTAR,
   LinksVersion,
-  NcApiVersion,
+  AtApiVersion,
   UITypes,
   WebhookActions,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type {
   ColumnReqType,
   FieldOptionAddItemV3Type,
@@ -14,17 +14,17 @@ import type {
   FieldUpdateV3Type,
   FieldV3Type,
   UserType,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { ReusableParams } from '~/services/columns.service';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import {
   type ColumnWebhookManager,
   ColumnWebhookManagerBuilder,
 } from '~/utils/column-webhook-manager';
 import { ColumnsService } from '~/services/columns.service';
 import { Column } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   columnBuilder,
   columnV3ToV2Builder,
@@ -46,7 +46,7 @@ export class ColumnsV3Service {
   constructor(protected readonly columnsService: ColumnsService) {}
 
   async columnUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       req: any;
       columnId: string;
@@ -56,7 +56,7 @@ export class ColumnsV3Service {
       reuse?: ReusableParams;
       columnWebhookManager?: ColumnWebhookManager;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload(
       'swagger-v3.json#/components/schemas/FieldUpdate',
@@ -77,7 +77,7 @@ export class ColumnsV3Service {
     let column = await Column.get(context, { colId: param.columnId }, ncMeta);
 
     if (!column) {
-      NcError.get(context).fieldNotFound(param.columnId);
+      AtError.get(context).fieldNotFound(param.columnId);
     }
 
     const columnWebhookManager =
@@ -135,7 +135,7 @@ export class ColumnsV3Service {
       {
         ...param,
         column: processedColumnReq,
-        apiVersion: NcApiVersion.V3,
+        apiVersion: AtApiVersion.V3,
         req: param.req,
         columnWebhookManager: columnWebhookManager,
       },
@@ -153,25 +153,25 @@ export class ColumnsV3Service {
     return v3Response;
   }
 
-  async columnGet(context: NcContext, param: { columnId: string }) {
+  async columnGet(context: AtContext, param: { columnId: string }) {
     const column = await Column.get(context, { colId: param.columnId });
     if (!column) {
-      NcError.get(context).fieldNotFound(param.columnId);
+      AtError.get(context).fieldNotFound(param.columnId);
     }
     return columnBuilder().build(column);
   }
 
   async columnAdd(
-    context: NcContext,
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       tableId: string;
       column: FieldV3Type;
       user: UserType;
       reuse?: ReusableParams;
       columnWebhookManager?: ColumnWebhookManager;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload(
       'swagger-v3.json#/components/schemas/CreateField',
@@ -226,7 +226,7 @@ export class ColumnsV3Service {
       {
         ...param,
         column,
-        apiVersion: NcApiVersion.V3,
+        apiVersion: AtApiVersion.V3,
         columnWebhookManager: columnWebhookManager,
       },
       ncMeta,
@@ -245,15 +245,15 @@ export class ColumnsV3Service {
   }
 
   async columnDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       columnId: string;
       forceDeleteSystem?: boolean;
       reuse?: ReusableParams;
       columnWebhookManager?: ColumnWebhookManager;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await this.columnsService.columnDelete(context, param, ncMeta);
 
@@ -264,12 +264,12 @@ export class ColumnsV3Service {
   // carry their stable `id`s — passing those ids back through columnUpdate is
   // what makes the underlying option diff preserve them (no data loss).
   private getSelectColumnChoices(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     column: Column,
   ): { current: FieldV3Type; choices: SelectChoiceV3[] } {
     if (![UITypes.SingleSelect, UITypes.MultiSelect].includes(column.uidt)) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Options can only be managed on SingleSelect or MultiSelect fields.',
       );
     }
@@ -301,14 +301,14 @@ export class ColumnsV3Service {
   }
 
   async columnOptionsAdd(
-    context: NcContext,
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       columnId: string;
       choices: FieldOptionAddItemV3Type[];
       user: UserType;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload(
       'swagger-v3.json#/components/schemas/FieldOptionsAddReq',
@@ -320,7 +320,7 @@ export class ColumnsV3Service {
     const column = await Column.get(context, { colId: param.columnId }, ncMeta);
 
     if (!column) {
-      NcError.get(context).fieldNotFound(param.columnId);
+      AtError.get(context).fieldNotFound(param.columnId);
     }
 
     const { current, choices: existingChoices } = this.getSelectColumnChoices(
@@ -335,7 +335,7 @@ export class ColumnsV3Service {
     for (const choice of param.choices) {
       const title = choice.title.trim();
       if (seenTitles.has(title)) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Duplicate choice title in request: '${title}'`,
         );
       }
@@ -378,14 +378,14 @@ export class ColumnsV3Service {
   }
 
   async columnOptionsDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       columnId: string;
       choices: FieldOptionDeleteItemV3Type[];
       user: UserType;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload(
       'swagger-v3.json#/components/schemas/FieldOptionsDeleteReq',
@@ -397,7 +397,7 @@ export class ColumnsV3Service {
     const column = await Column.get(context, { colId: param.columnId }, ncMeta);
 
     if (!column) {
-      NcError.get(context).fieldNotFound(param.columnId);
+      AtError.get(context).fieldNotFound(param.columnId);
     }
 
     const { current, choices: existingChoices } = this.getSelectColumnChoices(
@@ -422,7 +422,7 @@ export class ColumnsV3Service {
     }
 
     if (mergedChoices.length === 0) {
-      NcError.get(context).badRequest('At least one option is required.');
+      AtError.get(context).badRequest('At least one option is required.');
     }
 
     return this.columnUpdate(

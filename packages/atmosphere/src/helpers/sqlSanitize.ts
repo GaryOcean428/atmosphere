@@ -37,7 +37,7 @@ export function pgQuoteLiteral(value: string): string {
  * constraint — or, on SQLite, an arbitrary `;`-delimited statement — into the
  * live table schema.
  *
- * Accepts only the shapes NocoDB ever legitimately produces for `dtxp`:
+ * Accepts only the shapes Atmosphere ever legitimately produces for `dtxp`:
  *   - numeric precision, optionally `precision,scale` — e.g. `255`, `10,2`
  *   - the `MAX` length sentinel for SQL Server large-value types — e.g.
  *     `nvarchar(MAX)`, stored verbatim as `dtxp: 'MAX'` for text columns (see

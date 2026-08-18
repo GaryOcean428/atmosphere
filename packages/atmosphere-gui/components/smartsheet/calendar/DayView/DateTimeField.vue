@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import dayjs from 'dayjs'
-import { type ColumnType, PermissionEntity, PermissionKey, UITypes } from 'nocodb-sdk'
+import { type ColumnType, PermissionEntity, PermissionKey, UITypes } from 'atmosphere-sdk'
 import type { Row } from '~/lib/types'
 
 const emit = defineEmits(['expandRecord', 'newRecord', 'recordContextMenu'])
@@ -917,7 +917,7 @@ watch(
       if (isDragging.value) return
       const records = document.querySelectorAll('.draggable-record')
       if (records.length) records.item(0)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      else document.querySelectorAll('.nc-calendar-day-hour').item(9)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      else document.querySelectorAll('.atm-calendar-day-hour').item(9)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }, 100)
   },
   { immediate: true },
@@ -937,7 +937,7 @@ function onRecordContextMenu(event: MouseEvent, record: Row) {
 </script>
 
 <template>
-  <div ref="scrollContainer" class="h-[calc(100vh-5.3rem)] nc-scrollbar-md nc-scrollbar-x-md">
+  <div ref="scrollContainer" class="h-[calc(100vh-5.3rem)] atm-scrollbar-md atm-scrollbar-x-md">
     <SmartsheetCalendarDateTimeSpanningContainer
       v-if="
         calendarRange.some((range) => range.fk_to_col !== null && range.fk_to_col !== undefined) &&
@@ -954,20 +954,20 @@ function onRecordContextMenu(event: MouseEvent, record: Row) {
       ref="container"
       class="flex relative no-selection w-full"
       :style="{ minWidth: dayScrollWidth }"
-      data-testid="nc-calendar-day-view"
+      data-testid="atm-calendar-day-view"
       @drop="dropEvent"
     >
       <!-- Time-axis gutter: sticky so it stays put while the grid scrolls horizontally. It sits above
            the grid (z-20) purely for painting when scrolled, so it must NOT swallow pointer events —
            its high z-index would otherwise intercept clicks on the leftmost hour-cell column (the
            axis can overlap the grid edge by a sub-pixel), breaking hour selection. -->
-      <div class="sticky left-0 z-20 bg-nc-bg-default flex-none pointer-events-none">
+      <div class="sticky left-0 z-20 bg-atm-bg-default flex-none pointer-events-none">
         <div
           v-for="(hour, index) in hours"
           :key="index"
-          class="flex h-13 relative border-1 border-nc-base-white border-b-nc-border-gray-light"
+          class="flex h-13 relative border-1 border-atm-base-white border-b-atm-border-gray-light"
         >
-          <div class="w-16 pr-2 pl-2 text-right text-xs text-nc-content-gray-disabled font-semibold h-13">
+          <div class="w-16 pr-2 pl-2 text-right text-xs text-atm-content-gray-disabled font-semibold h-13">
             {{ timezoneDayjs.dayjsTz(hour).format(is12hrAxis ? 'hh a' : 'HH:00') }}
           </div>
         </div>
@@ -983,30 +983,30 @@ function onRecordContextMenu(event: MouseEvent, record: Row) {
             v-for="(hour, index) in hours"
             :key="index"
             :class="{ 'selected-hour': hour.isSame(selectedTime) }"
-            class="flex w-full h-13 transition nc-calendar-day-hour relative border-1 group hover:bg-nc-bg-gray-extralight border-nc-base-white border-b-nc-border-gray-light"
-            data-testid="nc-calendar-day-hour"
+            class="flex w-full h-13 transition atm-calendar-day-hour relative border-1 group hover:bg-atm-bg-gray-extralight border-atm-base-white border-b-atm-border-gray-light"
+            data-testid="atm-calendar-day-hour"
             @click="selectHour(hour)"
             @dblclick="newRecord(hour)"
           >
-            <NcDropdown
+            <AtDropdown
               v-if="isAddDeleteInlineEnabled && calendarRange.length > 1 && !isPublic"
               :class="{ '!block': hour.isSame(selectedTime), '!hidden': !hour.isSame(selectedTime) }"
               auto-close
             >
-              <NcButton
+              <AtButton
                 class="!group-hover:block mr-10 my-auto ml-auto z-10 top-0 bottom-0 !group-hover:block absolute"
                 size="xsmall"
                 type="secondary"
               >
                 <component :is="iconMap.plus" class="h-4 w-4" />
-              </NcButton>
+              </AtButton>
               <template #overlay>
-                <NcMenu class="w-64">
-                  <NcMenuItem> {{ $t('labels.selectDateFieldToAdd') }} </NcMenuItem>
+                <AtMenu class="w-64">
+                  <AtMenuItem> {{ $t('labels.selectDateFieldToAdd') }} </AtMenuItem>
                   <template v-for="(range, calIndex) in calendarRange" :key="calIndex">
-                    <NcMenuItem
+                    <AtMenuItem
                       v-if="!range.is_readonly"
-                      class="text-nc-content-gray font-semibold text-sm"
+                      class="text-atm-content-gray font-semibold text-sm"
                       @click="newRecordWithRange(range, hour)"
                     >
                       <div class="flex items-center gap-1">
@@ -1014,11 +1014,11 @@ function onRecordContextMenu(event: MouseEvent, record: Row) {
 
                         <span class="ml-1">{{ range.fk_from_col!.title! }}</span>
                       </div>
-                    </NcMenuItem>
+                    </AtMenuItem>
                   </template>
-                </NcMenu>
+                </AtMenu>
               </template>
-            </NcDropdown>
+            </AtDropdown>
 
             <div
               v-else-if="
@@ -1038,14 +1038,14 @@ function onRecordContextMenu(event: MouseEvent, record: Row) {
                 placement="left"
               >
                 <template #default="{ isAllowed }">
-                  <NcButton
+                  <AtButton
                     size="xsmall"
                     type="secondary"
                     :disabled="!isAllowed"
                     @click="newRecordWithRange(calendarRange[0], hour)"
                   >
                     <component :is="iconMap.plus" class="h-4 w-4" />
-                  </NcButton>
+                  </AtButton>
                 </template>
               </PermissionsTooltip>
             </div>
@@ -1056,12 +1056,12 @@ function onRecordContextMenu(event: MouseEvent, record: Row) {
         <div v-if="shouldEnableOverlay" class="absolute z-4 inset-x-0 pointer-events-none" :style="{ top: `${overlayTop}px` }">
           <div class="flex w-full items-center">
             <span
-              class="text-nc-content-inverted-primary bg-nc-content-brand text-xs font-bold rounded-md pointer-events-auto leading-3.5 p-0.5 cursor-pointer"
+              class="text-atm-content-inverted-primary bg-atm-content-brand text-xs font-bold rounded-md pointer-events-auto leading-3.5 p-0.5 cursor-pointer"
               @click="newRecord(currTime)"
             >
               {{ currTime.format(is12hrAxis ? 'hh:mm A' : 'HH:mm') }}
             </span>
-            <div class="flex-1 relative ml-1 nc-calendar-border-line border-b-2 border-nc-border-brand"></div>
+            <div class="flex-1 relative ml-1 atm-calendar-border-line border-b-2 border-atm-border-brand"></div>
           </div>
         </div>
 
@@ -1071,11 +1071,11 @@ function onRecordContextMenu(event: MouseEvent, record: Row) {
              The layer is pointer-events-none and inset 8px from the left so clicks between
              cards (and on the left rail) fall through to the hour grid below — keeping every
              hour selectable even when a full-width record covers it. -->
-        <div class="absolute z-2 inset-y-0 left-2 right-0 pointer-events-none" data-testid="nc-calendar-day-record-container">
+        <div class="absolute z-2 inset-y-0 left-2 right-0 pointer-events-none" data-testid="atm-calendar-day-record-container">
           <template v-for="record in visibleRecords" :key="record.rowMeta.id">
             <div
               v-if="record.rowMeta.style?.display !== 'none'"
-              :data-testid="`nc-calendar-day-record-${record.row[displayField!.title!]}`"
+              :data-testid="`atm-calendar-day-record-${record.row[displayField!.title!]}`"
               :data-unique-id="record.rowMeta.id"
               :style="{
                 ...record.rowMeta.style,
@@ -1119,7 +1119,7 @@ function onRecordContextMenu(event: MouseEvent, record: Row) {
                     <SmartsheetRecordFieldsTooltip :record="record" :fields="fields" />
                   </template>
                   <template #time>
-                    <span class="text-xs font-medium text-nc-content-gray-disabled">
+                    <span class="text-xs font-medium text-atm-content-gray-disabled">
                       {{
                         timezoneDayjs
                           .timezonize(record.row[record.rowMeta.range?.fk_from_col!.title!])
@@ -1147,11 +1147,11 @@ function onRecordContextMenu(event: MouseEvent, record: Row) {
 }
 
 .selected-hour {
-  @apply relative !bg-nc-bg-brand !border-nc-bg-brand;
+  @apply relative !bg-atm-bg-brand !border-atm-bg-brand;
 }
 
-.nc-calendar-border-line::after {
-  @apply absolute bg-nc-content-brand w-0.5 h-3;
+.atm-calendar-border-line::after {
+  @apply absolute bg-atm-content-brand w-0.5 h-3;
   content: '';
   top: -5px;
   bottom: -6px;

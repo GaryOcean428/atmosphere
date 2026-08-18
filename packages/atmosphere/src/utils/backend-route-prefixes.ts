@@ -19,7 +19,7 @@ export const backendRoutePrefixes = [
 // NOT a wildcard. Use '/:path*' for prefix matching across sub-paths.
 export const backendRouteExcludePatterns = [
   ...backendRoutePrefixes.map((p) => p + '/:path*'),
-  // /nc is a frontend route prefix (/nc/{baseId}, /nc/integrations, /nc/feed, etc.)
-  // but old-datas controller has API endpoints at /nc/:baseId/api/v1/* — exclude only those.
-  '/nc/:baseId/api/v1/:path*',
+  // /atm is a frontend route prefix (/atm/{baseId}, /atm/integrations, /atm/feed, etc.)
+  // but old-datas controller has API endpoints at /atm/:baseId/api/v1/* — exclude only those.
+  '/atm/:baseId/api/v1/:path*',
 ];

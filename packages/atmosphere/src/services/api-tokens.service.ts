@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, extractRolesObj, OrgUserRoles } from 'nocodb-sdk';
+import { AppEvents, extractRolesObj, OrgUserRoles } from 'atmosphere-sdk';
 import type { User } from '~/models';
-import type { ApiTokenReqType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+import type { ApiTokenReqType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { validatePayload } from '~/helpers';
 import { ApiToken } from '~/models';
 
@@ -12,7 +12,7 @@ import { ApiToken } from '~/models';
 export class ApiTokensService {
   constructor(protected readonly appHooksService: AppHooksService) {}
 
-  async apiTokenList(param: { userId: string; req: NcRequest }) {
+  async apiTokenList(param: { userId: string; req: AtRequest }) {
     // Check if user logged in via SSO
     const ssoClientId = (param.req.user as any)?.extra?.sso_client_id;
 
@@ -27,7 +27,7 @@ export class ApiTokensService {
   async apiTokenCreate(param: {
     userId: string;
     tokenBody: ApiTokenReqType;
-    req: NcRequest;
+    req: AtRequest;
   }) {
     validatePayload(
       'swagger.json#/components/schemas/ApiTokenReq',
@@ -54,16 +54,16 @@ export class ApiTokensService {
     return token;
   }
 
-  async apiTokenDelete(param: { tokenId: string; user: User; req: NcRequest }) {
+  async apiTokenDelete(param: { tokenId: string; user: User; req: AtRequest }) {
     const apiToken = await ApiToken.get(param.tokenId);
     if (!apiToken) {
-      NcError.notFound('Token not found');
+      AtError.notFound('Token not found');
     }
     if (
       !extractRolesObj(param.user.roles)[OrgUserRoles.SUPER_ADMIN] &&
       apiToken.fk_user_id !== param.user.id
     ) {
-      NcError.notFound('Token not found');
+      AtError.notFound('Token not found');
     }
 
     this.appHooksService.emit(AppEvents.API_TOKEN_DELETE, {

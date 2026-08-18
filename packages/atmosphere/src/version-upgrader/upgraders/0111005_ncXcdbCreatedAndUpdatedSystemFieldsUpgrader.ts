@@ -1,8 +1,8 @@
-import { UITypes } from 'nocodb-sdk';
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
+import { UITypes } from 'atmosphere-sdk';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
 import type { MetaService } from '~/meta/meta.service';
 import type { Base } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { Column, Model, Source } from '~/models';
 import {
@@ -12,7 +12,7 @@ import {
 import getColumnPropsFromUIDT from '~/helpers/getColumnPropsFromUIDT';
 import ProjectMgrv2 from '~/db/sql-mgr/v2/ProjectMgrv2';
 import { Altered } from '~/services/columns.service';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import getColumnUiType from '~/helpers/getColumnUiType';
 import RequestQueue from '~/utils/RequestQueue';
 
@@ -67,7 +67,7 @@ async function upgradeModels({
 }) {
   const context = { workspace_id: base.fk_workspace_id, base_id: base.id };
   // get existing columns from database
-  const sqlClient = await NcConnectionMgrv2.getSqlClient(source, ncMeta.knex);
+  const sqlClient = await AtConnectionMgrv2.getSqlClient(source, ncMeta.knex);
   const sqlMgr = ProjectMgrv2.getSqlMgr(
     context,
     { id: source.base_id },
@@ -276,7 +276,7 @@ async function upgradeModels({
               uidt: UITypes.CreatedBy,
               ...dbColumn,
               column_name: columnName,
-              title: getUniqueColumnAliasName(columns, 'nc_created_by'),
+              title: getUniqueColumnAliasName(columns, 'atm_created_by'),
               system: true,
             });
           } else {
@@ -288,7 +288,7 @@ async function upgradeModels({
                     [...columns, ...dbColumns],
                     'created_by',
                   ),
-                  title: getUniqueColumnAliasName(columns, 'nc_created_by'),
+                  title: getUniqueColumnAliasName(columns, 'atm_created_by'),
                 },
                 source,
               )),
@@ -309,7 +309,7 @@ async function upgradeModels({
               uidt: UITypes.LastModifiedBy,
               ...dbColumn,
               column_name: columnName,
-              title: getUniqueColumnAliasName(columns, 'nc_updated_by'),
+              title: getUniqueColumnAliasName(columns, 'atm_updated_by'),
               system: true,
             });
           } else {
@@ -321,7 +321,7 @@ async function upgradeModels({
                     [...columns, ...dbColumns],
                     'updated_by',
                   ),
-                  title: getUniqueColumnAliasName(columns, 'nc_updated_by'),
+                  title: getUniqueColumnAliasName(columns, 'atm_updated_by'),
                 },
                 source,
               )),
@@ -368,7 +368,7 @@ async function upgradeModels({
 }
 
 // database to virtual relation and create an index for it
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   // get all xcdb sources
   const sources = await ncMeta.knexConnection(MetaTable.SOURCES).condition({
     _or: [
@@ -377,7 +377,7 @@ export default async function ({ ncMeta }: NcUpgraderCtx) {
           eq: 1,
         },
       },
-      ...(Noco.isEE()
+      ...(Atmosphere.isEE()
         ? [
             {
               is_local: {

@@ -1,5 +1,5 @@
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 
 export default class Script {
   constructor(_unknown: any) {
@@ -7,19 +7,19 @@ export default class Script {
   }
 
   public static async get(
-    _context: NcContext,
+    _context: AtContext,
     _param1: string,
     _includeDeleted = false,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return null;
   }
 
   public static async list(
-    _context: NcContext,
+    _context: AtContext,
     _param1: string,
     _includeDeleted = false,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return [];
   }
@@ -27,27 +27,27 @@ export default class Script {
   static async softDelete(..._args: any) {}
 
   static async delete(
-    _context: NcContext,
+    _context: AtContext,
     _param1: any,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return true;
   }
 
   public static async update(
-    _context: NcContext,
+    _context: AtContext,
     _param1: string,
     _param2: Partial<any>,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return {};
   }
 
   public static async insert(
-    _context: NcContext,
+    _context: AtContext,
     _param1: string,
     _param2: Partial<any>,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return {};
   }

@@ -1,4 +1,4 @@
-import { parseProp, stringifyProp } from 'nocodb-sdk'
+import { parseProp, stringifyProp } from 'atmosphere-sdk'
 
 export { parseProp, stringifyProp }
 

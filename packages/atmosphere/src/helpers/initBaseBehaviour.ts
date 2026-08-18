@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { Knex } from 'knex';
 import PgConnectionConfig = Knex.PgConnectionConfig;
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import CustomKnex from '~/db/CustomKnex';
 import { SqlClientFactory } from '~/db/sql-client/lib/SqlClientFactory';
 const logger = new Logger('initBaseBehavior');
@@ -41,7 +41,7 @@ async function isSchemaCreateAllowed(
 }
 
 export async function initBaseBehavior() {
-  const dataConfig = await NcConnectionMgrv2.getDataConfig();
+  const dataConfig = await AtConnectionMgrv2.getDataConfig();
 
   // return if no data config or client is not postgres (this reflection is
   // postgres-only)
@@ -49,8 +49,8 @@ export async function initBaseBehavior() {
     return;
   }
 
-  // disable minimal databases feature if NC_DISABLE_PG_DATA_REFLECTION is set to true
-  if (process.env.NC_DISABLE_PG_DATA_REFLECTION === 'true') {
+  // disable minimal databases feature if ATMOSPHERE_DISABLE_PG_DATA_REFLECTION is set to true
+  if (process.env.ATMOSPHERE_DISABLE_PG_DATA_REFLECTION === 'true') {
     return;
   }
 
@@ -65,8 +65,8 @@ export async function initBaseBehavior() {
 
     // if schema creation is not allowed, return
     if (!schemaCreateAllowed?.rows?.[0]?.has_database_privilege) {
-      // set NC_DISABLE_PG_DATA_REFLECTION to true and log warning
-      process.env.NC_DISABLE_PG_DATA_REFLECTION = 'true';
+      // set ATMOSPHERE_DISABLE_PG_DATA_REFLECTION to true and log warning
+      process.env.ATMOSPHERE_DISABLE_PG_DATA_REFLECTION = 'true';
       logger.warn(
         `User ${
           (dataConfig.connection as PgConnectionConfig)?.user
@@ -75,13 +75,13 @@ export async function initBaseBehavior() {
       return;
     }
 
-    // set NC_DISABLE_PG_DATA_REFLECTION to false
-    process.env.NC_DISABLE_PG_DATA_REFLECTION = 'false';
+    // set ATMOSPHERE_DISABLE_PG_DATA_REFLECTION to false
+    process.env.ATMOSPHERE_DISABLE_PG_DATA_REFLECTION = 'false';
   } catch (error) {
     logger.warn(
       `Error while checking schema creation permission: ${error.message}`,
     );
-    process.env.NC_DISABLE_PG_DATA_REFLECTION = 'true';
+    process.env.ATMOSPHERE_DISABLE_PG_DATA_REFLECTION = 'true';
   } finally {
     // close the connection since it's only used to verify permission
     await tempConnection?.destroy();

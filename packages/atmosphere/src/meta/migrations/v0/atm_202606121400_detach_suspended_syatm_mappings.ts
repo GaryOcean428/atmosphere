@@ -16,16 +16,16 @@ const up = async (knex: Knex) => {
   await detachSuspendedMappings(knex);
   await detachSuspendedTableSyncMappings(knex);
 
-  await knex.schema.alterTable(MetaTable.SYNC_MAPPINGS, (table) => {
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_MAPPINGS, (table) => {
     table.dropColumn('status');
   });
-  await knex.schema.alterTable(MetaTable.TABLE_SYNC_MAPPINGS, (table) => {
+  await knex.schema.alterTable(MetaTable.TABLE_SYATMOSPHERE_MAPPINGS, (table) => {
     table.dropColumn('status');
   });
 };
 
 async function detachSuspendedMappings(knex: Knex) {
-  const suspended = await knex(MetaTable.SYNC_MAPPINGS)
+  const suspended = await knex(MetaTable.SYATMOSPHERE_MAPPINGS)
     .select('id', 'fk_model_id')
     .where('status', 'suspended');
 
@@ -46,7 +46,7 @@ async function detachSuspendedMappings(knex: Knex) {
       .update({ readonly: false });
   }
 
-  await knex(MetaTable.SYNC_MAPPINGS)
+  await knex(MetaTable.SYATMOSPHERE_MAPPINGS)
     .whereIn(
       'id',
       suspended.map((m) => m.id),
@@ -55,12 +55,12 @@ async function detachSuspendedMappings(knex: Knex) {
 }
 
 /**
- * Same sweep for the table-sync flavour (`nc_table_sync_mappings` carries the
+ * Same sweep for the table-sync flavour (`atm_table_sync_mappings` carries the
  * same legacy `suspended` state for dest tables that sat in trash under the
  * old model): detach the dest table and delete the mapping.
  */
 async function detachSuspendedTableSyncMappings(knex: Knex) {
-  const suspended = await knex(MetaTable.TABLE_SYNC_MAPPINGS)
+  const suspended = await knex(MetaTable.TABLE_SYATMOSPHERE_MAPPINGS)
     .select('id', 'dest_table_id', 'role', 'fk_table_sync_id')
     .where('status', 'suspended');
 
@@ -78,7 +78,7 @@ async function detachSuspendedTableSyncMappings(knex: Knex) {
   ];
 
   if (mainlessSyncIds.length) {
-    const allMappings = await knex(MetaTable.TABLE_SYNC_MAPPINGS)
+    const allMappings = await knex(MetaTable.TABLE_SYATMOSPHERE_MAPPINGS)
       .select('id', 'dest_table_id')
       .whereIn('fk_table_sync_id', mainlessSyncIds);
 
@@ -86,10 +86,10 @@ async function detachSuspendedTableSyncMappings(knex: Knex) {
       ...allMappings.filter((m) => !suspended.some((sm) => sm.id === m.id)),
     );
 
-    await knex(MetaTable.TABLE_SYNC_COLUMN_MAPPINGS)
+    await knex(MetaTable.TABLE_SYATMOSPHERE_COLUMN_MAPPINGS)
       .whereIn('fk_table_sync_id', mainlessSyncIds)
       .delete();
-    await knex(MetaTable.TABLE_SYNC_MAPPINGS)
+    await knex(MetaTable.TABLE_SYATMOSPHERE_MAPPINGS)
       .whereIn('fk_table_sync_id', mainlessSyncIds)
       .delete();
     await knex(MetaTable.TABLE_SYNCS).whereIn('id', mainlessSyncIds).delete();
@@ -110,7 +110,7 @@ async function detachSuspendedTableSyncMappings(knex: Knex) {
       .update({ readonly: false });
   }
 
-  await knex(MetaTable.TABLE_SYNC_MAPPINGS)
+  await knex(MetaTable.TABLE_SYATMOSPHERE_MAPPINGS)
     .whereIn(
       'id',
       suspended.map((m) => m.id),
@@ -120,10 +120,10 @@ async function detachSuspendedTableSyncMappings(knex: Knex) {
 
 const down = async (knex: Knex) => {
   // The data sweep is not reversible — only the column drops are undone.
-  await knex.schema.alterTable(MetaTable.SYNC_MAPPINGS, (table) => {
+  await knex.schema.alterTable(MetaTable.SYATMOSPHERE_MAPPINGS, (table) => {
     table.string('status', 20).defaultTo('active');
   });
-  await knex.schema.alterTable(MetaTable.TABLE_SYNC_MAPPINGS, (table) => {
+  await knex.schema.alterTable(MetaTable.TABLE_SYATMOSPHERE_MAPPINGS, (table) => {
     table.string('status', 20).defaultTo('active');
   });
 };

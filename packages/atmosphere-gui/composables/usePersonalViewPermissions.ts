@@ -1,5 +1,5 @@
-import type { ViewType } from 'nocodb-sdk'
-import { ViewLockType } from 'nocodb-sdk'
+import type { ViewType } from 'atmosphere-sdk'
+import { ViewLockType } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 
 /**

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { BaseType } from 'nocodb-sdk'
+import type { BaseType } from 'atmosphere-sdk'
 
 interface Props {
   workspaceId?: string
@@ -126,8 +126,8 @@ defineExpose({
 <template>
   <a-form-item
     name="baseId"
-    class="!mb-0 nc-base-selector"
-    :class="`nc-force-layout-${forceLayout}`"
+    class="!mb-0 atm-base-selector"
+    :class="`atm-force-layout-${forceLayout}`"
     :validate-status="selectedBase?.ncItemDisabled ? 'error' : ''"
     :help="selectedBase?.ncItemDisabled ? [selectedBase.ncItemTooltip] : []"
     @click.stop
@@ -138,7 +138,7 @@ defineExpose({
         <slot name="label">{{ t('objects.project') }}</slot>
       </div>
     </template>
-    <NcListDropdown v-model:is-open="isOpenBaseSelectDropdown" :disabled="disabled" :has-error="!!selectedBase?.ncItemDisabled">
+    <AtListDropdown v-model:is-open="isOpenBaseSelectDropdown" :disabled="disabled" :has-error="!!selectedBase?.ncItemDisabled">
       <div class="flex-1 flex items-center gap-2 min-w-0">
         <div v-if="selectedBase" class="min-w-5 flex items-center justify-center">
           <GeneralProjectIcon
@@ -151,21 +151,21 @@ defineExpose({
             size="small"
           />
         </div>
-        <NcTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
+        <AtTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
           <span
             v-if="selectedBase"
             :key="selectedBase?.value"
             class="text-sm flex-1 truncate"
-            :class="{ 'text-nc-content-gray-muted': !selectedBase }"
+            :class="{ 'text-atm-content-gray-muted': !selectedBase }"
           >
             {{ selectedBase?.label }}
           </span>
-          <span v-else class="text-sm flex-1 truncate text-nc-content-gray-muted">-- Select base --</span>
+          <span v-else class="text-sm flex-1 truncate text-atm-content-gray-muted">-- Select base --</span>
 
           <template #title>
             {{ selectedBase?.label || 'Select base' }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
 
         <GeneralIcon
           icon="ncChevronDown"
@@ -174,7 +174,7 @@ defineExpose({
         />
       </div>
       <template #overlay="{ onEsc }">
-        <NcList
+        <AtList
           v-model:open="isOpenBaseSelectDropdown"
           :value="modelValue || selectedBase?.value || ''"
           :list="baseList"
@@ -197,8 +197,8 @@ defineExpose({
               />
             </div>
           </template>
-        </NcList>
+        </AtList>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </a-form-item>
 </template>

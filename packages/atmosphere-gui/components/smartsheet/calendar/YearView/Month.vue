@@ -236,7 +236,7 @@ watch(activeDates, (newActiveDates) => {
 
 <template>
   <div>
-    <div class="flex justify-center px-2 nc-date-week-header text-nc-content-gray-subtle text-sm py-2 font-semibold items-center">
+    <div class="flex justify-center px-2 atm-date-week-header text-atm-content-gray-subtle text-sm py-2 font-semibold items-center">
       {{ currentMonthYear }}
     </div>
     <div
@@ -247,7 +247,7 @@ watch(activeDates, (newActiveDates) => {
       class="max-w-[320px]"
     >
       <div class="px-2.5">
-        <div class="flex border-b-1 justify-between gap-0.5 border-nc-border-gray-medium">
+        <div class="flex border-b-1 justify-between gap-0.5 border-atm-border-gray-medium">
           <span
             v-for="(day, index) in days"
             :key="index"
@@ -255,7 +255,7 @@ watch(activeDates, (newActiveDates) => {
               'w-8 h-8 text-sm': size === 'medium',
               'text-xs w-6 h-6': size === 'small',
             }"
-            class="flex items-center uppercase py-1 font-medium justify-center text-nc-content-gray-muted"
+            class="flex items-center uppercase py-1 font-medium justify-center text-atm-content-gray-muted"
             >{{ day[0] }}</span
           >
         </div>
@@ -265,22 +265,22 @@ watch(activeDates, (newActiveDates) => {
           'grid-cols-7 gap-x-0.5 ': maxVisibleDays === 7,
           'grid-cols-5 gap-x-4 ': maxVisibleDays === 5,
         }"
-        class="grid gap-y-2 px-2.5 py-1 nc-date-week-grid-wrapper"
+        class="grid gap-y-2 px-2.5 py-1 atm-date-week-grid-wrapper"
       >
         <span
           v-for="(date, index) in dates"
           :key="index"
           :class="{
-            'bg-nc-bg-gray-dark border-1 !font-semibold': date.isSelectedAndIsInCurrentMonth,
-            'hover:(border-1 border-nc-border-gray-medium bg-nc-bg-gray-light)': !date.isSelected,
-            'text-nc-content-gray-disabled': !date.isDayInCurrentMonth,
-            'text-nc-content-brand !font-semibold nc-calendar-today': date.isTodayInCurrentMonth,
-            'text-nc-content-gray-muted': date.isWeekend,
+            'bg-atm-bg-gray-dark border-1 !font-semibold': date.isSelectedAndIsInCurrentMonth,
+            'hover:(border-1 border-atm-border-gray-medium bg-atm-bg-gray-light)': !date.isSelected,
+            'text-atm-content-gray-disabled': !date.isDayInCurrentMonth,
+            'text-atm-content-brand !font-semibold atm-calendar-today': date.isTodayInCurrentMonth,
+            'text-atm-content-gray-muted': date.isWeekend,
             'h-8 w-8 text-sm': size === 'medium',
             'h-6 w-6 text-xs': size === 'small',
           }"
-          class="px-1 py-1.5 relative rounded border-transparent transition border-1 font-medium flex text-nc-content-gray-subtle items-center cursor-pointer justify-center"
-          data-testid="nc-calendar-date"
+          class="px-1 py-1.5 relative rounded border-transparent transition border-1 font-medium flex text-atm-content-gray-subtle items-center cursor-pointer justify-center"
+          data-testid="atm-calendar-date"
           :data-date="date.date.format('DD MMM YYYY')"
           @click="handleSelectDate(date.date)"
           @dblclick="emitDblClick(date.date)"
@@ -290,10 +290,10 @@ watch(activeDates, (newActiveDates) => {
             :class="{
               'h-1.25 w-1.25 top-0.5 right-0.5': size === 'small',
               'h-1.5 w-1.5 top-1 right-1': size === 'medium',
-              '!border-nc-base-white': date.isDateSelected,
-              '!border-nc-brand-50': date.isToday,
+              '!border-atm-base-white': date.isDateSelected,
+              '!border-atm-brand-50': date.isToday,
             }"
-            class="absolute z-2 transition border-1 rounded-full border-nc-base-white bg-nc-brand-500"
+            class="absolute z-2 transition border-1 rounded-full border-atm-base-white bg-atm-brand-500"
           ></span>
           <span class="z-2">
             {{ date.dayVal }}

@@ -3,12 +3,12 @@ import { Injectable, Optional } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
 import bcrypt from 'bcryptjs';
-import { AppEvents } from 'nocodb-sdk';
+import { AppEvents } from 'atmosphere-sdk';
 import type { Request } from 'express';
 import type { VerifyCallback } from 'passport-google-oauth20';
 import type { FactoryProvider } from '@nestjs/common/interfaces/modules/provider.interface';
-import type { NcRequest } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AtRequest } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { UsersService } from '~/services/users/users.service';
 import { BaseUser, Plugin, User } from '~/models';
 import { sanitiseUserObj } from '~/utils';
@@ -26,7 +26,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   }
 
   async validate(
-    req: NcRequest,
+    req: AtRequest,
     accessToken: string,
     refreshToken: string,
     profile: any,
@@ -105,13 +105,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
     if (googlePlugin && googlePlugin.input) {
       const settings = JSON.parse(googlePlugin.input);
-      process.env.NC_GOOGLE_CLIENT_ID = settings.client_id;
-      process.env.NC_GOOGLE_CLIENT_SECRET = settings.client_secret;
+      process.env.ATMOSPHERE_GOOGLE_CLIENT_ID = settings.client_id;
+      process.env.ATMOSPHERE_GOOGLE_CLIENT_SECRET = settings.client_secret;
     }
 
     if (
-      !process.env.NC_GOOGLE_CLIENT_ID ||
-      !process.env.NC_GOOGLE_CLIENT_SECRET
+      !process.env.ATMOSPHERE_GOOGLE_CLIENT_ID ||
+      !process.env.ATMOSPHERE_GOOGLE_CLIENT_SECRET
     )
       return this.error({
         message:
@@ -120,9 +120,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
     return super.authenticate(req, {
       ...options,
-      clientID: process.env.NC_GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.NC_GOOGLE_CLIENT_SECRET ?? '',
-      callbackURL: req.ncSiteUrl + Noco.getConfig().dashboardPath,
+      clientID: process.env.ATMOSPHERE_GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.ATMOSPHERE_GOOGLE_CLIENT_SECRET ?? '',
+      callbackURL: req.ncSiteUrl + Atmosphere.getConfig().dashboardPath,
       passReqToCallback: true,
       scope: ['profile', 'email'],
       state: req.query.state,
@@ -142,8 +142,8 @@ export const GoogleStrategyProvider: FactoryProvider = {
     // if not found provide dummy values to avoid error
     // it will be handled in authenticate method ( reading from plugin )
     const clientConfig = {
-      clientID: process.env.NC_GOOGLE_CLIENT_ID ?? 'dummy-id',
-      clientSecret: process.env.NC_GOOGLE_CLIENT_SECRET ?? 'dummy-secret',
+      clientID: process.env.ATMOSPHERE_GOOGLE_CLIENT_ID ?? 'dummy-id',
+      clientSecret: process.env.ATMOSPHERE_GOOGLE_CLIENT_SECRET ?? 'dummy-secret',
       // todo: update url
       callbackURL: 'http://localhost:8080/dahsboard',
       passReqToCallback: true,

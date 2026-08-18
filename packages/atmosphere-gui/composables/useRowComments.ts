@@ -1,5 +1,5 @@
-import type { AttachmentType, ColumnType, CommentType, MetaType, TableType } from 'nocodb-sdk'
-import { NcMarkdownParser } from '~/helpers/tiptap'
+import type { AttachmentType, ColumnType, CommentType, MetaType, TableType } from 'atmosphere-sdk'
+import { AtMarkdownParser } from '~/helpers/tiptap'
 
 export interface CommentTypeExtended extends CommentType {
   created_display_name?: string | null
@@ -42,7 +42,7 @@ const [useProvideRowComments, useRowComments] = useInjectionState((meta: Ref<Tab
           commentValue += ` [(edited)](a~~~###~~~Edited_${str}) `
         }
         acc[comment.id] =
-          NcMarkdownParser.parse(
+          AtMarkdownParser.parse(
             commentValue,
             {
               enableMention: !!isEeUI,

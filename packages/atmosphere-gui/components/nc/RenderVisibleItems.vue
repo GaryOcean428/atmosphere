@@ -73,7 +73,7 @@ watch(
 
     <slot name="more" :hidden-count="hiddenCount">
       <!-- Show +X more if there are additional items -->
-      <div v-if="hiddenCount > 0" class="flex items-center gap-1 pr-2 py-0.5 !text-caption text-nc-content-gray-subtle2 truncate">
+      <div v-if="hiddenCount > 0" class="flex items-center gap-1 pr-2 py-0.5 !text-caption text-atm-content-gray-subtle2 truncate">
         +{{ hiddenCount }} more
       </div>
     </slot>

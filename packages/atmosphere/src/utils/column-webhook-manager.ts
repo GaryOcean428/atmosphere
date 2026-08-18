@@ -1,14 +1,14 @@
-import { WebhookActions } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import { WebhookActions } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { IColumnsV3Service } from 'src/services/v3/columns-v3.types';
 import type { MetaService } from '~/meta/meta.service';
 import type { Model } from '~/models';
 import type { ModelWebhookManager } from '~/utils/model-webhook-manager';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export class ColumnWebhookManagerBuilder {
   constructor(
-    protected readonly context: NcContext,
+    protected readonly context: AtContext,
     protected readonly ncMeta?: MetaService,
   ) {}
   modelWebhookManager?: ModelWebhookManager;
@@ -43,7 +43,7 @@ export class ColumnWebhookManagerBuilder {
     }
     // needed to prevent circular dependencies
     const columnsV3Service: IColumnsV3Service =
-      Noco.nestApp.get('IColumnsV3Service');
+      Atmosphere.nestApp.get('IColumnsV3Service');
     const column = await columnsV3Service.columnGet(
       this.context,
       { columnId },
@@ -90,7 +90,7 @@ export class ColumnWebhookManagerBuilder {
 
 export class ColumnWebhookManager {
   constructor(
-    protected readonly context: NcContext,
+    protected readonly context: AtContext,
     protected readonly params: {
       action: WebhookActions;
       modelId: string;

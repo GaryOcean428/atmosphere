@@ -1,21 +1,21 @@
 import RedisCacheMgr from './RedisCacheMgr';
 import RedisMockCacheMgr from './RedisMockCacheMgr';
 import { isCacheBypassed } from './cacheBypassScope';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type CacheMgr from './CacheMgr';
 import { CACHE_PREFIX, CacheGetType } from '~/utils/globals';
 import { getRedisURL } from '~/helpers/redisHelpers';
 
-type CacheContext = NcContext | 'root';
+type CacheContext = AtContext | 'root';
 
 function cacheContext(context: CacheContext) {
   if (context === 'root') {
     return `root`;
   }
-  return `${context.workspace_id || 'nc'}:${context.base_id || 'nc'}`;
+  return `${context.workspace_id || 'atm'}:${context.base_id || 'atm'}`;
 }
 
-export default class NocoCache {
+export default class AtmosphereCache {
   private static client: CacheMgr;
   private static cacheDisabled: boolean;
   private static prefix: string;
@@ -25,7 +25,7 @@ export default class NocoCache {
   }
 
   public static init() {
-    this.cacheDisabled = (process.env.NC_DISABLE_CACHE || false) === 'true';
+    this.cacheDisabled = (process.env.ATMOSPHERE_DISABLE_CACHE || false) === 'true';
     if (this.cacheDisabled) {
       return;
     }
@@ -36,7 +36,7 @@ export default class NocoCache {
     }
 
     // TODO(cache): fetch orgs once it's implemented
-    const orgs = 'noco';
+    const orgs = 'atmosphere';
     this.prefix = `${CACHE_PREFIX}:${orgs}`;
   }
 
@@ -46,7 +46,7 @@ export default class NocoCache {
 
   public static enableCache() {
     // return to default value
-    this.cacheDisabled = (process.env.NC_DISABLE_CACHE || false) === 'true';
+    this.cacheDisabled = (process.env.ATMOSPHERE_DISABLE_CACHE || false) === 'true';
   }
 
   public static async set(context: CacheContext, key, value): Promise<boolean> {

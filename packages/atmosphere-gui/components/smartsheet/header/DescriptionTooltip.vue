@@ -20,9 +20,9 @@ function onIconInteract(e: Event) {
 </script>
 
 <template>
-  <NcTooltip
+  <AtTooltip
     v-if="description?.length"
-    overlay-class-name="nc-tooltip-scrollable"
+    overlay-class-name="atm-tooltip-scrollable"
     :class="variant === 'expanded' ? 'flex items-center ml-1' : 'flex'"
     :placement="variant === 'expanded' ? 'bottom' : undefined"
   >
@@ -31,11 +31,11 @@ function onIconInteract(e: Event) {
     </template>
     <GeneralIcon
       icon="info"
-      class="nc-column-description-icon flex-none !w-3.5 !h-3.5 !text-nc-content-gray-muted"
+      class="atm-column-description-icon flex-none !w-3.5 !h-3.5 !text-atm-content-gray-muted"
       :class="{ 'group-hover:opacity-100': variant === 'grid' }"
-      :data-testid="variant === 'expanded' ? 'nc-expanded-field-description' : undefined"
+      :data-testid="variant === 'expanded' ? 'atm-expanded-field-description' : undefined"
       @click="onIconInteract"
       @dblclick="onIconInteract"
     />
-  </NcTooltip>
+  </AtTooltip>
 </template>

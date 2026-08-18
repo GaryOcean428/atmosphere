@@ -9,13 +9,13 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { GalleryUpdateReqType, ViewCreateReqType } from 'nocodb-sdk';
+import { GalleryUpdateReqType, ViewCreateReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { GalleriesService } from '~/services/galleries.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -28,7 +28,7 @@ export class GalleriesController {
   ])
   @Acl('galleryViewGet')
   async galleryViewGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('galleryViewId') galleryViewId: string,
   ) {
     return await this.galleriesService.galleryViewGet(context, {
@@ -43,10 +43,10 @@ export class GalleriesController {
   @HttpCode(200)
   @Acl('galleryViewCreate')
   async galleryViewCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Body() body: ViewCreateReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.galleriesService.galleryViewCreate(context, {
       gallery: body,
@@ -63,11 +63,11 @@ export class GalleriesController {
   ])
   @Acl('galleryViewUpdate')
   async galleryViewUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('galleryViewId') galleryViewId: string,
     @Body() body: GalleryUpdateReqType,
 
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.galleriesService.galleryViewUpdate(context, {
       galleryViewId,

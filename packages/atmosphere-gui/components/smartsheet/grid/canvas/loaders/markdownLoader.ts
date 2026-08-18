@@ -1,8 +1,8 @@
 import { LRUCache } from 'lru-cache'
-import type { UserType } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
 import type { Block } from '../utils/markdownUtils'
 import { parseMarkdown } from '../utils/markdownUtils'
-import { NcMarkdownParser } from '~/helpers/tiptap'
+import { AtMarkdownParser } from '~/helpers/tiptap'
 
 export const markdownTextCache: LRUCache<string, { blocks: Block[]; width: number }> = new LRUCache({
   max: 1000,
@@ -45,7 +45,7 @@ export class MarkdownLoader {
         const { text, maxWidth, baseUsers, user } = options
 
         // 🔑 Async boundary (even though fn is sync)
-        const renderText = await Promise.resolve(NcMarkdownParser.preprocessMarkdown(text, true))
+        const renderText = await Promise.resolve(AtMarkdownParser.preprocessMarkdown(text, true))
 
         const parsedBlocks = await Promise.resolve(
           parseMarkdown(renderText, {

@@ -59,7 +59,7 @@ const createProject = async () => {
 
     navigateToProject({
       baseId: base.id!,
-      workspaceId: 'nc',
+      workspaceId: 'atm',
     })
 
     if (wsBaseListActions) {
@@ -104,10 +104,10 @@ watch(dialogShow, (n) => {
 </script>
 
 <template>
-  <NcModal v-model:visible="dialogShow" size="small" :show-separator="false" wrap-class-name="nc-modal-wrapper">
+  <AtModal v-model:visible="dialogShow" size="small" :show-separator="false" wrap-class-name="atm-modal-wrapper">
     <template #header>
       <!-- Create A New Base -->
-      <div class="flex flex-row items-center text-base text-nc-content-gray">
+      <div class="flex flex-row items-center text-base text-atm-content-gray">
         <GeneralProjectIcon :color="formState.meta.iconColor" :icon="formState.meta.icon" class="mr-2.5" />
         {{
           $t('general.createEntity', {
@@ -133,17 +133,17 @@ watch(dialogShow, (n) => {
             ref="input"
             v-model:value="formState.title"
             name="title"
-            class="nc-metadb-base-name nc-input-sm nc-input-shadow"
+            class="atm-metadb-base-name atm-input-sm atm-input-shadow"
             :placeholder="$t('general.title')"
           />
         </a-form-item>
       </a-form>
 
       <div class="flex flex-row justify-end mt-5 gap-x-2">
-        <NcButton type="secondary" size="small" :disabled="creating" @click="dialogShow = false">{{
+        <AtButton type="secondary" size="small" :disabled="creating" @click="dialogShow = false">{{
           $t('general.cancel')
-        }}</NcButton>
-        <NcButton
+        }}</AtButton>
+        <AtButton
           v-e="['a:base:create']"
           data-testid="docs-create-proj-dlg-create-btn"
           :loading="creating"
@@ -166,8 +166,8 @@ watch(dialogShow, (n) => {
               })
             }}
           </template>
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>

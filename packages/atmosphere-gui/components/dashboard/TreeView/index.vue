@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Draggable from 'vuedraggable'
-import type { TableType, ViewType } from 'nocodb-sdk'
+import type { TableType, ViewType } from 'atmosphere-sdk'
 import ProjectWrapper from './ProjectWrapper.vue'
 
 const { isUIAllowed } = useRoles()
@@ -271,14 +271,14 @@ provide(TreeViewInj, {
 useEventListener(document, 'contextmenu', handleContext, true)
 
 const scrollTableNode = () => {
-  const activeTableDom = document.querySelector(`.nc-treeview [data-table-id="${_activeTable.value?.id}"]`)
+  const activeTableDom = document.querySelector(`.atm-treeview [data-table-id="${_activeTable.value?.id}"]`)
   if (!activeTableDom) return
 
   // Scroll to the table node
   activeTableDom?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 }
 
-const onMove = async (_event: { moved: { newIndex: number; oldIndex: number; element: NcProject } }) => {
+const onMove = async (_event: { moved: { newIndex: number; oldIndex: number; element: AtProject } }) => {
   const {
     moved: { newIndex = 0, oldIndex = 0, element },
   } = _event
@@ -327,11 +327,11 @@ watch(
 </script>
 
 <template>
-  <div class="nc-treeview-container flex flex-col justify-between select-none">
-    <div v-if="!isSharedBase" class="text-nc-content-gray-muted font-medium pl-3.5 rtl:(pr-3.5 pl-0) mb-1">
+  <div class="atm-treeview-container flex flex-col justify-between select-none">
+    <div v-if="!isSharedBase" class="text-atm-content-gray-muted font-medium pl-3.5 rtl:(pr-3.5 pl-0) mb-1">
       {{ $t('objects.projects') }}
     </div>
-    <div mode="inline" class="nc-treeview pb-0.5 flex-grow min-h-50 overflow-x-hidden">
+    <div mode="inline" class="atm-treeview pb-0.5 flex-grow min-h-50 overflow-x-hidden">
       <div v-if="basesList?.length">
         <Draggable
           v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 50 })"

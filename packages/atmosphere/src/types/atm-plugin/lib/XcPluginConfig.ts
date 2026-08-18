@@ -1,4 +1,4 @@
-import type { XcForm } from '~/types/nc-plugin';
+import type { XcForm } from '~/types/atm-plugin';
 
 import type XcPlugin from './XcPlugin';
 import type XcPluginMigration from './XcPluginMigration';
@@ -9,7 +9,7 @@ export default interface XcPluginConfig {
   recoveryTitle?: string;
   logo?: string;
   /**
-   * @type {IconMapKey} from nc-gui/utils/iconUtils
+   * @type {IconMapKey} from atmosphere-gui/utils/iconUtils
    */
   icon?: string;
   tags?: string;

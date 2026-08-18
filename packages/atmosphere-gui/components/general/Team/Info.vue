@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TeamV3V3Type } from 'nocodb-sdk'
+import type { TeamV3V3Type } from 'atmosphere-sdk'
 import type { TeamIconProps } from './Icon.vue'
 
 interface Props {
@@ -36,11 +36,11 @@ const breadcrumb = computed(() => {
     <GeneralTeamIcon v-bind="iconProps" :team="team" class="flex-none" />
     <div class="flex flex-1 max-w-[calc(100%_-_44px)] flex-col">
       <div class="flex items-center gap-1">
-        <NcTooltip
+        <AtTooltip
           class="truncate max-w-full capitalize font-semibold"
           :class="{
-            'text-nc-content-gray': !disabled,
-            'text-nc-content-gray-muted': disabled,
+            'text-atm-content-gray': !disabled,
+            'text-atm-content-gray-muted': disabled,
           }"
           show-on-truncate-only
         >
@@ -48,29 +48,29 @@ const breadcrumb = computed(() => {
             {{ team.title }}
           </template>
           {{ team.title }}
-        </NcTooltip>
+        </AtTooltip>
         <slot name="title-append" />
       </div>
       <div
         v-if="showBreadcrumb && breadcrumb.length > 1"
-        class="flex items-center gap-0.5 text-[11px] text-nc-content-gray-subtle2 truncate"
+        class="flex items-center gap-0.5 text-[11px] text-atm-content-gray-subtle2 truncate"
       >
         <template v-for="(crumb, idx) in breadcrumb" :key="crumb.id">
-          <span :class="idx === breadcrumb.length - 1 ? 'text-nc-content-gray-subtle font-medium' : ''" class="truncate max-w-20">
+          <span :class="idx === breadcrumb.length - 1 ? 'text-atm-content-gray-subtle font-medium' : ''" class="truncate max-w-20">
             {{ crumb.title }}
           </span>
           <GeneralIcon v-if="idx < breadcrumb.length - 1" icon="ncArrowRight" class="h-3 w-3 flex-none" />
         </template>
       </div>
-      <NcTooltip
+      <AtTooltip
         v-else-if="showMembersCount"
         class="truncate max-w-full text-xs"
-        :class="{ 'text-nc-content-gray-muted': disabled, 'text-nc-content-gray-subtle2': !disabled }"
+        :class="{ 'text-atm-content-gray-muted': disabled, 'text-atm-content-gray-subtle2': !disabled }"
         show-on-truncate-only
       >
         <template #title> {{ team.members_count }} {{ $t('labels.members') }} </template>
         {{ team.members_count }} {{ $t('labels.members') }}
-      </NcTooltip>
+      </AtTooltip>
     </div>
   </div>
 </template>

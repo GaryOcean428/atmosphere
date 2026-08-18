@@ -4,12 +4,12 @@ import getPaths from './getPaths';
 import getSchemas from './getSchemas';
 import getSwaggerColumnMetas from './getSwaggerColumnMetas';
 import type { Base, Model } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { SourcesMap } from '~/services/api-docs/types';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export default async function getSwaggerJSONV2(
-  context: NcContext,
+  context: AtContext,
   {
     base,
     sourcesMap,
@@ -19,7 +19,7 @@ export default async function getSwaggerJSONV2(
     sourcesMap: SourcesMap;
     models: Model[];
   },
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ) {
   return generateSwagger(
     { context, base, models, sourcesMap, ncMeta },

@@ -3,9 +3,9 @@ import type { TestingModule } from '@nestjs/testing';
 import { OrgTokensService } from '~/services/org-tokens.service';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { ApiToken } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { validatePayload } from '~/helpers';
-import { OrgUserRoles } from 'nocodb-sdk';
+import { OrgUserRoles } from 'atmosphere-sdk';
 
 jest.mock('~/models', () => ({
   ApiToken: {
@@ -18,7 +18,7 @@ jest.mock('~/models', () => ({
 }));
 
 jest.mock('~/helpers/catchError', () => ({
-  NcError: {
+  AtError: {
     notFound: jest.fn(),
     _: { notFound: jest.fn() },
   },
@@ -36,11 +36,11 @@ jest.mock('~/services/app-hooks/app-hooks.service', () => ({
 
 describe('OrgTokensService', () => {
   let service: OrgTokensService;
-  const notFoundSpy = NcError.notFound as unknown as jest.Mock;
+  const notFoundSpy = AtError.notFound as unknown as jest.Mock;
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    // The real NcError.notFound always throws (return type `never`).
+    // The real AtError.notFound always throws (return type `never`).
     notFoundSpy.mockImplementation(() => {
       throw new Error('Token not found');
     });

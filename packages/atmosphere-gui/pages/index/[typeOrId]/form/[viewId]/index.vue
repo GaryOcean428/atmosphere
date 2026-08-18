@@ -9,14 +9,14 @@ const shouldRedirect = (to: string) => {
   if (sharedViewMeta.value.surveyMode) {
     if (!to.includes('survey')) {
       navigateTo({
-        path: `/nc/form/${route.params.viewId}/survey`,
+        path: `/atm/form/${route.params.viewId}/survey`,
         query: route.query,
       })
     }
   } else {
     if (to.includes('survey')) {
       navigateTo({
-        path: `/nc/form/${route.params.viewId}`,
+        path: `/atm/form/${route.params.viewId}`,
         query: route.query,
       })
     }
@@ -30,7 +30,7 @@ router.afterEach((to) => shouldRedirect(to.name as string))
 
 <template>
   <div
-    class="scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-200 hover-scrollbar-thumb-gray-300 nc-h-screen overflow-y-auto overflow-x-hidden flex flex-col color-transition p-4 lg:p-6 nc-form-view min-h-[600px]"
+    class="scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-200 hover-scrollbar-thumb-gray-300 atm-h-screen overflow-y-auto overflow-x-hidden flex flex-col color-transition p-4 lg:p-6 atm-form-view min-h-[600px]"
     :class="{
       'children:(!h-auto my-auto)': sharedViewMeta?.surveyMode,
     }"
@@ -43,8 +43,8 @@ router.afterEach((to) => shouldRedirect(to.name as string))
 </template>
 
 <style lang="scss">
-.nc-form-view {
-  .nc-data-cell {
+.atm-form-view {
+  .atm-data-cell {
     @apply !border-none rounded-none;
 
     &:focus-within {
@@ -52,26 +52,26 @@ router.afterEach((to) => shouldRedirect(to.name as string))
     }
   }
 
-  .nc-input {
+  .atm-input {
     &:not(.layout-list) {
-      &:not(:has(.form-attachment-cell.nc-has-attachments)) {
-        @apply !bg-nc-bg-default rounded-lg border-solid border-1 border-nc-border-gray-medium !focus-within:border-nc-border-brand;
+      &:not(:has(.form-attachment-cell.atm-has-attachments)) {
+        @apply !bg-atm-bg-default rounded-lg border-solid border-1 border-atm-border-gray-medium !focus-within:border-atm-border-brand;
       }
     }
   }
 
-  .nc-cell,
-  .nc-virtual-cell {
-    @apply bg-nc-bg-default  appearance-none;
+  .atm-cell,
+  .atm-virtual-cell {
+    @apply bg-atm-bg-default  appearance-none;
 
-    &.nc-cell-checkbox {
+    &.atm-cell-checkbox {
       @apply color-transition !border-0;
 
-      .nc-icon {
+      .atm-icon {
         @apply !text-2xl;
       }
 
-      .nc-cell-hover-show {
+      .atm-cell-hover-show {
         opacity: 100 !important;
 
         div {
@@ -80,17 +80,17 @@ router.afterEach((to) => shouldRedirect(to.name as string))
       }
     }
 
-    &:not(.nc-cell-checkbox) {
-      @apply bg-nc-bg-default;
+    &:not(.atm-cell-checkbox) {
+      @apply bg-atm-bg-default;
 
-      &.nc-input {
+      &.atm-input {
         @apply w-full h-10;
 
         &:not(.layout-list) {
-          @apply rounded-lg border-solid border-1 border-nc-border-gray-medium focus-within:border-nc-border-brand overflow-hidden;
+          @apply rounded-lg border-solid border-1 border-atm-border-gray-medium focus-within:border-atm-border-brand overflow-hidden;
 
           &.readonly {
-            @apply bg-nc-bg-gray-extralight cursor-not-allowed;
+            @apply bg-atm-bg-gray-extralight cursor-not-allowed;
 
             input,
             textarea {
@@ -113,27 +113,27 @@ router.afterEach((to) => shouldRedirect(to.name as string))
             @apply !outline-none;
 
             &::placeholder {
-              @apply text-nc-content-gray-disabled;
+              @apply text-atm-content-gray-disabled;
             }
           }
         }
 
         &:not(.readonly) {
-          &:not(.nc-cell-longtext) {
+          &:not(.atm-cell-longtext) {
             input,
             textarea,
-            &.nc-virtual-cell {
-              @apply bg-nc-bg-default !disabled:bg-transparent;
+            &.atm-virtual-cell {
+              @apply bg-atm-bg-default !disabled:bg-transparent;
             }
           }
-          &.nc-cell-longtext {
+          &.atm-cell-longtext {
             textarea {
-              @apply bg-nc-bg-default !disabled:bg-transparent;
+              @apply bg-atm-bg-default !disabled:bg-transparent;
             }
           }
         }
 
-        &.nc-cell-longtext {
+        &.atm-cell-longtext {
           @apply p-0 h-auto;
           & > div {
             @apply w-full;
@@ -146,43 +146,43 @@ router.afterEach((to) => shouldRedirect(to.name as string))
             @apply px-3;
           }
         }
-        &.nc-cell:not(.nc-cell-longtext) {
+        &.atm-cell:not(.atm-cell-longtext) {
           @apply p-2;
 
-          &.nc-cell-phonenumber,
-          &.nc-cell-email,
-          &.nc-cell-url {
-            .nc-cell-field.nc-cell-link-preview {
+          &.atm-cell-phonenumber,
+          &.atm-cell-email,
+          &.atm-cell-url {
+            .atm-cell-field.atm-cell-link-preview {
               @apply px-3;
             }
           }
 
-          &.nc-cell-attachment {
+          &.atm-cell-attachment {
             @apply pl-1;
           }
         }
-        &.nc-virtual-cell {
+        &.atm-virtual-cell {
           @apply px-2 py-1;
         }
 
-        &.nc-cell-json {
+        &.atm-cell-json {
           & > div {
             @apply w-full;
           }
         }
 
         .ant-picker,
-        input.nc-cell-field {
+        input.atm-cell-field {
           @apply !py-0 !px-1;
         }
-        &.nc-cell-currency {
+        &.atm-cell-currency {
           @apply !py-0 !pl-0 flex items-stretch;
 
-          .nc-currency-code {
-            @apply !bg-nc-bg-gray-light;
+          .atm-currency-code {
+            @apply !bg-atm-bg-gray-light;
           }
         }
-        &.nc-cell-attachment {
+        &.atm-cell-attachment {
           @apply h-auto;
         }
       }

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ProjectRoles, ViewLockType, extractBaseRoleFromWorkspaceRole } from 'nocodb-sdk'
+import { ProjectRoles, ViewLockType, extractBaseRoleFromWorkspaceRole } from 'atmosphere-sdk'
 import UserItem from './UserItem.vue'
 const props = defineProps<Props>()
 
@@ -119,22 +119,22 @@ const inputEl = (el: HTMLInputElement) => {
 </script>
 
 <template>
-  <NcModal v-model:visible="vModel" wrap-class-name="nc-modal-re-assign" width="448px">
+  <AtModal v-model:visible="vModel" wrap-class-name="atm-modal-re-assign" width="448px">
     <div class="mb-5">
-      <div class="flex text-base font-bold mb-2 text-nc-content-gray-emphasis">
+      <div class="flex text-base font-bold mb-2 text-atm-content-gray-emphasis">
         {{ isPersonalView ? $t('labels.reAssignThisView') : $t('labels.assignAsPersonalView') }}
       </div>
-      <div class="flex text-sm text-nc-content-gray-subtle">
+      <div class="flex text-sm text-atm-content-gray-subtle">
         {{ isPersonalView ? $t('title.reAssignViewModalSubtitle') : $t('title.assignAsPersonalViewModalSubtitle') }}
       </div>
     </div>
 
     <div v-if="isPersonalView" class="mb-5">
-      <div class="mb-2 text-nc-content-gray">{{ $t('labels.currentOwner') }}</div>
-      <UserItem :user="currentOwner" class="bg-nc-bg-gray-light rounded-lg px-4" />
+      <div class="mb-2 text-atm-content-gray">{{ $t('labels.currentOwner') }}</div>
+      <UserItem :user="currentOwner" class="bg-atm-bg-gray-light rounded-lg px-4" />
     </div>
     <div class="mb-5">
-      <div class="mb-2 text-nc-content-gray">{{ isPersonalView ? $t('labels.newOwner') : $t('labels.selectOwner') }}</div>
+      <div class="mb-2 text-atm-content-gray">{{ isPersonalView ? $t('labels.newOwner') : $t('labels.selectOwner') }}</div>
       <div
         class="rounded-lg border-1"
         :class="{
@@ -152,22 +152,22 @@ const inputEl = (el: HTMLInputElement) => {
           </template>
         </UserItem>
 
-        <div v-else class="flex flex-row items-center h-12.5 p-2 nc-list-user-item">
-          <GeneralIcon icon="search" class="text-nc-content-gray-muted ml-3 flex-none" />
+        <div v-else class="flex flex-row items-center h-12.5 p-2 atm-list-user-item">
+          <GeneralIcon icon="search" class="text-atm-content-gray-muted ml-3 flex-none" />
           <input
             :ref="inputEl"
             v-model="searchQuery"
             placeholder="Search User to assign..."
-            class="border-0 px-2 outline-none nc-search-input flex-1"
+            class="border-0 px-2 outline-none atm-search-input flex-1"
           />
         </div>
 
-        <div v-if="!selectedUser || userSelectMenu" class="max-h-65 overflow-auto nc-scrollbar-thin">
+        <div v-if="!selectedUser || userSelectMenu" class="max-h-65 overflow-auto atm-scrollbar-thin">
           <UserItem
             v-for="user of filterdBaseUsers"
             :key="user.id"
-            class="cursor-pointer hover:(bg-nc-bg-gray-light) px-3 nc-list-user-item"
-            :class="{ 'bg-nc-bg-gray-light': selectedUser === user }"
+            class="cursor-pointer hover:(bg-atm-bg-gray-light) px-3 atm-list-user-item"
+            :class="{ 'bg-atm-bg-gray-light': selectedUser === user }"
             :user="user"
             @click="selectUser(user)"
           >
@@ -182,29 +182,29 @@ const inputEl = (el: HTMLInputElement) => {
 
     <div class="flex justify-end">
       <div class="flex gap-2">
-        <NcButton size="small" type="secondary" @click="vModel = false"> {{ $t('labels.cancel') }} </NcButton>
-        <NcButton
+        <AtButton size="small" type="secondary" @click="vModel = false"> {{ $t('labels.cancel') }} </AtButton>
+        <AtButton
           size="small"
           type="primary"
-          class="nc-invite-btn"
+          class="atm-invite-btn"
           :disabled="!selectedUser"
           :loading="isLoading"
           @click="assignView"
         >
           {{ $t('activity.assignView') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style scoped lang="scss">
-.nc-modal-re-assign {
-  .nc-search-input::placeholder {
+.atm-modal-re-assign {
+  .atm-search-input::placeholder {
     @apply text-gray-400;
   }
 
-  .nc-list-user-item:not(:last-of-type) {
+  .atm-list-user-item:not(:last-of-type) {
     border-bottom: 1px solid;
     border-color: inherit;
   }

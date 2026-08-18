@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormBuilderKeyValueElement } from 'nocodb-sdk'
+import type { FormBuilderKeyValueElement } from 'atmosphere-sdk'
 
 interface Props {
   element: FormBuilderKeyValueElement
@@ -115,12 +115,12 @@ watch(
 </script>
 
 <template>
-  <div class="nc-key-value flex flex-col gap-2 w-full">
-    <div v-for="(row, index) in rows" :key="row.id" class="nc-key-value-row">
-      <div class="nc-key-value-content">
+  <div class="atm-key-value flex flex-col gap-2 w-full">
+    <div v-for="(row, index) in rows" :key="row.id" class="atm-key-value-row">
+      <div class="atm-key-value-content">
         <a-input v-model:value="row.key" class="flex-1 w-full" :placeholder="element.keyLabel || 'Key'" :disabled="disabled" />
 
-        <NcFormBuilderInputWorkflowInput
+        <AtFormBuilderInputWorkflowInput
           v-model="row.value"
           class="flex-1 w-full"
           :placeholder="element.valueLabel || 'Value'"
@@ -129,37 +129,37 @@ watch(
           :read-only="disabled"
         />
 
-        <NcButton type="text" size="small" :disabled="disabled" @click="removeRow(index)">
-          <GeneralIcon icon="delete" class="text-nc-content-gray-muted" />
-        </NcButton>
+        <AtButton type="text" size="small" :disabled="disabled" @click="removeRow(index)">
+          <GeneralIcon icon="delete" class="text-atm-content-gray-muted" />
+        </AtButton>
       </div>
     </div>
 
-    <NcButton class="nc-key-value-add-btn self-start" type="text" size="small" :disabled="disabled" @click="addRow">
+    <AtButton class="atm-key-value-add-btn self-start" type="text" size="small" :disabled="disabled" @click="addRow">
       <div class="flex items-center gap-1">
         <GeneralIcon icon="plus" />
         <span>{{ element.placeholder || 'Add row' }}</span>
       </div>
-    </NcButton>
+    </AtButton>
   </div>
 </template>
 
 <style scoped lang="scss">
-.nc-key-value {
-  :deep(.nc-workflow-input) {
+.atm-key-value {
+  :deep(.atm-workflow-input) {
     .ProseMirror {
       @apply !h-8 !min-h-8 !py-1;
     }
 
-    .nc-workflow-input-insert-btn {
+    .atm-workflow-input-insert-btn {
       @apply !-top-0.5;
     }
   }
 
-  .nc-key-value-row {
+  .atm-key-value-row {
     @apply flex items-start gap-2;
 
-    .nc-key-value-content {
+    .atm-key-value-content {
       @apply flex items-start gap-2 flex-1;
     }
   }

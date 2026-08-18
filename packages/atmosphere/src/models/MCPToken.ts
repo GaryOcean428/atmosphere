@@ -1,8 +1,8 @@
-import { NcError } from 'src/helpers/catchError';
+import { AtError } from 'src/helpers/catchError';
 import { nanoid } from 'nanoid';
-import type { MCPTokenType, NcContext } from 'nocodb-sdk';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import type { MCPTokenType, AtContext } from 'atmosphere-sdk';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import {
   CacheGetType,
   CacheScope,
@@ -28,27 +28,27 @@ export default class MCPToken implements MCPTokenType {
   }
 
   public static async validateToken(
-    context: NcContext,
+    context: AtContext,
     token: string,
     id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const mcpToken = await this.get(context, id, ncMeta);
 
     if (!mcpToken || token !== mcpToken.token) {
-      NcError.notFound('MCP Token not found');
+      AtError.notFound('MCP Token not found');
     }
 
     return mcpToken;
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     mcpTokenId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const key = `${CacheScope.MCP_TOKEN}:${mcpTokenId}`;
-    let mcpToken = await NocoCache.get(context, key, CacheGetType.TYPE_OBJECT);
+    let mcpToken = await AtmosphereCache.get(context, key, CacheGetType.TYPE_OBJECT);
 
     if (!mcpToken) {
       mcpToken = await ncMeta.metaGet2(
@@ -59,7 +59,7 @@ export default class MCPToken implements MCPTokenType {
       );
 
       if (mcpToken) {
-        await NocoCache.set(context, key, mcpToken);
+        await AtmosphereCache.set(context, key, mcpToken);
       }
     }
 
@@ -67,11 +67,11 @@ export default class MCPToken implements MCPTokenType {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     userId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    const cachedList = await NocoCache.getList(context, CacheScope.MCP_TOKEN, [
+    const cachedList = await AtmosphereCache.getList(context, CacheScope.MCP_TOKEN, [
       context.base_id,
       userId,
     ]);
@@ -91,7 +91,7 @@ export default class MCPToken implements MCPTokenType {
           },
         },
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.MCP_TOKEN,
         [context.base_id, userId],
@@ -107,9 +107,9 @@ export default class MCPToken implements MCPTokenType {
   }
 
   public static async listByUser(
-    context: NcContext,
+    context: AtContext,
     userId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const mcpTokenList = await ncMeta.metaList2(
       RootScopes.ROOT,
@@ -132,9 +132,9 @@ export default class MCPToken implements MCPTokenType {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     mcpToken: Partial<MCPTokenType>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(mcpToken, [
       'title',
@@ -158,7 +158,7 @@ export default class MCPToken implements MCPTokenType {
 
     return this.get(context, id, ncMeta).then(async (res) => {
       const key = `${CacheScope.MCP_TOKEN}:${id}`;
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.MCP_TOKEN,
         [context.base_id, mcpToken.fk_user_id],
@@ -169,10 +169,10 @@ export default class MCPToken implements MCPTokenType {
   }
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     mcpTokenId: string,
     mcpToken: Partial<MCPTokenType>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(mcpToken, ['token']);
 
@@ -185,15 +185,15 @@ export default class MCPToken implements MCPTokenType {
     );
 
     const key = `${CacheScope.MCP_TOKEN}:${mcpTokenId}`;
-    await NocoCache.update(context, key, updateObj);
+    await AtmosphereCache.update(context, key, updateObj);
 
     return await this.get(context, mcpTokenId, ncMeta);
   }
 
   public static async delete(
-    context: NcContext,
+    context: AtContext,
     mcpTokenId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const token = await this.get(context, mcpTokenId, ncMeta);
     if (!token) return false;
@@ -206,7 +206,7 @@ export default class MCPToken implements MCPTokenType {
     );
 
     const key = `${CacheScope.MCP_TOKEN}:${mcpTokenId}`;
-    await NocoCache.del(context, key);
+    await AtmosphereCache.del(context, key);
 
     return true;
   }
@@ -215,7 +215,7 @@ export default class MCPToken implements MCPTokenType {
     params: Partial<
       Pick<MCPToken, 'fk_workspace_id' | 'base_id' | 'fk_user_id'>
     >,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const condition = extractProps(params, [
       'fk_workspace_id',
@@ -228,7 +228,7 @@ export default class MCPToken implements MCPTokenType {
       !condition.base_id &&
       !condition.fk_user_id
     ) {
-      NcError.badRequest(
+      AtError.badRequest(
         'At least one of fk_workspace_id, base_id or fk_user_id is required',
       );
     }
@@ -251,7 +251,7 @@ export default class MCPToken implements MCPTokenType {
       );
 
       const key = `${CacheScope.MCP_TOKEN}:${token.id}`;
-      await NocoCache.del(
+      await AtmosphereCache.del(
         {
           workspace_id: token.fk_workspace_id,
           base_id: token.base_id,

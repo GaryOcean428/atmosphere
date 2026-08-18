@@ -15,7 +15,7 @@ import { parseHrtimeToMilliSeconds } from '~/helpers';
 
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(DataApiLimiterGuard, GlobalGuard)
@@ -25,8 +25,8 @@ export class CalendarDatasController {
   @Get(['/api/v1/db/calendar-data/:orgs/:baseName/:tableName/views/:viewName'])
   @Acl('dataList')
   async dataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('viewName') viewId: string,
     @Query('from_date') fromDate: string,
     @Query('to_date') toDate: string,
@@ -48,8 +48,8 @@ export class CalendarDatasController {
   ])
   @Acl('dataList')
   async calendarDataCount(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
@@ -83,8 +83,8 @@ export class CalendarDatasController {
     '/api/v2/public/calendar-view/:sharedViewUuid/countByDate',
   ])
   async countByDate(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
     @Query('from_date') fromDate: string,
     @Query('to_date') toDate: string,
@@ -110,8 +110,8 @@ export class CalendarDatasController {
     '/api/v2/public/calendar-view/:sharedViewUuid',
   ])
   async getPublicCalendarDataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
     @Query('from_date') fromDate: string,
     @Query('to_date') toDate: string,

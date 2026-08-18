@@ -8,10 +8,10 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { BaseReqType } from 'nocodb-sdk';
+import { BaseReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { validateDbConnectionHost } from '~/helpers/validateDbConnectionHost';
 import { getValidatableSourceCreateHost } from '~/helpers/dbConnectionHost.utils';
 import { Integration } from '~/models';
@@ -19,7 +19,7 @@ import { JobTypes } from '~/interface/Jobs';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -35,10 +35,10 @@ export class SourceCreateController {
   @HttpCode(200)
   @Acl('sourceCreate')
   async baseCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Body() body: BaseReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const jobs = await this.jobsService.jobList();
     const fnd = jobs.find(
@@ -46,7 +46,7 @@ export class SourceCreateController {
     );
 
     if (fnd) {
-      NcError.badRequest(
+      AtError.badRequest(
         'Another source creation is in progress for this base.',
       );
     }
@@ -57,7 +57,7 @@ export class SourceCreateController {
     // the integration config — merged in at connect time via Source.getConfig,
     // not present in body.config — so resolve the integration config first to
     // reach parity with the EE controller. No-op for host-less clients
-    // (sqlite/snowflake); self-hosted can bypass via NC_ALLOW_LOCAL_EXTERNAL_DBS,
+    // (sqlite/snowflake); self-hosted can bypass via ATMOSPHERE_ALLOW_LOCAL_EXTERNAL_DBS,
     // which validateDbConnectionHost honours.
     let integrationConfig:
       | { client?: string; connection?: { host?: unknown } }

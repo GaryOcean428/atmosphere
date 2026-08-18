@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type ColumnType, UITypes, UITypesName, isAIPromptCol, substituteColumnIdWithAliasInPrompt } from 'nocodb-sdk'
+import { type ColumnType, UITypes, UITypesName, isAIPromptCol, substituteColumnIdWithAliasInPrompt } from 'atmosphere-sdk'
 
 const props = defineProps<{
   modelValue: any
@@ -44,7 +44,7 @@ const {
   isXcdbBase,
 } = useColumnCreateStoreOrThrow()
 
-const { isAiBetaFeaturesEnabled, aiIntegrationAvailable, generateRows } = useNocoAi()
+const { isAiBetaFeaturesEnabled, aiIntegrationAvailable, generateRows } = useAtmosphereAi()
 
 const previewRow = ref<Row>({
   row: {},
@@ -199,7 +199,7 @@ const smartMode = computed({
   },
 })
 
-// SmartText requires nc_row_meta — only available on internal PG sources.
+// SmartText requires atm_row_meta — only available on internal PG sources.
 const isSmartTextEligible = computed(() => isXcdbBase.value && isPg.value && appInfo.value.ee)
 
 const smartTextDisableReason = computed(() => {
@@ -246,7 +246,7 @@ watch(isPreviewEnabled, handleDisableSubmitBtn, {
 <template>
   <div class="flex flex-col gap-4">
     <a-form-item>
-      <NcTooltip :disabled="!(isEnabledGenerateText || smartMode || (isPvColumn && !richMode))">
+      <AtTooltip :disabled="!(isEnabledGenerateText || smartMode || (isPvColumn && !richMode))">
         <template #title>
           {{
             isPvColumn && !richMode
@@ -257,38 +257,38 @@ watch(isPreviewEnabled, handleDisableSubmitBtn, {
           }}
         </template>
         <div class="flex items-center gap-1">
-          <NcSwitch v-model:checked="richMode" :disabled="isEnabledGenerateText || smartMode || (isPvColumn && !richMode)">
-            <div class="text-sm text-nc-content-gray select-none">
+          <AtSwitch v-model:checked="richMode" :disabled="isEnabledGenerateText || smartMode || (isPvColumn && !richMode)">
+            <div class="text-sm text-atm-content-gray select-none">
               {{ $t('labels.enableRichText') }}
             </div>
-          </NcSwitch>
+          </AtSwitch>
         </div>
-      </NcTooltip>
+      </AtTooltip>
     </a-form-item>
 
     <a-form-item v-if="isSmartTextEligible || smartMode">
-      <NcTooltip :disabled="!isSmartTextDisabled">
+      <AtTooltip :disabled="!isSmartTextDisabled">
         <template #title>{{ smartTextDisableReason }}</template>
         <div class="flex items-center gap-1">
-          <NcSwitch v-model:checked="smartMode" :disabled="isSmartTextDisabled" data-testid="nc-long-text-smart-mode-toggle">
-            <div class="text-sm text-nc-content-gray select-none">{{ $t('labels.enableSmartText') }}</div>
-          </NcSwitch>
-          <NcTooltip class="ml-1 flex cursor-pointer">
+          <AtSwitch v-model:checked="smartMode" :disabled="isSmartTextDisabled" data-testid="atm-long-text-smart-mode-toggle">
+            <div class="text-sm text-atm-content-gray select-none">{{ $t('labels.enableSmartText') }}</div>
+          </AtSwitch>
+          <AtTooltip class="ml-1 flex cursor-pointer">
             <template #title>
               {{ $t('labels.smartText.description') }}
             </template>
             <GeneralIcon
               icon="info"
-              class="text-nc-content-gray-muted hover:text-nc-content-gray-subtle opacity-70 w-3.5 h-3.5"
+              class="text-atm-content-gray-muted hover:text-atm-content-gray-subtle opacity-70 w-3.5 h-3.5"
             />
-          </NcTooltip>
+          </AtTooltip>
         </div>
-      </NcTooltip>
+      </AtTooltip>
     </a-form-item>
 
     <div v-if="isPromptEnabled" class="relative">
       <a-form-item class="flex items-center">
-        <NcTooltip :disabled="!(richMode || (isPvColumn && !isEnabledGenerateText) || isSyncedField)" class="flex items-center">
+        <AtTooltip :disabled="!(richMode || (isPvColumn && !isEnabledGenerateText) || isSyncedField)" class="flex items-center">
           <template #title>
             {{
               isSyncedField
@@ -299,30 +299,30 @@ watch(isPreviewEnabled, handleDisableSubmitBtn, {
             }}</template
           >
 
-          <NcSwitch
+          <AtSwitch
             v-model:checked="isEnabledGenerateText"
             :disabled="richMode || (isPvColumn && !isEnabledGenerateText) || isSyncedField"
-            class="nc-ai-field-generate-text nc-ai-input"
+            class="atm-ai-field-generate-text atm-ai-input"
             @change="handleDisableSubmitBtn"
           >
             <span
               class="text-sm font-semibold pl-1"
               :class="{
-                'text-nc-content-purple-dark': isEnabledGenerateText,
-                'text-nc-content-gray': !isEnabledGenerateText,
+                'text-atm-content-purple-dark': isEnabledGenerateText,
+                'text-atm-content-gray': !isEnabledGenerateText,
               }"
             >
               {{ $t('labels.generateTextUsingAi') }}
             </span>
-          </NcSwitch>
-        </NcTooltip>
-        <NcTooltip class="ml-2 mr-[40px] flex cursor-pointer">
+          </AtSwitch>
+        </AtTooltip>
+        <AtTooltip class="ml-2 mr-[40px] flex cursor-pointer">
           <template #title> {{ $t('tooltip.useAiToGenerateContent') }} </template>
-          <GeneralIcon icon="info" class="text-nc-content-gray-muted hover:text-nc-content-gray-subtle opacity-70 w-3.5 h-3.5" />
-        </NcTooltip>
+          <GeneralIcon icon="info" class="text-atm-content-gray-muted hover:text-atm-content-gray-subtle opacity-70 w-3.5 h-3.5" />
+        </AtTooltip>
         <div class="flex-1"></div>
 
-        <!-- Todo @rameshmane7218 remove hidden after enabling other integrations, hidden for now as we allow only nocoai -->
+        <!-- Todo @rameshmane7218 remove hidden after enabling other integrations, hidden for now as we allow only atmosphereai -->
         <div
           class="absolute right-0"
           :class="{
@@ -338,66 +338,66 @@ watch(isPreviewEnabled, handleDisableSubmitBtn, {
             :is-edit-column="isEdit"
             placement="bottomRight"
           >
-            <NcButton size="xs" theme="ai" class="!px-1" type="text">
+            <AtButton size="xs" theme="ai" class="!px-1" type="text">
               <GeneralIcon icon="settings" />
-            </NcButton>
+            </AtButton>
           </AiSettings>
         </div>
       </a-form-item>
     </div>
     <template v-if="isPromptEnabled && (!isEdit ? aiIntegrationAvailable && isEnabledGenerateText : isEnabledGenerateText)">
       <a-form-item class="flex">
-        <div class="nc-prompt-input-wrapper bg-nc-bg-gray-light rounded-lg w-full">
+        <div class="atm-prompt-input-wrapper bg-atm-bg-gray-light rounded-lg w-full">
           <AiPromptWithFields
             v-model="vModel.prompt_raw"
             :options="availableFields"
             :read-only="!aiIntegrationAvailable"
             :placeholder="$t('placeholder.writeCustomAiPrompt')"
-            prompt-field-tag-class-name="!text-nc-content-purple-dark font-weight-500"
-            suggestion-icon-class-name="!text-nc-content-purple-medium"
+            prompt-field-tag-class-name="!text-atm-content-purple-dark font-weight-500"
+            suggestion-icon-class-name="!text-atm-content-purple-medium"
           />
           <div class="rounded-b-lg flex items-center gap-1.5 p-1">
-            <GeneralIcon icon="info" class="!text-nc-content-purple-medium w-3.5 h-3.5" />
-            <i18n-t keypath="msg.info.mentionFieldsUsingCurlyBraces" tag="span" class="text-xs text-nc-content-gray-subtle2">
+            <GeneralIcon icon="info" class="!text-atm-content-purple-medium w-3.5 h-3.5" />
+            <i18n-t keypath="msg.info.mentionFieldsUsingCurlyBraces" tag="span" class="text-xs text-atm-content-gray-subtle2">
               <template #fieldName>
-                <span class="text-nc-content-purple-dark">{Field name}</span>
+                <span class="text-atm-content-purple-dark">{Field name}</span>
               </template>
             </i18n-t>
           </div>
         </div>
       </a-form-item>
-      <div v-if="aiIntegrationAvailable && isEnabledGenerateText" class="nc-ai-options-preview overflow-hidden">
+      <div v-if="aiIntegrationAvailable && isEnabledGenerateText" class="atm-ai-options-preview overflow-hidden">
         <div>
           <div
             class="flex items-center gap-2 transition-all duration-300"
             :class="{
               'pl-3 py-2 pr-2': !isAlreadyGenerated,
-              'pl-3 py-1 pr-1 border-b-1 border-nc-border-gray-medium': isAlreadyGenerated,
+              'pl-3 py-1 pr-1 border-b-1 border-atm-border-gray-medium': isAlreadyGenerated,
             }"
           >
             <div class="flex flex-col flex-1 gap-1">
               <div class="flex items-center gap-2">
-                <span class="text-sm font-bold text-nc-content-gray-subtle">{{ $t('labels.preview') }}</span>
-                <NcTooltip class="flex cursor-pointer">
+                <span class="text-sm font-bold text-atm-content-gray-subtle">{{ $t('labels.preview') }}</span>
+                <AtTooltip class="flex cursor-pointer">
                   <template #title> {{ $t('tooltip.previewGeneratedFromFirstRecord') }}</template>
                   <GeneralIcon
                     icon="info"
-                    class="text-nc-content-gray-muted hover:text-nc-content-gray-subtle opacity-70 w-3.5 h-3.5"
+                    class="text-atm-content-gray-muted hover:text-atm-content-gray-subtle opacity-70 w-3.5 h-3.5"
                   />
-                </NcTooltip>
+                </AtTooltip>
               </div>
-              <span v-if="!isAlreadyGenerated" class="text-[11px] leading-[18px] text-nc-content-gray-muted">
+              <span v-if="!isAlreadyGenerated" class="text-[11px] leading-[18px] text-atm-content-gray-muted">
                 {{ $t('msg.info.includeAtLeastOneFieldInPrompt') }}
               </span>
             </div>
 
-            <NcTooltip :disabled="isPreviewEnabled">
+            <AtTooltip :disabled="isPreviewEnabled">
               <template #title> {{ $t('tooltip.includeFieldInPromptToGenerate') }} </template>
-              <NcButton
-                class="nc-aioptions-preview-generate-btn"
+              <AtButton
+                class="atm-aioptions-preview-generate-btn"
                 :class="{
-                  'nc-is-already-generated': isAlreadyGenerated,
-                  'nc-preview-enabled': isPreviewEnabled,
+                  'atm-is-already-generated': isAlreadyGenerated,
+                  'atm-preview-enabled': isPreviewEnabled,
                 }"
                 size="xs"
                 :type="isAlreadyGenerated ? 'text' : 'secondary'"
@@ -408,7 +408,7 @@ watch(isPreviewEnabled, handleDisableSubmitBtn, {
               >
                 <div
                   :class="{
-                    'nc-animate-dots min-w-[91px] text-left': generatingPreview,
+                    'atm-animate-dots min-w-[91px] text-left': generatingPreview,
                     'min-w-[102px]': isAlreadyGenerated && generatingPreview,
                     'min-w-[80px]': !isAlreadyGenerated && generatingPreview,
                   }"
@@ -423,8 +423,8 @@ watch(isPreviewEnabled, handleDisableSubmitBtn, {
                       : $t('labels.generatePreview')
                   }}
                 </div>
-              </NcButton>
-            </NcTooltip>
+              </AtButton>
+            </AtTooltip>
           </div>
           <div v-if="previewRow.row?.[previewFieldTitle]?.value">
             <div class="relative">
@@ -451,23 +451,23 @@ watch(isPreviewEnabled, handleDisableSubmitBtn, {
   @apply flex items-center;
 }
 
-.nc-prompt-input-wrapper {
-  @apply border-1 border-nc-border-gray-medium;
+.atm-prompt-input-wrapper {
+  @apply border-1 border-atm-border-gray-medium;
   box-shadow: 0px 0px 4px 0px rgba(var(--rgb-base), 0.08);
 }
 
-.nc-ai-options-preview {
-  @apply rounded-lg border-1 border-nc-border-gray-medium;
+.atm-ai-options-preview {
+  @apply rounded-lg border-1 border-atm-border-gray-medium;
   box-shadow: 0px 0px 4px 0px rgba(var(--rgb-base), 0.08);
 
-  :deep(.nc-text-area-expand-btn) {
+  :deep(.atm-text-area-expand-btn) {
     @apply right-1;
   }
 }
 
-.nc-aioptions-preview-generate-btn {
-  &:not(.nc-is-already-generated) {
-    &.nc-preview-enabled {
+.atm-aioptions-preview-generate-btn {
+  &:not(.atm-is-already-generated) {
+    &.atm-preview-enabled {
       @apply !border-transparent;
     }
   }

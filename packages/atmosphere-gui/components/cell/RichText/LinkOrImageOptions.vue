@@ -264,17 +264,17 @@ const tabIndex = computed(() => {
     <!-- Link Options -->
     <div
       v-if="!justDeleted && isLinkOptionsVisible && !isImageOptionsVisible"
-      class="relative bubble-menu nc-text-area-rich-link-options bg-nc-bg-default flex flex-col border-1 border-nc-border-gray-medium py-1 px-1 rounded-lg w-full"
-      data-testid="nc-text-area-rich-link-options"
+      class="relative bubble-menu atm-text-area-rich-link-options bg-atm-bg-default flex flex-col border-1 border-atm-border-gray-medium py-1 px-1 rounded-lg w-full"
+      data-testid="atm-text-area-rich-link-options"
       @keydown.stop="handleKeyDown"
     >
       <div class="flex items-center gap-x-1">
-        <div class="!py-0.5 bg-nc-bg-default rounded-md !z-10 flex-1">
+        <div class="!py-0.5 bg-atm-bg-default rounded-md !z-10 flex-1">
           <a-input
             ref="inputRef"
             v-model:value="href"
             :tabindex="tabIndex"
-            class="nc-text-area-rich-link-option-input flex-1 !mx-0.5 !px-1.5 !py-0.5 !rounded-md z-10"
+            class="atm-text-area-rich-link-option-input flex-1 !mx-0.5 !px-1.5 !py-0.5 !rounded-md z-10"
             :bordered="false"
             :placeholder="$t('placeholder.enterALink')"
             @change="onChange"
@@ -283,34 +283,34 @@ const tabIndex = computed(() => {
             @blur="emits('blur')"
           />
         </div>
-        <NcTooltip overlay-class-name="nc-text-area-rich-link-options">
+        <AtTooltip overlay-class-name="atm-text-area-rich-link-options">
           <template #title> Open link </template>
-          <NcButton
+          <AtButton
             :tabindex="tabIndex"
             :class="{
-              '!text-nc-content-brand-hover cursor-not-allowed': href.length === 0,
+              '!text-atm-content-brand-hover cursor-not-allowed': href.length === 0,
             }"
-            data-testid="text-gray-700 nc-text-area-rich-link-options-open-link"
+            data-testid="text-gray-700 atm-text-area-rich-link-options-open-link"
             size="small"
             type="text"
             @click="openLink"
           >
             <GeneralIcon icon="externalLink" />
-          </NcButton>
-        </NcTooltip>
-        <NcTooltip overlay-class-name="nc-text-area-rich-link-options">
+          </AtButton>
+        </AtTooltip>
+        <AtTooltip overlay-class-name="atm-text-area-rich-link-options">
           <template #title> Delete link </template>
-          <NcButton
+          <AtButton
             :tabindex="tabIndex"
-            class="!duration-0 !hover:(text-nc-content-red-medium bg-nc-bg-red-light)"
-            data-testid="nc-text-area-rich-link-options-open-delete"
+            class="!duration-0 !hover:(text-atm-content-red-medium bg-atm-bg-red-light)"
+            data-testid="atm-text-area-rich-link-options-open-delete"
             size="small"
             type="text"
             @click="onDelete"
           >
             <GeneralIcon icon="delete" />
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
       </div>
     </div>
     <CellRichTextImageOptions
@@ -329,29 +329,29 @@ const tabIndex = computed(() => {
 <style lang="scss">
 .bubble-menu {
   // shadow
-  @apply shadow-nc-border-gray-medium shadow-sm;
+  @apply shadow-atm-border-gray-medium shadow-sm;
 }
 
-.nc-text-area-rich-link-option-input {
-  @apply text-nc-content-gray;
+.atm-text-area-rich-link-option-input {
+  @apply text-atm-content-gray;
 
   &::placeholder {
-    @apply text-nc-content-gray-muted;
+    @apply text-atm-content-gray-muted;
   }
 }
 
-.nc-text-area-rich-link-options {
+.atm-text-area-rich-link-options {
   .ant-popover-inner-content {
     @apply !shadow-none !p-0;
   }
   .ant-popover-arrow {
     @apply !shadow-none;
     .ant-popover-arrow-content {
-      @apply !shadow-none !bg-nc-bg-gray-light;
+      @apply !shadow-none !bg-atm-bg-gray-light;
     }
   }
   .ant-popover-inner {
-    @apply !shadow-none !bg-nc-bg-gray-light py-1.5 px-2.5 text-xs !rounded-sm;
+    @apply !shadow-none !bg-atm-bg-gray-light py-1.5 px-2.5 text-xs !rounded-sm;
   }
 }
 </style>

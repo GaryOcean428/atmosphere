@@ -12,7 +12,7 @@ function mdLinkRuleSetupExt(md: MarkdownIt, { openLinkOnClick = false }: { openL
         const [_, tooltipContent] = hrefValue.split('~~~###~~~')
         tokens[idx]!.tag = 'span' // Change the tag to `span`
         tokens[idx]!.attrs = [
-          ['class', 'nc-rich-link-tooltip'], // Add the class
+          ['class', 'atm-rich-link-tooltip'], // Add the class
           ['data-tooltip', (tooltipContent || '').replace(/_/g, ' ')], // Add tooltip content
         ]
 

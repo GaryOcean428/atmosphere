@@ -2,13 +2,13 @@ import { message } from 'ant-design-vue/es'
 import type { MessageArgsProps } from 'ant-design-vue/es'
 import type { VueNode } from 'ant-design-vue/es/_util/type'
 import type { VNode } from 'vue'
-import { isPrimitiveValue } from 'nocodb-sdk'
-import NcAlert, { type NcAlertProps } from '../components/nc/Alert.vue'
+import { isPrimitiveValue } from 'atmosphere-sdk'
+import AtAlert, { type AtAlertProps } from '../components/atm/Alert.vue'
 import { getI18n } from '~/plugins/a.i18n'
 
-interface NcAlertMessageProps
+interface AtAlertMessageProps
   extends Pick<
-    NcAlertProps,
+    AtAlertProps,
     | 'showIcon'
     | 'closable'
     | 'align'
@@ -21,10 +21,10 @@ interface NcAlertMessageProps
   > {}
 
 /**
- * `NcMessageObjectProps` defines the properties allowed in `ncMessage`,
- * extending `NcAlertProps` while omitting fields that are irrelevant for messages.
+ * `AtMessageObjectProps` defines the properties allowed in `ncMessage`,
+ * extending `AtAlertProps` while omitting fields that are irrelevant for messages.
  */
-export interface NcMessageObjectProps extends NcAlertMessageProps, Omit<MessageArgsProps, 'type' | 'content'> {
+export interface AtMessageObjectProps extends AtAlertMessageProps, Omit<MessageArgsProps, 'type' | 'content'> {
   title?: string
   content?: string | (() => VueNode) | VueNode
   /**
@@ -41,15 +41,15 @@ export interface NcMessageObjectProps extends NcAlertMessageProps, Omit<MessageA
 }
 
 /**
- * `NcMessageProps` can either be a string (message text) or an object of type `NcMessageObjectProps`.
+ * `AtMessageProps` can either be a string (message text) or an object of type `AtMessageObjectProps`.
  */
-export type NcMessageProps = NcMessageObjectProps | VueNode
+export type AtMessageProps = AtMessageObjectProps | VueNode
 
 /**
  * Use `copyText` & `copyBtnTooltip` to set the copy text & tooltip for the copy button if params is primitive value
  */
-export interface NcMessageExtraProps
-  extends Pick<NcMessageObjectProps, 'showDefaultMessage' | 'showCopyBtn' | 'copyText' | 'copyBtnTooltip'> {}
+export interface AtMessageExtraProps
+  extends Pick<AtMessageObjectProps, 'showDefaultMessage' | 'showCopyBtn' | 'copyText' | 'copyBtnTooltip'> {}
 
 const defaultNcMessageExtraProps = {
   showDefaultMessage: false,
@@ -60,7 +60,7 @@ const defaultNcMessageExtraProps = {
 const MODAL_HANDLED_MESSAGES = ['Two-factor authentication setup required for this workspace']
 
 /**
- * Default values for `NcMessageObjectProps`.
+ * Default values for `AtMessageObjectProps`.
  */
 const initialValue = {
   title: '',
@@ -73,7 +73,7 @@ const initialValue = {
   descriptionClass: '',
   renderAsNcAlert: true,
   ...defaultNcMessageExtraProps,
-} as NcMessageObjectProps
+} as AtMessageObjectProps
 
 const initialToastTypeValue = {
   closable: false,
@@ -81,7 +81,7 @@ const initialToastTypeValue = {
   showDuration: false,
   showIcon: false,
   duration: 2,
-} as NcMessageObjectProps
+} as AtMessageObjectProps
 
 /**
  * Generates the key that identifies a message instance.
@@ -93,14 +93,14 @@ const initialToastTypeValue = {
  * supplies an explicit `key`.
  */
 const generateMessageKey = (
-  type: NcAlertProps['type'],
+  type: AtAlertProps['type'],
   title: string | undefined,
-  content: NcMessageObjectProps['content'],
-  params: NcMessageProps,
+  content: AtMessageObjectProps['content'],
+  params: AtMessageProps,
 ) => {
   // caller-supplied key wins
-  if (!ncIsString(params) && (params as NcMessageObjectProps)?.key) {
-    return (params as NcMessageObjectProps).key
+  if (!ncIsString(params) && (params as AtMessageObjectProps)?.key) {
+    return (params as AtMessageObjectProps).key
   }
 
   // dedup identical messages by hashing type + title + content (isPrimitiveValue also covers null/undefined)
@@ -116,12 +116,12 @@ const generateMessageKey = (
   return `ncMessage_${Date.now()}_${Math.random()}`
 }
 
-function isNcMessageObjectProps(params: any): params is NcMessageObjectProps {
+function isNcMessageObjectProps(params: any): params is AtMessageObjectProps {
   return !ncIsEmptyObject(params)
 }
 
 /**
- * Processes `NcMessageProps` and merges them with default values.
+ * Processes `AtMessageProps` and merges them with default values.
  * - If a string is provided, it sets it as the description while applying a default content based on type.
  * - If neither `content` nor `description` exist, the content is set to the default localized text.
  * - Uses the spread operator to ensure proper merging of values.
@@ -129,13 +129,13 @@ function isNcMessageObjectProps(params: any): params is NcMessageObjectProps {
  * @param type - The type of message (`success`, `error`, `info`, `warning`).
  * @param params - The message parameters, either a string or an object.
  * @param ncMessageExtraProps - The extra props
- * @returns A full `NcMessageObjectProps` object with defaults applied.
+ * @returns A full `AtMessageObjectProps` object with defaults applied.
  */
 const getMessageProps = (
-  type: NcAlertProps['type'],
-  params: NcMessageProps,
-  ncMessageExtraProps: NcMessageExtraProps = defaultNcMessageExtraProps,
-): NcMessageObjectProps => {
+  type: AtAlertProps['type'],
+  params: AtMessageProps,
+  ncMessageExtraProps: AtMessageExtraProps = defaultNcMessageExtraProps,
+): AtMessageObjectProps => {
   const updatedParams = { ...initialValue, ...(type === 'toast' ? initialToastTypeValue : {}) }
   let content = ''
 
@@ -203,8 +203,8 @@ const getMessageProps = (
 }
 
 /**
- * Displays a message using Ant Design's `message.open`, rendering an `NcAlert` inside.
- * Note: we have to render our `NcAlert` only if content is primitive value
+ * Displays a message using Ant Design's `message.open`, rendering an `AtAlert` inside.
+ * Note: we have to render our `AtAlert` only if content is primitive value
  * @param type - The type of message (`success`, `error`, `info`, `warning`).
  * @param params - The message content or properties.
  * @param duration - Optional duration in seconds before auto-dismissal.
@@ -212,10 +212,10 @@ const getMessageProps = (
  */
 
 const showMessage = (
-  type: NcAlertProps['type'],
-  params: NcMessageProps,
+  type: AtAlertProps['type'],
+  params: AtMessageProps,
   duration?: number,
-  ncMessageExtraProps?: NcMessageExtraProps,
+  ncMessageExtraProps?: AtMessageExtraProps,
 ) => {
   const props = getMessageProps(type, params, ncMessageExtraProps)
 
@@ -255,7 +255,7 @@ const showMessage = (
     content: renderAsNcAlert
       ? () =>
           h(
-            NcAlert,
+            AtAlert,
             {
               ...ncAlertProps,
               message: title,
@@ -340,7 +340,7 @@ const showMessage = (
  *   showDuration: false,
  *   align: 'center',
  *   action: h(
- *     resolveComponent('NcButton'),
+ *     resolveComponent('AtButton'),
  *     {
  *       onClick: () => {
  *         console.log('clicked')
@@ -356,29 +356,29 @@ const showMessage = (
  */
 
 const ncMessage = {
-  success: (params: NcMessageProps = '', duration?: number, ncMessageExtraProps?: NcMessageExtraProps) => {
+  success: (params: AtMessageProps = '', duration?: number, ncMessageExtraProps?: AtMessageExtraProps) => {
     return showMessage('success', params, duration, ncMessageExtraProps)
   },
 
-  error: (params: NcMessageProps = '', duration?: number, ncMessageExtraProps?: NcMessageExtraProps) => {
+  error: (params: AtMessageProps = '', duration?: number, ncMessageExtraProps?: AtMessageExtraProps) => {
     return showMessage('error', params, duration, ncMessageExtraProps)
   },
 
-  info: (params: NcMessageProps = '', duration?: number, ncMessageExtraProps?: NcMessageExtraProps) => {
+  info: (params: AtMessageProps = '', duration?: number, ncMessageExtraProps?: AtMessageExtraProps) => {
     return showMessage('info', params, duration, ncMessageExtraProps)
   },
 
-  warn: (params: NcMessageProps = '', duration?: number, ncMessageExtraProps?: NcMessageExtraProps) => {
+  warn: (params: AtMessageProps = '', duration?: number, ncMessageExtraProps?: AtMessageExtraProps) => {
     return showMessage('warning', params, duration, ncMessageExtraProps)
   },
 
-  warning: (params: NcMessageProps = '', duration?: number, ncMessageExtraProps?: NcMessageExtraProps) => {
+  warning: (params: AtMessageProps = '', duration?: number, ncMessageExtraProps?: AtMessageExtraProps) => {
     return showMessage('warning', params, duration, ncMessageExtraProps)
   },
 
   toast: (
     params:
-      | (Omit<NcMessageObjectProps, 'content'> & {
+      | (Omit<AtMessageObjectProps, 'content'> & {
           content: string | number | null | undefined
         })
       | string
@@ -386,7 +386,7 @@ const ncMessage = {
       | null
       | undefined = '',
     duration?: number,
-    ncMessageExtraProps?: NcMessageExtraProps,
+    ncMessageExtraProps?: AtMessageExtraProps,
   ) => {
     return showMessage('toast', params, duration, ncMessageExtraProps)
   },

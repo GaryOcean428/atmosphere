@@ -1,7 +1,7 @@
-import { isLinksOrLTAR, isMMOrMMLike, RelationTypes } from 'nocodb-sdk';
+import { isLinksOrLTAR, isMMOrMMLike, RelationTypes } from 'atmosphere-sdk';
 import type { Logger } from '@nestjs/common';
 import type { Knex } from 'knex';
-import type { NcRequest } from 'nocodb-sdk';
+import type { AtRequest } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { Column } from '~/models';
 import type CustomKnex from '~/db/CustomKnex';
@@ -21,7 +21,7 @@ export const LTARColsUpdater = (param: {
     trx: externalTrx,
   }: {
     datas: any[];
-    cookie: NcRequest;
+    cookie: AtRequest;
     /**
      * When supplied, link writes join the caller's transaction and the caller
      * owns commit/rollback — used by `bulkUpsert` so field and link writes for
@@ -51,7 +51,7 @@ export const LTARColsUpdater = (param: {
 
     // Read what each row's link set currently is *before* any transaction is
     // open. sqlite's pool is a single connection, and in CE a meta source
-    // shares it with `Noco.ncMeta` — so a metadata read issued from inside the
+    // shares it with `Atmosphere.ncMeta` — so a metadata read issued from inside the
     // transaction (the related view's sorts, on a cache miss) queues behind the
     // transaction that is waiting on it, and the request only ends at the 60s
     // acquire timeout.

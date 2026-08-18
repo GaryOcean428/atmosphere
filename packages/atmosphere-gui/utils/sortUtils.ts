@@ -1,4 +1,4 @@
-import { type ColumnType, type SortType, UITypes, getEquivalentUIType } from 'nocodb-sdk'
+import { type ColumnType, type SortType, UITypes, getEquivalentUIType } from 'atmosphere-sdk'
 import dayjs from 'dayjs'
 
 export const getSortDirectionOptions = (uidt: UITypes | string, isGroupBy?: boolean) => {

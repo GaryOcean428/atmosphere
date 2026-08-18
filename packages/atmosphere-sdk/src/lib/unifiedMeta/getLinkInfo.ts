@@ -1,5 +1,5 @@
 import { RelationTypes } from '~/lib/globals';
-import type { NcContext } from '~/lib/ncTypes';
+import type { AtContext } from '~/lib/ncTypes';
 import type { UnifiedMetaType } from '~/lib/types';
 import { getColOptions } from '~/lib/unifiedMeta/getColOptions';
 import { getColumns } from '~/lib/unifiedMeta/getColumns';
@@ -60,7 +60,7 @@ from ctmbms7ytc649i2 coloption:
 */
 
 export const getLinkInfo = async (
-  context: NcContext,
+  context: AtContext,
   {
     linkColumn,
     sourceModel,

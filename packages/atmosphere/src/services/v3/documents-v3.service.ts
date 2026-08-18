@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, EventType, getDocShareMeta } from 'nocodb-sdk';
-import type { DocumentType } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+import { AppEvents, EventType, getDocShareMeta } from 'atmosphere-sdk';
+import type { DocumentType } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type {
   DocumentCreateV3Type,
   DocumentReorderV3Type,
@@ -15,9 +15,9 @@ import {
 } from '~/services/v3/documents-v3.types';
 import { DocumentsService } from '~/services/documents.service';
 import { Document } from '~/models';
-import Noco from '~/Noco';
-import NocoSocket from '~/socket/NocoSocket';
-import { NcError } from '~/helpers/catchError';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
+import { AtError } from '~/helpers/catchError';
 import { validatePayload } from '~/helpers';
 import { assertNotSandbox } from '~/helpers/sandboxGuards';
 
@@ -26,7 +26,7 @@ export class DocumentsV3Service {
   constructor(protected readonly documentsService: DocumentsService) {}
 
   async docList(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       parentId: string | null;
@@ -41,22 +41,22 @@ export class DocumentsV3Service {
   }
 
   async docGet(
-    context: NcContext,
+    context: AtContext,
     param: { docId: string },
   ): Promise<DocumentV3Type> {
     const doc = await this.documentsService.get(context, param.docId);
 
     if (!doc) {
-      NcError.get(context).genericNotFound('Document', param.docId);
+      AtError.get(context).genericNotFound('Document', param.docId);
     }
 
     return toDocumentV3(doc);
   }
 
   async docCreate(
-    context: NcContext,
+    context: AtContext,
     body: DocumentCreateV3Type,
-    req: NcRequest,
+    req: AtRequest,
   ): Promise<DocumentV3Type> {
     validatePayload(
       'swagger-v3.json#/components/schemas/DocumentCreate',
@@ -68,17 +68,17 @@ export class DocumentsV3Service {
     const doc = await this.documentsService.create(context, body, req);
 
     if (!doc) {
-      NcError.get(context).internalServerError('Failed to create document');
+      AtError.get(context).internalServerError('Failed to create document');
     }
 
     return toDocumentV3(doc);
   }
 
   async docUpdate(
-    context: NcContext,
+    context: AtContext,
     param: { docId: string },
     body: DocumentUpdateV3Type,
-    req: NcRequest,
+    req: AtRequest,
   ): Promise<DocumentV3Type> {
     validatePayload(
       'swagger-v3.json#/components/schemas/DocumentUpdate',
@@ -95,25 +95,25 @@ export class DocumentsV3Service {
     );
 
     if (!doc) {
-      NcError.get(context).genericNotFound('Document', param.docId);
+      AtError.get(context).genericNotFound('Document', param.docId);
     }
 
     return toDocumentV3(doc);
   }
 
   async docDelete(
-    context: NcContext,
+    context: AtContext,
     param: { docId: string },
-    req: NcRequest,
+    req: AtRequest,
   ): Promise<boolean> {
     return await this.documentsService.delete(context, param.docId, req);
   }
 
   async docReorder(
-    context: NcContext,
+    context: AtContext,
     param: { docId: string },
     body: DocumentReorderV3Type,
-    req: NcRequest,
+    req: AtRequest,
   ): Promise<DocumentV3Type> {
     validatePayload(
       'swagger-v3.json#/components/schemas/DocumentReorder',
@@ -123,7 +123,7 @@ export class DocumentsV3Service {
     );
 
     if (body.order == null && body.parent_id === undefined) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'At least one of order or parent_id must be provided',
       );
     }
@@ -160,7 +160,7 @@ export class DocumentsV3Service {
     );
 
     if (!doc) {
-      NcError.get(context).genericNotFound('Document', param.docId);
+      AtError.get(context).genericNotFound('Document', param.docId);
     }
 
     return toDocumentV3(doc);
@@ -171,9 +171,9 @@ export class DocumentsV3Service {
   // the share toggles too.
 
   /** Broadcast a sidebar 'update' so peers reflect share-state (uuid / meta) changes. */
-  private broadcastDocUpdate(context: NcContext, doc: DocumentType) {
+  private broadcastDocUpdate(context: AtContext, doc: DocumentType) {
     const { content: _content, ...liteDoc } = doc;
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.DOCUMENT_EVENT,
@@ -184,8 +184,8 @@ export class DocumentsV3Service {
   }
 
   async docShare(
-    context: NcContext,
-    param: { docId: string; req: NcRequest },
+    context: AtContext,
+    param: { docId: string; req: AtRequest },
   ): Promise<{ uuid: string; include_subtree: boolean }> {
     await assertNotSandbox(
       context,
@@ -194,7 +194,7 @@ export class DocumentsV3Service {
     const doc = await Document.share(context, param.docId);
     const includeSubtree = !!getDocShareMeta(doc.meta).include_subtree;
 
-    Noco.appHooksService.emit(AppEvents.DOCUMENT_PUBLIC_SHARE_CREATE, {
+    Atmosphere.appHooksService.emit(AppEvents.DOCUMENT_PUBLIC_SHARE_CREATE, {
       context,
       req: param.req,
       docId: param.docId,
@@ -209,8 +209,8 @@ export class DocumentsV3Service {
   }
 
   async docUnshare(
-    context: NcContext,
-    param: { docId: string; req: NcRequest },
+    context: AtContext,
+    param: { docId: string; req: AtRequest },
   ): Promise<boolean> {
     await assertNotSandbox(
       context,
@@ -220,7 +220,7 @@ export class DocumentsV3Service {
     const pre = await Document.getMeta(context, param.docId);
     await Document.unshare(context, param.docId);
 
-    Noco.appHooksService.emit(AppEvents.DOCUMENT_PUBLIC_SHARE_DELETE, {
+    Atmosphere.appHooksService.emit(AppEvents.DOCUMENT_PUBLIC_SHARE_DELETE, {
       context,
       req: param.req,
       docId: param.docId,
@@ -236,8 +236,8 @@ export class DocumentsV3Service {
   }
 
   async docShareUpdate(
-    context: NcContext,
-    param: { docId: string; req: NcRequest },
+    context: AtContext,
+    param: { docId: string; req: AtRequest },
     body: { include_subtree?: boolean },
   ): Promise<{
     uuid: string | null;
@@ -251,7 +251,7 @@ export class DocumentsV3Service {
     const includeSubtree = !!getDocShareMeta(doc.meta).include_subtree;
 
     if (doc.uuid) {
-      Noco.appHooksService.emit(AppEvents.DOCUMENT_PUBLIC_SHARE_UPDATE, {
+      Atmosphere.appHooksService.emit(AppEvents.DOCUMENT_PUBLIC_SHARE_UPDATE, {
         context,
         req: param.req,
         docId: param.docId,

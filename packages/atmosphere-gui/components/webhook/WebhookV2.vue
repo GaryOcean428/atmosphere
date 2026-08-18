@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { HookType } from 'nocodb-sdk'
+import type { HookType } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import { onKeyDown } from '@vueuse/core'
 import { defineAsyncComponent } from 'vue'
@@ -456,19 +456,19 @@ const toggleSamplePayload = () => {
 const supportedDocs: SupportedDocsType[] = [
   {
     title: 'Getting started',
-    href: 'https://nocodb.com/docs/product-docs/automation/webhook/create-webhook',
+    href: 'https://atmosphere.dev/docs/product-docs/automation/webhook/create-webhook',
   },
   {
     title: t('activity.createWebhook'),
-    href: 'https://nocodb.com/docs/product-docs/automation/webhook',
+    href: 'https://atmosphere.dev/docs/product-docs/automation/webhook',
   },
   {
     title: 'Custom payload',
-    href: 'https://nocodb.com/docs/product-docs/automation/webhook/create-webhook#webhook-with-custom-payload-',
+    href: 'https://atmosphere.dev/docs/product-docs/automation/webhook/create-webhook#webhook-with-custom-payload-',
   },
   {
     title: 'Trigger on condition',
-    href: 'https://nocodb.com/docs/product-docs/automation/webhook/create-webhook#webhook-with-conditions',
+    href: 'https://atmosphere.dev/docs/product-docs/automation/webhook/create-webhook#webhook-with-conditions',
   },
 ]
 
@@ -574,18 +574,18 @@ const toggleIncludeUser = async () => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-if="!isV3ModalOpen"
     v-model:visible="modalVisible"
     :show-separator="true"
     size="large"
-    wrap-class-name="nc-modal-webhook-create-edit"
+    wrap-class-name="atm-modal-webhook-create-edit"
   >
     <template #header>
       <div class="flex w-full items-center px-4 py-2 justify-between">
         <div class="flex items-center gap-3 flex-1">
-          <GeneralIcon class="text-nc-content-gray-emphasis h-5 w-5" icon="ncWebhook" />
-          <span class="text-nc-content-gray-emphasis font-semibold text-xl">
+          <GeneralIcon class="text-atm-content-gray-emphasis h-5 w-5" icon="ncWebhook" />
+          <span class="text-atm-content-gray-emphasis font-semibold text-xl">
             <template v-if="activeTab === HookTab.Configuration">
               {{ !hook ? $t('activity.newWebhook') : $t('activity.webhookDetails') }}
             </template>
@@ -595,7 +595,7 @@ const toggleIncludeUser = async () => {
           </span>
         </div>
 
-        <div v-if="hook && appInfo.ee" class="flex flex-row p-1 bg-nc-bg-gray-medium rounded-lg gap-x-0.5 nc-view-sidebar-tab">
+        <div v-if="hook && appInfo.ee" class="flex flex-row p-1 bg-atm-bg-gray-medium rounded-lg gap-x-0.5 atm-view-sidebar-tab">
           <div
             v-e="['c:webhook:edit']"
             class="tab"
@@ -604,7 +604,7 @@ const toggleIncludeUser = async () => {
             }"
             @click="activeTab = HookTab.Configuration"
           >
-            <div class="tab-title nc-tab">{{ $t('general.details') }}</div>
+            <div class="tab-title atm-tab">{{ $t('general.details') }}</div>
           </div>
           <div
             v-e="['c:webhook:log']"
@@ -614,32 +614,32 @@ const toggleIncludeUser = async () => {
             }"
             @click="activeTab = HookTab.Log"
           >
-            <div class="tab-title nc-tab">{{ $t('general.logs') }}</div>
+            <div class="tab-title atm-tab">{{ $t('general.logs') }}</div>
           </div>
         </div>
 
         <div class="flex justify-end items-center gap-3 flex-1">
-          <NcButton type="text" size="small" data-testid="nc-close-webhook-modal" @click.stop="closeModal">
+          <AtButton type="text" size="small" data-testid="atm-close-webhook-modal" @click.stop="closeModal">
             <GeneralIcon icon="close" />
-          </NcButton>
+          </AtButton>
         </div>
       </div>
     </template>
-    <div v-if="activeTab === HookTab.Configuration" class="flex bg-nc-bg-default rounded-b-2xl h-[calc(100%_-_66px)]">
+    <div v-if="activeTab === HookTab.Configuration" class="flex bg-atm-bg-default rounded-b-2xl h-[calc(100%_-_66px)]">
       <div
         ref="containerElem"
-        class="h-full flex-1 flex flex-col overflow-y-auto scroll-smooth nc-scrollbar-thin px-12 py-6 mx-auto"
+        class="h-full flex-1 flex flex-col overflow-y-auto scroll-smooth atm-scrollbar-thin px-12 py-6 mx-auto"
       >
         <div style="max-width: 700px; min-width: 640px" class="mx-auto gap-8 flex flex-col">
           <a-form-item v-bind="validateInfos.title">
             <div
-              class="flex flex-grow px-2 py-1 title-input items-center border-b-1 rounded-t-md border-nc-border-gray-medium bg-nc-bg-gray-light"
+              class="flex flex-grow px-2 py-1 title-input items-center border-b-1 rounded-t-md border-atm-border-gray-medium bg-atm-bg-gray-light"
               @click.prevent="titleDomRef?.focus()"
             >
               <input
                 ref="titleDomRef"
                 v-model="hookRef.title"
-                class="flex flex-grow text-lg px-2 font-medium capitalize outline-none bg-inherit nc-text-field-hook-title"
+                class="flex flex-grow text-lg px-2 font-medium capitalize outline-none bg-inherit atm-text-field-hook-title"
                 :placeholder="$t('placeholder.webhookTitle')"
                 :contenteditable="true"
                 disabled
@@ -649,19 +649,19 @@ const toggleIncludeUser = async () => {
             </div>
           </a-form-item>
 
-          <NcAlert
+          <AtAlert
             type="warning"
             :message="$t('msg.webhookV2DeprecationAlertTitle')"
             :description="$t('msg.webhookV2DeprecationAlertDesc')"
           >
             <template #action>
-              <NcTooltip :title="$t('general.reviewAndUpgrade')">
-                <NcButton type="link" size="xsmall" class="!font-bold" @click="isV3ModalOpen = true">
+              <AtTooltip :title="$t('general.reviewAndUpgrade')">
+                <AtButton type="link" size="xsmall" class="!font-bold" @click="isV3ModalOpen = true">
                   {{ $t('general.upgrade') }}
-                </NcButton>
-              </NcTooltip>
+                </AtButton>
+              </AtTooltip>
             </template>
-          </NcAlert>
+          </AtAlert>
 
           <a-form class="flex flex-col gap-8" :model="hookRef" name="create-or-edit-webhook">
             <div class="flex flex-col gap-4">
@@ -672,11 +672,11 @@ const toggleIncludeUser = async () => {
                     size="medium"
                     :disabled="true"
                     :placeholder="$t('general.event')"
-                    class="nc-text-field-hook-event !h-9 capitalize"
-                    dropdown-class-name="nc-dropdown-webhook-event"
+                    class="atm-text-field-hook-event !h-9 capitalize"
+                    dropdown-class-name="atm-dropdown-webhook-event"
                   >
                     <template #suffixIcon>
-                      <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+                      <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
                     </template>
                     <a-select-option
                       v-for="(event, i) in eventList"
@@ -686,16 +686,16 @@ const toggleIncludeUser = async () => {
                       :disabled="hookRef.version === 'v1' && ['bulkInsert', 'bulkUpdate', 'bulkDelete'].includes(event.value[1])"
                     >
                       <div class="flex items-center w-full gap-2 justify-between">
-                        <NcTooltip class="truncate" show-on-truncate-only>
+                        <AtTooltip class="truncate" show-on-truncate-only>
                           <template #title>
                             {{ event.text.join(' ') }}
                           </template>
                           {{ event.text.join(' ') }}
-                        </NcTooltip>
+                        </AtTooltip>
                         <component
                           :is="iconMap.check"
                           v-if="hookRef.eventOperation === event.value.join(' ')"
-                          id="nc-selected-item-icon"
+                          id="atm-selected-item-icon"
                           class="text-primary w-4 h-4 flex-none"
                         />
                       </div>
@@ -707,13 +707,13 @@ const toggleIncludeUser = async () => {
                     v-model:value="hookRef.notification.type"
                     size="medium"
                     :disabled="true"
-                    class="nc-select-hook-notification-type !h-9"
+                    class="atm-select-hook-notification-type !h-9"
                     :placeholder="$t('general.notification')"
-                    dropdown-class-name="nc-dropdown-webhook-notification"
+                    dropdown-class-name="atm-dropdown-webhook-notification"
                     @change="onNotificationTypeChange(true)"
                   >
                     <template #suffixIcon>
-                      <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+                      <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
                     </template>
                     <a-select-option
                       v-for="(notificationOption, i) in notificationList"
@@ -727,7 +727,7 @@ const toggleIncludeUser = async () => {
                         <component
                           :is="iconMap.check"
                           v-if="hookRef.notification.type === notificationOption.type"
-                          id="nc-selected-item-icon"
+                          id="atm-selected-item-icon"
                           class="text-primary w-4 h-4 flex-none"
                         />
                       </div>
@@ -744,11 +744,11 @@ const toggleIncludeUser = async () => {
                         v-model:value="hookRef.notification.payload.method"
                         :disabled="true"
                         size="medium"
-                        class="nc-select-hook-url-method"
-                        dropdown-class-name="nc-dropdown-hook-notification-url-method"
+                        class="atm-select-hook-url-method"
+                        dropdown-class-name="atm-dropdown-hook-notification-url-method"
                       >
                         <template #suffixIcon>
-                          <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+                          <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
                         </template>
 
                         <a-select-option v-for="(method, i) in methodList" :key="i" :value="method.title">
@@ -757,7 +757,7 @@ const toggleIncludeUser = async () => {
                             <component
                               :is="iconMap.check"
                               v-if="hookRef.notification.payload.method === method.title"
-                              id="nc-selected-item-icon"
+                              id="atm-selected-item-icon"
                               class="text-primary w-4 h-4 flex-none"
                             />
                           </div>
@@ -771,7 +771,7 @@ const toggleIncludeUser = async () => {
                           v-model:value="hookRef.notification.payload.path"
                           size="medium"
                           placeholder="http://example.com"
-                          class="nc-text-field-hook-url-path nc-input-shadow h-9 !rounded-lg"
+                          class="atm-text-field-hook-url-path atm-input-shadow h-9 !rounded-lg"
                         />
                         <div v-if="showCyclicCallsWarning" class="text-xs text-warning pl-2">
                           {{ $t('msg.cyclicCallsWarning') }}
@@ -781,12 +781,12 @@ const toggleIncludeUser = async () => {
                   </div>
                 </div>
                 <div>
-                  <NcTabs v-model:active-key="urlTabKey">
+                  <AtTabs v-model:active-key="urlTabKey">
                     <a-tab-pane key="params" :tab="$t('title.parameter')" force-render>
                       <LazyApiClientParams v-model="hookRef.notification.payload.parameters" disabled />
                     </a-tab-pane>
 
-                    <a-tab-pane key="headers" :tab="$t('title.headers')" class="nc-tab-headers">
+                    <a-tab-pane key="headers" :tab="$t('title.headers')" class="atm-tab-headers">
                       <LazyApiClientHeaders v-model="hookRef.notification.payload.headers" disabled />
                     </a-tab-pane>
 
@@ -849,7 +849,7 @@ const toggleIncludeUser = async () => {
                         </Suspense>
                       </div>
                     </a-tab-pane>
-                  </NcTabs>
+                  </AtTabs>
                 </div>
               </div>
 
@@ -900,11 +900,11 @@ const toggleIncludeUser = async () => {
 
             <div v-if="isConditionSupport">
               <div class="w-full cursor-not-allowed flex items-center">
-                <NcSwitch :checked="Boolean(hookRef.condition)" :disabled="true" class="nc-check-box-hook-condition">
-                  <span class="!text-nc-content-gray-subtle font-semibold">
+                <AtSwitch :checked="Boolean(hookRef.condition)" :disabled="true" class="atm-check-box-hook-condition">
+                  <span class="!text-atm-content-gray-subtle font-semibold">
                     {{ $t('general.trigger') }} {{ $t('activity.onCondition') }}
                   </span>
-                </NcSwitch>
+                </AtSwitch>
               </div>
 
               <LazySmartsheetToolbarColumnFilter
@@ -924,15 +924,15 @@ const toggleIncludeUser = async () => {
             <div v-if="appInfo.ee">
               <div>
                 <div class="w-full cursor-pointer flex items-center" @click.prevent="toggleIncludeUser">
-                  <NcSwitch :checked="Boolean(hookRef.notification.include_user)" class="nc-check-box-include-user">
-                    <span class="!text-nc-content-gray-subtle font-semibold">{{ $t('labels.includeUser') }}</span> jkl
-                  </NcSwitch>
-                  <NcTooltip class="flex">
+                  <AtSwitch :checked="Boolean(hookRef.notification.include_user)" class="atm-check-box-include-user">
+                    <span class="!text-atm-content-gray-subtle font-semibold">{{ $t('labels.includeUser') }}</span> jkl
+                  </AtSwitch>
+                  <AtTooltip class="flex">
                     <template #title>
                       {{ $t('tooltip.includeUserHint') }}
                     </template>
                     <GeneralIcon icon="info" class="text-gray-400 ml-1" />
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
               </div>
             </div>
@@ -944,7 +944,7 @@ const toggleIncludeUser = async () => {
                     <a-textarea
                       v-model:value="hookRef.notification.payload[input.key]"
                       :disabled="true"
-                      class="!rounded-lg !min-h-[120px] nc-scrollbar-thin nc-input-shadow"
+                      class="!rounded-lg !min-h-[120px] atm-scrollbar-thin atm-input-shadow"
                       :placeholder="input.label"
                     />
                   </a-form-item>
@@ -953,7 +953,7 @@ const toggleIncludeUser = async () => {
                     <a-input
                       v-model:value="hookRef.notification.payload[input.key]"
                       :disabled="true"
-                      class="!rounded-lg nc-input-shadow !h-9"
+                      class="!rounded-lg atm-input-shadow !h-9"
                       :placeholder="input.label"
                     />
                   </a-form-item>
@@ -963,7 +963,7 @@ const toggleIncludeUser = async () => {
 
             <div>
               <div class="flex items-center justify-between -ml-1.5">
-                <NcButton type="text" class="mb-3" size="small" @click="toggleSamplePayload()">
+                <AtButton type="text" class="mb-3" size="small" @click="toggleSamplePayload()">
                   <div class="flex items-center gap-3">
                     Sample Payload
                     <GeneralIcon
@@ -974,7 +974,7 @@ const toggleIncludeUser = async () => {
                       icon="arrowDown"
                     />
                   </div>
-                </NcButton>
+                </AtButton>
               </div>
               <div v-show="isVisible">
                 <Suspense>
@@ -1026,14 +1026,14 @@ const toggleIncludeUser = async () => {
         </div>
       </div>
 
-      <NcModalSupportedDocsSidebar>
-        <NcModalSupportedDocs :docs="supportedDocs"> </NcModalSupportedDocs>
-      </NcModalSupportedDocsSidebar>
+      <AtModalSupportedDocsSidebar>
+        <AtModalSupportedDocs :docs="supportedDocs"> </AtModalSupportedDocs>
+      </AtModalSupportedDocsSidebar>
     </div>
     <div v-else-if="activeTab === HookTab.Log" class="h-[calc(100%_-_66px)]">
       <WebhookCallLog :hook="hook" />
     </div>
-  </NcModal>
+  </AtModal>
 
   <Webhook
     v-if="isV3ModalOpen"
@@ -1048,32 +1048,32 @@ const toggleIncludeUser = async () => {
 </template>
 
 <style lang="scss">
-.nc-modal-webhook-create-edit {
+.atm-modal-webhook-create-edit {
   z-index: 1050;
-  a:not(.nc-link) {
-    @apply !no-underline !text-nc-content-gray-subtle !hover:text-primary;
+  a:not(.atm-link) {
+    @apply !no-underline !text-atm-content-gray-subtle !hover:text-primary;
   }
-  .nc-modal {
+  .atm-modal {
     @apply !p-0;
     height: min(calc(100vh - 100px), 1024px);
     max-height: min(calc(100vh - 100px), 1024px) !important;
   }
 
-  .nc-modal-header {
+  .atm-modal-header {
     @apply !mb-0 !pb-0;
   }
 }
 </style>
 
 <style scoped lang="scss">
-.nc-button :not(.nc-icon):not(.material-symbols) {
+.atm-button :not(.atm-icon):not(.material-symbols) {
   @apply !w-full;
 }
 
 .title-input {
   &:focus-within {
     @apply transition-all duration-0.3s border-b-brand-500;
-    box-shadow: 0px 2px 0px 0px rgba(var(--nc-brand-accent-rgb), 0.24);
+    box-shadow: 0px 2px 0px 0px rgba(var(--atm-brand-accent-rgb), 0.24);
   }
 }
 
@@ -1122,7 +1122,7 @@ const toggleIncludeUser = async () => {
     }
 
     &:hover:not(.ant-select-focused):not(.ant-select-disabled) .ant-select-selector {
-      @apply border-nc-border-gray-dark;
+      @apply border-atm-border-gray-dark;
       box-shadow: 0px 0px 4px 0px rgba(var(--rgb-base), 0.24);
     }
 
@@ -1133,7 +1133,7 @@ const toggleIncludeUser = async () => {
 }
 
 :deep(.ant-form-item-label > label) {
-  @apply !text-small !leading-[18px] mb-2 text-nc-content-gray-subtle flex;
+  @apply !text-small !leading-[18px] mb-2 text-atm-content-gray-subtle flex;
 
   &.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
     @apply content-[''] m-0;
@@ -1141,7 +1141,7 @@ const toggleIncludeUser = async () => {
 }
 
 :deep(.ant-form-item-label) {
-  @apply !pb-0 text-small leading-[18px] text-nc-content-gray-subtle;
+  @apply !pb-0 text-small leading-[18px] text-atm-content-gray-subtle;
 }
 
 :deep(.ant-form-item-control-input) {
@@ -1172,11 +1172,11 @@ const toggleIncludeUser = async () => {
   @apply !rounded-lg !bg-transparent !border-none !p-0;
 
   .ant-alert-message {
-    @apply text-sm text-nc-content-gray font-weight-600;
+    @apply text-sm text-atm-content-gray font-weight-600;
   }
 
   .ant-alert-description {
-    @apply text-small text-nc-content-gray-muted font-weight-500;
+    @apply text-small text-atm-content-gray-muted font-weight-500;
   }
 }
 
@@ -1188,9 +1188,9 @@ const toggleIncludeUser = async () => {
 
 :deep(input::placeholder),
 :deep(textarea::placeholder) {
-  @apply text-nc-content-gray-muted;
+  @apply text-atm-content-gray-muted;
 }
-:deep(.nc-tabs .ant-tabs-nav) {
+:deep(.atm-tabs .ant-tabs-nav) {
   @apply pl-0;
   .ant-tabs-tab {
     @apply pt-1 pb-1.5;
@@ -1201,7 +1201,7 @@ const toggleIncludeUser = async () => {
 }
 
 .tab {
-  @apply flex flex-row items-center h-6 justify-center px-2 py-1 rounded-md gap-x-2 text-nc-content-gray-subtle2 hover:text-nc-content-gray-extreme cursor-pointer transition-all duration-300 select-none;
+  @apply flex flex-row items-center h-6 justify-center px-2 py-1 rounded-md gap-x-2 text-atm-content-gray-subtle2 hover:text-atm-content-gray-extreme cursor-pointer transition-all duration-300 select-none;
 }
 
 .tab-icon {
@@ -1217,7 +1217,7 @@ const toggleIncludeUser = async () => {
 }
 
 .active {
-  @apply bg-nc-bg-default text-nc-content-brand-disabled hover:text-nc-content-brand-disabled;
+  @apply bg-atm-bg-default text-atm-content-brand-disabled hover:text-atm-content-brand-disabled;
 
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.06), 0px 5px 3px -2px rgba(0, 0, 0, 0.02);
 }

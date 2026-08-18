@@ -11,25 +11,25 @@ import {
   isVirtualCol,
   MetaEventType,
   ModelTypes,
-  NcBaseError,
+  AtBaseError,
   ProjectRoles,
   RelationTypes,
   ServiceUserType,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type {
   ColumnType,
-  NcApiVersion,
+  AtApiVersion,
   NormalColumnRequestType,
   OperationSource,
   TableReqType,
   TableType,
   UserType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
 import type { LinkToAnotherRecordColumn, User } from '~/models';
-import type { NcRequest } from '~/interface/config';
-import { NcContext } from '~/interface/config';
+import type { AtRequest } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { ColumnsService } from '~/services/columns.service';
 import { LinkPlaceholderService } from '~/services/link-placeholder.service';
 import { MetaDiffsService } from '~/services/meta-diffs.service';
@@ -51,16 +51,16 @@ import {
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { MetaDependencyEventHandler } from '~/services/meta-dependency/event-handler.service';
 import ProjectMgrv2 from '~/db/sql-mgr/v2/ProjectMgrv2';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import getColumnPropsFromUIDT from '~/helpers/getColumnPropsFromUIDT';
 import getColumnUiType from '~/helpers/getColumnUiType';
 import getTableNameAlias, { getColumnNameAlias } from '~/helpers/getTableName';
 import mapDefaultDisplayValue from '~/helpers/mapDefaultDisplayValue';
-import Noco from '~/Noco';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import Atmosphere from '~/Atmosphere';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { sanitizeColumnName, validatePayload } from '~/helpers';
 import { MetaTable } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 import { validateUniqueConstraint } from '~/helpers/uniqueConstraintHelpers';
 import { OperationName } from '~/command-registry/op-names';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
@@ -78,17 +78,17 @@ export class TablesService {
   ) {}
 
   async tableUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: any;
       table: Partial<TableReqType> & { base_id?: string };
       baseId?: string;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     const model = await Model.get(context, param.tableId);
@@ -100,7 +100,7 @@ export class TablesService {
     const source = base.sources.find((b) => b.id === model.source_id);
 
     if (model.base_id !== base.id) {
-      NcError.get(context).invalidRequestBody('Model does not belong to base');
+      AtError.get(context).invalidRequestBody('Model does not belong to base');
     }
 
     // if meta/description present update and return
@@ -119,7 +119,7 @@ export class TablesService {
         id: model.id,
       });
 
-      NocoSocket.broadcastEvent(
+      AtmosphereSocket.broadcastEvent(
         context,
         {
           event: EventType.META_EVENT,
@@ -136,11 +136,11 @@ export class TablesService {
 
     // allow user to only update meta json data when source is restricted changes to schema
     if (source?.is_schema_readonly) {
-      NcError.get(context).sourceMetaReadOnly(source.alias);
+      AtError.get(context).sourceMetaReadOnly(source.alias);
     }
 
     if (!param.table.table_name) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Missing table name `table_name` property in request body',
       );
     }
@@ -161,14 +161,14 @@ export class TablesService {
 
     // validate table name
     if (/^\s+|\s+$/.test(param.table.table_name)) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Leading or trailing whitespace not allowed in table names',
       );
     }
     const specialCharRegex = /[./\\]/g;
     if (specialCharRegex.test(param.table.table_name)) {
       const match = param.table.table_name.match(specialCharRegex);
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Following characters are not allowed ' +
           match.map((m) => JSON.stringify(m)).join(', '),
       );
@@ -189,7 +189,7 @@ export class TablesService {
         source_id: source.id,
       }))
     ) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'table',
         alias: param.table.table_name,
         base: context.base_id,
@@ -212,7 +212,7 @@ export class TablesService {
         source_id: source.id,
       }))
     ) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'table',
         alias: param.table.title,
         base: context.base_id,
@@ -220,7 +220,7 @@ export class TablesService {
     }
 
     const sqlMgr = await ProjectMgrv2.getSqlMgr(context, base);
-    const sqlClient = await NcConnectionMgrv2.getSqlClient(source);
+    const sqlClient = await AtConnectionMgrv2.getSqlClient(source);
 
     let tableNameLengthLimit = 255;
     const sqlClientType = sqlClient.knex.clientType();
@@ -237,7 +237,7 @@ export class TablesService {
     }
 
     if (param.table.table_name.length > tableNameLengthLimit) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `Table name exceeds ${tableNameLengthLimit} characters`,
       );
     }
@@ -266,7 +266,7 @@ export class TablesService {
       context,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -283,20 +283,20 @@ export class TablesService {
 
   @TraceCommand(OperationName.tableReorder)
   async reorderTable(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       order: any;
       // EE-only: base-level sidebar section (null = top level, undefined =
       // membership untouched). Validated in the EE service override.
       fk_base_section_id?: string | null;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     // Without either field updateOrder is a no-op — reject rather than emit a
     // TABLE_UPDATE (and audit row) for a write that never happened.
     if (param.order === undefined && param.fk_base_section_id === undefined) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Either order or fk_base_section_id is required',
       );
     }
@@ -327,7 +327,7 @@ export class TablesService {
       id: model.id,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -343,22 +343,22 @@ export class TablesService {
   }
 
   async tableDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       forceDeleteRelations?: boolean;
       forceDeleteSyncs?: boolean;
       skipLinkPlaceholder?: boolean;
       skipTrash?: boolean;
-      req: NcRequest;
+      req: AtRequest;
     },
     ncMetaParam?: MetaService,
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
-    const ncMeta = ncMetaParam ?? Noco.ncMeta;
+    const ncMeta = ncMetaParam ?? Atmosphere.ncMeta;
     // Source of truth for the actor — every caller passes `req`.
     const user = param.req?.user as User;
 
@@ -369,11 +369,11 @@ export class TablesService {
       table = await Model.getByIdOrName(context, { id: param.tableId }, ncMeta);
 
       if (!table) {
-        NcError.get(context).tableNotFound(param.tableId);
+        AtError.get(context).tableNotFound(param.tableId);
       }
 
       if (table.synced && !param.forceDeleteSyncs) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           'Synced tables cannot be deleted',
         );
       }
@@ -419,7 +419,7 @@ export class TablesService {
           }),
         );
 
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `This is a many to many table for ${tables[0]?.title} (${relColumns[0]?.title}) & ${tables[1]?.title} (${relColumns[1]?.title}). You can disable "Show M2M tables" in base settings to avoid seeing this.`,
         );
       } else if (!param.forceDeleteRelations) {
@@ -449,7 +449,7 @@ export class TablesService {
             false,
             ncMeta,
           );
-          NcError.tableAssociatedWithLink(table.id, {
+          AtError.tableAssociatedWithLink(table.id, {
             customMessage: `This is a many to many table for '${relTable?.title}' (${relTable?.title}), please delete the column before deleting the table.`,
           });
         }
@@ -471,7 +471,7 @@ export class TablesService {
               .then((t) => t?.title),
           ),
         );
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Table can't be deleted since Table is being referred in following tables : ${referredTables.join(
             ', ',
           )}. Delete LinkToAnotherRecord columns and try again.`,
@@ -568,12 +568,12 @@ export class TablesService {
 
       result = await table.delete(context, ncMeta);
     } catch (e) {
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error(
         `Error deleting table ${table.id}: ${e.message}`,
         e.stack,
       );
-      NcError.get(context).tableError(e.message || 'Bad Request');
+      AtError.get(context).tableError(e.message || 'Bad Request');
     }
 
     if (result) {
@@ -593,7 +593,7 @@ export class TablesService {
         ncMeta,
       );
 
-      NocoSocket.broadcastEvent(
+      AtmosphereSocket.broadcastEvent(
         context,
         {
           event: EventType.META_EVENT,
@@ -608,13 +608,13 @@ export class TablesService {
       for (const [refTableId, refTable] of placeholderRefTables) {
         if (refTableId === table.id) continue;
         try {
-          const refContext: NcContext = {
+          const refContext: AtContext = {
             ...context,
             workspace_id: refTable.fk_workspace_id,
             base_id: refTable.base_id,
           };
           await refTable.getColumns(refContext, ncMeta);
-          NocoSocket.broadcastEvent(refContext, {
+          AtmosphereSocket.broadcastEvent(refContext, {
             event: EventType.META_EVENT,
             payload: {
               action: 'column_delete',
@@ -636,7 +636,7 @@ export class TablesService {
   }
 
   async getTableWithAccessibleViews(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       user: User | UserType;
@@ -647,7 +647,7 @@ export class TablesService {
     });
 
     if (!table) {
-      NcError.tableNotFound(param.tableId);
+      AtError.tableNotFound(param.tableId);
     }
 
     // Check table visibility permission
@@ -661,14 +661,14 @@ export class TablesService {
 
       if (!hasAccess) {
         // Return 404 as if table doesn't exist
-        NcError.tableNotFound(param.tableId);
+        AtError.tableNotFound(param.tableId);
       }
     }
 
     if (
       isServiceUser(param.user, [
         ServiceUserType.WORKFLOW_USER,
-        ServiceUserType.SYNC_USER,
+        ServiceUserType.SYATMOSPHERE_USER,
       ])
     ) {
       await table.getViews(context);
@@ -695,7 +695,7 @@ export class TablesService {
   }
 
   async xcVisibilityMetaGet(
-    context: NcContext,
+    context: AtContext,
     baseId,
     _models: Model[] = null,
     includeM2M = true,
@@ -756,7 +756,7 @@ export class TablesService {
   }
 
   async getAccessibleTables(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       sourceId?: string;
@@ -838,16 +838,16 @@ export class TablesService {
   }
 
   async tableCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       sourceId?: string;
       table: TableReqType;
       user: User | UserType;
-      req: NcRequest;
+      req: AtRequest;
       synced?: boolean;
       mm?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       isDuplicateOperation?: boolean;
       operationSource?: OperationSource;
     },
@@ -881,7 +881,7 @@ export class TablesService {
     };
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     const base = await Base.getWithInfo(context, param.baseId);
@@ -903,7 +903,7 @@ export class TablesService {
 
     //#region validating table title and table name
     if (!tableCreatePayLoad.title) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Missing table `title` property in request body',
       );
     }
@@ -919,7 +919,7 @@ export class TablesService {
         source_id: source.id,
       }))
     ) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'table',
         alias: tableCreatePayLoad.title,
         base: context.base_id,
@@ -943,7 +943,7 @@ export class TablesService {
     );
     // validate table name
     if (/^\s+|\s+$/.test(tableCreatePayLoad.table_name)) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Leading or trailing whitespace not allowed in table names',
       );
     }
@@ -952,7 +952,7 @@ export class TablesService {
       const match = (param.table.title ?? param.table.table_name).match(
         specialCharRegex,
       );
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Following characters are not allowed ' +
           match.map((m) => JSON.stringify(m)).join(', '),
       );
@@ -973,7 +973,7 @@ export class TablesService {
         source_id: source.id,
       }))
     ) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'table',
         alias: tableCreatePayLoad.table_name,
         base: context.base_id,
@@ -1014,7 +1014,7 @@ export class TablesService {
 
     const sqlMgr = await ProjectMgrv2.getSqlMgr(context, base);
 
-    const sqlClient = await NcConnectionMgrv2.getSqlClient(source);
+    const sqlClient = await AtConnectionMgrv2.getSqlClient(source);
 
     let tableNameLengthLimit = 255;
     const sqlClientType = sqlClient.knex.clientType();
@@ -1031,7 +1031,7 @@ export class TablesService {
     }
 
     if (tableCreatePayLoad.table_name.length > tableNameLengthLimit) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `Table name exceeds ${tableNameLengthLimit} characters`,
       );
     }
@@ -1078,7 +1078,7 @@ export class TablesService {
       }
 
       if (column.title && column.title.length > 255) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Column title ${column.title} exceeds 255 characters`,
         );
       }
@@ -1204,7 +1204,7 @@ export class TablesService {
     } as any);
 
     try {
-      // create nc_order index column
+      // create atm_order index column
       const metaOrderColumn = tableCreatePayLoad.columns.find(
         (c) => c.uidt === UITypes.Order,
       );
@@ -1213,7 +1213,7 @@ export class TablesService {
         throw new Error('Order column not found' + result.id);
       }
 
-      const dbDriver = await NcConnectionMgrv2.get(source);
+      const dbDriver = await AtConnectionMgrv2.get(source);
 
       const baseModel = await Model.getBaseModelSQL(context, {
         model: result,
@@ -1228,7 +1228,7 @@ export class TablesService {
       ]);
     } catch (e) {
       this.logger.error(
-        `Something went wrong while creating index for nc_order`,
+        `Something went wrong while creating index for atm_order`,
         e,
       );
     }
@@ -1240,7 +1240,7 @@ export class TablesService {
       );
 
       if (metaDeletedColumn) {
-        const dbDriver = await NcConnectionMgrv2.get(source);
+        const dbDriver = await AtConnectionMgrv2.get(source);
 
         const baseModel = await Model.getBaseModelSQL(context, {
           model: result,
@@ -1272,7 +1272,7 @@ export class TablesService {
       context,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,

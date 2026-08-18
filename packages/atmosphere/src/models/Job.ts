@@ -1,13 +1,13 @@
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { Condition } from '~/db/CustomKnex';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   CacheDelDirection,
   CacheGetType,
   CacheScope,
   MetaTable,
 } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { prepareForDb, prepareForResponse } from '~/utils/modelUtils';
 
@@ -27,9 +27,9 @@ export default class Job {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     jobObj: Partial<Job>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(jobObj, [
       'id',
@@ -50,10 +50,10 @@ export default class Job {
   }
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     jobId: string,
     jobObj: Partial<Job>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(jobObj, ['status', 'result']);
 
@@ -65,7 +65,7 @@ export default class Job {
       jobId,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       'root',
       `${CacheScope.JOBS}:${jobId}`,
       prepareForResponse(updateObj, 'result'),
@@ -75,9 +75,9 @@ export default class Job {
   }
 
   public static async delete(
-    context: NcContext,
+    context: AtContext,
     jobId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaDelete(
       context.workspace_id,
@@ -86,17 +86,17 @@ export default class Job {
       jobId,
     );
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       'root',
       `${CacheScope.JOBS}:${jobId}`,
       CacheDelDirection.CHILD_TO_PARENT,
     );
   }
 
-  public static async get(context: NcContext, id: any, ncMeta = Noco.ncMeta) {
+  public static async get(context: AtContext, id: any, ncMeta = Atmosphere.ncMeta) {
     let jobData =
       id &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         'root',
         `${CacheScope.JOBS}:${id}`,
         CacheGetType.TYPE_OBJECT,
@@ -112,19 +112,19 @@ export default class Job {
 
       jobData = prepareForResponse(jobData, 'result');
 
-      await NocoCache.set('root', `${CacheScope.JOBS}:${id}`, jobData);
+      await AtmosphereCache.set('root', `${CacheScope.JOBS}:${id}`, jobData);
     }
 
     return jobData && new Job(jobData);
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     opts: {
       condition?: Record<string, string>;
       xcCondition?: Condition;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Job[]> {
     const jobList = await ncMeta.metaList2(
       context.workspace_id,

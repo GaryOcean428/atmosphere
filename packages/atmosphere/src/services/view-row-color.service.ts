@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import type {
   ColumnReqType,
   FilterType,
-  NcContext,
-  NcRequest,
+  AtContext,
+  AtRequest,
   RowColoringInfo,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
 import type { Column } from '~/models';
 
 export interface RowColorConditionBody {
   color: string;
   is_set_as_background: boolean;
-  nc_order: number;
+  atm_order: number;
   type?: string;
   fk_target_column_id?: string;
 }
@@ -20,7 +20,7 @@ export interface RowColorConditionBody {
 @Injectable()
 export class ViewRowColorService {
   async getByViewId(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       fk_view_id?: string;
       ncMeta?: MetaService;
@@ -30,11 +30,11 @@ export class ViewRowColorService {
   }
 
   async addRowColoringCondition(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       fk_view_id?: string;
       condition: RowColorConditionBody & { id?: string };
-      req?: NcRequest;
+      req?: AtRequest;
       filter?: FilterType;
       filters?: FilterType[];
       ncMeta?: MetaService;
@@ -47,48 +47,48 @@ export class ViewRowColorService {
   }
 
   async updateRowColoringCondition(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       fk_view_id?: string;
       fk_row_coloring_conditions_id: string;
       condition: RowColorConditionBody;
-      req?: NcRequest;
+      req?: AtRequest;
       ncMeta?: MetaService;
     },
   ) {}
 
   async deleteRowColoringCondition(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       fk_view_id?: string;
       fk_row_coloring_conditions_id: string;
-      req?: NcRequest;
+      req?: AtRequest;
       ncMeta?: MetaService;
     },
   ) {}
 
   async setRowColoringSelect(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       fk_view_id?: string;
       fk_column_id: string;
       is_set_as_background: boolean;
-      req?: NcRequest;
+      req?: AtRequest;
       ncMeta?: MetaService;
     },
   ) {}
 
   async removeRowColorInfo(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       fk_view_id?: string;
-      req?: NcRequest;
+      req?: AtRequest;
       ncMeta?: MetaService;
     },
   ) {}
 
   async checkIfColumnInvolved(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       existingColumn: Column;
       newColumn?: Column | ColumnReqType;
@@ -102,7 +102,7 @@ export class ViewRowColorService {
   }
 
   async restoreRowColoring(
-    _context: NcContext,
+    _context: AtContext,
     _param: {
       fk_view_id: string;
       snapshot: {
@@ -110,7 +110,7 @@ export class ViewRowColorService {
         meta?: unknown;
         conditions?: unknown;
       };
-      req?: NcRequest;
+      req?: AtRequest;
       ncMeta?: MetaService;
     },
   ) {}

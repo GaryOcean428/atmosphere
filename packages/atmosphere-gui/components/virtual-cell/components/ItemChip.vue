@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnType } from 'nocodb-sdk'
-import { UITypes, isVirtualCol } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
+import { UITypes, isVirtualCol } from 'atmosphere-sdk'
 
 interface Props {
   value: string | number | boolean
@@ -206,7 +206,7 @@ export default {
             <div
               :class="{
                 'px-1 rounded-full flex-1': !isAttachment(column),
-                'border-nc-border-gray-medium rounded border-1 blue-chip':
+                'border-atm-border-gray-medium rounded border-1 blue-chip':
                   !isBlueprint &&
                   border &&
                   ![UITypes.Attachment, UITypes.MultiSelect, UITypes.SingleSelect].includes(column.uidt),
@@ -243,7 +243,7 @@ export default {
     >
       <component
         :is="iconMap.closeThick"
-        class="nc-icon unlink-icon text-nc-content-gray-muted/50 group-hover:text-nc-content-gray-muted ml-0.5 cursor-pointer"
+        class="atm-icon unlink-icon text-atm-content-gray-muted/50 group-hover:text-atm-content-gray-muted ml-0.5 cursor-pointer"
         @click.stop="emit('unlink')"
       />
     </div>
@@ -259,19 +259,19 @@ export default {
     word-break: keep-all;
   }
 
-  :deep(.nc-action-icon) {
+  :deep(.atm-action-icon) {
     @apply invisible;
   }
 
-  :deep(.nc-cell) {
-    &.nc-cell-longtext {
+  :deep(.atm-cell) {
+    &.atm-cell-longtext {
       .long-text-wrapper {
         @apply min-h-1;
-        .nc-readonly-rich-text-wrapper {
+        .atm-readonly-rich-text-wrapper {
           @apply !min-h-1;
         }
 
-        .nc-rich-text {
+        .atm-rich-text {
           @apply pl-0;
           .tiptap.ProseMirror {
             @apply -ml-1 min-h-1;
@@ -280,40 +280,40 @@ export default {
       }
     }
 
-    &.nc-cell-checkbox {
+    &.atm-cell-checkbox {
       @apply children:pl-0;
       & > div {
         @apply !h-auto;
       }
     }
 
-    &.nc-cell-singleselect .nc-cell-field > div {
+    &.atm-cell-singleselect .atm-cell-field > div {
       @apply flex items-center;
     }
 
-    &.nc-cell-multiselect .nc-cell-field > div {
+    &.atm-cell-multiselect .atm-cell-field > div {
       @apply h-5;
     }
 
-    &.nc-cell-email,
-    &.nc-cell-phonenumber {
+    &.atm-cell-email,
+    &.atm-cell-phonenumber {
       @apply flex items-center;
     }
 
-    &.nc-cell-email,
-    &.nc-cell-phonenumber,
-    &.nc-cell-url {
-      .nc-cell-field-link {
+    &.atm-cell-email,
+    &.atm-cell-phonenumber,
+    &.atm-cell-url {
+      .atm-cell-field-link {
         @apply py-0;
       }
     }
   }
 
   .blue-chip {
-    @apply !bg-nc-bg-brand dark:!bg-nc-bg-gray-light !border-none px-2 py-[3px] rounded-lg;
+    @apply !bg-atm-bg-brand dark:!bg-atm-bg-gray-light !border-none px-2 py-[3px] rounded-lg;
     &,
     & * {
-      @apply !text-nc-content-brand !bg-nc-bg-brand dark:!bg-nc-bg-gray-light;
+      @apply !text-atm-content-brand !bg-atm-bg-brand dark:!bg-atm-bg-gray-light;
     }
 
     :deep(.clamped-text) {
@@ -322,10 +322,10 @@ export default {
   }
 
   .blueprint-chip {
-    @apply !bg-nc-bg-gray-extralight !border-nc-border-gray-medium px-2 py-[3px] rounded-lg;
+    @apply !bg-atm-bg-gray-extralight !border-atm-border-gray-medium px-2 py-[3px] rounded-lg;
     &,
     & * {
-      @apply !text-nc-content-gray-muted !bg-nc-bg-gray-extralight;
+      @apply !text-atm-content-gray-muted !bg-atm-bg-gray-extralight;
     }
 
     :deep(.clamped-text) {

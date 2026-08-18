@@ -1,4 +1,4 @@
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 

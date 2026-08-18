@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { NcBaseError } from 'nocodb-sdk';
+import { AtBaseError } from 'atmosphere-sdk';
 import {
   BaseUser,
   OAuthAuthorizationCode,
   OAuthClient,
   WorkspaceUser,
 } from '~/models';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import {
   isHttpRedirectUri,
   isRegisteredRedirectUri,
@@ -31,14 +31,14 @@ export class OauthAuthorizationService {
   async assertRegisteredRedirectUri(clientId: string, redirectUri: string) {
     const client = await OAuthClient.getByClientId(clientId);
     if (!client) {
-      NcError.badRequest('invalid_client');
+      AtError.badRequest('invalid_client');
     }
 
     // Re-checks the scheme as well as the exact match — `z.string().url()`
     // accepted opaque schemes at registration time on older clients, so the
     // stored list isn't trusted.
     if (!isRegisteredRedirectUri(client.redirect_uris, redirectUri)) {
-      NcError.badRequest('invalid_redirect_uri');
+      AtError.badRequest('invalid_redirect_uri');
     }
 
     return client;
@@ -50,7 +50,7 @@ export class OauthAuthorizationService {
     // registered-URI match happens in `assertRegisteredRedirectUri`, which the
     // caller must run before it reaches any of those branches.
     if (!isHttpRedirectUri(redirectUri)) {
-      NcError.badRequest('invalid_redirect_uri');
+      AtError.badRequest('invalid_redirect_uri');
     }
 
     const url = new URL(redirectUri);
@@ -97,30 +97,30 @@ export class OauthAuthorizationService {
     // Validate state inline
     if (state) {
       if (state.length < 16 || state.length > 1024) {
-        NcError.badRequest('invalid_state');
+        AtError.badRequest('invalid_state');
       }
       const allowedChars = /^[a-zA-Z0-9._-]+$/;
       if (!allowedChars.test(state)) {
-        NcError.badRequest('invalid_state');
+        AtError.badRequest('invalid_state');
       }
     }
 
     // Validate code challenge inline
     if (!codeChallenge) {
-      NcError.badRequest('code_challenge_required');
+      AtError.badRequest('code_challenge_required');
     }
 
     if (codeChallengeMethod !== 'S256') {
-      NcError.badRequest('invalid_code_challenge');
+      AtError.badRequest('invalid_code_challenge');
     }
 
     if (codeChallenge.length !== 43) {
-      NcError.badRequest('invalid_code_challenge');
+      AtError.badRequest('invalid_code_challenge');
     }
 
     const base64urlPattern = /^[A-Za-z0-9_-]+$/;
     if (!base64urlPattern.test(codeChallenge)) {
-      NcError.badRequest('invalid_code_challenge');
+      AtError.badRequest('invalid_code_challenge');
     }
 
     const expiresAt = new Date(
@@ -135,16 +135,16 @@ export class OauthAuthorizationService {
         const wsUser = await WorkspaceUser.get(workspaceId, userId);
 
         if (!wsUser) {
-          NcError.forbidden(
+          AtError.forbidden(
             'User does not have access to the specified workspace',
           );
         }
 
         grantedResources.workspace_id = workspaceId;
       } catch (error) {
-        if (error instanceof NcError || error instanceof NcBaseError)
+        if (error instanceof AtError || error instanceof AtBaseError)
           throw error;
-        NcError.badRequest('invalid_workspace_id');
+        AtError.badRequest('invalid_workspace_id');
       }
     }
 
@@ -156,19 +156,19 @@ export class OauthAuthorizationService {
         const base = bases?.find?.((b) => b.id === baseId);
 
         if (!base) {
-          NcError.forbidden('User does not have access to the specified base');
+          AtError.forbidden('User does not have access to the specified base');
         }
 
         // If workspace is specified, ensure base belongs to that workspace
         if (workspaceId && base.fk_workspace_id !== workspaceId) {
-          NcError.badRequest('Base does not belong to the specified workspace');
+          AtError.badRequest('Base does not belong to the specified workspace');
         }
 
         grantedResources.base_id = baseId;
       } catch (error) {
-        if (error instanceof NcError || error instanceof NcBaseError)
+        if (error instanceof AtError || error instanceof AtBaseError)
           throw error;
-        NcError.badRequest('invalid_base_id');
+        AtError.badRequest('invalid_base_id');
       }
     }
 

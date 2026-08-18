@@ -1,4 +1,4 @@
-import type { TableType, TimelineType, ViewType } from 'nocodb-sdk'
+import type { TableType, TimelineType, ViewType } from 'atmosphere-sdk'
 import type { ComputedRef } from 'vue'
 
 const [useProvideTimelineViewStore, useTimelineViewStore] = useInjectionState(

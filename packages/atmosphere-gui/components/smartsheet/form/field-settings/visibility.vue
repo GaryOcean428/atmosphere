@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 
 const { visibleColumns, activeField, allViewFilters, localColumns, localColumnsMapByFkColumnId } = useFormViewStoreOrThrow()
 
@@ -58,56 +58,56 @@ const filterOption = (column: ColumnType) => {
   <div v-if="activeField" class="flex flex-col">
     <div class="flex flex-col gap-3">
       <div class="flex items-center justify-between">
-        <div class="text-nc-content-gray font-medium">{{ $t('labels.showOnConditions') }}</div>
+        <div class="text-atm-content-gray font-medium">{{ $t('labels.showOnConditions') }}</div>
 
         <div class="flex flex-col">
-          <NcDropdown
+          <AtDropdown
             v-if="visibilityFilters"
             v-model:visible="isOpen"
             placement="bottomLeft"
             :disabled="isFirstField && !visibilityFilters.length && !isOpen"
-            overlay-class-name="nc-form-field-visibility-dropdown"
+            overlay-class-name="atm-form-field-visibility-dropdown"
           >
-            <NcTooltip placement="left" :disabled="!isFirstField">
+            <AtTooltip placement="left" :disabled="!isFirstField">
               <template #title> {{ $t('tooltip.cannotAddConditionsToFirstField') }} </template>
               <div
-                class="nc-form-field-visibility-btn border-1 rounded-lg py-1 px-3 flex items-center justify-between gap-2 !min-w-[170px] transition-all cursor-pointer select-none text-sm"
+                class="atm-form-field-visibility-btn border-1 rounded-lg py-1 px-3 flex items-center justify-between gap-2 !min-w-[170px] transition-all cursor-pointer select-none text-sm"
                 :class="{
-                  '!border-nc-border-brand shadow-selected': isOpen,
-                  'border-nc-border-gray-medium': !isOpen,
-                  'bg-nc-bg-brand dark:bg-nc-bg-gray-light': visibilityFilters.length,
-                  'opacity-70 cursor-default nc-disabled': isFirstField && !visibilityFilters.length,
+                  '!border-atm-border-brand shadow-selected': isOpen,
+                  'border-atm-border-gray-medium': !isOpen,
+                  'bg-atm-bg-brand dark:bg-atm-bg-gray-light': visibilityFilters.length,
+                  'opacity-70 cursor-default atm-disabled': isFirstField && !visibilityFilters.length,
                 }"
-                data-testid="nc-form-field-visibility-btn"
+                data-testid="atm-form-field-visibility-btn"
               >
                 <div
-                  class="nc-form-field-visibility-conditions-count flex-1"
+                  class="atm-form-field-visibility-conditions-count flex-1"
                   :class="{
-                    'text-nc-content-brand ': visibilityFilters.length,
+                    'text-atm-content-brand ': visibilityFilters.length,
                   }"
                 >
                   {{
                     visibilityFilters.length
                       ? $t('labels.conditionsCount', { count: visibilityFilters.length }, visibilityFilters.length)
-                      : $t('labels.noConditions')
+                      : $t('labels.atmospherenditions')
                   }}
                 </div>
 
-                <GeneralIcon v-if="hasvisibilityError" icon="alertTriangle" class="flex-none !text-nc-content-red-medium" />
+                <GeneralIcon v-if="hasvisibilityError" icon="alertTriangle" class="flex-none !text-atm-content-red-medium" />
 
                 <GeneralIcon
                   icon="settings"
                   class="flex-none w-4 h-4"
                   :class="{
-                    'text-nc-content-brand ': visibilityFilters.length,
+                    'text-atm-content-brand ': visibilityFilters.length,
                   }"
                 />
               </div>
-            </NcTooltip>
+            </AtTooltip>
 
             <template #overlay>
               <div
-                class="nc-form-field-visibility-dropdown-container"
+                class="atm-form-field-visibility-dropdown-container"
                 :class="{
                   'py-2': !visibilityFilters.length,
                 }"
@@ -117,7 +117,7 @@ const filterOption = (column: ColumnType) => {
                   v-model="visibilityFilters"
                   class="w-full"
                   :auto-save="true"
-                  data-testid="nc-filter-menu"
+                  data-testid="atm-filter-menu"
                   :show-loading="false"
                   :parent-col-id="activeField.fk_column_id"
                   :filter-option="filterOption"
@@ -126,12 +126,12 @@ const filterOption = (column: ColumnType) => {
                 />
               </div>
             </template>
-          </NcDropdown>
+          </AtDropdown>
         </div>
       </div>
       <div>
-        <div class="text-sm text-nc-content-gray-muted">{{ $t('labels.showFieldOnConditionsMet') }}</div>
-        <div v-if="hasvisibilityError" class="mt-2 visibility-condition-input-error text-nc-content-red-medium">
+        <div class="text-sm text-atm-content-gray-muted">{{ $t('labels.showFieldOnConditionsMet') }}</div>
+        <div v-if="hasvisibilityError" class="mt-2 visibility-condition-input-error text-atm-content-red-medium">
           {{ $t('msg.error.errorConditionsIgnoredForVisibility') }}
         </div>
       </div>
@@ -140,8 +140,8 @@ const filterOption = (column: ColumnType) => {
 </template>
 
 <style lang="scss">
-.nc-form-field-visibility-dropdown {
-  @apply rounded-2xl border-nc-border-gray-medium;
+.atm-form-field-visibility-dropdown {
+  @apply rounded-2xl border-atm-border-gray-medium;
   box-shadow: 0px 20px 24px -4px rgba(0, 0, 0, 0.1), 0px 8px 8px -4px rgba(0, 0, 0, 0.04);
 }
 </style>

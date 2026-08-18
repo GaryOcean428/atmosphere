@@ -8,10 +8,10 @@ import {
   EventType,
   ncIsNull,
   OperationSource,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import slash from 'slash';
 import { getBase64FileSize } from 'src/helpers/stringHelpers';
-import type { DataUpdatePayload, NcContext } from 'nocodb-sdk';
+import type { DataUpdatePayload, AtContext } from 'atmosphere-sdk';
 import type { AttachmentFilePathConstructed } from '~/helpers/attachmentHelpers';
 import type {
   AttachmentBase64UploadParam,
@@ -19,16 +19,16 @@ import type {
 } from '~/types/data-columns/attachment';
 import { getFilteredAgents } from '~/utils/ssrf';
 import {
-  NC_ATTACHMENT_FIELD_SIZE,
-  NC_ATTACHMENT_URL_MAX_REDIRECT,
+  ATMOSPHERE_ATTACHMENT_FIELD_SIZE,
+  ATMOSPHERE_ATTACHMENT_URL_MAX_REDIRECT,
 } from '~/constants';
 import {
   constructFilePath,
   validateNumberOfFilesInCell,
 } from '~/helpers/attachmentHelpers';
 import { _wherePk, getBaseModelSqlFromModelId } from '~/helpers/dbHelpers';
-import { NcError } from '~/helpers/ncError';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import { AtError } from '~/helpers/ncError';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import { JobTypes } from '~/interface/Jobs';
 import { Audit, FileReference, PresignedUrl } from '~/models';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
@@ -37,7 +37,7 @@ import { SizeLimitedStream } from '~/services/v3/attachment-size-limited-stream'
 import { extractColsMetaForAudit, generateAuditV1Payload } from '~/utils';
 import { supportsThumbnails } from '~/utils/attachmentUtils';
 import { RootScopes } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 // ref: https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html - extended with some more characters
 const normalizeFilename = (filename: string) => {
@@ -142,7 +142,7 @@ export class DataAttachmentV3Service {
         console.error(`Failed to process attachment:`, error);
       }
     }
-    // direct update to prevent prepare noco data again
+    // direct update to prevent prepare atmosphere data again
     await baseModel
       .dbDriver(baseModel.getTnPath(baseModel.model))
       .update({
@@ -199,7 +199,7 @@ export class DataAttachmentV3Service {
       ),
     );
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.DATA_EVENT,
@@ -223,7 +223,7 @@ export class DataAttachmentV3Service {
       !attachment?.file ||
       !attachment?.filename
     ) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `Field contentType, file and filename is required`,
       );
     }
@@ -231,10 +231,10 @@ export class DataAttachmentV3Service {
     // Calculate file size from base64 value
     const fileSize = getBase64FileSize(attachment.file);
 
-    if (fileSize > NC_ATTACHMENT_FIELD_SIZE) {
-      NcError.get(context).invalidRequestBody(
+    if (fileSize > ATMOSPHERE_ATTACHMENT_FIELD_SIZE) {
+      AtError.get(context).invalidRequestBody(
         `File is too large. Maximum allowed size is ${(
-          NC_ATTACHMENT_FIELD_SIZE / mb
+          ATMOSPHERE_ATTACHMENT_FIELD_SIZE / mb
         ).toFixed(2)} MB`,
       );
     }
@@ -248,7 +248,7 @@ export class DataAttachmentV3Service {
 
     // Check if column exists in model
     if (!column) {
-      NcError.get(context).fieldNotFound(columnId);
+      AtError.get(context).fieldNotFound(columnId);
     }
 
     // Get the row data
@@ -258,11 +258,11 @@ export class DataAttachmentV3Service {
       .first();
 
     if (!rowData) {
-      NcError.get(context).recordNotFound(recordId);
+      AtError.get(context).recordNotFound(recordId);
     }
 
     if (!attachment.contentType || !attachment.file || !attachment.filename) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `Field contentType, file and filename is required`,
       );
     }
@@ -281,7 +281,7 @@ export class DataAttachmentV3Service {
     const generateThumbnailAttachments = [];
 
     try {
-      const storageAdapter = await NcPluginMgrv2.storageAdapter();
+      const storageAdapter = await AtPluginMgrv2.storageAdapter();
       const mimeType = attachment.contentType.split(';')[0].trim();
 
       let filename = attachment.filename;
@@ -298,7 +298,7 @@ export class DataAttachmentV3Service {
           (k) => k,
         ),
       );
-      const destPath = path.join('nc', scope ?? 'uploads', filePath);
+      const destPath = path.join('atm', scope ?? 'uploads', filePath);
 
       const resultAttachmentUrl = await storageAdapter.fileCreateByStream(
         slash(path.join(destPath, filename)),
@@ -354,7 +354,7 @@ export class DataAttachmentV3Service {
       }
     } catch (error) {
       this.logger.error(`${error?.constructor?.name}: ${error?.message}`);
-      NcError.get(context).unprocessableEntity(
+      AtError.get(context).unprocessableEntity(
         `Failed to process base64 attachment`,
       );
     }
@@ -422,7 +422,7 @@ export class DataAttachmentV3Service {
   }
 
   protected async downloadAndStoreAttachment(
-    context: NcContext,
+    context: AtContext,
     {
       url,
       filePath,
@@ -438,8 +438,8 @@ export class DataAttachmentV3Service {
       method: 'GET',
       url: url,
       responseType: 'stream',
-      maxRedirects: NC_ATTACHMENT_URL_MAX_REDIRECT,
-      maxContentLength: NC_ATTACHMENT_FIELD_SIZE,
+      maxRedirects: ATMOSPHERE_ATTACHMENT_URL_MAX_REDIRECT,
+      maxContentLength: ATMOSPHERE_ATTACHMENT_FIELD_SIZE,
       ...getFilteredAgents({ url, source: OperationSource.ATTACHMENTS }),
     });
 
@@ -457,13 +457,13 @@ export class DataAttachmentV3Service {
     // honoured when the response declares a Content-Length, so a chunked or
     // length-less (or lying) response would otherwise stream an oversized file
     // straight to storage. The limiter aborts the stream once the cap is passed.
-    const sizeLimiter = new SizeLimitedStream(NC_ATTACHMENT_FIELD_SIZE);
+    const sizeLimiter = new SizeLimitedStream(ATMOSPHERE_ATTACHMENT_FIELD_SIZE);
     sizeLimiter.on('error', () => {
       // tear down the underlying download so it does not keep buffering
       response.data.destroy();
     });
 
-    const storageAdapter = await NcPluginMgrv2.storageAdapter();
+    const storageAdapter = await AtPluginMgrv2.storageAdapter();
     const mimeType = contentType.split(';')[0].trim();
 
     // Extract filename from URL or content-disposition header

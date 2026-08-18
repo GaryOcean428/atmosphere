@@ -1,5 +1,5 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { INITIAL_LEFT_SIDEBAR_WIDTH, MINI_SIDEBAR_WIDTH, NC_BREAKPOINTS, NEW_MINI_SIDEBAR_WIDTH } from '~/lib/constants'
+import { INITIAL_LEFT_SIDEBAR_WIDTH, MINI_SIDEBAR_WIDTH, ATMOSPHERE_BREAKPOINTS, NEW_MINI_SIDEBAR_WIDTH } from '~/lib/constants'
 
 export const useSidebarStore = defineStore('sidebarStore', () => {
   const router = useRouter()
@@ -8,7 +8,7 @@ export const useSidebarStore = defineStore('sidebarStore', () => {
   const { width } = useWindowSize()
 
   const isViewPortMobile = () => {
-    return width.value < NC_BREAKPOINTS.sm
+    return width.value < ATMOSPHERE_BREAKPOINTS.sm
   }
 
   const { isMobileMode, leftSidebarSize: _leftSidebarSize, isLeftSidebarOpen: _isLeftSidebarOpen } = useGlobal()

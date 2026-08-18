@@ -1,30 +1,30 @@
 import debug from 'debug';
 import { v4 as uuidv4 } from 'uuid';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { RecoverDisconnectedTableNames } from './nc_job_008_recover_disconnected_table_name';
+import { RecoverDisconnectedTableNames } from './atm_job_008_recover_disconnected_table_name';
 import type { Job } from 'bull';
 import { JobTypes, MigrationJobTypes } from '~/interface/Jobs';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
-import { AttachmentMigration } from '~/modules/jobs/migration-jobs/nc_job_001_attachment';
-import { ThumbnailMigration } from '~/modules/jobs/migration-jobs/nc_job_002_thumbnail';
+import { AttachmentMigration } from '~/modules/jobs/migration-jobs/atm_job_001_attachment';
+import { ThumbnailMigration } from '~/modules/jobs/migration-jobs/atm_job_002_thumbnail';
 import {
   getMigrationJobsState,
   setMigrationJobsStallInterval,
   updateMigrationJobsState,
 } from '~/helpers/migrationJobs';
-import { RecoverLinksMigration } from '~/modules/jobs/migration-jobs/nc_job_003_recover_links';
-import { CleanupDuplicateColumnMigration } from '~/modules/jobs/migration-jobs/nc_job_004_cleanup_duplicate_column';
-import { OrderColumnMigration } from '~/modules/jobs/migration-jobs/nc_job_005_order_column';
-import { RecoverOrderColumnMigration } from '~/modules/jobs/migration-jobs/nc_job_007_recover_order_column';
-import { NoOpMigration } from '~/modules/jobs/migration-jobs/nc_job_no_op';
-import { AuditMigration } from '~/modules/jobs/migration-jobs/nc_job_009_audit_migration';
-import { SoftDeleteColumnMigration } from '~/modules/jobs/migration-jobs/nc_job_010_soft_delete_column';
-import { NormalizeSoftDeleteSqliteMigration } from '~/modules/jobs/migration-jobs/nc_job_011_normalize_soft_delete_sqlite';
-import { RecordTrashBackfillMigration } from '~/modules/jobs/migration-jobs/nc_job_012_record_trash_backfill';
-import { CleanupOrphanCrossBaseLinksMigration } from '~/modules/jobs/migration-jobs/nc_job_013_cleanup_orphan_cross_base_links';
-import { CleanupOrphanViewColumnsMigration } from '~/modules/jobs/migration-jobs/nc_job_014_cleanup_orphan_view_columns';
-import { PgSourceSearchPathBackfillMigration } from '~/modules/jobs/migration-jobs/nc_job_015_pg_source_searchpath_backfill';
-import { CreditPlanBackfillMigration } from '~/modules/jobs/migration-jobs/nc_job_016_credit_plan_backfill';
+import { RecoverLinksMigration } from '~/modules/jobs/migration-jobs/atm_job_003_recover_links';
+import { CleanupDuplicateColumnMigration } from '~/modules/jobs/migration-jobs/atm_job_004_cleanup_duplicate_column';
+import { OrderColumnMigration } from '~/modules/jobs/migration-jobs/atm_job_005_order_column';
+import { RecoverOrderColumnMigration } from '~/modules/jobs/migration-jobs/atm_job_007_recover_order_column';
+import { NoOpMigration } from '~/modules/jobs/migration-jobs/atm_job_no_op';
+import { AuditMigration } from '~/modules/jobs/migration-jobs/atm_job_009_audit_migration';
+import { SoftDeleteColumnMigration } from '~/modules/jobs/migration-jobs/atm_job_010_soft_delete_column';
+import { NormalizeSoftDeleteSqliteMigration } from '~/modules/jobs/migration-jobs/atm_job_011_normalize_soft_delete_sqlite';
+import { RecordTrashBackfillMigration } from '~/modules/jobs/migration-jobs/atm_job_012_record_trash_backfill';
+import { CleanupOrphanCrossBaseLinksMigration } from '~/modules/jobs/migration-jobs/atm_job_013_cleanup_orphan_cross_base_links';
+import { CleanupOrphanViewColumnsMigration } from '~/modules/jobs/migration-jobs/atm_job_014_cleanup_orphan_view_columns';
+import { PgSourceSearchPathBackfillMigration } from '~/modules/jobs/migration-jobs/atm_job_015_pg_source_searchpath_backfill';
+import { CreditPlanBackfillMigration } from '~/modules/jobs/migration-jobs/atm_job_016_credit_plan_backfill';
 import { isEE } from '~/utils';
 
 @Injectable()
@@ -112,7 +112,7 @@ export class InitMigrationJobs {
     },
   ];
 
-  private readonly debugLog = debug('nc:migration-jobs:init');
+  private readonly debugLog = debug('atm:migration-jobs:init');
 
   constructor(
     @Inject(forwardRef(() => 'JobsService'))

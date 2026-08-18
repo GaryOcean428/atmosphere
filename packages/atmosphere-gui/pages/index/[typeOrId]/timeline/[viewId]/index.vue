@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ViewTypes } from 'nocodb-sdk'
+import { ViewTypes } from 'atmosphere-sdk'
 
 definePageMeta({
   public: true,

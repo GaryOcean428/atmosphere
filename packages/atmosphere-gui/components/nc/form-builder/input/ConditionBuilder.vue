@@ -7,7 +7,7 @@ import type {
   FilterOperator,
   FilterOperatorType,
   FormBuilderConditionBuilderElement,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 interface Props {
   element: FormBuilderConditionBuilderElement
@@ -311,19 +311,19 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="nc-condition-builder">
-    <NcListDropdown
+  <div class="atm-condition-builder">
+    <AtListDropdown
       v-model:visible="isDropdownOpen"
       :disabled="disabled"
       placement="bottomLeft"
-      overlay-class-name="nc-condition-builder-dropdown"
+      overlay-class-name="atm-condition-builder-dropdown"
     >
       <!-- Trigger: Compact condition count display -->
       <div
-        class="nc-conditions-count flex-1"
+        class="atm-conditions-count flex-1"
         :class="{
-          'text-nc-content-brand': conditions.length > 0,
-          'text-nc-content-gray-muted': conditions.length === 0,
+          'text-atm-content-brand': conditions.length > 0,
+          'text-atm-content-gray-muted': conditions.length === 0,
         }"
       >
         {{ conditions.length > 0 ? `${conditions.length} condition${conditions.length !== 1 ? 's' : ''}` : 'No conditions' }}
@@ -332,23 +332,23 @@ onMounted(() => {
         icon="ncChevronDown"
         class="flex-none w-4 h-4"
         :class="{
-          'text-nc-content-brand': conditions.length > 0,
-          'text-nc-content-gray-muted': conditions.length === 0,
+          'text-atm-content-brand': conditions.length > 0,
+          'text-atm-content-gray-muted': conditions.length === 0,
         }"
       />
 
       <!-- Dropdown overlay: Full condition builder -->
       <template #overlay>
-        <div class="nc-condition-builder-dropdown-container">
+        <div class="atm-condition-builder-dropdown-container">
           <!-- Empty state -->
           <div v-if="conditions.length === 0" class="p-4">
-            <NcButton type="text" size="small" :disabled="disabled" @click="addCondition">
+            <AtButton type="text" size="small" :disabled="disabled" @click="addCondition">
               <template #icon>
                 <GeneralIcon icon="ncPlus" class="w-4 h-4" />
               </template>
               {{ $t('activity.addCondition') }}
-            </NcButton>
-            <div class="text-nc-content-gray-muted mt-2 ml-0.5">{{ $t('title.noConditionsAdded') }}</div>
+            </AtButton>
+            <div class="text-atm-content-gray-muted mt-2 ml-0.5">{{ $t('title.atmospherenditionsAdded') }}</div>
           </div>
 
           <!-- Conditions list -->
@@ -356,17 +356,17 @@ onMounted(() => {
             <div class="space-y-1.5 mb-3">
               <template v-for="(condition, index) in conditions" :key="condition.id">
                 <!-- Single connected row like If node -->
-                <div class="flex flex-nowrap gap-0 nc-filter-wrapper">
+                <div class="flex flex-nowrap gap-0 atm-filter-wrapper">
                   <!-- Where / AND / OR -->
-                  <div v-if="index === 0" class="flex items-center !min-w-18 !max-w-18 nc-filter-where-label">
+                  <div v-if="index === 0" class="flex items-center !min-w-18 !max-w-18 atm-filter-where-label">
                     {{ $t('labels.where') }}
                   </div>
-                  <NcSelect
+                  <AtSelect
                     v-else
                     :value="combinator"
                     :disabled="index !== 1"
                     class="h-full !max-w-18 !min-w-18 capitalize"
-                    dropdown-class-name="nc-dropdown-filter-logical-op"
+                    dropdown-class-name="atm-dropdown-filter-logical-op"
                     @update:value="combinator = $event"
                   >
                     <a-select-option value="and">
@@ -374,7 +374,7 @@ onMounted(() => {
                         <span class="capitalize">And</span>
                         <GeneralIcon
                           v-if="combinator === 'and'"
-                          id="nc-selected-item-icon"
+                          id="atm-selected-item-icon"
                           icon="ncCheck"
                           class="text-primary w-4 h-4"
                         />
@@ -385,33 +385,33 @@ onMounted(() => {
                         <span class="capitalize">Or</span>
                         <GeneralIcon
                           v-if="combinator === 'or'"
-                          id="nc-selected-item-icon"
+                          id="atm-selected-item-icon"
                           icon="ncCheck"
                           class="text-primary w-4 h-4"
                         />
                       </div>
                     </a-select-option>
-                  </NcSelect>
+                  </AtSelect>
 
                   <!-- Field Input -->
-                  <div v-if="!element.fixedLeftValue" class="nc-filter-field-input min-w-36 max-w-36 flex items-center">
+                  <div v-if="!element.fixedLeftValue" class="atm-filter-field-input min-w-36 max-w-36 flex items-center">
                     <template v-if="hasPropertyOptions && getPropertyInputMode(condition.id) === 'select'">
-                      <NcButton
+                      <AtButton
                         type="text"
                         size="xs"
-                        class="nc-property-mode-toggle flex-shrink-0 ml-1"
+                        class="atm-property-mode-toggle flex-shrink-0 ml-1"
                         :disabled="disabled"
                         @click="togglePropertyInputMode(condition.id)"
                       >
-                        <GeneralIcon icon="ncList" class="text-nc-content-gray-muted w-3.5 h-3.5" />
-                      </NcButton>
-                      <NcSelect
+                        <GeneralIcon icon="ncList" class="text-atm-content-gray-muted w-3.5 h-3.5" />
+                      </AtButton>
+                      <AtSelect
                         :value="condition.leftValue || undefined"
                         :disabled="disabled"
                         :loading="isLoadingPropertyOptions"
                         :placeholder="element.propertyPlaceholder || 'Property'"
-                        class="nc-property-select flex-1"
-                        dropdown-class-name="nc-dropdown-filter-property"
+                        class="atm-property-select flex-1"
+                        dropdown-class-name="atm-dropdown-filter-property"
                         show-search
                         allow-clear
                         :filter-option="(input: string, option: any) => option.label?.toLowerCase()?.includes(input.toLowerCase())"
@@ -422,99 +422,99 @@ onMounted(() => {
                             <span class="truncate">{{ opt.label }}</span>
                             <GeneralIcon
                               v-if="condition.leftValue === opt.value"
-                              id="nc-selected-item-icon"
+                              id="atm-selected-item-icon"
                               icon="ncCheck"
                               class="text-primary w-4 h-4 flex-shrink-0"
                             />
                           </div>
                         </a-select-option>
-                      </NcSelect>
+                      </AtSelect>
                     </template>
 
                     <!-- Manual mode (WorkflowInput) -->
                     <template v-else>
                       <!-- Mode toggle button (only show if hasPropertyOptions) -->
-                      <NcButton
+                      <AtButton
                         v-if="hasPropertyOptions"
                         type="text"
                         size="xs"
-                        class="nc-property-mode-toggle flex-shrink-0 ml-1"
+                        class="atm-property-mode-toggle flex-shrink-0 ml-1"
                         :disabled="disabled"
                         @click="togglePropertyInputMode(condition.id)"
                       >
-                        <GeneralIcon icon="ncCode" class="text-nc-content-gray-muted w-3.5 h-3.5" />
-                      </NcButton>
-                      <NcFormBuilderInputWorkflowInput
+                        <GeneralIcon icon="ncCode" class="text-atm-content-gray-muted w-3.5 h-3.5" />
+                      </AtButton>
+                      <AtFormBuilderInputWorkflowInput
                         :model-value="condition.leftValue || ''"
                         :placeholder="element.propertyPlaceholder || 'Property'"
                         :variables="workflowVariables"
                         :grouped-variables="groupedVariables"
                         :read-only="disabled"
-                        class="nc-property-input flex-1 h-8"
+                        class="atm-property-input flex-1 h-8"
                         @update:model-value="updateCondition(index, 'leftValue', $event)"
                       />
                     </template>
                   </div>
 
                   <!-- Operator -->
-                  <NcSelect
+                  <AtSelect
                     :value="`${condition.operator.type}:${condition.operator.operation}`"
                     :options="operatorOptions"
                     :disabled="disabled"
-                    class="nc-filter-comparison-op !min-w-26.75"
-                    dropdown-class-name="nc-dropdown-filter-comp-op"
+                    class="atm-filter-comparison-op !min-w-26.75"
+                    dropdown-class-name="atm-dropdown-filter-comp-op"
                     @update:value="updateCondition(index, 'operator', $event)"
                   />
 
                   <!-- Value Input (if needed) -->
                   <div
                     v-if="!isSingleValueOperator(condition)"
-                    class="nc-filter-value-input flex items-center flex-grow min-w-34"
+                    class="atm-filter-value-input flex items-center flex-grow min-w-34"
                   >
-                    <NcFormBuilderInputWorkflowInput
+                    <AtFormBuilderInputWorkflowInput
                       :model-value="condition.rightValue || ''"
                       :placeholder="$t('placeholder.variableValue')"
                       :variables="workflowVariables"
                       :grouped-variables="groupedVariables"
                       :read-only="disabled"
-                      class="nc-value-input flex-1 h-8"
+                      class="atm-value-input flex-1 h-8"
                       @update:model-value="updateCondition(index, 'rightValue', $event)"
                     />
                   </div>
                   <div v-else class="flex-grow"></div>
 
                   <!-- Remove Button -->
-                  <NcButton
+                  <AtButton
                     v-if="!disabled"
                     type="text"
                     size="small"
-                    class="nc-filter-item-remove-btn self-center"
+                    class="atm-filter-item-remove-btn self-center"
                     @click="removeCondition(index)"
                   >
                     <GeneralIcon icon="deleteListItem" />
-                  </NcButton>
+                  </AtButton>
                 </div>
               </template>
             </div>
 
             <!-- Add condition button -->
-            <div v-if="canAddCondition" class="nc-condition-builder-add">
-              <NcButton type="text" size="small" :disabled="disabled" @click="addCondition">
+            <div v-if="canAddCondition" class="atm-condition-builder-add">
+              <AtButton type="text" size="small" :disabled="disabled" @click="addCondition">
                 <template #icon>
                   <GeneralIcon icon="ncPlus" class="w-4 h-4" />
                 </template>
                 {{ $t('activity.addCondition') }}
-              </NcButton>
+              </AtButton>
             </div>
           </div>
         </div>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </div>
 </template>
 
 <style lang="scss">
-.nc-condition-builder-dropdown {
+.atm-condition-builder-dropdown {
   @apply !min-w-[560px] !max-w-[700px];
 
   .ant-dropdown-menu {
@@ -522,34 +522,34 @@ onMounted(() => {
   }
 }
 
-.nc-dropdown-filter-property {
+.atm-dropdown-filter-property {
   @apply !min-w-[180px];
 }
 </style>
 
 <style scoped lang="scss">
-.nc-condition-builder {
+.atm-condition-builder {
   @apply w-full;
 
-  .nc-condition-builder-dropdown-container {
+  .atm-condition-builder-dropdown-container {
     @apply max-h-[400px] overflow-y-auto;
   }
 
-  .nc-condition-builder-add {
+  .atm-condition-builder-add {
     @apply self-start;
   }
 }
 
-.nc-filter-wrapper {
-  @apply bg-nc-bg-default !rounded-lg border-1px border-nc-border-gray-medium w-full items-center;
+.atm-filter-wrapper {
+  @apply bg-atm-bg-default !rounded-lg border-1px border-atm-border-gray-medium w-full items-center;
 
   & > *,
-  .nc-filter-field-input {
+  .atm-filter-field-input {
     @apply !border-none;
   }
 
   & > :not(:last-child):not(:empty) {
-    border-right: 1px solid var(--nc-border-gray-medium) !important;
+    border-right: 1px solid var(--atm-border-gray-medium) !important;
     border-bottom-right-radius: 0 !important;
     border-top-right-radius: 0 !important;
   }
@@ -563,7 +563,7 @@ onMounted(() => {
     @apply relative;
     &::after {
       content: '';
-      @apply absolute h-full w-1px bg-nc-border-gray-medium -left-1px top-0;
+      @apply absolute h-full w-1px bg-atm-border-gray-medium -left-1px top-0;
     }
   }
 
@@ -579,15 +579,15 @@ onMounted(() => {
     @apply text-sm;
   }
 
-  :deep(.nc-select:not(.ant-select-disabled):hover) {
+  :deep(.atm-select:not(.ant-select-disabled):hover) {
     &,
     .ant-select-selector {
-      @apply bg-nc-bg-gray-extralight;
+      @apply bg-atm-bg-gray-extralight;
     }
   }
 
-  :deep(.nc-select),
-  :deep(.nc-select.ant-select) {
+  :deep(.atm-select),
+  :deep(.atm-select.ant-select) {
     .ant-select-selector {
       border: none !important;
       box-shadow: none !important;
@@ -617,21 +617,21 @@ onMounted(() => {
   }
 }
 
-.nc-filter-where-label {
-  @apply text-nc-content-gray-disabled pl-3;
+.atm-filter-where-label {
+  @apply text-atm-content-gray-disabled pl-3;
 }
 
-.nc-filter-item-remove-btn {
-  @apply text-nc-content-gray-subtle2 hover:text-nc-content-gray;
+.atm-filter-item-remove-btn {
+  @apply text-atm-content-gray-subtle2 hover:text-atm-content-gray;
 }
 
-.nc-filter-field-input {
-  .nc-property-mode-toggle {
+.atm-filter-field-input {
+  .atm-property-mode-toggle {
     @apply flex-shrink-0 !border-r-1;
   }
 
-  :deep(.nc-select),
-  :deep(.nc-select.ant-select) {
+  :deep(.atm-select),
+  :deep(.atm-select.ant-select) {
     @apply h-8;
 
     .ant-select-selector {
@@ -642,39 +642,39 @@ onMounted(() => {
     }
 
     .ant-select-arrow {
-      @apply text-nc-content-gray-muted;
+      @apply text-atm-content-gray-muted;
     }
 
     .ant-select-clear {
-      @apply bg-nc-bg-default;
+      @apply bg-atm-bg-default;
     }
   }
 
-  :deep(.nc-workflow-input) {
+  :deep(.atm-workflow-input) {
     .ProseMirror {
       @apply !h-8 !min-h-8 border-none !py-1;
     }
   }
 }
 
-.nc-filter-value-input {
-  :deep(.nc-workflow-input) {
+.atm-filter-value-input {
+  :deep(.atm-workflow-input) {
     .ProseMirror {
       @apply !h-8 !min-h-8 border-none !py-1 !pr-8;
     }
 
-    .nc-workflow-input-insert-btn {
+    .atm-workflow-input-insert-btn {
       @apply !-top-0.5;
     }
   }
 }
 
-:deep(.nc-workflow-input) {
+:deep(.atm-workflow-input) {
   .ProseMirror {
     @apply !h-8 !min-h-8 border-none !py-1;
   }
 
-  .nc-workflow-input-insert-btn {
+  .atm-workflow-input-insert-btn {
     @apply !-top-0.5;
   }
 }

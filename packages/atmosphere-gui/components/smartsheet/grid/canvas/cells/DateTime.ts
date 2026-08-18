@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { type TimeZone } from '@vvo/tzdb'
-import { isCreatedOrLastModifiedTimeCol } from 'nocodb-sdk'
+import { isCreatedOrLastModifiedTimeCol } from 'atmosphere-sdk'
 import { defaultOffscreen2DContext, isBoxHovered, truncateText } from '../utils/canvas'
 import { timeCellMaxWidthMap, timeFormatsObj } from '../utils/cell'
 

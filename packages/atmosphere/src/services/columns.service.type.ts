@@ -1,10 +1,10 @@
 import type {
   ColumnReqType,
-  NcApiVersion,
-  NcContext,
-  NcRequest,
+  AtApiVersion,
+  AtContext,
+  AtRequest,
   UserType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
 import type CustomKnex from '~/db/CustomKnex';
 import type SqlClient from '~/db/sql-client/lib/SqlClient';
@@ -67,10 +67,10 @@ export interface LtarSideEffectIds {
 }
 
 export interface IColumnsService {
-  columnAdd<T extends NcApiVersion = NcApiVersion | null | undefined>(
-    context: NcContext,
+  columnAdd<T extends AtApiVersion = AtApiVersion | null | undefined>(
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       tableId: string;
       column: ColumnReqType;
       user: UserType;
@@ -78,24 +78,24 @@ export interface IColumnsService {
       suppressFormulaError?: boolean;
       apiVersion?: T;
     },
-  ): Promise<T extends NcApiVersion.V3 ? Column : Model>;
+  ): Promise<T extends AtApiVersion.V3 ? Column : Model>;
 
   columnUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       columnId: string;
       column: ColumnReqType & { colOptions?: any };
       user: UserType;
       reuse?: ReusableParams;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
     },
   ): Promise<Model | Column<any>>;
 
   columnDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       columnId: string;
       forceDeleteSystem?: boolean;
       skipLinkPlaceholder?: boolean;
@@ -116,7 +116,7 @@ export interface IColumnsService {
  */
 export interface IColumnConversionHost extends IColumnsService {
   createLTARColumn(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       column: ColumnReqType;
@@ -125,7 +125,7 @@ export interface IColumnConversionHost extends IColumnsService {
       reuse?: ReusableParams;
       colExtra?: any;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
       columnWebhookManager?: ColumnWebhookManager;
       _ltarCapture?: LtarSideEffectIds;
     },

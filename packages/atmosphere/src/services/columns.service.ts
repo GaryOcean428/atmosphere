@@ -22,8 +22,8 @@ import {
   LongTextRichModeMetaProp,
   LongTextSmartModeMetaProp,
   MetaEventType,
-  NcApiVersion,
-  NcBaseError,
+  AtApiVersion,
+  AtBaseError,
   ncIsNull,
   ncIsUndefined,
   type OperationSource,
@@ -40,26 +40,26 @@ import {
   UITypes,
   validateFormulaAndExtractTreeWithType,
   WebhookActions,
-} from 'nocodb-sdk';
-import { getProjectRole } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import { getProjectRole } from 'atmosphere-sdk';
 import {
   dateFormats,
   dateMonthFormats,
   jalaliDateFormats,
   jalaliDateMonthFormats,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import rfdc from 'rfdc';
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import type {
   ColumnReqType,
   LinkToAnotherColumnReqType,
   LinkToAnotherRecordType,
   UserType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
 import type CustomKnex from '~/db/CustomKnex';
 import type SqlMgrv2 from '~/db/sql-mgr/v2/SqlMgrv2';
-import type { NcRequest } from '~/interface/config';
+import type { AtRequest } from '~/interface/config';
 import type { Base, LinkToAnotherRecordColumn } from '~/models';
 import type {
   IColumnsService,
@@ -67,7 +67,7 @@ import type {
   ReusableParams,
 } from '~/services/columns.service.type';
 import type { ColumnBackupRef } from '~/services/column-data-backup-handler';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import {
   type ColumnWebhookManager,
   ColumnWebhookManagerBuilder,
@@ -95,7 +95,7 @@ import {
 } from '~/decorators/trace-command.decorator';
 import { getReplay, setReplay } from '~/helpers/replayScope';
 import { OperationName } from '~/command-registry/op-names';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { extractProps } from '~/helpers/extractProps';
 import { pgQuoteLiteral } from '~/helpers/sqlSanitize';
 import getColumnPropsFromUIDT from '~/helpers/getColumnPropsFromUIDT';
@@ -121,7 +121,7 @@ import {
   User,
   View,
 } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { IFormulaColumnTypeChanger } from '~/services/formula-column-type-changer.types';
 import { ColumnDataBackupHandler } from '~/services/column-data-backup-handler.service';
@@ -130,7 +130,7 @@ import { ViewColumnsService } from '~/services/view-columns.service';
 import { FiltersService } from '~/services/filters.service';
 import { DuplicateDetectionService } from '~/services/duplicate-detection.service';
 import { LinkPlaceholderService } from '~/services/link-placeholder.service';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { ltarColumnConversion } from '~/helpers/ltarColumnConversion';
 import { pickPairedLtarColumn } from '~/helpers/ltarPairing';
 import { validateUniqueConstraint } from '~/helpers/uniqueConstraintHelpers';
@@ -139,8 +139,8 @@ import {
   convertValueToAIRecordType,
 } from '~/utils/dataConversion';
 import { CacheDelDirection, CacheScope, MetaTable } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 import { DBErrorExtractor } from '~/helpers/db-error/extractor';
 import { MetaDependencyEventHandler } from '~/services/meta-dependency/event-handler.service';
 import { getRelatedModelMap } from '~/utils/getRelatedModelMap';
@@ -230,7 +230,7 @@ const enumRebuildSuffix = customAlphabet(
   8,
 );
 
-function validateDateFormatMeta(context: NcContext, meta: unknown) {
+function validateDateFormatMeta(context: AtContext, meta: unknown) {
   let parsed;
   try {
     parsed = typeof meta === 'string' ? JSON.parse(meta) : meta;
@@ -238,7 +238,7 @@ function validateDateFormatMeta(context: NcContext, meta: unknown) {
     return;
   }
   if (parsed?.date_format && !ALLOWED_DATE_FORMATS.has(parsed.date_format)) {
-    NcError.get(context).badRequest('Invalid date format');
+    AtError.get(context).badRequest('Invalid date format');
   }
 }
 
@@ -250,20 +250,20 @@ function validateDateFormatMeta(context: NcContext, meta: unknown) {
 // Also enforces the enterprise-license gate: the override is an EE-only
 // feature, so any non-null payload on a non-EE instance is rejected.
 function resolveDisplayValueColumnOrThrow(
-  context: NcContext,
+  context: AtContext,
   relatedTable: Model,
   requestedId: string | null | undefined,
 ): string | null {
   if (!requestedId) return null;
-  if (!Noco.isEE()) {
-    NcError.get(context).badRequest(
+  if (!Atmosphere.isEE()) {
+    AtError.get(context).badRequest(
       'Custom display value field is an enterprise feature',
     );
   }
   const col = relatedTable.columns?.find((c) => c.id === requestedId);
   if (!col) return null;
   if (!isSupportedDisplayValueColumn(col)) {
-    NcError.get(context).badRequest(
+    AtError.get(context).badRequest(
       'Selected column type is not supported as a display value field',
     );
   }
@@ -279,22 +279,22 @@ function resolveDisplayValueColumnOrThrow(
 // ColumnDeleteTransitiveDependentsDependencyHandler), and clear each
 // affected model's cache.
 async function clearDependentLookupModelCaches(
-  context: NcContext,
+  context: AtContext,
   ltarColumn: Column,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ) {
   // The compiled single-query cache is EE-only (clearSingleQueryCache no-ops
   // in CE) — skip the dependency walk entirely there.
-  if (!Noco.isEE()) return;
+  if (!Atmosphere.isEE()) return;
 
-  const contexts: NcContext[] = [context];
+  const contexts: AtContext[] = [context];
   const discoveredModels = new Set<string>();
 
   // Bases reachable through cross-base links on a model can host lookups
   // that target that model's columns. Called for the LTAR's own model and
   // for every dependent lookup's model found by the BFS, so chains that
   // cross a base boundary at hop ≥ 2 are still invalidated.
-  const addLinkedBaseContexts = async (modelId: string, ctx: NcContext) => {
+  const addLinkedBaseContexts = async (modelId: string, ctx: AtContext) => {
     const key = `${ctx.base_id}:${modelId}`;
     if (discoveredModels.has(key)) return;
     discoveredModels.add(key);
@@ -322,7 +322,7 @@ async function clearDependentLookupModelCaches(
   await addLinkedBaseContexts(ltarColumn.fk_model_id, context);
 
   const visited = new Set<string>();
-  const affectedModels = new Map<string, NcContext>();
+  const affectedModels = new Map<string, AtContext>();
 
   let frontier = [ltarColumn.id];
   while (frontier.length) {
@@ -391,7 +391,7 @@ async function reuseOrSave(
   tp: 'sqlClient',
   params: ReusableParams,
   get: () => Promise<any>,
-): Promise<ReturnType<typeof NcConnectionMgrv2.getSqlClient>>;
+): Promise<ReturnType<typeof AtConnectionMgrv2.getSqlClient>>;
 async function reuseOrSave(
   tp: 'sqlMgr',
   params: ReusableParams,
@@ -439,7 +439,7 @@ export async function getJunctionTableName(
   let suffix: number = null;
   // check table name avail or not, if not then add incremental suffix
   while (
-    await Noco.ncMeta.metaGet2(
+    await Atmosphere.ncMeta.metaGet2(
       (parent as any).fk_workspace_id,
       parent.base_id,
       MetaTable.MODELS,
@@ -499,14 +499,14 @@ const generateColumnDeleteHandler = (
  * exclusive — at most one may be true on a single column.
  *
  * Also enforces that smartMode is only enabled on internal PostgreSQL sources:
- * the runtime read/write paths use `nc_row_meta` JSONB (added only when
+ * the runtime read/write paths use `atm_row_meta` JSONB (added only when
  * `isEE && clientType === PG` in tableHelpers) and PG-specific JSONB
  * operators in prepareMetaUpdateQuery. Allowing smartMode on SQLite/MySQL
- * meta DBs creates a column the user can never use (no nc_row_meta) and on
+ * meta DBs creates a column the user can never use (no atm_row_meta) and on
  * EE with non-PG meta DB triggers a runtime crash.
  */
 function validateLongTextMetaExclusivity(
-  context: NcContext,
+  context: AtContext,
   uidt: UITypes | string | undefined,
   meta: Record<string, any> | null | undefined,
   source: Source | null | undefined,
@@ -518,7 +518,7 @@ function validateLongTextMetaExclusivity(
   const aiMode = !!meta[LongTextAiMetaProp];
 
   if ([richMode, smartMode, aiMode].filter(Boolean).length > 1) {
-    NcError.get(context).invalidRequestBody(
+    AtError.get(context).invalidRequestBody(
       'richMode, smartMode, and AI generation are mutually exclusive on LongText',
     );
   }
@@ -531,7 +531,7 @@ function validateLongTextMetaExclusivity(
   // catches non-PG meta DBs and is_local SQLite minimal-DBs alike.
   if (smartMode && source) {
     if (!source.isMeta()) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'SmartText is only supported on internal sources',
       );
     }
@@ -539,7 +539,7 @@ function validateLongTextMetaExclusivity(
     // enum) while ClientType is the SDK-side enum; both share the 'pg' value
     // but TS sees them as disjoint. The string compare is the cross-enum-safe form.
     if ((source.type as string) !== ClientType.PG) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'SmartText is only supported on PostgreSQL meta databases',
       );
     }
@@ -573,12 +573,12 @@ export class ColumnsService implements IColumnsService {
    * This ensures we can drop the constraint even if table/column name changes later.
    * internal_meta is an internal field (not exposed via API)
    *
-   * @param context - NcContext
+   * @param context - AtContext
    * @param column - Partial Column object containing base_id, fk_model_id, id, and internal_meta
    * @returns Updated internal_meta object with unique_constraint_name set
    */
   private storeUniqueConstraintNameInInternalMeta(
-    context: NcContext,
+    context: AtContext,
     column: Pick<Column, 'id' | 'base_id' | 'fk_model_id' | 'internal_meta'>,
   ): any {
     // Generate constraint name using base_id + '_' + table_id + '_' + column_id for fixed-length, unique constraint name
@@ -607,7 +607,7 @@ export class ColumnsService implements IColumnsService {
   }
 
   async updateFormulas(
-    context: NcContext,
+    context: AtContext,
     args: { oldColumn: any; colBody: any },
   ) {
     const { oldColumn, colBody } = args;
@@ -617,7 +617,7 @@ export class ColumnsService implements IColumnsService {
       oldColumn.column_name !== colBody.column_name ||
       oldColumn.title !== colBody.title
     ) {
-      const formulas = await Noco.ncMeta
+      const formulas = await Atmosphere.ncMeta
         .knex(MetaTable.COL_FORMULA)
         .where('formula', 'like', `%${oldColumn.id}%`);
       if (formulas) {
@@ -641,7 +641,7 @@ export class ColumnsService implements IColumnsService {
   }
 
   private async updateMetaAndDatabase(
-    context: NcContext,
+    context: AtContext,
     args: {
       table: Model;
       column: Partial<Column>;
@@ -668,7 +668,7 @@ export class ColumnsService implements IColumnsService {
 
     const unfilteredColumns = await table.getColumns(
       context,
-      Noco.ncMeta,
+      Atmosphere.ncMeta,
       undefined,
       false,
     );
@@ -746,12 +746,12 @@ export class ColumnsService implements IColumnsService {
   }
 
   private async simpleColumnUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       columnId: string;
       column: ColumnReqType;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
     },
     {
       table,
@@ -764,7 +764,7 @@ export class ColumnsService implements IColumnsService {
       oldColumn: Column;
       isSyncedColumn: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model | Column<any>> {
     const updateObj: Partial<Column> = {};
 
@@ -774,11 +774,11 @@ export class ColumnsService implements IColumnsService {
         (column.system && TITLE_IMMUTABLE_SYSTEM_TYPES.has(column.uidt)) ||
         column.pk
       ) {
-        NcError.get(context).systemFieldNonModifiable();
+        AtError.get(context).systemFieldNonModifiable();
       }
 
       if (isSyncedColumn) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `The column '${
             column.title || column.column_name
           }' is a synced column and cannot be updated.`,
@@ -788,7 +788,7 @@ export class ColumnsService implements IColumnsService {
       const trimmedTitle = param.column.title?.trim();
 
       if (trimmedTitle && trimmedTitle.length > 255) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Column title ${trimmedTitle} exceeds 255 characters`,
         );
       }
@@ -805,7 +805,7 @@ export class ColumnsService implements IColumnsService {
           ncMeta,
         ))
       ) {
-        NcError.get(context).duplicateAlias({
+        AtError.get(context).duplicateAlias({
           type: 'column',
           alias: trimmedTitle,
           base: context.base_id,
@@ -846,7 +846,7 @@ export class ColumnsService implements IColumnsService {
       columns: table.columns,
     });
 
-    if (param.apiVersion === NcApiVersion.V3) {
+    if (param.apiVersion === AtApiVersion.V3) {
       return updatedColumn;
     }
 
@@ -854,24 +854,24 @@ export class ColumnsService implements IColumnsService {
   }
 
   async columnUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       columnId: string;
       column: ColumnReqType & { colOptions?: any };
       user: UserType;
       reuse?: ReusableParams;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       forceUpdateSystem?: boolean;
       bypassSyncedFieldGuard?: boolean;
       columnWebhookManager?: ColumnWebhookManager;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model | Column<any>> {
     const reuse = param.reuse || {};
     const column = await Column.get(context, { colId: param.columnId });
     if (!column) {
-      NcError.get(context).fieldNotFound(param.columnId);
+      AtError.get(context).fieldNotFound(param.columnId);
     }
 
     const oldColumn = deepClone(column);
@@ -933,7 +933,7 @@ export class ColumnsService implements IColumnsService {
   }
 
   protected async shouldBackupBeforeTypeChange(
-    _context: NcContext,
+    _context: AtContext,
     _oldColumn: Column<any> | null | undefined,
     _requestColumn: any,
   ): Promise<boolean> {
@@ -941,12 +941,12 @@ export class ColumnsService implements IColumnsService {
   }
 
   protected async _runColumnUpdate(
-    context: NcContext,
+    context: AtContext,
     param: Parameters<ColumnsService['columnUpdate']>[1],
     column: Column<any>,
     oldColumn: any,
     reuse: ReusableParams,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Model | Column<any>> {
     const { req } = param;
 
@@ -973,7 +973,7 @@ export class ColumnsService implements IColumnsService {
     );
 
     const allowUpdateSystemField =
-      process.env.NC_SYSTEM_FIELD_API_UPDATE === 'true' ||
+      process.env.ATMOSPHERE_SYSTEM_FIELD_API_UPDATE === 'true' ||
       param.forceUpdateSystem;
 
     if (
@@ -994,17 +994,17 @@ export class ColumnsService implements IColumnsService {
       // Allow meta-only updates (description, display format) for system/pk columns
       !!payloadHasNonMetaProps
     ) {
-      NcError.get(context).systemFieldNonModifiable();
+      AtError.get(context).systemFieldNonModifiable();
     }
 
     if (isSyncedColumn && payloadHasNonMetaProps) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Synced fields cannot be modified directly. Only meta and description are editable on synced columns.',
       );
     }
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     const source = await reuseOrSave('source', reuse, async () =>
@@ -1102,7 +1102,7 @@ export class ColumnsService implements IColumnsService {
     ) {
       /*
       throw error if source is readonly and column type is not allowed
-      NcError.sourceMetaReadOnly(source.alias);
+      AtError.sourceMetaReadOnly(source.alias);
 
       Get all the columns in the table and return
       */
@@ -1126,7 +1126,7 @@ export class ColumnsService implements IColumnsService {
     }
 
     const sqlClient = await reuseOrSave('sqlClient', reuse, async () =>
-      NcConnectionMgrv2.getSqlClient(source),
+      AtConnectionMgrv2.getSqlClient(source),
     );
 
     const sqlClientType = sqlClient.knex.clientType();
@@ -1174,13 +1174,13 @@ export class ColumnsService implements IColumnsService {
       param.column.column_name &&
       param.column.column_name.length > mxColumnLength
     ) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `Column name ${param.column.column_name} exceeds ${mxColumnLength} characters`,
       );
     }
 
     if (param.column.title && param.column.title.length > 255) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `Column title ${param.column.title} exceeds 255 characters`,
       );
     }
@@ -1196,7 +1196,7 @@ export class ColumnsService implements IColumnsService {
         exclude_id: param.columnId,
       }))
     ) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'column',
         alias: param.column.column_name,
         base: context.base_id,
@@ -1215,7 +1215,7 @@ export class ColumnsService implements IColumnsService {
       }))
     ) {
       // This error will be thrown if there are more than one column linking to the same table. You have to delete one of them
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'column',
         alias: param.column.title,
         base: context.base_id,
@@ -1306,7 +1306,7 @@ export class ColumnsService implements IColumnsService {
               column,
             );
           if (duplicateCheck.hasDuplicates) {
-            NcError.get(context).badRequest(
+            AtError.get(context).badRequest(
               `Found ${duplicateCheck.count} duplicate values in this field. Please edit or remove duplicates before enabling uniqueness.`,
             );
           }
@@ -1330,7 +1330,7 @@ export class ColumnsService implements IColumnsService {
       const currentUnique =
         param.column.unique !== undefined ? param.column.unique : column.unique;
       if (currentUnique) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'Default values are not allowed for unique fields. Please disable the unique constraint first.',
         );
       }
@@ -1367,7 +1367,7 @@ export class ColumnsService implements IColumnsService {
         Model.getBaseModelSQL(context, {
           id: table.id,
           dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-            NcConnectionMgrv2.get(source),
+            AtConnectionMgrv2.get(source),
           ),
         }),
       );
@@ -1412,7 +1412,7 @@ export class ColumnsService implements IColumnsService {
       column.internal_meta = cleanedInternalMeta;
       column.dt = 'text';
       colBody.internal_meta = cleanedInternalMeta;
-      // Persist immediately so a mid-update failure doesn't leave NocoDB
+      // Persist immediately so a mid-update failure doesn't leave Atmosphere
       // metadata claiming the column is still bound to the enum type.
       await Column.update(context, column.id, {
         dt: 'text',
@@ -1486,7 +1486,7 @@ export class ColumnsService implements IColumnsService {
               Model.getBaseModelSQL(context, {
                 id: table.id,
                 dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-                  NcConnectionMgrv2.get(source),
+                  AtConnectionMgrv2.get(source),
                 ),
               }),
             );
@@ -1499,12 +1499,12 @@ export class ColumnsService implements IColumnsService {
               parsedTree: colBody.parsed_tree,
             });
           } catch (e) {
-            if (e instanceof NcError || e instanceof NcBaseError) throw e;
+            if (e instanceof AtError || e instanceof AtBaseError) throw e;
             this.logger.error(
               `Failed to update column: ${e?.message ?? e}`,
               e?.stack,
             );
-            NcError.get(context).internalServerError('Failed to update column');
+            AtError.get(context).internalServerError('Failed to update column');
           }
 
           await Column.update(context, column.id, {
@@ -1545,7 +1545,7 @@ export class ColumnsService implements IColumnsService {
                   Model.getBaseModelSQL(context, {
                     id: table.id,
                     dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-                      NcConnectionMgrv2.get(source),
+                      AtConnectionMgrv2.get(source),
                     ),
                   }),
               );
@@ -1559,11 +1559,11 @@ export class ColumnsService implements IColumnsService {
               });
             } catch (e) {
               console.error(e);
-              NcError.get(context).badRequest('Invalid Formula');
+              AtError.get(context).badRequest('Invalid Formula');
             }
           } else if (colBody.type === ButtonActionsType.Webhook) {
             if (!colBody.fk_webhook_id) {
-              NcError.get(context).badRequest('Webhook not found');
+              AtError.get(context).badRequest('Webhook not found');
             }
 
             const hook = await Hook.get(context, colBody.fk_webhook_id);
@@ -1574,17 +1574,17 @@ export class ColumnsService implements IColumnsService {
               (hook.version !== 'v3' && hook.event === 'manual') ||
               (hook.version === 'v3' && !hook.operation?.includes('trigger'))
             ) {
-              NcError.get(context).badRequest('Webhook not found');
+              AtError.get(context).badRequest('Webhook not found');
             }
           } else if (colBody.type === ButtonActionsType.Script) {
             if (!colBody.fk_script_id) {
-              NcError.get(context).badRequest('Script not found');
+              AtError.get(context).badRequest('Script not found');
             }
 
             const script = await Script.get(context, colBody.fk_script_id);
 
             if (!script) {
-              NcError.get(context).badRequest('Script not found');
+              AtError.get(context).badRequest('Script not found');
             }
           } else if (colBody.type === ButtonActionsType.Ai) {
             /*
@@ -1599,7 +1599,7 @@ export class ColumnsService implements IColumnsService {
                   const column = table.columns.find((c) => c.title === p1);
 
                   if (!column) {
-                    NcError.get(context).badRequest(`Field '${p1}' not found`);
+                    AtError.get(context).badRequest(`Field '${p1}' not found`);
                   }
 
                   return `{${column.id}}`;
@@ -1706,7 +1706,7 @@ export class ColumnsService implements IColumnsService {
                   id: colOptions.fk_related_model_id,
                 });
                 if (!relatedModel) {
-                  NcError.get(context).tableNotFound(
+                  AtError.get(context).tableNotFound(
                     colOptions.fk_related_model_id,
                   );
                 }
@@ -1812,7 +1812,7 @@ export class ColumnsService implements IColumnsService {
             context,
             columns: safeTable.columns,
           });
-          NocoSocket.broadcastEvent(
+          AtmosphereSocket.broadcastEvent(
             context,
             {
               event: EventType.META_EVENT,
@@ -1831,7 +1831,7 @@ export class ColumnsService implements IColumnsService {
 
         return safeTable;
       } else {
-        NcError.get(context).notImplemented(
+        AtError.get(context).notImplemented(
           `Updating ${column.uidt} => ${colBody.uidt}`,
         );
       }
@@ -1889,7 +1889,7 @@ export class ColumnsService implements IColumnsService {
           columns: safeTable.columns,
         });
 
-        NocoSocket.broadcastEvent(
+        AtmosphereSocket.broadcastEvent(
           context,
           {
             event: EventType.META_EVENT,
@@ -1921,7 +1921,7 @@ export class ColumnsService implements IColumnsService {
         UITypes.ForeignKey,
       ].includes(colBody.uidt)
     ) {
-      NcError.get(context).notImplemented(
+      AtError.get(context).notImplemented(
         `Updating ${colBody.uidt} => ${colBody.uidt}`,
       );
     } else if (
@@ -1933,7 +1933,7 @@ export class ColumnsService implements IColumnsService {
       ].includes(colBody.uidt)
     ) {
       if (isSyncedColumn) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `The column '${
             column.title || column.column_name
           }' is a synced column and cannot be updated.`,
@@ -1949,7 +1949,7 @@ export class ColumnsService implements IColumnsService {
       [UITypes.SingleSelect, UITypes.MultiSelect].includes(colBody.uidt)
     ) {
       if (isSyncedColumn) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `The column '${
             column.title || column.column_name
           }' is a synced column and cannot be updated.`,
@@ -1969,7 +1969,7 @@ export class ColumnsService implements IColumnsService {
         Model.getBaseModelSQL(context, {
           id: table.id,
           dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-            NcConnectionMgrv2.get(source),
+            AtConnectionMgrv2.get(source),
           ),
         }),
       );
@@ -1986,7 +1986,7 @@ export class ColumnsService implements IColumnsService {
           'oracledb',
         ];
         const dbDriver = await reuseOrSave('dbDriver', reuse, async () =>
-          NcConnectionMgrv2.get(source),
+          AtConnectionMgrv2.get(source),
         );
         const driverType = dbDriver.clientType();
 
@@ -2021,7 +2021,7 @@ export class ColumnsService implements IColumnsService {
 
           // Validate: PG enums must have at least one value.
           if ((colBody.colOptions?.options || []).length === 0) {
-            NcError.get(context).badRequest(
+            AtError.get(context).badRequest(
               `Cannot remove all options from this field. ` +
                 `At least one option is required.`,
             );
@@ -2111,7 +2111,7 @@ export class ColumnsService implements IColumnsService {
             (await KanbanView.getViewsByGroupingColId(context, column.id))
               .length > 0
           ) {
-            NcError.get(context).badRequest(
+            AtError.get(context).badRequest(
               `The column '${column.title}' is being used in Kanban View.`,
             );
           }
@@ -2180,7 +2180,7 @@ export class ColumnsService implements IColumnsService {
         } else {
           // Text to SingleSelect/MultiSelect
           const dbDriver = await reuseOrSave('dbDriver', reuse, async () =>
-            NcConnectionMgrv2.get(source),
+            AtConnectionMgrv2.get(source),
           );
 
           const baseModel = await reuseOrSave('baseModel', reuse, async () =>
@@ -2212,7 +2212,7 @@ export class ColumnsService implements IColumnsService {
                 const values = String(el[column.column_name]).split(',');
                 if (values.length > 1) {
                   if (colBody.uidt === UITypes.SingleSelect) {
-                    NcError.get(context).badRequest(
+                    AtError.get(context).badRequest(
                       'SingleSelect cannot have comma separated values, please use MultiSelect instead.',
                     );
                   }
@@ -2252,14 +2252,14 @@ export class ColumnsService implements IColumnsService {
           if (colBody.uidt === UITypes.SingleSelect) {
             try {
               if (!optionTitles.includes(colBody.cdf.replace(/'/g, "''"))) {
-                NcError.get(context).badRequest(
+                AtError.get(context).badRequest(
                   `Default value '${colBody.cdf}' is not a select option.`,
                 );
               }
             } catch (e) {
               colBody.cdf = colBody.cdf.replace(/^'/, '').replace(/'$/, '');
               if (!optionTitles.includes(colBody.cdf.replace(/'/g, "''"))) {
-                NcError.get(context).badRequest(
+                AtError.get(context).badRequest(
                   `Default value '${colBody.cdf}' is not a select option.`,
                 );
               }
@@ -2268,7 +2268,7 @@ export class ColumnsService implements IColumnsService {
             try {
               for (const cdf of colBody.cdf.split(',')) {
                 if (!optionTitles.includes(cdf.replace(/'/g, "''"))) {
-                  NcError.get(context).badRequest(
+                  AtError.get(context).badRequest(
                     `Default value '${cdf}' is not a select option.`,
                   );
                 }
@@ -2277,7 +2277,7 @@ export class ColumnsService implements IColumnsService {
               colBody.cdf = colBody.cdf.replace(/^'/, '').replace(/'$/, '');
               for (const cdf of colBody.cdf.split(',')) {
                 if (!optionTitles.includes(cdf.replace(/'/g, "''"))) {
-                  NcError.get(context).badRequest(
+                  AtError.get(context).badRequest(
                     `Default value '${cdf}' is not a select option.`,
                   );
                 }
@@ -2309,7 +2309,7 @@ export class ColumnsService implements IColumnsService {
             isMysqlCaseInsensitiveOptionDt(driverType, colBody.dt),
           )
         ) {
-          NcError.get(context).badRequest('Duplicates are not allowed!');
+          AtError.get(context).badRequest('Duplicates are not allowed!');
         }
 
         // Restrict empty options
@@ -2318,7 +2318,7 @@ export class ColumnsService implements IColumnsService {
             return item === '';
           })
         ) {
-          NcError.get(context).badRequest('Empty options are not allowed!');
+          AtError.get(context).badRequest('Empty options are not allowed!');
         }
 
         // Trim end of enum/set
@@ -2339,7 +2339,7 @@ export class ColumnsService implements IColumnsService {
             ? `${colBody.colOptions.options
                 .map((o) => {
                   if (o.title.includes(',')) {
-                    NcError.get(context).badRequest(
+                    AtError.get(context).badRequest(
                       "Illegal char(',') for MultiSelect",
                     );
                   }
@@ -2493,7 +2493,7 @@ export class ColumnsService implements IColumnsService {
               !supportedDrivers.includes(driverType) &&
               column.uidt === UITypes.MultiSelect
             ) {
-              NcError.get(context).badRequest(
+              AtError.get(context).badRequest(
                 'Your database not yet supported for this operation. Please remove option from records manually before dropping.',
               );
             }
@@ -2616,7 +2616,7 @@ export class ColumnsService implements IColumnsService {
               !supportedDrivers.includes(driverType) &&
               column.uidt === UITypes.MultiSelect
             ) {
-              NcError.get(context).badRequest(
+              AtError.get(context).badRequest(
                 'Your database not yet supported for this operation. Please remove option from records manually before updating.',
               );
             }
@@ -2687,7 +2687,7 @@ export class ColumnsService implements IColumnsService {
                   ? `${column.colOptions.options
                       .map((o) => {
                         if (o.title.includes(',')) {
-                          NcError.get(context).badRequest(
+                          AtError.get(context).badRequest(
                             "Illegal char(',') for MultiSelect",
                           );
                         }
@@ -3176,7 +3176,7 @@ export class ColumnsService implements IColumnsService {
       });
     } else if (colBody.uidt === UITypes.User) {
       if (isSyncedColumn) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `The column '${
             column.title || column.column_name
           }' is a synced column and cannot be updated.`,
@@ -3208,7 +3208,7 @@ export class ColumnsService implements IColumnsService {
           });
 
           if (emailsNotPresent.length) {
-            NcError.get(context).badRequest(
+            AtError.get(context).badRequest(
               `The following default users are not part of workspace: ${emailsNotPresent.join(
                 ', ',
               )}`,
@@ -3230,7 +3230,7 @@ export class ColumnsService implements IColumnsService {
       if (column.uidt === UITypes.User) {
         // multi user to single user
         if (isSyncedColumn) {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             `The column '${
               column.title || column.column_name
             }' is a synced column and cannot be updated.`,
@@ -3245,13 +3245,13 @@ export class ColumnsService implements IColumnsService {
             Model.getBaseModelSQL(context, {
               id: table.id,
               dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-                NcConnectionMgrv2.get(source),
+                AtConnectionMgrv2.get(source),
               ),
             }),
           );
 
           const dbDriver = await reuseOrSave('dbDriver', reuse, async () =>
-            NcConnectionMgrv2.get(source),
+            AtConnectionMgrv2.get(source),
           );
           const driverType = dbDriver.clientType();
 
@@ -3330,7 +3330,7 @@ export class ColumnsService implements IColumnsService {
         });
       } else {
         if (isSyncedColumn) {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             `The column '${
               column.title || column.column_name
             }' is a synced column and cannot be updated.`,
@@ -3342,7 +3342,7 @@ export class ColumnsService implements IColumnsService {
           Model.getBaseModelSQL(context, {
             id: table.id,
             dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-              NcConnectionMgrv2.get(source),
+              AtConnectionMgrv2.get(source),
             ),
           }),
         );
@@ -3383,7 +3383,7 @@ export class ColumnsService implements IColumnsService {
           ].includes(column.uidt)
         ) {
           const dbDriver = await reuseOrSave('dbDriver', reuse, async () =>
-            NcConnectionMgrv2.get(source),
+            AtConnectionMgrv2.get(source),
           );
           const driverType = dbDriver.clientType();
 
@@ -3440,7 +3440,7 @@ export class ColumnsService implements IColumnsService {
       }
     } else {
       if (isSyncedColumn) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `The column '${
             column.title || column.column_name
           }' is a synced column and cannot be updated.`,
@@ -3451,7 +3451,7 @@ export class ColumnsService implements IColumnsService {
           Model.getBaseModelSQL(context, {
             id: table.id,
             dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-              NcConnectionMgrv2.get(source),
+              AtConnectionMgrv2.get(source),
             ),
           }),
         );
@@ -3479,7 +3479,7 @@ export class ColumnsService implements IColumnsService {
         (await KanbanView.getViewsByGroupingColId(context, column.id)).length >
           0
       ) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           `The column '${column.title}' is being used in Kanban View. Please update stack by field or delete Kanban View first.`,
         );
       }
@@ -3494,7 +3494,7 @@ export class ColumnsService implements IColumnsService {
           Model.getBaseModelSQL(context, {
             id: table.id,
             dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-              NcConnectionMgrv2.get(source),
+              AtConnectionMgrv2.get(source),
             ),
           }),
         );
@@ -3519,7 +3519,7 @@ export class ColumnsService implements IColumnsService {
             const column = table.columns.find((c) => c.title === p1);
 
             if (!column) {
-              NcError.get(context).badRequest(`Field '${p1}' not found`);
+              AtError.get(context).badRequest(`Field '${p1}' not found`);
             }
 
             return `{${column.id}}`;
@@ -3537,7 +3537,7 @@ export class ColumnsService implements IColumnsService {
             Model.getBaseModelSQL(context, {
               id: table.id,
               dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-                NcConnectionMgrv2.get(source),
+                AtConnectionMgrv2.get(source),
               ),
             }),
           );
@@ -3558,7 +3558,7 @@ export class ColumnsService implements IColumnsService {
       // existing text/numeric values would violate both invariants (no backfill
       // path, likely duplicates). UUID must be created as a fresh column.
       if (colBody.uidt === UITypes.UUID && column.uidt !== UITypes.UUID) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           `Cannot convert '${column.title}' to UUID. UUID values are auto-generated — create a new UUID column instead.`,
         );
       }
@@ -3569,7 +3569,7 @@ export class ColumnsService implements IColumnsService {
         column.uidt !== UITypes.AutoNumber &&
         source.type !== 'pg'
       ) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'AutoNumber field type is supported only for PostgreSQL databases',
         );
       }
@@ -3669,7 +3669,7 @@ export class ColumnsService implements IColumnsService {
       ncMeta,
     );
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -3697,25 +3697,25 @@ export class ColumnsService implements IColumnsService {
       });
     }
 
-    if (param.apiVersion === NcApiVersion.V3) {
+    if (param.apiVersion === AtApiVersion.V3) {
       return column;
     }
 
     return table;
   }
 
-  async columnGet(context: NcContext, param: { columnId: string }) {
+  async columnGet(context: AtContext, param: { columnId: string }) {
     return Column.get(context, { colId: param.columnId });
   }
 
   @TraceCommand(OperationName.columnSetAsPrimary)
   async columnSetAsPrimary(
-    context: NcContext,
-    param: { columnId: string; req: NcRequest },
+    context: AtContext,
+    param: { columnId: string; req: AtRequest },
   ) {
     const oldColumn = await Column.get(context, { colId: param.columnId });
     if (!oldColumn) {
-      NcError.get(context).fieldNotFound(param.columnId);
+      AtError.get(context).fieldNotFound(param.columnId);
     }
 
     const oldPrimaryColumn = await Model.get(context, oldColumn.fk_model_id)
@@ -3727,7 +3727,7 @@ export class ColumnsService implements IColumnsService {
     // single-line surfaces (LTAR chips, breadcrumbs, audit lines, search).
     // Existing PV columns keep working; only new selections are blocked.
     if (oldColumn.uidt === UITypes.LongText && !oldColumn.pv) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'Long Text fields cannot be set as the display value.',
       );
     }
@@ -3753,7 +3753,7 @@ export class ColumnsService implements IColumnsService {
         columns: table.columns,
       });
 
-      NocoSocket.broadcastEvent(
+      AtmosphereSocket.broadcastEvent(
         context,
         {
           event: EventType.META_EVENT,
@@ -3779,7 +3779,7 @@ export class ColumnsService implements IColumnsService {
       columns: table.columns,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -3797,10 +3797,10 @@ export class ColumnsService implements IColumnsService {
     return result;
   }
 
-  async columnAdd<T extends NcApiVersion = NcApiVersion | null | undefined>(
-    context: NcContext,
+  async columnAdd<T extends AtApiVersion = AtApiVersion | null | undefined>(
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       tableId: string;
       column: ColumnReqType;
       user: UserType;
@@ -3810,8 +3810,8 @@ export class ColumnsService implements IColumnsService {
       columnWebhookManager?: ColumnWebhookManager;
       operationSource?: OperationSource;
     },
-    ncMeta = Noco.ncMeta,
-  ): Promise<T extends NcApiVersion.V3 ? Column : Model> {
+    ncMeta = Atmosphere.ncMeta,
+  ): Promise<T extends AtApiVersion.V3 ? Column : Model> {
     let savedColumn;
     // if column_name is defined and title is not defined, set title to column_name
     if (param.column.column_name && !param.column.title) {
@@ -3836,7 +3836,7 @@ export class ColumnsService implements IColumnsService {
     );
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     const source = await reuseOrSave('source', reuse, async () =>
@@ -3848,7 +3848,7 @@ export class ColumnsService implements IColumnsService {
       source?.is_schema_readonly &&
       !readonlyMetaAllowedTypes.includes(param.column.uidt as UITypes)
     ) {
-      NcError.get(context).sourceMetaReadOnly(source.alias);
+      AtError.get(context).sourceMetaReadOnly(source.alias);
     }
 
     validateLongTextMetaExclusivity(
@@ -3864,7 +3864,7 @@ export class ColumnsService implements IColumnsService {
         param.column.uidt as UITypes,
       )
     ) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `Cannot manually create system columns`,
       );
     } else {
@@ -3887,7 +3887,7 @@ export class ColumnsService implements IColumnsService {
 
     if (param.column.title || param.column.column_name) {
       const dbDriver = await reuseOrSave('dbDriver', reuse, async () =>
-        NcConnectionMgrv2.get(source),
+        AtConnectionMgrv2.get(source),
       );
 
       const sqlClientType = dbDriver.clientType();
@@ -3931,13 +3931,13 @@ export class ColumnsService implements IColumnsService {
         param.column.column_name &&
         param.column.column_name.length > mxColumnLength
       ) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Column name ${param.column.column_name} exceeds ${mxColumnLength} characters`,
         );
       }
 
       if (param.column.title && param.column.title.length > 255) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Column title ${param.column.title} exceeds 255 characters`,
         );
       }
@@ -3950,7 +3950,7 @@ export class ColumnsService implements IColumnsService {
         fk_model_id: param.tableId,
       }))
     ) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'column',
         alias: param.column.column_name,
         label: 'name',
@@ -3966,7 +3966,7 @@ export class ColumnsService implements IColumnsService {
         fk_model_id: param.tableId,
       }))
     ) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'column',
         alias: param.column.title,
         base: context.base_id,
@@ -4007,7 +4007,7 @@ export class ColumnsService implements IColumnsService {
       colBody.unique &&
       colBody.uidt !== UITypes.UUID
     ) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Default values are not allowed for unique fields. Please disable the unique constraint first.',
       );
     }
@@ -4092,7 +4092,7 @@ export class ColumnsService implements IColumnsService {
       case UITypes.UUID:
         {
           if (source.type !== 'pg' && source.type !== 'mssql') {
-            NcError.get(context).badRequest(
+            AtError.get(context).badRequest(
               'UUID field type is supported only for PostgreSQL and SQL Server databases',
             );
           }
@@ -4189,7 +4189,7 @@ export class ColumnsService implements IColumnsService {
             Model.getBaseModelSQL(context, {
               id: table.id,
               dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-                NcConnectionMgrv2.get(source),
+                AtConnectionMgrv2.get(source),
               ),
             }),
           );
@@ -4205,12 +4205,12 @@ export class ColumnsService implements IColumnsService {
           colBody.error = e.message;
           colBody.parsed_tree = null;
           if (!param.suppressFormulaError) {
-            if (e instanceof NcError || e instanceof NcBaseError) throw e;
+            if (e instanceof AtError || e instanceof AtBaseError) throw e;
             this.logger.error(
               `Failed to update column: ${e?.message ?? e}`,
               e?.stack,
             );
-            NcError.get(context).internalServerError('Failed to update column');
+            AtError.get(context).internalServerError('Failed to update column');
           }
         }
 
@@ -4253,7 +4253,7 @@ export class ColumnsService implements IColumnsService {
               Model.getBaseModelSQL(context, {
                 id: table.id,
                 dbDriver: await reuseOrSave('dbDriver', reuse, async () =>
-                  NcConnectionMgrv2.get(source),
+                  AtConnectionMgrv2.get(source),
                 ),
               }),
             );
@@ -4269,7 +4269,7 @@ export class ColumnsService implements IColumnsService {
             colBody.error = e.message;
             colBody.parsed_tree = null;
             if (!param.suppressFormulaError) {
-              NcError.get(context).invalidRequestBody('Invalid URL Formula');
+              AtError.get(context).invalidRequestBody('Invalid URL Formula');
             }
           }
         } else if (colBody.type === ButtonActionsType.Webhook) {
@@ -4303,7 +4303,7 @@ export class ColumnsService implements IColumnsService {
                 const column = table.columns.find((c) => c.title === p1);
 
                 if (!column) {
-                  NcError.get(context).invalidRequestBody(
+                  AtError.get(context).invalidRequestBody(
                     `Field '${p1}' not found`,
                   );
                 }
@@ -4347,11 +4347,11 @@ export class ColumnsService implements IColumnsService {
                 break;
               case UITypes.CreatedBy:
                 columnName = 'created_by';
-                columnTitle = 'nc_created_by';
+                columnTitle = 'atm_created_by';
                 break;
               case UITypes.LastModifiedBy:
                 columnName = 'updated_by';
-                columnTitle = 'nc_updated_by';
+                columnTitle = 'atm_updated_by';
                 break;
             }
 
@@ -4423,7 +4423,7 @@ export class ColumnsService implements IColumnsService {
       case UITypes.AutoNumber: {
         // AutoNumber is only supported for PostgreSQL
         if (source.type !== 'pg') {
-          NcError.get(context).badRequest(
+          AtError.get(context).badRequest(
             'AutoNumber field type is supported only for PostgreSQL databases',
           );
         }
@@ -4504,7 +4504,7 @@ export class ColumnsService implements IColumnsService {
 
             normalizeSelectOptionTitles(colBody.colOptions.options);
 
-            const dbDriver = await NcConnectionMgrv2.get(source);
+            const dbDriver = await AtConnectionMgrv2.get(source);
             const driverType = dbDriver.clientType();
             const optionTitles = colBody.colOptions.options.map((el) =>
               el.title.replace(/'/g, "''"),
@@ -4517,14 +4517,14 @@ export class ColumnsService implements IColumnsService {
               if (colBody.uidt === UITypes.SingleSelect) {
                 try {
                   if (!optionTitles.includes(colBody.cdf.replace(/'/g, "''"))) {
-                    NcError.get(context).invalidRequestBody(
+                    AtError.get(context).invalidRequestBody(
                       `Default value '${colBody.cdf}' is not a select option.`,
                     );
                   }
                 } catch (e) {
                   colBody.cdf = colBody.cdf.replace(/^'/, '').replace(/'$/, '');
                   if (!optionTitles.includes(colBody.cdf.replace(/'/g, "''"))) {
-                    NcError.get(context).invalidRequestBody(
+                    AtError.get(context).invalidRequestBody(
                       `Default value '${colBody.cdf}' is not a select option.`,
                     );
                   }
@@ -4533,7 +4533,7 @@ export class ColumnsService implements IColumnsService {
                 try {
                   for (const cdf of colBody.cdf.split(',')) {
                     if (!optionTitles.includes(cdf.replace(/'/g, "''"))) {
-                      NcError.get(context).invalidRequestBody(
+                      AtError.get(context).invalidRequestBody(
                         `Default value '${cdf}' is not a select option.`,
                       );
                     }
@@ -4542,7 +4542,7 @@ export class ColumnsService implements IColumnsService {
                   colBody.cdf = colBody.cdf.replace(/^'/, '').replace(/'$/, '');
                   for (const cdf of colBody.cdf.split(',')) {
                     if (!optionTitles.includes(cdf.replace(/'/g, "''"))) {
-                      NcError.get(context).invalidRequestBody(
+                      AtError.get(context).invalidRequestBody(
                         `Default value '${cdf}' is not a select option.`,
                       );
                     }
@@ -4574,7 +4574,7 @@ export class ColumnsService implements IColumnsService {
                 isMysqlCaseInsensitiveOptionDt(driverType, colBody.dt),
               )
             ) {
-              NcError.get(context).invalidRequestBody(
+              AtError.get(context).invalidRequestBody(
                 'Duplicates are not allowed!',
               );
             }
@@ -4585,7 +4585,7 @@ export class ColumnsService implements IColumnsService {
                 return item === '';
               })
             ) {
-              NcError.get(context).invalidRequestBody(
+              AtError.get(context).invalidRequestBody(
                 'Empty options are not allowed!',
               );
             }
@@ -4608,7 +4608,7 @@ export class ColumnsService implements IColumnsService {
                 ? `${colBody.colOptions.options
                     .map((o) => {
                       if (o.title.includes(',')) {
-                        NcError.get(context).invalidRequestBody(
+                        AtError.get(context).invalidRequestBody(
                           "Illegal char(',') for MultiSelect",
                         );
                       }
@@ -4661,7 +4661,7 @@ export class ColumnsService implements IColumnsService {
                 });
 
                 if (emailsNotPresent.length) {
-                  NcError.get(context).invalidRequestBody(
+                  AtError.get(context).invalidRequestBody(
                     `The following default users are not part of workspace: ${emailsNotPresent.join(
                       ', ',
                     )}`,
@@ -4694,7 +4694,7 @@ export class ColumnsService implements IColumnsService {
                 const column = table.columns.find((c) => c.title === p1);
 
                 if (!column) {
-                  NcError.get(context).invalidRequestBody(
+                  AtError.get(context).invalidRequestBody(
                     `Field '${p1}' not found`,
                   );
                 }
@@ -4770,7 +4770,7 @@ export class ColumnsService implements IColumnsService {
           };
 
           const sqlClient = await reuseOrSave('sqlClient', reuse, async () =>
-            NcConnectionMgrv2.getSqlClient(source),
+            AtConnectionMgrv2.getSqlClient(source),
           );
           const sqlMgr = await reuseOrSave('sqlMgr', reuse, async () =>
             ProjectMgrv2.getSqlMgr(context, { id: source.base_id }),
@@ -4883,7 +4883,7 @@ export class ColumnsService implements IColumnsService {
       ncMeta,
     );
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -4920,7 +4920,7 @@ export class ColumnsService implements IColumnsService {
           // source table.
           if (refTable && refTable.id !== table.id) {
             await refTable.getColumns(refContext, ncMeta);
-            NocoSocket.broadcastEvent(
+            AtmosphereSocket.broadcastEvent(
               refContext,
               {
                 event: EventType.META_EVENT,
@@ -4943,16 +4943,16 @@ export class ColumnsService implements IColumnsService {
       }
     }
 
-    if (param.apiVersion === NcApiVersion.V3) {
+    if (param.apiVersion === AtApiVersion.V3) {
       if (savedColumn)
         return (await Column.get(context, {
           colId: savedColumn.id,
-        })) as T extends NcApiVersion.V3 ? Column<any> : never;
+        })) as T extends AtApiVersion.V3 ? Column<any> : never;
 
       if (param.column.title) {
         return (await Column.get(context, {
           colId: table.columns.find((c) => c.title === param.column.title)?.id,
-        })) as T extends NcApiVersion.V3 ? Column<any> : never;
+        })) as T extends AtApiVersion.V3 ? Column<any> : never;
       }
     }
 
@@ -4965,15 +4965,15 @@ export class ColumnsService implements IColumnsService {
     if (!param.columnWebhookManager) {
       columnWebhookManager.emit();
     }
-    return table as T extends NcApiVersion.V3 | null | undefined
+    return table as T extends AtApiVersion.V3 | null | undefined
       ? never
       : Model;
   }
 
   async columnDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       columnId: string;
       forceDeleteSystem?: boolean;
       skipLinkPlaceholder?: boolean;
@@ -4988,11 +4988,11 @@ export class ColumnsService implements IColumnsService {
     const column = await Column.get(context, { colId: param.columnId }, ncMeta);
 
     if (!column) {
-      NcError.get(context).fieldNotFound(param.columnId);
+      AtError.get(context).fieldNotFound(param.columnId);
     }
 
     if ((column.system || isSystemColumn(column)) && !param.forceDeleteSystem) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `The column '${
           column.title || column.column_name
         }' is a system column and cannot be deleted.`,
@@ -5017,7 +5017,7 @@ export class ColumnsService implements IColumnsService {
     const placeholderRefTables = new Map<string, Model>();
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     // check if source is readonly and column type is not allowed
@@ -5025,7 +5025,7 @@ export class ColumnsService implements IColumnsService {
       source?.is_schema_readonly &&
       !readonlyMetaAllowedTypes.includes(column.uidt)
     ) {
-      NcError.get(context).sourceMetaReadOnly(source.alias);
+      AtError.get(context).sourceMetaReadOnly(source.alias);
     }
 
     if (
@@ -5034,7 +5034,7 @@ export class ColumnsService implements IColumnsService {
       !isAutoGeneratedColumn(column) &&
       !param.forceDeleteSystem
     ) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `The column '${
           column.title || column.column_name
         }' is a synced column and cannot be deleted.`,
@@ -5098,7 +5098,7 @@ export class ColumnsService implements IColumnsService {
           ncMeta,
         );
         const table = await linkCol.getModel(context, ncMeta);
-        NcError.get(context).columnAssociatedWithLink(column.id, {
+        AtError.get(context).columnAssociatedWithLink(column.id, {
           customMessage: `Column is associated with Link column '${
             linkCol.title || linkCol.column_name
           }' (${
@@ -5664,7 +5664,7 @@ export class ColumnsService implements IColumnsService {
         });
         break;
       case UITypes.ForeignKey: {
-        NcError.get(context).notImplemented(`Support for ${column.uidt}`);
+        AtError.get(context).notImplemented(`Support for ${column.uidt}`);
         break;
       }
       default: {
@@ -5744,7 +5744,7 @@ export class ColumnsService implements IColumnsService {
       ncMeta,
     );
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -5765,13 +5765,13 @@ export class ColumnsService implements IColumnsService {
     for (const [refTableId, refTable] of placeholderRefTables) {
       if (refTableId === table.id) continue;
       try {
-        const refContext: NcContext = {
+        const refContext: AtContext = {
           ...context,
           workspace_id: refTable.fk_workspace_id,
           base_id: refTable.base_id,
         };
         await refTable.getColumns(refContext, ncMeta);
-        NocoSocket.broadcastEvent(refContext, {
+        AtmosphereSocket.broadcastEvent(refContext, {
           event: EventType.META_EVENT,
           payload: {
             action: 'column_delete',
@@ -5796,7 +5796,7 @@ export class ColumnsService implements IColumnsService {
   }
 
   deleteHmOrBtRelation = async (
-    context: NcContext,
+    context: AtContext,
     {
       relationColOpt,
       source,
@@ -5805,7 +5805,7 @@ export class ColumnsService implements IColumnsService {
       parentColumn,
       parentTable,
       sqlMgr,
-      ncMeta = Noco.ncMeta,
+      ncMeta = Atmosphere.ncMeta,
       virtual,
       custom = false,
       req,
@@ -5826,9 +5826,9 @@ export class ColumnsService implements IColumnsService {
       ncMeta?: MetaService;
       virtual?: boolean;
       custom?: boolean;
-      req: NcRequest;
-      parentContext: NcContext;
-      childContext: NcContext;
+      req: AtRequest;
+      parentContext: AtContext;
+      childContext: AtContext;
       column?: Column;
       columnWebhookManager?: ColumnWebhookManager;
       skipLinkPlaceholder?: boolean;
@@ -6084,7 +6084,7 @@ export class ColumnsService implements IColumnsService {
   };
 
   deleteOoRelation = async (
-    context: NcContext,
+    context: AtContext,
     {
       relationColOpt,
       source,
@@ -6093,7 +6093,7 @@ export class ColumnsService implements IColumnsService {
       parentColumn,
       parentTable,
       sqlMgr,
-      ncMeta = Noco.ncMeta,
+      ncMeta = Atmosphere.ncMeta,
       virtual,
       custom = false,
       req,
@@ -6114,10 +6114,10 @@ export class ColumnsService implements IColumnsService {
       ncMeta?: MetaService;
       virtual?: boolean;
       custom?: boolean;
-      req: NcRequest;
+      req: AtRequest;
 
-      childContext: NcContext;
-      parentContext: NcContext;
+      childContext: AtContext;
+      parentContext: AtContext;
       column: Column;
       columnWebhookManager?: ColumnWebhookManager;
       skipLinkPlaceholder?: boolean;
@@ -6378,14 +6378,14 @@ export class ColumnsService implements IColumnsService {
    * — `columnUpdate` and the undo/redo command handlers — keep a stable surface.
    */
   async convertSingleLineTextToLtar(
-    context: NcContext,
+    context: AtContext,
     param: {
       column: Column;
       colBody: Column & { meta?: Record<string, any> };
       table: Model;
       source: Source;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
       reuse?: ReusableParams;
       reverseRestore?: {
         reverseColumnId: string;
@@ -6402,12 +6402,12 @@ export class ColumnsService implements IColumnsService {
 
   /** Inverse of {@link convertSingleLineTextToLtar} — see helper for details. */
   async revertLinkColumnToText(
-    context: NcContext,
+    context: AtContext,
     param: {
       linkColumnId: string;
       textColumn: Record<string, any>;
       backupRef?: ColumnBackupRef;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     return ltarColumnConversion(this).revertLinkColumnToText(context, param);
@@ -6415,14 +6415,14 @@ export class ColumnsService implements IColumnsService {
 
   /** Convert a link (LTAR) column into a SingleLineText column — see helper. */
   async convertLtarToSingleLineText(
-    context: NcContext,
+    context: AtContext,
     param: {
       column: Column;
       colBody: Column & { meta?: Record<string, any> };
       table: Model;
       source: Source;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     return ltarColumnConversion(this).convertLtarToSingleLineText(
@@ -6433,7 +6433,7 @@ export class ColumnsService implements IColumnsService {
 
   /** Inverse of {@link convertLtarToSingleLineText} — see helper for details. */
   async revertTextColumnToLink(
-    context: NcContext,
+    context: AtContext,
     param: {
       textColumnId: string;
       link: {
@@ -6451,14 +6451,14 @@ export class ColumnsService implements IColumnsService {
         pairedColumnId?: string;
         pairedColumnTitle?: string;
       };
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     return ltarColumnConversion(this).revertTextColumnToLink(context, param);
   }
 
   async createLTARColumn(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       column: ColumnReqType;
@@ -6467,7 +6467,7 @@ export class ColumnsService implements IColumnsService {
       reuse?: ReusableParams;
       colExtra?: any;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
       columnWebhookManager?: ColumnWebhookManager;
       // Sandbox-replay capture slot, mutated by this method with the
       // side-effect IDs (assoc model, FK cols, back-link, reverse LTAR).
@@ -6484,7 +6484,7 @@ export class ColumnsService implements IColumnsService {
     const capture = param._ltarCapture;
 
     if ((param.column as any).is_custom_link) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Custom links require an Enterprise license.',
       );
     }
@@ -6506,10 +6506,10 @@ export class ColumnsService implements IColumnsService {
     };
 
     if (!ltarReq.parentId) {
-      NcError.get(context).invalidRequestBody(`'parentId' is required`);
+      AtError.get(context).invalidRequestBody(`'parentId' is required`);
     }
     if (!ltarReq.childId) {
-      NcError.get(context).invalidRequestBody(`'childId' is required`);
+      AtError.get(context).invalidRequestBody(`'childId' is required`);
     }
 
     const relationType = ltarReq.type;
@@ -6537,7 +6537,7 @@ export class ColumnsService implements IColumnsService {
       (relationType === RelationTypes.ONE_TO_MANY ||
         relationType === RelationTypes.MANY_TO_ONE)
     ) {
-      NcError.badRequest(
+      AtError.badRequest(
         `Relation type '${relationType}' requires version 2 (junction table). Use type 'hm' or 'bt' for V1 FK-based relations.`,
       );
     }
@@ -6573,7 +6573,7 @@ export class ColumnsService implements IColumnsService {
     // dereferences null and throws an opaque 500
     // (`Cannot read properties of null (reading 'primaryKey')`).
     if (!refTable) {
-      NcError.get(context).tableNotFound(ltarReq.childId);
+      AtError.get(context).tableNotFound(ltarReq.childId);
     }
 
     // Both sides need a primary key for the relation to be usable.
@@ -6582,14 +6582,14 @@ export class ColumnsService implements IColumnsService {
     // will crash on `.primaryKey.<x>`. Fail fast with a clear message here
     // instead of partially creating an unusable LTAR column.
     if (!table.primaryKey) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         `Cannot create relation: table '${
           table.title || table.table_name
         }' has no primary key. Add a primary key column and try again.`,
       );
     }
     if (!refTable.primaryKey) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         `Cannot create relation: table '${
           refTable.title || refTable.table_name
         }' has no primary key. Add a primary key column and try again.`,
@@ -6620,7 +6620,7 @@ export class ColumnsService implements IColumnsService {
       param.source.id !== refTable.source_id &&
       (!param.source.isMeta() || !refSource.isMeta())
     ) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Cross base relations are only supported between meta bases',
       );
     }
@@ -6949,11 +6949,11 @@ export class ColumnsService implements IColumnsService {
         },
       );
 
-      // Per-link ordering (v2 links, NocoDB-managed sources only): add two system
+      // Per-link ordering (v2 links, Atmosphere-managed sources only): add two system
       // Order columns to the junction table — one to order rows within each
       // parent-FK group and one within each child-FK group — so each side of the
       // link can be ordered independently (Airtable parity). Skipped for v1 links
-      // and external sources, mirroring the nc_order exclusion for mm tables.
+      // and external sources, mirroring the atm_order exclusion for mm tables.
       const addLinkOrder = isMMLike && param.source.isMeta();
       let parentGroupOrderColName: string | undefined;
       let childGroupOrderColName: string | undefined;
@@ -6964,14 +6964,14 @@ export class ColumnsService implements IColumnsService {
         );
         parentGroupOrderColName = getUniqueColumnName(
           associateTableCols as any,
-          'nc_order',
+          'atm_order',
         );
         childGroupOrderColName = getUniqueColumnName(
           [
             ...associateTableCols,
             { column_name: parentGroupOrderColName },
           ] as any,
-          'nc_order',
+          'atm_order',
         );
         for (const cn of [parentGroupOrderColName, childGroupOrderColName]) {
           // Preserve ids on sandbox replay (mirrors the assoc FK columns) so the
@@ -7106,13 +7106,13 @@ export class ColumnsService implements IColumnsService {
             tn: aTn,
             columns: [columnName, parentGroupOrderCol.column_name],
             non_unique: true,
-            indexName: `nc_lo_p_${assocModel.id}`,
+            indexName: `atm_lo_p_${assocModel.id}`,
           });
           await sqlMgr.sqlOpPlus(param.source, 'indexCreate', {
             tn: aTn,
             columns: [refColumnName, childGroupOrderCol.column_name],
             non_unique: true,
-            indexName: `nc_lo_c_${assocModel.id}`,
+            indexName: `atm_lo_c_${assocModel.id}`,
           });
         } catch (e) {
           this.logger.warn(
@@ -7414,7 +7414,7 @@ export class ColumnsService implements IColumnsService {
   }
 
   async createColumnIndex(
-    context: NcContext,
+    context: AtContext,
     {
       column,
       sqlMgr,
@@ -7442,7 +7442,7 @@ export class ColumnsService implements IColumnsService {
   }
 
   async updateRollupOrLookup(
-    context: NcContext,
+    context: AtContext,
     colBody: any,
     column: Column<any>,
   ) {
@@ -7485,13 +7485,13 @@ export class ColumnsService implements IColumnsService {
     }
   }
 
-  async columnsHash(context: NcContext, tableId: string) {
+  async columnsHash(context: AtContext, tableId: string) {
     const table = await Model.getWithInfo(context, {
       id: tableId,
     });
 
     if (!table) {
-      NcError.get(context).tableNotFound(tableId);
+      AtError.get(context).tableNotFound(tableId);
     }
 
     return {
@@ -7501,7 +7501,7 @@ export class ColumnsService implements IColumnsService {
 
   @TraceCommand(OperationName.columnsBulk)
   async columnsBulk(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       hash: string;
@@ -7520,7 +7520,7 @@ export class ColumnsService implements IColumnsService {
           italic?: boolean | 0 | 1 | null;
         };
       }>;
-      req: NcRequest;
+      req: AtRequest;
       columnWebhookManager?: ColumnWebhookManager;
     },
   ) {
@@ -7529,27 +7529,27 @@ export class ColumnsService implements IColumnsService {
     });
 
     if (!table) {
-      NcError.get(context).tableNotFound(param.tableId);
+      AtError.get(context).tableNotFound(param.tableId);
     }
 
     if (table.columnsHash !== param.hash) {
-      NcError.get(context).outOfSync(
+      AtError.get(context).outOfSync(
         'Columns are updated by someone else! Your changes are rejected. Please refresh the page and try again.',
       );
     }
 
     const source = await Source.get(context, table.source_id);
     if (!source) {
-      NcError.get(context).sourceNotFound(table.source_id);
+      AtError.get(context).sourceNotFound(table.source_id);
     }
 
     const base = await source.getProject(context);
     if (!base) {
-      NcError.get(context).baseNotFound(source.base_id);
+      AtError.get(context).baseNotFound(source.base_id);
     }
 
-    const dbDriver = await NcConnectionMgrv2.get(source);
-    const sqlClient = await NcConnectionMgrv2.getSqlClient(source);
+    const dbDriver = await AtConnectionMgrv2.get(source);
+    const sqlClient = await AtConnectionMgrv2.getSqlClient(source);
     const sqlMgr = await ProjectMgrv2.getSqlMgr(context, {
       id: source.base_id,
     });
@@ -7559,7 +7559,7 @@ export class ColumnsService implements IColumnsService {
     });
 
     if (!dbDriver || !sqlClient || !sqlMgr || !baseModel) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'There was an error handling your request',
       );
     }
@@ -7577,20 +7577,20 @@ export class ColumnsService implements IColumnsService {
     for (const op of param.ops) {
       if (op.op === 'update') {
         if (!op.column || !op.column?.id) {
-          NcError.get(context).badRequest(
+          AtError.get(context).badRequest(
             'Bad request, update operation requires column id',
           );
         }
         validateDateFormatMeta(context, op.column?.meta);
       } else if (op.op === 'delete') {
         if (!op.column || !op.column?.id) {
-          NcError.get(context).badRequest(
+          AtError.get(context).badRequest(
             'Bad request, delete operation requires column id',
           );
         }
       } else if (op.op === 'add') {
         if (!op.column) {
-          NcError.get(context).badRequest(
+          AtError.get(context).badRequest(
             'Bad request, add operation requires column',
           );
         }
@@ -7658,7 +7658,7 @@ export class ColumnsService implements IColumnsService {
           e?.stack,
         );
         const safeError =
-          e instanceof NcBaseError ? e.message : 'Visibility update failed';
+          e instanceof AtBaseError ? e.message : 'Visibility update failed';
         failedVisibility.push({
           viewId: v.viewId,
           columnId: v.columnId,
@@ -7674,7 +7674,7 @@ export class ColumnsService implements IColumnsService {
   }
 
   protected async postColumnAdd(
-    _context: NcContext,
+    _context: AtContext,
     _columnBody: ColumnReqType,
     _tableMeta: Model,
   ) {
@@ -7682,14 +7682,14 @@ export class ColumnsService implements IColumnsService {
   }
 
   protected async postColumnUpdate(
-    _context: NcContext,
+    _context: AtContext,
     _columnBody: ColumnReqType,
   ) {
     // placeholder for post column update hook
   }
 
   protected async snapshotColumnFilterTree(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     kind: 'link' | 'button',
   ): Promise<Array<Record<string, unknown>>> {
@@ -7716,9 +7716,9 @@ export class ColumnsService implements IColumnsService {
   // this to soft-delete via baseTrashService so bulk deletes route through
   // the trash system identically to the single-column delete path.
   protected async handleColumnBulkDelete(
-    context: NcContext,
+    context: AtContext,
     op: { column: Partial<Column> },
-    req: NcRequest,
+    req: AtRequest,
   ) {
     await this.columnDelete(context, {
       columnId: op.column.id,
@@ -7727,7 +7727,7 @@ export class ColumnsService implements IColumnsService {
   }
 
   private async checkCrossBasePermission(
-    refContext: NcContext,
+    refContext: AtContext,
     user: UserType,
   ) {
     // extract target base roles and check if columnAdd permission is granted
@@ -7737,21 +7737,21 @@ export class ColumnsService implements IColumnsService {
     });
 
     if (!userWithRoles) {
-      NcError.get(refContext).userNotFound(user.id);
+      AtError.get(refContext).userNotFound(user.id);
     }
 
     if (
       !userWithRoles.base_roles?.[ProjectRoles.CREATOR] &&
       !userWithRoles.base_roles?.[ProjectRoles.OWNER]
     ) {
-      NcError.get(refContext).forbidden(
+      AtError.get(refContext).forbidden(
         `You don't have permission to create a relation to target base ${refContext.base_id}`,
       );
     }
   }
 
   protected async deleteCustomLinkIndex(
-    _context: NcContext,
+    _context: AtContext,
     _: {
       ltarCustomProps: CustomLinkProps;
       isMm: boolean;
@@ -7763,7 +7763,7 @@ export class ColumnsService implements IColumnsService {
   }
 
   async getLinkColumnRefTable(
-    context: NcContext,
+    context: AtContext,
     {
       columnId,
       tableId,
@@ -7774,7 +7774,7 @@ export class ColumnsService implements IColumnsService {
 
     // if not LTAR or Links throw error
     if (!isLinksOrLTAR(column)) {
-      NcError.get(context).badRequest('Invalid column id');
+      AtError.get(context).badRequest('Invalid column id');
     }
 
     const colOptions = await column.getColOptions<LinkToAnotherRecordColumn>(
@@ -7797,7 +7797,7 @@ export class ColumnsService implements IColumnsService {
             `${column?.fk_model_id}: missing mm table mm_model_id=` +
             `${colOptions.fk_mm_model_id}, relation=${colOptions.type}`,
         );
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           `The linked field '${
             column?.title ?? columnId
           }' points to a table that no longer exists (it may have been ` +
@@ -7814,7 +7814,7 @@ export class ColumnsService implements IColumnsService {
             `${column?.fk_model_id}: missing related table related_model_id=` +
             `${colOptions.fk_related_model_id}, relation=${colOptions.type}`,
         );
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           `The linked field '${
             column?.title ?? columnId
           }' points to a table that no longer exists (it may have been ` +
@@ -7824,7 +7824,7 @@ export class ColumnsService implements IColumnsService {
       // load columns
       await table.getColumns(refContext);
     } else {
-      NcError.get(context).badRequest('Invalid table id');
+      AtError.get(context).badRequest('Invalid table id');
     }
 
     // filter out columns other than primary key, display column, and the
@@ -7887,21 +7887,21 @@ export class ColumnsService implements IColumnsService {
    * Both paired columns are updated atomically.
    */
   async convertLinkToV2(
-    context: NcContext,
+    context: AtContext,
     param: {
       columnId: string;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     // Phase 0: Load and validate
     const column = await Column.get(context, { colId: param.columnId });
 
     if (!column) {
-      NcError.fieldNotFound(param.columnId);
+      AtError.fieldNotFound(param.columnId);
     }
 
     if (!isLinksOrLTAR(column.uidt)) {
-      NcError.badRequest('Column is not a Link/LTAR type');
+      AtError.badRequest('Column is not a Link/LTAR type');
     }
 
     const colOptions = await column.getColOptions<LinkToAnotherRecordColumn>(
@@ -7930,7 +7930,7 @@ export class ColumnsService implements IColumnsService {
     }
 
     if (colOptions.version === LinksVersion.V2) {
-      NcError.badRequest('Column is already V2');
+      AtError.badRequest('Column is already V2');
     }
 
     // Phase 1: Normalize to parent side (HM or parent-OO)
@@ -7985,7 +7985,7 @@ export class ColumnsService implements IColumnsService {
       }
 
       if (!hmColumn) {
-        NcError.badRequest('Could not find the paired parent-side column');
+        AtError.badRequest('Could not find the paired parent-side column');
       }
     } else {
       hmColumn = column;
@@ -8029,7 +8029,7 @@ export class ColumnsService implements IColumnsService {
       }
 
       if (!btColumn) {
-        NcError.badRequest('Could not find the paired child-side column');
+        AtError.badRequest('Could not find the paired child-side column');
       }
     }
 
@@ -8051,13 +8051,13 @@ export class ColumnsService implements IColumnsService {
     });
 
     if (!fkColumn) {
-      NcError.badRequest('Could not find the foreign key column');
+      AtError.badRequest('Could not find the foreign key column');
     }
 
     const source = await Source.get(context, parentTable.source_id);
 
     if (source?.is_schema_readonly) {
-      NcError.get(context).sourceMetaReadOnly(source.alias);
+      AtError.get(context).sourceMetaReadOnly(source.alias);
     }
 
     const childSource =
@@ -8070,7 +8070,7 @@ export class ColumnsService implements IColumnsService {
       childSource.id !== source.id &&
       childSource.is_schema_readonly
     ) {
-      NcError.get(context).sourceMetaReadOnly(childSource.alias);
+      AtError.get(context).sourceMetaReadOnly(childSource.alias);
     }
 
     const base = await source.getProject(context);
@@ -8087,7 +8087,7 @@ export class ColumnsService implements IColumnsService {
     let assocModel: Model | undefined;
 
     // Compute junction table name and column names before starting the
-    // transaction — getJunctionTableName queries the meta DB via Noco.ncMeta
+    // transaction — getJunctionTableName queries the meta DB via Atmosphere.ncMeta
     // and would deadlock on SQLite if the transaction is already holding the
     // only available connection.
     const aTn = await getJunctionTableName({ base }, parentTable, childTable);
@@ -8099,7 +8099,7 @@ export class ColumnsService implements IColumnsService {
     );
 
     // ── Phase A: SQL / data-DB operations (no meta transaction) ──
-    // These touch the data DB via sqlMgr and NcConnectionMgrv2, which may
+    // These touch the data DB via sqlMgr and AtConnectionMgrv2, which may
     // trigger indirect meta queries (EE workspace/payment lookups). Running
     // them outside a meta transaction avoids SQLite single-connection deadlock.
 
@@ -8173,7 +8173,7 @@ export class ColumnsService implements IColumnsService {
       }
 
       // Migrate data: copy FK → junction table
-      const dbDriver = await NcConnectionMgrv2.get(source);
+      const dbDriver = await AtConnectionMgrv2.get(source);
       const baseModel = await Model.getBaseModelSQL(context, {
         id: childTable.id,
         dbDriver,
@@ -8267,7 +8267,7 @@ export class ColumnsService implements IColumnsService {
       fkDropped = true;
 
       // ── Phase A.2: Meta model + system columns (outside transaction) ──
-      // Model.insert and createHmAndBtColumn use Noco.ncMeta internally
+      // Model.insert and createHmAndBtColumn use Atmosphere.ncMeta internally
       // and cannot run inside a meta transaction (SQLite deadlock).
       // This matches the existing MM creation pattern in columnAdd.
 
@@ -8408,7 +8408,7 @@ export class ColumnsService implements IColumnsService {
       // All meta operations run inside a single transaction so that a failure
       // in Column.insert or RollupColumn.insert rolls back the entire batch
       // (uidt change, col_relations, new LTAR column, rollup metadata).
-      const ncMeta = await (Noco.ncMeta as MetaService).startTransaction();
+      const ncMeta = await (Atmosphere.ncMeta as MetaService).startTransaction();
 
       let newLtarCol: Column | undefined;
       let dependentLookupColIds: string[] = [];
@@ -8712,12 +8712,12 @@ export class ColumnsService implements IColumnsService {
       }
 
       // Clear caches after successful commit
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         context,
         `${CacheScope.COL_RELATION}:${hmColumn.id}`,
         CacheDelDirection.CHILD_TO_PARENT,
       );
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         childRefContext,
         `${CacheScope.COL_RELATION}:${btColumn.id}`,
         CacheDelDirection.CHILD_TO_PARENT,
@@ -8726,7 +8726,7 @@ export class ColumnsService implements IColumnsService {
       if (isLinksColumn) {
         // Update column cache entry to reflect new Rollup uidt
         // (deepDel would remove it from the list cache, making it disappear from table metadata)
-        await NocoCache.update(context, `${CacheScope.COLUMN}:${hmColumn.id}`, {
+        await AtmosphereCache.update(context, `${CacheScope.COLUMN}:${hmColumn.id}`, {
           uidt: UITypes.Rollup,
           meta: { ...parseProp(hmColumn.meta), precision: 0 },
         });
@@ -8734,12 +8734,12 @@ export class ColumnsService implements IColumnsService {
         // Update cached fk_relation_column_id for dependent lookup/rollup columns
         // that were retargeted from hmColumn → newLtarCol during the transaction.
         for (const colId of dependentLookupColIds) {
-          await NocoCache.update(context, `${CacheScope.COL_LOOKUP}:${colId}`, {
+          await AtmosphereCache.update(context, `${CacheScope.COL_LOOKUP}:${colId}`, {
             fk_relation_column_id: newLtarCol.id,
           });
         }
         for (const colId of dependentRollupColIds) {
-          await NocoCache.update(context, `${CacheScope.COL_ROLLUP}:${colId}`, {
+          await AtmosphereCache.update(context, `${CacheScope.COL_ROLLUP}:${colId}`, {
             fk_relation_column_id: newLtarCol.id,
           });
         }
@@ -8748,7 +8748,7 @@ export class ColumnsService implements IColumnsService {
       if (btColumn.uidt === UITypes.Links) {
         // BT side was a Links column — DB was updated to LinkToAnotherRecord but cache was not.
         // Update the cache to prevent stale uidt causing incorrect column rendering.
-        await NocoCache.update(
+        await AtmosphereCache.update(
           childRefContext,
           `${CacheScope.COLUMN}:${btColumn.id}`,
           { uidt: UITypes.LinkToAnotherRecord },
@@ -8756,7 +8756,7 @@ export class ColumnsService implements IColumnsService {
       }
 
       if (fkColumn.uidt === UITypes.ForeignKey) {
-        await NocoCache.deepDel(
+        await AtmosphereCache.deepDel(
           childRefContext,
           `${CacheScope.COLUMN}:${fkColumn.id}`,
           CacheDelDirection.CHILD_TO_PARENT,
@@ -8764,7 +8764,7 @@ export class ColumnsService implements IColumnsService {
 
         // Bust cache for the FK column's view-column rows removed in the tx
         for (const { scope, id } of fkViewColumnDeepDelKeys) {
-          await NocoCache.deepDel(
+          await AtmosphereCache.deepDel(
             childRefContext,
             `${scope}:${id}`,
             CacheDelDirection.CHILD_TO_PARENT,
@@ -8839,11 +8839,11 @@ export class ColumnsService implements IColumnsService {
    * (V1 or V2), convert the original to Rollup and create a new V2 LTAR column.
    */
   async convertMMToV2(
-    context: NcContext,
+    context: AtContext,
     param: {
       column: Column;
       colOptions: LinkToAnotherRecordColumn;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const { column, colOptions } = param;
@@ -8853,7 +8853,7 @@ export class ColumnsService implements IColumnsService {
       colOptions.version === LinksVersion.V2 &&
       column.uidt === UITypes.LinkToAnotherRecord
     ) {
-      NcError.badRequest('Column is already converted');
+      AtError.badRequest('Column is already converted');
     }
 
     const sourceTable = await Model.getWithInfo(context, {
@@ -8868,7 +8868,7 @@ export class ColumnsService implements IColumnsService {
     const source = await Source.get(context, sourceTable.source_id);
 
     if (source?.is_schema_readonly) {
-      NcError.get(context).sourceMetaReadOnly(source.alias);
+      AtError.get(context).sourceMetaReadOnly(source.alias);
     }
 
     if (relatedTable.source_id !== source.id) {
@@ -8877,7 +8877,7 @@ export class ColumnsService implements IColumnsService {
         relatedTable.source_id,
       );
       if (relatedSource?.is_schema_readonly) {
-        NcError.get(context).sourceMetaReadOnly(relatedSource.alias);
+        AtError.get(context).sourceMetaReadOnly(relatedSource.alias);
       }
     }
 
@@ -8935,7 +8935,7 @@ export class ColumnsService implements IColumnsService {
 
     // Meta transaction: all meta operations in a single transaction so that
     // a failure in Column.insert or RollupColumn.insert rolls back everything
-    const ncMeta = await (Noco.ncMeta as MetaService).startTransaction();
+    const ncMeta = await (Atmosphere.ncMeta as MetaService).startTransaction();
 
     let mmNewLtarCol: Column | undefined;
     let dependentLookupRows: any[] = [];
@@ -9082,14 +9082,14 @@ export class ColumnsService implements IColumnsService {
       // Post-commit: update cached fk_relation_column_id for retargeted dependents
       if (isLinksColumn) {
         for (const row of dependentLookupRows) {
-          await NocoCache.update(
+          await AtmosphereCache.update(
             context,
             `${CacheScope.COL_LOOKUP}:${row.fk_column_id}`,
             { fk_relation_column_id: mmNewLtarCol.id },
           );
         }
         for (const row of dependentRollupRows) {
-          await NocoCache.update(
+          await AtmosphereCache.update(
             context,
             `${CacheScope.COL_ROLLUP}:${row.fk_column_id}`,
             { fk_relation_column_id: mmNewLtarCol.id },
@@ -9104,14 +9104,14 @@ export class ColumnsService implements IColumnsService {
     if (isLinksColumn) {
       // Update column cache entry to reflect new Rollup uidt + precision
       // (deepDel would remove it from the list cache, making it disappear from table metadata)
-      await NocoCache.update(context, `${CacheScope.COLUMN}:${column.id}`, {
+      await AtmosphereCache.update(context, `${CacheScope.COLUMN}:${column.id}`, {
         uidt: UITypes.Rollup,
         meta: { ...parseProp(column.meta), precision: 0 },
       });
     }
 
     // Clear relation caches
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.COL_RELATION}:${column.id}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -9119,13 +9119,13 @@ export class ColumnsService implements IColumnsService {
     if (pairedColumn) {
       // Update paired column cache uidt if it was Links
       if (pairedColumn.uidt === UITypes.Links) {
-        await NocoCache.update(
+        await AtmosphereCache.update(
           refContext,
           `${CacheScope.COLUMN}:${pairedColumn.id}`,
           { uidt: UITypes.LinkToAnotherRecord },
         );
       }
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         refContext,
         `${CacheScope.COL_RELATION}:${pairedColumn.id}`,
         CacheDelDirection.CHILD_TO_PARENT,

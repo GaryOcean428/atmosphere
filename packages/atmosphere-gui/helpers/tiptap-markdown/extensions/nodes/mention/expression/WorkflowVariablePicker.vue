@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { VariableDefinition } from 'nocodb-sdk'
-import { WorkflowNodeCategory } from 'nocodb-sdk'
+import type { VariableDefinition } from 'atmosphere-sdk'
+import { WorkflowNodeCategory } from 'atmosphere-sdk'
 
 interface NodeGroup {
   nodeId: string
@@ -124,7 +124,7 @@ const groupLabels: Record<string, string> = {
 
 const scrollToSelected = () => {
   nextTick(() => {
-    const selectedEl = document.querySelector('.nc-workflow-variable-picker .nc-variable-item.is-selected')
+    const selectedEl = document.querySelector('.atm-workflow-variable-picker .atm-variable-item.is-selected')
     selectedEl?.scrollIntoView({ block: 'nearest' })
   })
 }
@@ -294,45 +294,45 @@ defineExpose({
 
 <template>
   <div
-    class="nc-workflow-variable-picker flex bg-nc-bg-default border-1 border-nc-border-gray-medium rounded-lg shadow-lg overflow-hidden"
+    class="atm-workflow-variable-picker flex bg-atm-bg-default border-1 border-atm-border-gray-medium rounded-lg shadow-lg overflow-hidden"
     style="width: 560px; max-height: 400px"
     @mousedown.stop
   >
-    <div class="nc-variable-picker-nodes w-[220px] border-r border-nc-border-gray-medium flex flex-col">
-      <div class="px-3 py-2 text-sm font-semibold text-nc-content-gray-emphasis border-b border-nc-border-gray-light">
+    <div class="atm-variable-picker-nodes w-[220px] border-r border-atm-border-gray-medium flex flex-col">
+      <div class="px-3 py-2 text-sm font-semibold text-atm-content-gray-emphasis border-b border-atm-border-gray-light">
         Use data from...
       </div>
-      <div class="flex-1 overflow-y-auto nc-scrollbar-thin">
+      <div class="flex-1 overflow-y-auto atm-scrollbar-thin">
         <div
           v-for="(node, index) in nodeGroups"
           :key="node.nodeId"
-          class="nc-node-item flex items-center gap-2 px-3 py-2.5 cursor-pointer transition-colors"
+          class="atm-node-item flex items-center gap-2 px-3 py-2.5 cursor-pointer transition-colors"
           :class="{
-            'bg-nc-bg-brand-light border-l-2 border-l-nc-border-brand': index === selectedNodeIndex,
-            'hover:bg-nc-bg-gray-light': index !== selectedNodeIndex,
+            'bg-atm-bg-brand-light border-l-2 border-l-atm-border-brand': index === selectedNodeIndex,
+            'hover:bg-atm-bg-gray-light': index !== selectedNodeIndex,
           }"
           @click="selectNode(index)"
         >
           <div
             class="w-8 h-8 rounded-md flex items-center justify-center"
             :class="{
-              'bg-nc-bg-brand text-nc-content-brand-disabled': [
+              'bg-atm-bg-brand text-atm-content-brand-disabled': [
                 WorkflowNodeCategory.TRIGGER,
                 WorkflowNodeCategory.ACTION,
               ].includes(node.category),
-              'bg-nc-bg-maroon-dark text-nc-content-maroon-dark': node.category === WorkflowNodeCategory.FLOW,
+              'bg-atm-bg-maroon-dark text-atm-content-maroon-dark': node.category === WorkflowNodeCategory.FLOW,
             }"
           >
             <GeneralIcon :icon="getNodeIcon(node)" class="w-4 h-4" />
           </div>
           <div class="flex-1 min-w-0">
-            <div class="text-sm font-medium text-nc-content-gray-emphasis truncate">{{ node.nodeTitle }}</div>
-            <div class="text-xs text-nc-content-gray-muted">{{ node.variables.length }} fields</div>
+            <div class="text-sm font-medium text-atm-content-gray-emphasis truncate">{{ node.nodeTitle }}</div>
+            <div class="text-xs text-atm-content-gray-muted">{{ node.variables.length }} fields</div>
           </div>
-          <GeneralIcon v-if="index === selectedNodeIndex" icon="check" class="w-4 h-4 text-nc-content-brand flex-none" />
+          <GeneralIcon v-if="index === selectedNodeIndex" icon="check" class="w-4 h-4 text-atm-content-brand flex-none" />
         </div>
 
-        <div v-if="nodeGroups.length === 0" class="px-4 py-8 text-center text-nc-content-gray-disabled text-sm">
+        <div v-if="nodeGroups.length === 0" class="px-4 py-8 text-center text-atm-content-gray-disabled text-sm">
           No data sources available.<br />
           Run previous steps first.
         </div>
@@ -340,163 +340,163 @@ defineExpose({
     </div>
 
     <!-- Right Panel: Variable Selection -->
-    <div class="nc-variable-picker-variables flex-1 flex flex-col min-w-0">
+    <div class="atm-variable-picker-variables flex-1 flex flex-col min-w-0">
       <!-- Header with back button and title -->
-      <div class="px-3 py-2 border-b border-nc-border-gray-light flex items-center gap-2">
-        <NcButton v-if="navigationStack.length > 0" size="xs" type="text" class="!px-1" @click="goBack">
+      <div class="px-3 py-2 border-b border-atm-border-gray-light flex items-center gap-2">
+        <AtButton v-if="navigationStack.length > 0" size="xs" type="text" class="!px-1" @click="goBack">
           <GeneralIcon icon="arrowLeft" class="w-4 h-4" />
-        </NcButton>
-        <span class="text-sm font-semibold text-nc-content-gray-emphasis">{{ currentTitle }}</span>
+        </AtButton>
+        <span class="text-sm font-semibold text-atm-content-gray-emphasis">{{ currentTitle }}</span>
       </div>
 
       <!-- Search -->
-      <div class="px-3 py-2 border-b border-nc-border-gray-light">
-        <a-input v-model:value="searchQuery" placeholder="Search..." class="!rounded-md nc-input-shadow" allow-clear @click.stop>
+      <div class="px-3 py-2 border-b border-atm-border-gray-light">
+        <a-input v-model:value="searchQuery" placeholder="Search..." class="!rounded-md atm-input-shadow" allow-clear @click.stop>
           <template #prefix>
-            <GeneralIcon icon="search" class="text-nc-content-gray-disabled w-4 h-4" />
+            <GeneralIcon icon="search" class="text-atm-content-gray-disabled w-4 h-4" />
           </template>
         </a-input>
       </div>
 
       <!-- Variables List -->
-      <div class="flex-1 overflow-y-auto nc-scrollbar-thin">
+      <div class="flex-1 overflow-y-auto atm-scrollbar-thin">
         <template v-if="hasVariables">
           <!-- Fields Group -->
           <template v-if="groupedVariables.fields?.length">
-            <div class="px-3 pt-3 pb-1 text-xs font-semibold text-nc-content-gray-muted uppercase tracking-wide">
+            <div class="px-3 pt-3 pb-1 text-xs font-semibold text-atm-content-gray-muted uppercase tracking-wide">
               {{ groupLabels.fields }}
             </div>
             <div
               v-for="variable in groupedVariables.fields"
               :key="variable.key"
-              class="nc-variable-item flex items-center gap-2 px-3 py-2 mx-2 rounded-md transition-colors"
+              class="atm-variable-item flex items-center gap-2 px-3 py-2 mx-2 rounded-md transition-colors"
               :class="{
-                'is-selected bg-nc-bg-gray-light': filteredVariables.indexOf(variable) === selectedVariableIndex,
-                'hover:bg-nc-bg-gray-extralight': filteredVariables.indexOf(variable) !== selectedVariableIndex,
+                'is-selected bg-atm-bg-gray-light': filteredVariables.indexOf(variable) === selectedVariableIndex,
+                'hover:bg-atm-bg-gray-extralight': filteredVariables.indexOf(variable) !== selectedVariableIndex,
               }"
             >
               <div
                 class="flex items-center gap-2 flex-1 min-w-0 cursor-pointer"
                 @click="variable.children?.length ? navigateInto(variable) : selectVariable(variable)"
               >
-                <div class="w-7 h-7 rounded flex items-center justify-center bg-nc-bg-gray-medium">
+                <div class="w-7 h-7 rounded flex items-center justify-center bg-atm-bg-gray-medium">
                   <GeneralIcon :icon="getVariableIcon(variable)" class="w-4 h-4" />
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-sm font-medium text-nc-content-gray-emphasis truncate">{{ variable.name }}</div>
-                  <div v-if="variable?.extra?.description" class="text-xs text-nc-content-gray-disabled truncate">
+                  <div class="text-sm font-medium text-atm-content-gray-emphasis truncate">{{ variable.name }}</div>
+                  <div v-if="variable?.extra?.description" class="text-xs text-atm-content-gray-disabled truncate">
                     {{ variable.extra.description }}
                   </div>
                 </div>
               </div>
-              <NcButton size="xs" type="secondary" class="flex-none" @click.stop="selectVariable(variable)">
+              <AtButton size="xs" type="secondary" class="flex-none" @click.stop="selectVariable(variable)">
                 {{ $t('labels.select') }}
-              </NcButton>
+              </AtButton>
             </div>
           </template>
 
           <!-- Iteration Group -->
           <template v-if="groupedVariables.iteration?.length">
-            <div class="px-3 pt-3 pb-1 text-xs font-semibold text-nc-content-gray-muted uppercase tracking-wide">
+            <div class="px-3 pt-3 pb-1 text-xs font-semibold text-atm-content-gray-muted uppercase tracking-wide">
               {{ groupLabels.iteration }}
             </div>
             <div
               v-for="variable in groupedVariables.iteration"
               :key="variable.key"
-              class="nc-variable-item flex items-center gap-2 px-3 py-2 mx-2 rounded-md transition-colors"
+              class="atm-variable-item flex items-center gap-2 px-3 py-2 mx-2 rounded-md transition-colors"
               :class="{
-                'is-selected bg-nc-bg-gray-light': filteredVariables.indexOf(variable) === selectedVariableIndex,
-                'hover:bg-nc-bg-gray-extralight': filteredVariables.indexOf(variable) !== selectedVariableIndex,
+                'is-selected bg-atm-bg-gray-light': filteredVariables.indexOf(variable) === selectedVariableIndex,
+                'hover:bg-atm-bg-gray-extralight': filteredVariables.indexOf(variable) !== selectedVariableIndex,
               }"
             >
               <div
                 class="flex items-center gap-2 flex-1 min-w-0 cursor-pointer"
                 @click="variable.children?.length ? navigateInto(variable) : selectVariable(variable)"
               >
-                <div class="w-7 h-7 rounded flex items-center justify-center bg-nc-bg-gray-medium">
-                  <GeneralIcon :icon="getVariableIcon(variable)" class="w-4 h-4 text-nc-content-gray-subtle" />
+                <div class="w-7 h-7 rounded flex items-center justify-center bg-atm-bg-gray-medium">
+                  <GeneralIcon :icon="getVariableIcon(variable)" class="w-4 h-4 text-atm-content-gray-subtle" />
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-sm font-medium text-nc-content-gray-emphasis truncate">{{ variable.name }}</div>
-                  <div v-if="variable?.extra?.description" class="text-xs text-nc-content-gray-disabled truncate">
+                  <div class="text-sm font-medium text-atm-content-gray-emphasis truncate">{{ variable.name }}</div>
+                  <div v-if="variable?.extra?.description" class="text-xs text-atm-content-gray-disabled truncate">
                     {{ variable.extra.description }}
                   </div>
                 </div>
               </div>
-              <NcButton size="xs" type="secondary" class="flex-none" @click.stop="selectVariable(variable)">
+              <AtButton size="xs" type="secondary" class="flex-none" @click.stop="selectVariable(variable)">
                 {{ $t('labels.select') }}
-              </NcButton>
+              </AtButton>
             </div>
           </template>
 
           <template v-if="groupedVariables.meta?.length">
-            <div class="px-3 pt-3 pb-1 text-xs font-semibold text-nc-content-gray-muted uppercase tracking-wide">
+            <div class="px-3 pt-3 pb-1 text-xs font-semibold text-atm-content-gray-muted uppercase tracking-wide">
               {{ groupLabels.meta }}
             </div>
             <div
               v-for="variable in groupedVariables.meta"
               :key="variable.key"
-              class="nc-variable-item flex items-center gap-2 px-3 py-2 mx-2 rounded-md transition-colors"
+              class="atm-variable-item flex items-center gap-2 px-3 py-2 mx-2 rounded-md transition-colors"
               :class="{
-                'is-selected bg-nc-bg-gray-light': filteredVariables.indexOf(variable) === selectedVariableIndex,
-                'hover:bg-nc-bg-gray-extralight': filteredVariables.indexOf(variable) !== selectedVariableIndex,
+                'is-selected bg-atm-bg-gray-light': filteredVariables.indexOf(variable) === selectedVariableIndex,
+                'hover:bg-atm-bg-gray-extralight': filteredVariables.indexOf(variable) !== selectedVariableIndex,
               }"
             >
               <div
                 class="flex items-center gap-2 flex-1 min-w-0 cursor-pointer"
                 @click="variable.children?.length ? navigateInto(variable) : selectVariable(variable)"
               >
-                <div class="w-7 h-7 rounded flex items-center justify-center bg-nc-bg-gray-medium">
-                  <GeneralIcon :icon="getVariableIcon(variable)" class="w-4 h-4 text-nc-content-gray-subtle" />
+                <div class="w-7 h-7 rounded flex items-center justify-center bg-atm-bg-gray-medium">
+                  <GeneralIcon :icon="getVariableIcon(variable)" class="w-4 h-4 text-atm-content-gray-subtle" />
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-sm font-medium text-nc-content-gray-emphasis truncate">{{ variable.name }}</div>
-                  <div v-if="variable.extra?.description" class="text-xs text-nc-content-gray-disabled truncate">
+                  <div class="text-sm font-medium text-atm-content-gray-emphasis truncate">{{ variable.name }}</div>
+                  <div v-if="variable.extra?.description" class="text-xs text-atm-content-gray-disabled truncate">
                     {{ variable.extra.description }}
                   </div>
                 </div>
               </div>
-              <NcButton size="xs" type="secondary" class="flex-none" @click.stop="selectVariable(variable)">
+              <AtButton size="xs" type="secondary" class="flex-none" @click.stop="selectVariable(variable)">
                 {{ $t('labels.select') }}
-              </NcButton>
+              </AtButton>
             </div>
           </template>
 
           <template v-if="groupedVariables.other?.length">
-            <div class="px-3 pt-3 pb-1 text-xs font-semibold text-nc-content-gray-muted uppercase tracking-wide">
+            <div class="px-3 pt-3 pb-1 text-xs font-semibold text-atm-content-gray-muted uppercase tracking-wide">
               {{ groupLabels.other }}
             </div>
             <div
               v-for="variable in groupedVariables.other"
               :key="variable.key"
-              class="nc-variable-item flex items-center gap-2 px-3 py-2 mx-2 rounded-md transition-colors"
+              class="atm-variable-item flex items-center gap-2 px-3 py-2 mx-2 rounded-md transition-colors"
               :class="{
-                'is-selected bg-nc-bg-gray-light': filteredVariables.indexOf(variable) === selectedVariableIndex,
-                'hover:bg-nc-bg-gray-extralight': filteredVariables.indexOf(variable) !== selectedVariableIndex,
+                'is-selected bg-atm-bg-gray-light': filteredVariables.indexOf(variable) === selectedVariableIndex,
+                'hover:bg-atm-bg-gray-extralight': filteredVariables.indexOf(variable) !== selectedVariableIndex,
               }"
             >
               <div
                 class="flex items-center gap-2 flex-1 min-w-0 cursor-pointer"
                 @click="variable.children?.length ? navigateInto(variable) : selectVariable(variable)"
               >
-                <div class="w-7 h-7 rounded flex items-center justify-center bg-nc-bg-gray-medium">
-                  <GeneralIcon :icon="getVariableIcon(variable)" class="w-4 h-4 text-nc-content-gray-subtle" />
+                <div class="w-7 h-7 rounded flex items-center justify-center bg-atm-bg-gray-medium">
+                  <GeneralIcon :icon="getVariableIcon(variable)" class="w-4 h-4 text-atm-content-gray-subtle" />
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-sm font-medium text-nc-content-gray-emphasis truncate">{{ variable.name }}</div>
-                  <div v-if="variable.extra?.description" class="text-xs text-nc-content-gray-disabled truncate">
+                  <div class="text-sm font-medium text-atm-content-gray-emphasis truncate">{{ variable.name }}</div>
+                  <div v-if="variable.extra?.description" class="text-xs text-atm-content-gray-disabled truncate">
                     {{ variable.extra.description }}
                   </div>
                 </div>
               </div>
-              <NcButton size="xs" type="secondary" class="flex-none" @click.stop="selectVariable(variable)">
+              <AtButton size="xs" type="secondary" class="flex-none" @click.stop="selectVariable(variable)">
                 {{ $t('labels.select') }}
-              </NcButton>
+              </AtButton>
             </div>
           </template>
         </template>
 
-        <div v-else class="px-4 py-8 text-center text-nc-content-gray-disabled text-sm">
+        <div v-else class="px-4 py-8 text-center text-atm-content-gray-disabled text-sm">
           {{ searchQuery ? 'No variables found' : 'Select a data source' }}
         </div>
       </div>
@@ -505,11 +505,11 @@ defineExpose({
 </template>
 
 <style lang="scss" scoped>
-.nc-workflow-variable-picker {
+.atm-workflow-variable-picker {
   @apply select-none;
 }
 
-.nc-node-item {
+.atm-node-item {
   &:first-child {
     @apply mt-1;
   }
@@ -518,7 +518,7 @@ defineExpose({
   }
 }
 
-.nc-variable-item {
+.atm-variable-item {
   &:last-child {
     @apply mb-2;
   }

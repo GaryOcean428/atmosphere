@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, UITypes } from 'nocodb-sdk'
+import { ColumnHelper, UITypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -94,22 +94,22 @@ const onPrecisionChange = (value: number) => {
           show-search
           :filter-option="filterOption"
           :disabled="isMoney && isPg"
-          dropdown-class-name="nc-dropdown-currency-cell-locale"
+          dropdown-class-name="atm-dropdown-currency-cell-locale"
         >
-          <template #suffixIcon> <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" /> </template>
+          <template #suffixIcon> <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" /> </template>
 
           <a-select-option v-for="currencyLocale of currencyLocaleList" :key="currencyLocale.text" :value="currencyLocale.value">
             <div class="flex gap-2 w-full truncate items-center">
-              <NcTooltip show-on-truncate-only class="flex-1 truncate">
+              <AtTooltip show-on-truncate-only class="flex-1 truncate">
                 <template #title>{{ currencyLocale.text }}</template>
                 {{ currencyLocale.text }}
-              </NcTooltip>
+              </AtTooltip>
 
               <component
                 :is="iconMap.check"
                 v-if="vModel.meta.currency_locale === currencyLocale.value"
-                id="nc-selected-item-icon"
-                class="text-nc-content-brand w-4 h-4"
+                id="atm-selected-item-icon"
+                class="text-atm-content-brand w-4 h-4"
               />
             </div>
           </a-select-option>
@@ -125,9 +125,9 @@ const onPrecisionChange = (value: number) => {
           show-search
           :filter-option="filterOption"
           :disabled="isMoney && isPg"
-          dropdown-class-name="nc-dropdown-currency-cell-code"
+          dropdown-class-name="atm-dropdown-currency-cell-code"
         >
-          <template #suffixIcon> <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" /> </template>
+          <template #suffixIcon> <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" /> </template>
 
           <a-select-option v-for="(currencyCode, i) of currencyList" :key="i" :value="currencyCode">
             <div class="flex gap-2 w-full justify-between items-center">
@@ -135,8 +135,8 @@ const onPrecisionChange = (value: number) => {
               <component
                 :is="iconMap.check"
                 v-if="vModel.meta.currency_code === currencyCode"
-                id="nc-selected-item-icon"
-                class="text-nc-content-brand w-4 h-4"
+                id="atm-selected-item-icon"
+                class="text-atm-content-brand w-4 h-4"
               />
             </div>
           </a-select-option>
@@ -150,11 +150,11 @@ const onPrecisionChange = (value: number) => {
           v-if="vModel.meta?.precision || vModel.meta?.precision === 0"
           v-model:value="vModel.meta.precision"
           :disabled="isMoney && isPg"
-          dropdown-class-name="nc-dropdown-currency-precision-format"
+          dropdown-class-name="atm-dropdown-currency-precision-format"
           @change="onPrecisionChange"
         >
           <template #suffixIcon>
-            <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+            <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
           </template>
           <a-select-option v-for="(format, i) of precisionFormats" :key="i" :value="format">
             <div class="flex gap-2 w-full justify-between items-center">
@@ -162,8 +162,8 @@ const onPrecisionChange = (value: number) => {
               <component
                 :is="iconMap.check"
                 v-if="vModel.meta.precision === format"
-                id="nc-selected-item-icon"
-                class="text-nc-content-brand w-4 h-4"
+                id="atm-selected-item-icon"
+                class="text-atm-content-brand w-4 h-4"
               />
             </div>
           </a-select-option>

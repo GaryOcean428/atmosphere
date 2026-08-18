@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, UITypes, readonlyMetaAllowedTypes, resolveColumnSeparator } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, readonlyMetaAllowedTypes, resolveColumnSeparator } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -46,11 +46,11 @@ if (!vModel.value.meta.separator) {
       v-if="vModel.meta?.precision || vModel.meta?.precision === 0"
       v-model:value="vModel.meta.precision"
       :disabled="disableConfiguration"
-      dropdown-class-name="nc-dropdown-decimal-precision-format"
+      dropdown-class-name="atm-dropdown-decimal-precision-format"
       @change="onPrecisionChange"
     >
       <template #suffixIcon>
-        <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+        <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
       </template>
       <a-select-option v-for="(format, i) of precisionFormats" :key="i" :value="format">
         <div class="flex gap-2 w-full justify-between items-center">
@@ -58,8 +58,8 @@ if (!vModel.value.meta.separator) {
           <component
             :is="iconMap.check"
             v-if="vModel.meta.precision === format"
-            id="nc-selected-item-icon"
-            class="text-nc-content-brand w-4 h-4"
+            id="atm-selected-item-icon"
+            class="text-atm-content-brand w-4 h-4"
           />
         </div>
       </a-select-option>
@@ -69,6 +69,6 @@ if (!vModel.value.meta.separator) {
   <SmartsheetColumnSeparatorSelect
     v-model:value="vModel.meta.separator"
     :disabled="disableConfiguration"
-    dropdown-class-name="nc-dropdown-decimal-separator-format"
+    dropdown-class-name="atm-dropdown-decimal-separator-format"
   />
 </template>

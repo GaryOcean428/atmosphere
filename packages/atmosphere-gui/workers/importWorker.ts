@@ -1,5 +1,5 @@
-import type { ColumnType, TableType } from 'nocodb-sdk'
-import { Api, UITypes } from 'nocodb-sdk'
+import type { ColumnType, TableType } from 'atmosphere-sdk'
+import { Api, UITypes } from 'atmosphere-sdk'
 import * as xlsx from 'xlsx'
 import type { ImportWorkerPayload } from '../lib/types'
 import { ImportSource, ImportType, ImportWorkerOperations, ImportWorkerResponse } from '../lib/enums'

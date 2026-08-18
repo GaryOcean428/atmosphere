@@ -15,11 +15,11 @@ import {
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
-import { PublicAttachmentScope } from 'nocodb-sdk';
+import { PublicAttachmentScope } from 'atmosphere-sdk';
 import contentDisposition from 'content-disposition';
-import type { AttachmentReqType, FileType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
-import { NcContext } from '~/interface/config';
+import type { AttachmentReqType, FileType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { AttachmentsService } from '~/services/attachments.service';
 import { PresignedUrl } from '~/models';
@@ -33,7 +33,7 @@ import {
   isPreviewAllowed,
   localFileExists,
 } from '~/helpers/attachmentHelpers';
-import { NC_DATA_IMPORT_FILE_SIZE } from '~/constants';
+import { ATMOSPHERE_DATA_IMPORT_FILE_SIZE } from '~/constants';
 
 @Controller()
 export class AttachmentsSecureController {
@@ -45,7 +45,7 @@ export class AttachmentsSecureController {
   @UseInterceptors(UploadAllowedInterceptor, AnyFilesInterceptor())
   async upload(
     @UploadedFiles() files: Array<FileType>,
-    @Req() req: NcRequest & { user: { id: string } },
+    @Req() req: AtRequest & { user: { id: string } },
     @Query('scope') scope?: PublicAttachmentScope,
   ) {
     const attachments = await this.attachmentsService.upload({
@@ -63,7 +63,7 @@ export class AttachmentsSecureController {
   @UseGuards(MetaApiLimiterGuard, GlobalGuard)
   async uploadViaURL(
     @Body() body: Array<AttachmentReqType>,
-    @Req() req: NcRequest & { user: { id: string } },
+    @Req() req: AtRequest & { user: { id: string } },
     @Query('scope') scope?: PublicAttachmentScope,
   ) {
     const attachments = await this.attachmentsService.uploadViaURL({
@@ -82,13 +82,13 @@ export class AttachmentsSecureController {
     UploadAllowedInterceptor,
     AnyFilesInterceptor({
       limits: {
-        fileSize: NC_DATA_IMPORT_FILE_SIZE,
+        fileSize: ATMOSPHERE_DATA_IMPORT_FILE_SIZE,
       },
     }),
   )
   async dataImportUpload(
     @UploadedFiles() files: Array<FileType>,
-    @Req() req: NcRequest & { user: { id: string } },
+    @Req() req: AtRequest & { user: { id: string } },
   ) {
     return await this.attachmentsService.upload({
       files,
@@ -124,7 +124,7 @@ export class AttachmentsSecureController {
       const filePath = ATTACHMENT_ROOTS.includes(targetParam) ? '' : 'uploads';
 
       const file = await this.attachmentsService.getFile({
-        path: path.join('nc', filePath, fpath),
+        path: path.join('atm', filePath, fpath),
       });
 
       if (!(await localFileExists(file.path))) {
@@ -176,7 +176,7 @@ export class AttachmentsSecureController {
   @Get('/api/v2/downloadAttachment/:modelId/:columnId/:rowId')
   @Acl('dataRead')
   async downloadAttachment(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('modelId') modelId: string,
     @Param('columnId') columnId: string,
     @Param('rowId') rowId: string,

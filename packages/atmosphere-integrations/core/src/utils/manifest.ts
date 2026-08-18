@@ -9,7 +9,7 @@ import type { IntegrationManifest } from '../types';
  * Example usage in an integration manifest file:
  *
  * ```typescript
- * import { createManifest, IntegrationType } from '@noco-integrations/core';
+ * import { createManifest, IntegrationType } from '@atmosphere-integrations/core';
  *
  * export const manifest = createManifest(IntegrationType.Ai, {
  *   title: 'Your Integration',

@@ -2,12 +2,12 @@ import {
   extractProjectRolePower,
   extractWorkspaceRolePower,
   hasMinimumRoleAccess,
-} from 'nocodb-sdk';
-import { NcError } from 'src/helpers/catchError';
-import type { ProjectRoles } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import { AtError } from 'src/helpers/catchError';
+import type { ProjectRoles } from 'atmosphere-sdk';
 
-// Re-export getProjectRole from nocodb-sdk to keep backward compatibility
-export { getProjectRole } from 'nocodb-sdk';
+// Re-export getProjectRole from atmosphere-sdk to keep backward compatibility
+export { getProjectRole } from 'atmosphere-sdk';
 
 /**
  * Get the power of the project role of the user.
@@ -16,7 +16,7 @@ export { getProjectRole } from 'nocodb-sdk';
  */
 export function getProjectRolePower(user: any) {
   return extractProjectRolePower(user, () => {
-    NcError.badRequest('Forbidden');
+    AtError.badRequest('Forbidden');
   });
 }
 
@@ -27,7 +27,7 @@ export function getProjectRolePower(user: any) {
  */
 export function getWorkspaceRolePower(user: any) {
   return extractWorkspaceRolePower(user, () => {
-    NcError.badRequest('Forbidden');
+    AtError.badRequest('Forbidden');
   });
 }
 
@@ -39,6 +39,6 @@ export function getWorkspaceRolePower(user: any) {
  */
 export function hasMinimumRole(user: any, minimumRole: ProjectRoles): boolean {
   return hasMinimumRoleAccess(user, minimumRole, () => {
-    NcError.badRequest('Forbidden');
+    AtError.badRequest('Forbidden');
   });
 }

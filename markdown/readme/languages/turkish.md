@@ -1,7 +1,7 @@
 <h1 align="center" style="border-bottom: none">
     <div>
-        <a style="color:#36f" href="https://www.nocodb.com">
-            <img src="/packages/nc-gui/assets/img/brand/nocodb-full.png" height="80" />
+        <a style="color:#36f" href="https://www.atmosphere.dev">
+            <img src="/packages/atmosphere-gui/assets/img/brand/atmosphere-full.png" height="80" />
             <br>
     Açık Kaynak Kodlu Airtable Alternatifi 
         </a>
@@ -10,20 +10,20 @@
 </h1>
 
 <p align="center">
-NocoDB online veritabanı oluşturmanın en hızlı ve kolay yoludur.
+Atmosphere online veritabanı oluşturmanın en hızlı ve kolay yoludur.
 </p>
 
 
 <p align="center">
-    <a href="http://www.nocodb.com"><b>Web sitesi</b></a> •
+    <a href="http://www.atmosphere.dev"><b>Web sitesi</b></a> •
     <a href="https://discord.gg/c7GEYrvFtT"><b>Discord</b></a> •
-    <a href="https://community.nocodb.com/"><b>Topluluk</b></a> •
-    <a href="https://twitter.com/nocodb"><b>Twitter</b></a> •
-    <a href="https://www.reddit.com/r/NocoDB/"><b>Reddit</b></a> •
-    <a href="https://docs.nocodb.com/"><b>Dokümantasyon</b></a>
+    <a href="https://community.atmosphere.dev/"><b>Topluluk</b></a> •
+    <a href="https://twitter.com/atmosphere"><b>Twitter</b></a> •
+    <a href="https://www.reddit.com/r/Atmosphere/"><b>Reddit</b></a> •
+    <a href="https://docs.atmosphere.dev/"><b>Dokümantasyon</b></a>
 </p>
 
-![video avi](https://github.com/nocodb/nocodb/assets/86527202/e2fad786-f211-4dcb-9bd3-aaece83a6783)
+![video avi](https://github.com/GaryOcean428/atmosphere/assets/86527202/e2fad786-f211-4dcb-9bd3-aaece83a6783)
 
 # Topluluğumuza Katılın
 
@@ -31,7 +31,7 @@ NocoDB online veritabanı oluşturmanın en hızlı ve kolay yoludur.
 <img src="https://discordapp.com/api/guilds/661905455894888490/widget.png?style=banner3" alt="">
 </a>
 
-[![Stargazers repo roster for @nocodb/nocodb](http://reporoster.com/stars/nocodb/nocodb)](https://github.com/nocodb/nocodb/stargazers)
+[![Stargazers repo roster for @atmosphere/atmosphere](http://reporoster.com/stars/atmosphere/atmosphere)](https://github.com/GaryOcean428/atmosphere/stargazers)
 
 # Kurulum
 
@@ -39,36 +39,36 @@ NocoDB online veritabanı oluşturmanın en hızlı ve kolay yoludur.
 
 ```bash 
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  nocodb/nocodb:latest
+  atmosphere/atmosphere:latest
   ```
 
 ## Docker ile PG
 ```bash
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  -e NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
-  -e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-  nocodb/nocodb:latest
+  -e ATMOSPHERE_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
+  -e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+  atmosphere/atmosphere:latest
 ```
 
 ## Auto-upstall
-Auto-upstall, NocoDB'yi production (canlı) ortamı için hazırlayan bir komuttur. Arka planda docker-compose dosyasını sizin için otomatik olarak oluşturur.
+Auto-upstall, Atmosphere'yi production (canlı) ortamı için hazırlayan bir komuttur. Arka planda docker-compose dosyasını sizin için otomatik olarak oluşturur.
 
 ```bash
-bash <(curl -sSL http://install.nocodb.com/noco.sh) <(mktemp)
+bash <(curl -sSL http://install.atmosphere.dev/atmosphere.sh) <(mktemp)
 ```
 
 Auto-upstall şunları yapar: 🕊
 - 🐳 Docker ve Docker Compose gibi tüm ön gereksinimleri otomatik olarak yükler.
-- 🚀 Docker Compose kullanarak NocoDB ile birlikte PostgreSQL, Redis ve Traefik gateway servislerini otomatik olarak kurar. 🐘 🗄️ 🌐
-- 🔄 Komutu tekrar çalıştırdığınızda NocoDB'yi otomatik olarak en son sürüme günceller.
+- 🚀 Docker Compose kullanarak Atmosphere ile birlikte PostgreSQL, Redis ve Traefik gateway servislerini otomatik olarak kurar. 🐘 🗄️ 🌐
+- 🔄 Komutu tekrar çalıştırdığınızda Atmosphere'yi otomatik olarak en son sürüme günceller.
 - 🔒 SSL sertifikasını otomatik olarak kurar ve yeniler. Kurulum sırasında bir alan adı (domain) veya alt alan adı (subdomain) girmeniz gerekir.
->  [install.nocodb.com/noco.sh](https://raw.githubusercontent.com/nocodb/nocodb/develop/docker-compose/1_Auto_Upstall/noco.sh) script'ini GitHub sayfamızda bulabilirsiniz. 
+>  [install.atmosphere.dev/atmosphere.sh](https://raw.githubusercontent.com/atmosphere/atmosphere/develop/docker-compose/1_Auto_Upstall/atmosphere.sh) script'ini GitHub sayfamızda bulabilirsiniz. 
 
 
 ## Diğer Yöntemler
@@ -77,17 +77,17 @@ Auto-upstall şunları yapar: 🕊
 
 | Kurulum Yöntemi               | Kurulum Komudu                                                                                                                                                                                                                                                                                                                                                        |
 |-------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 🍏 MacOS arm64 <br>(Binary)   | `curl http://get.nocodb.com/macos-arm64 -o nocodb -L && chmod +x nocodb && ./nocodb`                                                                                                                                                                                                                                                                                       |
-| 🍏 MacOS x64 <br>(Binary)     | `curl http://get.nocodb.com/macos-x64 -o nocodb -L && chmod +x nocodb && ./nocodb`                                                                                                                                                                                                                                                                                         |
-| 🐧 Linux arm64 <br>(Binary)   | `curl http://get.nocodb.com/linux-arm64 -o nocodb -L && chmod +x nocodb && ./nocodb`                                                                                                                                                                                                                                                                                       |
-| 🐧 Linux x64 <br>(Binary)     | `curl http://get.nocodb.com/linux-x64 -o nocodb -L && chmod +x nocodb && ./nocodb`                                                                                                                                                                                                                                                                                         |
-| 🪟 Windows arm64 <br>(Binary) | `iwr http://get.nocodb.com/win-arm64.exe -OutFile Noco-win-arm64.exe && .\Noco-win-arm64.exe`                                                                                                                                                                                                                                                                              |
-| 🪟 Windows x64 <br>(Binary)   | `iwr http://get.nocodb.com/win-x64.exe -OutFile Noco-win-x64.exe && .\Noco-win-x64.exe`                                                                                                                                                                                                                                                                                    |
+| 🍏 MacOS arm64 <br>(Binary)   | `curl http://get.atmosphere.dev/macos-arm64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`                                                                                                                                                                                                                                                                                       |
+| 🍏 MacOS x64 <br>(Binary)     | `curl http://get.atmosphere.dev/macos-x64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`                                                                                                                                                                                                                                                                                         |
+| 🐧 Linux arm64 <br>(Binary)   | `curl http://get.atmosphere.dev/linux-arm64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`                                                                                                                                                                                                                                                                                       |
+| 🐧 Linux x64 <br>(Binary)     | `curl http://get.atmosphere.dev/linux-x64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`                                                                                                                                                                                                                                                                                         |
+| 🪟 Windows arm64 <br>(Binary) | `iwr http://get.atmosphere.dev/win-arm64.exe -OutFile Atmosphere-win-arm64.exe && .\Atmosphere-win-arm64.exe`                                                                                                                                                                                                                                                                              |
+| 🪟 Windows x64 <br>(Binary)   | `iwr http://get.atmosphere.dev/win-x64.exe -OutFile Atmosphere-win-x64.exe && .\Atmosphere-win-x64.exe`                                                                                                                                                                                                                                                                                    |
 
 
-> Lokalde çalışırken NocoDB'ye [http://localhost:8080/dashboard](http://localhost:8080/dashboard) adresinden erişebilirsiniz. 
+> Lokalde çalışırken Atmosphere'ye [http://localhost:8080/dashboard](http://localhost:8080/dashboard) adresinden erişebilirsiniz. 
 
-Diğer kurulum yöntemleri için [dokümanlarımızı](https://docs.nocodb.com/category/installation) inceleyebilirsiniz.
+Diğer kurulum yöntemleri için [dokümanlarımızı](https://docs.atmosphere.dev/category/installation) inceleyebilirsiniz.
 
 # Ekran Görüntüleri
 ![2](https://github.com/user-attachments/assets/ffcabc8a-9b3b-48f1-9d04-16859878540e)
@@ -120,7 +120,7 @@ Diğer kurulum yöntemleri için [dokümanlarımızı](https://docs.nocodb.com/c
 
 ### İş Akışı Otomasyonları için Uygulama Mağazası
 
-Üç ana kategoride çeşitli entegrasyonlar sunuyoruz. Detaylar için <a href="https://docs.nocodb.com/account-settings/oss-specific-details/#app-store" target="_blank">Uygulama Mağazası</a>'na göz atabilirsiniz.
+Üç ana kategoride çeşitli entegrasyonlar sunuyoruz. Detaylar için <a href="https://docs.atmosphere.dev/account-settings/oss-specific-details/#app-store" target="_blank">Uygulama Mağazası</a>'na göz atabilirsiniz.
 
 - ⚡ &nbsp;Sohbet: Slack, Discord, Mattermost, and etc
 - ⚡ &nbsp;E-posta: AWS SES, SMTP, MailerSend, and etc
@@ -128,14 +128,14 @@ Diğer kurulum yöntemleri için [dokümanlarımızı](https://docs.nocodb.com/c
 
 ### Programatik Erişim
 
-Kullanıcıların işlemleri programatik olarak tetikleyebilmesi için aşağıdaki yöntemleri sunuyoruz. İsteklerinizi NocoDB’ye yetkilendirmek için bir token (JWT veya Sosyal Kimlik Doğrulama / Social Auth) kullanabilirsiniz.
+Kullanıcıların işlemleri programatik olarak tetikleyebilmesi için aşağıdaki yöntemleri sunuyoruz. İsteklerinizi Atmosphere’ye yetkilendirmek için bir token (JWT veya Sosyal Kimlik Doğrulama / Social Auth) kullanabilirsiniz.
 
 - ⚡ &nbsp;REST API'ler
-- ⚡ &nbsp;NocoDB SDK
+- ⚡ &nbsp;Atmosphere SDK
 
 # Katkıda Bulunma
 
-[Katkı Rehberi](https://github.com/nocodb/nocodb/blob/master/.github/CONTRIBUTING.md)'ni inceleyebilirsiniz..
+[Katkı Rehberi](https://github.com/GaryOcean428/atmosphere/blob/master/.github/CONTRIBUTING.md)'ni inceleyebilirsiniz..
 
 # Neden bunu geliştiriyoruz?
 
@@ -159,6 +159,6 @@ Bu proje <a href="./LICENSE">AGPLv3</a> ile lisanslanmıştır.
 
 Katkılarınız için teşekkür ederiz! Topluluktan gelen tüm katkılar bizim için çok değerli.
 
-<a href="https://github.com/nocodb/nocodb/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=nocodb/nocodb" />
+<a href="https://github.com/GaryOcean428/atmosphere/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=atmosphere/atmosphere" />
 </a>

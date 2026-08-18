@@ -1,8 +1,8 @@
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
-import type { SelectOptionsType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
+import type { SelectOptionsType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import { MetaTable } from '~/utils/globals';
 import Column from '~/models/Column';
 import Filter from '~/models/Filter';
@@ -92,7 +92,7 @@ const migrateNullAndEmptyToBlankFilters = (filter, ncMeta) => {
 };
 
 const migrateMultiSelectEq = async (
-  context: NcContext,
+  context: AtContext,
   filter,
   col: Column,
   ncMeta,
@@ -367,7 +367,7 @@ async function updateProjectMeta(ncMeta: MetaService) {
   await Promise.all(actions);
 }
 
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   // fix the existing filter behaviours or
   // migrate `null` or `empty` filters to `blank`
   await migrateFilters(ncMeta);

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IntegrationType } from 'nocodb-sdk'
+import type { IntegrationType } from 'atmosphere-sdk'
 
 interface IntegrationLinkedBaseListResponse {
   all_bases: boolean
@@ -141,7 +141,7 @@ watch(allBases, () => {
 </script>
 
 <template>
-  <NcModal v-model:visible="isOpen" size="sm" wrap-class-name="nc-modal-base-assignment">
+  <AtModal v-model:visible="isOpen" size="sm" wrap-class-name="atm-modal-base-assignment">
     <template #header>
       <span class="text-heading3">
         {{ t('labels.manageBaseAccess') }}
@@ -153,65 +153,65 @@ watch(allBases, () => {
     <div v-else class="flex flex-col flex-1 min-h-0 overflow-hidden">
       <div
         class="flex items-center justify-between p-3 rounded-lg border-1 cursor-pointer"
-        :class="allBases ? 'border-nc-border-brand bg-nc-bg-brand-soft' : 'border-nc-border-gray-medium'"
+        :class="allBases ? 'border-atm-border-brand bg-atm-bg-brand-soft' : 'border-atm-border-gray-medium'"
         @click="allBases = !allBases"
       >
         <div class="flex flex-col gap-1">
-          <span class="text-sm font-semibold text-nc-content-gray">{{ t('activity.allBases') }}</span>
-          <span class="text-bodySm text-nc-content-gray-subtle">{{ t('labels.grantAccessToAllBases') }}</span>
+          <span class="text-sm font-semibold text-atm-content-gray">{{ t('activity.allBases') }}</span>
+          <span class="text-bodySm text-atm-content-gray-subtle">{{ t('labels.grantAccessToAllBases') }}</span>
         </div>
         <span @click.stop>
-          <NcSwitch v-model:checked="allBases" size="small" :disabled="isLoading" />
+          <AtSwitch v-model:checked="allBases" size="small" :disabled="isLoading" />
         </span>
       </div>
 
       <template v-if="!allBases">
         <div class="flex items-center justify-between mt-4 mb-2">
-          <span class="text-captionSm text-nc-content-gray-subtle2 uppercase tracking-wide">
+          <span class="text-captionSm text-atm-content-gray-subtle2 uppercase tracking-wide">
             {{ t('labels.selectBases') }}
           </span>
-          <span class="text-bodySm text-nc-content-gray-subtle"> {{ selectedBaseIds.size }} / {{ basesList.length }} </span>
+          <span class="text-bodySm text-atm-content-gray-subtle"> {{ selectedBaseIds.size }} / {{ basesList.length }} </span>
         </div>
         <div class="relative flex-1 min-h-0">
-          <div ref="listRef" class="flex flex-col gap-1 h-full overflow-auto nc-scrollbar-thin" @scroll="checkScrollable">
+          <div ref="listRef" class="flex flex-col gap-1 h-full overflow-auto atm-scrollbar-thin" @scroll="checkScrollable">
             <div
               v-for="base in basesList"
               :key="base.id"
-              class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-nc-bg-gray-light cursor-pointer"
+              class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-atm-bg-gray-light cursor-pointer"
               @click="toggleBase(base.id!)"
             >
-              <NcCheckbox :checked="selectedBaseIds.has(base.id!)" />
+              <AtCheckbox :checked="selectedBaseIds.has(base.id!)" />
               <GeneralProjectIcon
                 :color="parseProp(base.meta).iconColor"
                 :icon="parseProp(base.meta).icon"
                 :type="base.type"
                 class="h-4.5 w-4.5 flex-none"
               />
-              <NcTooltip show-on-truncate-only class="truncate text-sm font-medium text-nc-content-gray">
+              <AtTooltip show-on-truncate-only class="truncate text-sm font-medium text-atm-content-gray">
                 {{ base.title }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
-            <div v-if="!basesList.length" class="text-sm text-nc-content-gray-subtle2 py-2 text-center">
+            <div v-if="!basesList.length" class="text-sm text-atm-content-gray-subtle2 py-2 text-center">
               {{ t('labels.noData') }}
             </div>
           </div>
           <div
             v-if="hasScrollableContent"
             class="absolute bottom-0 left-0 right-0 h-5 pointer-events-none"
-            style="background: linear-gradient(transparent, var(--nc-bg-default))"
+            style="background: linear-gradient(transparent, var(--atm-bg-default))"
           />
         </div>
       </template>
 
       <!-- Footer -->
       <div class="flex items-center justify-end gap-2 mt-auto pt-4">
-        <NcButton size="small" type="secondary" @click="isOpen = false">
+        <AtButton size="small" type="secondary" @click="isOpen = false">
           {{ $t('general.cancel') }}
-        </NcButton>
-        <NcButton size="small" type="primary" :loading="isSaving" :disabled="!hasChanges" @click="save">
+        </AtButton>
+        <AtButton size="small" type="primary" :loading="isSaving" :disabled="!hasChanges" @click="save">
           {{ $t('general.save') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>

@@ -3,7 +3,7 @@ import Redis from 'ioredis-mock';
 import CacheMgr from './CacheMgr';
 import { CACHE_PREFIX } from '~/utils/globals';
 
-const _log = debug('nc:cache');
+const _log = debug('atm:cache');
 
 export default class RedisMockCacheMgr extends CacheMgr {
   constructor() {
@@ -13,7 +13,7 @@ export default class RedisMockCacheMgr extends CacheMgr {
     this.client.flushdb();
 
     // TODO(cache): fetch orgs once it's implemented
-    const orgs = 'noco';
+    const orgs = 'atmosphere';
     this.prefix = `${CACHE_PREFIX}:${orgs}`;
     this.context = 'RedisMockCacheMgr';
   }

@@ -5,15 +5,15 @@ import {
   parseProp,
   UITypes,
   ViewTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type {
   KanbanUpdateReqType,
   UserType,
   ViewCreateReqType,
-} from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import type { SelectOption } from '~/models';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { MetaService } from '~/meta/meta.service';
 import {
   type ViewWebhookManager,
@@ -23,20 +23,20 @@ import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
 import { assertPersonalViewAllowed } from '~/helpers/checkPersonalViewFeature';
 import { assertNotSandbox } from '~/helpers/sandboxGuards';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
 import { KanbanView, Model, User, View } from '~/models';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheScope } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 @Injectable()
 export class KanbansService {
   constructor(protected readonly appHooksService: AppHooksService) {}
 
   async kanbanViewGet(
-    context: NcContext,
+    context: AtContext,
     param: { kanbanViewId: string },
     ncMeta?: MetaService,
   ) {
@@ -45,12 +45,12 @@ export class KanbansService {
 
   @TraceCommand(OperationName.kanbanViewCreate)
   async kanbanViewCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       kanban: ViewCreateReqType;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
       ownedBy?: string;
       viewWebhookManager?: ViewWebhookManager;
     },
@@ -69,7 +69,7 @@ export class KanbansService {
     );
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     await assertPersonalViewAllowed(context, param.kanban.lock_type);
@@ -104,7 +104,7 @@ export class KanbansService {
       ncMeta,
     );
     if (existingView) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'view',
         alias: param.kanban.title,
         label: 'title',
@@ -144,7 +144,7 @@ export class KanbansService {
     );
 
     const view = await View.get(context, id, false, ncMeta);
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       context,
       CacheScope.VIEW,
       [view.fk_model_id],
@@ -172,7 +172,7 @@ export class KanbansService {
 
     await view.getView<ViewTypes.KANBAN>(context);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -193,11 +193,11 @@ export class KanbansService {
 
   @TraceCommand(OperationName.kanbanViewUpdate)
   async kanbanViewUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       kanbanViewId: string;
       kanban: KanbanUpdateReqType;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -210,7 +210,7 @@ export class KanbansService {
     const view = await View.get(context, param.kanbanViewId, false, ncMeta);
 
     if (!view) {
-      NcError.get(context).viewNotFound(param.kanbanViewId);
+      AtError.get(context).viewNotFound(param.kanbanViewId);
     }
 
     const viewWebhookManager =
@@ -274,7 +274,7 @@ export class KanbansService {
     // Strip the stored bcrypt password hash from every outbound payload.
     const safeView = View.maskPasswordForResponse(view);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -296,7 +296,7 @@ export class KanbansService {
    * Initialize or update kanban meta for the grouping column
    */
   private async initializeKanbanMetaForGroupingColumn(
-    context: NcContext,
+    context: AtContext,
     view: View,
     ncMeta?: MetaService,
   ) {
@@ -392,11 +392,11 @@ export class KanbansService {
   }
 
   async kanbanOptionsReorder(
-    context: NcContext,
+    context: AtContext,
     param: {
       kanbanViewId: string;
       optionsOrder: string[];
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -429,7 +429,7 @@ export class KanbansService {
       (col) => col.id === kanbanView.fk_grp_col_id,
     );
     if (!column) {
-      NcError.get(context).fieldNotFound(kanbanView.fk_grp_col_id);
+      AtError.get(context).fieldNotFound(kanbanView.fk_grp_col_id);
     }
     const options = (await column.getColOptions(context))
       .options as SelectOption[];

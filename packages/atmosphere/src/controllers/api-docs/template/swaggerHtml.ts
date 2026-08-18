@@ -7,7 +7,7 @@ export default ({
 }): string => `<!DOCTYPE html>
 <html>
 <head>
-    <title>NocoDB : API Docs</title>
+    <title>Atmosphere : API Docs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     <link rel="shortcut icon" href="${ncSiteUrl}/favicon.ico" />
     <link rel="stylesheet" href="${ncSiteUrl}/css/swagger-ui.css"/>
@@ -20,7 +20,7 @@ export default ({
 let initialLocalStorage = {}
 
 try {
-  initialLocalStorage = JSON.parse(localStorage.getItem('nocodb-gui-v2') || '{}');
+  initialLocalStorage = JSON.parse(localStorage.getItem('atmosphere-gui-v2') || '{}');
 } catch (e) {
   console.error('Failed to parse local storage', e);
 }
@@ -52,9 +52,9 @@ xmlhttp.onload = function () {
 xmlhttp.send();
 
   
-  console.log('%c🚀 We are Hiring!!! 🚀%c\\n%cJoin the forces http://careers.nocodb.com', 'color:#1348ba;font-size:3rem;padding:20px;', 'display:none', 'font-size:1.5rem;padding:20px');
+  console.log('%c🚀 We are Hiring!!! 🚀%c\\n%cJoin the forces http://careers.atmosphere.dev', 'color:#1348ba;font-size:3rem;padding:20px;', 'display:none', 'font-size:1.5rem;padding:20px');
     const linkEl = document.createElement('a')
-  linkEl.setAttribute('href', "http://careers.nocodb.com")
+  linkEl.setAttribute('href', "http://careers.atmosphere.dev")
   linkEl.setAttribute('target', '_blank')
   linkEl.setAttribute('class', 'we-are-hiring')
   linkEl.innerHTML = '🚀 We are Hiring!!! 🚀'

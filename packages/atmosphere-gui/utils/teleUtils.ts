@@ -5,7 +5,7 @@ import { io } from 'socket.io-client'
  * Socket.io based telemetry transport.
  * Used by CE plugin directly and by EE plugin for free/unlicensed users.
  *
- * Events are sent to SocketGateway → Tele → telemetry.nocodb.com
+ * Events are sent to SocketGateway → Tele → telemetry.atmosphere.dev
  */
 export class SocketTele {
   private socket: Socket | null = null

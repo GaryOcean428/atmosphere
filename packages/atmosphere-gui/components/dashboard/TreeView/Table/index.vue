@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SourceType, TableType } from 'nocodb-sdk'
+import type { SourceType, TableType } from 'atmosphere-sdk'
 
 defineProps<{
   baseId: string
@@ -134,7 +134,7 @@ const updateSourceTitle = async (sourceId: string) => {
  * It opens a dialog for table creation, handles the dialog closure,
  * and potentially scrolls to the newly created table.
  *
- * @see {@link packages/nc-gui/components/smartsheet/topbar/TableListDropdown.vue} for a similar implementation
+ * @see {@link packages/atmosphere-gui/components/smartsheet/topbar/TableListDropdown.vue} for a similar implementation
  * of table creation dialog. If this function is updated, consider updating the other implementation as well.
  */
 function openTableCreateDialog(sourceIndex?: number | undefined, showSourceSelector = true) {
@@ -222,13 +222,13 @@ onKeyStroke('Escape', () => {
 </script>
 
 <template>
-  <div class="nc-project-home-section">
-    <div v-if="!hideHeader" class="nc-project-home-section-header !cursor-pointer" @click.stop="isExpanded = !isExpanded">
+  <div class="atm-project-home-section">
+    <div v-if="!hideHeader" class="atm-project-home-section-header !cursor-pointer" @click.stop="isExpanded = !isExpanded">
       <div class="flex-1">{{ $t('objects.tables') }}</div>
 
       <GeneralIcon
         icon="chevronRight"
-        class="flex-none nc-sidebar-source-node-btns cursor-pointer transform transition-transform duration-200 text-[20px] text-nc-content-gray-muted"
+        class="flex-none atm-sidebar-source-node-btns cursor-pointer transform transition-transform duration-200 text-[20px] text-atm-content-gray-muted"
         :class="{ '!rotate-90': isExpanded }"
       />
     </div>
@@ -252,7 +252,7 @@ onKeyStroke('Escape', () => {
                   v-else-if="source && source.enabled"
                   v-model:active-key="activeKey"
                   v-e="['c:source:toggle-expand']"
-                  class="!mx-0 !px-0 nc-sidebar-source-node nc-source-collapse-no-arrow"
+                  class="!mx-0 !px-0 atm-sidebar-source-node atm-source-collapse-no-arrow"
                   :class="[{ hidden: searchActive && !!filterQuery }]"
                   :bordered="false"
                   ghost
@@ -262,14 +262,14 @@ onKeyStroke('Escape', () => {
                     <template #header>
                       <div
                         :data-sourceId="source.id"
-                        class="nc-sidebar-node min-w-20 w-full h-full flex flex-row group py-0.5 !mr-0"
+                        class="atm-sidebar-node min-w-20 w-full h-full flex flex-row group py-0.5 !mr-0"
                         :class="{
                           'pr-0.5': source.id && sourceRenameHelpers[source.id]?.editMode,
                         }"
                       >
                         <div
                           v-if="sourceIndex === 0"
-                          class="source-context flex items-center gap-2 text-nc-content-gray nc-sidebar-node-title"
+                          class="source-context flex items-center gap-2 text-atm-content-gray atm-sidebar-node-title"
                           @contextmenu="setMenuContext('source', source)"
                         >
                           <div
@@ -278,16 +278,16 @@ onKeyStroke('Escape', () => {
                           >
                             <GeneralIcon
                               icon="chevronRight"
-                              class="transform transition-transform duration-200 !text-nc-content-gray-subtle2 text-[16px]"
+                              class="transform transition-transform duration-200 !text-atm-content-gray-subtle2 text-[16px]"
                               :class="{ '!rotate-90': isSourceExpanded(source.id!) }"
                             />
                           </div>
-                          <div class="flex items-center nc-source-icon-wrapper min-w-6 h-6 relative" @click.stop>
-                            <NcButton
+                          <div class="flex items-center atm-source-icon-wrapper min-w-6 h-6 relative" @click.stop>
+                            <AtButton
                               v-e="['c:source:toggle-expand']"
                               type="text"
                               size="xxsmall"
-                              class="nc-source-chevron-btn !absolute inset-0 flex items-center justify-center opacity-0 z-10 text-nc-content-gray-subtle2 hover:text-nc-content-gray !rounded-md !xs:hidden"
+                              class="atm-source-chevron-btn !absolute inset-0 flex items-center justify-center opacity-0 z-10 text-atm-content-gray-subtle2 hover:text-atm-content-gray !rounded-md !xs:hidden"
                               @click.stop="toggleSourceExpand(source.id!)"
                             >
                               <GeneralIcon
@@ -295,7 +295,7 @@ onKeyStroke('Escape', () => {
                                 class="cursor-pointer transform transition-transform duration-200 !text-current text-[16px]"
                                 :class="{ '!rotate-90': isSourceExpanded(source.id!) }"
                               />
-                            </NcButton>
+                            </AtButton>
                             <div class="flex items-center">
                               <GeneralBaseLogo class="flex-none min-w-4 !xs:(min-w-4.25 w-4.25 text-sm)" />
                             </div>
@@ -304,7 +304,7 @@ onKeyStroke('Escape', () => {
                         </div>
                         <div
                           v-else
-                          class="source-context flex flex-grow items-center gap-1 text-nc-content-gray min-w-1/20 max-w-full"
+                          class="source-context flex flex-grow items-center gap-1 text-atm-content-gray min-w-1/20 max-w-full"
                           @contextmenu="setMenuContext('source', source)"
                         >
                           <div
@@ -313,16 +313,16 @@ onKeyStroke('Escape', () => {
                           >
                             <GeneralIcon
                               icon="chevronRight"
-                              class="transform transition-transform duration-200 !text-nc-content-gray-subtle2 text-[16px]"
+                              class="transform transition-transform duration-200 !text-atm-content-gray-subtle2 text-[16px]"
                               :class="{ '!rotate-90': isSourceExpanded(source.id!) }"
                             />
                           </div>
-                          <div class="flex items-center nc-source-icon-wrapper min-w-6 h-6 relative" @click.stop>
-                            <NcButton
+                          <div class="flex items-center atm-source-icon-wrapper min-w-6 h-6 relative" @click.stop>
+                            <AtButton
                               v-e="['c:source:toggle-expand']"
                               type="text"
                               size="xxsmall"
-                              class="nc-source-chevron-btn !absolute inset-0 flex items-center justify-center opacity-0 z-10 text-nc-content-gray-subtle2 hover:text-nc-content-gray !rounded-md !xs:hidden"
+                              class="atm-source-chevron-btn !absolute inset-0 flex items-center justify-center opacity-0 z-10 text-atm-content-gray-subtle2 hover:text-atm-content-gray !rounded-md !xs:hidden"
                               @click.stop="toggleSourceExpand(source.id!)"
                             >
                               <GeneralIcon
@@ -330,8 +330,8 @@ onKeyStroke('Escape', () => {
                                 class="cursor-pointer transform transition-transform duration-200 !text-current text-[16px]"
                                 :class="{ '!rotate-90': isSourceExpanded(source.id!) }"
                               />
-                            </NcButton>
-                            <NcTooltip
+                            </AtButton>
+                            <AtTooltip
                               :tooltip-style="{ 'min-width': 'max-content' }"
                               :overlay-inner-style="{ 'min-width': 'max-content' }"
                               :mouse-leave-delay="0.3"
@@ -348,13 +348,13 @@ onKeyStroke('Escape', () => {
                                   class="flex-none min-w-4 !xs:(min-w-4.25 w-4.25 text-sm)"
                                 />
                               </div>
-                            </NcTooltip>
+                            </AtTooltip>
                           </div>
                           <a-input
                             v-if="source.id && sourceRenameHelpers[source.id]?.editMode"
                             ref="input"
                             v-model:value="sourceRenameHelpers[source.id].tempTitle"
-                            class="capitalize !bg-transparent flex-1 mr-4 !pr-1.5 !text-nc-content-gray-subtle !rounded-md !h-6 animate-sidebar-node-input-padding"
+                            class="capitalize !bg-transparent flex-1 mr-4 !pr-1.5 !text-atm-content-gray-subtle !rounded-md !h-6 animate-sidebar-node-input-padding"
                             :style="{
                               fontWeight: 'inherit',
                             }"
@@ -366,43 +366,43 @@ onKeyStroke('Escape', () => {
                             @blur="updateSourceTitle(source.id!)"
                             @keydown.stop
                           />
-                          <NcTooltip
+                          <AtTooltip
                             v-else
-                            class="nc-sidebar-node-title capitalize text-ellipsis overflow-hidden select-none text-nc-content-gray-subtle"
+                            class="atm-sidebar-node-title capitalize text-ellipsis overflow-hidden select-none text-atm-content-gray-subtle"
                             :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap', display: 'inline' }"
                             show-on-truncate-only
                           >
                             <template #title> {{ source.alias || '' }}</template>
                             <span
-                              :data-testid="`nc-sidebar-base-${source.alias}`"
+                              :data-testid="`atm-sidebar-base-${source.alias}`"
                               @dblclick.stop="enableEditModeForSource(source.id!)"
                             >
                               {{ source.alias || '' }}
                             </span>
-                          </NcTooltip>
+                          </AtTooltip>
                         </div>
                         <div
                           v-if="!(source.id && sourceRenameHelpers[source.id]?.editMode)"
                           class="flex flex-row items-center gap-x-0.25"
                         >
-                          <NcDropdown
+                          <AtDropdown
                             :visible="isBasesOptionsOpen[source!.id!]"
                             :trigger="['click']"
                             @update:visible="isBasesOptionsOpen[source!.id!] = $event"
                           >
-                            <NcButton
+                            <AtButton
                               v-e="['c:source:options']"
-                              class="nc-sidebar-node-btn"
-                              :class="{ '!text-nc-content-gray-extreme !opacity-100 !inline-block': isBasesOptionsOpen[source!.id!] }"
+                              class="atm-sidebar-node-btn"
+                              :class="{ '!text-atm-content-gray-extreme !opacity-100 !inline-block': isBasesOptionsOpen[source!.id!] }"
                               type="text"
                               size="xxsmall"
                               @click.stop="isBasesOptionsOpen[source!.id!] = !isBasesOptionsOpen[source!.id!]"
                             >
                               <GeneralIcon icon="threeDotHorizontal" class="w-4 h-4" />
-                            </NcButton>
+                            </AtButton>
                             <template #overlay>
-                              <NcMenu
-                                class="nc-scrollbar-md !min-w-50"
+                              <AtMenu
+                                class="atm-scrollbar-md !min-w-50"
                                 :style="{
                                   maxHeight: '70vh',
                                   overflow: 'overlay',
@@ -410,7 +410,7 @@ onKeyStroke('Escape', () => {
                                 variant="small"
                                 @click="isBasesOptionsOpen[source!.id!] = false"
                               >
-                                <NcMenuItemCopyId
+                                <AtMenuItemCopyId
                                   :id="source.id"
                                   :tooltip="$t('labels.clickToCopySourceID')"
                                   :label="
@@ -420,26 +420,26 @@ onKeyStroke('Escape', () => {
                                   "
                                   @click.stop
                                 />
-                                <NcDivider />
+                                <AtDivider />
 
-                                <NcMenuItem
+                                <AtMenuItem
                                   v-if="isUIAllowed('baseRename')"
-                                  data-testid="nc-sidebar-source-rename"
+                                  data-testid="atm-sidebar-source-rename"
                                   @click="enableEditModeForSource(source.id!)"
                                 >
                                   <GeneralIcon icon="rename" />
                                   {{ $t('general.rename') }}
-                                </NcMenuItem>
+                                </AtMenuItem>
 
-                                <NcDivider />
+                                <AtDivider />
 
                                 <!-- ERD View -->
-                                <NcMenuItem key="erd" @click="openErdView(source)">
+                                <AtMenuItem key="erd" @click="openErdView(source)">
                                   <div v-e="['c:source:erd']" class="flex gap-2 items-center">
                                     <GeneralIcon icon="ncErd" />
                                     {{ $t('title.relations') }}
                                   </div>
-                                </NcMenuItem>
+                                </AtMenuItem>
 
                                 <DashboardTreeViewBaseOptions
                                   v-if="showBaseOption(source)"
@@ -447,28 +447,28 @@ onKeyStroke('Escape', () => {
                                   :source="source"
                                   :show-source-selector="false"
                                 />
-                              </NcMenu>
+                              </AtMenu>
                             </template>
-                          </NcDropdown>
+                          </AtDropdown>
 
-                          <NcButton
+                          <AtButton
                             v-if="isUIAllowed('tableCreate', { roles: baseRole, source })"
                             v-e="['c:source:add-table']"
                             type="text"
                             size="xxsmall"
-                            class="nc-sidebar-node-btn"
+                            class="atm-sidebar-node-btn"
                             :class="{ '!opacity-100 !inline-block': isBasesOptionsOpen[source!.id!] }"
                             @click.stop="openTableCreateDialog(sourceIndex, false)"
                           >
                             <GeneralIcon icon="plus" class="text-xl leading-5" style="-webkit-text-stroke: 0.15px" />
-                          </NcButton>
+                          </AtButton>
                         </div>
                       </div>
                     </template>
                     <div
                       ref="menuRefs"
                       :key="`sortable-${source.id}-${source.id && source.id in keys ? keys[source.id] : '0'}`"
-                      :nc-source="source.id"
+                      :atm-source="source.id"
                     >
                       <DashboardTreeViewTableList :base="base" :base-id="baseId" :source-index="sourceIndex" />
                     </div>
@@ -484,26 +484,26 @@ onKeyStroke('Escape', () => {
 </template>
 
 <style lang="scss" scoped>
-.nc-source-collapse-no-arrow {
+.atm-source-collapse-no-arrow {
   :deep(.ant-collapse-arrow) {
     @apply !hidden;
   }
 
-  .nc-source-chevron-btn {
+  .atm-source-chevron-btn {
     @apply transition-opacity duration-150;
   }
 
-  :deep(.nc-source-icon-wrapper > :not(.nc-source-chevron-btn)) {
+  :deep(.atm-source-icon-wrapper > :not(.atm-source-chevron-btn)) {
     @apply transition-opacity duration-150;
   }
 
   @media (min-width: 481px) {
     :deep(.ant-collapse-header:hover) {
-      .nc-source-chevron-btn {
+      .atm-source-chevron-btn {
         @apply !opacity-100;
       }
 
-      .nc-source-icon-wrapper > :not(.nc-source-chevron-btn) {
+      .atm-source-icon-wrapper > :not(.atm-source-chevron-btn) {
         @apply !opacity-0;
       }
     }

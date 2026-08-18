@@ -10,14 +10,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ProjectRoles, ProjectUserReqType } from 'nocodb-sdk';
+import { ProjectRoles, ProjectUserReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { BaseUsersService } from '~/services/base-users/base-users.service';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
 @Controller()
@@ -32,9 +32,9 @@ export class BaseUsersController {
     blockPublicBaseAccess: true,
   })
   async userList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const baseRoles = Object.keys((req.user as any)?.base_roles ?? {});
     const mode =
@@ -60,14 +60,14 @@ export class BaseUsersController {
     blockPublicBaseAccess: true,
   })
   async userInvite(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Body() body: ProjectUserReqType,
   ): Promise<any> {
     // todo: move this to a service
     if (!body.email) {
-      NcError.badRequest('Email is required');
+      AtError.badRequest('Email is required');
     }
     return await this.baseUsersService.userInvite(context, {
       baseId,
@@ -84,10 +84,10 @@ export class BaseUsersController {
     blockPublicBaseAccess: true,
   })
   async baseUserUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Param('userId') userId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Body()
     body: ProjectUserReqType & {
       base_id: string;
@@ -112,10 +112,10 @@ export class BaseUsersController {
     blockPublicBaseAccess: true,
   })
   async baseUserDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Param('userId') userId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ): Promise<any> {
     await this.baseUsersService.baseUserDelete(context, {
       baseId,
@@ -136,10 +136,10 @@ export class BaseUsersController {
     blockPublicBaseAccess: true,
   })
   async baseUserInviteResend(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Param('userId') userId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Body() body: ProjectUserReqType,
   ): Promise<any> {
     await this.baseUsersService.baseUserInviteResend(context, {
@@ -159,9 +159,9 @@ export class BaseUsersController {
   ])
   @Acl('baseUserMetaUpdate')
   async baseUserMetaUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Body() body: ProjectUserReqType,
   ): Promise<any> {
     return await this.baseUsersService.baseUserMetaUpdate(context, {

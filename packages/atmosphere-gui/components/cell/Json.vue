@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
-import NcModal from '../nc/Modal.vue'
+import AtModal from '../atm/Modal.vue'
 
 const props = defineProps<Props>()
 
@@ -175,7 +175,7 @@ useSelectedCellKeydownListener(active, (e) => {
 const inputWrapperRef = ref<HTMLElement | null>(null)
 
 onClickOutside(inputWrapperRef, (e) => {
-  if ((e.target as HTMLElement)?.closest('.nc-json-action')) return
+  if ((e.target as HTMLElement)?.closest('.atm-json-action')) return
   editEnabled.value = false
 })
 
@@ -207,7 +207,7 @@ watch(inputWrapperRef, () => {
   if (!isEditColumn.value) return
 
   // stop event propogation in edit to prevent close edit modal on clicking expanded modal overlay
-  const modal = document.querySelector('.nc-json-expanded-modal') as HTMLElement
+  const modal = document.querySelector('.atm-json-expanded-modal') as HTMLElement
 
   if (!modal?.parentElement) return
 
@@ -259,7 +259,7 @@ onMounted(() => {
     gridCell.addEventListener('dblclick', openJSONEditor)
     return
   }
-  const container = el.value?.closest('.nc-data-cell, .nc-default-value-wrapper')
+  const container = el.value?.closest('.atm-data-cell, .atm-default-value-wrapper')
   if (container) container.addEventListener('click', openJSONEditor)
 })
 
@@ -271,34 +271,34 @@ onUnmounted(() => {
     gridCell.removeEventListener('dblclick', openJSONEditor)
     return
   }
-  const container = el.value?.closest?.('.nc-data-cell, .nc-default-value-wrapper')
+  const container = el.value?.closest?.('.atm-data-cell, .atm-default-value-wrapper')
   if (container) container.removeEventListener('click', openJSONEditor)
 })
 </script>
 
 <template>
   <component
-    :is="isExpanded ? NcModal : 'div'"
+    :is="isExpanded ? AtModal : 'div'"
     v-model:visible="isExpanded"
     width="auto"
     :closable="false"
     centered
     :footer="null"
-    :wrap-class-name="isExpanded ? '!z-1051 nc-json-expanded-modal' : null"
+    :wrap-class-name="isExpanded ? '!z-1051 atm-json-expanded-modal' : null"
     class="relative"
     :class="{ 'json-modal min-w-80': isExpanded, 'min-h-6 flex items-center': !isExpanded }"
   >
     <div v-if="isExpanded" class="flex flex-col w-full" @mousedown.stop @mouseup.stop @click.stop>
-      <div class="flex flex-row justify-between items-center -mt-2 pb-3 nc-json-action" @mousedown.stop>
-        <NcButton type="secondary" size="xsmall" class="!w-7 !h-7 !min-w-[fit-content]" @click.stop="closeJSONEditor">
+      <div class="flex flex-row justify-between items-center -mt-2 pb-3 atm-json-action" @mousedown.stop>
+        <AtButton type="secondary" size="xsmall" class="!w-7 !h-7 !min-w-[fit-content]" @click.stop="closeJSONEditor">
           <component :is="iconMap.minimize" class="w-4 h-4" />
-        </NcButton>
+        </AtButton>
 
         <div v-if="!readOnly" class="flex gap-2">
-          <NcButton type="secondary" size="small" @click="clear">{{ $t('general.cancel') }}</NcButton>
-          <NcButton type="primary" size="small" :disabled="!!error || localValue === vModel" @click="onSave">
+          <AtButton type="secondary" size="small" @click="clear">{{ $t('general.cancel') }}</AtButton>
+          <AtButton type="primary" size="small" :disabled="!!error || localValue === vModel" @click="onSave">
             {{ $t('general.save') }}
-          </NcButton>
+          </AtButton>
         </div>
         <div v-else></div>
       </div>
@@ -327,23 +327,23 @@ onUnmounted(() => {
         </template>
       </Suspense>
 
-      <span v-if="error" class="nc-cell-field text-xs w-full py-1 text-nc-content-red-medium">
+      <span v-if="error" class="atm-cell-field text-xs w-full py-1 text-atm-content-red-medium">
         {{ error.toString() }}
       </span>
     </div>
-    <span v-else-if="ncIsNull(vModel) && showNull" class="nc-cell-field nc-null uppercase">{{ $t('general.null') }}</span>
+    <span v-else-if="ncIsNull(vModel) && showNull" class="atm-cell-field atm-null uppercase">{{ $t('general.null') }}</span>
     <CellClampedText
       v-else
       :value="!ncIsUndefined(vModel) && !ncIsNull(vModel) ? stringifyProp(vModel) : ''"
       :lines="rowHeight"
-      class="nc-cell-field"
+      class="atm-cell-field"
     />
-    <NcTooltip placement="bottom" class="nc-json-expand-btn hidden absolute top-0 bottom-0 right-0">
+    <AtTooltip placement="bottom" class="atm-json-expand-btn hidden absolute top-0 bottom-0 right-0">
       <template #title>{{ isExpandedFormOpen ? $t('title.expand') : $t('tooltip.expandShiftSpace') }}</template>
-      <NcButton type="secondary" size="xsmall" class="!w-5 !h-5 !min-w-[fit-content]" @click.stop="openJSONEditor">
+      <AtButton type="secondary" size="xsmall" class="!w-5 !h-5 !min-w-[fit-content]" @click.stop="openJSONEditor">
         <component :is="iconMap.maximize" class="w-3 h-3" />
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
   </component>
 </template>
 
@@ -357,18 +357,18 @@ onUnmounted(() => {
 </style>
 
 <style lang="scss">
-.nc-cell-json:hover .nc-json-expand-btn,
-.nc-grid-cell:hover .nc-json-expand-btn {
+.atm-cell-json:hover .atm-json-expand-btn,
+.atm-grid-cell:hover .atm-json-expand-btn {
   @apply flex items-center;
 }
-.nc-default-value-wrapper .nc-cell-json,
-.nc-grid-cell .nc-cell-json {
+.atm-default-value-wrapper .atm-cell-json,
+.atm-grid-cell .atm-cell-json {
   min-height: 20px !important;
 }
-.nc-expanded-cell .nc-cell-json .nc-cell-field {
+.atm-expanded-cell .atm-cell-json .atm-cell-field {
   margin: 4px 0;
 }
-.nc-expand-col-JSON.nc-expanded-form-row .nc-cell-json {
+.atm-expand-col-JSON.atm-expanded-form-row .atm-cell-json {
   min-height: 34px;
   @apply !flex items-center max-w-full;
   & > div {
@@ -376,10 +376,10 @@ onUnmounted(() => {
   }
 }
 
-.nc-default-value-wrapper,
-.nc-expanded-cell,
+.atm-default-value-wrapper,
+.atm-expanded-cell,
 .ant-form-item-control-input {
-  .nc-json-expand-btn {
+  .atm-json-expand-btn {
     @apply flex items-center;
   }
 }

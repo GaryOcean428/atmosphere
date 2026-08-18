@@ -26,9 +26,9 @@ import { UsersService } from '~/services/users/users.service';
 
 /* Metas */
 import {
-  NC_ATTACHMENT_FIELD_SIZE,
-  NC_MAX_ATTACHMENTS_ALLOWED,
-  NC_NON_ATTACHMENT_FIELD_SIZE,
+  ATMOSPHERE_ATTACHMENT_FIELD_SIZE,
+  ATMOSPHERE_MAX_ATTACHMENTS_ALLOWED,
+  ATMOSPHERE_NON_ATTACHMENT_FIELD_SIZE,
 } from '~/constants';
 import { ApiDocsController } from '~/controllers/api-docs/api-docs.controller';
 import { ApiTokensController } from '~/controllers/api-tokens.controller';
@@ -95,7 +95,7 @@ import { KanbansService } from '~/services/kanbans.service';
 import { MapsService } from '~/services/maps.service';
 import { MetaDiffsService } from '~/services/meta-diffs.service';
 import { ModelVisibilitiesService } from '~/services/model-visibilities.service';
-import { NocoJobsService } from '~/services/noco-jobs.service';
+import { AtmosphereJobsService } from '~/services/atmosphere-jobs.service';
 import { NotificationsService } from '~/services/notifications/notifications.service';
 import { OrgLicenseService } from '~/services/org-license.service';
 import { OrgTokensEeService } from '~/services/org-tokens-ee.service';
@@ -173,16 +173,16 @@ import {
 } from '~/services/meta-dependency/meta-dependency.provider';
 import { TelemetryHandlerService } from '~/services/telemetry-handler.service';
 
-export const nocoModuleMetadata = {
+export const atmosphereModuleMetadata = {
   imports: [
     EventEmitterModule,
     JobsModule,
     MulterModule.register({
       storage: multer.diskStorage({}),
       limits: {
-        fieldSize: NC_NON_ATTACHMENT_FIELD_SIZE,
-        fileSize: NC_ATTACHMENT_FIELD_SIZE,
-        files: NC_MAX_ATTACHMENTS_ALLOWED,
+        fieldSize: ATMOSPHERE_NON_ATTACHMENT_FIELD_SIZE,
+        fileSize: ATMOSPHERE_ATTACHMENT_FIELD_SIZE,
+        files: ATMOSPHERE_MAX_ATTACHMENTS_ALLOWED,
       },
     }),
     OAuthModule,
@@ -192,7 +192,7 @@ export const nocoModuleMetadata = {
     NotFoundHandlerModule,
   ],
   controllers: [
-    ...(process.env.NC_WORKER_CONTAINER !== 'true'
+    ...(process.env.ATMOSPHERE_WORKER_CONTAINER !== 'true'
       ? [
           /* Users */
           UsersController,
@@ -200,7 +200,7 @@ export const nocoModuleMetadata = {
           /* Metas */
           ApiDocsController,
           ApiTokensController,
-          ...(process.env.NC_SECURE_ATTACHMENTS === 'true'
+          ...(process.env.ATMOSPHERE_SECURE_ATTACHMENTS === 'true'
             ? [AttachmentsSecureController]
             : [AttachmentsController]),
           SourcesController,
@@ -332,7 +332,7 @@ export const nocoModuleMetadata = {
     ColumnsV3Service,
     SortsV3Service,
     FiltersV3Service,
-    NocoJobsService,
+    AtmosphereJobsService,
     McpTokenService,
     McpService,
     ViewRowColorService,
@@ -415,7 +415,7 @@ export const nocoModuleMetadata = {
     SourcesService,
     UtilsService,
     IntegrationsService,
-    NocoJobsService,
+    AtmosphereJobsService,
     ViewRowColorService,
     ViewRowColorV3Service,
     DependencyService,
@@ -438,5 +438,5 @@ export const nocoModuleMetadata = {
   ],
 };
 
-@Module(nocoModuleMetadata)
-export class NocoModule {}
+@Module(atmosphereModuleMetadata)
+export class AtmosphereModule {}

@@ -1,5 +1,5 @@
 // based on source restriction decide the icon color
-import type { SourceType } from 'nocodb-sdk'
+import type { SourceType } from 'atmosphere-sdk'
 import { clientTypes } from '~/utils/baseCreateUtils'
 
 export const getSourceIconColor = (source: SourceType) => {
@@ -33,7 +33,7 @@ export const getSourceTooltip = (source: SourceType) => {
           'a',
           {
             className: '!text-current',
-            href: 'https://nocodb.com/docs/product-docs/data-sources/connect-to-data-source#configuring-permissions',
+            href: 'https://atmosphere.dev/docs/product-docs/data-sources/connect-to-data-source#configuring-permissions',
             target: '_blank',
           },
           'Learn more',
@@ -58,7 +58,7 @@ export const getSourceTooltip = (source: SourceType) => {
           'a',
           {
             className: '!text-current',
-            href: 'https://nocodb.com/docs/product-docs/data-sources/connect-to-data-source#configuring-permissions',
+            href: 'https://atmosphere.dev/docs/product-docs/data-sources/connect-to-data-source#configuring-permissions',
             target: '_blank',
           },
           'Learn more',
@@ -81,7 +81,7 @@ export const getSourceTooltip = (source: SourceType) => {
         'a',
         {
           className: '!text-current',
-          href: 'https://nocodb.com/docs/product-docs/data-sources/connect-to-data-source#configuring-permissions',
+          href: 'https://atmosphere.dev/docs/product-docs/data-sources/connect-to-data-source#configuring-permissions',
           target: '_blank',
         },
         'disabling schema editing',

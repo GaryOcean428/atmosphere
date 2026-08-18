@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { IconType, type UserType } from 'nocodb-sdk'
+import { IconType, type UserType } from 'atmosphere-sdk'
 import 'emoji-mart-vue-fast/css/emoji-mart.css'
 import { Icon } from '@iconify/vue'
 import { type IconMapKey, isColorDark, stringToColor } from '#imports'
@@ -21,7 +21,7 @@ const props = withDefaults(
     name: '',
     email: '',
     disabled: false,
-    iconBgColor: 'var(--nc-bg-gray-light)',
+    iconBgColor: 'var(--atm-bg-gray-light)',
     showPlaceholderIcon: false,
     isDeleted: false,
     initialsLength: 2,
@@ -121,7 +121,7 @@ const usernameInitials = computed(() => {
 
 <template>
   <div
-    class="nc-user-avatar"
+    class="atm-user-avatar"
     :class="{
       'h-full min-h-5 aspect-square': size === 'auto',
       'w-4 h-4': size === 'small',
@@ -135,7 +135,7 @@ const usernameInitials = computed(() => {
         showPlaceholderIcon || (userIcon.icon && userIcon.iconType === IconType.IMAGE) ? undefined : backgroundColor,
     }"
   >
-    <div v-if="showPlaceholderIcon" class="border-1 border-nc-border-gray-medium rounded-full overflow-hidden">
+    <div v-if="showPlaceholderIcon" class="border-1 border-atm-border-gray-medium rounded-full overflow-hidden">
       <img src="~assets/img/placeholder/avatar.png" class="!w-full h-full flex-none" />
     </div>
     <CellAttachmentPreviewImage
@@ -165,7 +165,7 @@ const usernameInitials = computed(() => {
 
       <Icon
         v-else
-        :data-testid="`nc-icon-${userIcon.icon}`"
+        :data-testid="`atm-icon-${userIcon.icon}`"
         class="!text-inherit flex-none"
         :class="{
           'w-[75%] h-[75%]': size === 'auto',
@@ -213,7 +213,7 @@ const usernameInitials = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.nc-user-avatar {
+.atm-user-avatar {
   @apply flex-none rounded-full text-xs flex items-center justify-center uppercase overflow-hidden;
 }
 </style>

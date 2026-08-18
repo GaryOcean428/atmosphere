@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# NocoDB Auto-upstall installer.
+# Atmosphere Auto-upstall installer.
 # Single image (community + enterprise). License activates post-install via Admin Panel.
 #
 set -euo pipefail
@@ -14,7 +14,7 @@ fi
 # owner-only from the start, not just chmod 600 after the fact.
 umask 077
 
-WORK_DIR="${PWD}/nocodb"
+WORK_DIR="${PWD}/atmosphere"
 
 # ── Colors ────────────────────────────────────────────────────────────────────
 RED='\033[0;31m'
@@ -31,17 +31,17 @@ ACME_EMAIL=""
 PG_MODE=""           # bundled | external
 PG_HOST=""           # external only; bundled hardcodes "db". Required for external.
 PG_PORT="5432"
-PG_DATABASE="nocodb"
-PG_USER=""           # defaulted to "nocodb" on bundled paths. Required for external.
+PG_DATABASE="atmosphere"
+PG_USER=""           # defaulted to "atmosphere" on bundled paths. Required for external.
 PG_PASSWORD=""
 PG_SSL=""            # managed | none | custom
 PG_CA_FILE=""
 REDIS_MODE=""        # bundled | external
 REDIS_URL=""         # set on bundled paths. Required for external.
 HOST_PORT="8080"
-IMAGE_TAG="latest"   # docker tag for nocodb/nocodb
+IMAGE_TAG="latest"   # docker tag for atmosphere/atmosphere
 NON_INTERACTIVE=0
-NOCO_SKIP_PREFLIGHT="${NOCO_SKIP_PREFLIGHT:-}"   # when set, skip OS/Docker/port checks (testing & re-runs)
+ATMOSPHERE_SKIP_PREFLIGHT="${ATMOSPHERE_SKIP_PREFLIGHT:-}"   # when set, skip OS/Docker/port checks (testing & re-runs)
 SELINUX_SUFFIX=""    # ":Z" when SELinux is enforcing
 STACK_STARTED=0      # set to 1 once 'docker compose up -d' succeeds
 
@@ -114,8 +114,8 @@ get_public_ip() {
 # Runs on Linux, macOS, and Windows (Git Bash / WSL). We don't install anything
 # for you: if a dependency is missing, we point you at it and ask you to re-run.
 check_prereqs() {
-  [ -n "$NOCO_SKIP_PREFLIGHT" ] && return 0
-  printf '\n%bNocoDB Auto-upstall%b\n' "$BOLD" "$NC"
+  [ -n "$ATMOSPHERE_SKIP_PREFLIGHT" ] && return 0
+  printf '\n%bAtmosphere Auto-upstall%b\n' "$BOLD" "$NC"
   printf '%b═══════════════════════════════════════════%b\n' "$DIM" "$NC"
 
   local missing=""
@@ -145,7 +145,7 @@ check_selinux() {
 }
 
 check_ports() {
-  [ -n "$NOCO_SKIP_PREFLIGHT" ] && return 0
+  [ -n "$ATMOSPHERE_SKIP_PREFLIGHT" ] && return 0
   [ "$MODE" = "production" ] || return 0
   for port in 80 443; do
     if lsof -Pi :"$port" -sTCP:LISTEN -t >/dev/null 2>&1; then
@@ -170,7 +170,7 @@ collect_domain() {
   [ -n "$DOMAIN" ] && return 0
   [ "$NON_INTERACTIVE" -eq 1 ] && return 0
   header "Domain"
-  info "Enter the domain or IP for this NocoDB instance."
+  info "Enter the domain or IP for this Atmosphere instance."
   info "Leave blank for local mode (http://localhost:8080, no SSL)."
 
   local pub_ip; pub_ip="$(get_public_ip)"
@@ -200,7 +200,7 @@ collect_pg() {
   case "$REPLY" in
     1)
       PG_MODE="bundled"
-      PG_USER="nocodb"
+      PG_USER="atmosphere"
       PG_PASSWORD="$(generate_password)"
       ok "Bundled Postgres. Auto-generated password."
       ;;
@@ -208,7 +208,7 @@ collect_pg() {
       PG_MODE="external"
       ask "Host"; PG_HOST="$REPLY"
       ask "Port" "5432"; PG_PORT="$REPLY"
-      ask "Database" "nocodb"; PG_DATABASE="$REPLY"
+      ask "Database" "atmosphere"; PG_DATABASE="$REPLY"
       ask "Username"; PG_USER="$REPLY"
       ask_secret "Password"; PG_PASSWORD="$REPLY"
       [ -n "$PG_HOST" ] && [ -n "$PG_USER" ] && [ -n "$PG_PASSWORD" ] \
@@ -286,7 +286,7 @@ show_summary() {
 
 # ── Generators ────────────────────────────────────────────────────────────────
 generate_db_json() {
-  mkdir -p "$WORK_DIR/nocodb"
+  mkdir -p "$WORK_DIR/atmosphere"
   local ssl_block=""
 
   if [ "$PG_MODE" = "external" ]; then
@@ -307,7 +307,7 @@ generate_db_json() {
       }"
         ;;
     esac
-    cat > "$WORK_DIR/nocodb/db.json" <<EOF
+    cat > "$WORK_DIR/atmosphere/db.json" <<EOF
 {
   "client": "pg",
   "connection": {
@@ -320,7 +320,7 @@ generate_db_json() {
 }
 EOF
   else
-    cat > "$WORK_DIR/nocodb/db.json" <<EOF
+    cat > "$WORK_DIR/atmosphere/db.json" <<EOF
 {
   "client": "pg",
   "connection": {
@@ -333,7 +333,7 @@ EOF
 }
 EOF
   fi
-  ok "nocodb/db.json"
+  ok "atmosphere/db.json"
 }
 
 generate_env() {
@@ -348,17 +348,17 @@ generate_env() {
 
   cat > "$WORK_DIR/docker.env" <<EOF
 # Database
-NC_DB_JSON_FILE=/usr/app/data/db.json
+ATMOSPHERE_DB_JSON_FILE=/usr/app/data/db.json
 
 # Redis
-NC_REDIS_URL=${REDIS_URL}
+ATMOSPHERE_REDIS_URL=${REDIS_URL}
 
 # Public URL (email links, webhooks, OAuth redirects)
-NC_SITE_URL=${site_url}
+ATMOSPHERE_SITE_URL=${site_url}
 
 # Settings
-NC_SECURE_ATTACHMENTS=true
-NC_DISABLE_MUX=true
+ATMOSPHERE_SECURE_ATTACHMENTS=true
+ATMOSPHERE_DISABLE_MUX=true
 EOF
   ok "docker.env"
 }
@@ -369,8 +369,8 @@ generate_compose() {
   cat > "$f" <<EOF
 services:
 
-  nocodb:
-    image: nocodb/nocodb:${IMAGE_TAG}
+  atmosphere:
+    image: atmosphere/atmosphere:${IMAGE_TAG}
     env_file: docker.env
     deploy:
       mode: replicated
@@ -392,10 +392,10 @@ EOF
   cat >> "$f" <<EOF
     restart: unless-stopped
     volumes:
-      - nocodb_data:/usr/app/data
-      - ./nocodb/db.json:/usr/app/data/db.json${SELINUX_SUFFIX}
+      - atmosphere_data:/usr/app/data
+      - ./atmosphere/db.json:/usr/app/data/db.json${SELINUX_SUFFIX}
     networks:
-      - nocodb-network
+      - atmosphere-network
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --tries=1 --spider http://localhost:8080/api/v1/health || exit 1']
       interval: 30s
@@ -408,9 +408,9 @@ EOF
     cat >> "$f" <<EOF
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.nocodb.rule=Host(\`${DOMAIN}\`)'
-      - 'traefik.http.routers.nocodb.entrypoints=websecure'
-      - 'traefik.http.routers.nocodb.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.atmosphere.rule=Host(\`${DOMAIN}\`)'
+      - 'traefik.http.routers.atmosphere.entrypoints=websecure'
+      - 'traefik.http.routers.atmosphere.tls.certresolver=letsencrypt'
 EOF
   elif [ "$MODE" = "production-ip" ]; then
     cat >> "$f" <<EOF
@@ -427,19 +427,19 @@ EOF
   cat >> "$f" <<EOF
 
   worker:
-    image: nocodb/nocodb:${IMAGE_TAG}
+    image: atmosphere/atmosphere:${IMAGE_TAG}
     env_file: docker.env
     environment:
-      NC_WORKER_CONTAINER: 'true'
+      ATMOSPHERE_WORKER_CONTAINER: 'true'
     depends_on:
-      nocodb:
+      atmosphere:
         condition: service_healthy
     restart: unless-stopped
     volumes:
-      - nocodb_data:/usr/app/data
-      - ./nocodb/db.json:/usr/app/data/db.json${SELINUX_SUFFIX}
+      - atmosphere_data:/usr/app/data
+      - ./atmosphere/db.json:/usr/app/data/db.json${SELINUX_SUFFIX}
     networks:
-      - nocodb-network
+      - atmosphere-network
 EOF
 
   if [ "$PG_MODE" = "bundled" ]; then
@@ -460,7 +460,7 @@ EOF
       timeout: 5s
       retries: 5
     networks:
-      - nocodb-network
+      - atmosphere-network
 EOF
   fi
 
@@ -478,7 +478,7 @@ EOF
       timeout: 5s
       retries: 5
     networks:
-      - nocodb-network
+      - atmosphere-network
 EOF
   fi
 
@@ -505,18 +505,18 @@ EOF
       - ./letsencrypt:/letsencrypt${SELINUX_SUFFIX}
     restart: unless-stopped
     networks:
-      - nocodb-network
+      - atmosphere-network
 EOF
   fi
 
   cat >> "$f" <<'EOF'
 
 networks:
-  nocodb-network:
+  atmosphere-network:
     driver: bridge
 
 volumes:
-  nocodb_data:
+  atmosphere_data:
 EOF
   [ "$PG_MODE" = "bundled" ]    && echo "  postgres_data:" >> "$f"
   [ "$REDIS_MODE" = "bundled" ] && echo "  redis_data:" >> "$f"
@@ -546,18 +546,18 @@ generate_gitignore() {
   cat > "$WORK_DIR/.gitignore" <<'EOF'
 # Credentials. Never commit.
 docker.env
-nocodb/db.json
+atmosphere/db.json
 
 # Runtime data (named volumes are managed by Docker, not stored here)
 letsencrypt/
-nocodb/
+atmosphere/
 EOF
   ok ".gitignore"
 }
 
 tighten_perms() {
   # Restrict files containing credentials to the deploy user.
-  chmod 600 "$WORK_DIR/docker.env" "$WORK_DIR/nocodb/db.json" 2>/dev/null || true
+  chmod 600 "$WORK_DIR/docker.env" "$WORK_DIR/atmosphere/db.json" 2>/dev/null || true
 }
 
 # ── Flag parsing ──────────────────────────────────────────────────────────────
@@ -588,7 +588,7 @@ parse_flags() {
       --redis-url=*)     REDIS_URL="${1#*=}" ;;
       --help|-h)
         cat <<HELP
-NocoDB Auto-upstall. Interactive: run with no flags.
+Atmosphere Auto-upstall. Interactive: run with no flags.
 
 Common shortcuts:
   --quick                 Install with bundled Postgres + Redis, local mode (port 8080).
@@ -599,7 +599,7 @@ Non-interactive flags:
   --domain=HOST           Domain or IP. Blank or localhost selects local mode.
                           Also enables --non-interactive.
   --acme-email=EMAIL      Let's Encrypt email. Required in production mode.
-  --image-tag=TAG         Pin nocodb/nocodb image tag. Default: latest.
+  --image-tag=TAG         Pin atmosphere/atmosphere image tag. Default: latest.
   --pg=bundled|external
   --pg-host=HOST          (when --pg=external)
   --pg-port=PORT
@@ -613,7 +613,7 @@ HELP
         exit 0
         ;;
       upgrade|start|stop|restart|scale|monitor|status|logs|down)
-        fail "'$1' is no longer a subcommand. This installer only generates the stack; manage it from the deploy dir (cd nocodb && docker compose ...), or run ./nocodb/update.sh to upgrade."
+        fail "'$1' is no longer a subcommand. This installer only generates the stack; manage it from the deploy dir (cd atmosphere && docker compose ...), or run ./atmosphere/update.sh to upgrade."
         ;;
       *) fail "Unknown flag: $1 (try --help)" ;;
     esac
@@ -627,7 +627,7 @@ apply_bundled_defaults() {
   # after all flags are parsed, so flag order (e.g. --pg-password before
   # --pg=bundled) never clobbers an explicit value.
   [ "$PG_MODE" = "bundled" ] || return 0
-  [ -n "$PG_USER" ]     || PG_USER="nocodb"
+  [ -n "$PG_USER" ]     || PG_USER="atmosphere"
   [ -n "$PG_PASSWORD" ] || PG_PASSWORD="$(generate_password)"
 }
 
@@ -669,14 +669,14 @@ validate_non_interactive() {
 require_tty() {
   [ "$NON_INTERACTIVE" -eq 1 ] && return 0
   if ! { true >/dev/tty; } 2>/dev/null; then
-    fail "No terminal available for interactive prompts. Re-run with flags, e.g.: curl -fsSL https://install.nocodb.com/noco.sh | bash -s -- --quick"
+    fail "No terminal available for interactive prompts. Re-run with flags, e.g.: curl -fsSL https://install.atmosphere.dev/atmosphere.sh | bash -s -- --quick"
   fi
 }
 
-# Bring the stack up. Skipped under NOCO_SKIP_PREFLIGHT (tests and config-only re-runs).
+# Bring the stack up. Skipped under ATMOSPHERE_SKIP_PREFLIGHT (tests and config-only re-runs).
 start_stack() {
-  [ -n "$NOCO_SKIP_PREFLIGHT" ] && return 0
-  header "Starting NocoDB"
+  [ -n "$ATMOSPHERE_SKIP_PREFLIGHT" ] && return 0
+  header "Starting Atmosphere"
   info "Pulling images and starting containers (first run can take a few minutes)…"
   if ( cd "$WORK_DIR" && docker compose up -d ); then
     STACK_STARTED=1
@@ -693,35 +693,35 @@ display_completion() {
 
   if [ "$STACK_STARTED" -eq 1 ]; then
     if [ "$MODE" = "production" ]; then
-      printf '  %bNocoDB is starting at:%b https://%s\n' "$GREEN" "$NC" "$DOMAIN"
+      printf '  %bAtmosphere is starting at:%b https://%s\n' "$GREEN" "$NC" "$DOMAIN"
       printf '    The TLS certificate can take a minute to issue on first run.\n\n'
     elif [ "$MODE" = "production-ip" ]; then
-      printf '  %bNocoDB is starting at:%b http://%s%b (plaintext, no SSL)%b\n\n' "$GREEN" "$NC" "$DOMAIN" "$YELLOW" "$NC"
+      printf '  %bAtmosphere is starting at:%b http://%s%b (plaintext, no SSL)%b\n\n' "$GREEN" "$NC" "$DOMAIN" "$YELLOW" "$NC"
     else
-      printf '  %bNocoDB is starting at:%b http://localhost:%s\n\n' "$GREEN" "$NC" "$HOST_PORT"
+      printf '  %bAtmosphere is starting at:%b http://localhost:%s\n\n' "$GREEN" "$NC" "$HOST_PORT"
     fi
     printf '  %bManage the stack:%b\n' "$BOLD" "$NC"
     printf '    cd %s\n' "$WORK_DIR"
-    printf '    docker compose logs -f nocodb   # follow startup logs\n'
+    printf '    docker compose logs -f atmosphere   # follow startup logs\n'
     printf '    docker compose ps               # container status\n'
     printf '    docker compose down             # stop (keeps data)\n\n'
   else
     printf '  Files generated in: %s/\n' "$WORK_DIR"
-    printf '    docker-compose.yml, docker.env, nocodb/db.json, update.sh, .gitignore\n\n'
+    printf '    docker-compose.yml, docker.env, atmosphere/db.json, update.sh, .gitignore\n\n'
     printf '  %bStart it:%b\n' "$BOLD" "$NC"
     printf '    cd %s\n' "$WORK_DIR"
     printf '    docker compose up -d\n'
-    printf '    docker compose logs -f nocodb\n\n'
+    printf '    docker compose logs -f atmosphere\n\n'
     if [ "$MODE" = "production" ]; then
-      printf '  %bNocoDB will be available at:%b https://%s\n\n' "$GREEN" "$NC" "$DOMAIN"
+      printf '  %bAtmosphere will be available at:%b https://%s\n\n' "$GREEN" "$NC" "$DOMAIN"
     elif [ "$MODE" = "production-ip" ]; then
-      printf '  %bNocoDB will be available at:%b http://%s%b (plaintext, no SSL)%b\n\n' "$GREEN" "$NC" "$DOMAIN" "$YELLOW" "$NC"
+      printf '  %bAtmosphere will be available at:%b http://%s%b (plaintext, no SSL)%b\n\n' "$GREEN" "$NC" "$DOMAIN" "$YELLOW" "$NC"
     else
-      printf '  %bNocoDB will be available at:%b http://localhost:%s\n\n' "$GREEN" "$NC" "$HOST_PORT"
+      printf '  %bAtmosphere will be available at:%b http://localhost:%s\n\n' "$GREEN" "$NC" "$HOST_PORT"
     fi
   fi
 
-  printf '  %bActivate your license:%b open NocoDB → Admin Panel → License → paste your key\n\n' "$BOLD" "$NC"
+  printf '  %bActivate your license:%b open Atmosphere → Admin Panel → License → paste your key\n\n' "$BOLD" "$NC"
 }
 
 # ── Main ──────────────────────────────────────────────────────────────────────

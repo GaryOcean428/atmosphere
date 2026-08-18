@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { MetaType, PlanLimitExceededDetailsType, Roles, WorkspaceUserRoles } from 'nocodb-sdk'
+import type { MetaType, PlanLimitExceededDetailsType, Roles, WorkspaceUserRoles } from 'atmosphere-sdk'
 import {
   OrderedProjectRoles,
   OrgUserRoles,
@@ -9,7 +9,7 @@ import {
   WorkspaceUserRoles as WorkspaceUserRolesEnum,
   extractBaseRoleFromWorkspaceRole,
   getEffectiveBaseRole,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 const props = defineProps<{
   baseId?: string
@@ -264,7 +264,7 @@ const updateCollaborator = async (collab: any, roles: ProjectRoles) => {
   } catch (e: any) {
     const errorInfo = await extractSdkResponseErrorMsgv2(e)
 
-    if (isPaymentEnabled.value && errorInfo.error === NcErrorType.ERR_PLAN_LIMIT_EXCEEDED) {
+    if (isPaymentEnabled.value && errorInfo.error === AtErrorType.ERR_PLAN_LIMIT_EXCEEDED) {
       const details = errorInfo.details as PlanLimitExceededDetailsType
 
       showUserPlanLimitExceededModal({
@@ -496,7 +496,7 @@ const columns = [
     minWidth: 110,
     justify: 'justify-end',
   },
-] as NcTableColumnProps[]
+] as AtTableColumnProps[]
 
 const customRow = (record: Record<string, any>) => ({
   class: `${selected[record.id] ? 'selected' : ''} user-row`,
@@ -547,36 +547,36 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="nc-collaborator-table-container nc-access-settings-view flex flex-col relative"
+    class="atm-collaborator-table-container atm-access-settings-view flex flex-col relative"
     :class="{
-      'nc-admin-panel': isAdminPanel,
-      'nc-is-settings-sidebar': isSettingsSidebar,
+      'atm-admin-panel': isAdminPanel,
+      'atm-is-settings-sidebar': isSettingsSidebar,
     }"
   >
     <ProjectPrivateOverlay v-if="showOverlay" />
     <template v-else>
       <div v-if="isAdminPanel">
-        <div class="nc-breadcrumb px-2">
-          <div class="nc-breadcrumb-item">
+        <div class="atm-breadcrumb px-2">
+          <div class="atm-breadcrumb-item">
             {{ org.title }}
           </div>
-          <GeneralIcon icon="ncSlash1" class="nc-breadcrumb-divider" />
+          <GeneralIcon icon="ncSlash1" class="atm-breadcrumb-divider" />
           <NuxtLink
             :href="`/admin/${orgId}/bases`"
-            class="!hover:(text-nc-content-gray underline-nc-gray-600) flex items-center !text-nc-content-gray-subtle !underline-transparent max-w-1/4"
+            class="!hover:(text-atm-content-gray underline-atm-gray-600) flex items-center !text-atm-content-gray-subtle !underline-transparent max-w-1/4"
           >
-            <div class="nc-breadcrumb-item">
+            <div class="atm-breadcrumb-item">
               {{ $t('objects.projects') }}
             </div>
           </NuxtLink>
-          <GeneralIcon icon="ncSlash1" class="nc-breadcrumb-divider" />
-          <div class="nc-breadcrumb-item active truncate capitalize">
+          <GeneralIcon icon="ncSlash1" class="atm-breadcrumb-divider" />
+          <div class="atm-breadcrumb-item active truncate capitalize">
             {{ currentBase?.title }}
           </div>
         </div>
-        <NcPageHeader>
+        <AtPageHeader>
           <template #icon>
-            <div class="nc-page-header-icon flex justify-center items-center h-5 w-5">
+            <div class="atm-page-header-icon flex justify-center items-center h-5 w-5">
               <GeneralBaseIconColorPicker
                 :managed-app="{
                   managed_app_master: currentBase?.managed_app_master,
@@ -591,20 +591,20 @@ onBeforeUnmount(() => {
               {{ currentBase?.title }}
             </span>
           </template>
-        </NcPageHeader>
+        </AtPageHeader>
       </div>
 
-      <div class="nc-content-max-w h-full flex flex-col items-center gap-6 px-4 md:px-6 pt-6">
-        <NcAlert v-if="isEeUI && isPrivateBase" type="info" :message="$t('title.privateBase')" class="bg-nc-bg-gray-extralight">
+      <div class="atm-content-max-w h-full flex flex-col items-center gap-6 px-4 md:px-6 pt-6">
+        <AtAlert v-if="isEeUI && isPrivateBase" type="info" :message="$t('title.privateBase')" class="bg-atm-bg-gray-extralight">
           <template #icon>
-            <GeneralIcon icon="ncUser" class="w-6 h-6 text-nc-content-gray-subtle" />
+            <GeneralIcon icon="ncUser" class="w-6 h-6 text-atm-content-gray-subtle" />
           </template>
           <template #description>
             {{ $t('title.privateBaseAlertDescription') }}
           </template>
 
           <template v-if="isUIAllowed('manageBaseType')" #action>
-            <NcButton
+            <AtButton
               type="secondary"
               size="small"
               class="!mt-[-4px]"
@@ -616,33 +616,33 @@ onBeforeUnmount(() => {
                 <GeneralIcon icon="ncArrowUpRight" class="w-4 h-4" />
               </template>
               {{ $t('activity.goToBaseSettings') }}
-            </NcButton>
+            </AtButton>
           </template>
-        </NcAlert>
+        </AtAlert>
         <div v-if="!isAdminPanel" class="w-full flex justify-between items-center max-w-full gap-3">
           <a-input
             v-model:value="userSearchText"
             :placeholder="isTeamsEnabled && showEEFeatures ? $t('title.searchForMembersOrTeams') : $t('title.searchMembers')"
             :disabled="isLoading"
             allow-clear
-            class="nc-input-border-on-value !max-w-90 !h-8 !px-3 !py-1 !rounded-lg"
+            class="atm-input-border-on-value !max-w-90 !h-8 !px-3 !py-1 !rounded-lg"
           >
             <template #prefix>
               <GeneralIcon
                 icon="search"
-                class="mr-2 h-4 w-4 text-nc-content-gray-muted group-hover:text-nc-content-gray-extreme"
+                class="mr-2 h-4 w-4 text-atm-content-gray-muted group-hover:text-atm-content-gray-extreme"
               />
             </template>
           </a-input>
 
           <div class="flex items-center gap-2">
-            <NcButton
+            <AtButton
               v-if="isTeamsEnabled && !isAdminPanel && showEEFeatures"
               v-e="['c:base:team-add']"
               size="small"
               type="secondary"
               :disabled="isLoading"
-              data-testid="nc-add-teams-btn"
+              data-testid="atm-add-teams-btn"
               text-color="primary"
               @click="
                 showUpgradeToUseTeams({
@@ -658,31 +658,31 @@ onBeforeUnmount(() => {
                 <GeneralIcon icon="ncBuilding" />
                 <span class="hidden sm:inline">{{ $t('labels.addTeams') }}</span>
               </div>
-            </NcButton>
+            </AtButton>
 
-            <NcButton
+            <AtButton
               size="small"
               type="primary"
               :disabled="isLoading"
-              data-testid="nc-add-member-btn"
+              data-testid="atm-add-member-btn"
               @click="isInviteModalVisible = true"
             >
               <div class="flex items-center gap-2">
                 <GeneralIcon :icon="isTeamsEnabled ? 'ncUsers' : 'plus'" class="h-4 w-4" />
                 <span class="hidden sm:inline">{{ $t('activity.addMembers') }}</span>
               </div>
-            </NcButton>
+            </AtButton>
           </div>
         </div>
 
-        <NcTable
+        <AtTable
           v-model:order-by="orderBy"
           :is-data-loading="isLoading"
           :columns="columns"
           :data="sortedCollaborators"
           :bordered="false"
           :custom-row="customRow"
-          class="flex-1 nc-collaborators-list max-w-full"
+          class="flex-1 atm-collaborators-list max-w-full"
           body-row-class-name="!cursor-default"
           :pagination="true"
           :pagination-offset="25"
@@ -693,7 +693,7 @@ onBeforeUnmount(() => {
 
           <template #headerCell="{ column }">
             <template v-if="column.key === 'select'">
-              <NcCheckbox v-model:checked="selectAll" :disabled="!sortedCollaborators.length" />
+              <AtCheckbox v-model:checked="selectAll" :disabled="!sortedCollaborators.length" />
             </template>
             <template v-else>
               {{ column.title }}
@@ -702,38 +702,38 @@ onBeforeUnmount(() => {
 
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'select'">
-              <NcCheckbox v-model:checked="selected[record.id]" />
+              <AtCheckbox v-model:checked="selected[record.id]" />
             </template>
 
             <template v-if="column.key === 'email' && record.isTeam">
               <GeneralTeamInfo :team="transformToTeamObject(record, teamsMap[record.id])" show-breadcrumb />
-              <NcBadge
+              <AtBadge
                 v-if="teamsMap[record.id]?.scope === 'org'"
                 :border="false"
                 color="blue"
                 class="text-[10px] leading-[14px] !h-[18px] font-semibold flex-none"
               >
                 {{ $t('general.orgBadge') }}
-              </NcBadge>
+              </AtBadge>
             </template>
 
             <div v-else-if="column.key === 'email'" class="w-full flex gap-3 items-center users-email-grid">
               <GeneralUserIcon size="base" :user="record" class="flex-none" />
               <div class="flex flex-col flex-1 max-w-[calc(100%_-_44px)]">
                 <div class="flex gap-3">
-                  <NcTooltip class="truncate max-w-full text-nc-content-gray capitalize font-semibold" show-on-truncate-only>
+                  <AtTooltip class="truncate max-w-full text-atm-content-gray capitalize font-semibold" show-on-truncate-only>
                     <template #title>
                       {{ extractUserDisplayNameOrEmail(record) }}
                     </template>
                     {{ extractUserDisplayNameOrEmail(record) }}
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
-                <NcTooltip class="truncate max-w-full text-xs text-nc-content-gray-subtle2" show-on-truncate-only>
+                <AtTooltip class="truncate max-w-full text-xs text-atm-content-gray-subtle2" show-on-truncate-only>
                   <template #title>
                     {{ record.email }}
                   </template>
                   {{ record.email }}
-                </NcTooltip>
+                </AtTooltip>
               </div>
             </div>
             <div v-if="column.key === 'role'">
@@ -761,7 +761,7 @@ onBeforeUnmount(() => {
                     :border="false"
                     :role="getInheritanceInfo(record) ? getInheritanceInfo(record)?.effectiveRole : record.roles"
                   />
-                  <div v-if="getInheritanceInfo(record)" class="flex items-center gap-1 text-xs text-nc-content-gray-muted">
+                  <div v-if="getInheritanceInfo(record)" class="flex items-center gap-1 text-xs text-atm-content-gray-muted">
                     <GeneralIcon icon="role_inherit" class="h-3 w-3" />
                     <span>{{
                       getInheritanceInfo(record)?.source === 'team'
@@ -773,23 +773,23 @@ onBeforeUnmount(() => {
               </template>
             </div>
             <div v-if="column.key === 'created_at'">
-              <NcTooltip class="max-w-full">
+              <AtTooltip class="max-w-full">
                 <template #title>
                   {{ parseStringDateTime(record.created_at) }}
                 </template>
                 <span>
                   {{ timeAgo(record.created_at) }}
                 </span>
-              </NcTooltip>
+              </AtTooltip>
             </div>
             <div v-if="column.key === 'action'">
-              <NcDropdown placement="bottomRight">
-                <NcButton size="small" type="secondary">
+              <AtDropdown placement="bottomRight">
+                <AtButton size="small" type="secondary">
                   <component :is="iconMap.ncMoreVertical" />
-                </NcButton>
+                </AtButton>
                 <template #overlay>
-                  <NcMenu variant="small">
-                    <NcMenuItemCopyId
+                  <AtMenu variant="small">
+                    <AtMenuItemCopyId
                       :id="record.id"
                       :tooltip="record.isTeam ? $t(`labels.clickToCopyTeamID`) : $t(`labels.clickToCopyUserID`)"
                       :label="
@@ -798,12 +798,12 @@ onBeforeUnmount(() => {
                           : $t(`labels.userIdColon`, { userId: record.id })
                       "
                     />
-                  </NcMenu>
+                  </AtMenu>
                 </template>
-              </NcDropdown>
+              </AtDropdown>
             </div>
           </template>
-        </NcTable>
+        </AtTable>
       </div>
 
       <LazyDlgInviteDlg
@@ -825,18 +825,18 @@ onBeforeUnmount(() => {
   @apply w-6 h-6 left-0 top-2.5 rounded-full flex justify-center uppercase text-base-white font-weight-bold text-xs items-center;
 }
 
-:deep(.nc-collaborator-role-select .ant-select-selector) {
+:deep(.atm-collaborator-role-select .ant-select-selector) {
   @apply !rounded;
 }
 
-.nc-page-header-icon {
+.atm-page-header-icon {
   :deep(svg) {
     @apply h-4.5 w-4.5;
   }
 }
 
-.nc-collaborator-table-container {
-  &:not(.nc-admin-panel) {
+.atm-collaborator-table-container {
+  &:not(.atm-admin-panel) {
     @apply h-[calc(100vh-var(--topbar-height)-44px)];
 
     @supports (height: 100dvh) {
@@ -845,7 +845,7 @@ onBeforeUnmount(() => {
   }
 
   // Admin sidebar mode: tab bar is hidden, so no 44px subtraction
-  &.nc-is-settings-sidebar {
+  &.atm-is-settings-sidebar {
     @apply h-[calc(100vh-var(--topbar-height))];
 
     @supports (height: 100dvh) {

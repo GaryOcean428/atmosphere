@@ -1,14 +1,14 @@
 import {
   isOrderCol,
-  NcApiVersion,
+  AtApiVersion,
   parseProp,
   RelationTypes,
   ROW_COLORING_MODE,
   UITypes,
   ViewTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { Logger } from '@nestjs/common';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { MetaService } from '~/meta/meta.service';
 import type {
   Column,
@@ -29,9 +29,9 @@ import {
   View,
 } from '~/models';
 import { MetaTable } from '~/cli';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import RowColorCondition from '~/models/RowColorCondition';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   type Ast,
   type AstResult,
@@ -45,7 +45,7 @@ const logger = new Logger('getAst');
 const GET_AST_MAX_DEPTH = 8;
 
 const getAst = async (
-  context: NcContext,
+  context: AtContext,
   {
     query,
     extractOnlyPrimaries = false,
@@ -60,7 +60,7 @@ const getAst = async (
     getHiddenColumn = query?.['getHiddenColumn'] === 'true',
     throwErrorIfInvalidParams = false,
     extractOnlyRangeFields = false,
-    apiVersion = NcApiVersion.V2,
+    apiVersion = AtApiVersion.V2,
     extractOrderColumn = false,
     includeSortAndFilterColumns = false,
     includeRowColorColumns = false,
@@ -80,7 +80,7 @@ const getAst = async (
     throwErrorIfInvalidParams?: boolean;
     // Used for calendar view
     extractOnlyRangeFields?: boolean;
-    apiVersion?: NcApiVersion;
+    apiVersion?: AtApiVersion;
     extractOrderColumn?: boolean;
     includeSortAndFilterColumns?: boolean;
     includeRowColorColumns?: boolean;
@@ -273,7 +273,7 @@ const getAst = async (
         (f) => !colAliasMap[f] && !aliasColMap[f],
       );
       if (invalidFields.length) {
-        NcError.get(context).fieldNotFound(invalidFields.join(', '));
+        AtError.get(context).fieldNotFound(invalidFields.join(', '));
       }
     }
   } else {
@@ -465,12 +465,12 @@ const getAst = async (
   }
 
   // Narrow back to `Ast`: falsy entries are runtime-only "not requested" markers
-  // that `nocoExecute` ignores; the exposed shape stays `1 | true | null | Ast`.
+  // that `atmosphereExecute` ignores; the exposed shape stays `1 | true | null | Ast`.
   return { ast: ast as Ast, dependencyFields, parsedQuery: dependencyFields };
 };
 
 const getViewRowColorFields = async (params: {
-  context: NcContext;
+  context: AtContext;
   view: View;
   ncMeta?: MetaService;
 }) => {
@@ -478,7 +478,7 @@ const getViewRowColorFields = async (params: {
     const viewMeta = parseProp(params.view.meta) as ViewMetaRowColoring;
     return [viewMeta?.rowColoringInfo?.fk_column_id];
   } else if (params.view.row_coloring_mode === ROW_COLORING_MODE.FILTER) {
-    const ncMeta = params.ncMeta ?? Noco.ncMeta;
+    const ncMeta = params.ncMeta ?? Atmosphere.ncMeta;
     const rowColorConditions = await RowColorCondition.getByViewId(
       params.context,
       params.view.id,
@@ -509,12 +509,12 @@ const getViewRowColorFields = async (params: {
  * filter conditions are still included in the API response.
  */
 const getButtonFilterFields = async (params: {
-  context: NcContext;
+  context: AtContext;
   model: Model;
   view?: View;
   ncMeta?: MetaService;
 }): Promise<string[]> => {
-  const ncMeta = params.ncMeta ?? Noco.ncMeta;
+  const ncMeta = params.ncMeta ?? Atmosphere.ncMeta;
 
   // Find all button columns in this table
   if (!params.model.columns?.length)
@@ -552,7 +552,7 @@ const getButtonFilterFields = async (params: {
 };
 
 const extractDependencies = async (
-  context: NcContext,
+  context: AtContext,
   column: Column,
   dependencyFields: DependantFields = {
     nested: {},
@@ -594,7 +594,7 @@ const extractDependencies = async (
 };
 
 const extractLookupDependencies = async (
-  context: NcContext,
+  context: AtContext,
   lookUpColumn: Column<LookupColumn>,
   dependencyFields: DependantFields = {
     nested: {},
@@ -634,7 +634,7 @@ const extractLookupDependencies = async (
 };
 
 const extractRelationDependencies = async (
-  context: NcContext,
+  context: AtContext,
   relationColumn: Column<LinkToAnotherRecordColumn>,
   dependencyFields: DependantFields = {
     nested: {},

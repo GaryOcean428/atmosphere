@@ -96,13 +96,13 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col max-w-[350px]">
-    <div v-if="isMinGranularityPicker" ref="timeOptionsWrapperRef" class="h-[180px] overflow-y-auto nc-scrollbar-thin">
+    <div v-if="isMinGranularityPicker" ref="timeOptionsWrapperRef" class="h-[180px] overflow-y-auto atm-scrollbar-thin">
       <div
         v-for="time of timeOptions"
         :key="time.format('HH:mm')"
-        class="hover:bg-nc-bg-gray-light py-1 px-3 text-sm text-nc-content-gray-subtle2 font-weight-500 text-center cursor-pointer"
+        class="hover:bg-atm-bg-gray-light py-1 px-3 text-sm text-atm-content-gray-subtle2 font-weight-500 text-center cursor-pointer"
         :class="{
-          'nc-selected bg-nc-bg-gray-light': selectedDate && compareTime(time, selectedDate),
+          'atm-selected bg-atm-bg-gray-light': selectedDate && compareTime(time, selectedDate),
         }"
         :data-testid="`time-option-${time.format('HH:mm')}`"
         @click="handleSelectTime(time)"
@@ -112,23 +112,23 @@ onMounted(() => {
     </div>
     <div v-else></div>
     <div class="px-2 py-1 box-border flex items-center justify-center gap-2">
-      <NcButton :tabindex="-1" class="!h-7" size="small" type="secondary" @click="handleSelectTime(dayjsTz())">
+      <AtButton :tabindex="-1" class="!h-7" size="small" type="secondary" @click="handleSelectTime(dayjsTz())">
         <span class="text-small"> {{ $t('general.now') }} </span>
-      </NcButton>
-      <NcTooltip v-if="showCurrentDateOption" :disabled="showCurrentDateOption !== 'disabled'">
+      </AtButton>
+      <AtTooltip v-if="showCurrentDateOption" :disabled="showCurrentDateOption !== 'disabled'">
         <template #title>
           {{ $t('tooltip.currentDateNotAvail') }}
         </template>
-        <NcButton
-          class="nc-date-picker-now-btn !h-7"
+        <AtButton
+          class="atm-date-picker-now-btn !h-7"
           size="small"
           type="secondary"
           :disabled="showCurrentDateOption === 'disabled'"
           @click="emit('currentDate')"
         >
           <span class="text-small"> {{ $t('labels.currentDate') }} </span>
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
     </div>
   </div>
 </template>

@@ -7,7 +7,7 @@ import type { DbConfig } from './interfaces';
 import { SqlClientFactory } from '~/db/sql-client/lib/SqlClientFactory';
 import { ncSiteUrl } from '~/utils/envs';
 
-export class NcConfig {
+export class AtConfig {
   version: string;
   meta: {
     db: DbConfig;
@@ -15,7 +15,7 @@ export class NcConfig {
     db: {
       client: DriverClient.SQLITE,
       connection: {
-        filename: 'noco.db',
+        filename: 'atmosphere.db',
       },
     },
   };
@@ -60,11 +60,11 @@ export class NcConfig {
     worker?: boolean;
     dashboardPath?: string;
     ncSiteUrl?: string;
-  }): Promise<NcConfig> {
+  }): Promise<AtConfig> {
     const { meta, secret, port, worker, tryMode, ncSiteUrl, dashboardPath } =
       param;
 
-    const ncConfig = new NcConfig();
+    const ncConfig = new AtConfig();
 
     ncConfig.auth = {
       jwt: {
@@ -76,8 +76,8 @@ export class NcConfig {
     ncConfig.toolDir = getToolDir();
     ncConfig.worker = worker ?? false;
 
-    ncConfig.env = '_noco';
-    ncConfig.workingEnv = '_noco';
+    ncConfig.env = '_atmosphere';
+    ncConfig.workingEnv = '_atmosphere';
 
     ncConfig.baseType = 'rest';
 
@@ -107,7 +107,7 @@ export class NcConfig {
         ncConfig.meta.db = JSON.parse(meta.metaJson);
       } else if (meta?.metaJsonFile) {
         if (!(await promisify(fs.exists)(meta.metaJsonFile))) {
-          throw new Error(`NC_DB_JSON_FILE not found: ${meta.metaJsonFile}`);
+          throw new Error(`ATMOSPHERE_DB_JSON_FILE not found: ${meta.metaJsonFile}`);
         }
         const fileContent = await promisify(fs.readFile)(meta.metaJsonFile, {
           encoding: 'utf8',
@@ -136,18 +136,18 @@ export class NcConfig {
     return ncConfig;
   }
 
-  public static async createByEnv(): Promise<NcConfig> {
-    return NcConfig.create({
+  public static async createByEnv(): Promise<AtConfig> {
+    return AtConfig.create({
       meta: {
-        metaUrl: process.env.NC_DB,
-        metaJson: process.env.NC_DB_JSON,
-        metaJsonFile: process.env.NC_DB_JSON_FILE,
+        metaUrl: process.env.ATMOSPHERE_DB,
+        metaJson: process.env.ATMOSPHERE_DB_JSON,
+        metaJsonFile: process.env.ATMOSPHERE_DB_JSON_FILE,
       },
-      secret: process.env.NC_AUTH_JWT_SECRET,
-      port: process.env.NC_PORT,
-      tryMode: !!process.env.NC_TRY,
-      worker: !!process.env.NC_WORKER,
-      dashboardPath: process.env.NC_DASHBOARD_URL ?? '/',
+      secret: process.env.ATMOSPHERE_AUTH_JWT_SECRET,
+      port: process.env.ATMOSPHERE_PORT,
+      tryMode: !!process.env.ATMOSPHERE_TRY,
+      worker: !!process.env.ATMOSPHERE_WORKER,
+      dashboardPath: process.env.ATMOSPHERE_DASHBOARD_URL ?? '/',
       ncSiteUrl,
     });
   }
@@ -180,6 +180,6 @@ export class NcConfig {
   }
 
   static get isAuditEnabled() {
-    return process.env.NC_ENABLE_AUDIT === 'true';
+    return process.env.ATMOSPHERE_ENABLE_AUDIT === 'true';
   }
 }

@@ -1,4 +1,4 @@
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheGetType } from '~/utils/globals';
 import { LRUMap } from '~/utils/LRUMap';
 
@@ -24,7 +24,7 @@ export class RedisVersionTracker {
   }
 
   private async getRedisVersion(id: string): Promise<string | null> {
-    return NocoCache.get('root', this.redisKey(id), CacheGetType.TYPE_STRING);
+    return AtmosphereCache.get('root', this.redisKey(id), CacheGetType.TYPE_STRING);
   }
 
   /**
@@ -32,7 +32,7 @@ export class RedisVersionTracker {
    * on their next checkStaleness() call.
    */
   async bump(id: string): Promise<void> {
-    await NocoCache.set('root', this.redisKey(id), `${Date.now()}`);
+    await AtmosphereCache.set('root', this.redisKey(id), `${Date.now()}`);
   }
 
   /**
@@ -61,7 +61,7 @@ export class RedisVersionTracker {
    */
   async bumpAndSync(id: string): Promise<void> {
     const ver = `${Date.now()}`;
-    await NocoCache.set('root', this.redisKey(id), ver);
+    await AtmosphereCache.set('root', this.redisKey(id), ver);
     this.localVersions.set(id, ver);
   }
 }

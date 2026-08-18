@@ -11,8 +11,8 @@ import {
   type TableType,
   isLinksOrLTAR,
   readonlyMetaAllowedTypes,
-} from 'nocodb-sdk'
-import { RelationTypes, UITypes, UITypesName, substituteColumnIdWithAliasInFormula } from 'nocodb-sdk'
+} from 'atmosphere-sdk'
+import { RelationTypes, UITypes, UITypesName, substituteColumnIdWithAliasInFormula } from 'atmosphere-sdk'
 
 const props = defineProps<{
   column: ColumnType
@@ -114,10 +114,10 @@ const tooltipMsg = computed(() => {
       const fkColumn = getMetaByKey(relatedBaseId, column.value?.colOptions?.fk_related_model_id as string)?.columns?.find(
         (c) => c.id === column.value?.colOptions?.fk_child_column_id,
       )
-      suffix = fkColumn?.title?.startsWith('nc_') ? '' : `\n${t('labels.foreignKeyColumn', { title: fkColumn.title })}`
+      suffix = fkColumn?.title?.startsWith('atm_') ? '' : `\n${t('labels.foreignKeyColumn', { title: fkColumn.title })}`
     } else if (isBt(column.value)) {
       const fkColumn = meta.value?.columns?.find((c) => c.id === column.value?.colOptions?.fk_child_column_id)
-      suffix = fkColumn?.title?.startsWith('nc_') ? '' : `\n${t('labels.foreignKeyColumn', { title: fkColumn.title })}`
+      suffix = fkColumn?.title?.startsWith('atm_') ? '' : `\n${t('labels.foreignKeyColumn', { title: fkColumn.title })}`
     }
   }
 
@@ -222,7 +222,7 @@ const onClick = (e: Event) => {
   // On mobile, only respond to clicks within the name wrapper
   if (isMobileMode.value && props.showMenuMobile) {
     const target = e.target as HTMLElement
-    if (!target?.closest('.nc-virtual-cell-name-wrapper')) return
+    if (!target?.closest('.atm-virtual-cell-name-wrapper')) return
   }
 
   if (isDropDownOpen.value) {
@@ -241,14 +241,14 @@ const onClick = (e: Event) => {
 
 <template>
   <div
-    class="flex items-center w-full h-full text-small text-nc-content-gray-muted font-weight-medium group"
+    class="flex items-center w-full h-full text-small text-atm-content-gray-muted font-weight-medium group"
     :class="{
       'flex-col !items-start justify-center pt-0.5': isExpandedForm && !isMobileMenuHidden && !isExpandedBulkUpdateForm,
-      'nc-cell-expanded-form-header cursor-pointer hover:bg-nc-bg-gray-light':
+      'atm-cell-expanded-form-header cursor-pointer hover:bg-atm-bg-gray-light':
         isExpandedForm && !isMobileMenuHidden && !isMobileMode && isUIAllowed('fieldEdit') && !isExpandedBulkUpdateForm,
       'cursor-pointer':
         isExpandedForm && !isMobileMenuHidden && isMobileMode && isUIAllowed('fieldEdit') && !isExpandedBulkUpdateForm,
-      'bg-nc-bg-gray-light':
+      'bg-atm-bg-gray-light':
         isExpandedForm && !isMobileMode && !isExpandedBulkUpdateForm ? editColumnDropdown || isDropDownOpen : false,
     }"
     @dblclick="openHeaderMenu"
@@ -256,7 +256,7 @@ const onClick = (e: Event) => {
     @click="onClick"
   >
     <div
-      class="nc-virtual-cell-name-wrapper flex items-center"
+      class="atm-virtual-cell-name-wrapper flex items-center"
       :class="{
         'w-full flex-1': !(isMobileMode && props.showMenuMobile && isExpandedForm),
         'max-w-[calc(100%_-_23px)]': !isExpandedForm && !column.description?.length,
@@ -265,13 +265,13 @@ const onClick = (e: Event) => {
       }"
     >
       <template v-if="column && !props.hideIcon">
-        <NcTooltip v-if="isGrid" :disabled="hideIconTooltip" class="flex items-center" placement="bottom">
+        <AtTooltip v-if="isGrid" :disabled="hideIconTooltip" class="flex items-center" placement="bottom">
           <template #title> {{ columnTypeName }} </template>
           <LazySmartsheetHeaderVirtualCellIcon />
-        </NcTooltip>
+        </AtTooltip>
         <LazySmartsheetHeaderVirtualCellIcon v-else />
       </template>
-      <NcTooltip placement="bottom" class="truncate name pl-1 rtl:(pr-1 pl-0)" :show-on-truncate-only="!showTooltipAlways">
+      <AtTooltip placement="bottom" class="truncate name pl-1 rtl:(pr-1 pl-0)" :show-on-truncate-only="!showTooltipAlways">
         <template #title>
           <template v-for="(msg, i) in tooltipMsg.split('\n')" :key="i">
             <div>{{ msg }}</div>
@@ -285,9 +285,9 @@ const onClick = (e: Event) => {
         >
           {{ column.title }}
         </span>
-      </NcTooltip>
+      </AtTooltip>
 
-      <span v-if="isVirtualColRequired(column, meta?.columns || []) || required" class="text-nc-content-red-medium">&nbsp;*</span>
+      <span v-if="isVirtualColRequired(column, meta?.columns || []) || required" class="text-atm-content-red-medium">&nbsp;*</span>
 
       <PermissionsTooltip
         v-if="!isAllowedToEditField"
@@ -298,13 +298,13 @@ const onClick = (e: Event) => {
         hide-on-click
         class="!ml-1 flex children:flex"
       >
-        <GeneralIcon icon="ncLock" class="nc-column-lock-icon flex-none w-3.5 h-3.5 opacity-90" />
+        <GeneralIcon icon="ncLock" class="atm-column-lock-icon flex-none w-3.5 h-3.5 opacity-90" />
       </PermissionsTooltip>
 
       <GeneralIcon
         v-if="isExpandedForm && !isMobileMenuHidden && isUIAllowed('fieldEdit') && !isExpandedBulkUpdateForm"
         icon="arrowDown"
-        class="nc-column-context-menu flex-none cursor-pointer ml-1 group-hover:visible w-4 h-4"
+        class="atm-column-context-menu flex-none cursor-pointer ml-1 group-hover:visible w-4 h-4"
         :class="{
           visible: editColumnDropdown || isDropDownOpen,
           invisible: !(editColumnDropdown || isDropDownOpen),
@@ -317,27 +317,27 @@ const onClick = (e: Event) => {
       />
 
       <div class="flex-1" />
-      <NcTooltip
+      <AtTooltip
         v-if="meta?.synced && column?.readonly && isExpandedForm && !isPublic"
         class="flex items-center"
         placement="bottom"
       >
         <template #title> {{ $t('tooltip.fieldIsExternallySynced') }} </template>
-        <GeneralIcon icon="ncZap" class="flex-none !w-3.5 !h-3.5 !text-nc-content-gray-disabled" />
-      </NcTooltip>
+        <GeneralIcon icon="ncZap" class="flex-none !w-3.5 !h-3.5 !text-atm-content-gray-disabled" />
+      </AtTooltip>
     </div>
 
-    <NcTooltip
+    <AtTooltip
       v-if="column.description?.length && isPublic && isGrid && !isExpandedForm && !hideMenu"
-      overlay-class-name="nc-tooltip-scrollable"
+      overlay-class-name="atm-tooltip-scrollable"
     >
       <template #title>
         <div class="whitespace-pre-wrap break-words">{{ column.description }}</div>
       </template>
       <div>
-        <GeneralIcon icon="info" class="group-hover:opacity-100 !w-3.5 !h-3.5 !text-nc-content-gray-muted flex-none" />
+        <GeneralIcon icon="info" class="group-hover:opacity-100 !w-3.5 !h-3.5 !text-atm-content-gray-muted flex-none" />
       </div>
-    </NcTooltip>
+    </AtTooltip>
 
     <template v-if="!hideMenu">
       <div v-if="!isExpandedForm" class="flex-1" />
@@ -357,13 +357,13 @@ const onClick = (e: Event) => {
       class="h-full"
       :trigger="['click']"
       :placement="isExpandedForm && !isExpandedBulkUpdateForm ? 'bottomLeft' : 'bottomRight'"
-      :overlay-class-name="`nc-dropdown-edit-column ${editColumnDropdown ? 'active rounded-2xl' : ''}`"
+      :overlay-class-name="`atm-dropdown-edit-column ${editColumnDropdown ? 'active rounded-2xl' : ''}`"
       @visible-change="onVisibleChange"
     >
       <div v-if="isExpandedForm && !isExpandedBulkUpdateForm" class="h-[1px]" @dblclick.stop>&nbsp;</div>
       <div v-else />
       <template #overlay>
-        <div class="nc-edit-or-add-provider-wrapper">
+        <div class="atm-edit-or-add-provider-wrapper">
           <LazySmartsheetColumnEditOrAddProvider
             v-if="editColumnDropdown"
             ref="editOrAddProviderRef"

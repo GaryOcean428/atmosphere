@@ -11,12 +11,12 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { FilterCreateV3Type, FilterUpdateV3Type } from 'nocodb-sdk';
+import { FilterCreateV3Type, FilterUpdateV3Type } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 import { FiltersV3Service } from '~/services/v3/filters-v3.service';
 import { PREFIX_APIV3_METABASE } from '~/constants/controllers';
 
@@ -54,7 +54,7 @@ export class FiltersV3Controller {
   ])
   @Acl('filterList')
   async filterList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Param('hookId') hookId: string,
   ) {
@@ -76,12 +76,12 @@ export class FiltersV3Controller {
   @HttpCode(200)
   @Acl('filterCreate')
   async filterCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Param('linkColumnId') linkColumnId: string,
     @Param('hookId') hookId: string,
     @Body() body: FilterCreateV3Type,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const filter = await this.filtersV3Service.filterCreate(context, {
       filter: body,
@@ -98,9 +98,9 @@ export class FiltersV3Controller {
   ])
   @Acl('filterUpdate')
   async filterUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Body() body: FilterUpdateV3Type,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
   ) {
     const filter = await this.filtersV3Service.filterUpdate(context, {
@@ -119,9 +119,9 @@ export class FiltersV3Controller {
   ])
   @Acl('filterUpdate')
   async filterReplace(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Body() body: FilterCreateV3Type,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('viewId') viewId: string,
   ) {
     const filter = await this.filtersV3Service.filterReplace(context, {
@@ -139,10 +139,10 @@ export class FiltersV3Controller {
   ])
   @Acl('filterDelete')
   async filterDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Body() body: { id: string },
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const filter = await this.filtersV3Service.filterDelete(context, {
       req,

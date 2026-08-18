@@ -1,8 +1,8 @@
-import { NcContext } from '../ncTypes';
+import { AtContext } from '../ncTypes';
 import { UnifiedMetaType } from '../types';
 
 export const getColumns = async (
-  context: NcContext,
+  context: AtContext,
   { model }: { model: UnifiedMetaType.IModel }
 ) => {
   if (!model) {

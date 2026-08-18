@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type HookType, PlanLimitTypes } from 'nocodb-sdk'
+import { type HookType, PlanLimitTypes } from 'atmosphere-sdk'
 import { LoadingOutlined } from '@ant-design/icons-vue'
 import dayjs from 'dayjs'
 
@@ -222,7 +222,7 @@ const v2EventList = ref<Record<string, any>[]>([
   { text: [t('general.record'), t('general.bulkDelete').toLowerCase()], value: ['after', 'bulkDelete'] },
 ])
 
-const columns: NcTableColumnProps[] = [
+const columns: AtTableColumnProps[] = [
   {
     key: 'active',
     title: t('general.active'),
@@ -320,10 +320,10 @@ const getHookTypeText = (hook: HookType) => {
 </script>
 
 <template>
-  <div class="nc-webhook-wrapper w-full p-4">
+  <div class="atm-webhook-wrapper w-full p-4">
     <div class="max-w-250 h-full w-full mx-auto">
       <div v-if="activeView && !isHooksLoading">
-        <NcAlert
+        <AtAlert
           v-if="hasV2Webhooks"
           type="warning"
           :message="$t('msg.webhookV2DeprecationAlertTitle')"
@@ -331,37 +331,37 @@ const getHookTypeText = (hook: HookType) => {
           background
         >
           <template #action>
-            <NcButton
+            <AtButton
               type="link"
               size="xsmall"
               class="!hover:underline !font-bold"
               target="_blank"
-              href="https://nocodb.com/docs/product-docs/automation/webhook/webhook-v2-vs-v3#upgrade-to-webhook-v3"
+              href="https://atmosphere.dev/docs/product-docs/automation/webhook/webhook-v2-vs-v3#upgrade-to-webhook-v3"
             >
               {{ $t('activity.goToDocs') }}
-            </NcButton>
+            </AtButton>
           </template>
-        </NcAlert>
+        </AtAlert>
 
         <div class="w-full mb-4 mt-6 flex justify-between gap-3">
           <div class="flex-1 flex gap-2">
             <a-input
               v-model:value="webHookSearch"
-              class="w-full nc-input-sm nc-input-border-on-value !max-w-84"
+              class="w-full atm-input-sm atm-input-border-on-value !max-w-84"
               size="small"
               :placeholder="$t('title.searchWebhook')"
               allow-clear
             >
               <template #prefix>
-                <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-nc-content-inverted-secondary-disabled" />
+                <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-atm-content-inverted-secondary-disabled" />
               </template>
             </a-input>
-            <NcButton
+            <AtButton
               class="px-2"
               type="text"
               size="small"
               @click="
-                navigateTo('https://nocodb.com/docs/product-docs/automation/webhook', { open: navigateToBlankTargetOpenOption })
+                navigateTo('https://atmosphere.dev/docs/product-docs/automation/webhook', { open: navigateToBlankTargetOpenOption })
               "
             >
               <div class="flex items-center gap-2">
@@ -369,22 +369,22 @@ const getHookTypeText = (hook: HookType) => {
 
                 <GeneralIcon icon="externalLink" />
               </div>
-            </NcButton>
+            </AtButton>
           </div>
 
-          <NcButton
+          <AtButton
             v-e="['c:actions:webhook']"
             type="secondary"
             size="small"
-            class="!text-nc-content-brand !hover:text-nc-content-brand-disabled"
-            data-testid="nc-new-webhook"
+            class="!text-atm-content-brand !hover:text-atm-content-brand-disabled"
+            data-testid="atm-new-webhook"
             @click="createWebhook"
           >
             <div class="flex gap-2 items-center">
               <GeneralIcon icon="plus" />
               {{ $t('activity.newWebhook') }}
             </div>
-          </NcButton>
+          </AtButton>
         </div>
 
         <div
@@ -394,56 +394,56 @@ const getHookTypeText = (hook: HookType) => {
         >
           <div
             v-if="!hooks.length"
-            class="flex-col flex items-center gap-6 justify-center w-full h-full py-12 px-4 border-1 rounded-xl border-nc-border-gray-medium"
+            class="flex-col flex items-center gap-6 justify-center w-full h-full py-12 px-4 border-1 rounded-xl border-atm-border-gray-medium"
           >
-            <div class="text-nc-content-gray-subtle font-bold text-center text-2xl">{{ $t('msg.createWebhookMsg1') }}</div>
-            <div class="text-nc-content-gray-subtle text-center max-w-[24rem]">{{ $t('msg.createWebhookMsg2') }}</div>
-            <NcButton v-e="['c:actions:webhook']" class="flex max-w-40" type="primary" size="small" @click="createWebhook">
+            <div class="text-atm-content-gray-subtle font-bold text-center text-2xl">{{ $t('msg.createWebhookMsg1') }}</div>
+            <div class="text-atm-content-gray-subtle text-center max-w-[24rem]">{{ $t('msg.createWebhookMsg2') }}</div>
+            <AtButton v-e="['c:actions:webhook']" class="flex max-w-40" type="primary" size="small" @click="createWebhook">
               <div class="flex items-center gap-2">
                 <GeneralIcon icon="plus" class="flex-none" />
                 <span>{{ $t('activity.newWebhook') }}</span>
               </div>
-            </NcButton>
+            </AtButton>
           </div>
 
-          <NcTable
+          <AtTable
             v-else
             v-model:order-by="orderBy"
             :columns="columns"
             :data="sortedHooks"
             :custom-row="customRow"
             class="h-full"
-            body-row-class-name="nc-view-sidebar-webhook-item group"
+            body-row-class-name="atm-view-sidebar-webhook-item group"
           >
             <template #bodyCell="{ column, record: hook }">
-              <NcTooltip :disabled="hook.event !== 'manual'">
+              <AtTooltip :disabled="hook.event !== 'manual'">
                 <template #title>
                   {{ $t('msg.error.manualTriggerHook') }}
                 </template>
                 <div v-if="column.key === 'active'" v-e="['c:actions:webhook']" @click.stop>
-                  <NcSwitch
+                  <AtSwitch
                     size="small"
                     :disabled="hook.event === 'manual'"
                     :checked="!!hook.active"
                     @change="toggleHook(hook)"
                   />
                 </div>
-              </NcTooltip>
+              </AtTooltip>
 
               <template v-if="column.key === 'name'">
-                <NcTooltip class="truncate max-w-full flex-1 text-nc-content-gray font-semibold text-sm" show-on-truncate-only>
+                <AtTooltip class="truncate max-w-full flex-1 text-atm-content-gray font-semibold text-sm" show-on-truncate-only>
                   {{ hook.title }}
 
                   <template #title>
                     {{ hook.title }}
                   </template>
-                </NcTooltip>
+                </AtTooltip>
 
-                <NcTooltip v-if="hook.version === 'v2'" class="-mr-2 flex">
-                  <GeneralIcon icon="ncAlertTriangle" class="flex-none text-nc-content-orange-dark" />
+                <AtTooltip v-if="hook.version === 'v2'" class="-mr-2 flex">
+                  <GeneralIcon icon="ncAlertTriangle" class="flex-none text-atm-content-orange-dark" />
 
                   <template #title> {{ $t('tooltip.portWebhookV2ToV3') }} </template>
-                </NcTooltip>
+                </AtTooltip>
               </template>
               <template v-if="column.key === 'type'">
                 {{ getHookTypeText(hook) }}
@@ -452,62 +452,62 @@ const getHookTypeText = (hook: HookType) => {
                 {{ dayjs(hook.created_at).format('DD MMM YYYY') }}
               </template>
               <template v-if="column.key === 'action'">
-                <NcDropdown v-model:visible="isOpenContextMenu[hook.id]" overlay-class-name="nc-webhook-item-action-dropdown">
+                <AtDropdown v-model:visible="isOpenContextMenu[hook.id]" overlay-class-name="atm-webhook-item-action-dropdown">
                   <template #default="{ visible }">
-                    <NcButton
+                    <AtButton
                       type="secondary"
                       size="small"
                       class="!w-8 !h-8 invisible group-hover:visible"
                       :class="{
                         '!visible': visible,
                       }"
-                      data-testid="nc-webhook-item-action"
+                      data-testid="atm-webhook-item-action"
                       @click.stop
                     >
-                      <component :is="iconMap.threeDotVertical" class="text-nc-content-gray-subtle" />
-                    </NcButton>
+                      <component :is="iconMap.threeDotVertical" class="text-atm-content-gray-subtle" />
+                    </AtButton>
                   </template>
                   <template #overlay>
-                    <NcMenu class="w-48" variant="small" @click="isOpenContextMenu[hook.id] = false">
-                      <NcMenuItem key="edit" data-testid="nc-webhook-item-action-edit" @click="editHook(hook)">
+                    <AtMenu class="w-48" variant="small" @click="isOpenContextMenu[hook.id] = false">
+                      <AtMenuItem key="edit" data-testid="atm-webhook-item-action-edit" @click="editHook(hook)">
                         <GeneralIcon icon="edit" />
                         <span>{{ $t('general.edit') }}</span>
-                      </NcMenuItem>
-                      <NcMenuItem
+                      </AtMenuItem>
+                      <AtMenuItem
                         key="duplicate"
-                        data-testid="nc-webhook-item-action-duplicate"
+                        data-testid="atm-webhook-item-action-duplicate"
                         :disabled="hook.version !== 'v3'"
                         @click="copyWebhook(hook)"
                       >
                         <GeneralIcon icon="duplicate" />
                         <span>{{ $t('general.duplicate') }}</span>
-                      </NcMenuItem>
+                      </AtMenuItem>
 
-                      <NcDivider />
+                      <AtDivider />
 
-                      <NcMenuItem
+                      <AtMenuItem
                         key="delete"
                         danger
-                        data-testid="nc-webhook-item-action-delete"
+                        data-testid="atm-webhook-item-action-delete"
                         @click="openDeleteModal(hook.id)"
                       >
                         <GeneralIcon icon="delete" />
                         {{ $t('general.delete') }}
-                      </NcMenuItem>
-                    </NcMenu>
+                      </AtMenuItem>
+                    </AtMenu>
                   </template>
-                </NcDropdown>
+                </AtDropdown>
               </template>
             </template>
-          </NcTable>
+          </AtTable>
         </div>
         <GeneralDeleteModal v-model:visible="showDeleteModal" :entity-name="$t('objects.webhook')" :on-delete="deleteHook">
           <template #entity-preview>
             <div
               v-if="toBeDeleteHook"
-              class="flex flex-row items-center py-2 px-3 bg-nc-bg-gray-extralight rounded-lg text-nc-content-gray-subtle mb-4"
+              class="flex flex-row items-center py-2 px-3 bg-atm-bg-gray-extralight rounded-lg text-atm-content-gray-subtle mb-4"
             >
-              <component :is="iconMap.hook" class="text-nc-content-gray-subtle2" />
+              <component :is="iconMap.hook" class="text-atm-content-gray-subtle2" />
               <div
                 class="capitalize text-ellipsis overflow-hidden select-none w-full pl-2.5"
                 :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap', display: 'inline' }"
@@ -517,7 +517,7 @@ const getHookTypeText = (hook: HookType) => {
             </div>
             <span
               v-if="toBeDeleteHook?.event === 'manual'"
-              class="text-small leading-[18px] mb-2 text-nc-content-inverted-secondary-disabled"
+              class="text-small leading-[18px] mb-2 text-atm-content-inverted-secondary-disabled"
             >
               {{ $t('msg.warning.webhookDelete') }}
             </span>
@@ -553,9 +553,9 @@ const getHookTypeText = (hook: HookType) => {
 
 <style lang="scss" scoped>
 :deep(.ant-input::placeholder) {
-  @apply text-nc-content-inverted-secondary-disabled;
+  @apply text-atm-content-inverted-secondary-disabled;
 }
 .btn-goto-docs:hover {
-  background: var(--nc-bg-coloured-orange-dark, #fee6d6) !important;
+  background: var(--atm-bg-coloured-orange-dark, #fee6d6) !important;
 }
 </style>

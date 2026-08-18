@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NC_ERROR_SENTINEL } from 'nocodb-sdk'
+import { ATMOSPHERE_ERROR_SENTINEL } from 'atmosphere-sdk'
 import { useQRCode } from '@vueuse/integrations/useQRCode'
 import type QRCode from 'qrcode'
 import { IsCanvasInjectionInj } from '../../context'
@@ -32,7 +32,7 @@ const tooManyCharsForQrCode = computed(() => qrValue?.value.length > maxNumberOf
 const hasColError = computed(() => !!column?.value?.colOptions?.error)
 
 const showQrCode = computed(
-  () => qrValue?.value?.length > 0 && !tooManyCharsForQrCode.value && qrValue?.value !== NC_ERROR_SENTINEL && !hasColError.value,
+  () => qrValue?.value?.length > 0 && !tooManyCharsForQrCode.value && qrValue?.value !== ATMOSPHERE_ERROR_SENTINEL && !hasColError.value,
 )
 
 const compressedQrValue = computed(() => {
@@ -118,7 +118,7 @@ onMounted(() => {
   <a-modal
     v-model:visible="modalVisible"
     :class="{ active: modalVisible }"
-    wrap-class-name="nc-qr-code-large qrcode-modal"
+    wrap-class-name="atm-qr-code-large qrcode-modal"
     :body-style="{ padding: '0px', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }"
     :closable="false"
     :centered="isMobileMode"
@@ -127,7 +127,7 @@ onMounted(() => {
     <template #title>
       <div class="flex gap-2 items-center w-full">
         <h1 class="font-weight-700 m-0">{{ column?.title }}</h1>
-        <div class="h-5 px-1 bg-nc-bg-gray-medium text-nc-content-gray-subtle2 rounded-md justify-center items-center flex">
+        <div class="h-5 px-1 bg-atm-bg-gray-medium text-atm-content-gray-subtle2 rounded-md justify-center items-center flex">
           <SmartsheetHeaderIcon
             v-if="meta?.columnsById?.[valueFieldId]"
             :column="meta?.columnsById?.[valueFieldId]"
@@ -137,22 +137,22 @@ onMounted(() => {
           <div class="text-sm font-medium">{{ meta?.columnsById?.[valueFieldId]?.title }}</div>
         </div>
         <div class="flex-1"></div>
-        <NcButton class="nc-qrcode-close !px-1" type="text" size="xs" @click="modalVisible = false">
-          <GeneralIcon class="text-md text-nc-content-gray-subtle h-4 w-4" icon="close" />
-        </NcButton>
+        <AtButton class="atm-qrcode-close !px-1" type="text" size="xs" @click="modalVisible = false">
+          <GeneralIcon class="text-md text-atm-content-gray-subtle h-4 w-4" icon="close" />
+        </AtButton>
       </div>
     </template>
     <template #footer>
       <div class="flex flex-row items-center justify-end">
-        <div class="flex flex-row flex-grow mr-2 !overflow-y-auto py-2 hidden" data-testid="nc-qr-code-large-value-label">
+        <div class="flex flex-row flex-grow mr-2 !overflow-y-auto py-2 hidden" data-testid="atm-qr-code-large-value-label">
           {{ qrValue }}
         </div>
         <div v-if="showQrCode" class="flex gap-2">
-          <NcTooltip>
+          <AtTooltip>
             <template #title>
               {{ $t('labels.clickToCopy') }}
             </template>
-            <NcButton size="small" type="secondary" @click="performCopy(copyAsPng)">
+            <AtButton size="small" type="secondary" @click="performCopy(copyAsPng)">
               <template #icon>
                 <div class="flex children:flex-none relative h-4 w-4">
                   <Transition name="icon-fade" :duration="200">
@@ -162,40 +162,40 @@ onMounted(() => {
                 </div>
               </template>
               {{ isCopied ? $t('general.copied') : $t('general.copy') }}
-            </NcButton>
-          </NcTooltip>
+            </AtButton>
+          </AtTooltip>
           <a :href="qrCodeLarge" :download="`${qrValue}.png`">
-            <NcTooltip>
+            <AtTooltip>
               <template #title>
                 {{ $t('labels.clickToDownload') }}
               </template>
-              <NcButton size="small" type="secondary">
+              <AtButton size="small" type="secondary">
                 <template #icon>
                   <GeneralIcon icon="download" class="w-4 h-4" />
                 </template>
                 {{ $t('general.download') }}
-              </NcButton>
-            </NcTooltip>
+              </AtButton>
+            </AtTooltip>
           </a>
         </div>
       </div>
     </template>
     <div v-if="showQrCode" class="w-full px-4">
       <img :src="qrCodeLarge" :alt="$t('title.qrCode')" class="h-[156px] mx-auto mt-8 mb-4" />
-      <div class="bg-nc-bg-gray-light px-3 py-2 rounded-lg">
-        <NcTooltip show-on-truncate-only class="truncate">
+      <div class="bg-atm-bg-gray-light px-3 py-2 rounded-lg">
+        <AtTooltip show-on-truncate-only class="truncate">
           <template #title>
             {{ qrValue }}
           </template>
 
           {{ qrValue }}
-        </NcTooltip>
+        </AtTooltip>
       </div>
     </div>
   </a-modal>
   <div
     v-if="showQrCode"
-    class="nc-qrcode-container w-full flex"
+    class="atm-qrcode-container w-full flex"
     :class="{
       'flex-start h-20': isExpandedFormOpen,
       'justify-center': !isExpandedFormOpen && !isLinkRecordDropdown,
@@ -227,25 +227,25 @@ onMounted(() => {
   <div v-if="showClearNonEditableFieldWarning" class="text-left text-wrap mt-2 text-[#e65100] text-xs">
     {{ $t('msg.warning.nonEditableFields.qrFieldsCannotBeDirectlyChanged') }}
   </div>
-  <NcTooltip v-else-if="hasColError" placement="bottom" class="text-nc-content-orange-dark">
+  <AtTooltip v-else-if="hasColError" placement="bottom" class="text-atm-content-orange-dark">
     <template #title>
       <span class="font-bold">{{ column?.colOptions?.error }}</span>
     </template>
     <span>ERR!</span>
-  </NcTooltip>
-  <NcTooltip v-else-if="!showQrCode && qrValue === NC_ERROR_SENTINEL" placement="bottom" class="text-nc-content-orange-dark">
+  </AtTooltip>
+  <AtTooltip v-else-if="!showQrCode && qrValue === ATMOSPHERE_ERROR_SENTINEL" placement="bottom" class="text-atm-content-orange-dark">
     <template #title>
       <span class="font-bold">Please select a target field!</span>
     </template>
     <span>ERR!</span>
-  </NcTooltip>
+  </AtTooltip>
 </template>
 
 <style lang="scss">
 .qrcode-modal .ant-modal-content {
   padding: 0 !important;
   .ant-modal-header {
-    @apply border-b-1 border-b-nc-border-gray-medium;
+    @apply border-b-1 border-b-atm-border-gray-medium;
     position: relative;
     padding: 8px 16px;
     border-top-left-radius: 1em;
@@ -263,12 +263,12 @@ onMounted(() => {
   }
 }
 
-.nc-data-cell {
-  &:has(.nc-virtual-cell-qrcode) {
+.atm-data-cell {
+  &:has(.atm-virtual-cell-qrcode) {
     @apply !border-none;
     box-shadow: none !important;
 
-    &:focus-within:not(.nc-readonly-div-data-cell):not(.nc-system-field) {
+    &:focus-within:not(.atm-readonly-div-data-cell):not(.atm-system-field) {
       box-shadow: none !important;
     }
   }

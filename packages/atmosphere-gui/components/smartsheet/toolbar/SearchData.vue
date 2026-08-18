@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ColumnType, TableType, UITypes } from 'nocodb-sdk'
+import type { ColumnType, TableType, UITypes } from 'atmosphere-sdk'
 
 const isSearchExpanded = defineModel<boolean>('searchExpanded', { default: false })
 
@@ -211,7 +211,7 @@ const handleEscapeKey = () => {
 
 const handleClickOutside = (e: MouseEvent | KeyboardEvent) => {
   const targetEl = e.target as HTMLElement
-  if (targetEl?.closest('.nc-dropdown-toolbar-search, .nc-dropdown-toolbar-search-field-option')) {
+  if (targetEl?.closest('.atm-dropdown-toolbar-search, .atm-dropdown-toolbar-search-field-option')) {
     return
   }
 
@@ -239,7 +239,7 @@ useResizeObserver(toolbarElRef, () => {
 })
 
 onMounted(() => {
-  toolbarElRef.value = globalSearchWrapperRef.value?.closest('.nc-table-toolbar') ?? null
+  toolbarElRef.value = globalSearchWrapperRef.value?.closest('.atm-table-toolbar') ?? null
   spacerElRef.value = (globalSearchWrapperRef.value?.previousElementSibling as HTMLElement) ?? null
 
   if (search.value.query && !showSearchBox.value && !shouldCollapseSearch.value) {
@@ -257,7 +257,7 @@ watch(
 
 useEventListener('keydown', (e: KeyboardEvent) => {
   // Skip if event originated inside the smart text panel (it has its own search)
-  if ((e.target as HTMLElement)?.closest?.('.nc-smart-text-panel')) return
+  if ((e.target as HTMLElement)?.closest?.('.atm-smart-text-panel')) return
 
   if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
     e.preventDefault()
@@ -283,42 +283,42 @@ watch(
 </script>
 
 <template>
-  <div ref="globalSearchWrapperRef" class="nc-global-search-wrapper relative">
-    <NcTooltip v-if="isSearchButtonVisible" :disabled="!search.query" placement="bottom">
+  <div ref="globalSearchWrapperRef" class="atm-global-search-wrapper relative">
+    <AtTooltip v-if="isSearchButtonVisible" :disabled="!search.query" placement="bottom">
       <template #title> {{ $t('general.searchIn') }} {{ displayColumnLabel ?? '' }}: {{ search.query }} </template>
-      <NcButton
+      <AtButton
         size="small"
         type="text"
-        class="nc-toolbar-btn !rounded-lg !h-7 !px-1.5 relative"
-        data-testid="nc-global-search-show-input"
+        class="atm-toolbar-btn !rounded-lg !h-7 !px-1.5 relative"
+        data-testid="atm-global-search-show-input"
         @click="handleShowSearchInput"
       >
-        <GeneralIcon icon="search" class="h-4 w-4 text-nc-content-gray-subtle group-hover:text-nc-content-gray-extreme" />
+        <GeneralIcon icon="search" class="h-4 w-4 text-atm-content-gray-subtle group-hover:text-atm-content-gray-extreme" />
         <span
           v-if="search.query"
-          class="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-nc-fill-primary"
-          data-testid="nc-global-search-active-indicator"
+          class="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-atm-fill-primary"
+          data-testid="atm-global-search-active-indicator"
         />
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
     <LazySmartsheetToolbarSearchDataWrapperDropdown v-else :visible="true" :realign-tick="realignTick">
       <div
         class="overflow-hidden"
         :class="{
-          'border-1 rounded-lg border-nc-border-gray-medium focus-within:(border-primary shadow-selected)': isMobileMode,
+          'border-1 rounded-lg border-atm-border-gray-medium focus-within:(border-primary shadow-selected)': isMobileMode,
         }"
       >
         <div
           v-if="isList && listViewStore && listViewStore.levels.value.length > 1"
-          class="flex items-center gap-1 px-2 py-1 border-b-1 border-nc-border-gray-medium"
+          class="flex items-center gap-1 px-2 py-1 border-b-1 border-atm-border-gray-medium"
         >
           <div
             v-for="(level, index) in listViewStore.levels.value"
             :key="level.id || index"
             class="px-1.5 py-0.5 rounded text-[11px] font-medium cursor-pointer transition-colors truncate"
             :class="{
-              'bg-nc-bg-brand text-nc-content-brand': listViewStore.selectedLevelId.value === level.id,
-              'text-nc-content-gray-muted hover:bg-nc-bg-gray-medium': listViewStore.selectedLevelId.value !== level.id,
+              'bg-atm-bg-brand text-atm-content-brand': listViewStore.selectedLevelId.value === level.id,
+              'text-atm-content-gray-muted hover:bg-atm-bg-gray-medium': listViewStore.selectedLevelId.value !== level.id,
             }"
             @click="listViewStore.setSelectedLevel(level.id ?? null)"
           >
@@ -326,14 +326,14 @@ watch(
           </div>
         </div>
         <div class="flex flex-row h-8 relative">
-          <NcDropdown
+          <AtDropdown
             v-model:visible="isDropdownOpen"
             :trigger="['click']"
-            overlay-class-name="nc-dropdown-toolbar-search-field-option"
+            overlay-class-name="atm-dropdown-toolbar-search-field-option"
           >
             <div class="flex items-center gap-2 group px-2 cursor-pointer" @click="isDropdownOpen = !isDropdownOpen">
-              <GeneralIcon icon="search" class="h-3.5 w-3.5 text-nc-content-gray-muted" />
-              <div class="h-5 flex items-center gap-1 px-1 rounded-md text-nc-content-brand bg-nc-bg-brand-inverted select-none">
+              <GeneralIcon icon="search" class="h-3.5 w-3.5 text-atm-content-gray-muted" />
+              <div class="h-5 flex items-center gap-1 px-1 rounded-md text-atm-content-brand bg-atm-bg-brand-inverted select-none">
                 <SmartsheetHeaderIcon v-if="!isFieldListCompact" :column="displayColumn" class="!w-3.5 !h-3.5 !mx-0" />
                 <div v-if="!isMobileMode" class="w-16 text-bodyDefaultSm font-medium truncate">
                   {{ displayColumnLabel ?? '' }}
@@ -360,7 +360,7 @@ watch(
                 @selected="onSelectOption"
               />
             </template>
-          </NcDropdown>
+          </AtDropdown>
 
           <form class="p-0 flex-1 flex" @submit.prevent>
             <a-input
@@ -370,7 +370,7 @@ watch(
               :inputmode="searchInputMode"
               name="globalSearchQuery"
               size="small"
-              class="!text-bodyDefaultSm flex-1 md:!w-40 h-full nc-view-search-data !pl-0"
+              class="!text-bodyDefaultSm flex-1 md:!w-40 h-full atm-view-search-data !pl-0"
               :class="{
                 '!pr-7': !isValidSearchQuery,
               }"
@@ -382,20 +382,20 @@ watch(
             >
             </a-input>
           </form>
-          <NcTooltip
+          <AtTooltip
             v-if="!isValidSearchQuery"
             :title="$t('msg.error.invalidSearchQuery')"
             class="absolute right-1 top-[50%] transform -translate-y-[50%] flex items-center pr-1"
             placement="topRight"
           >
-            <GeneralIcon icon="ncInfo" class="flex-none h-3.5 w-3.5 text-nc-content-red-medium" />
-          </NcTooltip>
+            <GeneralIcon icon="ncInfo" class="flex-none h-3.5 w-3.5 text-atm-content-red-medium" />
+          </AtTooltip>
         </div>
-        <div v-if="isSearchResultVisible" class="border-t-1 border-nc-border-gray-medium py-1 px-3 flex gap-3">
-          <div class="text-nc-content-gray text-bodySmBold">
+        <div v-if="isSearchResultVisible" class="border-t-1 border-atm-border-gray-medium py-1 px-3 flex gap-3">
+          <div class="text-atm-content-gray text-bodySmBold">
             {{ $t('title.countOfTotal', { count: totalRowsWithSearchQuery, total: totalRowsWithoutSearchQuery }) }}
           </div>
-          <div class="text-nc-content-gray-muted text-bodySm">
+          <div class="text-atm-content-gray-muted text-bodySm">
             {{ $t('title.matchingResultsInRecords', { count: totalRowsWithSearchQuery }) }}
           </div>
         </div>

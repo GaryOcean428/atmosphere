@@ -1,5 +1,5 @@
 import type dayjs from 'dayjs'
-import { type ColumnType, parseProp } from 'nocodb-sdk'
+import { type ColumnType, parseProp } from 'atmosphere-sdk'
 
 const isRowInDateRange = (
   rowData: Record<string, any>,

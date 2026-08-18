@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type BaseType, PlanFeatureTypes, PlanTitles, PresencePageType, type TableType } from 'nocodb-sdk'
+import { type BaseType, PlanFeatureTypes, PlanTitles, PresencePageType, type TableType } from 'atmosphere-sdk'
 
 import type { SidebarTableNode } from '~/lib/types'
 
@@ -93,7 +93,7 @@ const emojiPickerRef = ref<HTMLElement>()
 const onChangeIcon = () => {
   isOptionsOpen.value = false
   nextTick(() => {
-    emojiPickerRef.value?.querySelector<HTMLElement>('.nc-emoji')?.click()
+    emojiPickerRef.value?.querySelector<HTMLElement>('.atm-emoji')?.click()
   })
 }
 
@@ -482,15 +482,15 @@ const isMmTable = computed(() => !!table.value?.mm)
 
 <template>
   <div
-    class="nc-tree-item nc-table-node-wrapper text-sm select-none w-full bg-inherit"
+    class="atm-tree-item atm-table-node-wrapper text-sm select-none w-full bg-inherit"
     :data-order="table.order"
     :data-id="table.id"
     :data-table-id="table.id"
-    :class="[`nc-base-tree-tbl nc-base-tree-tbl-${toSafeClassName(table.title)}`]"
+    :class="[`atm-base-tree-tbl atm-base-tree-tbl-${toSafeClassName(table.title)}`]"
     :data-active="openedTableId === table.id"
   >
     <div class="flex items-center py-0.5">
-      <NcTooltip
+      <AtTooltip
         :tooltip-style="{ width: '260px', zIndex: '1049' }"
         :overlay-inner-style="{ width: '260px' }"
         :mouse-enter-delay="0.5"
@@ -504,19 +504,19 @@ const isMmTable = computed(() => !!table.value?.mm)
         </template>
         <div
           v-e="['a:table:open']"
-          class="flex-none flex-1 table-context flex items-center gap-1 h-full nc-tree-item-inner nc-sidebar-node pr-0.75 mb-0.25 rounded-md h-7 w-full group cursor-pointer hover:bg-nc-bg-gray-medium text-bodyDefaultSm font-medium"
+          class="flex-none flex-1 table-context flex items-center gap-1 h-full atm-tree-item-inner atm-sidebar-node pr-0.75 mb-0.25 rounded-md h-7 w-full group cursor-pointer hover:bg-atm-bg-gray-medium text-bodyDefaultSm font-medium"
           :class="{
-            'hover:bg-nc-bg-gray-medium': openedTableId !== table.id,
+            'hover:bg-atm-bg-gray-medium': openedTableId !== table.id,
             'pl-8 rtl:(pr-8 pl-0.75)': sourceIndex !== 0,
             'pl-2 xs:(pl-2) rtl:(pr-2 pl-0.75) rtl:xs:(pr-2 pl-0.75)': sourceIndex === 0,
           }"
-          :data-testid="`nc-tbl-side-node-${table.title}`"
+          :data-testid="`atm-tbl-side-node-${table.title}`"
           @contextmenu="setMenuContext('table', table)"
           @click="onOpenTable"
         >
           <div class="flex flex-row h-full items-center">
             <div class="flex w-auto" :data-testid="`tree-view-table-draggable-handle-${table.title}`">
-              <GeneralLoader v-if="table.isViewsLoading" class="flex items-center w-6 h-full !text-nc-content-gray-subtle2" />
+              <GeneralLoader v-if="table.isViewsLoading" class="flex items-center w-6 h-full !text-atm-content-gray-subtle2" />
               <!-- Mobile: plain chevron before icon -->
               <div
                 v-if="!table.isViewsLoading"
@@ -525,17 +525,17 @@ const isMmTable = computed(() => !!table.value?.mm)
               >
                 <GeneralIcon
                   icon="chevronRight"
-                  class="transform transition-transform duration-200 !text-nc-content-gray-subtle2 text-[16px]"
+                  class="transform transition-transform duration-200 !text-atm-content-gray-subtle2 text-[16px]"
                   :class="{ '!rotate-90': isExpanded }"
                 />
               </div>
-              <div v-if="!table.isViewsLoading" class="flex items-center nc-table-icon-wrapper min-w-6 h-6 relative" @click.stop>
+              <div v-if="!table.isViewsLoading" class="flex items-center atm-table-icon-wrapper min-w-6 h-6 relative" @click.stop>
                 <!-- Desktop: combo chevron overlay -->
-                <NcButton
+                <AtButton
                   v-e="['c:table:toggle-expand']"
                   type="text"
                   size="xxsmall"
-                  class="nc-table-chevron-btn !absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10 text-nc-content-gray-subtle2 hover:text-nc-content-gray !rounded-md !xs:hidden"
+                  class="atm-table-chevron-btn !absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10 text-atm-content-gray-subtle2 hover:text-atm-content-gray !rounded-md !xs:hidden"
                   @click.stop="onExpand"
                 >
                   <GeneralIcon
@@ -543,7 +543,7 @@ const isMmTable = computed(() => !!table.value?.mm)
                     class="cursor-pointer transform transition-transform duration-200 !text-current text-[16px]"
                     :class="{ '!rotate-90': isExpanded }"
                   />
-                </NcButton>
+                </AtButton>
 
                 <!-- Table icon/emoji (hidden on hover, replaced by chevron).
                    pointer-events-none is intentional — icon changes are triggered via the
@@ -564,16 +564,16 @@ const isMmTable = computed(() => !!table.value?.mm)
                       <component
                         :is="iconMap.ncZap"
                         v-if="table?.synced"
-                        class="nc-table-icon w-4 text-sm !text-nc-content-gray-muted"
+                        class="atm-table-icon w-4 text-sm !text-atm-content-gray-muted"
                       />
 
                       <component
                         :is="iconMap.table"
                         v-else-if="table.type === 'table'"
-                        class="nc-table-icon w-4 text-sm !text-nc-content-gray-muted"
+                        class="atm-table-icon w-4 text-sm !text-atm-content-gray-muted"
                       />
 
-                      <MdiEye v-else class="nc-table-iconflex w-5 text-sm !text-nc-content-gray-muted" />
+                      <MdiEye v-else class="atm-table-iconflex w-5 text-sm !text-atm-content-gray-muted" />
                     </template>
                   </LazyGeneralEmojiPicker>
                 </div>
@@ -592,21 +592,21 @@ const isMmTable = computed(() => !!table.value?.mm)
               @keydown.stop="onKeyDown($event)"
             />
           </a-form>
-          <NcTooltip
+          <AtTooltip
             v-else
-            class="nc-tbl-title nc-sidebar-node-title text-ellipsis overflow-hidden select-none !flex-1"
+            class="atm-tbl-title atm-sidebar-node-title text-ellipsis overflow-hidden select-none !flex-1"
             show-on-truncate-only
           >
             <template #title>{{ table.title }}</template>
             <span
-              :class="openedTableId === table.id ? 'text-nc-content-gray' : 'text-nc-content-gray-subtle'"
-              :data-testid="`nc-tbl-title-${table.title}`"
+              :class="openedTableId === table.id ? 'text-atm-content-gray' : 'text-atm-content-gray-subtle'"
+              :data-testid="`atm-tbl-title-${table.title}`"
               :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap', display: 'inline' }"
               @dblclick.stop="onRenameMenuClick(table)"
             >
               {{ table.title }}
             </span>
-          </NcTooltip>
+          </AtTooltip>
           <DashboardTreeViewPresenceAvatars
             v-if="isEeUI && !isEditing"
             :resource-id="table.id"
@@ -618,37 +618,37 @@ const isMmTable = computed(() => !!table.value?.mm)
             @mouseenter="showTableNodeTooltip = false"
             @mouseleave="showTableNodeTooltip = true"
           >
-            <NcTooltip v-if="table.description?.length" overlay-class-name="nc-tooltip-scrollable" placement="bottom">
+            <AtTooltip v-if="table.description?.length" overlay-class-name="atm-tooltip-scrollable" placement="bottom">
               <template #title>
                 <div class="whitespace-pre-wrap break-words">{{ table.description }}</div>
               </template>
 
-              <NcButton type="text" class="!hover:bg-transparent" size="xsmall">
+              <AtButton type="text" class="!hover:bg-transparent" size="xsmall">
                 <GeneralIcon
                   icon="info"
-                  class="!w-3.5 !h-3.5 nc-info-icon group-hover:opacity-100 text-nc-content-gray-subtle2 opacity-0"
+                  class="!w-3.5 !h-3.5 atm-info-icon group-hover:opacity-100 text-atm-content-gray-subtle2 opacity-0"
                 />
-              </NcButton>
-            </NcTooltip>
+              </AtButton>
+            </AtTooltip>
 
-            <NcDropdown v-model:visible="isOptionsOpen" :trigger="['click']" @click.stop>
-              <NcButton
+            <AtDropdown v-model:visible="isOptionsOpen" :trigger="['click']" @click.stop>
+              <AtButton
                 v-e="['c:table:option']"
-                class="nc-sidebar-node-btn nc-tbl-context-menu text-nc-content-gray-subtle hover:text-nc-content-gray"
+                class="atm-sidebar-node-btn atm-tbl-context-menu text-atm-content-gray-subtle hover:text-atm-content-gray"
                 :class="{
                   '!opacity-100 !inline-block': isOptionsOpen,
                 }"
-                data-testid="nc-sidebar-table-context-menu"
+                data-testid="atm-sidebar-table-context-menu"
                 type="text"
                 size="xxsmall"
                 @click.stop
               >
                 <MdiDotsHorizontal class="!text-current" />
-              </NcButton>
+              </AtButton>
 
               <template #overlay>
-                <NcMenu class="!min-w-62.5" :data-testid="`sidebar-table-context-menu-list-${table.title}`" variant="small">
-                  <NcMenuItemCopyId
+                <AtMenu class="!min-w-62.5" :data-testid="`sidebar-table-context-menu-list-${table.title}`" variant="small">
+                  <AtMenuItemCopyId
                     v-if="table"
                     :id="table.id"
                     :tooltip="$t('labels.clickToCopyTableID')"
@@ -669,15 +669,15 @@ const isMmTable = computed(() => !!table.value?.mm)
                         enabledOptions.tablePermission)
                     "
                   >
-                    <NcDivider v-if="enabledOptions.tableRename || enabledOptions.tableDuplicate" />
-                    <NcTooltip
+                    <AtDivider v-if="enabledOptions.tableRename || enabledOptions.tableDuplicate" />
+                    <AtTooltip
                       v-if="enabledOptions.tableRename"
                       :title="restrictionReasons.tableRename ? $t(restrictionReasons.tableRename) : ''"
                       :disabled="!restrictionReasons.tableRename"
                     >
-                      <NcMenuItem
+                      <AtMenuItem
                         :data-testid="`sidebar-table-rename-${table.title}`"
-                        class="nc-table-rename"
+                        class="atm-table-rename"
                         :disabled="!!restrictionReasons.tableRename"
                         @click="onRenameMenuClick(table)"
                       >
@@ -685,24 +685,24 @@ const isMmTable = computed(() => !!table.value?.mm)
                           <GeneralIcon icon="rename" class="opacity-80" />
                           {{ $t('general.rename') }} {{ $t('objects.table').toLowerCase() }}
                         </div>
-                      </NcMenuItem>
-                    </NcTooltip>
+                      </AtMenuItem>
+                    </AtTooltip>
 
-                    <NcTooltip :title="tableIconEditReason ? $t(tableIconEditReason) : ''" :disabled="!tableIconEditReason">
-                      <NcMenuItemChangeIcon
+                    <AtTooltip :title="tableIconEditReason ? $t(tableIconEditReason) : ''" :disabled="!tableIconEditReason">
+                      <AtMenuItemChangeIcon
                         v-e="['c:table:change-icon']"
                         :disabled="!!(!canUserEditEmote || isMobileMode || tableIconEditReason)"
                         :data-testid="`sidebar-table-change-icon-${table.title}`"
                         @change-icon="onChangeIcon"
                       />
-                    </NcTooltip>
+                    </AtTooltip>
 
-                    <NcTooltip
+                    <AtTooltip
                       v-if="enabledOptions.tableDuplicate"
                       :title="restrictionReasons.tableDuplicate ? $t(restrictionReasons.tableDuplicate) : ''"
                       :disabled="!restrictionReasons.tableDuplicate"
                     >
-                      <NcMenuItem
+                      <AtMenuItem
                         :data-testid="`sidebar-table-duplicate-${table.title}`"
                         :disabled="!!restrictionReasons.tableDuplicate"
                         @click="duplicateTable(table)"
@@ -711,8 +711,8 @@ const isMmTable = computed(() => !!table.value?.mm)
                           <GeneralIcon icon="duplicate" class="opacity-80" />
                           {{ $t('general.duplicate') }} {{ $t('objects.table').toLowerCase() }}
                         </div>
-                      </NcMenuItem>
-                    </NcTooltip>
+                      </AtMenuItem>
+                    </AtTooltip>
 
                     <!-- Move to a section of this table's own source (EE) -->
                     <DashboardTreeViewDataMoveToSectionMenu
@@ -725,16 +725,16 @@ const isMmTable = computed(() => !!table.value?.mm)
                       :order="table.order"
                       @close-modal="isOptionsOpen = false"
                     />
-                    <NcDivider />
+                    <AtDivider />
 
-                    <NcTooltip
+                    <AtTooltip
                       v-if="enabledOptions.tableDescriptionEdit"
                       :title="restrictionReasons.tableDescriptionEdit ? $t(restrictionReasons.tableDescriptionEdit) : ''"
                       :disabled="!restrictionReasons.tableDescriptionEdit"
                     >
-                      <NcMenuItem
+                      <AtMenuItem
                         :data-testid="`sidebar-table-description-${table.title}`"
-                        class="nc-table-description"
+                        class="atm-table-description"
                         :disabled="!!restrictionReasons.tableDescriptionEdit"
                         @click="openTableDescriptionDialog(table)"
                       >
@@ -742,18 +742,18 @@ const isMmTable = computed(() => !!table.value?.mm)
                           <GeneralIcon icon="ncAlignLeft" class="opacity-80" />
                           {{ $t('labels.editTableDescription') }}
                         </div>
-                      </NcMenuItem>
-                    </NcTooltip>
-                    <NcTooltip
+                      </AtMenuItem>
+                    </AtTooltip>
+                    <AtTooltip
                       v-if="enabledOptions.tablePermission"
                       :title="restrictionReasons.tablePermission ? $t(restrictionReasons.tablePermission) : ''"
                       :disabled="!restrictionReasons.tablePermission"
                     >
                       <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_TABLE_AND_FIELD_PERMISSIONS">
                         <template #default="{ click }">
-                          <NcMenuItem
+                          <AtMenuItem
                             :data-testid="`sidebar-table-permissions-${table.title}`"
-                            class="nc-table-permissions"
+                            class="atm-table-permissions"
                             :disabled="!!restrictionReasons.tablePermission"
                             @click="
                               click(PlanFeatureTypes.FEATURE_TABLE_AND_FIELD_PERMISSIONS, () => {
@@ -779,20 +779,20 @@ const isMmTable = computed(() => !!table.value?.mm)
                                 show-as-lock
                               />
                             </div>
-                          </NcMenuItem>
+                          </AtMenuItem>
                         </template>
                       </PaymentUpgradeBadgeProvider>
-                    </NcTooltip>
-                    <NcTooltip
+                    </AtTooltip>
+                    <AtTooltip
                       v-if="enabledOptions.tableRowLevelSecurity"
                       :title="restrictionReasons.tableRowLevelSecurity ? $t(restrictionReasons.tableRowLevelSecurity) : ''"
                       :disabled="!restrictionReasons.tableRowLevelSecurity"
                     >
                       <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_RLS">
                         <template #default="{ click }">
-                          <NcMenuItem
+                          <AtMenuItem
                             :data-testid="`sidebar-table-rls-${table.title}`"
-                            class="nc-table-rls"
+                            class="atm-table-rls"
                             :disabled="!!restrictionReasons.tableRowLevelSecurity"
                             @click="click(PlanFeatureTypes.FEATURE_RLS, onRowLevelSecurity)"
                           >
@@ -813,18 +813,18 @@ const isMmTable = computed(() => !!table.value?.mm)
                                 :on-click-callback="() => (isOptionsOpen = false)"
                               />
                             </div>
-                          </NcMenuItem>
+                          </AtMenuItem>
                         </template>
                       </PaymentUpgradeBadgeProvider>
-                    </NcTooltip>
+                    </AtTooltip>
                     <PaymentUpgradeBadgeProvider
                       v-if="enabledOptions.tableDateDependency"
                       :feature="PlanFeatureTypes.FEATURE_DATE_DEPENDENCY"
                     >
                       <template #default="{ click }">
-                        <NcMenuItem
+                        <AtMenuItem
                           :data-testid="`sidebar-table-date-dependency-${table.title}`"
-                          class="nc-table-date-dependency"
+                          class="atm-table-date-dependency"
                           @click="click(PlanFeatureTypes.FEATURE_DATE_DEPENDENCY, onDateDependency)"
                         >
                           <div v-e="['c:table:date-dependency']" class="flex gap-2 items-center w-full">
@@ -838,11 +838,11 @@ const isMmTable = computed(() => !!table.value?.mm)
                               :on-click-callback="() => (isOptionsOpen = false)"
                             />
                           </div>
-                        </NcMenuItem>
+                        </AtMenuItem>
                       </template>
                     </PaymentUpgradeBadgeProvider>
                   </template>
-                  <NcDivider v-else-if="isEeUI && isBookmarkAllowed" />
+                  <AtDivider v-else-if="isEeUI && isBookmarkAllowed" />
 
                   <BookmarksMenuAction
                     v-if="isEeUI"
@@ -859,8 +859,8 @@ const isMmTable = computed(() => !!table.value?.mm)
                     @close="isOptionsOpen = false"
                   />
                   <template v-if="enabledOptions.tableDelete && !table.synced">
-                    <NcDivider />
-                    <NcTooltip
+                    <AtDivider />
+                    <AtTooltip
                       :disabled="!restrictionReasons.tableDelete && !isMmTable"
                       :title="
                         restrictionReasons.tableDelete
@@ -869,9 +869,9 @@ const isMmTable = computed(() => !!table.value?.mm)
                       "
                       placement="right"
                     >
-                      <NcMenuItem
+                      <AtMenuItem
                         :data-testid="`sidebar-table-delete-${table.title}`"
-                        class="nc-table-delete"
+                        class="atm-table-delete"
                         danger
                         :disabled="!!restrictionReasons.tableDelete || isMmTable"
                         @click="deleteTable"
@@ -880,12 +880,12 @@ const isMmTable = computed(() => !!table.value?.mm)
                           <GeneralIcon icon="delete" />
                           {{ $t('general.delete') }} {{ $t('objects.table').toLowerCase() }}
                         </div>
-                      </NcMenuItem>
-                    </NcTooltip>
+                      </AtMenuItem>
+                    </AtTooltip>
                   </template>
-                </NcMenu>
+                </AtMenu>
               </template>
-            </NcDropdown>
+            </AtDropdown>
 
             <DashboardTreeViewCreateViewBtn
               v-if="!isSharedBase && isUIAllowed('viewCreateOrEdit')"
@@ -893,25 +893,25 @@ const isMmTable = computed(() => !!table.value?.mm)
               :source="source"
               placement="bottomRight"
             >
-              <NcButton
+              <AtButton
                 v-e="['c:table:create-view']"
                 type="text"
                 size="xxsmall"
-                class="nc-sidebar-node-btn nc-sidebar-expand text-nc-content-gray-subtle2 hover:text-nc-content-gray"
+                class="atm-sidebar-node-btn atm-sidebar-expand text-atm-content-gray-subtle2 hover:text-atm-content-gray"
                 :class="{
                   '!opacity-100 !visible': isOptionsOpen,
                 }"
-                data-testid="nc-sidebar-table-create-view-btn"
+                data-testid="atm-sidebar-table-create-view-btn"
                 @click.stop
               >
-                <NcTooltip :title="$t('activity.createView')" hide-on-click :placement="isMobileMode ? 'topRight' : undefined">
+                <AtTooltip :title="$t('activity.createView')" hide-on-click :placement="isMobileMode ? 'topRight' : undefined">
                   <GeneralIcon icon="plus" class="!text-current text-[16px]" />
-                </NcTooltip>
-              </NcButton>
+                </AtTooltip>
+              </AtButton>
             </DashboardTreeViewCreateViewBtn>
           </div>
         </div>
-      </NcTooltip>
+      </AtTooltip>
     </div>
     <DlgTableDelete
       v-if="table.id && base?.id"
@@ -942,19 +942,19 @@ const isMmTable = computed(() => !!table.value?.mm)
 </template>
 
 <style scoped lang="scss">
-.nc-tree-item {
+.atm-tree-item {
   @apply relative after:(pointer-events-none content-[''] rounded absolute top-0 left-0  w-full h-full right-0 !bg-current transition duration-100 opacity-0);
 }
 
-.nc-tree-item svg {
-  &:not(.nc-info-icon):not(.nc-table-icon):not(.nc-view-icon):not(.nc-script-icon):not(.nc-dashboard-icon):not(
-      .nc-workflow-icon
+.atm-tree-item svg {
+  &:not(.atm-info-icon):not(.atm-table-icon):not(.atm-view-icon):not(.atm-script-icon):not(.atm-dashboard-icon):not(
+      .atm-workflow-icon
     ) {
     @apply text-primary/60;
   }
 }
 
-:deep(.nc-menu-item-inner) {
+:deep(.atm-menu-item-inner) {
   @apply !w-full;
 }
 </style>

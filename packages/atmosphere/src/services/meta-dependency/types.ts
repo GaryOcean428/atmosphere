@@ -1,4 +1,4 @@
-import type { MetaEntityType, MetaEventType, NcContext } from 'nocodb-sdk';
+import type { MetaEntityType, MetaEventType, AtContext } from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
 
 export const META_DEPENDENCY_MODULE_PROVIDER_KEY = 'META_DEPENDENCY';
@@ -21,12 +21,12 @@ export interface MetaDependencyEventRequest {
 export interface MetaEventHandler {
   triggerMetaEvents: MetaEventType[];
   getAffectedDependency(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest,
     ncMeta?: MetaService,
   ): Promise<undefined | AffectedDependencyResult>;
   handle(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest & {
       affectedDependencyResult: AffectedDependencyResult;
     },

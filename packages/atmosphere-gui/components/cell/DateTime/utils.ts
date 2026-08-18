@@ -1,4 +1,4 @@
-import { timeFormats } from 'nocodb-sdk'
+import { timeFormats } from 'atmosphere-sdk'
 
 export const timeFormatsObj = {
   [timeFormats[0]]: 'hh:mm A',

@@ -3,7 +3,7 @@ const { DOCKER_DB_HOST, DOCKER_DB_PORT } = process.env;
 export default {
   title: 'default',
   envs: {
-    _noco: {
+    _atmosphere: {
       db: [
         {
           client: 'pg',
@@ -15,7 +15,7 @@ export default {
             database: 'default_dev',
           },
           meta: {
-            tn: 'nc_evolutions',
+            tn: 'atm_evolutions',
             dbAlias: 'primary',
           },
         },
@@ -33,14 +33,14 @@ export default {
             database: 'default_test',
           },
           meta: {
-            tn: 'nc_evolutions',
+            tn: 'atm_evolutions',
             dbAlias: 'primary',
           },
         },
       ],
     },
   },
-  workingEnv: '_noco',
+  workingEnv: '_atmosphere',
   meta: {
     version: '0.5',
     seedsFolder: 'seeds',

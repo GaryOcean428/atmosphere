@@ -1,7 +1,7 @@
 import {
   type ColumnType,
   type LinkToAnotherRecordType,
-  NC_ERROR_SENTINEL,
+  ATMOSPHERE_ERROR_SENTINEL,
   type RollupType,
   UITypes,
   getEffectiveDisplayColumn,
@@ -11,7 +11,7 @@ import {
   integerPreservingRollupFunctions,
   integerRollupFunctions,
   isIntegerUiType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 import { getRelatedBaseId } from '../utils/cell'
 import { renderCellError } from '../utils/canvas'
@@ -20,7 +20,7 @@ export const RollupCellRenderer: CellRenderer = {
   render: (ctx, props) => {
     const { column, value, metas, meta, renderCell, x, y, padding = 10, getColor } = props
 
-    if (parseProp(column.colOptions)?.error || value === NC_ERROR_SENTINEL) {
+    if (parseProp(column.colOptions)?.error || value === ATMOSPHERE_ERROR_SENTINEL) {
       renderCellError(ctx, { x: x ?? 0, y: y ?? 0, width: props.width ?? 0, height: props.height, padding, getColor })
       return
     }

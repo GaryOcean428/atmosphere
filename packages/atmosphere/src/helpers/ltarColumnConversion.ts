@@ -1,7 +1,7 @@
 import { customAlphabet } from 'nanoid';
-import { AppEvents, EventType, RelationTypes, UITypes } from 'nocodb-sdk';
-import type { ColumnReqType, UserType } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+import { AppEvents, EventType, RelationTypes, UITypes } from 'atmosphere-sdk';
+import type { ColumnReqType, UserType } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type {
   IColumnConversionHost,
   LtarSideEffectIds,
@@ -10,10 +10,10 @@ import type {
 import type { ColumnBackupRef } from '~/services/column-data-backup-handler';
 import type { LinkToAnotherRecordColumn } from '~/models';
 import { Column, Filter, Model, Source } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { _wherePk } from '~/helpers/dbHelpers';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
-import NocoSocket from '~/socket/NocoSocket';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 import { processConcurrently } from '~/utils/dataUtils';
 import {
   getLtarDisplayValueContext,
@@ -58,12 +58,12 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
    * committed, so a notification failure must not abort the op.
    */
   const broadcastColumnConversion = async (
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       columnId: string;
       oldColumn?: Column;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) => {
     try {
@@ -103,7 +103,7 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
         context,
         columns: safeTable.columns,
       });
-      NocoSocket.broadcastEvent(
+      AtmosphereSocket.broadcastEvent(
         context,
         {
           event: EventType.META_EVENT,
@@ -132,7 +132,7 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
    * Best-effort — the conversion is already committed.
    */
   const broadcastRelatedTableBackLink = async (
-    context: NcContext,
+    context: AtContext,
     param: {
       relationColOpt: LinkToAnotherRecordColumn;
       sourceTableId: string;
@@ -159,7 +159,7 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
         }),
       );
 
-      NocoSocket.broadcastEvent(refContext, {
+      AtmosphereSocket.broadcastEvent(refContext, {
         event: EventType.META_EVENT,
         payload: { action: param.action, payload: { table: safeTable } },
       });
@@ -186,7 +186,7 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
    *  - link→text: omit it → count all rows (every row's links are read).
    */
   const assertConvertibleRowCount = async (
-    context: NcContext,
+    context: AtContext,
     baseModel: Awaited<ReturnType<typeof Model.getBaseModelSQL>>,
     sourceColumn?: Column,
   ): Promise<void> => {
@@ -204,7 +204,7 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
       : undefined;
     const rowCount = Number(await baseModel.count({ filterArr }, true));
     if (Number.isFinite(rowCount) && rowCount > LTAR_CONVERSION_MAX_ROWS) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         `Cannot convert: this conversion would process ${rowCount.toLocaleString()} ` +
           `records, which exceeds the ${LTAR_CONVERSION_MAX_ROWS.toLocaleString()}-` +
           `record limit for converting between text and link fields.`,
@@ -231,14 +231,14 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
    * conversion honoring the captured ids.
    */
   const convertSingleLineTextToLtar = async (
-    context: NcContext,
+    context: AtContext,
     param: {
       column: Column;
       colBody: Column & { meta?: Record<string, any> };
       table: Model;
       source: Source;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
       reuse?: ReusableParams;
       /**
        * Set only when undoing a junction-less `bt`→text conversion. The forward
@@ -268,7 +268,7 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
     // cache and breaks `hash(columns)` in a later `Model.get`. Each sub-op gets
     // a fresh reuse, exactly like a standalone columnAdd/columnDelete.
     const base = await source.getProject(context);
-    const dbDriver = await NcConnectionMgrv2.get(source);
+    const dbDriver = await AtConnectionMgrv2.get(source);
     const baseModel = await Model.getBaseModelSQL(context, {
       id: table.id,
       dbDriver,
@@ -472,13 +472,13 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
    * links via `addLinks` (append-only). Returns counts for logging.
    */
   const backfillLtarFromText = async (
-    context: NcContext,
+    context: AtContext,
     params: {
       baseModel: Awaited<ReturnType<typeof Model.getBaseModelSQL>>;
       ltarColumn: Column;
       snapshot: { pk: string | number; text: string }[];
       delimiter: string;
-      req: NcRequest;
+      req: AtRequest;
     },
   ): Promise<{ linksCreated: number; valuesUnmatched: number }> => {
     const { baseModel, ltarColumn, snapshot, delimiter, req } = params;
@@ -560,12 +560,12 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
    * recreated column's pre-set id is honored.
    */
   const revertLinkColumnToText = async (
-    context: NcContext,
+    context: AtContext,
     param: {
       linkColumnId: string;
       textColumn: Record<string, any>;
       backupRef?: ColumnBackupRef;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) => {
     const { linkColumnId, textColumn, backupRef, req } = param;
@@ -648,21 +648,21 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
    * resolving those display values — see {@link convertSingleLineTextToLtar}.
    */
   const convertLtarToSingleLineText = async (
-    context: NcContext,
+    context: AtContext,
     param: {
       column: Column;
       colBody: Column & { meta?: Record<string, any> };
       table: Model;
       source: Source;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) => {
     const { column, colBody, table, source, user, req } = param;
     const originalTitle = column.title;
     const delimiter = (colBody.meta?.delimiter as string) || ',';
 
-    const dbDriver = await NcConnectionMgrv2.get(source);
+    const dbDriver = await AtConnectionMgrv2.get(source);
     const baseModel = await Model.getBaseModelSQL(context, {
       id: table.id,
       dbDriver,
@@ -815,7 +815,7 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
       await Column.list(context, { fk_model_id: table.id })
     ).find((c) => c.title === tempTitle);
     if (!textColumn) {
-      NcError.get(context).badRequest('Failed to create text column');
+      AtError.get(context).badRequest('Failed to create text column');
     }
 
     // Capture the new text column id so redo / sandbox replay recreates it
@@ -902,7 +902,7 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
    * undo/redo replay scope.
    */
   const revertTextColumnToLink = async (
-    context: NcContext,
+    context: AtContext,
     param: {
       textColumnId: string;
       link: {
@@ -920,19 +920,19 @@ export const ltarColumnConversion = (svc: IColumnConversionHost) => {
         pairedColumnId?: string;
         pairedColumnTitle?: string;
       };
-      req: NcRequest;
+      req: AtRequest;
     },
   ) => {
     const { textColumnId, link, req } = param;
 
     const textColumn = await Column.get(context, { colId: textColumnId });
     if (!textColumn) {
-      NcError.get(context).genericNotFound('Column', textColumnId);
+      AtError.get(context).genericNotFound('Column', textColumnId);
     }
 
     const table = await Model.get(context, textColumn.fk_model_id);
     if (!table) {
-      NcError.get(context).tableNotFound(textColumn.fk_model_id);
+      AtError.get(context).tableNotFound(textColumn.fk_model_id);
     }
     const source = await Source.get(context, table.source_id);
 

@@ -13,11 +13,11 @@ const vModel = useVModel(props, 'modelValue')
 </script>
 
 <template>
-  <span v-if="vModel === null && showNull" class="nc-cell-field nc-null uppercase">{{ $t('general.null') }}</span>
+  <span v-if="vModel === null && showNull" class="atm-cell-field atm-null uppercase">{{ $t('general.null') }}</span>
 
   <LazyCellClampedText
     v-else
-    class="nc-cell-field nc-uuid-cell"
+    class="atm-cell-field atm-uuid-cell"
     :value="vModel"
     :lines="rowHeight"
     :style="{ 'word-break': 'break-word', 'font-family': 'monospace' }"
@@ -25,7 +25,7 @@ const vModel = useVModel(props, 'modelValue')
 </template>
 
 <style scoped>
-.nc-uuid-cell {
+.atm-uuid-cell {
   font-family: monospace;
 }
 </style>

@@ -59,7 +59,7 @@ export interface ApiTokenPermissionsJson {
   categories: ApiTokenPermissions;
 }
 
-// Scope entry for a token — each maps to a row in nc_api_token_scopes
+// Scope entry for a token — each maps to a row in atm_api_token_scopes
 export interface ApiTokenScopeEntry {
   id?: string;
   resource_type: ApiTokenScopeResourceType;
@@ -67,7 +67,7 @@ export interface ApiTokenScopeEntry {
   permissions?: ApiTokenPermissions;
 }
 
-export const API_TOKEN_PREFIX = 'nc_pat_';
+export const API_TOKEN_PREFIX = 'atm_pat_';
 
 // Preset permission configurations for UI
 export const API_TOKEN_PERMISSION_PRESETS = {

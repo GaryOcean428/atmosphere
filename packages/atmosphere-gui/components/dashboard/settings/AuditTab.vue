@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Tooltip as ATooltip, Empty } from 'ant-design-vue'
-import type { AuditType } from 'nocodb-sdk'
-import { timeAgo } from 'nocodb-sdk'
+import type { AuditType } from 'atmosphere-sdk'
+import { timeAgo } from 'atmosphere-sdk'
 
 const { $api } = useNuxtApp()
 
@@ -94,13 +94,13 @@ const columns = [
 
 <template>
   <div class="flex flex-col gap-4 w-full">
-    <div v-if="!appInfo.auditEnabled" class="text-nc-content-red-medium">
+    <div v-if="!appInfo.auditEnabled" class="text-atm-content-red-medium">
       Audit logs are currently disabled by administrators.
     </div>
     <div class="flex flex-row justify-end items-center">
       <a-button class="self-start !rounded-md" @click="loadAudits">
         <!-- Reload -->
-        <div class="flex items-center gap-2 text-nc-content-gray-subtle2 font-light">
+        <div class="flex items-center gap-2 text-atm-content-gray-subtle2 font-light">
           <component :is="iconMap.reload" :class="{ 'animate-infinite animate-spin !text-success': isLoading }" />
 
           {{ $t('general.reload') }}
@@ -109,7 +109,7 @@ const columns = [
     </div>
 
     <a-table
-      class="nc-audit-table w-full"
+      class="atm-audit-table w-full"
       size="small"
       :data-source="audits ?? []"
       :columns="columns"
@@ -134,7 +134,7 @@ const columns = [
 </template>
 
 <style lang="scss">
-.nc-audit-table pre {
+.atm-audit-table pre {
   display: table;
   table-layout: fixed;
   width: 100%;

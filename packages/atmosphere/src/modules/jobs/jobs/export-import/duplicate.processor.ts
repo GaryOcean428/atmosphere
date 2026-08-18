@@ -6,21 +6,21 @@ import {
   isAIPromptCol,
   isLinksOrLTAR,
   isVirtualCol,
-  NOCO_SERVICE_USERS,
+  ATMOSPHERE_SERVICE_USERS,
   parseProp,
   RelationTypes,
   ServiceUserType,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Job } from 'bull';
-import type { NcContext, NcRequest } from '~/interface/config';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type {
   DuplicateBaseJobData,
   DuplicateColumnJobData,
   DuplicateModelJobData,
 } from '~/interface/Jobs';
-import type { NocoHrTime } from '~/modules/jobs/helpers';
+import type { AtmosphereHrTime } from '~/modules/jobs/helpers';
 import { ColumnWebhookManagerBuilder } from '~/utils/column-webhook-manager';
 import { Base, Column, Model, Source } from '~/models';
 import { BasesService } from '~/services/bases.service';
@@ -43,7 +43,7 @@ import { Untraced } from '~/decorators/trace-command.decorator';
 
 @Injectable()
 export class DuplicateProcessor {
-  protected readonly debugLog = debug('nc:jobs:duplicate');
+  protected readonly debugLog = debug('atm:jobs:duplicate');
 
   constructor(
     protected readonly exportService: ExportService,
@@ -61,9 +61,9 @@ export class DuplicateProcessor {
     sourceBase: Base; // Base to duplicate
     targetBase: Base; // Base to duplicate to
     dataSource: Source; // Data source to duplicate from
-    req: NcRequest;
-    context: NcContext; // Context of the base to duplicate
-    targetContext?: NcContext; // Context of the base to duplicate to
+    req: AtRequest;
+    context: AtContext; // Context of the base to duplicate
+    targetContext?: AtContext; // Context of the base to duplicate to
     options: {
       excludeData?: boolean;
       excludeHooks?: boolean;
@@ -91,9 +91,9 @@ export class DuplicateProcessor {
     sourceBase: Base; // Base to duplicate
     targetBase: Base; // Base to duplicate to
     dataSource: Source; // Data source to duplicate from
-    req: NcRequest;
-    context: NcContext; // Context of the base to duplicate
-    targetContext?: NcContext; // Context of the base to duplicate to
+    req: AtRequest;
+    context: AtContext; // Context of the base to duplicate
+    targetContext?: AtContext; // Context of the base to duplicate to
     options: {
       excludeData?: boolean;
       excludeHooks?: boolean;
@@ -385,7 +385,7 @@ export class DuplicateProcessor {
     // system service user instead of leaving them with a NULL actor.
     if (req.user?.id === '1') {
       req.user = {
-        ...NOCO_SERVICE_USERS[ServiceUserType.SYSTEM_USER],
+        ...ATMOSPHERE_SERVICE_USERS[ServiceUserType.SYSTEM_USER],
       } as typeof req.user;
     }
 
@@ -853,14 +853,14 @@ export class DuplicateProcessor {
   }
 
   async importModelsDataWithSameId(
-    targetContext: NcContext,
-    sourceContext: NcContext,
+    targetContext: AtContext,
+    sourceContext: AtContext,
     param: {
       sourceProject: Base;
       sourceModels: Model[];
       destProject: Base;
       destBase: Source;
-      hrTime: NocoHrTime;
+      hrTime: AtmosphereHrTime;
       options?: {
         excludeData?: boolean;
         excludeViews?: boolean;
@@ -986,15 +986,15 @@ export class DuplicateProcessor {
   }
 
   async importModelsData(
-    targetContext: NcContext,
-    sourceContext: NcContext,
+    targetContext: AtContext,
+    sourceContext: AtContext,
     param: {
       idMap: Map<string, string>;
       sourceProject: Base;
       sourceModels: Model[];
       destProject: Base;
       destBase: Source;
-      hrTime: NocoHrTime;
+      hrTime: AtmosphereHrTime;
       modelFieldIds?: Record<string, string[]>;
       externalModels?: Model[];
       options?: {

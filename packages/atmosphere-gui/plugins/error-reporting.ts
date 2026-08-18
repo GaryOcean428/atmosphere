@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/vue'
-import type { Api } from 'nocodb-sdk'
+import type { Api } from 'atmosphere-sdk'
 
 class ErrorReporting {
   errors: Error[] = []
@@ -78,7 +78,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       return
     }
 
-    if (env !== 'production' && !process.env.NC_ENABLE_DEV_SENTRY) {
+    if (env !== 'production' && !process.env.ATMOSPHERE_ENABLE_DEV_SENTRY) {
       return
     }
 

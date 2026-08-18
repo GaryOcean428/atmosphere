@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
-import type { ColumnType, LinkToAnotherRecordType, TableType } from 'nocodb-sdk'
-import { UITypes, isLinksOrLTAR, isSmartText } from 'nocodb-sdk'
+import type { ColumnType, LinkToAnotherRecordType, TableType } from 'atmosphere-sdk'
+import { UITypes, isLinksOrLTAR, isSmartText } from 'atmosphere-sdk'
 import { UseDetachedLongTextProvider } from '../smartsheet/grid/canvas/composables/useDetachedLongText'
 import DetachedExpandedText from '../smartsheet/grid/canvas/components/DetachedExpandedText.vue'
 
@@ -12,7 +12,7 @@ const props = defineProps<{
 
 const activeTab = toRef(props, 'activeTab')
 
-useSidebar('nc-right-sidebar')
+useSidebar('atm-right-sidebar')
 
 const { isUIAllowed } = useRoles()
 
@@ -68,7 +68,7 @@ const isSmartTextActive = computed(() => {
 
 // When the SmartText panel closes (true → false), the expanded-record panel
 // becomes the topmost visible panel again. Clicking SmartText's close button
-// counts as a click outside `.nc-expanded-form-panel`, so the click-intent
+// counts as a click outside `.atm-expanded-form-panel`, so the click-intent
 // flag would otherwise leave the user stuck — Escape and Tab would not act
 // on EFP until they click into it. Reset intent here so the next keystroke
 // targets EFP.
@@ -348,22 +348,22 @@ watch(isViewsLoading, async () => {
 
 <template>
   <div
-    class="nc-container relative flex flex-col h-full"
+    class="atm-container relative flex flex-col h-full"
     :class="{ 'children:pointer-events-none': isEeUI && showBaseAccessRequestOverlay }"
     @drop="onDrop"
     @dragover.prevent
   >
     <SmartsheetTopbar v-if="!isFullScreen" />
     <div style="height: calc(100% - var(--topbar-height))">
-      <NcFullScreen v-if="openedViewsTab === 'view'" v-model="isFullScreen" class="h-full" :page-only="true">
+      <AtFullScreen v-if="openedViewsTab === 'view'" v-model="isFullScreen" class="h-full" :page-only="true">
         <!-- Splitpanes is conditionally rendered only after mount to avoid race conditions with its internal async resize logic. -->
         <Splitpanes
           v-if="isMounted"
           :rtl="isRtl"
-          class="nc-extensions-content-resizable-wrapper"
+          class="atm-extensions-content-resizable-wrapper"
           :class="{
-            'nc-is-open-extensions': isPanelExpanded,
-            'nc-is-open-actions': isActionPanelExpanded,
+            'atm-is-open-extensions': isPanelExpanded,
+            'atm-is-open-actions': isActionPanelExpanded,
           }"
           @ready="() => onReady()"
           @resize="onResize"
@@ -378,7 +378,7 @@ watch(isViewsLoading, async () => {
               >
                 <Transition name="layout" mode="out-in">
                   <div v-if="openedViewsTab === 'view'" class="flex flex-1 min-h-0 w-3/4">
-                    <div class="h-full flex-1 min-w-0 min-h-0 bg-nc-bg-default">
+                    <div class="h-full flex-1 min-w-0 min-h-0 bg-atm-bg-default">
                       <SmartsheetGrid v-if="isGrid || !meta || !activeView" ref="grid" />
 
                       <template v-if="activeView && meta">
@@ -418,7 +418,7 @@ watch(isViewsLoading, async () => {
         <div v-else class="flex items-center justify-center h-full w-full">
           <a-spin size="large" />
         </div>
-      </NcFullScreen>
+      </AtFullScreen>
 
       <LazySmartsheetDetails v-else />
     </div>
@@ -429,12 +429,12 @@ watch(isViewsLoading, async () => {
 </template>
 
 <style lang="scss">
-:deep(.nc-right-sidebar.ant-layout-sider-collapsed) {
+:deep(.atm-right-sidebar.ant-layout-sider-collapsed) {
   @apply !w-0 !max-w-0 !min-w-0 overflow-x-hidden;
 }
 
-.nc-extensions-content-resizable-wrapper {
-  &:not(.nc-is-open-extensions):not(.nc-is-open-actions) > .splitpanes__splitter {
+.atm-extensions-content-resizable-wrapper {
+  &:not(.atm-is-open-extensions):not(.atm-is-open-actions) > .splitpanes__splitter {
     @apply hidden;
   }
 
@@ -443,18 +443,18 @@ watch(isViewsLoading, async () => {
   }
 
   > .splitpanes__splitter:before {
-    @apply bg-nc-bg-gray-medium absolute left-0 top-[12px] h-[calc(100%_-_24px)] rounded-full z-40;
+    @apply bg-atm-bg-gray-medium absolute left-0 top-[12px] h-[calc(100%_-_24px)] rounded-full z-40;
     content: '';
   }
 
   > .splitpanes__splitter:hover:before {
-    @apply bg-nc-border-gray-medium;
+    @apply bg-atm-border-gray-medium;
     width: 3px !important;
     left: 0px;
   }
 
   &.splitpanes--dragging > .splitpanes__splitter:before {
-    @apply bg-nc-border-gray-medium;
+    @apply bg-atm-border-gray-medium;
     width: 3px !important;
     left: 0px;
   }
@@ -472,7 +472,7 @@ watch(isViewsLoading, async () => {
   }
 }
 
-.rtl .nc-extensions-content-resizable-wrapper {
+.rtl .atm-extensions-content-resizable-wrapper {
   > .splitpanes__splitter {
     @apply -ml-0 -mr-1px;
   }

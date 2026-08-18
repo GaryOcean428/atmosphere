@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { OrgUserRoles } from 'nocodb-sdk'
+import { OrgUserRoles } from 'atmosphere-sdk'
 
 type FilterType = 'all' | 'starred' | 'private' | 'owned' | 'managed'
 
@@ -34,7 +34,7 @@ const isSearchFocused = ref(false)
 const isSuperAdmin = computed(() => !!orgRoles.value?.[OrgUserRoles.SUPER_ADMIN])
 
 // Filter options in priority order: Starred → Private → Managed → Owned
-const filterOptions = computed<NcListItemType[]>(() => [
+const filterOptions = computed<AtListItemType[]>(() => [
   { value: 'all', label: t('activity.allBases'), icon: 'ncList' },
   ...(appInfo.value.ee
     ? [
@@ -71,19 +71,19 @@ const clearFilter = () => {
 </script>
 
 <template>
-  <div class="nc-bases-header flex items-center gap-2 px-4 py-2 border-b border-nc-border-gray-medium">
+  <div class="atm-bases-header flex items-center gap-2 px-4 py-2 border-b border-atm-border-gray-medium">
     <!-- Search Input -->
     <a-input
       v-if="['xs', 'sm'].includes(activeBreakpoint)"
       v-model:value="vSearchQuery"
-      class="nc-bases-search nc-input-sm flex-1"
+      class="atm-bases-search atm-input-sm flex-1"
       :placeholder="$t('activity.searchProject')"
       allow-clear
       @focus="isSearchFocused = true"
       @blur="isSearchFocused = false"
     >
       <template #prefix>
-        <GeneralIcon icon="search" class="text-nc-content-gray-muted" />
+        <GeneralIcon icon="search" class="text-atm-content-gray-muted" />
       </template>
     </a-input>
 
@@ -92,7 +92,7 @@ const clearFilter = () => {
         class="hidden md:flex flex-1 justify-end items-center gap-2 text-xs font-medium tracking-wide min-w-0 truncate overflow-hidden"
       >
         <slot name="baseListHeader"> </slot>
-        <span class="flex-shrink-0 font-normal text-nc-content-gray-muted">({{ baseCount }})</span>
+        <span class="flex-shrink-0 font-normal text-atm-content-gray-muted">({{ baseCount }})</span>
       </div>
 
       <div class="flex items-center flex-row-reverse md:flex-row gap-2">
@@ -110,26 +110,26 @@ const clearFilter = () => {
         </WorkspaceCreateProjectBtn>
 
         <!-- Active filter pill -->
-        <div v-if="isFilterActive && !isMobileMode" class="nc-filter-pill" @click.stop>
+        <div v-if="isFilterActive && !isMobileMode" class="atm-filter-pill" @click.stop>
           <GeneralIcon :icon="activeFilterIcon" class="w-3.5 h-3.5" />
           <span class="text-bodyDefaultSm font-medium">{{ selectedFilter?.label }}</span>
-          <GeneralIcon icon="close" class="nc-filter-pill-close w-3.5 h-3.5 cursor-pointer" @click="clearFilter" />
+          <GeneralIcon icon="close" class="atm-filter-pill-close w-3.5 h-3.5 cursor-pointer" @click="clearFilter" />
         </div>
 
         <!-- Filter Dropdown - Desktop -->
-        <NcListDropdown
+        <AtListDropdown
           v-if="!isFilterActive || isMobileMode"
           v-model:is-open="isFilterDropdownOpen"
           :default-slot-wrapper="false"
           placement="bottomRight"
         >
-          <NcButton size="small" type="secondary">
+          <AtButton size="small" type="secondary">
             <div class="flex items-center gap-1">
               <GeneralIcon
                 :icon="activeFilterIcon"
                 class="w-4 h-4"
                 :class="{
-                  'text-nc-content-brand': activeFilterIcon !== 'ncList',
+                  'text-atm-content-brand': activeFilterIcon !== 'ncList',
                 }"
               />
               <span class="text-bodyDefaultSm hidden sm:inline">{{ $t('activity.allBases') }}</span>
@@ -139,9 +139,9 @@ const clearFilter = () => {
                 :class="{ 'transform rotate-180': isFilterDropdownOpen }"
               />
             </div>
-          </NcButton>
+          </AtButton>
           <template #overlay="{ onEsc }">
-            <NcList
+            <AtList
               v-model:open="isFilterDropdownOpen"
               :value="activeFilter"
               :list="filterOptions"
@@ -153,23 +153,23 @@ const clearFilter = () => {
               @escape="onEsc"
             >
               <template #listItemExtraLeft="{ option }">
-                <GeneralIcon :icon="option.icon" class="w-4 h-4 text-nc-content-gray-muted" />
+                <GeneralIcon :icon="option.icon" class="w-4 h-4 text-atm-content-gray-muted" />
               </template>
-            </NcList>
+            </AtList>
           </template>
-        </NcListDropdown>
+        </AtListDropdown>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.nc-filter-pill {
+.atm-filter-pill {
   @apply flex items-center gap-1.5 px-2 py-1 rounded-full
-    bg-nc-bg-brand-soft text-nc-content-brand text-xs font-medium
-    border-1 border-nc-border-brand;
+    bg-atm-bg-brand-soft text-atm-content-brand text-xs font-medium
+    border-1 border-atm-border-brand;
 
-  .nc-filter-pill-close {
+  .atm-filter-pill-close {
     @apply rounded-full opacity-70 transition-opacity;
 
     &:hover {

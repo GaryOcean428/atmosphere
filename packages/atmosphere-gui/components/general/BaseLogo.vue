@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import LogosMysqlIcon from '~icons/logos/mysql-icon'
-import LogosPostgresql from '~icons/nc-icons/postgresql'
+import LogosPostgresql from '~icons/atm-icons/postgresql'
 import VscodeIconsFileTypeSqlite from '~icons/vscode-icons/file-type-sqlite'
 import LogosSnowflakeIcon from '~icons/logos/snowflake-icon'
-import NcMssqlServer from '~icons/nc-icons/mssql-server'
-import NcOracle from '~icons/nc-icons/oracle'
+import AtMssqlServer from '~icons/atm-icons/mssql-server'
+import AtOracle from '~icons/atm-icons/oracle'
 import MdiDatabaseOutline from '~icons/mdi/database-outline'
 
 const { sourceType } = defineProps<{ sourceType?: string; color?: string }>()
@@ -20,9 +20,9 @@ const baseIcon = computed(() => {
     case ClientType.SNOWFLAKE:
       return LogosSnowflakeIcon
     case ClientType.MSSQL:
-      return NcMssqlServer
+      return AtMssqlServer
     case ClientType.ORACLE:
-      return NcOracle
+      return AtOracle
     default:
       return MdiDatabaseOutline
   }

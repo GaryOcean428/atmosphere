@@ -1,6 +1,6 @@
 <h1 align="center" style="border-bottom: none">
     <b>
-        <a href="https://www.nocodb.com">NocoDB </a><br>
+        <a href="https://www.atmosphere.dev">Atmosphere </a><br>
     </b>
     ✨ La alternativa fair-code de Airtable ✨ <br>
 
@@ -10,18 +10,18 @@ Convierte cualquier MySQL, PostgreSQL, SQL Server, SQLite y Mariadb en una hoja 
 </p>
 <div align="center">
  
-[![Build Status](https://travis-ci.org/dwyl/esta.svg?branch=master)](https://travis-ci.com/github/NocoDB/NocoDB) 
+[![Build Status](https://travis-ci.org/dwyl/esta.svg?branch=master)](https://travis-ci.com/github/Atmosphere/Atmosphere) 
 [![Node version](https://img.shields.io/badge/node-%3E%3D%2014.18.0-brightgreen)](http://nodejs.org/download/)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-green.svg)](https://conventionalcommits.org)
 
 </div>
 
 <p align="center">
-    <a href="http://www.nocodb.com"><b>Website</b></a> •
+    <a href="http://www.atmosphere.dev"><b>Website</b></a> •
     <a href="https://discord.gg/c7GEYrvFtT"><b>Discord</b></a> •
-    <a href="https://twitter.com/nocodb"><b>Twitter</b></a> •
-    <a href="https://www.reddit.com/r/NocoDB/"><b>Reddit</b></a> •
-    <a href="https://docs.nocodb.com/"><b>Documentación</b></a>
+    <a href="https://twitter.com/atmosphere"><b>Twitter</b></a> •
+    <a href="https://www.reddit.com/r/Atmosphere/"><b>Reddit</b></a> •
+    <a href="https://docs.atmosphere.dev/"><b>Documentación</b></a>
 </p>
 
 ![OpenSourceAirtableAlternative](https://user-images.githubusercontent.com/5435402/133762127-e94da292-a1c3-4458-b09a-02cd5b57be53.png)
@@ -29,7 +29,7 @@ Convierte cualquier MySQL, PostgreSQL, SQL Server, SQLite y Mariadb en una hoja 
 <img src="https://static.scarf.sh/a.png?x-pxid=c12a77cc-855e-4602-8a0f-614b2d0da56a" />
 
 <p align="center">
-  <a href="https://www.producthunt.com/posts/nocodb?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-nocodb" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=297536&theme=dark" alt="NocoDB - Free & Self-hostable Airtable alternative | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+  <a href="https://www.producthunt.com/posts/atmosphere?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-atmosphere" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=297536&theme=dark" alt="Atmosphere - Free & Self-hostable Airtable alternative | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 </p>
 
 # Prueba rápida
@@ -38,25 +38,25 @@ Convierte cualquier MySQL, PostgreSQL, SQL Server, SQLite y Mariadb en una hoja 
 
 ```bash
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  nocodb/nocodb:latest
+  atmosphere/atmosphere:latest
   ```
 
-- NocoDB necesita de una base de datos previamente creada: Leer [Production Setup](https://github.com/nocodb/nocodb/blob/master/README.md#production-setup).
+- Atmosphere necesita de una base de datos previamente creada: Leer [Production Setup](https://github.com/GaryOcean428/atmosphere/blob/master/README.md#production-setup).
 - Para habilitar datos no efímeros se puede usar `/usr/app/data/`.
 
 Ejemplo:
 
 ```
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  -e NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
-  -e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-  nocodb/nocodb:latest
+  -e ATMOSPHERE_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
+  -e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+  atmosphere/atmosphere:latest
   ```
 
 
@@ -121,21 +121,21 @@ Para accesar al dashboard: [http://localhost:8080/dashboard](http://localhost:80
 - ⚡ y más ...
 
 ### App Store para Automatización de Flujos de Trabajo:
-Proveemos diferentes integraciones en tres categorías principales. Ver <a href="https://docs.nocodb.com/setup-and-usages/app-store" target="_blank">App Store</a> para más detalles.
+Proveemos diferentes integraciones en tres categorías principales. Ver <a href="https://docs.atmosphere.dev/setup-and-usages/app-store" target="_blank">App Store</a> para más detalles.
 
 - ⚡ Chat: Slack, Discord, Mattermost, etc.
 - ⚡ Correo electrónico: AWS SES, SMTP, MailerSend, etc.
 - ⚡ Almacenamiento: AWS S3, Google Cloud Storage, Minio, etc.
 
 ### Acceso Programático
-Proveemos las siguientes maneras para dejar que los usuarios puedan invocar acciones a través de la programación. Puedes usar un token (JWT o Auth Social) para firmar tus solicitudes de autorización a NocoDB.
+Proveemos las siguientes maneras para dejar que los usuarios puedan invocar acciones a través de la programación. Puedes usar un token (JWT o Auth Social) para firmar tus solicitudes de autorización a Atmosphere.
 
 - ⚡ REST APIs
-- ⚡ NocoDB SDK
+- ⚡ Atmosphere SDK
 
 # Configruación para Entorno de Producción:
 
-NocoDB requiere una base de datos para almacenar metadatos de vistas a las hojas de cálculo y bases de datos externas. Y los parámetros de conexión para esta base de datos se pueden especificar en la variable de entorno NC_DB.
+Atmosphere requiere una base de datos para almacenar metadatos de vistas a las hojas de cálculo y bases de datos externas. Y los parámetros de conexión para esta base de datos se pueden especificar en la variable de entorno ATMOSPHERE_DB.
 
 ## Docker
 
@@ -144,17 +144,17 @@ NocoDB requiere una base de datos para almacenar metadatos de vistas a las hojas
 
 ```
 docker run -d -p 8080:8080 \
-    -e NC_DB="pg://host:port?u=user&p=password&d=database" \
-    -e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-    nocodb/nocodb:latest
+    -e ATMOSPHERE_DB="pg://host:port?u=user&p=password&d=database" \
+    -e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+    atmosphere/atmosphere:latest
 ```
 
 
 ## Docker Compose
 
 ```
-git clone https://github.com/nocodb/nocodb
-cd nocodb
+git clone https://github.com/GaryOcean428/atmosphere
+cd atmosphere
 cd docker-compose
 cd pg
 docker compose up -d
@@ -162,15 +162,15 @@ docker compose up -d
 
 ## Variables de entorno
 
-Por favor diríjase a [Environment variables](https://docs.nocodb.com/getting-started/self-hosted/environment-variables)
+Por favor diríjase a [Environment variables](https://docs.atmosphere.dev/getting-started/self-hosted/environment-variables)
 
 # Configuración de desarollo
 
-Por favor diríjase a [Development Setup](https://github.com/nocodb/nocodb/tree/master#development-setup)
+Por favor diríjase a [Development Setup](https://github.com/GaryOcean428/atmosphere/tree/master#development-setup)
 
 # Contribuciones
 
-Por favor diríjase a [Contribution Guide](https://github.com/nocodb/nocodb/blob/master/.github/CONTRIBUTING.md).
+Por favor diríjase a [Contribution Guide](https://github.com/GaryOcean428/atmosphere/blob/master/.github/CONTRIBUTING.md).
 
 # Por qué estamos construyendo esto?
 

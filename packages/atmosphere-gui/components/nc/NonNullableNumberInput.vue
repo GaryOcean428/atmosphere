@@ -64,7 +64,7 @@ onMounted(() => {
   <a-input
     ref="inputRef"
     v-model:value="vModel"
-    class="nc-input-sm nc-input-shadow"
+    class="atm-input-sm atm-input-shadow"
     type="number"
     :min="min"
     :max="max"

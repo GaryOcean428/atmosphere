@@ -1,21 +1,21 @@
 import { debug } from 'debug'
-export class NcDebug {
+export class AtDebug {
   private static logger: any
 
   static initLogger() {
-    if (!NcDebug.logger) {
-      NcDebug.logger = debug('nc')
+    if (!AtDebug.logger) {
+      AtDebug.logger = debug('atm')
     }
 
-    return NcDebug.logger
+    return AtDebug.logger
   }
 
   static log(...args: any[]) {
-    if (!debug.enabled('nc')) {
+    if (!debug.enabled('atm')) {
       return
     }
 
-    const logger = NcDebug.initLogger()
+    const logger = AtDebug.initLogger()
 
     logger(...args)
   }

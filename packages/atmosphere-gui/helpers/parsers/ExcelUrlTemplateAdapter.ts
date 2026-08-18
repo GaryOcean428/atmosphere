@@ -1,4 +1,4 @@
-import type { Api, ColumnType } from 'nocodb-sdk'
+import type { Api, ColumnType } from 'atmosphere-sdk'
 import ExcelTemplateAdapter from './ExcelTemplateAdapter'
 import type { ProgressMessageType } from './TemplateGenerator'
 

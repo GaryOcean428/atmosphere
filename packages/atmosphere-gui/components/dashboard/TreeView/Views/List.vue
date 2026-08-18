@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ViewType } from 'nocodb-sdk'
-import { ViewTypes, getFirstNonPersonalView, viewTypeAlias } from 'nocodb-sdk'
+import type { ViewType } from 'atmosphere-sdk'
+import { ViewTypes, getFirstNonPersonalView, viewTypeAlias } from 'atmosphere-sdk'
 import type { SortableEvent } from 'sortablejs'
 import Sortable from 'sortablejs'
 
@@ -481,11 +481,11 @@ const filteredViews = computed(() => {
       :data-section-id="sectionId"
       :data-table-id="table?.id"
       :class="{ dragging, 'min-h-6': !!sectionId && !filteredViews.length }"
-      class="nc-views-menu flex flex-col w-full !border-r-0 !bg-inherit"
+      class="atm-views-menu flex flex-col w-full !border-r-0 !bg-inherit"
     >
       <div
         v-if="!!sectionId && !filteredViews.length && !dragging"
-        class="flex items-center py-1 text-nc-content-gray-muted text-body sm:text-bodyDefaultSm"
+        class="flex items-center py-1 text-atm-content-gray-muted text-body sm:text-bodyDefaultSm"
         :class="{
           'pl-14.5 xs:(pl-16) rtl:(pr-14.5 pl-0) rtl:xs:(pr-16 pl-0)': isDefaultSource,
           'pl-21.5 xs:(pl-23) rtl:(pr-21.5 pl-0) rtl:xs:(pr-23 pl-0)': !isDefaultSource,
@@ -502,14 +502,14 @@ const filteredViews = computed(() => {
         :data-title="view.title"
         :is-in-section="isInSection"
         :class="{
-          'bg-nc-bg-gray-medium': isMarked === view.id,
+          'bg-atm-bg-gray-medium': isMarked === view.id,
           'active': activeView?.id === view.id,
-          [`nc-${view.type ? viewTypeAlias[view.type] : undefined || view.type}-view-item`]: true,
+          [`atm-${view.type ? viewTypeAlias[view.type] : undefined || view.type}-view-item`]: true,
         }"
         :on-validate="validate"
         :table="table"
         :view="view"
-        class="nc-view-item !rounded-md !pr-0.75 rtl:!pl-0.75 !py-0.5 w-full transition-all ease-in duration-100"
+        class="atm-view-item !rounded-md !pr-0.75 rtl:!pl-0.75 !py-0.5 w-full transition-all ease-in duration-100"
         @delete="openDeleteDialog"
         @rename="onRename"
         @change-view="changeView"
@@ -521,24 +521,24 @@ const filteredViews = computed(() => {
 </template>
 
 <style lang="scss">
-.nc-views-menu {
+.atm-views-menu {
   .ghost,
   .ghost > * {
     @apply !pointer-events-none;
   }
 
   .ghost {
-    @apply !bg-nc-bg-gray-medium;
+    @apply !bg-atm-bg-gray-medium;
   }
 
   &.dragging {
-    .nc-view-icon {
+    .atm-view-icon {
       @apply !block;
     }
   }
 
   .active {
-    @apply !bg-primary-selected dark:!bg-nc-bg-gray-medium font-medium;
+    @apply !bg-primary-selected dark:!bg-atm-bg-gray-medium font-medium;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { isVirtualCol, NcApiVersion, UITypes } from 'nocodb-sdk';
+import { isVirtualCol, AtApiVersion, UITypes } from 'atmosphere-sdk';
 import type {
   ColumnReqType,
   ColumnType,
@@ -9,12 +9,12 @@ import type {
   TableUpdateV3Type,
   TableV3Type,
   UserType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Model, User } from '~/models';
-import type { NcRequest } from '~/interface/config';
-import { NcContext } from '~/interface/config';
+import type { AtRequest } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { Base, Column } from '~/models';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { ColumnsService } from '~/services/columns.service';
 import { MetaDiffsService } from '~/services/meta-diffs.service';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
@@ -45,13 +45,13 @@ export class TablesV3Service {
   ) {}
 
   async tableUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: any;
       table: TableUpdateV3Type;
       baseId?: string;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload(
@@ -105,13 +105,13 @@ export class TablesV3Service {
   // the route ACL only guards `tableId`, so this ownership check prevents
   // setting the display field on a table reached via a foreign column id.
   protected async setDisplayField(
-    context: NcContext,
-    param: { tableId: string; columnId: string; req: NcRequest },
+    context: AtContext,
+    param: { tableId: string; columnId: string; req: AtRequest },
   ) {
     const column = await Column.get(context, { colId: param.columnId });
 
     if (!column || column.fk_model_id !== param.tableId) {
-      NcError.get(context).fieldNotFound(param.columnId);
+      AtError.get(context).fieldNotFound(param.columnId);
     }
 
     // already the display field — nothing to do
@@ -124,11 +124,11 @@ export class TablesV3Service {
   }
 
   async tableDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       forceDeleteRelations?: boolean;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     await this.tablesService.tableDelete(context, param);
@@ -136,7 +136,7 @@ export class TablesV3Service {
   }
 
   async getTableWithAccessibleViews(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       user: User | UserType;
@@ -165,7 +165,7 @@ export class TablesV3Service {
   }
 
   async getAccessibleTables(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       sourceId?: string;
@@ -199,7 +199,7 @@ export class TablesV3Service {
   // Build the `dtxp` enum/set value list for a select column from its
   // colOptions.options titles, mirroring the per-field columnsService.columnAdd
   // logic. Without this the bulk table-create path emits a value-less enum.
-  protected setSelectColumnDtxp(context: NcContext, column: ColumnReqType) {
+  protected setSelectColumnDtxp(context: AtContext, column: ColumnReqType) {
     const col = column as ColumnReqType & {
       colOptions?: { options?: { title?: string }[] };
       dtxp?: string;
@@ -227,12 +227,12 @@ export class TablesV3Service {
         const title = opt.title ?? '';
         // Reject empty option values, mirroring the per-field path.
         if (title === '') {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             'Empty options are not allowed!',
           );
         }
         if (col.uidt === UITypes.MultiSelect && title.includes(',')) {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             "Illegal char(',') for MultiSelect",
           );
         }
@@ -243,7 +243,7 @@ export class TablesV3Service {
 
   @TraceCommand(OperationName.tableV3Create)
   async tableCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       table: TableCreateV3Type;
@@ -306,7 +306,7 @@ export class TablesV3Service {
         table: tableCreateReq,
         user: param.user,
         req: param.req,
-        apiVersion: NcApiVersion.V3,
+        apiVersion: AtApiVersion.V3,
         sourceId: param.sourceId,
       });
 
@@ -315,7 +315,7 @@ export class TablesV3Service {
         await this.columnsV3Service.columnAdd(context, {
           tableId: tableCreateOutput.id,
           column: vCol as FieldV3Type,
-          req: param.req as NcRequest,
+          req: param.req as AtRequest,
           user: param.user! as UserType,
         });
       }

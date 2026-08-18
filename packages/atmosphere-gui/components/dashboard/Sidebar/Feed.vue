@@ -15,35 +15,35 @@ const gotoFeed = () => navigateToFeed()
 <template>
   <div
     v-if="isMiniSidebar"
-    v-e="['c:nocodb:feed']"
-    class="nc-mini-sidebar-btn-full-width"
-    data-testid="nc-sidebar-product-feed"
+    v-e="['c:atmosphere:feed']"
+    class="atm-mini-sidebar-btn-full-width"
+    data-testid="atm-sidebar-product-feed"
     @click="gotoFeed"
   >
     <div
-      class="nc-mini-sidebar-btn relative"
+      class="atm-mini-sidebar-btn relative"
       :class="{
         active: isFeedPageOpened,
       }"
     >
       <div v-if="isNewFeedAvailable" class="flex justify-center items-center w-3 absolute top-0.5 right-0.5">
-        <div class="w-2.5 h-2.5 pulsing-dot bg-nc-fill-red-medium border-2 border-white rounded-full"></div>
+        <div class="w-2.5 h-2.5 pulsing-dot bg-atm-fill-red-medium border-2 border-white rounded-full"></div>
       </div>
       <GeneralIcon icon="megaPhone" class="h-4 w-4" />
     </div>
   </div>
-  <NcButton
+  <AtButton
     v-else
-    v-e="['c:nocodb:feed']"
+    v-e="['c:atmosphere:feed']"
     type="text"
     full-width
     size="xsmall"
     class="n!xs:hidden w-full !h-7 !rounded-md !pl-3 !pr-2"
-    data-testid="nc-sidebar-product-feed"
+    data-testid="atm-sidebar-product-feed"
     :centered="false"
     :class="{
-      '!text-nc-content-brand-disabled !bg-nc-bg-brand !hover:bg-nc-bg-brand active': isFeedPageOpened,
-      '!hover:(bg-nc-bg-gray-medium text-gray-700)': !isFeedPageOpened,
+      '!text-atm-content-brand-disabled !bg-atm-bg-brand !hover:bg-atm-bg-brand active': isFeedPageOpened,
+      '!hover:(bg-atm-bg-gray-medium text-gray-700)': !isFeedPageOpened,
     }"
     @click="gotoFeed"
   >
@@ -58,10 +58,10 @@ const gotoFeed = () => navigateToFeed()
         <span class="">{{ $t('labels.whatsNew') }}!</span>
       </div>
       <div v-if="isNewFeedAvailable" class="flex justify-center items-center w-4">
-        <div class="w-3 h-3 pulsing-dot bg-nc-fill-red-medium border-2 border-white rounded-full"></div>
+        <div class="w-3 h-3 pulsing-dot bg-atm-fill-red-medium border-2 border-white rounded-full"></div>
       </div>
     </div>
-  </NcButton>
+  </AtButton>
 </template>
 
 <style scoped lang="scss">
@@ -84,7 +84,7 @@ const gotoFeed = () => navigateToFeed()
   animation: pulse 1.5s infinite ease-in-out;
 }
 
-:deep(.nc-btn-inner) {
+:deep(.atm-btn-inner) {
   @apply !w-full;
 }
 </style>

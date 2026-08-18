@@ -1,4 +1,4 @@
-import { type EvaluablePermission, PermissionGrantedType, evaluatePermission, matchesTeamSubjectByPaths } from 'nocodb-sdk'
+import { type EvaluablePermission, PermissionGrantedType, evaluatePermission, matchesTeamSubjectByPaths } from 'atmosphere-sdk'
 
 /**
  * Frontend decision for a table/field permission check.

@@ -1,4 +1,4 @@
-import { isNumericCol, type NcContext, UITypes } from 'nocodb-sdk';
+import { isNumericCol, type AtContext, UITypes } from 'atmosphere-sdk';
 import type { Logger } from '@nestjs/common';
 import type { Knex } from 'knex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
@@ -1047,7 +1047,7 @@ export class GenericFieldHandler
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
@@ -1059,7 +1059,7 @@ export class GenericFieldHandler
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       logger?: Logger;
     };

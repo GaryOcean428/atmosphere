@@ -49,8 +49,8 @@
   ],
   "ignorePaths": [
     "**/node_modules/**",
-    "**/nc-lib-gui/**",
-    "**/nocodb-legacy/**",
+    "**/atmosphere-lib-gui/**",
+    "**/atmosphere-legacy/**",
     "**/test/**",
     "**/tests/**",
     "**/workflows/**",

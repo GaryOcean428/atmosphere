@@ -1,5 +1,5 @@
 import {
-  NC_ERROR_SENTINEL,
+  ATMOSPHERE_ERROR_SENTINEL,
   RelationTypes,
   UITypes,
   getEffectiveLookupColumn,
@@ -7,8 +7,8 @@ import {
   isBtLikeV2Junction,
   isLinksOrLTAR,
   isVirtualCol,
-} from 'nocodb-sdk'
-import type { ColumnType, LinkToAnotherRecordType, LookupType, TableType } from 'nocodb-sdk'
+} from 'atmosphere-sdk'
+import type { ColumnType, LinkToAnotherRecordType, LookupType, TableType } from 'atmosphere-sdk'
 import { getRelatedBaseId, getSingleMultiselectColOptions, getUserColOptions, renderAsCellLookupOrLtarValue } from '../utils/cell'
 import { renderCellError, renderSingleLineText } from '../utils/canvas'
 import { PlainCellRenderer } from './Plain'
@@ -38,7 +38,7 @@ export const LookupCellRenderer: CellRenderer = {
     let y = _y
     let width = _width - ellipsisWidth
 
-    if (parseProp(column.colOptions)?.error || value === NC_ERROR_SENTINEL) {
+    if (parseProp(column.colOptions)?.error || value === ATMOSPHERE_ERROR_SENTINEL) {
       renderCellError(ctx, { x, y, width: _width, height, padding, getColor })
       return
     }

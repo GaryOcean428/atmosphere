@@ -149,7 +149,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <NcDateWeekSelector
+  <AtDateWeekSelector
     v-if="tempPickerType === 'date'"
     v-model:page-date="localStatePageDate"
     v-model:selected-date="localStateSelectedDate"
@@ -162,7 +162,7 @@ onMounted(() => {
     @update:picker-type="handleUpdatePickerType"
     @current-date="emit('currentDate', $event)"
   />
-  <NcMonthYearSelector
+  <AtMonthYearSelector
     v-if="['month', 'year'].includes(tempPickerType)"
     v-model:page-date="localStatePageDate"
     v-model:selected-date="localStateSelectedDate"

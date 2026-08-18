@@ -1,29 +1,29 @@
-import { WorkspaceUserRoles } from 'nocodb-sdk';
+import { WorkspaceUserRoles } from 'atmosphere-sdk';
 import { Logger } from '@nestjs/common';
 import type { User } from '~/models';
 import {
   MetaTable,
-  NC_STORE_DEFAULT_WORKSPACE_ID_KEY,
+  ATMOSPHERE_STORE_DEFAULT_WORKSPACE_ID_KEY,
   RootScopes,
 } from '~/utils/globals';
 import { isOnPrem } from '~/utils';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import WorkspaceUser from '~/models/WorkspaceUser';
 
 const logger = new Logger('verifyDefaultWorkspace');
 
 export const verifyDefaultWorkspace = async (
   user?: User,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ) => {
   // Skip for cloud/pure EE — they manage workspaces via EE service.
   // On-prem always needs a default workspace regardless of license state.
-  if (Noco.isEE() && !isOnPrem) {
+  if (Atmosphere.isEE() && !isOnPrem) {
     return;
   }
 
   // if ws id exists, return
-  if (Noco.ncDefaultWorkspaceId) {
+  if (Atmosphere.ncDefaultWorkspaceId) {
     return;
   }
   const ncDefaultWorkspaceId = await ncMeta.metaGet(
@@ -31,12 +31,12 @@ export const verifyDefaultWorkspace = async (
     RootScopes.ROOT,
     MetaTable.STORE,
     {
-      key: NC_STORE_DEFAULT_WORKSPACE_ID_KEY,
+      key: ATMOSPHERE_STORE_DEFAULT_WORKSPACE_ID_KEY,
     },
   );
   // if store has default ws id, we use that
   if (ncDefaultWorkspaceId?.value) {
-    Noco.ncDefaultWorkspaceId = ncDefaultWorkspaceId.value;
+    Atmosphere.ncDefaultWorkspaceId = ncDefaultWorkspaceId.value;
     return;
   }
 
@@ -91,18 +91,18 @@ export const verifyDefaultWorkspace = async (
     RootScopes.ROOT,
     MetaTable.STORE,
     {
-      key: NC_STORE_DEFAULT_WORKSPACE_ID_KEY,
+      key: ATMOSPHERE_STORE_DEFAULT_WORKSPACE_ID_KEY,
       value: workspace.id,
     },
     true,
   );
 
-  Noco.ncDefaultWorkspaceId = workspace.id;
+  Atmosphere.ncDefaultWorkspaceId = workspace.id;
 };
 
-export const verifyDefaultWsOwner = async (ncMeta = Noco.ncMeta) => {
+export const verifyDefaultWsOwner = async (ncMeta = Atmosphere.ncMeta) => {
   // Skip for cloud/pure EE — on-prem always needs default workspace owner
-  if (Noco.isEE() && !isOnPrem) {
+  if (Atmosphere.isEE() && !isOnPrem) {
     return;
   }
 
@@ -117,14 +117,14 @@ export const verifyDefaultWsOwner = async (ncMeta = Noco.ncMeta) => {
   }
 
   // if no default ws id present, we verify it first
-  if (!Noco.ncDefaultWorkspaceId) {
+  if (!Atmosphere.ncDefaultWorkspaceId) {
     await verifyDefaultWorkspace(user, ncMeta);
   }
 
   // get the user's workspace role
   const workspaceUser = await ncMeta
     .knexConnection(MetaTable.WORKSPACE_USER)
-    .where('fk_workspace_id', Noco.ncDefaultWorkspaceId)
+    .where('fk_workspace_id', Atmosphere.ncDefaultWorkspaceId)
     .andWhere('fk_user_id', user.id)
     .first();
 
@@ -132,7 +132,7 @@ export const verifyDefaultWsOwner = async (ncMeta = Noco.ncMeta) => {
   if (!workspaceUser) {
     await WorkspaceUser.insert(
       {
-        fk_workspace_id: Noco.ncDefaultWorkspaceId,
+        fk_workspace_id: Atmosphere.ncDefaultWorkspaceId,
         fk_user_id: user.id,
         roles: WorkspaceUserRoles.OWNER,
       },
@@ -142,7 +142,7 @@ export const verifyDefaultWsOwner = async (ncMeta = Noco.ncMeta) => {
   // however if user has workspace role but not owner, we update
   else if (workspaceUser.roles !== WorkspaceUserRoles.OWNER) {
     await WorkspaceUser.update(
-      Noco.ncDefaultWorkspaceId,
+      Atmosphere.ncDefaultWorkspaceId,
       user.id,
       { roles: WorkspaceUserRoles.OWNER },
       ncMeta,
@@ -162,20 +162,20 @@ export const verifyDefaultWsOwner = async (ncMeta = Noco.ncMeta) => {
 export const ensureUserInDefaultWorkspace = async (
   userId: string,
   role: WorkspaceUserRoles = WorkspaceUserRoles.NO_ACCESS,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 ) => {
   // Cloud EE manages workspace membership via its own service
-  if (Noco.isEE() && !isOnPrem) return;
+  if (Atmosphere.isEE() && !isOnPrem) return;
 
-  if (!Noco.ncDefaultWorkspaceId) {
+  if (!Atmosphere.ncDefaultWorkspaceId) {
     await verifyDefaultWorkspace(undefined, ncMeta);
   }
-  if (!Noco.ncDefaultWorkspaceId) return;
+  if (!Atmosphere.ncDefaultWorkspaceId) return;
 
   try {
     await WorkspaceUser.insert(
       {
-        fk_workspace_id: Noco.ncDefaultWorkspaceId,
+        fk_workspace_id: Atmosphere.ncDefaultWorkspaceId,
         fk_user_id: userId,
         roles: role,
       },

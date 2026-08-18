@@ -1,6 +1,6 @@
 import type { Thenable, editor, languages } from 'monaco-editor'
 
-import { formulas } from 'nocodb-sdk'
+import { formulas } from 'atmosphere-sdk'
 
 const formulaKeyWords = Object.keys(formulas)
 

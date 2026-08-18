@@ -1,199 +1,199 @@
-import { NcErrorType } from '~/lib/globals';
+import { AtErrorType } from '~/lib/globals';
 import { ncIsNumber } from '~/lib/is';
 
 export const presetErrorCodexMap: Partial<
   Record<
-    NcErrorType,
+    AtErrorType,
     {
       message: string | ((...params: string[]) => string);
       code: number;
-      error_code?: NcErrorType;
+      error_code?: AtErrorType;
     }
   >
 > = {
-  [NcErrorType.ERR_UNKNOWN]: {
+  [AtErrorType.ERR_UNKNOWN]: {
     message: 'Something went wrong',
     code: 500,
   },
-  [NcErrorType.ERR_INTERNAL_SERVER]: {
+  [AtErrorType.ERR_INTERNAL_SERVER]: {
     message: (message: string) => message || `Internal server error`,
     code: 500,
   },
-  [NcErrorType.ERR_DATABASE_OP_FAILED]: {
+  [AtErrorType.ERR_DATABASE_OP_FAILED]: {
     message: (message: string) =>
       message || `There was an error while running the query`,
     code: 500,
   },
-  [NcErrorType.ERR_AUTHENTICATION_REQUIRED]: {
+  [AtErrorType.ERR_AUTHENTICATION_REQUIRED]: {
     message: (message: string) =>
       message
         ? `Authentication required - ${message}`
         : 'Authentication required to access this resource',
     code: 401,
   },
-  [NcErrorType.ERR_FORBIDDEN]: {
+  [AtErrorType.ERR_FORBIDDEN]: {
     message: (message: string) =>
       message ? `Forbidden - ${message}` : 'Forbidden to access this resource',
     code: 403,
   },
-  [NcErrorType.ERR_INSUFFICIENT_PRIVILEGE]: {
+  [AtErrorType.ERR_INSUFFICIENT_PRIVILEGE]: {
     message: (message: string) =>
       message || 'Insufficient privilege to perform this action',
     code: 403,
   },
-  [NcErrorType.ERR_API_TOKEN_NOT_ALLOWED]: {
+  [AtErrorType.ERR_API_TOKEN_NOT_ALLOWED]: {
     message: 'This request is not allowed with API token',
     code: 401,
   },
-  [NcErrorType.ERR_WORKSPACE_NOT_FOUND]: {
+  [AtErrorType.ERR_WORKSPACE_NOT_FOUND]: {
     message: (id: string) => `Workspace '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_ORG_NOT_FOUND]: {
+  [AtErrorType.ERR_ORG_NOT_FOUND]: {
     message: (id: string) => `Org '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_BASE_NOT_FOUND]: {
+  [AtErrorType.ERR_BASE_NOT_FOUND]: {
     message: (id: string) => `Base '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_VIEW_COLUMN_NOT_FOUND]: {
+  [AtErrorType.ERR_VIEW_COLUMN_NOT_FOUND]: {
     message: (id: string) => `View column '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_SOURCE_NOT_FOUND]: {
+  [AtErrorType.ERR_SOURCE_NOT_FOUND]: {
     message: (id: string) => `Source '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_INTEGRATION_NOT_FOUND]: {
+  [AtErrorType.ERR_INTEGRATION_NOT_FOUND]: {
     message: (id: string) => `Connection '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_SYNC_CONFIG_NOT_FOUND]: {
+  [AtErrorType.ERR_SYATMOSPHERE_CONFIG_NOT_FOUND]: {
     message: (id: string) => `Sync '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_INTEGRATION_LINKED_WITH_BASES]: {
+  [AtErrorType.ERR_INTEGRATION_LINKED_WITH_BASES]: {
     message: (bases) => `Connection linked with following bases '${bases}'`,
     code: 404,
   },
-  [NcErrorType.ERR_TABLE_NOT_FOUND]: {
+  [AtErrorType.ERR_TABLE_NOT_FOUND]: {
     message: (id: string) => `Table '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_VIEW_NOT_FOUND]: {
+  [AtErrorType.ERR_VIEW_NOT_FOUND]: {
     message: (id: string) => `View '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_FIELD_NOT_FOUND]: {
+  [AtErrorType.ERR_FIELD_NOT_FOUND]: {
     message: (id: string) => `Field ${id} not found`,
     code: 404,
   },
-  [NcErrorType.ERR_FILTER_NOT_FOUND]: {
+  [AtErrorType.ERR_FILTER_NOT_FOUND]: {
     message: (id: string) => `Filter '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_HOOK_NOT_FOUND]: {
+  [AtErrorType.ERR_HOOK_NOT_FOUND]: {
     message: (id: string) => `Hook '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_RECORD_NOT_FOUND]: {
+  [AtErrorType.ERR_RECORD_NOT_FOUND]: {
     message: (...ids: string[]) => {
       const isMultiple = Array.isArray(ids) && ids.length > 1;
       return `Record${isMultiple ? 's' : ''} '${ids.join(', ')}' not found`;
     },
     code: 404,
   },
-  [NcErrorType.ERR_TABLE_TRASH_NOT_SUPPORTED]: {
+  [AtErrorType.ERR_TABLE_TRASH_NOT_SUPPORTED]: {
     message: (tableTitle: string) =>
       `Record trash is not supported for table '${tableTitle || 'unknown'}'`,
     code: 422,
   },
-  [NcErrorType.ERR_RECORD_RESTORE_CONFLICT]: {
+  [AtErrorType.ERR_RECORD_RESTORE_CONFLICT]: {
     message: (details: string) =>
       `Cannot restore record — link conflict: ${details || 'unknown conflict'}`,
     code: 409,
   },
-  [NcErrorType.ERR_RECORD_NOT_TRASHED]: {
+  [AtErrorType.ERR_RECORD_NOT_TRASHED]: {
     message: () =>
       `Cannot permanently delete active records that are not in trash`,
     code: 422,
   },
-  [NcErrorType.ERR_TRASH_BATCH_LIMIT_EXCEEDED]: {
+  [AtErrorType.ERR_TRASH_BATCH_LIMIT_EXCEEDED]: {
     message: (limit: string) =>
       `Cannot process more than ${limit} records at a time`,
     code: 422,
   },
-  [NcErrorType.ERR_GENERIC_NOT_FOUND]: {
+  [AtErrorType.ERR_GENERIC_NOT_FOUND]: {
     message: (resource: string, id: string) => `${resource} '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_WIDGET_NOT_FOUND]: {
+  [AtErrorType.ERR_WIDGET_NOT_FOUND]: {
     message: (id: string) => `Widget '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_VIEW_SECTION_NOT_FOUND]: {
+  [AtErrorType.ERR_VIEW_SECTION_NOT_FOUND]: {
     message: (id: string) => `View folder '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_BASE_SECTION_NOT_FOUND]: {
+  [AtErrorType.ERR_BASE_SECTION_NOT_FOUND]: {
     message: (id: string) => `Folder '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_TRASH_NOT_FOUND]: {
+  [AtErrorType.ERR_TRASH_NOT_FOUND]: {
     message: (id: string) => `Trash entry '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_PARENT_IN_TRASH]: {
+  [AtErrorType.ERR_PARENT_IN_TRASH]: {
     message: (parentType: string) =>
       `Cannot restore — parent ${parentType} is in trash. Restore it first.`,
     code: 400,
   },
-  [NcErrorType.ERR_DASHBOARD_NOT_FOUND]: {
+  [AtErrorType.ERR_DASHBOARD_NOT_FOUND]: {
     message: (id: string) => `Dashboard '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_INTERFACE_NOT_FOUND]: {
+  [AtErrorType.ERR_INTERFACE_NOT_FOUND]: {
     message: (id: string) => `Interface '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_INTERFACE_PAGE_NOT_FOUND]: {
+  [AtErrorType.ERR_INTERFACE_PAGE_NOT_FOUND]: {
     message: (id: string) => `Interface page '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_INTERFACE_PREVIEW_WRITE_BLOCKED]: {
+  [AtErrorType.ERR_INTERFACE_PREVIEW_WRITE_BLOCKED]: {
     message: () => 'Writes are disabled while previewing as another user',
     code: 403,
   },
-  [NcErrorType.ERR_CHAT_SESSION_NOT_FOUND]: {
+  [AtErrorType.ERR_CHAT_SESSION_NOT_FOUND]: {
     message: (id: string) => `Chat session '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_CHAT_MESSAGE_NOT_FOUND]: {
+  [AtErrorType.ERR_CHAT_MESSAGE_NOT_FOUND]: {
     message: (id: string) => `Chat message '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_WORKFLOW_NOT_FOUND]: {
+  [AtErrorType.ERR_WORKFLOW_NOT_FOUND]: {
     message: (id: string) => `Workflow '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_SCRIPT_NOT_FOUND]: {
+  [AtErrorType.ERR_SCRIPT_NOT_FOUND]: {
     message: (id: string) => `Script '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_RLS_POLICY_NOT_FOUND]: {
+  [AtErrorType.ERR_RLS_POLICY_NOT_FOUND]: {
     message: (id: string) => `RLS Policy '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_TABLE_SYNC_NOT_FOUND]: {
+  [AtErrorType.ERR_TABLE_SYATMOSPHERE_NOT_FOUND]: {
     message: (id: string) => `Table sync '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_REQUIRED_FIELD_MISSING]: {
+  [AtErrorType.ERR_REQUIRED_FIELD_MISSING]: {
     message: (field: string) => `Field '${field}' is required`,
     code: 422,
   },
-  [NcErrorType.ERR_DUPLICATE_RECORD]: {
+  [AtErrorType.ERR_DUPLICATE_RECORD]: {
     message: (...ids: string[]) => {
       const isMultiple = Array.isArray(ids) && ids.length > 1;
       return `Record${isMultiple ? 's' : ''} '${ids.join(
@@ -202,7 +202,7 @@ export const presetErrorCodexMap: Partial<
     },
     code: 422,
   },
-  [NcErrorType.ERR_USER_NOT_FOUND]: {
+  [AtErrorType.ERR_USER_NOT_FOUND]: {
     message: (idOrEmail: string) => {
       const isEmail = idOrEmail.includes('@');
       return `User ${
@@ -211,336 +211,336 @@ export const presetErrorCodexMap: Partial<
     },
     code: 404,
   },
-  [NcErrorType.ERR_TEAM_NOT_FOUND]: {
+  [AtErrorType.ERR_TEAM_NOT_FOUND]: {
     message: (id: string) => `Team '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_INVALID_OFFSET_VALUE]: {
+  [AtErrorType.ERR_INVALID_OFFSET_VALUE]: {
     message: (offset: string) =>
       ncIsNumber(Number(offset)) && Number(offset) > 0
         ? `Offset value '${offset}' is invalid`
         : `Offset must be a non-negative integer`,
     code: 422,
   },
-  [NcErrorType.ERR_INVALID_PAGE_VALUE]: {
+  [AtErrorType.ERR_INVALID_PAGE_VALUE]: {
     message: (page: string) => `Page value '${page}' is invalid`,
     code: 422,
   },
-  [NcErrorType.ERR_INVALID_PK_VALUE]: {
+  [AtErrorType.ERR_INVALID_PK_VALUE]: {
     message: (value: any, pkColumn: string) =>
       `Primary key value '${value}' is invalid for column '${pkColumn}'`,
     code: 422,
   },
-  [NcErrorType.ERR_INVALID_LIMIT_VALUE]: {
+  [AtErrorType.ERR_INVALID_LIMIT_VALUE]: {
     message: (limitMin: string, limitMax: string) =>
       `Limit value should be between ${limitMin} and ${limitMax}`,
     code: 422,
   },
-  [NcErrorType.ERR_INVALID_FILTER]: {
+  [AtErrorType.ERR_INVALID_FILTER]: {
     message: (filter: string) => `Filter '${filter}' is invalid`,
     code: 422,
   },
-  [NcErrorType.ERR_UNSUPPORTED_FILTER_OPERATION]: {
+  [AtErrorType.ERR_UNSUPPORTED_FILTER_OPERATION]: {
     message: (operation: string) => `Operation '${operation}' is not supported`,
     code: 400,
   },
-  [NcErrorType.ERR_INVALID_SHARED_VIEW_PASSWORD]: {
+  [AtErrorType.ERR_INVALID_SHARED_VIEW_PASSWORD]: {
     message: 'Invalid shared view password',
     code: 403,
   },
-  [NcErrorType.ERR_SHARED_DASHBOARD_PASSWORD_INVALID]: {
+  [AtErrorType.ERR_SHARED_DASHBOARD_PASSWORD_INVALID]: {
     message: 'Invalid shared dashboard password',
     code: 403,
   },
-  [NcErrorType.ERR_SHARED_INTERFACE_PAGE_PASSWORD_INVALID]: {
+  [AtErrorType.ERR_SHARED_INTERFACE_PAGE_PASSWORD_INVALID]: {
     message: 'Invalid shared interface page password',
     code: 403,
   },
-  [NcErrorType.ERR_INVALID_ATTACHMENT_JSON]: {
+  [AtErrorType.ERR_INVALID_ATTACHMENT_JSON]: {
     message: (payload: string) =>
       `Invalid JSON for attachment field: ${payload}`,
     code: 400,
   },
-  [NcErrorType.ERR_NOT_IMPLEMENTED]: {
+  [AtErrorType.ERR_NOT_IMPLEMENTED]: {
     message: (feature: string) => `${feature} is not implemented`,
     code: 501,
   },
-  [NcErrorType.ERR_INVALID_JSON]: {
+  [AtErrorType.ERR_INVALID_JSON]: {
     message: 'Invalid JSON in request body',
     code: 400,
   },
-  [NcErrorType.ERR_COLUMN_ASSOCIATED_WITH_LINK]: {
+  [AtErrorType.ERR_COLUMN_ASSOCIATED_WITH_LINK]: {
     message: 'Column is associated with a link, please remove the link first',
     code: 400,
   },
-  [NcErrorType.ERR_TABLE_ASSOCIATED_WITH_LINK]: {
+  [AtErrorType.ERR_TABLE_ASSOCIATED_WITH_LINK]: {
     message: 'Table is associated with a link, please remove the link first',
     code: 400,
   },
-  [NcErrorType.ERR_FORMULA]: {
+  [AtErrorType.ERR_FORMULA]: {
     message: (message: string) => {
       return message;
     },
     code: 400,
   },
-  [NcErrorType.ERR_CIRCULAR_REF_IN_FORMULA]: {
+  [AtErrorType.ERR_CIRCULAR_REF_IN_FORMULA]: {
     message: (message: string) => {
       return message;
     },
     code: 400,
   },
-  [NcErrorType.ERR_PERMISSION_DENIED]: {
+  [AtErrorType.ERR_PERMISSION_DENIED]: {
     message: 'Permission denied',
     code: 403,
   },
-  [NcErrorType.ERR_INVALID_ATTACHMENT_UPLOAD_SCOPE]: {
+  [AtErrorType.ERR_INVALID_ATTACHMENT_UPLOAD_SCOPE]: {
     message: 'Invalid attachment upload scope',
     code: 400,
   },
-  [NcErrorType.ERR_REORDER_FAILED]: {
+  [AtErrorType.ERR_REORDER_FAILED]: {
     message: 'Reorder failed',
     code: 400,
   },
-  [NcErrorType.ERR_CANNOT_CALCULATE_INTERMEDIATE_ORDER]: {
+  [AtErrorType.ERR_CANNOT_CALCULATE_INTERMEDIATE_ORDER]: {
     message: 'Cannot calculate intermediate order',
     code: 400,
   },
-  [NcErrorType.ERR_PLAN_LIMIT_EXCEEDED]: {
+  [AtErrorType.ERR_PLAN_LIMIT_EXCEEDED]: {
     message: (message: string) => message || 'Plan limit exceeded',
     code: 403,
   },
-  [NcErrorType.ERR_SSO_LOGIN_REQUIRED]: {
+  [AtErrorType.ERR_SSO_LOGIN_REQUIRED]: {
     message: (_workspaceId: string) => 'SSO login required for workspace',
     code: 403,
   },
-  [NcErrorType.ERR_SSO_GENERATED_TOKEN_REQUIRED]: {
+  [AtErrorType.ERR_SSO_GENERATED_TOKEN_REQUIRED]: {
     message: (_workspaceId: string) =>
       'This workspace requires SSO-authenticated tokens. Please generate a new token after signing in with SSO',
     code: 403,
   },
-  [NcErrorType.ERR_MFA_SETUP_REQUIRED]: {
+  [AtErrorType.ERR_MFA_SETUP_REQUIRED]: {
     message: (_workspaceId: string) =>
       'Two-factor authentication setup required for this workspace',
     code: 403,
   },
-  [NcErrorType.ERR_MAX_PAYLOAD_LIMIT_EXCEEDED]: {
+  [AtErrorType.ERR_MAX_PAYLOAD_LIMIT_EXCEEDED]: {
     message: (limit: string) =>
       `Maximum ${limit} entities are allowed per request`,
     code: 422,
   },
-  [NcErrorType.ERR_MAX_WORKSPACE_LIMIT_REACHED]: {
+  [AtErrorType.ERR_MAX_WORKSPACE_LIMIT_REACHED]: {
     message: () =>
       `The maximum workspace limit has been reached. Please contact your administrator to request access to a workspace.`,
     code: 403,
   },
-  [NcErrorType.ERR_INVALID_VALUE_FOR_FIELD]: {
+  [AtErrorType.ERR_INVALID_VALUE_FOR_FIELD]: {
     message: (message: string) => message,
     code: 422,
   },
-  [NcErrorType.ERR_INVALID_REQUEST_BODY]: {
+  [AtErrorType.ERR_INVALID_REQUEST_BODY]: {
     message: (message: string) => message,
     code: 400,
   },
-  [NcErrorType.ERR_BASE_COLLABORATION]: {
+  [AtErrorType.ERR_BASE_COLLABORATION]: {
     message: (message: string) => message || 'Something went wrong',
     code: 422,
   },
-  [NcErrorType.ERR_ORG_USER]: {
+  [AtErrorType.ERR_ORG_USER]: {
     message: (message: string) => message || 'Something went wrong',
     code: 422,
   },
-  [NcErrorType.ERR_TABLE_OP_FAILED]: {
+  [AtErrorType.ERR_TABLE_OP_FAILED]: {
     message: (message: string) => message || 'Something went wrong',
     code: 422,
   },
-  [NcErrorType.ERR_COLUMN_OP_FAILED]: {
+  [AtErrorType.ERR_COLUMN_OP_FAILED]: {
     message: (message: string) => message || 'Something went wrong',
     code: 422,
   },
-  [NcErrorType.ERR_SYNC_TABLE_OPERATION_PROHIBITED]: {
+  [AtErrorType.ERR_SYATMOSPHERE_TABLE_OPERATION_PROHIBITED]: {
     message: (message: string) =>
       message ||
       `Prohibited data insert / update / delete operation on synced table`,
     code: 422,
   },
-  [NcErrorType.ERR_FEATURE_NOT_SUPPORTED]: {
+  [AtErrorType.ERR_FEATURE_NOT_SUPPORTED]: {
     message: (message: string) =>
       message || `Upgrade to a higher plan to use this feature.`,
     code: 403,
   },
-  [NcErrorType.ERR_DUPLICATE_IN_ALIAS]: {
+  [AtErrorType.ERR_DUPLICATE_IN_ALIAS]: {
     message: (message: string) => message,
     code: 422,
   },
-  [NcErrorType.ERR_OUT_OF_SYNC]: {
+  [AtErrorType.ERR_OUT_OF_SYNC]: {
     message: (message: string) =>
       message || `Please refresh the page and try again.`,
     code: 409,
   },
-  [NcErrorType.ERR_FILTER_VERIFICATION_FAILED]: {
+  [AtErrorType.ERR_FILTER_VERIFICATION_FAILED]: {
     message: (message: string) => `Filter verification failed: ${message}`,
     code: 422,
   },
-  [NcErrorType.ERR_WEBHOOK_ERROR]: {
+  [AtErrorType.ERR_WEBHOOK_ERROR]: {
     message: (message: string) => message,
     code: 400,
   },
-  [NcErrorType.ERR_DATA_SOURCES_NOT_FOUND]: {
+  [AtErrorType.ERR_DATA_SOURCES_NOT_FOUND]: {
     message: (message: string) => message,
     code: 400,
   },
-  [NcErrorType.ERR_TEST_PLUGIN_FAILED]: {
+  [AtErrorType.ERR_TEST_PLUGIN_FAILED]: {
     message: (message: string) => message,
     code: 400,
   },
-  [NcErrorType.ERR_UNSUPPORTED_RELATION]: {
+  [AtErrorType.ERR_UNSUPPORTED_RELATION]: {
     message: (message: string) => message,
     code: 400,
   },
-  [NcErrorType.ERR_IN_EXTERNAL_DATA_SOURCE]: {
+  [AtErrorType.ERR_IN_EXTERNAL_DATA_SOURCE]: {
     message: (message: string) =>
       message ||
       'Error running query on external source. Confirm if source is accessible.',
     code: 400,
   },
-  [NcErrorType.ERR_EXTERNAL_DATA_SOURCE_TIMEOUT]: {
+  [AtErrorType.ERR_EXTERNAL_DATA_SOURCE_TIMEOUT]: {
     message: (message: string) =>
       message ||
       'External source taking long to respond. Reconsider sorts/filters for this view and confirm if source is accessible.',
     code: 408,
   },
-  [NcErrorType.ERR_RELATION_FIELD_NOT_FOUND]: {
+  [AtErrorType.ERR_RELATION_FIELD_NOT_FOUND]: {
     message: (id: string) => `Relation Field '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_EXTENSION_NOT_FOUND]: {
+  [AtErrorType.ERR_EXTENSION_NOT_FOUND]: {
     message: (id: string) => `Extension '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_STORAGE_FILE_CREATE]: {
+  [AtErrorType.ERR_STORAGE_FILE_CREATE]: {
     message: (details: string) => `Failed to create file: ${details}`,
     code: 500,
   },
-  [NcErrorType.ERR_STORAGE_FILE_READ]: {
+  [AtErrorType.ERR_STORAGE_FILE_READ]: {
     message: (details: string) => `Failed to read file: ${details}`,
     code: 500,
   },
-  [NcErrorType.ERR_STORAGE_FILE_DELETE]: {
+  [AtErrorType.ERR_STORAGE_FILE_DELETE]: {
     message: (details: string) => `Failed to delete file: ${details}`,
     code: 500,
   },
-  [NcErrorType.ERR_STORAGE_FILE_STREAM]: {
+  [AtErrorType.ERR_STORAGE_FILE_STREAM]: {
     message: (details: string) => `Failed to stream file: ${details}`,
     code: 500,
   },
-  [NcErrorType.ERR_SUBSCRIPTION_ALREADY_EXISTS]: {
+  [AtErrorType.ERR_SUBSCRIPTION_ALREADY_EXISTS]: {
     message: (id: string) => `Subscription already exists for ${id}`,
     code: 409,
   },
-  [NcErrorType.ERR_SUBSCRIPTION_NOT_FOUND]: {
+  [AtErrorType.ERR_SUBSCRIPTION_NOT_FOUND]: {
     message: (id: string) => `Subscription not found for ${id}`,
     code: 404,
   },
-  [NcErrorType.ERR_PLAN_NOT_AVAILABLE]: {
+  [AtErrorType.ERR_PLAN_NOT_AVAILABLE]: {
     message: () => 'This plan is not available',
     code: 400,
   },
-  [NcErrorType.ERR_SEAT_COUNT_MISMATCH]: {
+  [AtErrorType.ERR_SEAT_COUNT_MISMATCH]: {
     message: (msg: string) => msg,
     code: 400,
   },
-  [NcErrorType.ERR_INVALID_PAYMENT_PAYLOAD]: {
+  [AtErrorType.ERR_INVALID_PAYMENT_PAYLOAD]: {
     message: (msg: string) => msg,
     code: 400,
   },
-  [NcErrorType.ERR_STRIPE_CUSTOMER_NOT_FOUND]: {
+  [AtErrorType.ERR_STRIPE_CUSTOMER_NOT_FOUND]: {
     message: (id: string) => `Stripe customer '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_STRIPE_SUBSCRIPTION_NOT_FOUND]: {
+  [AtErrorType.ERR_STRIPE_SUBSCRIPTION_NOT_FOUND]: {
     message: (id: string) => `Stripe subscription '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_SUBSCRIPTION_OWNERSHIP_MISMATCH]: {
+  [AtErrorType.ERR_SUBSCRIPTION_OWNERSHIP_MISMATCH]: {
     message: (msg: string) => msg,
     code: 403,
   },
-  [NcErrorType.ERR_INTERNAL_CUSTOMER_NOT_SUPPORTED]: {
+  [AtErrorType.ERR_INTERNAL_CUSTOMER_NOT_SUPPORTED]: {
     message: (msg: string) => msg,
     code: 501,
   },
-  [NcErrorType.ERR_SUBSCRIPTION_CREATE_FAILED]: {
+  [AtErrorType.ERR_SUBSCRIPTION_CREATE_FAILED]: {
     message: (msg: string) => msg,
     code: 500,
   },
-  [NcErrorType.ERR_STRIPE_WEBHOOK_VERIFICATION_FAILED]: {
+  [AtErrorType.ERR_STRIPE_WEBHOOK_VERIFICATION_FAILED]: {
     message: (msg: string) => msg,
     code: 400,
   },
-  [NcErrorType.ERR_PLAN_ALREADY_EXISTS]: {
+  [AtErrorType.ERR_PLAN_ALREADY_EXISTS]: {
     message: (id: string) => `Plan already exists with id ${id}`,
     code: 409,
   },
-  [NcErrorType.ERR_WORKFLOW_WAITING_EXECUTIONS]: {
+  [AtErrorType.ERR_WORKFLOW_WAITING_EXECUTIONS]: {
     message: (count: string) =>
       `This workflow has ${count} pending execution(s) waiting to resume`,
     code: 400,
   },
-  [NcErrorType.ERR_WORKFLOW_NODE_NOT_FOUND]: {
+  [AtErrorType.ERR_WORKFLOW_NODE_NOT_FOUND]: {
     message: (message: string) => message,
     code: 400,
   },
-  [NcErrorType.ERR_METHOD_NOT_ALLOWED]: {
+  [AtErrorType.ERR_METHOD_NOT_ALLOWED]: {
     message: (method: string) => `Method ${method} not allowed`,
     code: 405,
   },
-  [NcErrorType.ERR_LICENSE_REQUIRED]: {
+  [AtErrorType.ERR_LICENSE_REQUIRED]: {
     message: (feature: string) =>
       feature
         ? `The "${feature}" feature requires an Enterprise license.`
         : 'This feature requires an Enterprise license.',
     code: 402,
   },
-  [NcErrorType.ERR_LICENSE_SUSPENDED]: {
+  [AtErrorType.ERR_LICENSE_SUSPENDED]: {
     message: 'Your license has been suspended. Please contact support.',
     code: 403,
   },
-  [NcErrorType.ERR_SYSTEM_FIELD_NON_MODIFIABLE]: {
+  [AtErrorType.ERR_SYSTEM_FIELD_NON_MODIFIABLE]: {
     message: 'System field cannot be modified',
     code: 422,
   },
-  [NcErrorType.ERR_SYSTEM_MISCONFIGURED]: {
+  [AtErrorType.ERR_SYSTEM_MISCONFIGURED]: {
     message: (message: string) =>
       message || 'System is not configured correctly',
     code: 500,
   },
-  [NcErrorType.ERR_TOO_MANY_REQUESTS]: {
+  [AtErrorType.ERR_TOO_MANY_REQUESTS]: {
     message: (message: string) =>
       message || 'Too many requests. Please try again later.',
     code: 429,
   },
-  [NcErrorType.ERR_SANDBOX_BLOCKED]: {
+  [AtErrorType.ERR_SANDBOX_BLOCKED]: {
     message: (message: string) =>
       message || 'This operation is not allowed in a sandbox base.',
     code: 403,
   },
-  [NcErrorType.ERR_SANDBOX_PRODUCTION_BLOCKED]: {
+  [AtErrorType.ERR_SANDBOX_PRODUCTION_BLOCKED]: {
     message: (message: string) =>
       message ||
       'This operation is not allowed while a sandbox is active. Make the change in the sandbox instead.',
     code: 403,
   },
-  [NcErrorType.ERR_SNAPSHOT_BLOCKED]: {
+  [AtErrorType.ERR_SNAPSHOT_BLOCKED]: {
     message: (message: string) =>
       message ||
       'This base is a snapshot and cannot be accessed directly. Restore the snapshot to a new base to view or edit its contents.',
     code: 403,
   },
-  [NcErrorType.ERR_CREDIT_PACK_NOT_FOUND]: {
+  [AtErrorType.ERR_CREDIT_PACK_NOT_FOUND]: {
     message: (id: string) => `Credit pack '${id}' not found`,
     code: 404,
   },
-  [NcErrorType.ERR_CREDITS_EXHAUSTED]: {
+  [AtErrorType.ERR_CREDITS_EXHAUSTED]: {
     message: (message: string) =>
       message || 'You have run out of credits. Top up to continue.',
     code: 402,

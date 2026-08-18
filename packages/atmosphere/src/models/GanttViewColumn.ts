@@ -1,4 +1,4 @@
-import type { BoolType, MetaType } from 'nocodb-sdk';
+import type { BoolType, MetaType } from 'atmosphere-sdk';
 
 export default class GanttViewColumn {
   id?: string;

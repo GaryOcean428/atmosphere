@@ -28,11 +28,11 @@ const toggleFullScreen = () => {
 
 <template>
   <div
-    class="w-full bg-nc-bg-default"
+    class="w-full bg-atm-bg-default"
     :class="{
-      'z-100 nc-h-screen nc-w-screen fixed top-0 left-0 right-0 bottom-0': config.isFullScreen,
-      'nc-erd-vue-flow-single-table': config.singleTableMode,
-      'nc-erd-vue-flow': !config.singleTableMode,
+      'z-100 atm-h-screen atm-w-screen fixed top-0 left-0 right-0 bottom-0': config.isFullScreen,
+      'atm-erd-vue-flow-single-table': config.singleTableMode,
+      'atm-erd-vue-flow': !config.singleTableMode,
     }"
   >
     <div class="relative h-full">

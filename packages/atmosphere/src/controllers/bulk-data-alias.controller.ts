@@ -17,7 +17,7 @@ import { BulkDataAliasService } from '~/services/bulk-data-alias.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { DataApiLimiterGuard } from '~/guards/data-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(DataApiLimiterGuard, GlobalGuard)
@@ -28,8 +28,8 @@ export class BulkDataAliasController {
   @HttpCode(200)
   @Acl('bulkDataInsert')
   async bulkDataInsert(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
@@ -44,14 +44,14 @@ export class BulkDataAliasController {
       undo: undo === 'true',
     });
 
-    res.header('nc-operation-id', req.ncParentAuditId).json(exists);
+    res.header('atm-operation-id', req.ncParentAuditId).json(exists);
   }
 
   @Patch(['/api/v1/db/data/bulk/:orgs/:baseName/:tableName'])
   @Acl('bulkDataUpdate')
   async bulkDataUpdate(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Body() body: any,
@@ -68,8 +68,8 @@ export class BulkDataAliasController {
   @Patch(['/api/v1/db/data/bulk/:orgs/:baseName/:tableName/all'])
   @Acl('bulkDataUpdateAll')
   async bulkDataUpdateAll(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Body() body: any,
@@ -86,8 +86,8 @@ export class BulkDataAliasController {
   @Delete(['/api/v1/db/data/bulk/:orgs/:baseName/:tableName'])
   @Acl('bulkDataDelete')
   async bulkDataDelete(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Body() body: any,
@@ -105,8 +105,8 @@ export class BulkDataAliasController {
   @Delete(['/api/v1/db/data/bulk/:orgs/:baseName/:tableName/all'])
   @Acl('bulkDataDeleteAll')
   async bulkDataDeleteAll(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
   ) {
@@ -123,8 +123,8 @@ export class BulkDataAliasController {
   @Post(['/api/v1/db/data/bulk/:orgs/:baseName/:tableName/upsert'])
   @Acl('bulkDataUpsert')
   async bulkDataUpsert(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Body() body: any,

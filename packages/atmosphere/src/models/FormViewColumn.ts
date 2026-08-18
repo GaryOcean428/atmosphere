@@ -3,11 +3,11 @@ import type {
   FormColumnType,
   MetaType,
   StringOrNullType,
-} from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import View from '~/models/View';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { deserializeJSON, serializeJSON } from '~/utils/serialize';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
@@ -36,13 +36,13 @@ export default class FormViewColumn implements FormColumnType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     formViewColumnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let viewColumn =
       formViewColumnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.FORM_VIEW_COLUMN}:${formViewColumnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -61,7 +61,7 @@ export default class FormViewColumn implements FormColumnType {
             ? JSON.parse(viewColumn.meta)
             : viewColumn.meta;
 
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.FORM_VIEW_COLUMN}:${formViewColumnId}`,
           viewColumn,
@@ -73,9 +73,9 @@ export default class FormViewColumn implements FormColumnType {
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     column: Partial<FormViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(column, [
       'fk_view_id',
@@ -121,7 +121,7 @@ export default class FormViewColumn implements FormColumnType {
     );
 
     return this.get(context, id, ncMeta).then(async (viewColumn) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.FORM_VIEW_COLUMN,
         [column.fk_view_id],
@@ -132,11 +132,11 @@ export default class FormViewColumn implements FormColumnType {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<FormViewColumn[]> {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.FORM_VIEW_COLUMN,
       [viewId],
@@ -162,7 +162,7 @@ export default class FormViewColumn implements FormColumnType {
         viewColumn.meta = deserializeJSON(viewColumn.meta);
       }
 
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.FORM_VIEW_COLUMN,
         [viewId],
@@ -178,10 +178,10 @@ export default class FormViewColumn implements FormColumnType {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     body: Partial<FormViewColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, [
       'label',
@@ -204,7 +204,7 @@ export default class FormViewColumn implements FormColumnType {
       columnId,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.FORM_VIEW_COLUMN}:${columnId}`,
       prepareForResponse(updateObj),

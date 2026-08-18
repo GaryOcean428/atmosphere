@@ -1,7 +1,7 @@
 import UITypes from '../UITypes';
 
 /**
- * Maps a NocoDB "abstract type" to the UIType assigned when introspecting an
+ * Maps a Atmosphere "abstract type" to the UIType assigned when introspecting an
  * EXISTING DB column during meta-sync / meta-diff.
  *
  * This is the exact map the (now-removed) `ModelXcMeta*.getUIDataType` classes

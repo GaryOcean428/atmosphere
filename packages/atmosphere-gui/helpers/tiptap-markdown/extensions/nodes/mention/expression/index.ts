@@ -1,5 +1,5 @@
 import TipTapMention from '@tiptap/extension-mention'
-import type { VariableDefinition } from 'nocodb-sdk'
+import type { VariableDefinition } from 'atmosphere-sdk'
 
 export const WorkflowExpression = TipTapMention.extend({
   name: 'workflowExpression',
@@ -60,7 +60,7 @@ export const WorkflowExpression = TipTapMention.extend({
       'span',
       {
         ...HTMLAttributes,
-        'class': 'nc-workflow-expression',
+        'class': 'atm-workflow-expression',
         'data-type': 'workflowExpression',
         'data-id': node.attrs.id,
         'data-label': node.attrs.label,
@@ -84,7 +84,7 @@ export const WorkflowExpression = TipTapMention.extend({
       serialize(node: any) {
         return node.attrs.expression || ''
       },
-      // Parse NocoDB expression format
+      // Parse Atmosphere expression format
       parse(text: string) {
         const expressionRegex = /\{\{([^}]+)}}/g
         const matches = text.matchAll(expressionRegex)

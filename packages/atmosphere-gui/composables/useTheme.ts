@@ -79,7 +79,7 @@ export const useTheme = createSharedComposable(() => {
     selectedTheme.value = theme
 
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('nc-theme', theme)
+      localStorage.setItem('atm-theme', theme)
     }
   }
 
@@ -242,14 +242,14 @@ export const useTheme = createSharedComposable(() => {
     if (initialized || typeof window === 'undefined') return
     initialized = true
 
-    const saved = localStorage.getItem('nc-theme') as ThemeMode
+    const saved = localStorage.getItem('atm-theme') as ThemeMode
     if (saved && ['system', 'light', 'dark'].includes(saved)) {
       selectedTheme.value = saved
     }
 
     // Check for theme query parameter on shared views (without persisting to localStorage)
-    // Use 'nc-theme' to avoid conflicts with user form fields named 'theme'
-    const themeParam = route.value.query?.['nc-theme'] || route.value.query?.theme
+    // Use 'atm-theme' to avoid conflicts with user form fields named 'theme'
+    const themeParam = route.value.query?.['atm-theme'] || route.value.query?.theme
     if (isSharedViewRoute(route.value) && themeParam) {
       const queryTheme = themeParam as string
       if (['light', 'dark', 'system'].includes(queryTheme)) {
@@ -265,9 +265,9 @@ export const useTheme = createSharedComposable(() => {
     })
   }
 
-  // Update selectedTheme when nc-theme is changed in another tab
+  // Update selectedTheme when atm-theme is changed in another tab
   const handleStorageChange = (event: StorageEvent) => {
-    if (event.key === 'nc-theme' && event.newValue) {
+    if (event.key === 'atm-theme' && event.newValue) {
       const newTheme = event.newValue as ThemeMode
       if (['system', 'light', 'dark'].includes(newTheme) && newTheme !== selectedTheme.value) {
         selectedTheme.value = newTheme

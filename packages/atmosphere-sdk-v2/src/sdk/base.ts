@@ -2,7 +2,7 @@ import type { Base } from '../lib/Api';
 import type { InternalAPI } from './types';
 import type { Workspace } from './workspace';
 
-export class NocoDBBase implements Base {
+export class AtmosphereBase implements Base {
   readonly id: string;
   private workspace: Workspace;
   private readonly internalAPI: InternalAPI;

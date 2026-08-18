@@ -15,13 +15,13 @@ import {
   extractRolesObj,
   TableCreateV3Type,
   TableUpdateV3Type,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { TablesV3Service } from '~/services/v3/tables-v3.service';
 import { PREFIX_APIV3_METABASE } from '~/constants/controllers';
 
@@ -33,7 +33,7 @@ export class TablesV3Controller {
   @Get(`${PREFIX_APIV3_METABASE}/tables`)
   @Acl('tableList')
   async tableList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Param('sourceId') sourceId: string,
     @Query('includeM2M') includeM2M: string,
@@ -55,7 +55,7 @@ export class TablesV3Controller {
   @HttpCode(200)
   @Acl('tableCreate')
   async tableCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Param('sourceId') sourceId: string,
     @Body() body: TableCreateV3Type,
@@ -75,7 +75,7 @@ export class TablesV3Controller {
   @Get(`${PREFIX_APIV3_METABASE}/tables/:tableId`)
   @Acl('tableGet')
   async tableGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Request() req,
   ) {
@@ -93,7 +93,7 @@ export class TablesV3Controller {
   @Patch(`${PREFIX_APIV3_METABASE}/tables/:tableId`)
   @Acl('tableUpdate')
   async tableUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Body() body: TableUpdateV3Type,
     @Request() req,
@@ -110,7 +110,7 @@ export class TablesV3Controller {
   @Delete(`${PREFIX_APIV3_METABASE}/tables/:tableId`)
   @Acl('tableDelete')
   async tableDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Request() req,
   ) {

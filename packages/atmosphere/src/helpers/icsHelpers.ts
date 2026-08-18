@@ -196,7 +196,7 @@ export function icsCalendarHeader(calendarName?: string): string {
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//NocoDB//Calendar Export//EN',
+    'PRODID:-//Atmosphere//Calendar Export//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     // All event times are emitted as absolute UTC (`Z`), so they are already

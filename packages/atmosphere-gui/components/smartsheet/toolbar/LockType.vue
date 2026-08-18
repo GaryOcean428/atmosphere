@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PlanFeatureTypes, PlanTitles } from 'nocodb-sdk'
+import { PlanFeatureTypes, PlanTitles } from 'atmosphere-sdk'
 import { LockType } from '#imports'
 
 const { type, hideTick } = defineProps<{
@@ -19,7 +19,7 @@ const { getPlanTitle } = useEeConfig()
 
 <template>
   <div
-    class="nc-locked-menu-item w-full max-w-[312px]"
+    class="atm-locked-menu-item w-full max-w-[312px]"
     :class="{
       '!px-1': hideTick,
     }"
@@ -34,14 +34,14 @@ const { getPlanTitle } = useEeConfig()
             :class="{
               '!w-3 h-3': hideTick,
               '!w-4 h-4': !hideTick,
-              'text-nc-content-gray-disabled': disabled,
+              'text-atm-content-gray-disabled': disabled,
             }"
           />
           <div
             class="flex"
             :class="{
               '!text-xs py-0.7': hideTick,
-              'text-nc-content-gray-disabled': disabled,
+              'text-atm-content-gray-disabled': disabled,
             }"
           >
             {{ $t(types[type].title) }}
@@ -52,7 +52,7 @@ const { getPlanTitle } = useEeConfig()
               v-if="selectedView?.lock_type === type"
               icon="circleCheckSolid"
               class="h-4 w-4 flex-none"
-              :class="{ '!text-nc-content-brand': !disabled }"
+              :class="{ '!text-atm-content-brand': !disabled }"
             />
             <LazyPaymentUpgradeBadge
               v-else-if="type === LockType.Personal"
@@ -70,10 +70,10 @@ const { getPlanTitle } = useEeConfig()
         </div>
         <div
           v-if="!hideTick"
-          class="nc-subtitle font-weight-400 max-w-120 !text-xs whitespace-normal ml-6 pr-6"
+          class="atm-subtitle font-weight-400 max-w-120 !text-xs whitespace-normal ml-6 pr-6"
           :class="{
-            'text-nc-content-gray-disabled': disabled,
-            'text-nc-content-gray-subtle2': !disabled,
+            'text-atm-content-gray-disabled': disabled,
+            'text-atm-content-gray-subtle2': !disabled,
           }"
         >
           {{ $t(types[type].subtitle) }}
@@ -84,7 +84,7 @@ const { getPlanTitle } = useEeConfig()
 </template>
 
 <style scoped lang="scss">
-.nc-locked-menu-item > div {
+.atm-locked-menu-item > div {
   @apply !py-0 items-center;
 
   &.show-tick {

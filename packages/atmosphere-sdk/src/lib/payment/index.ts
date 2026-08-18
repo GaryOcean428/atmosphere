@@ -95,7 +95,7 @@ export enum PlanFeatureTypes {
   FEATURE_SCIM = 'feature_scim',
   FEATURE_SYNC = 'feature_sync',
   FEATURE_TABLE_SYNC = 'feature_table_sync',
-  FEATURE_TABLE_SYNC_AUTO = 'feature_table_sync_auto',
+  FEATURE_TABLE_SYATMOSPHERE_AUTO = 'feature_table_sync_auto',
   FEATURE_CUSTOM_SYNC = 'feature_custom_sync',
   FEATURE_UNIQUE = 'feature_unique',
   FEATURE_LOOKUP_SORT_LIMIT = 'feature_lookup_sort_limit',
@@ -479,8 +479,8 @@ export const PlanFeatureUpgradeMessages: Record<PlanFeatureTypes, string> = {
     'to hide field headers in Gallery and Kanban views.',
   [PlanFeatureTypes.FEATURE_SCIM]: 'to enable SCIM provisioning.',
   [PlanFeatureTypes.FEATURE_SYNC]: 'to use App Sync.',
-  [PlanFeatureTypes.FEATURE_TABLE_SYNC]: 'to use NocoDB Sync.',
-  [PlanFeatureTypes.FEATURE_TABLE_SYNC_AUTO]: 'to use automatic NocoDB Sync.',
+  [PlanFeatureTypes.FEATURE_TABLE_SYNC]: 'to use Atmosphere Sync.',
+  [PlanFeatureTypes.FEATURE_TABLE_SYATMOSPHERE_AUTO]: 'to use automatic Atmosphere Sync.',
   [PlanFeatureTypes.FEATURE_CUSTOM_SYNC]: 'to use Custom Sync.',
   [PlanFeatureTypes.FEATURE_UNIQUE]: 'to use unique constraint.',
   [PlanFeatureTypes.FEATURE_LOOKUP_SORT_LIMIT]:
@@ -614,7 +614,7 @@ export type PlanMetaType = Partial<
  * customer — free, internal and comped accounts. Nothing can be charged
  * against it, so any money-in path must check before calling Stripe.
  */
-export const INTERNAL_STRIPE_CUSTOMER_ID = 'nocodb';
+export const INTERNAL_STRIPE_CUSTOMER_ID = 'atmosphere';
 
 /** True when this is a chargeable Stripe customer, not the internal sentinel. */
 export const isChargeableStripeCustomer = (

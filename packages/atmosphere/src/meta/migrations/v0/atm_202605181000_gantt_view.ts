@@ -13,9 +13,9 @@ const up = async (knex: Knex) => {
     table.primary(['base_id', 'fk_view_id']);
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_gantt_view_v2_base_id_fk_workspace_id_index',
+      'atm_gantt_view_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_view_id'], 'nc_gantt_view_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_gantt_view_v2_oldpk_idx');
   });
 
   await knex.schema.createTable(MetaTable.GANTT_VIEW_COLUMNS, (table) => {
@@ -38,13 +38,13 @@ const up = async (knex: Knex) => {
     table.primary(['base_id', 'id']);
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_gantt_view_columns_v2_base_id_fk_workspace_id_index',
+      'atm_gantt_view_columns_v2_base_id_fk_workspace_id_index',
     );
     table.index(
       ['fk_view_id', 'fk_column_id'],
-      'nc_gantt_view_columns_v2_fk_view_id_fk_column_id_index',
+      'atm_gantt_view_columns_v2_fk_view_id_fk_column_id_index',
     );
-    table.index(['id'], 'nc_gantt_view_columns_v2_oldpk_idx');
+    table.index(['id'], 'atm_gantt_view_columns_v2_oldpk_idx');
   });
 
   // Date-dependency rules are stored per (table, gantt view) — many rules per
@@ -64,18 +64,18 @@ const up = async (knex: Knex) => {
     table.string('fk_gantt_view_id', 20).nullable();
     table.index(
       ['fk_model_id', 'fk_gantt_view_id'],
-      'nc_date_dep_model_view_idx',
+      'atm_date_dep_model_view_idx',
     );
-    table.unique(['fk_gantt_view_id'], 'nc_date_dep_gantt_view_id_unique');
+    table.unique(['fk_gantt_view_id'], 'atm_date_dep_gantt_view_id_unique');
   });
 };
 
 const down = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.DATE_DEPENDENCY, (table) => {
-    table.dropUnique(['fk_gantt_view_id'], 'nc_date_dep_gantt_view_id_unique');
+    table.dropUnique(['fk_gantt_view_id'], 'atm_date_dep_gantt_view_id_unique');
     table.dropIndex(
       ['fk_model_id', 'fk_gantt_view_id'],
-      'nc_date_dep_model_view_idx',
+      'atm_date_dep_model_view_idx',
     );
     table.dropColumn('fk_gantt_view_id');
   });

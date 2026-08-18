@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { IconType, PublicAttachmentScope } from 'nocodb-sdk'
+import { IconType, PublicAttachmentScope } from 'atmosphere-sdk'
 
 const { user } = useGlobal()
 
@@ -102,7 +102,7 @@ const imageCropperData = ref<Omit<ImageCropperProps, 'showCropper'>>({
     name: 'icon',
   },
   uploadConfig: {
-    path: [NOCO, 'profile', 'icon'].join('/'),
+    path: [ATMOSPHERE, 'profile', 'icon'].join('/'),
     scope: PublicAttachmentScope.PROFILEPICS,
     maxFileSize: 2 * 1024 * 1024,
   },
@@ -135,7 +135,7 @@ const onCancel = () => {
 
 <template>
   <div class="flex flex-col">
-    <NcPageHeader>
+    <AtPageHeader>
       <template #icon>
         <GeneralIcon class="flex-none !h-5 !w-5" icon="user" />
       </template>
@@ -144,16 +144,16 @@ const onCancel = () => {
           {{ $t('labels.profile') }}
         </span>
       </template>
-    </NcPageHeader>
-    <div class="h-[calc(100vh_-_100px)] flex flex-col gap-6 overflow-auto nc-scrollbar-thin">
-      <div class="h-full nc-content-max-w p-6">
+    </AtPageHeader>
+    <div class="h-[calc(100vh_-_100px)] flex flex-col gap-6 overflow-auto atm-scrollbar-thin">
+      <div class="h-full atm-content-max-w p-6">
         <div class="flex flex-col w-150 mx-auto">
-          <div class="nc-settings-item-card-wrapper mt-5">
-            <div class="nc-settings-item-heading text-nc-content-gray-emphasis">
+          <div class="atm-settings-item-card-wrapper mt-5">
+            <div class="atm-settings-item-heading text-atm-content-gray-emphasis">
               {{ $t('labels.accountDetails') }}
             </div>
 
-            <div class="nc-settings-item-card p-6">
+            <div class="atm-settings-item-card p-6">
               <a-form ref="formValidator" layout="vertical" no-style :model="form" class="w-full" @finish="() => saveChanges()">
                 <div class="flex gap-4">
                   <div>
@@ -170,7 +170,7 @@ const onCancel = () => {
                           class="border-1 w-26.25 h-26.25 flex-none rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
                           :class="{
                             'border-transparent': !isOpen && form.iconType === IconType.IMAGE,
-                            'border-nc-gray-medium': !isOpen && form.iconType !== IconType.IMAGE,
+                            'border-atm-gray-medium': !isOpen && form.iconType !== IconType.IMAGE,
                             'border-primary shadow-selected': isOpen,
                           }"
                         >
@@ -187,11 +187,11 @@ const onCancel = () => {
                   <div class="flex-1 flex flex-col gap-4">
                     <div>
                       <div class="flex items-center gap-1.5 justify-between mb-2">
-                        <div class="text-nc-content-gray" data-rec="true">{{ $t('general.name') }}</div>
-                        <NcTooltip v-if="user" :title="$t('labels.clickToCopyUserID')" placement="top" hide-on-click class="flex">
+                        <div class="text-atm-content-gray" data-rec="true">{{ $t('general.name') }}</div>
+                        <AtTooltip v-if="user" :title="$t('labels.clickToCopyUserID')" placement="top" hide-on-click class="flex">
                           <div
                             data-rec="true"
-                            class="flex items-center gap-1.5 text-bodyDefaultSm text-nc-content-gray-subtle2 cursor-pointer"
+                            class="flex items-center gap-1.5 text-bodyDefaultSm text-atm-content-gray-subtle2 cursor-pointer"
                             @click="copyBtnRef?.copyContent()"
                           >
                             {{ $t('labels.userIdColon', { userId: user?.id }) }}
@@ -204,51 +204,51 @@ const onCancel = () => {
                               :show-toast="false"
                             />
                           </div>
-                        </NcTooltip>
+                        </AtTooltip>
                       </div>
                       <a-form-item name="title" :rules="formRules.title" class="!my-0">
                         <a-input
                           v-model:value="form.title"
                           class="w-full !rounded-lg !px-4 h-10"
                           :placeholder="$t('general.name')"
-                          data-testid="nc-account-settings-rename-input"
+                          data-testid="atm-account-settings-rename-input"
                         />
                       </a-form-item>
                     </div>
                     <div>
-                      <div class="text-nc-content-gray mb-2" data-rec="true">{{ $t('labels.accountEmailID') }}</div>
+                      <div class="text-atm-content-gray mb-2" data-rec="true">{{ $t('labels.accountEmailID') }}</div>
                       <a-input
                         v-model:value="email"
                         class="w-full !rounded-lg !px-4 h-10"
                         :placeholder="$t('labels.email')"
                         disabled
-                        data-testid="nc-account-settings-email-input"
+                        data-testid="atm-account-settings-email-input"
                       />
                     </div>
                   </div>
                 </div>
                 <div class="flex flex-row w-full justify-end mt-8 gap-4">
-                  <NcButton
+                  <AtButton
                     v-if="isSaveChangesBtnEnabled"
                     type="secondary"
                     size="small"
-                    data-testid="nc-account-settings-cancel"
+                    data-testid="atm-account-settings-cancel"
                     :disabled="isProfileUpdating"
                     @click="onCancel"
                   >
                     {{ $t('general.cancel') }}
-                  </NcButton>
-                  <NcButton
+                  </AtButton>
+                  <AtButton
                     type="primary"
                     html-type="submit"
                     size="small"
                     :disabled="isErrored || !isSaveChangesBtnEnabled || isProfileUpdating"
                     :loading="isProfileUpdating"
-                    data-testid="nc-account-settings-save"
+                    data-testid="atm-account-settings-save"
                   >
                     <template #loading> {{ $t('general.saving') }} </template>
                     {{ $t('general.save') }}
-                  </NcButton>
+                  </AtButton>
                 </div>
               </a-form>
             </div>

@@ -73,11 +73,11 @@ const height = computed(() => {
 const visible = useVModel(props, 'visible', emits)
 
 const newWrapClassName = computed(() => {
-  let className = 'nc-modal-wrapper'
+  let className = 'atm-modal-wrapper'
 
-  // For backward compatibility, we are not combining nc-modal-wrapper
+  // For backward compatibility, we are not combining atm-modal-wrapper
   if (_wrapClassName) {
-    className = `nc-has-modal-wrapper-class ${_wrapClassName}`
+    className = `atm-has-modal-wrapper-class ${_wrapClassName}`
   }
 
   return className
@@ -98,20 +98,20 @@ const newWrapClassName = computed(() => {
     :mask-closable="maskClosable"
     @keydown.esc="visible = false"
   >
-    <div :class="`nc-modal h-[${height}] max-h-[${height}]`">
+    <div :class="`atm-modal h-[${height}] max-h-[${height}]`">
       <slot />
     </div>
   </a-modal>
 </template>
 
 <style lang="scss">
-.nc-has-modal-wrapper-class {
+.atm-has-modal-wrapper-class {
   .ant-modal-content {
     @apply xs:!p-4;
   }
 }
 
-.nc-modal-wrapper {
+.atm-modal-wrapper {
   .ant-modal-content {
     @apply !p-0;
   }

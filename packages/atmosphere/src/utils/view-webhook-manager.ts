@@ -1,15 +1,15 @@
-import { WebhookActions } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from 'nocodb-sdk';
+import { WebhookActions } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
 import type { Model } from '~/models';
 import type { IViewsV3Service } from '~/services/v3/views-v3.types';
 import type { ModelWebhookManager } from '~/utils/model-webhook-manager';
-import { NcError } from '~/helpers/ncError';
-import Noco from '~/Noco';
+import { AtError } from '~/helpers/ncError';
+import Atmosphere from '~/Atmosphere';
 
 export class ViewWebhookManagerBuilder {
   constructor(
-    protected readonly context: NcContext,
+    protected readonly context: AtContext,
     protected readonly ncMeta?: MetaService,
   ) {}
   modelWebhookManager?: ModelWebhookManager;
@@ -31,9 +31,9 @@ export class ViewWebhookManagerBuilder {
     this.oldView = view;
     return this;
   }
-  async withViewId(viewId: string, req?: NcRequest) {
+  async withViewId(viewId: string, req?: AtRequest) {
     // needed to prevent circular dependencies
-    const viewsV3Service: IViewsV3Service = Noco.nestApp.get('IViewsV3Service');
+    const viewsV3Service: IViewsV3Service = Atmosphere.nestApp.get('IViewsV3Service');
     this.oldView = await viewsV3Service.getView(
       this.context,
       {
@@ -47,7 +47,7 @@ export class ViewWebhookManagerBuilder {
 
   forCreate() {
     if (!this.modelId) {
-      NcError.get(this.context).internalServerError(
+      AtError.get(this.context).internalServerError(
         `Need to call 'withModel' before running 'forCreate'`,
       );
     }
@@ -64,7 +64,7 @@ export class ViewWebhookManagerBuilder {
 
   forUpdate() {
     if (!this.modelId) {
-      NcError.get(this.context).internalServerError(
+      AtError.get(this.context).internalServerError(
         `Need to call 'withModel' before running 'forUpdate'`,
       );
     }
@@ -82,7 +82,7 @@ export class ViewWebhookManagerBuilder {
 
   forDelete() {
     if (!this.modelId) {
-      NcError.get(this.context).internalServerError(
+      AtError.get(this.context).internalServerError(
         `Need to call 'withModel' before running 'forDelete'`,
       );
     }
@@ -101,7 +101,7 @@ export class ViewWebhookManagerBuilder {
 
 export class ViewWebhookManager {
   constructor(
-    protected readonly context: NcContext,
+    protected readonly context: AtContext,
     protected readonly params: {
       action: WebhookActions;
       modelId: string;
@@ -118,9 +118,9 @@ export class ViewWebhookManager {
     this.params.newView = view;
     return this;
   }
-  async withNewViewId(viewId: string, req?: NcRequest) {
+  async withNewViewId(viewId: string, req?: AtRequest) {
     // needed to prevent circular dependencies
-    const viewsV3Service: IViewsV3Service = Noco.nestApp.get('IViewsV3Service');
+    const viewsV3Service: IViewsV3Service = Atmosphere.nestApp.get('IViewsV3Service');
     this.params.newView = await viewsV3Service.getView(
       this.context,
       {

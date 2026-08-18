@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BaseType, SourceType, TableType } from 'nocodb-sdk'
+import type { BaseType, SourceType, TableType } from 'atmosphere-sdk'
 import Sortable from 'sortablejs'
 import TableNode from './Node.vue'
 
@@ -91,7 +91,7 @@ function resortLocalTables() {
 
 // todo: replace with vuedraggable
 const initSortable = (el: Element) => {
-  const source_id = el.getAttribute('nc-source')
+  const source_id = el.getAttribute('atm-source')
   if (!source_id) return
   if (isMobileMode.value) return
 
@@ -234,14 +234,14 @@ const filteredAvailableTables = computed(() => {
       <div
         v-if="!availableTables.length && showCreateTableBtn"
         :class="{
-          'text-nc-content-brand hover:text-nc-content-brand-disabled': openedProject?.id === baseId,
-          'text-nc-content-gray-muted hover:text-nc-content-brand': openedProject?.id !== baseId,
+          'text-atm-content-brand hover:text-atm-content-brand-disabled': openedProject?.id === baseId,
+          'text-atm-content-gray-muted hover:text-atm-content-brand': openedProject?.id !== baseId,
         }"
-        class="nc-create-table-btn flex flex-row items-center cursor-pointer rounded-md w-full"
+        class="atm-create-table-btn flex flex-row items-center cursor-pointer rounded-md w-full"
         role="button"
         @click="emits('createTable')"
       >
-        <div class="nc-project-home-section-item">
+        <div class="atm-project-home-section-item">
           <GeneralIcon icon="plus" />
           <div>
             {{
@@ -255,9 +255,9 @@ const filteredAvailableTables = computed(() => {
 
       <div
         v-if="!availableTables.length || !filteredAvailableTables.length"
-        class="py-0.5 text-nc-content-gray-muted font-normal"
+        class="py-0.5 text-atm-content-gray-muted font-normal"
         :class="{
-          'nc-project-home-section-item': sourceIndex === 0,
+          'atm-project-home-section-item': sourceIndex === 0,
           'ml-9 xs:(ml-9.75)': sourceIndex !== 0,
         }"
       >
@@ -272,12 +272,12 @@ const filteredAvailableTables = computed(() => {
         v-if="base.sources?.[sourceIndex] && base!.sources[sourceIndex].enabled"
         ref="menuRefs"
         :key="`sortable-${source?.id}-${source?.id && source?.id in keys ? keys[source?.id] : '0'}`"
-        :nc-source="source?.id"
+        :atm-source="source?.id"
       >
         <TableNode
           v-for="table of filteredAvailableTables"
           :key="table.id"
-          class="nc-tree-item text-sm"
+          class="atm-tree-item text-sm"
           :data-order="table.order"
           :data-id="table.id"
           :table="table"

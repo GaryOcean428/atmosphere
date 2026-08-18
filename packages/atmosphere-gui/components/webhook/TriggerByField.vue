@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 
 interface Props {
   columns: ColumnType[]
@@ -34,28 +34,28 @@ const removeColumnId = (colId: string) => {
 <template>
   <div class="w-full flex items-center justify-between h-[28px]">
     <label class="cursor-pointer flex items-center" @click.prevent="triggerField = !triggerField">
-      <NcSwitch :checked="triggerField" class="nc-check-box-trigger-field">
-        <span class="!text-nc-content-gray-subtle font-semibold"> Trigger only when specific fields change </span>
-      </NcSwitch>
+      <AtSwitch :checked="triggerField" class="atm-check-box-trigger-field">
+        <span class="!text-atm-content-gray-subtle font-semibold"> Trigger only when specific fields change </span>
+      </AtSwitch>
     </label>
-    <NcDropdown v-if="triggerField" v-model:visible="isDropdownOpen" overlay-class-name="!pt-0">
-      <NcButton
+    <AtDropdown v-if="triggerField" v-model:visible="isDropdownOpen" overlay-class-name="!pt-0">
+      <AtButton
         size="xs"
         type="secondary"
         :class="{
-          '!shadow-selected !border-nc-border-brand': isDropdownOpen,
+          '!shadow-selected !border-atm-border-brand': isDropdownOpen,
         }"
       >
         <div class="flex items-center justify-center gap-2">
           <GeneralIcon icon="plus" />
           {{ $t('activity.addFieldFromFormView') }}
         </div>
-      </NcButton>
+      </AtButton>
       <template #overlay>
-        <NcList
+        <AtList
           v-model:value="triggerFields"
           v-model:open="isDropdownOpen"
-          class="nc-list-field"
+          class="atm-list-field"
           is-multi-select
           :close-on-select="false"
           :list="columns"
@@ -64,37 +64,37 @@ const removeColumnId = (colId: string) => {
           option-label-key="title"
         >
           <template #headerExtraRight>
-            <NcBadge :border="false" color="brand" class="mr-2"> {{ triggerFields.length }} fields </NcBadge>
+            <AtBadge :border="false" color="brand" class="mr-2"> {{ triggerFields.length }} fields </AtBadge>
           </template>
 
           <template #listItem="{ option }">
             <div
-              class="flex items-center w-full truncate gap-3 text-nc-content-gray-subtle hover:text-nc-content-gray-extreme transition-colors"
+              class="flex items-center w-full truncate gap-3 text-atm-content-gray-subtle hover:text-atm-content-gray-extreme transition-colors"
             >
               <SmartsheetHeaderIcon :column="option" />
 
-              <NcTooltip class="flex-1 truncate" show-on-truncate-only>
+              <AtTooltip class="flex-1 truncate" show-on-truncate-only>
                 <template #title>
                   {{ option?.title }}
                 </template>
                 <div class="flex-1 font-550 leading-5 text-small">
                   {{ option?.title }}
                 </div>
-              </NcTooltip>
+              </AtTooltip>
 
-              <NcCheckbox :checked="!!triggerFields.includes(option.id)" />
+              <AtCheckbox :checked="!!triggerFields.includes(option.id)" />
             </div>
           </template>
-        </NcList>
+        </AtList>
       </template>
-    </NcDropdown>
+    </AtDropdown>
   </div>
   <div v-if="triggerField">
     <div v-if="triggerFields?.length" class="mt-2 gap-2 flex flex-wrap min-h-5.5">
       <div
         v-for="col of computedTags"
         :key="col.id"
-        class="bg-nc-bg-gray-medium text-nc-content-gray-subtle2 px-1 py-0.5 rounded-md flex gap-1 items-center"
+        class="bg-atm-bg-gray-medium text-atm-content-gray-subtle2 px-1 py-0.5 rounded-md flex gap-1 items-center"
       >
         <SmartsheetHeaderIcon :column="col" />
 
@@ -102,35 +102,35 @@ const removeColumnId = (colId: string) => {
           {{ col.title }}
         </div>
 
-        <div class="w-0.25 h-4 bg-nc-border-gray-dark" />
+        <div class="w-0.25 h-4 bg-atm-border-gray-dark" />
 
         <GeneralIcon class="cursor-pointer opacity-70 hover:opacity-100" icon="close" @click="removeColumnId(col.id)" />
       </div>
     </div>
-    <div v-else class="flex flex-row text-nc-content-gray-disabled mt-2">
+    <div v-else class="flex flex-row text-atm-content-gray-disabled mt-2">
       {{ $t('title.noFieldsSelected') }}
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.nc-list-field {
-  :deep(.nc-list-item) {
+.atm-list-field {
+  :deep(.atm-list-item) {
     .ant-checkbox-checked .ant-checkbox-inner {
-      background-color: var(--nc-brand-accent) !important;
-      border-color: var(--nc-brand-accent) !important;
+      background-color: var(--atm-brand-accent) !important;
+      border-color: var(--atm-brand-accent) !important;
     }
 
     .ant-checkbox {
       @apply !mr-0;
     }
 
-    .nc-icon {
+    .atm-icon {
       @apply mx-0;
     }
   }
 }
-.nc-dropdown {
+.atm-dropdown {
   [prefixcls='ant-dropdown-menu'] {
     @apply !pt-1;
   }

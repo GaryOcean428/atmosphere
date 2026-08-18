@@ -1,8 +1,8 @@
-import { type NcContext } from 'nocodb-sdk';
+import { type AtContext } from 'atmosphere-sdk';
 import type RowColorCondition from '~/models/RowColorCondition';
 import type { MetaService } from '~/meta/meta.service';
 import type { Filter, View } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export type GetRowColorConditionsResult = {
   view: View;
@@ -14,13 +14,13 @@ export type GetRowColorConditionsResult = {
 
 export class RowColorViewHelpers {
   protected constructor(
-    protected readonly context: NcContext,
+    protected readonly context: AtContext,
     protected props: {
       ncMeta: MetaService;
     },
   ) {}
   static withContext(
-    context: NcContext,
+    context: AtContext,
     props?: {
       ncMeta?: MetaService;
     },
@@ -29,7 +29,7 @@ export class RowColorViewHelpers {
       props = {};
     }
     if (!props.ncMeta) {
-      props.ncMeta = Noco.ncMeta;
+      props.ncMeta = Atmosphere.ncMeta;
     }
     return new RowColorViewHelpers(context, props as any);
   }

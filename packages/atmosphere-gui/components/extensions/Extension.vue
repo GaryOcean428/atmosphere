@@ -116,7 +116,7 @@ useEventListener('keydown', (e) => {
   }
 })
 
-const noExplicitHeightExtensions = ['nc-data-exporter']
+const noExplicitHeightExtensions = ['atm-data-exporter']
 
 const isNoExplicitHeightExtension = computed(() => noExplicitHeightExtensions.includes(extension.value.extensionId))
 
@@ -137,7 +137,7 @@ watch(
 </script>
 
 <template>
-  <div ref="extensionRef" class="w-full px-4" :class="`nc-${extensionManifest?.id}`" :data-testid="extension.id">
+  <div ref="extensionRef" class="w-full px-4" :class="`atm-${extensionManifest?.id}`" :data-testid="extension.id">
     <div
       class="extension-wrapper"
       :class="[
@@ -163,30 +163,30 @@ watch(
       <template v-if="activeError">
         <div
           v-show="!collapsed"
-          class="extension-content nc-scrollbar-thin h-[calc(100%_-_50px)] flex items-center justify-center"
+          class="extension-content atm-scrollbar-thin h-[calc(100%_-_50px)] flex items-center justify-center"
           :class="{
             fullscreen,
           }"
         >
-          <a-result status="error" title="Extension Error" class="nc-extension-error">
+          <a-result status="error" title="Extension Error" class="atm-extension-error">
             <template #subTitle>
-              <span class="text-nc-content-gray-muted">
+              <span class="text-atm-content-gray-muted">
                 {{ activeError }}
               </span>
             </template>
             <template #extra>
-              <NcButton size="small" @click="onClearData">
+              <AtButton size="small" @click="onClearData">
                 <div class="flex items-center gap-2">
                   <GeneralIcon icon="reload" />
                   {{ extensionAccess.update ? 'Clear Data' : 'Reload Extension' }}
                 </div>
-              </NcButton>
-              <NcButton v-if="extensionAccess.delete" size="small" type="danger" @click="extension.delete()">
+              </AtButton>
+              <AtButton v-if="extensionAccess.delete" size="small" type="danger" @click="extension.delete()">
                 <div class="flex items-center gap-2">
                   <GeneralIcon icon="delete" />
                   {{ $t('general.delete') }}
                 </div>
-              </NcButton>
+              </AtButton>
             </template>
           </a-result>
         </div>
@@ -196,7 +196,7 @@ watch(
           <div
             ref="extensionModalRef"
             :class="[
-              fullscreen ? `nc-${extensionManifest?.id}` : '',
+              fullscreen ? `atm-${extensionManifest?.id}` : '',
               { 'extension-modal': fullscreen, 'h-[calc(100%_-_50px)]': !fullscreen },
             ]"
             @click="closeFullscreen"
@@ -205,8 +205,8 @@ watch(
               :class="{
                 'extension-modal-content': fullscreen,
                 'h-full': !fullscreen,
-                '!nc-h-screen !nc-w-screen': fullscreen && currentExtensionModalSize === 'fullscreen',
-                'nc-extension-fullscreen': fullscreen && currentExtensionModalSize === 'extensionFullscreen',
+                '!atm-h-screen !atm-w-screen': fullscreen && currentExtensionModalSize === 'fullscreen',
+                'atm-extension-fullscreen': fullscreen && currentExtensionModalSize === 'extensionFullscreen',
               }"
               :style="
                 fullscreen
@@ -220,7 +220,7 @@ watch(
               <div
                 v-show="fullscreen || !collapsed"
                 class="extension-content h-full"
-                :class="{ 'fullscreen': fullscreen, 'h-full nc-scrollbar-thin': !fullscreen }"
+                :class="{ 'fullscreen': fullscreen, 'h-full atm-scrollbar-thin': !fullscreen }"
               >
                 <component :is="component" :key="extension.uiKey" class="h-full" />
               </div>
@@ -230,7 +230,7 @@ watch(
       </template>
 
       <general-overlay :model-value="isLoadedExtension" inline transition class="!bg-opacity-15 rounded-xl overflow-hidden">
-        <div class="flex flex-col items-center justify-center h-full w-full !bg-nc-bg-default !bg-opacity-80">
+        <div class="flex flex-col items-center justify-center h-full w-full !bg-atm-bg-default !bg-opacity-80">
           <a-spin size="large" />
         </div>
       </general-overlay>
@@ -240,7 +240,7 @@ watch(
 
 <style scoped lang="scss">
 .extension-wrapper {
-  @apply bg-nc-bg-default rounded-xl w-full border-1 relative;
+  @apply bg-atm-bg-default rounded-xl w-full border-1 relative;
   box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.08);
 
   &.isOpen {
@@ -261,23 +261,23 @@ watch(
   @apply absolute top-0 left-0 z-1000 w-full h-full bg-black/50 flex items-center justify-center;
 
   .extension-modal-content {
-    @apply bg-nc-bg-default rounded-2xl mx-auto flex flex-col overflow-hidden dark:(border-1 border-nc-border-gray-medium);
+    @apply bg-atm-bg-default rounded-2xl mx-auto flex flex-col overflow-hidden dark:(border-1 border-atm-border-gray-medium);
 
-    &:not(.nc-extension-fullscreen) {
+    &:not(.atm-extension-fullscreen) {
       @apply w-[90%] h-[90vh];
     }
 
-    &.nc-extension-fullscreen {
+    &.atm-extension-fullscreen {
       @apply w-[calc(100vw-32px)] h-[calc(100vh-var(--topbar-height)-16px)];
     }
   }
 
-  &:has(.nc-extension-fullscreen) {
+  &:has(.atm-extension-fullscreen) {
     @apply pt-[var(--topbar-height)] !items-start;
   }
 }
 
-:deep(.nc-extension-error.ant-result) {
+:deep(.atm-extension-error.ant-result) {
   @apply p-0;
   .ant-result-icon {
     @apply mb-3;
@@ -287,7 +287,7 @@ watch(
   }
 
   .ant-result-title {
-    @apply text-base text-nc-content-gray font-semibold;
+    @apply text-base text-atm-content-gray font-semibold;
   }
 
   .ant-result-extra {

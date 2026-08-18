@@ -1,13 +1,13 @@
 import path from 'path';
 import { Logger } from '@nestjs/common';
-import type { IStorageAdapterV2 } from '~/types/nc-plugin';
+import type { IStorageAdapterV2 } from '~/types/atm-plugin';
 import type { Job } from 'bull';
-import type { AttachmentResType, PublicAttachmentScope } from 'nocodb-sdk';
+import type { AttachmentResType, PublicAttachmentScope } from 'atmosphere-sdk';
 import type { ThumbnailGeneratorJobData } from '~/interface/Jobs';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import { getPathFromUrl } from '~/helpers/attachmentHelpers';
 import { ImageThumbnailGenerator } from '~/modules/jobs/jobs/thumbnail-generator/generators/image-thumbnail-generator';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export class ThumbnailGeneratorProcessor {
   private logger = new Logger(ThumbnailGeneratorProcessor.name);
@@ -18,7 +18,7 @@ export class ThumbnailGeneratorProcessor {
 
     const results = [];
 
-    const sharp = Noco.sharp;
+    const sharp = Atmosphere.sharp;
 
     if (!sharp) {
       this.logger.warn('Sharp not available, skipping thumbnail generation');
@@ -47,14 +47,14 @@ export class ThumbnailGeneratorProcessor {
     attachment: AttachmentResType,
     scope?: PublicAttachmentScope,
   ): Promise<{ [key: string]: string }> {
-    const sharp = Noco.sharp;
+    const sharp = Atmosphere.sharp;
 
     if (!sharp) {
       return null;
     }
 
     try {
-      const storageAdapter = await NcPluginMgrv2.storageAdapter();
+      const storageAdapter = await AtPluginMgrv2.storageAdapter();
       const { file, relativePath } = await this.getFileData(
         attachment,
         storageAdapter,
@@ -101,7 +101,7 @@ export class ThumbnailGeneratorProcessor {
       // For scoped uploads, `attachment.path` already starts with the scope
       // (after `download/`) — see attachments.service. Don't re-prefix.
       relativePath = path.join(
-        'nc',
+        'atm',
         scope ? '' : 'uploads',
         attachment.path.replace(/^download[/\\]/i, ''),
       );
@@ -113,9 +113,9 @@ export class ThumbnailGeneratorProcessor {
 
     const scopePath = scope ? scope : 'uploads';
 
-    // remove everything before 'nc/${scopePath}/' (including nc/${scopePath}/) in relativePath
+    // remove everything before 'atm/${scopePath}/' (including atm/${scopePath}/) in relativePath
     relativePath = relativePath.replace(
-      new RegExp(`^.*?nc[/\\\\]${scopePath}[/\\\\]`),
+      new RegExp(`^.*?atm[/\\\\]${scopePath}[/\\\\]`),
       '',
     );
 

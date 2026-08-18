@@ -1,5 +1,5 @@
 import CryptoJS from 'crypto-js';
-import type { NcUpgraderCtx } from '~/version-upgrader/NcUpgrader';
+import type { AtUpgraderCtx } from '~/version-upgrader/AtUpgrader';
 import { MetaTable, RootScopes } from '~/utils/globals';
 
 const logger = {
@@ -57,15 +57,15 @@ const decryptConfigWithFallbackKey = async ({
 };
 
 // decrypt datasource details in source table and integration table
-export default async function ({ ncMeta }: NcUpgraderCtx) {
+export default async function ({ ncMeta }: AtUpgraderCtx) {
   logger.log('Starting decryption of sources and integrations');
 
-  let encryptionKey = process.env.NC_AUTH_JWT_SECRET;
+  let encryptionKey = process.env.ATMOSPHERE_AUTH_JWT_SECRET;
   let fallbackEncryptionKey: string | null = null;
 
   const encryptionKeyFromMeta = (
     await ncMeta.metaGet(RootScopes.ROOT, RootScopes.ROOT, MetaTable.STORE, {
-      key: 'nc_auth_jwt_secret',
+      key: 'atm_auth_jwt_secret',
     })
   )?.value;
 
@@ -77,8 +77,8 @@ export default async function ({ ncMeta }: NcUpgraderCtx) {
 
   // if encryption key is same as previous, just update is_encrypted flag and return
   if (
-    process.env.NC_CONNECTION_ENCRYPT_KEY &&
-    process.env.NC_CONNECTION_ENCRYPT_KEY === encryptionKey
+    process.env.ATMOSPHERE_CONNECTION_ENCRYPT_KEY &&
+    process.env.ATMOSPHERE_CONNECTION_ENCRYPT_KEY === encryptionKey
   ) {
     logger.log('Encryption key is same as previous. Skipping decryption');
     await ncMeta.knexConnection(MetaTable.SOURCES).update({

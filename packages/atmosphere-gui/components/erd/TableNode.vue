@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { NodeProps } from '@vue-flow/core'
 import { Handle, Position, useVueFlow } from '@vue-flow/core'
-import { isLinksOrLTAR, isVirtualCol } from 'nocodb-sdk'
+import { isLinksOrLTAR, isVirtualCol } from 'atmosphere-sdk'
 import type { NodeData } from './utils'
 
 interface Props extends Pick<NodeProps<NodeData>, 'data' | 'dragging'> {
@@ -17,11 +17,11 @@ const { viewport } = useVueFlow()
 const table = computed(() => data.table)
 
 // Distinct case variants of a physical identifier (as-is + lowercase), so the
-// `nc-erd-table-node-*` test/automation hooks resolve regardless of how the
+// `atm-erd-table-node-*` test/automation hooks resolve regardless of how the
 // underlying DB cases identifiers:
 //   - Oracle uppercases external table/column names (e.g. COUNTRY) — the
 //     lowercase variant (`country`) matches the convention the tests use.
-//   - NocoDB-created tables keep their title case (e.g. `Test`) — the as-is
+//   - Atmosphere-created tables keep their title case (e.g. `Test`) — the as-is
 //     variant keeps those hooks working.
 // pg/mysql/mssql already store lowercase physical names, so both variants
 // coincide there (the Set dedupes the harmless duplicate).
@@ -30,17 +30,17 @@ function caseVariants(raw?: string): string[] {
   return [...new Set([raw, raw.toLowerCase()])]
 }
 
-// Build `nc-erd-table-node-<table>` classes (one per table-name case variant).
+// Build `atm-erd-table-node-<table>` classes (one per table-name case variant).
 function tableNodeClasses(rawTable?: string): string[] {
-  return caseVariants(rawTable).map((t) => `nc-erd-table-node-${t}`)
+  return caseVariants(rawTable).map((t) => `atm-erd-table-node-${t}`)
 }
 
-// Build `nc-erd-table-node-<table>-column-<col>` classes across every
+// Build `atm-erd-table-node-<table>-column-<col>` classes across every
 // table-name × column-name case-variant combination.
 function columnNodeClasses(rawTable?: string, rawCol?: string): string[] {
   if (!rawTable || !rawCol) return []
   const cols = caseVariants(rawCol)
-  return [...new Set(caseVariants(rawTable).flatMap((t) => cols.map((c) => `nc-erd-table-node-${t}-column-${c}`)))]
+  return [...new Set(caseVariants(rawTable).flatMap((t) => cols.map((c) => `atm-erd-table-node-${t}-column-${c}`)))]
 }
 
 const isZooming = refAutoReset(false, 200)
@@ -77,13 +77,13 @@ watch(
 
     <div
       v-if="table"
-      class="relative h-full max-w-76 flex flex-col justify-center bg-nc-bg-default min-w-16 min-h-8 rounded-lg nc-erd-table-node"
+      class="relative h-full max-w-76 flex flex-col justify-center bg-atm-bg-default min-w-16 min-h-8 rounded-lg atm-erd-table-node"
       :class="[...tableNodeClasses(table.table_name), showSkeleton ? 'cursor-pointer items-center min-h-200px min-w-300px' : '']"
       @click="$e('c:erd:node-click')"
     >
       <div
         :class="[showSkeleton ? '' : '', hasColumns ? 'border-b-1 ' : '']"
-        class="text-nc-content-gray text-sm py-4 border-nc-border-gray-medium rounded-t-lg w-full h-full px-3 font-medium flex items-center"
+        class="text-atm-content-gray text-sm py-4 border-atm-border-gray-medium rounded-t-lg w-full h-full px-3 font-medium flex items-center"
       >
         <GeneralTableIcon class="text-primary" :class="{ '!text-6xl !w-auto mr-2 !h-18': showSkeleton }" :meta="table" />
         <div :class="showSkeleton ? 'text-6xl' : ''" class="flex pr-2 pl-1">
@@ -103,7 +103,7 @@ watch(
           class="w-full h-full min-w-32 py-2 px-1"
           :class="columnNodeClasses(table.table_name, col.column_name)"
         >
-          <LazySmartsheetHeaderCell v-if="col" class="nc-erd-table-node-column" :column="col" :hide-menu="true" />
+          <LazySmartsheetHeaderCell v-if="col" class="atm-erd-table-node-column" :column="col" :hide-menu="true" />
         </div>
 
         <div v-for="(col, index) in nonPkColumns" :key="col.title">
@@ -132,14 +132,14 @@ watch(
                 :connectable="false"
               />
 
-              <LazySmartsheetHeaderVirtualCell class="nc-erd-table-node-column" :column="col" :hide-menu="true" />
+              <LazySmartsheetHeaderVirtualCell class="atm-erd-table-node-column" :column="col" :hide-menu="true" />
             </div>
 
             <LazySmartsheetHeaderVirtualCell
               v-else-if="isVirtualCol(col)"
               :column="col"
               :hide-menu="true"
-              class="nc-erd-table-node-column"
+              class="atm-erd-table-node-column"
               :class="[...columnNodeClasses(table.table_name, col.column_name)]"
             />
 
@@ -147,7 +147,7 @@ watch(
               v-else
               :column="col"
               :hide-menu="true"
-              class="nc-erd-table-node-column"
+              class="atm-erd-table-node-column"
               :class="[...columnNodeClasses(table.table_name, col.column_name)]"
             />
           </div>
@@ -158,7 +158,7 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-.nc-erd-table-node-column {
-  @apply py-0.5 px-2 text-nc-content-gray-subtle;
+.atm-erd-table-node-column {
+  @apply py-0.5 px-2 text-atm-content-gray-subtle;
 }
 </style>

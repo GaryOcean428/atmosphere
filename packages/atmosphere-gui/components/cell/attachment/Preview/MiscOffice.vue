@@ -29,13 +29,13 @@ const openMethod = ref<'google' | undefined>()
   <div v-if="!openMethod" :class="props.class" class="flex flex-col text-white gap-2 items-center justify-center">
     <GeneralIcon class="w-28 h-28" icon="pdfFile" />
 
-    <NcButton type="secondary" @click="openMethod = 'google'">
+    <AtButton type="secondary" @click="openMethod = 'google'">
       <div class="flex items-center gap-1">
         <GeneralIcon class="w-4 h-4" icon="googleDocs" />
 
         Open with Google Docs
       </div>
-    </NcButton>
+    </AtButton>
   </div>
 
   <iframe

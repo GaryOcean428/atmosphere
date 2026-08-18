@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PlanFeatureTypes, PlanTitles } from 'nocodb-sdk'
+import { PlanFeatureTypes, PlanTitles } from 'atmosphere-sdk'
 
 const router = useRouter()
 const route = router.currentRoute
@@ -61,9 +61,9 @@ const activeWsSettingsTab = computed(() => {
 </script>
 
 <template>
-  <div class="nc-project-home-section">
-    <div class="nc-settings-section-header">{{ $t('objects.workspace') }} {{ $t('labels.settings') }}</div>
-    <NcSidebarMenuItem
+  <div class="atm-project-home-section">
+    <div class="atm-settings-section-header">{{ $t('objects.workspace') }} {{ $t('labels.settings') }}</div>
+    <AtSidebarMenuItem
       v-if="isUIAllowed('workspaceCollaborators')"
       v-e="['c:settings:ws:invite-user']"
       icon="users"
@@ -72,8 +72,8 @@ const activeWsSettingsTab = computed(() => {
       @click="navigateToWsSettings('ws-collaborators')"
     >
       {{ $t('labels.inviteUsersToWorkspace') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isEeUI && isTeamsEnabled && showEEFeatures"
       v-e="['c:settings:ws:add-team']"
       icon="ncBuilding"
@@ -85,8 +85,8 @@ const activeWsSettingsTab = computed(() => {
       <template #extraRight>
         <LazyPaymentUpgradeBadge :feature="PlanFeatureTypes.FEATURE_TEAM_MANAGEMENT" remove-click />
       </template>
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isUIAllowed('workspaceIntegrations') && !isMobileMode"
       v-e="['c:integrations']"
       icon="integration"
@@ -95,8 +95,8 @@ const activeWsSettingsTab = computed(() => {
       @click="navigateToWsSettings('ws-integrations')"
     >
       {{ $t('general.integrations') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="
         isEeUI &&
         !activeWorkspace?.fk_org_id &&
@@ -112,8 +112,8 @@ const activeWsSettingsTab = computed(() => {
       @click="navigateToWsSettings('ws-billing')"
     >
       {{ $t('general.billing') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isEeUI && isUIAllowed('workspaceAuditList') && !isMobileMode && showEEFeatures"
       v-e="['c:settings:ws:audits']"
       icon="audit"
@@ -129,8 +129,8 @@ const activeWsSettingsTab = computed(() => {
           remove-click
         />
       </template>
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isWorkspaceSsoAvail && !activeWorkspace?.fk_org_id && isUIAllowed('workspaceSSO') && !isMobileMode && showEEFeatures"
       v-e="['c:settings:ws:sso']"
       icon="sso"
@@ -139,8 +139,8 @@ const activeWsSettingsTab = computed(() => {
       @click="navigateToWsSettings('ws-sso')"
     >
       {{ $t('title.sso') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="!isEEFeatureBlocked && (isUIAllowed('workspaceSettings') || isUIAllowed('workspaceCollaborators'))"
       v-e="['c:settings:ws:general']"
       icon="ncMoreHorizontal"
@@ -149,13 +149,13 @@ const activeWsSettingsTab = computed(() => {
       @click="navigateToWsSettings('ws-settings')"
     >
       {{ $t('general.general') }}
-    </NcSidebarMenuItem>
+    </AtSidebarMenuItem>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-settings-section-header {
-  @apply px-3 pt-3 pb-1 font-semibold text-nc-content-brand uppercase tracking-wide;
+.atm-settings-section-header {
+  @apply px-3 pt-3 pb-1 font-semibold text-atm-content-brand uppercase tracking-wide;
   font-size: 13px;
 }
 </style>

@@ -2,7 +2,7 @@ import dns from 'node:dns';
 import path from 'path';
 import cors from 'cors';
 import express from 'express';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { handleUncaughtErrors } from '~/utils';
 handleUncaughtErrors(process);
 
@@ -12,14 +12,14 @@ dns.setDefaultResultOrder('ipv4first');
 const server = express();
 server.enable('trust proxy');
 server.use(cors());
-const ncGuiPath = path.join(__dirname, 'nc-gui');
-process.env.NC_GUI_DIST_PATH = process.env.NC_GUI_DIST_PATH ?? ncGuiPath;
+const ncGuiPath = path.join(__dirname, 'atmosphere-gui');
+process.env.ATMOSPHERE_GUI_DIST_PATH = process.env.ATMOSPHERE_GUI_DIST_PATH ?? ncGuiPath;
 server.use('/', express.static(ncGuiPath));
 server.set('view engine', 'ejs');
 
 (async () => {
   const httpServer = server.listen(process.env.PORT || 8080, async () => {
-    console.log(`App started successfully.\nVisit -> ${Noco.dashboardUrl}`);
-    server.use(await Noco.init({}, httpServer, server));
+    console.log(`App started successfully.\nVisit -> ${Atmosphere.dashboardUrl}`);
+    server.use(await Atmosphere.init({}, httpServer, server));
   });
 })().catch((e) => console.log(e));

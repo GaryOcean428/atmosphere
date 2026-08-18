@@ -1,4 +1,4 @@
-import type { NcRequest } from '~/interface/config';
+import type { AtRequest } from '~/interface/config';
 
 export interface RecordField {
   [key: string]: any;
@@ -46,7 +46,7 @@ export interface DataListParams {
   query: any;
   viewId?: string;
   ignorePagination?: boolean;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 export interface DataInsertParams {
@@ -82,7 +82,7 @@ export interface NestedDataListParams {
   query: any;
   viewId: string;
   columnId: string;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 export interface DataReadParams {
@@ -90,7 +90,7 @@ export interface DataReadParams {
   rowId: string;
   query: any;
   viewId?: string;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 export interface DataUpsertRecordRequest {

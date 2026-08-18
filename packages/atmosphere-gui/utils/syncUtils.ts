@@ -1,16 +1,16 @@
-import type { SyncConfig } from 'nocodb-sdk'
+import type { SyncConfig } from 'atmosphere-sdk'
 import {
   IntegrationsType,
   OnDeleteAction,
   OnDeleteActionMeta,
-  SYNC_SYSTEM_COLUMN_TITLES,
+  SYATMOSPHERE_SYSTEM_COLUMN_TITLES,
   SyncCategory,
   SyncTrigger,
   SyncTriggerMeta,
   SyncType,
   SyncTypeMeta,
   generateUniqueCopyName,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { getI18n } from '~/plugins/a.i18n'
 
 /**
@@ -20,7 +20,7 @@ import { getI18n } from '~/plugins/a.i18n'
  * record's revision history, so the audit sidebar hides their changes on
  * synced tables.
  */
-const syncSystemColumnTitles = new Set<string>(SYNC_SYSTEM_COLUMN_TITLES)
+const syncSystemColumnTitles = new Set<string>(SYATMOSPHERE_SYSTEM_COLUMN_TITLES)
 
 const isSyncSystemColumnTitle = (title?: string | null): boolean => !!title && syncSystemColumnTitles.has(title)
 

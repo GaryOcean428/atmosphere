@@ -1,20 +1,20 @@
 import debug from 'debug';
 import { Logger } from '@nestjs/common';
-import { getCircularReplacer } from 'nocodb-sdk';
+import { getCircularReplacer } from 'atmosphere-sdk';
 import type { ChainableCommander } from 'ioredis';
 import type IORedis from 'ioredis';
 import { CacheDelDirection, CacheGetType } from '~/utils/globals';
-import { NC_REDIS_GRACE_TTL, NC_REDIS_TTL } from '~/helpers/redisHelpers';
+import { ATMOSPHERE_REDIS_GRACE_TTL, ATMOSPHERE_REDIS_TTL } from '~/helpers/redisHelpers';
 
-const log = debug('nc:cache');
+const log = debug('atm:cache');
 const logger = new Logger('CacheMgr');
 
 /*
   - keys are stored as following:
-    - simple key: nc:<orgs>:<scope>:<model_id_1>
-      - value: { value: { ... }, parentKeys: [ "nc:<orgs>:<scope>:<model_id_1>:list" ], timestamp: 1234567890 }
+    - simple key: atm:<orgs>:<scope>:<model_id_1>
+      - value: { value: { ... }, parentKeys: [ "atm:<orgs>:<scope>:<model_id_1>:list" ], timestamp: 1234567890 }
       - stored as stringified JSON
-    - list key: nc:<orgs>:<scope>:<model_id_1>:list
+    - list key: atm:<orgs>:<scope>:<model_id_1>:list
       - stored as SET
   - get returns `value` only
   - getRaw returns the whole cache object with metadata
@@ -62,7 +62,7 @@ export default abstract class CacheMgr {
 
             if (!skipTTL && o.timestamp) {
               const diff = Date.now() - o.timestamp;
-              if (diff > NC_REDIS_GRACE_TTL * 1000) {
+              if (diff > ATMOSPHERE_REDIS_GRACE_TTL * 1000) {
                 await this.execRefreshTTL(key);
               }
             }
@@ -117,7 +117,7 @@ export default abstract class CacheMgr {
             .pipeline()
             .sadd(key, value)
             // - 60 seconds to avoid expiring list before any of its children
-            .expire(key, NC_REDIS_TTL - 60)
+            .expire(key, ATMOSPHERE_REDIS_TTL - 60)
             .exec((err) => {
               if (err) {
                 logger.error(
@@ -149,7 +149,7 @@ export default abstract class CacheMgr {
           key,
           JSON.stringify(value, getCircularReplacer()),
           'EX',
-          NC_REDIS_TTL,
+          ATMOSPHERE_REDIS_TTL,
         )
         .then(async () => {
           await this.execRefreshTTL(key, timestamp);
@@ -272,12 +272,12 @@ export default abstract class CacheMgr {
   }> {
     // remove null from arrays
     subKeys = subKeys.filter((k) => k);
-    // e.g. key = nc:<orgs>:<scope>:<project_id_1>:<source_id_1>:list
+    // e.g. key = atm:<orgs>:<scope>:<project_id_1>:<source_id_1>:list
     const key =
       subKeys.length === 0
         ? `${scope}:list`
         : `${scope}:${subKeys.join(':')}:list`;
-    // e.g. arr = ["nc:<orgs>:<scope>:<model_id_1>", "nc:<orgs>:<scope>:<model_id_2>"]
+    // e.g. arr = ["atm:<orgs>:<scope>:<model_id_1>", "atm:<orgs>:<scope>:<model_id_2>"]
     const arr = (await this.get(key, CacheGetType.TYPE_ARRAY)) || [];
     log(`${this.context}::getList: getting list with key ${key}`);
     const isNoneList = arr.length && arr.includes('NONE');
@@ -332,7 +332,7 @@ export default abstract class CacheMgr {
         const o = JSON.parse(values[0]);
         if (typeof o === 'object') {
           const diff = Date.now() - o.timestamp;
-          if (diff > NC_REDIS_GRACE_TTL * 1000) {
+          if (diff > ATMOSPHERE_REDIS_GRACE_TTL * 1000) {
             await this.execRefreshTTL(key);
           }
         }
@@ -397,7 +397,7 @@ export default abstract class CacheMgr {
     // remove null from arrays
     subListKeys = subListKeys.filter((k) => k);
     // construct key for List
-    // e.g. nc:<orgs>:<scope>:<project_id_1>:<source_id_1>:list
+    // e.g. atm:<orgs>:<scope>:<project_id_1>:<source_id_1>:list
     const listKey =
       subListKeys.length === 0
         ? `${scope}:list`
@@ -419,7 +419,7 @@ export default abstract class CacheMgr {
       let getKey = `${scope}:${o.id}`;
       if (props.length) {
         const propValues = props.map((p) => o[p]);
-        // e.g. nc:<orgs>:<scope>:<prop_value_1>:<prop_value_2>
+        // e.g. atm:<orgs>:<scope>:<prop_value_1>:<prop_value_2>
         getKey = `${scope}:${propValues.join(':')}`;
       }
       log(`${this.context}::setList: get key ${getKey}`);
@@ -501,7 +501,7 @@ export default abstract class CacheMgr {
   ): Promise<boolean> {
     // remove null from arrays
     subListKeys = subListKeys.filter((k) => k);
-    // e.g. key = nc:<orgs>:<scope>:<project_id_1>:<source_id_1>:list
+    // e.g. key = atm:<orgs>:<scope>:<project_id_1>:<source_id_1>:list
     const listKey =
       subListKeys.length === 0
         ? `${scope}:list`
@@ -636,7 +636,7 @@ export default abstract class CacheMgr {
                     key,
                     JSON.stringify(o, getCircularReplacer()),
                     'EX',
-                    NC_REDIS_TTL,
+                    ATMOSPHERE_REDIS_TTL,
                   );
                 }
               }
@@ -651,7 +651,7 @@ export default abstract class CacheMgr {
             }
           }
         }
-        pipeline.expire(key, NC_REDIS_TTL - 60);
+        pipeline.expire(key, ATMOSPHERE_REDIS_TTL - 60);
       }
     } else {
       const rawValue = await this.getRaw(key, null, true);
@@ -667,7 +667,7 @@ export default abstract class CacheMgr {
               key,
               JSON.stringify(rawValue, getCircularReplacer()),
               'EX',
-              NC_REDIS_TTL,
+              ATMOSPHERE_REDIS_TTL,
             );
           }
         }

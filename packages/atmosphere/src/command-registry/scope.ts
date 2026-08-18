@@ -1,4 +1,4 @@
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { ScopeRef } from './types';
 import { View } from '~/models';
 
@@ -12,7 +12,7 @@ import { View } from '~/models';
  * trace runs against a base, so this should never be hit at runtime; it's
  * a stronger signal than silently emitting `id: undefined`.
  */
-export const scopeBase = (context: NcContext): ScopeRef => {
+export const scopeBase = (context: AtContext): ScopeRef => {
   if (!context?.base_id) {
     throw new Error('scopeBase: context.base_id is required');
   }
@@ -65,7 +65,7 @@ export const scopeInterfacePage = (
  * remain reachable. View lookup failures degrade to base-only.
  */
 export async function getScopeAncestors(
-  context: NcContext,
+  context: AtContext,
   scope: ScopeRef,
 ): Promise<ScopeRef[]> {
   const ancestors: ScopeRef[] = [];

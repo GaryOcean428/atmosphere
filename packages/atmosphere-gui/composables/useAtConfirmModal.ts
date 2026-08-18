@@ -1,7 +1,7 @@
-import NcModalConfirm, { type NcConfirmModalProps } from '../components/nc/ModalConfirm.vue'
+import AtModalConfirm, { type AtConfirmModalProps } from '../components/atm/ModalConfirm.vue'
 
-export type NcShowConfirmModalProps = Pick<
-  NcConfirmModalProps,
+export type AtShowConfirmModalProps = Pick<
+  AtConfirmModalProps,
   | 'type'
   | 'title'
   | 'content'
@@ -67,7 +67,7 @@ const useNcConfirmModal = () => {
     okCallback = () => Promise.resolve(),
     initialSlots = {},
     showOkLoading,
-  }: NcShowConfirmModalProps) => {
+  }: AtShowConfirmModalProps) => {
     key = key || getModalKey()
 
     if (openedModalKeyMap.value[key]) {
@@ -83,7 +83,7 @@ const useNcConfirmModal = () => {
     const slots = ref<Record<string, () => VNode[]>>(toValue(initialSlots))
 
     const { close } = useDialog(
-      NcModalConfirm,
+      AtModalConfirm,
       {
         'visible': isOpen,
         'type': type,
@@ -137,16 +137,16 @@ const useNcConfirmModal = () => {
   }
 
   return {
-    showInfoModal: (props: Omit<NcShowConfirmModalProps, 'type'>) => {
+    showInfoModal: (props: Omit<AtShowConfirmModalProps, 'type'>) => {
       showConfirmModal({ ...props, type: 'info' })
     },
-    showSuccessModal: (props: Omit<NcShowConfirmModalProps, 'type'>) => {
+    showSuccessModal: (props: Omit<AtShowConfirmModalProps, 'type'>) => {
       showConfirmModal({ ...props, type: 'success' })
     },
-    showWarningModal: (props: Omit<NcShowConfirmModalProps, 'type'>) => {
+    showWarningModal: (props: Omit<AtShowConfirmModalProps, 'type'>) => {
       showConfirmModal({ ...props, type: 'warning' })
     },
-    showErrorModal: (props: Omit<NcShowConfirmModalProps, 'type'>) => {
+    showErrorModal: (props: Omit<AtShowConfirmModalProps, 'type'>) => {
       showConfirmModal({ ...props, type: 'error' })
     },
     openedModalKeyMap,

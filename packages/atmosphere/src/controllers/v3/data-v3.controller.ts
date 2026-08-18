@@ -13,7 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { NcApiVersion } from 'nocodb-sdk';
+import { AtApiVersion } from 'atmosphere-sdk';
 import type {
   DataDeleteRequest,
   DataInsertRequest,
@@ -26,7 +26,7 @@ import { parseHrtimeToMilliSeconds } from '~/helpers';
 import { DataApiLimiterGuard } from '~/guards/data-api-limiter.guard';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 import { DataV3Service } from '~/services/v3/data-v3.service';
 import { DataTableService } from '~/services/data-table.service';
 import { DataAttachmentV3Service } from '~/services/v3/data-attachment-v3.service';
@@ -44,8 +44,8 @@ export class Datav3Controller {
   @Get(`${PREFIX_APIV3_DATA}/:modelId/records`)
   @Acl('dataList')
   async dataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('baseName') baseName: string,
     @Param('modelId') modelId: string,
@@ -68,8 +68,8 @@ export class Datav3Controller {
   @HttpCode(200)
   @Acl('dataUpsert')
   async dataUpsert(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Body() body: DataUpsertRequest,
   ) {
@@ -85,8 +85,8 @@ export class Datav3Controller {
   @HttpCode(200)
   @Acl('dataInsert')
   async dataInsert(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('modelId') modelId: string,
     @Query('view_id') viewId: string,
@@ -107,8 +107,8 @@ export class Datav3Controller {
   @HttpCode(200)
   @Acl('dataUpdate')
   async dataAttachmentUpload(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('modelId') modelId: string,
     @Param('recordId') recordId: string,
     @Param('columnId') columnId: string,
@@ -129,8 +129,8 @@ export class Datav3Controller {
   @Delete(`${PREFIX_APIV3_DATA}/:modelId/records`)
   @Acl('dataDelete')
   async dataDelete(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('modelId') modelId: string,
     @Query('view_id') viewId: string,
@@ -150,8 +150,8 @@ export class Datav3Controller {
   @Patch(`${PREFIX_APIV3_DATA}/:modelId/records`)
   @Acl('dataUpdate')
   async dataUpdate(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('modelId') modelId: string,
     @Query('view_id') viewId: string,
@@ -169,8 +169,8 @@ export class Datav3Controller {
   @Get(`${PREFIX_APIV3_DATA}/:modelId/links/:columnId/:rowId`)
   @Acl('nestedDataList')
   async nestedDataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('modelId') modelId: string,
     @Query('viewId') viewId: string,
@@ -192,8 +192,8 @@ export class Datav3Controller {
   @HttpCode(200)
   @Acl('nestedDataLink')
   async nestedLink(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('modelId') modelId: string,
     @Query('view_id') viewId: string,
@@ -223,8 +223,8 @@ export class Datav3Controller {
   @Delete(`${PREFIX_APIV3_DATA}/:modelId/links/:columnId/:rowId`)
   @Acl('nestedDataUnlink')
   async nestedUnlink(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('modelId') modelId: string,
     @Query('view_id') viewId: string,
@@ -254,8 +254,8 @@ export class Datav3Controller {
   @Get(`${PREFIX_APIV3_DATA}/:modelId/count`)
   @Acl('dataCount')
   async dataCount(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('baseName') baseName: string,
     @Param('modelId') modelId: string,
@@ -266,7 +266,7 @@ export class Datav3Controller {
       query: req.query,
       modelId,
       viewId,
-      apiVersion: NcApiVersion.V3,
+      apiVersion: AtApiVersion.V3,
     });
 
     res.json(countResult);
@@ -274,8 +274,8 @@ export class Datav3Controller {
   @Get(`${PREFIX_APIV3_DATA}/:modelId/records/:rowId`)
   @Acl('dataRead')
   async dataRead(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('modelId') modelId: string,
     @Query('view_id') viewId: string,

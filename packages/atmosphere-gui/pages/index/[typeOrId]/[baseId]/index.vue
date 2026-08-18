@@ -21,7 +21,7 @@ const { base } = storeToRefs(baseStore)
 provide(ProjectInj, base)
 
 // create a new sidebar state
-const { toggle, toggleHasSidebar } = useSidebar('nc-left-sidebar', { hasSidebar: true, isOpen: true })
+const { toggle, toggleHasSidebar } = useSidebar('atm-left-sidebar', { hasSidebar: true, isOpen: true })
 
 const dropdownOpen = ref(false)
 
@@ -48,8 +48,8 @@ onBeforeMount(async () => {
 
     message.error(error.message)
 
-    if (error.error === NcErrorType.ERR_BASE_NOT_FOUND) {
-      navigateTo({ name: 'index-typeOrId', params: { typeOrId: 'nc' } })
+    if (error.error === AtErrorType.ERR_BASE_NOT_FOUND) {
+      navigateTo({ name: 'index-typeOrId', params: { typeOrId: 'atm' } })
       return
     }
   }
@@ -61,7 +61,7 @@ onBeforeMount(async () => {
   /** If v1 url found navigate to corresponding new url */
   const { type, name, view } = route.query
   if (type && name) {
-    await router.replace(`/nc/${route.params.baseId}/${type}/${name}${view ? `/${view}` : ''}`)
+    await router.replace(`/atm/${route.params.baseId}/${type}/${name}${view ? `/${view}` : ''}`)
   }
 })
 
@@ -115,20 +115,20 @@ useEventListener(document, 'keydown', async (e: KeyboardEvent) => {
 </template>
 
 <style lang="scss" scoped>
-:global(#nc-sidebar-left .ant-layout-sider-collapsed) {
+:global(#atm-sidebar-left .ant-layout-sider-collapsed) {
   @apply !w-0 !max-w-0 !min-w-0 overflow-x-hidden;
 }
 
-.nc-left-sidebar {
-  .nc-sidebar-left-toggle-icon {
-    @apply opacity-0 transition-opacity duration-200 transition-colors text-nc-content-gray-muted/80 hover:text-nc-content-gray-muted/100;
+.atm-left-sidebar {
+  .atm-sidebar-left-toggle-icon {
+    @apply opacity-0 transition-opacity duration-200 transition-colors text-atm-content-gray-muted/80 hover:text-atm-content-gray-muted/100;
 
-    .nc-left-sidebar {
+    .atm-left-sidebar {
       @apply !border-r-0;
     }
   }
 
-  &:hover .nc-sidebar-left-toggle-icon {
+  &:hover .atm-sidebar-left-toggle-icon {
     @apply opacity-100;
   }
 }
@@ -137,7 +137,7 @@ useEventListener(document, 'keydown', async (e: KeyboardEvent) => {
   @apply py-0;
 }
 
-.nc-sidebar-header {
+.atm-sidebar-header {
   @apply border-[var(--navbar-border)] !bg-[var(--navbar-bg)];
 }
 </style>

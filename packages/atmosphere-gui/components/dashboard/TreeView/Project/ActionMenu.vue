@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type SourceType, stringifyRolesObj } from 'nocodb-sdk'
+import { type SourceType, stringifyRolesObj } from 'atmosphere-sdk'
 
 interface Props {
   showBaseOption: (source: SourceType) => boolean
@@ -15,7 +15,7 @@ interface Emits {
   (e: 'clickMenu'): void
   (e: 'rename'): void
   (e: 'openErdView', value: SourceType): void
-  (e: 'duplicateProject', base: NcProject): void
+  (e: 'duplicateProject', base: AtProject): void
   (e: 'openBaseSettings', id: string): void
   (e: 'openMcpServer', id: string): void
   (e: 'copyProjectInfo'): void
@@ -54,18 +54,18 @@ const isOptionVisible = computed(() => {
 </script>
 
 <template>
-  <NcMenu
-    class="nc-scrollbar-md !min-w-50"
+  <AtMenu
+    class="atm-scrollbar-md !min-w-50"
     :style="{
       maxHeight: '70vh',
       overflow: 'overlay',
     }"
-    :data-testid="`nc-sidebar-base-${base.title}-options`"
+    :data-testid="`atm-sidebar-base-${base.title}-options`"
     variant="small"
     @click="emits('clickMenu')"
   >
     <!-- Copy Base ID -->
-    <NcMenuItemCopyId
+    <AtMenuItemCopyId
       :id="base.id"
       :tooltip="$t('labels.clickToCopyBaseID')"
       :label="
@@ -75,20 +75,20 @@ const isOptionVisible = computed(() => {
       "
     />
 
-    <NcMenuItem v-if="isUIAllowed('baseRename')" data-testid="nc-sidebar-project-rename" @click="emits('rename')">
+    <AtMenuItem v-if="isUIAllowed('baseRename')" data-testid="atm-sidebar-project-rename" @click="emits('rename')">
       <div v-e="['c:base:rename']" class="flex gap-2 items-center">
         <GeneralIcon icon="rename" />
         {{ $t('general.rename') }}
       </div>
-    </NcMenuItem>
+    </AtMenuItem>
 
-    <NcTooltip
+    <AtTooltip
       v-if="isOptionVisible.baseDuplicate"
       :title="baseDuplicateReason ? $t(baseDuplicateReason) : ''"
       :disabled="!baseDuplicateReason"
     >
-      <NcMenuItem
-        data-testid="nc-sidebar-base-duplicate"
+      <AtMenuItem
+        data-testid="atm-sidebar-base-duplicate"
         :disabled="!!baseDuplicateReason"
         @click="!baseDuplicateReason && emits('duplicateProject', base)"
       >
@@ -96,45 +96,45 @@ const isOptionVisible = computed(() => {
           <GeneralIcon icon="duplicate" />
           {{ $t('general.duplicate') }}
         </div>
-      </NcMenuItem>
-    </NcTooltip>
+      </AtMenuItem>
+    </AtTooltip>
 
-    <NcDivider v-if="['baseDuplicate', 'baseRename'].some((permission) => isUIAllowed(permission)) || !!baseDuplicateReason" />
+    <AtDivider v-if="['baseDuplicate', 'baseRename'].some((permission) => isUIAllowed(permission)) || !!baseDuplicateReason" />
 
     <!-- Copy Project Info -->
-    <NcMenuItem v-if="!isEeUI" key="copy" data-testid="nc-sidebar-base-copy-base-info" @click.stop="emits('copyProjectInfo')">
+    <AtMenuItem v-if="!isEeUI" key="copy" data-testid="atm-sidebar-base-copy-base-info" @click.stop="emits('copyProjectInfo')">
       <div v-e="['c:base:copy-proj-info']" class="flex gap-2 items-center">
         <GeneralIcon icon="copy" />
         {{ $t('activity.account.projInfo') }}
       </div>
-    </NcMenuItem>
+    </AtMenuItem>
 
     <!-- ERD View -->
-    <NcMenuItem
+    <AtMenuItem
       v-if="base?.sources?.[0]?.enabled"
       key="erd"
-      data-testid="nc-sidebar-base-relations"
+      data-testid="atm-sidebar-base-relations"
       @click="emits('openErdView', base?.sources?.[0])"
     >
       <div v-e="['c:base:erd']" class="flex gap-2 items-center">
         <GeneralIcon icon="ncErd" />
         {{ $t('title.relations') }}
       </div>
-    </NcMenuItem>
+    </AtMenuItem>
 
-    <NcMenuItem key="mcp" data-testid="nc-sidebar-mcp-server" @click="emits('openMcpServer', base.id!)">
+    <AtMenuItem key="mcp" data-testid="atm-sidebar-mcp-server" @click="emits('openMcpServer', base.id!)">
       <div v-e="['c:base:mcp-server']" class="flex gap-2 items-center">
         <GeneralIcon icon="mcp" />
         {{ $t('title.mcpServer') }}
       </div>
-    </NcMenuItem>
+    </AtMenuItem>
 
     <!-- Swagger: Rest APIs -->
-    <NcSubMenu
+    <AtSubMenu
       v-if="isOptionVisible.apiDocs"
       key="api"
       v-e="['e:api-docs']"
-      data-testid="nc-sidebar-base-rest-apis"
+      data-testid="atm-sidebar-base-rest-apis"
       class="py-0"
       variant="small"
       @click.stop
@@ -144,47 +144,47 @@ const isOptionVisible = computed(() => {
         {{ $t('activity.account.swagger') }}
       </template>
 
-      <NcMenuItem
-        data-testid="nc-sidebar-base-rest-apis-v2"
+      <AtMenuItem
+        data-testid="atm-sidebar-base-rest-apis-v2"
         @click.stop="openLink(`/api/v2/meta/bases/${base.id}/swagger`, appInfo.ncSiteUrl)"
       >
         <GeneralIcon icon="ncCode" class="opacity-80 !max-w-3.9" />
         API v2
-      </NcMenuItem>
+      </AtMenuItem>
 
-      <NcMenuItem
-        data-testid="nc-sidebar-base-rest-apis-v3"
+      <AtMenuItem
+        data-testid="atm-sidebar-base-rest-apis-v3"
         @click.stop="openLink(`/api/v3/meta/bases/${base.id}/swagger`, appInfo.ncSiteUrl)"
       >
         <GeneralIcon icon="ncCode" class="opacity-80 !max-w-3.9" />
         API v3
-      </NcMenuItem>
-    </NcSubMenu>
+      </AtMenuItem>
+    </AtSubMenu>
 
     <template v-if="isOptionVisible.baseOptions">
-      <NcDivider />
+      <AtDivider />
       <DashboardTreeViewBaseOptions v-model:base="base" :source="base.sources[0]" />
     </template>
 
-    <NcDivider v-if="isOptionVisible.baseMiscSettings || isOptionVisible.baseDelete" />
+    <AtDivider v-if="isOptionVisible.baseMiscSettings || isOptionVisible.baseDelete" />
 
-    <NcMenuItem
+    <AtMenuItem
       v-if="isOptionVisible.baseMiscSettings"
       key="teamAndSettings"
-      data-testid="nc-sidebar-base-settings"
-      class="nc-sidebar-base-base-settings"
+      data-testid="atm-sidebar-base-settings"
+      class="atm-sidebar-base-base-settings"
       @click="emits('openBaseSettings', base.id!)"
     >
       <div v-e="['c:base:settings']" class="flex gap-2 items-center">
         <GeneralIcon icon="settings" />
         {{ $t('activity.settings') }}
       </div>
-    </NcMenuItem>
-    <NcMenuItem v-if="isOptionVisible.baseDelete" data-testid="nc-sidebar-base-delete" danger @click="emits('delete')">
+    </AtMenuItem>
+    <AtMenuItem v-if="isOptionVisible.baseDelete" data-testid="atm-sidebar-base-delete" danger @click="emits('delete')">
       <div class="flex gap-2 items-center">
         <GeneralIcon icon="delete" class="w-4" />
         {{ $t('general.delete') }}
       </div>
-    </NcMenuItem>
-  </NcMenu>
+    </AtMenuItem>
+  </AtMenu>
 </template>

@@ -3,7 +3,7 @@ import StarterKit from '@tiptap/starter-kit'
 import TaskList from '@tiptap/extension-task-list'
 import { EditorContent, useEditor } from '@tiptap/vue-3'
 import Placeholder from '@tiptap/extension-placeholder'
-import { NcMarkdownParser, suggestion } from '~/helpers/tiptap'
+import { AtMarkdownParser, suggestion } from '~/helpers/tiptap'
 import { Markdown } from '~/helpers/tiptap-markdown'
 
 import {
@@ -95,7 +95,7 @@ const richTextLinkOptionRef = ref<HTMLElement | null>(null)
 
 const vModel = computed({
   get: () => {
-    return NcMarkdownParser.preprocessMarkdown(props.value, true)
+    return AtMarkdownParser.preprocessMarkdown(props.value, true)
   },
   set: (v: any) => {
     emits('update:value', v)
@@ -176,7 +176,7 @@ const editor = useEditor({
   onBlur: (e) => {
     if (
       !(e?.event?.relatedTarget as HTMLElement)?.closest(
-        '.bubble-menu, .nc-textarea-rich-editor, .nc-rich-text, .tippy-box, .mention, .nc-mention-list, .tippy-content',
+        '.bubble-menu, .atm-textarea-rich-editor, .atm-rich-text, .tippy-box, .mention, .atm-mention-list, .tippy-content',
       )
     ) {
       isFocused.value = false
@@ -258,7 +258,7 @@ useEventListener(
     if (
       targetEl?.classList?.contains('tiptap') ||
       !targetEl?.closest(
-        '.bubble-menu, .tippy-content, .nc-textarea-rich-editor,  .tippy-box, .mention, .nc-mention-list, .tippy-content',
+        '.bubble-menu, .tippy-content, .atm-textarea-rich-editor,  .tippy-box, .mention, .atm-mention-list, .tippy-content',
       )
     ) {
       isFocused.value = false
@@ -275,14 +275,14 @@ useEventListener(
     if (
       !targetEl &&
       (e.target as HTMLElement)?.closest(
-        '.bubble-menu, .tippy-content, .nc-textarea-rich-editor, .tippy-box, .mention, .nc-mention-list, .tippy-content',
+        '.bubble-menu, .tippy-content, .atm-textarea-rich-editor, .tippy-box, .mention, .atm-mention-list, .tippy-content',
       )
     )
       return
 
     if (
       !targetEl?.closest(
-        '.bubble-menu, .tippy-content, .nc-textarea-rich-editor,  .tippy-box, .mention, .nc-mention-list, .tippy-content',
+        '.bubble-menu, .tippy-content, .atm-textarea-rich-editor,  .tippy-box, .mention, .atm-mention-list, .tippy-content',
       )
     ) {
       isFocused.value = false
@@ -298,7 +298,7 @@ onClickOutside(editorDom, (e) => {
 
   if (
     !targetEl?.closest(
-      '.bubble-menu,.tippy-content, .nc-textarea-rich-editor, .tippy-box, .mention, .nc-mention-list, .tippy-content',
+      '.bubble-menu,.tippy-content, .atm-textarea-rich-editor, .tippy-box, .mention, .atm-mention-list, .tippy-content',
     )
   ) {
     isFocused.value = false
@@ -309,13 +309,13 @@ onClickOutside(editorDom, (e) => {
 
 <template>
   <div
-    class="nc-rich-text h-full focus:outline-none"
+    class="atm-rich-text h-full focus:outline-none"
     :class="{
-      'flex flex-col flex-grow nc-rich-text-full': fullMode,
-      'nc-rich-text-embed flex flex-col pl-1 w-full': !fullMode,
+      'flex flex-col flex-grow atm-rich-text-full': fullMode,
+      'atm-rich-text-embed flex flex-col pl-1 w-full': !fullMode,
       'readonly': readOnly,
-      'nc-form-rich-text-field !p-0 relative': isFormField,
-      'nc-rich-text-grid': isGrid,
+      'atm-form-rich-text-field !p-0 relative': isFormField,
+      'atm-rich-text-grid': isGrid,
     }"
     :tabindex="readOnlyCell || isFormField ? -1 : 0"
     @focus="onFocusWrapper"
@@ -334,7 +334,7 @@ onClickOutside(editorDom, (e) => {
           'justify-end xs:hidden max-w-[calc(100%_-_2px)]': !isForm,
         }"
       >
-        <div class="nc-scrollbar-thin relative">
+        <div class="atm-scrollbar-thin relative">
           <CellRichTextSelectedBubbleMenu
             v-if="editor"
             :editor="editor"
@@ -366,12 +366,12 @@ onClickOutside(editorDom, (e) => {
       <EditorContent
         ref="editorDom"
         :editor="editor"
-        class="nc-rich-text-content flex flex-col nc-textarea-rich-editor w-full"
+        class="atm-rich-text-content flex flex-col atm-textarea-rich-editor w-full"
         :class="{
           'mt-2.5 flex-grow': fullMode,
-          'nc-scrollbar-thin': !fullMode || (!fullMode && isExpandedFormOpen),
+          'atm-scrollbar-thin': !fullMode || (!fullMode && isExpandedFormOpen),
           'flex-grow': isExpandedFormOpen,
-          [`!overflow-hidden nc-rich-truncate nc-line-clamp-${rowHeightTruncateLines(localRowHeight)}`]:
+          [`!overflow-hidden atm-rich-truncate atm-line-clamp-${rowHeightTruncateLines(localRowHeight)}`]:
             !fullMode && readOnly && localRowHeight && !isExpandedFormOpen && !isForm,
         }"
         @click="readOnly ? handleDompurifyLinkClick($event) : undefined"
@@ -387,7 +387,7 @@ onClickOutside(editorDom, (e) => {
         @mousedown.stop
         @keydown.esc="handleOnEscRichTextEditor($event, editor)"
       />
-      <div v-if="isFormField && !readOnly" class="nc-form-field-bubble-menu-wrapper overflow-hidden">
+      <div v-if="isFormField && !readOnly" class="atm-form-field-bubble-menu-wrapper overflow-hidden">
         <div
           :class="isFocused ? 'max-h-[50px]' : 'max-h-0'"
           :style="{
@@ -409,28 +409,28 @@ onClickOutside(editorDom, (e) => {
 </template>
 
 <style lang="scss">
-.nc-text-rich-scroll {
+.atm-text-rich-scroll {
   &::-webkit-scrollbar-thumb {
     @apply bg-transparent;
   }
 }
-.nc-text-rich-scroll:hover {
+.atm-text-rich-scroll:hover {
   &::-webkit-scrollbar-thumb {
-    @apply bg-nc-bg-gray-medium;
+    @apply bg-atm-bg-gray-medium;
   }
 }
 
-.nc-rich-text-embed {
+.atm-rich-text-embed {
   .ProseMirror {
     @apply !border-transparent max-h-full;
   }
-  &:not(.nc-form-rich-text-field):not(.nc-rich-text-grid) {
+  &:not(.atm-form-rich-text-field):not(.atm-rich-text-grid) {
     .ProseMirror {
       min-height: 8rem;
     }
   }
 
-  &.nc-form-rich-text-field {
+  &.atm-form-rich-text-field {
     .ProseMirror {
       padding: 0;
     }
@@ -438,7 +438,7 @@ onClickOutside(editorDom, (e) => {
       ul[data-type='taskList'] li input[type='checkbox'] {
         background-color: #d5d5d9 !important;
         &:not(:checked) {
-          @apply !border-nc-border-gray-extradark;
+          @apply !border-atm-border-gray-extradark;
         }
         &:focus {
           box-shadow: none !important;
@@ -448,7 +448,7 @@ onClickOutside(editorDom, (e) => {
     }
   }
   &.readonly {
-    .nc-textarea-rich-editor {
+    .atm-textarea-rich-editor {
       .ProseMirror {
         resize: none;
         white-space: pre-line;
@@ -457,7 +457,7 @@ onClickOutside(editorDom, (e) => {
   }
   &.allow-vertical-resize:not(.readonly) {
     .ProseMirror {
-      @apply nc-scrollbar-thin;
+      @apply atm-scrollbar-thin;
 
       overflow-y: auto;
       overflow-x: hidden;
@@ -472,7 +472,7 @@ onClickOutside(editorDom, (e) => {
   }
 }
 
-.nc-rich-text-full {
+.atm-rich-text-full {
   @apply px-3;
   .ProseMirror {
     @apply !p-2 h-[min(797px,100dvh_-_170px)] w-[min(1256px,100vw_-_124px)];
@@ -496,29 +496,29 @@ onClickOutside(editorDom, (e) => {
   }
   &.readonly {
     .ProseMirror {
-      @apply bg-nc-bg-gray-extralight;
+      @apply bg-atm-bg-gray-extralight;
     }
   }
 }
 
-.nc-textarea-rich-editor {
-  &.nc-rich-truncate {
+.atm-textarea-rich-editor {
+  &.atm-rich-truncate {
     .tiptap.ProseMirror {
       display: -webkit-box;
       max-width: 100%;
       -webkit-box-orient: vertical;
       word-break: break-word;
     }
-    &.nc-line-clamp-1 .tiptap.ProseMirror {
+    &.atm-line-clamp-1 .tiptap.ProseMirror {
       -webkit-line-clamp: 1;
     }
-    &.nc-line-clamp-2 .tiptap.ProseMirror {
+    &.atm-line-clamp-2 .tiptap.ProseMirror {
       -webkit-line-clamp: 2;
     }
-    &.nc-line-clamp-3 .tiptap.ProseMirror {
+    &.atm-line-clamp-3 .tiptap.ProseMirror {
       -webkit-line-clamp: 3;
     }
-    &.nc-line-clamp-4 .tiptap.ProseMirror {
+    &.atm-line-clamp-4 .tiptap.ProseMirror {
       -webkit-line-clamp: 4;
     }
   }
@@ -530,7 +530,7 @@ onClickOutside(editorDom, (e) => {
     pointer-events: none;
   }
   .ProseMirror {
-    @apply flex-grow pt-1.5 border-1 border-nc-border-gray-medium rounded-lg;
+    @apply flex-grow pt-1.5 border-1 border-atm-border-gray-medium rounded-lg;
 
     > * {
       @apply ml-1;
@@ -539,10 +539,10 @@ onClickOutside(editorDom, (e) => {
   .ProseMirror-focused {
     // remove all border
     outline: none;
-    @apply border-nc-border-brand;
+    @apply border-atm-border-brand;
   }
 }
-.nc-form-field-bubble-menu-wrapper {
+.atm-form-field-bubble-menu-wrapper {
   @apply absolute -bottom-9 left-1/2 z-50 rounded-lg;
   transform: translateX(-50%);
   box-shadow: 0px 8px 8px -4px rgba(0, 0, 0, 0.04), 0px 20px 24px -4px rgba(0, 0, 0, 0.1);

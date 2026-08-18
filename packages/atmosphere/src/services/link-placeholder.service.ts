@@ -6,21 +6,21 @@ import {
   RelationTypes,
   SqlUiFactory,
   UITypes,
-} from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import type { MetaService } from '~/meta/meta.service';
 import Column from '~/models/Column';
 import Model from '~/models/Model';
 import View from '~/models/View';
 import Base from '~/models/Base';
-import NocoCache from '~/cache/NocoCache';
-import Noco from '~/Noco';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import Atmosphere from '~/Atmosphere';
 import ProjectMgrv2 from '~/db/sql-mgr/v2/ProjectMgrv2';
 import { getColumnNameQuery } from '~/db/getColumnNameQuery';
 import { getUniqueColumnName } from '~/helpers/getUniqueName';
 import { Altered } from '~/services/columns.service';
 import { CacheDelDirection, CacheScope, MetaTable } from '~/utils/globals';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 
 @Injectable()
 export class LinkPlaceholderService {
@@ -34,11 +34,11 @@ export class LinkPlaceholderService {
    * Returns the created placeholder column meta, or null on failure.
    */
   async createPlaceholder(
-    ctx: NcContext,
+    ctx: AtContext,
     originalCol: any,
     table: Model,
     columnNamePrefix = '_nc_ph_',
-    ncMeta: MetaService = Noco.ncMeta,
+    ncMeta: MetaService = Atmosphere.ncMeta,
   ): Promise<{ id: string } | null> {
     if (!table) return null;
 
@@ -154,12 +154,12 @@ export class LinkPlaceholderService {
     }
 
     // Add placeholder to column list cache
-    await NocoCache.set(
+    await AtmosphereCache.set(
       ctx,
       `${CacheScope.COLUMN}:${placeholderCol.id}`,
       placeholderCol,
     );
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       ctx,
       CacheScope.COLUMN,
       [originalCol.fk_model_id],
@@ -213,7 +213,7 @@ export class LinkPlaceholderService {
           MetaTable.COLUMNS,
           placeholderCol.id,
         );
-        await NocoCache.deepDel(
+        await AtmosphereCache.deepDel(
           ctx,
           `${CacheScope.COLUMN}:${placeholderCol.id}`,
           CacheDelDirection.CHILD_TO_PARENT,
@@ -257,12 +257,12 @@ export class LinkPlaceholderService {
    * using a single UPDATE query. Handles MM, HM, BT, and OO relation types.
    */
   async populatePlaceholderValues(
-    ctx: NcContext,
+    ctx: AtContext,
     originalCol: any,
     placeholderColumnName: string,
     table: Model,
     source: any,
-    ncMeta: MetaService = Noco.ncMeta,
+    ncMeta: MetaService = Atmosphere.ncMeta,
   ): Promise<void> {
     const colOpt = await ncMeta.metaGet2(
       ctx.workspace_id,
@@ -282,11 +282,11 @@ export class LinkPlaceholderService {
     // wrong base and silently no-op (placeholder values never materialize).
     // Same-base links leave fk_related_base_id/fk_mm_base_id null or equal, so
     // these collapse to ctx.
-    const relatedCtx: NcContext =
+    const relatedCtx: AtContext =
       colOpt.fk_related_base_id && colOpt.fk_related_base_id !== ctx.base_id
         ? { ...ctx, base_id: colOpt.fk_related_base_id }
         : ctx;
-    const mmCtx: NcContext =
+    const mmCtx: AtContext =
       colOpt.fk_mm_base_id && colOpt.fk_mm_base_id !== ctx.base_id
         ? { ...ctx, base_id: colOpt.fk_mm_base_id }
         : ctx;
@@ -337,7 +337,7 @@ export class LinkPlaceholderService {
       return;
     }
 
-    const dbDriver = await NcConnectionMgrv2.get(source);
+    const dbDriver = await AtConnectionMgrv2.get(source);
     if (!dbDriver) {
       this.logger.warn(
         `populatePlaceholder skipped — no dbDriver for source ${source?.id}`,
@@ -492,13 +492,13 @@ export class LinkPlaceholderService {
         // `AS` (ORA-03048). The subquery's `fk_val`/`dv` column aliases stay
         // unquoted so they fold to the same case as the unquoted references.
         await baseModel.execAndParse(
-          `MERGE INTO ${srcTn} USING (${subquery}) nc_ph_linked ON (${qCol(
+          `MERGE INTO ${srcTn} USING (${subquery}) atm_ph_linked ON (${qCol(
             srcTn,
             childCol.column_name,
-          )} = nc_ph_linked.fk_val) WHEN MATCHED THEN UPDATE SET ${qCol(
+          )} = atm_ph_linked.fk_val) WHEN MATCHED THEN UPDATE SET ${qCol(
             srcTn,
             phCn,
-          )} = nc_ph_linked.dv`,
+          )} = atm_ph_linked.dv`,
           null,
           { raw: true },
         );
@@ -553,15 +553,15 @@ export class LinkPlaceholderService {
         );
       } else if (baseModel.isOracle) {
         // Oracle has no `UPDATE ... FROM` — see the MM branch above for why the
-        // source alias is `nc_ph_linked` and the table alias carries no `AS`.
+        // source alias is `atm_ph_linked` and the table alias carries no `AS`.
         await baseModel.execAndParse(
-          `MERGE INTO ${srcTn} USING (${subquery}) nc_ph_linked ON (${qCol(
+          `MERGE INTO ${srcTn} USING (${subquery}) atm_ph_linked ON (${qCol(
             srcTn,
             parentCol.column_name,
-          )} = nc_ph_linked.fk_val) WHEN MATCHED THEN UPDATE SET ${qCol(
+          )} = atm_ph_linked.fk_val) WHEN MATCHED THEN UPDATE SET ${qCol(
             srcTn,
             phCn,
-          )} = nc_ph_linked.dv`,
+          )} = atm_ph_linked.dv`,
           null,
           { raw: true },
         );
@@ -674,9 +674,9 @@ export class LinkPlaceholderService {
    * reverse column exists or the related table/column is already deleted.
    */
   async findReverseLinkColumn(
-    ctx: NcContext,
+    ctx: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column | null> {
     const col = await Column.get(
       ctx,
@@ -700,7 +700,7 @@ export class LinkPlaceholderService {
     // NOT the deleted column's base. Resolving it with the caller's `ctx`
     // returns null (wrong base scope), so the reverse column is never found
     // and is left orphaned. Resolve it in the related base.
-    const relatedCtx: NcContext =
+    const relatedCtx: AtContext =
       colOpt.fk_related_base_id && colOpt.fk_related_base_id !== ctx.base_id
         ? { ...ctx, base_id: colOpt.fk_related_base_id }
         : ctx;
@@ -754,17 +754,17 @@ export class LinkPlaceholderService {
    * (SQLite) will deadlock.
    *
    * `ncMeta` is used only for the lookup + cache clear that sit around the
-   * DDL path; `createPlaceholder` itself still goes through `Noco.ncMeta`
+   * DDL path; `createPlaceholder` itself still goes through `Atmosphere.ncMeta`
    * (its meta insert happens after the DDL and is independent of any
    * caller-held transaction).
    *
    * Returns { reverseCol, placeholder, table_id } on success, null otherwise.
    */
   async createPlaceholderForReverse(
-    ctx: NcContext,
+    ctx: AtContext,
     reverseCol: Column,
     columnNamePrefix = '_nc_ph_',
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<{
     reverseCol: Column;
     placeholder: { id: string };

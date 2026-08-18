@@ -50,7 +50,7 @@ const { t } = useI18n()
 const wrapperRef = ref()
 
 const handleAutoScrollOption = () => {
-  const option = document.querySelector('.nc-unified-list-option-active')
+  const option = document.querySelector('.atm-unified-list-option-active')
 
   if (option) {
     setTimeout(() => {
@@ -113,7 +113,7 @@ watch(
 <template>
   <div
     ref="wrapperRef"
-    class="flex flex-col pt-2 nc-list-with-search w-64"
+    class="flex flex-col pt-2 atm-list-with-search w-64"
     @keydown.arrow-down.prevent="onArrowDown"
     @keydown.arrow-up.prevent="onArrowUp"
     @keydown.enter.prevent="onClick(filteredOptions[activeOptionIndex])"
@@ -123,15 +123,15 @@ watch(
         ref="inputRef"
         v-model:value="searchQuery"
         :placeholder="searchInputPlaceholder || t('placeholder.search')"
-        class="nc-dropdown-search-unified-input"
+        class="atm-dropdown-search-unified-input"
         @keydown.enter.stop="handleKeydownEnter"
         @change="activeOptionIndex = 0"
       >
-        <template #prefix> <GeneralIcon icon="search" class="nc-search-icon h-3.5 w-3.5 mr-1" /> </template
+        <template #prefix> <GeneralIcon icon="search" class="atm-search-icon h-3.5 w-3.5 mr-1" /> </template
       ></a-input>
     </div>
 
-    <div class="nc-unified-search-list-wrapper flex-col w-full max-h-100 nc-scrollbar-thin !overflow-y-auto px-2 pb-2">
+    <div class="atm-unified-search-list-wrapper flex-col w-full max-h-100 atm-scrollbar-thin !overflow-y-auto px-2 pb-2">
       <div v-if="!filteredOptions.length" class="px-2 py-6 text-center text-gray-500 flex flex-col items-center gap-6">
         <img
           v-if="!disableMascot"
@@ -147,12 +147,12 @@ watch(
         v-for="(option, index) in filteredOptions"
         :key="index"
         v-e="optionConfig.selectOptionEvent"
-        class="flex w-full py-[5px] items-center justify-between px-2 hover:bg-nc-bg-gray-light cursor-pointer rounded-md"
+        class="flex w-full py-[5px] items-center justify-between px-2 hover:bg-atm-bg-gray-light cursor-pointer rounded-md"
         :class="[
           `${optionConfig.optionClassName}`,
-          `nc-unified-list-option-${index}`,
+          `atm-unified-list-option-${index}`,
           {
-            'bg-nc-bg-gray-light nc-unified-list-option-active': activeOptionIndex === index,
+            'bg-atm-bg-gray-light atm-unified-list-option-active': activeOptionIndex === index,
           },
         ]"
         @click="onClick(option)"
@@ -165,12 +165,12 @@ watch(
           }"
         >
           <slot :option="option" />
-          <NcTooltip class="truncate" show-on-truncate-only>
+          <AtTooltip class="truncate" show-on-truncate-only>
             <template #title> {{ option.title }}</template>
             <span>
               {{ option.title }}
             </span>
-          </NcTooltip>
+          </AtTooltip>
         </div>
         <GeneralIcon
           v-if="showSelectedOption && option[uniqueIdentifier] === selectedOptionId"
@@ -185,7 +185,7 @@ watch(
 </template>
 
 <style scoped lang="scss">
-.nc-unified-search-list-wrapper {
+.atm-unified-search-list-wrapper {
   max-height: min(400px, calc(100vh - 120px));
 }
 </style>

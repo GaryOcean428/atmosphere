@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, EventType } from 'nocodb-sdk';
-import type { GridColumnReqType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
-import { NcContext } from '~/interface/config';
+import { AppEvents, EventType } from 'atmosphere-sdk';
+import type { GridColumnReqType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { MetaService } from '~/meta/meta.service';
 import {
   type ViewWebhookManager,
@@ -11,23 +11,23 @@ import {
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
 import { MetaTable } from '~/cli';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheDelDirection, CacheScope } from '~/utils/globals';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { assertNotLockedViewOnSandboxProduction } from '~/helpers/sandboxGuards';
 import { Column, GridViewColumn, View } from '~/models';
 import { extractProps } from '~/helpers/extractProps';
-import Noco from '~/Noco';
-import NocoSocket from '~/socket/NocoSocket';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 @Injectable()
 export class GridColumnsService {
   constructor(private readonly appHooksService: AppHooksService) {}
 
   async columnList(
-    context: NcContext,
+    context: AtContext,
     param: { gridViewId: string },
     ncMeta?: MetaService,
   ) {
@@ -36,11 +36,11 @@ export class GridColumnsService {
 
   @TraceCommand(OperationName.gridColumnUpdate)
   async gridColumnUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       gridViewColumnId: string;
       grid: GridColumnReqType;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -57,7 +57,7 @@ export class GridColumnsService {
     );
 
     if (!oldGridViewColumn) {
-      NcError.get(context).fieldNotFound(param.gridViewColumnId);
+      AtError.get(context).fieldNotFound(param.gridViewColumnId);
     }
 
     if (oldGridViewColumn?.fk_view_id) {
@@ -120,7 +120,7 @@ export class GridColumnsService {
       context,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -142,9 +142,9 @@ export class GridColumnsService {
   }
 
   async gridColumnClearGroupBy(
-    context: NcContext,
+    context: AtContext,
     param: { viewId: string; viewWebhookManager?: ViewWebhookManager },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const qb = ncMeta
       .knex(MetaTable.GRID_VIEW_COLUMNS)
@@ -175,7 +175,7 @@ export class GridColumnsService {
         ).forUpdate();
     }
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.GRID_VIEW_COLUMN}:${param.viewId}`,
       CacheDelDirection.PARENT_TO_CHILD,

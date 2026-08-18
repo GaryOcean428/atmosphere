@@ -1,14 +1,14 @@
-import { type NcContext, parseProp } from 'nocodb-sdk';
+import { type AtContext, parseProp } from 'atmosphere-sdk';
 import type { LinksColumn } from '~/models';
 import { type Column } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export const getCustomLinkParam = async (
-  _context: NcContext,
+  _context: AtContext,
   {
     col,
   }: { col: Column; colOptions: LinksColumn; mapId?: (id: string) => string },
-  _ncMeta = Noco.ncMeta,
+  _ncMeta = Atmosphere.ncMeta,
 ) => {
   if (!parseProp(col.meta).custom) {
     return;

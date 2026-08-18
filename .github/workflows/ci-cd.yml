@@ -7,15 +7,15 @@ on:
   push:
     branches: [develop]
     paths:
-      - "packages/nc-gui/**"
-      - "packages/nocodb/**"
+      - "packages/atmosphere-gui/**"
+      - "packages/atmosphere/**"
       - ".github/workflows/ci-cd.yml"
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review, labeled]
     branches: [develop]
     paths:
-      - "packages/nc-gui/**"
-      - "packages/nocodb/**"
+      - "packages/atmosphere-gui/**"
+      - "packages/atmosphere/**"
       - ".github/workflows/ci-cd.yml"
   # Triggered manually
   workflow_dispatch:
@@ -40,15 +40,15 @@ jobs:
       #          uses: char0n/swagger-editor-validate@v1
       #          with:
       #            swagger-editor-url: http://localhost/
-      #            definition-file: packages/nocodb/src/schema/swagger.json
+      #            definition-file: packages/atmosphere/src/schema/swagger.json
 
       - name: Validate Swagger JSON
         run: |
-          if ! jq empty packages/nocodb/src/schema/swagger.json; then
+          if ! jq empty packages/atmosphere/src/schema/swagger.json; then
             echo "swagger.json file is not valid JSON"
             exit 1
           fi
-          if ! jq empty packages/nocodb/src/schema/swagger-v2.json; then
+          if ! jq empty packages/atmosphere/src/schema/swagger-v2.json; then
             echo "swaggerv2.json file is not valid JSON"
             exit 1
           fi

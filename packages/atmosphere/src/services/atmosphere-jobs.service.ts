@@ -4,8 +4,8 @@ import { JobsLogService } from '~/modules/jobs/jobs/jobs-log.service';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 
 @Injectable()
-export class NocoJobsService {
-  protected logger = new Logger(NocoJobsService.name);
+export class AtmosphereJobsService {
+  protected logger = new Logger(AtmosphereJobsService.name);
 
   constructor(
     @Inject('JobsService') private readonly jobsService: IJobsService,

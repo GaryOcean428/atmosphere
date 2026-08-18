@@ -10,8 +10,8 @@ import type { ModelMessage, ToolSet } from 'ai';
 import type { LanguageModelV3 as LanguageModel } from '@ai-sdk/provider';
 
 /**
- * AI SDK DevTools — opt-in via NC_AI_DEVTOOLS=true. The watch:run* scripts in
- * packages/nocodb default it to false; flip it to true locally when you need to
+ * AI SDK DevTools — opt-in via ATMOSPHERE_AI_DEVTOOLS=true. The watch:run* scripts in
+ * packages/atmosphere default it to false; flip it to true locally when you need to
  * inspect AI calls (never set in production). Applied centrally in
  * getModel() so it captures EVERY AI call — chat agents and the schema / docs /
  * completion / utils / data services all route through getModel(). Runs/steps/
@@ -24,7 +24,7 @@ import type { LanguageModelV3 as LanguageModel } from '@ai-sdk/provider';
  * static import and prod prunes devDependencies.
  */
 const devToolsMw =
-  process.env.NC_AI_DEVTOOLS === 'true' ? devToolsMiddleware() : null;
+  process.env.ATMOSPHERE_AI_DEVTOOLS === 'true' ? devToolsMiddleware() : null;
 if (devToolsMw) {
   // eslint-disable-next-line no-console
   console.log(
@@ -36,7 +36,7 @@ export type ModelCapability = 'text' | 'vision' | 'tools' | 'image-generation';
 
 /**
  * System AI activity — lets an integration route different activities to
- * different models (the NocoDB-managed integration maps these via its
+ * different models (the Atmosphere-managed integration maps these via its
  * `activities` config; every other provider ignores them).
  *
  * NOTE: features where the user explicitly picks an integration AND a model
@@ -164,7 +164,7 @@ export function resolveReasoningEffort(
  * model, so we look up the exact value (first match wins). A model that matches no
  * entry, or whose matched entry has no value for the requested effort, gets NO
  * reasoning options. Shared by every `openai`-namespace integration (OpenAI,
- * OpenAI-compatible, NocoDB-managed).
+ * OpenAI-compatible, Atmosphere-managed).
  *
  * Confirmed sets (off/minimal map to each model's lowest supported value):
  *   gpt-5.x "-pro"      : medium | high | xhigh           (no none/low)
@@ -278,7 +278,7 @@ export abstract class AiIntegration<
   /**
    * Resolve the full model-selection args to a concrete provider model id.
    * Default ignores `useCase` and delegates to {@link resolveModelId} — only
-   * integrations that route activities to different models (the NocoDB-managed
+   * integrations that route activities to different models (the Atmosphere-managed
    * integration) override this.
    */
   protected resolveModel(args?: AiGetModelArgs): string {
@@ -310,7 +310,7 @@ export abstract class AiIntegration<
    * The model reference this integration would resolve `args` to, as it should be
    * *reported* — not necessarily what the provider is handed.
    *
-   * These differ for the NocoDB-managed integration: it resolves `<provider>/<modelId>`
+   * These differ for the Atmosphere-managed integration: it resolves `<provider>/<modelId>`
    * and then hands the delegate only the bare `<modelId>`, so `LanguageModel.modelId`
    * loses the namespace. Billing keys its rate table on the qualified ref, so usage must
    * be reported from here rather than off the returned model.
@@ -346,7 +346,7 @@ export abstract class AiIntegration<
       }
     }
 
-    // DevTools capture (no-op unless NC_AI_DEVTOOLS=true) — applied last so it
+    // DevTools capture (no-op unless ATMOSPHERE_AI_DEVTOOLS=true) — applied last so it
     // observes the fully-configured model used by every AI feature.
     if (devToolsMw) {
       model = wrapLanguageModel({ model, middleware: devToolsMw });

@@ -1,4 +1,4 @@
-import type { TableType, UnifiedMetaType } from 'nocodb-sdk'
+import type { TableType, UnifiedMetaType } from 'atmosphere-sdk'
 
 export const validateFormulaGetMeta = (
   getMeta: (

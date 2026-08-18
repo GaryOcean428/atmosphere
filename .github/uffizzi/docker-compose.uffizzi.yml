@@ -2,7 +2,7 @@ version: '3'
 
 x-uffizzi:
   ingress:
-    service: nocodb
+    service: atmosphere
     port: 8080
 
 services:
@@ -21,22 +21,22 @@ services:
       MYSQL_DATABASE: root_db
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_USER: noco
+      MYSQL_USER: atmosphere
     image: "mysql:8.3.0"
     deploy:
       resources:
         limits:
           memory: 500M
-  nocodb:
-    image: "${NOCODB_IMAGE}"
+  atmosphere:
+    image: "${ATMOSPHERE_IMAGE}"
     ports:
       - "8080:8080"
     entrypoint: /bin/sh
     command: ["-c", "apk add wait4ports && wait4ports tcp://localhost:5432 && /usr/src/appEntry/start.sh"]
     environment:
-      NC_DB: "pg://localhost:5432?u=postgres&p=password&d=root_db"
-      NC_ADMIN_EMAIL: admin@nocodb.com
-      NC_ADMIN_PASSWORD: password
+      ATMOSPHERE_DB: "pg://localhost:5432?u=postgres&p=password&d=root_db"
+      ATMOSPHERE_ADMIN_EMAIL: admin@atmosphere.dev
+      ATMOSPHERE_ADMIN_PASSWORD: password
     deploy:
       resources:
         limits:

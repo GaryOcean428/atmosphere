@@ -1,4 +1,4 @@
-import { type MCPTokenType } from 'nocodb-sdk'
+import { type MCPTokenType } from 'atmosphere-sdk'
 import dayjs from 'dayjs'
 
 export type MCPTokenExtendedType = MCPTokenType & {

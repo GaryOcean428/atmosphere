@@ -1,4 +1,4 @@
-import type { ColumnType, LinkToAnotherRecordType, TableType } from 'nocodb-sdk'
+import type { ColumnType, LinkToAnotherRecordType, TableType } from 'atmosphere-sdk'
 import { isBoxHovered } from '../../utils/canvas'
 import { PlainCellRenderer } from '../Plain'
 import { renderAsCellLookupOrLtarValue } from '../../utils/cell'
@@ -70,7 +70,7 @@ export const BelongsToCellRenderer: CellRenderer = {
         textColor: getColor(themeV4Colors.brand['500']),
         tag: {
           renderAsTag: true,
-          tagBgColor: getColor(themeV4Colors.brand['50'], 'var(--nc-bg-gray-light)'),
+          tagBgColor: getColor(themeV4Colors.brand['50'], 'var(--atm-bg-gray-light)'),
           tagHeight: 24,
         },
         meta: relatedTableMeta,
@@ -143,7 +143,7 @@ export const BelongsToCellRenderer: CellRenderer = {
         size: 16,
         color: isSimpleLinkRecordList
           ? getColor(themeV4Colors.gray['500'])
-          : getColor(themeVariables.content['nc-content-gray'].subtle),
+          : getColor(themeVariables.content['atm-content-gray'].subtle),
       })
 
       if (isBoxHovered({ x: x + width - 26, y: y + 7, width: 16, height: 16 }, mousePosition)) {

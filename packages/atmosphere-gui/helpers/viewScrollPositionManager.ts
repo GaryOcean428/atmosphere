@@ -21,7 +21,7 @@ export class ViewScrollPositionManager {
   private readonly TTL = 30 * 24 * 60 * 60 * 1000 // 30 days
 
   constructor() {
-    this.storage = useStorage<ViewScrollPositionStorage>('nc-view-scroll-position', {})
+    this.storage = useStorage<ViewScrollPositionStorage>('atm-view-scroll-position', {})
     this.cleanExpired()
   }
 

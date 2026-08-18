@@ -1,4 +1,4 @@
-import { ProjectTypes } from 'nocodb-sdk'
+import { ProjectTypes } from 'atmosphere-sdk'
 
 export const useCopySharedBase = createSharedComposable(() => {
   const workspaceStore = useWorkspace()
@@ -55,7 +55,7 @@ export const useCopySharedBase = createSharedComposable(() => {
     isLoading.value = true
 
     try {
-      const jobData = await api.base.duplicateShared(workspaceId ?? 'nc', sharedBaseId.value, {
+      const jobData = await api.base.duplicateShared(workspaceId ?? 'atm', sharedBaseId.value, {
         options: optionsToExclude.value,
         base: isEeUI
           ? {

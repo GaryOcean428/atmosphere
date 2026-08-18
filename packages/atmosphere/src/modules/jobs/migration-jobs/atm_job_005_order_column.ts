@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import debug from 'debug';
 import PQueue from 'p-queue';
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
 import type { Knex } from 'knex';
 import type SqlMgrv2 from '~/db/sql-mgr/v2/SqlMgrv2';
@@ -9,7 +9,7 @@ import type CustomKnex from '~/db/CustomKnex';
 import { Column, Model, Source } from '~/models';
 import { MetaTable } from '~/utils/globals';
 import SimpleLRUCache from '~/utils/cache';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import ProjectMgrv2 from '~/db/sql-mgr/v2/ProjectMgrv2';
 import {
   getUniqueColumnAliasName,
@@ -18,10 +18,10 @@ import {
 import getColumnPropsFromUIDT from '~/helpers/getColumnPropsFromUIDT';
 import { Altered } from '~/services/columns.service';
 import Upgrader from '~/Upgrader';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
-const PARALLEL_LIMIT = +process.env.NC_ORDER_MIGRATION_PARALLEL_LIMIT || 10;
-const TEMP_TABLE = 'nc_temp_processed_order_models';
+const PARALLEL_LIMIT = +process.env.ATMOSPHERE_ORDER_MIGRATION_PARALLEL_LIMIT || 10;
+const TEMP_TABLE = 'atm_temp_processed_order_models';
 
 const propsByClientType = {};
 
@@ -38,8 +38,8 @@ const memoizedGetColumnPropsFromUIDT = async (source: Source) => {
     propsByClientType[clientType] = await getColumnPropsFromUIDT(
       {
         uidt: UITypes.Order,
-        column_name: 'nc_order',
-        title: 'nc_order',
+        column_name: 'atm_order',
+        title: 'atm_order',
       },
       source,
     );
@@ -50,7 +50,7 @@ const memoizedGetColumnPropsFromUIDT = async (source: Source) => {
 
 @Injectable()
 export class OrderColumnMigration {
-  private readonly debugLog = debug('nc:migration-jobs:order-column');
+  private readonly debugLog = debug('atm:migration-jobs:order-column');
   private readonly logger = new Logger(OrderColumnMigration.name);
   private readonly log = (...msgs: string[]) =>
     this.logger.log(`${msgs.join(' ')}`);
@@ -59,7 +59,7 @@ export class OrderColumnMigration {
   private processedModelsCount = 0;
   private cache = new SimpleLRUCache(1000);
 
-  private logTimes = process.env.NC_ORDER_MIGRATION_LOG_TIMES === 'true';
+  private logTimes = process.env.ATMOSPHERE_ORDER_MIGRATION_LOG_TIMES === 'true';
 
   logExecutionTime(message: string, hrTime, force = false) {
     if (!force && !this.logTimes) return;
@@ -74,8 +74,8 @@ export class OrderColumnMigration {
   }
 
   async job() {
-    if (!(await Noco.ncMeta.knexConnection.schema.hasTable(TEMP_TABLE))) {
-      await Noco.ncMeta.knexConnection.schema.createTable(
+    if (!(await Atmosphere.ncMeta.knexConnection.schema.hasTable(TEMP_TABLE))) {
+      await Atmosphere.ncMeta.knexConnection.schema.createTable(
         TEMP_TABLE,
         (table) => {
           table.increments('id').primary();
@@ -88,7 +88,7 @@ export class OrderColumnMigration {
     }
 
     // Remove incomplete models from previous run
-    await Noco.ncMeta
+    await Atmosphere.ncMeta
       .knexConnection(TEMP_TABLE)
       .delete()
       .where('completed', false);
@@ -142,7 +142,7 @@ export class OrderColumnMigration {
             `Error processing model ${model.id}: ${e.message}`,
             e.stack,
           );
-          await this.updateModelStatus(Noco.ncMeta, model.id, false, e.message);
+          await this.updateModelStatus(Atmosphere.ncMeta, model.id, false, e.message);
         } finally {
           const item = this.processingModels.find(
             (m) => m.fk_model_id === model.id,
@@ -282,8 +282,8 @@ export class OrderColumnMigration {
   private async addOrderColumn(model: Model, source: Source, sqlMgr: SqlMgrv2) {
     const newColumn = {
       ...(await memoizedGetColumnPropsFromUIDT(source)),
-      column_name: getUniqueColumnName(model.columns, 'nc_order'),
-      title: getUniqueColumnAliasName(model.columns, 'nc_order'),
+      column_name: getUniqueColumnName(model.columns, 'atm_order'),
+      title: getUniqueColumnAliasName(model.columns, 'atm_order'),
       cdf: null,
       system: true,
       altered: Altered.NEW_COLUMN,
@@ -334,7 +334,7 @@ export class OrderColumnMigration {
 
       source.upgraderMode = true;
 
-      const dbDriver: CustomKnex = await NcConnectionMgrv2.get(source);
+      const dbDriver: CustomKnex = await AtConnectionMgrv2.get(source);
 
       const model = await Model.get(context, modelId);
 
@@ -390,14 +390,14 @@ export class OrderColumnMigration {
             context.workspace_id ? `, WorkspaceId ${context.workspace_id}` : ''
           }`,
         );
-        await this.updateModelStatus(Noco.ncMeta, modelId, true);
+        await this.updateModelStatus(Atmosphere.ncMeta, modelId, true);
         return;
       }
 
       // Add update model status query to upgrader queries
       await this.updateModelStatus(ncMeta, modelId, true);
 
-      const realDbDriver = await NcConnectionMgrv2.get(
+      const realDbDriver = await AtConnectionMgrv2.get(
         new Source({
           ...source,
           upgraderMode: false,

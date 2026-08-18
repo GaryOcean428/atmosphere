@@ -14,8 +14,8 @@ import { ApiDocsService } from '~/services/api-docs/api-docs.service';
 import { PublicApiLimiterGuard } from '~/guards/public-api-limiter.guard';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { ncSiteUrl } from '~/utils/envs';
 
 @Controller()
@@ -26,7 +26,7 @@ export class ApiDocsController {
   @UseGuards(MetaApiLimiterGuard, GlobalGuard)
   @Acl('swaggerJson')
   async swaggerJson(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Request() req,
   ) {
@@ -43,7 +43,7 @@ export class ApiDocsController {
   @UseGuards(MetaApiLimiterGuard, GlobalGuard)
   @Acl('swaggerJson')
   async swaggerJsonV2(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Request() req,
   ) {
@@ -62,7 +62,7 @@ export class ApiDocsController {
     res.send(
       getSwaggerHtml({
         ncSiteUrl: ncSiteUrl || '',
-        dashboardPath: Noco.getConfig().dashboardPath || '',
+        dashboardPath: Atmosphere.getConfig().dashboardPath || '',
       }),
     );
   }
@@ -73,7 +73,7 @@ export class ApiDocsController {
     res.send(
       getRedocHtml({
         ncSiteUrl: ncSiteUrl || '',
-        dashboardPath: Noco.getConfig().dashboardPath || '',
+        dashboardPath: Atmosphere.getConfig().dashboardPath || '',
       }),
     );
   }
@@ -84,7 +84,7 @@ export class ApiDocsController {
     res.send(
       getSwaggerHtml({
         ncSiteUrl: ncSiteUrl || '',
-        dashboardPath: Noco.getConfig().dashboardPath || '',
+        dashboardPath: Atmosphere.getConfig().dashboardPath || '',
       }),
     );
   }
@@ -95,7 +95,7 @@ export class ApiDocsController {
     res.send(
       getRedocHtml({
         ncSiteUrl: ncSiteUrl || '',
-        dashboardPath: Noco.getConfig().dashboardPath || '',
+        dashboardPath: Atmosphere.getConfig().dashboardPath || '',
       }),
     );
   }
@@ -104,7 +104,7 @@ export class ApiDocsController {
   @UseGuards(MetaApiLimiterGuard, GlobalGuard)
   @Acl('swaggerJson')
   async swaggerJsonV3(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Request() req,
   ) {
@@ -123,7 +123,7 @@ export class ApiDocsController {
     res.send(
       getSwaggerHtml({
         ncSiteUrl: ncSiteUrl || '',
-        dashboardPath: Noco.getConfig().dashboardPath || '',
+        dashboardPath: Atmosphere.getConfig().dashboardPath || '',
       }),
     );
   }
@@ -134,7 +134,7 @@ export class ApiDocsController {
     res.send(
       getRedocHtml({
         ncSiteUrl: ncSiteUrl || '',
-        dashboardPath: Noco.getConfig().dashboardPath || '',
+        dashboardPath: Atmosphere.getConfig().dashboardPath || '',
       }),
     );
   }

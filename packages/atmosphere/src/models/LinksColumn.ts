@@ -1,8 +1,8 @@
 import type { RollupColumn } from '~/models/';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import { Column } from '~/models/';
 import LinkToAnotherRecordColumn from '~/models/LinkToAnotherRecordColumn';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export default class LinksColumn
   extends LinkToAnotherRecordColumn
@@ -29,15 +29,15 @@ export default class LinksColumn
   }
 
   async getRelationColumn(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column> {
     return await Column.get(context, { colId: this.fk_column_id }, ncMeta);
   }
 
   async getRollupColumn(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Column> {
     return await Column.get(
       context,
@@ -47,18 +47,18 @@ export default class LinksColumn
   }
 
   public static async read(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const colData = await super.read(context, columnId, ncMeta);
     return colData && new LinksColumn(colData);
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     data: Partial<LinksColumn>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const colData = await super.insert(context, data, ncMeta);
     return colData && new LinksColumn(colData);

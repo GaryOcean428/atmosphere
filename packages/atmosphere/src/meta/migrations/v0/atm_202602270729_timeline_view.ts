@@ -13,9 +13,9 @@ const up = async (knex: Knex) => {
     table.primary(['base_id', 'fk_view_id']);
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_timeline_view_v2_base_id_fk_workspace_id_index',
+      'atm_timeline_view_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['fk_view_id'], 'nc_timeline_view_v2_oldpk_idx');
+    table.index(['fk_view_id'], 'atm_timeline_view_v2_oldpk_idx');
   });
 
   await knex.schema.createTable(MetaTable.TIMELINE_VIEW_COLUMNS, (table) => {
@@ -38,13 +38,13 @@ const up = async (knex: Knex) => {
     table.primary(['base_id', 'id']);
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_timeline_view_columns_v2_base_id_fk_workspace_id_index',
+      'atm_timeline_view_columns_v2_base_id_fk_workspace_id_index',
     );
     table.index(
       ['fk_view_id', 'fk_column_id'],
-      'nc_timeline_view_columns_v2_fk_view_id_fk_column_id_index',
+      'atm_timeline_view_columns_v2_fk_view_id_fk_column_id_index',
     );
-    table.index(['id'], 'nc_timeline_view_columns_v2_oldpk_idx');
+    table.index(['id'], 'atm_timeline_view_columns_v2_oldpk_idx');
   });
 
   await knex.schema.createTable(MetaTable.TIMELINE_VIEW_RANGE, (table) => {
@@ -59,9 +59,9 @@ const up = async (knex: Knex) => {
     table.primary(['base_id', 'id']);
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_timeline_view_range_v2_base_id_fk_workspace_id_index',
+      'atm_timeline_view_range_v2_base_id_fk_workspace_id_index',
     );
-    table.index(['id'], 'nc_timeline_view_range_v2_oldpk_idx');
+    table.index(['id'], 'atm_timeline_view_range_v2_oldpk_idx');
   });
 };
 

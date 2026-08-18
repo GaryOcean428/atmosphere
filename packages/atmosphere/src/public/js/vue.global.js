@@ -1782,7 +1782,7 @@ var Vue = (function (exports) {
       [10 /* ErrorCodes.APP_ERROR_HANDLER */]: 'app errorHandler',
       [11 /* ErrorCodes.APP_WARN_HANDLER */]: 'app warnHandler',
       [12 /* ErrorCodes.FUNCTION_REF */]: 'ref function',
-      [13 /* ErrorCodes.ASYNC_COMPONENT_LOADER */]: 'async component loader',
+      [13 /* ErrorCodes.ASYATMOSPHERE_COMPONENT_LOADER */]: 'async component loader',
       [14 /* ErrorCodes.SCHEDULER */]: 'scheduler flush. This is likely a Vue internals bug. ' +
           'Please open an issue at https://new-issue.vuejs.org/?repo=vuejs/core'
   };
@@ -3937,7 +3937,7 @@ var Vue = (function (exports) {
               }
               const onError = (err) => {
                   pendingRequest = null;
-                  handleError(err, instance, 13 /* ErrorCodes.ASYNC_COMPONENT_LOADER */, !errorComponent /* do not throw in dev if user provided error component */);
+                  handleError(err, instance, 13 /* ErrorCodes.ASYATMOSPHERE_COMPONENT_LOADER */, !errorComponent /* do not throw in dev if user provided error component */);
               };
               // suspense-controlled or SSR.
               if ((suspensible && instance.suspense) ||

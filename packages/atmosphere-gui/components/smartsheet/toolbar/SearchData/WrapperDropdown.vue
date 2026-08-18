@@ -24,18 +24,18 @@ const popupAlign = computed(() => ({
 
 <template>
   <slot v-if="isMobileMode" />
-  <NcDropdown
+  <AtDropdown
     v-else
     :visible="visible"
     :trigger="['click']"
     placement="bottomRight"
     :align="popupAlign"
-    overlay-class-name="nc-dropdown-toolbar-search !border-primary !shadow-selected overflow-hidden !z-1000"
-    non-nc-dropdown
+    overlay-class-name="atm-dropdown-toolbar-search !border-primary !shadow-selected overflow-hidden !z-1000"
+    non-atm-dropdown
   >
     <div class="absolute -right-1 -top-5"></div>
     <template #overlay>
       <slot />
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

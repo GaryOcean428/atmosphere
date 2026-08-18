@@ -2,7 +2,7 @@
 const props = defineProps<{
   visible: boolean
   baseId: string
-  base?: NcProject
+  base?: AtProject
 }>()
 
 const emits = defineEmits(['update:visible'])
@@ -52,7 +52,7 @@ const onDelete = async () => {
     <template #entity-preview>
       <div
         v-if="base"
-        class="flex flex-row items-center py-2 px-2.25 bg-nc-bg-gray-extralight rounded-lg text-nc-content-gray-subtle"
+        class="flex flex-row items-center py-2 px-2.25 bg-atm-bg-gray-extralight rounded-lg text-atm-content-gray-subtle"
       >
         <GeneralProjectIcon
           :color="parseProp(base.meta).iconColor"
@@ -62,7 +62,7 @@ const onDelete = async () => {
             managed_app_master: base.managed_app_master,
             managed_app_id: base.managed_app_id,
           }"
-          class="nc-view-icon w-6 h-6 mx-1"
+          class="atm-view-icon w-6 h-6 mx-1"
         />
         <div
           class="capitalize text-ellipsis overflow-hidden select-none w-full pl-1.75"

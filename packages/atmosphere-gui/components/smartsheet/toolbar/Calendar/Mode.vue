@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ViewTypes } from 'nocodb-sdk'
+import { ViewTypes } from 'atmosphere-sdk'
 import { INTERFACE_VIEW_ID_PREFIX } from '~/lib/interfaceData'
 
 const props = defineProps<{
@@ -164,7 +164,7 @@ const setWeekendDisplay = (value: WeekendDisplay) => {
 
 const updateHighlightPosition = () => {
   nextTick(() => {
-    const activeTab = document.querySelector('.nc-calendar-mode-tab .tab.active') as HTMLElement
+    const activeTab = document.querySelector('.atm-calendar-mode-tab .tab.active') as HTMLElement
     if (activeTab) {
       highlightStyle.value.left = `${activeTab.offsetLeft}px`
       highlightStyle.value.width = `${activeTab.offsetWidth}px`
@@ -192,23 +192,23 @@ watch(dropdownOpen, (open) => {
 <template>
   <div v-if="isTab" class="absolute left-[42%] top-0 bottom-0">
     <div
-      class="px-1 pointer-events-auto relative mx-3 rounded-lg gap-x-0.5 nc-calendar-mode-tab"
-      data-testid="nc-calendar-view-mode"
+      class="px-1 pointer-events-auto relative mx-3 rounded-lg gap-x-0.5 atm-calendar-mode-tab"
+      data-testid="atm-calendar-view-mode"
     >
       <div class="flex items-center flex-row">
         <div
           :style="highlightStyle"
-          class="highlight h-0.5 rounded-t-md absolute transition-all -bottom-0.7 bg-nc-content-brand"
+          class="highlight h-0.5 rounded-t-md absolute transition-all -bottom-0.7 bg-atm-content-brand"
         ></div>
 
         <div
           v-for="mode in modes"
           :key="mode"
-          :data-testid="`nc-calendar-view-mode-${mode}`"
+          :data-testid="`atm-calendar-view-mode-${mode}`"
           class="cursor-pointer tab transition-all px-1 duration-300 flex items-center h-10 z-10 justify-center"
           :class="{
-            'text-nc-content-brand font-bold  bg-transparent active': activeCalendarView === mode,
-            'text-nc-content-gray-subtle2 font-[500] hover:text-nc-content-gray-extreme ': activeCalendarView !== mode,
+            'text-atm-content-brand font-bold  bg-transparent active': activeCalendarView === mode,
+            'text-atm-content-gray-subtle2 font-[500] hover:text-atm-content-gray-extreme ': activeCalendarView !== mode,
           }"
           @click="setActiveCalendarMode(mode, $event)"
         >
@@ -220,61 +220,61 @@ watch(dropdownOpen, (open) => {
     </div>
   </div>
 
-  <NcDropdown v-else v-model:visible="dropdownOpen" :trigger="['click']" overlay-class-name="!rounded-lg">
-    <NcButton
-      class="nc-select-shadow !h-7 !rounded-lg !shrink-0"
+  <AtDropdown v-else v-model:visible="dropdownOpen" :trigger="['click']" overlay-class-name="!rounded-lg">
+    <AtButton
+      class="atm-select-shadow !h-7 !rounded-lg !shrink-0"
       :class="isMobileMode ? '!px-2' : '!px-3'"
-      data-testid="nc-calendar-view-mode"
+      data-testid="atm-calendar-view-mode"
       size="small"
       type="secondary"
       @click.stop
     >
-      <div class="flex items-center text-[13px] font-medium text-nc-content-gray" :class="isMobileMode ? 'gap-1' : 'gap-2'">
-        <span class="whitespace-nowrap" data-testid="nc-calendar-view-mode-label">{{ triggerLabel }}</span>
-        <GeneralIcon v-if="!isMobileMode" icon="arrowDown" class="flex-none text-nc-content-gray-subtle h-4 w-4" />
+      <div class="flex items-center text-[13px] font-medium text-atm-content-gray" :class="isMobileMode ? 'gap-1' : 'gap-2'">
+        <span class="whitespace-nowrap" data-testid="atm-calendar-view-mode-label">{{ triggerLabel }}</span>
+        <GeneralIcon v-if="!isMobileMode" icon="arrowDown" class="flex-none text-atm-content-gray-subtle h-4 w-4" />
       </div>
-    </NcButton>
+    </AtButton>
 
     <template #overlay>
       <!-- Mode list -->
-      <NcMenu v-if="panel === 'list'" class="!min-w-36" variant="small" data-testid="nc-calendar-view-mode-menu">
-        <NcMenuItem
+      <AtMenu v-if="panel === 'list'" class="!min-w-36" variant="small" data-testid="atm-calendar-view-mode-menu">
+        <AtMenuItem
           v-for="option in modes"
           :key="option"
-          :data-testid="`nc-calendar-view-mode-option-${option}`"
+          :data-testid="`atm-calendar-view-mode-option-${option}`"
           inner-class="w-full"
           @click="() => selectMode(option)"
         >
           <div class="flex-1 text-[13px]">{{ $t(modeI18nKey(option)) }}</div>
           <GeneralIcon
             v-if="option === activeCalendarView"
-            id="nc-selected-item-icon"
+            id="atm-selected-item-icon"
             icon="check"
-            class="flex-none text-nc-content-brand w-4 h-4"
+            class="flex-none text-atm-content-brand w-4 h-4"
           />
-        </NcMenuItem>
+        </AtMenuItem>
 
-        <NcMenuItem
+        <AtMenuItem
           v-e="['c:calendar:custom-timescale:open']"
-          data-testid="nc-calendar-view-mode-option-custom"
+          data-testid="atm-calendar-view-mode-option-custom"
           inner-class="w-full"
           @click="openCustomPanel"
         >
           <div class="flex-1 text-[13px]">{{ $t('labels.custom') }}…</div>
           <GeneralIcon
             v-if="activeCalendarView === 'custom'"
-            id="nc-selected-item-icon"
+            id="atm-selected-item-icon"
             icon="check"
-            class="flex-none text-nc-content-brand w-4 h-4"
+            class="flex-none text-atm-content-brand w-4 h-4"
           />
-        </NcMenuItem>
+        </AtMenuItem>
 
         <template v-if="supportsWeekendOptions">
-          <NcDivider />
-          <NcMenuItem
+          <AtDivider />
+          <AtMenuItem
             v-for="opt in weekendOptions"
             :key="opt.value"
-            :data-testid="`nc-calendar-weekend-${opt.value}`"
+            :data-testid="`atm-calendar-weekend-${opt.value}`"
             inner-class="w-full"
             @click="
               () => {
@@ -286,30 +286,30 @@ watch(dropdownOpen, (open) => {
             <div class="flex-1 text-[13px]">{{ opt.label }}</div>
             <GeneralIcon
               v-if="weekendDisplay === opt.value"
-              id="nc-selected-item-icon"
+              id="atm-selected-item-icon"
               icon="check"
-              class="flex-none text-nc-content-brand w-4 h-4"
+              class="flex-none text-atm-content-brand w-4 h-4"
             />
-          </NcMenuItem>
+          </AtMenuItem>
         </template>
-      </NcMenu>
+      </AtMenu>
 
       <!-- Custom timescale config -->
       <form
         v-else
-        class="nc-calendar-custom-timescale flex flex-col gap-3 p-4 w-64 bg-nc-bg-default rounded-lg"
-        data-testid="nc-calendar-custom-timescale"
+        class="atm-calendar-custom-timescale flex flex-col gap-3 p-4 w-64 bg-atm-bg-default rounded-lg"
+        data-testid="atm-calendar-custom-timescale"
         @click.stop
       >
-        <label class="text-bodyDefaultSm text-nc-content-gray" for="nc-calendar-custom-count-input">
+        <label class="text-bodyDefaultSm text-atm-content-gray" for="atm-calendar-custom-count-input">
           {{ $t('labels.timescale') }}
         </label>
         <!-- One combo box: numeric count + borderless unit select, with the standard input shadow. -->
         <div
-          class="nc-calendar-custom-combo flex items-center w-full h-8 rounded-lg border-1 border-nc-border-gray-medium shadow-default hover:shadow-hover focus-within:shadow-selected focus-within:border-nc-border-brand transition-all overflow-hidden"
+          class="atm-calendar-custom-combo flex items-center w-full h-8 rounded-lg border-1 border-atm-border-gray-medium shadow-default hover:shadow-hover focus-within:shadow-selected focus-within:border-atm-border-brand transition-all overflow-hidden"
         >
           <a-input-number
-            id="nc-calendar-custom-count-input"
+            id="atm-calendar-custom-count-input"
             ref="countInputRef"
             v-model:value="draftCount"
             :min="1"
@@ -318,52 +318,52 @@ watch(dropdownOpen, (open) => {
             :controls="false"
             :bordered="false"
             placeholder="1-6"
-            class="nc-calendar-custom-count flex-1 min-w-0"
-            data-testid="nc-calendar-custom-count"
+            class="atm-calendar-custom-count flex-1 min-w-0"
+            data-testid="atm-calendar-custom-count"
             @press-enter="applyCustom"
           />
-          <NcSelect
+          <AtSelect
             v-model:value="draftUnit"
             :options="unitOptions"
             :bordered="false"
             :dropdown-match-select-width="false"
-            class="nc-calendar-custom-unit flex-none"
-            data-testid="nc-calendar-custom-unit"
-            dropdown-class-name="nc-calendar-custom-unit-dropdown"
+            class="atm-calendar-custom-unit flex-none"
+            data-testid="atm-calendar-custom-unit"
+            dropdown-class-name="atm-calendar-custom-unit-dropdown"
             @change="focusCountInput"
           />
         </div>
         <div class="flex items-center justify-end gap-2 mt-2">
-          <NcButton type="secondary" size="small" data-testid="nc-calendar-custom-cancel" @click="cancelCustom">
+          <AtButton type="secondary" size="small" data-testid="atm-calendar-custom-cancel" @click="cancelCustom">
             {{ $t('general.cancel') }}
-          </NcButton>
-          <NcButton
+          </AtButton>
+          <AtButton
             v-e="['c:calendar:custom-timescale:set', { unit: draftUnit }]"
             type="primary"
             size="small"
             :disabled="!isDraftCountValid"
-            data-testid="nc-calendar-custom-set"
+            data-testid="atm-calendar-custom-set"
             inner-class="!px-1.5"
             @click="applyCustom"
           >
             {{ $t('general.set') }}
-          </NcButton>
+          </AtButton>
         </div>
       </form>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style lang="scss" scoped>
-.nc-calendar-mode-menu {
-  :deep(.nc-menu-item-inner) {
+.atm-calendar-mode-menu {
+  :deep(.atm-menu-item-inner) {
     @apply !text-[13px];
   }
 }
 
 // Custom-timescale combo: the count input and unit select share one bordered box.
 // Both render borderless; a faint divider separates the unit from the count.
-.nc-calendar-custom-combo {
+.atm-calendar-custom-combo {
   :deep(.ant-input-number) {
     @apply h-full w-full bg-transparent shadow-none;
 
@@ -373,23 +373,23 @@ watch(dropdownOpen, (open) => {
   }
 
   :deep(.ant-input-number-input) {
-    @apply h-full px-3 text-[13px] text-nc-content-gray;
+    @apply h-full px-3 text-[13px] text-atm-content-gray;
   }
 
   // Unit select sizes to its text (Days/Weeks); pr-7 leaves a tidy gap before the chevron
   // instead of the wide gap a full-width select produced.
-  .nc-calendar-custom-unit {
+  .atm-calendar-custom-unit {
     :deep(.ant-select-selector) {
       @apply h-full text-[13px] pl-2 pr-7 min-w-20 cursor-pointer transition-colors;
     }
 
     // Visible hover feedback on the select segment so it reads as an interactive dropdown.
     &:hover :deep(.ant-select-selector) {
-      @apply bg-nc-bg-gray-light;
+      @apply bg-atm-bg-gray-light;
     }
 
     :deep(.ant-select-selection-item) {
-      @apply text-nc-content-gray pr-0;
+      @apply text-atm-content-gray pr-0;
     }
   }
 }

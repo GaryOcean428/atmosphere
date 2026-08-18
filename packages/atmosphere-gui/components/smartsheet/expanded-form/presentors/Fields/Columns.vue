@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type ColumnType, isLinksOrLTAR, isVirtualCol } from 'nocodb-sdk'
+import { type ColumnType, isLinksOrLTAR, isVirtualCol } from 'atmosphere-sdk'
 import { fieldMatchesSearch, isBlankFieldValue } from './searchUtils'
 
 const props = defineProps<{
@@ -73,8 +73,8 @@ const showHiddenFieldsSection = computed(() => {
 <template>
   <div
     ref="expandedFormScrollWrapper"
-    class="flex flex-col flex-grow h-full max-h-full nc-scrollbar-thin items-center w-full p-4 xs:(px-4 pt-4 pb-2) children:max-w-[588px] <lg:(children:max-w-[450px])"
-    :class="[compactMode ? 'gap-2.5 xs:gap-3 nc-panel-fields-compact' : 'gap-5 xs:gap-6']"
+    class="flex flex-col flex-grow h-full max-h-full atm-scrollbar-thin items-center w-full p-4 xs:(px-4 pt-4 pb-2) children:max-w-[588px] <lg:(children:max-w-[450px])"
+    :class="[compactMode ? 'gap-2.5 xs:gap-3 atm-panel-fields-compact' : 'gap-5 xs:gap-6']"
   >
     <SmartsheetExpandedFormPresentorsFieldsColumnList
       :fields="fields"
@@ -85,11 +85,11 @@ const showHiddenFieldsSection = computed(() => {
       :compact-mode="compactMode"
     />
     <div v-if="showHiddenFieldsSection" class="flex w-full <lg:(px-1) items-center py-6">
-      <div class="flex-grow h-px mr-1 bg-nc-bg-gray-light" />
-      <NcButton
+      <div class="flex-grow h-px mr-1 bg-atm-bg-gray-light" />
+      <AtButton
         :size="isMobileMode ? 'medium' : 'small'"
         :disabled="isFiltering"
-        class="flex-shrink !text-sm overflow-hidden !text-nc-content-gray-muted !font-weight-500"
+        class="flex-shrink !text-sm overflow-hidden !text-atm-content-gray-muted !font-weight-500"
         type="secondary"
         @click="showHiddenFields = !showHiddenFields"
       >
@@ -109,8 +109,8 @@ const showHiddenFieldsSection = computed(() => {
           :class="showHiddenFields ? 'transform rotate-180' : ''"
           class="ml-1"
         />
-      </NcButton>
-      <div class="flex-grow h-px ml-1 bg-nc-bg-gray-light" />
+      </AtButton>
+      <div class="flex-grow h-px ml-1 bg-atm-bg-gray-light" />
     </div>
     <SmartsheetExpandedFormPresentorsFieldsColumnList
       v-if="showHiddenFieldsSection && effectiveShowHidden"
@@ -125,8 +125,8 @@ const showHiddenFieldsSection = computed(() => {
     />
     <div
       v-if="showEmptyState"
-      class="nc-expanded-form-empty-search flex flex-col items-center justify-center gap-2 w-full py-12 text-nc-content-gray-muted"
-      data-testid="nc-expanded-form-empty-search"
+      class="atm-expanded-form-empty-search flex flex-col items-center justify-center gap-2 w-full py-12 text-atm-content-gray-muted"
+      data-testid="atm-expanded-form-empty-search"
     >
       <GeneralIcon icon="search" class="h-6 w-6" />
       <span v-if="isSearching" class="text-sm">{{ $t('placeholder.noResultsFoundForYourSearch') }}</span>

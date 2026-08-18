@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dateFormats, timeFormats } from 'nocodb-sdk'
+import { dateFormats, timeFormats } from 'atmosphere-sdk'
 import dayjs from 'dayjs'
 import { timeCellMaxWidthMap, timeFormatsObj } from './utils'
 
@@ -81,11 +81,11 @@ const timeCellMaxWidth = computed(() => {
 <template>
   <div
     :title="localState?.format(dateTimeFormat)"
-    class="nc-date-picker w-full flex items-center nc-cell-field relative gap-2 nc-cell-picker-datetime tracking-tight"
+    class="atm-date-picker w-full flex items-center atm-cell-field relative gap-2 atm-cell-picker-datetime tracking-tight"
   >
     <div class="flex-1 flex items-center gap-2 truncate">
       <div
-        class="px-1 nc-truncate"
+        class="px-1 atm-truncate"
         :class="{
           'w-[fit-content]': isUnderLookup,
           'w-[60%] !max-w-[110px]': !isUnderLookup,
@@ -94,11 +94,11 @@ const timeCellMaxWidth = computed(() => {
         {{ localState?.format(dateFormat) ?? '' }}
       </div>
 
-      <div :class="timeCellMaxWidth" class="px-1 nc-truncate">
+      <div :class="timeCellMaxWidth" class="px-1 atm-truncate">
         {{ cellValue }}
       </div>
     </div>
-    <div v-if="timeZoneDisplay" class="text-nc-content-gray-muted whitespace-nowrap text-tiny">
+    <div v-if="timeZoneDisplay" class="text-atm-content-gray-muted whitespace-nowrap text-tiny">
       {{ timeZoneDisplay }}
     </div>
   </div>

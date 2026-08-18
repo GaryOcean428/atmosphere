@@ -1,6 +1,6 @@
 import type { FunctionalComponent, SVGAttributes } from 'vue'
-import type { FormDefinition, IntegrationType, PaginatedType } from 'nocodb-sdk'
-import { ClientType, IntegrationsType, SyncDataType } from 'nocodb-sdk'
+import type { FormDefinition, IntegrationType, PaginatedType } from 'atmosphere-sdk'
+import { ClientType, IntegrationsType, SyncDataType } from 'atmosphere-sdk'
 import { getI18n } from '~/plugins/a.i18n'
 import GeneralBaseLogo from '~/components/general/BaseLogo.vue'
 import type { IntegrationStoreEvents as IntegrationStoreEventsTypes } from '#imports'
@@ -118,7 +118,7 @@ const [useProvideIntegrationViewStore, _useIntegrationStore] = useInjectionState
 
   const { t } = useI18n()
 
-  const { aiIntegrations } = useNocoAi()
+  const { aiIntegrations } = useAtmosphereAi()
 
   const isFromIntegrationPage = ref(false)
 
@@ -237,7 +237,7 @@ const [useProvideIntegrationViewStore, _useIntegrationStore] = useInjectionState
     } catch (e) {
       const error = await extractSdkResponseErrorMsgv2(e)
 
-      if (error.error === NcErrorType.ERR_INTEGRATION_NOT_FOUND) {
+      if (error.error === AtErrorType.ERR_INTEGRATION_NOT_FOUND) {
         await message.error(error.message?.replace(integration.id, integration.title!))
         window.location.reload()
         return
@@ -414,7 +414,7 @@ const [useProvideIntegrationViewStore, _useIntegrationStore] = useInjectionState
     } catch (e) {
       const error = await extractSdkResponseErrorMsgv2(e)
 
-      if (error.error === NcErrorType.ERR_INTEGRATION_NOT_FOUND) {
+      if (error.error === AtErrorType.ERR_INTEGRATION_NOT_FOUND) {
         await message.error(error.message?.replace(integration.id!, integration.title!))
         window.location.reload()
         return

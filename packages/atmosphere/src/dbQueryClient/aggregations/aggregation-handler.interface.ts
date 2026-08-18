@@ -1,4 +1,4 @@
-import type { AggregationCategory, FormulaDataTypes } from 'nocodb-sdk';
+import type { AggregationCategory, FormulaDataTypes } from 'atmosphere-sdk';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Knex } from '~/db/CustomKnex';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
@@ -45,7 +45,7 @@ export interface AggregationSqlContext {
 
   /**
    * Inline column expression. Plain dialects use `column_query`; mssql/oracle
-   * point this at the materialized `nc_val` when a virtual column is involved.
+   * point this at the materialized `atm_val` when a virtual column is involved.
    */
   cq?: string | Knex.QueryBuilder;
 
@@ -56,6 +56,6 @@ export interface AggregationSqlContext {
 
   /** mssql/oracle: whether the column was materialized into a derived table. */
   materialize?: boolean;
-  /** mssql/oracle: the filtered derived table exposing `nc_val`. */
+  /** mssql/oracle: the filtered derived table exposing `atm_val`. */
   derivedInner?: Knex.QueryBuilder;
 }

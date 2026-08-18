@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-export interface NcBadgeProps {
+export interface AtBadgeProps {
   color?: string
   border?: boolean
   size?: 'xs' | 'sm' | 'md' | 'lg'
   rounded?: 'sm' | 'md' | 'lg'
 }
 
-const props = withDefaults(defineProps<NcBadgeProps>(), {
+const props = withDefaults(defineProps<AtBadgeProps>(), {
   border: true,
   size: 'sm',
   rounded: 'md',
@@ -16,17 +16,17 @@ const props = withDefaults(defineProps<NcBadgeProps>(), {
 <template>
   <div
     :class="{
-      'border-nc-purple-500 bg-nc-bg-purple-dark dark:bg-nc-bg-purple-light': props.color === 'purple',
-      'border-nc-blue-500 bg-nc-bg-blue-dark dark:bg-nc-blue-20': props.color === 'blue',
-      'border-nc-green-500 bg-nc-bg-green-dark dark:bg-nc-green-20': props.color === 'green',
-      'border-nc-orange-500 bg-nc-bg-orange-dark dark:bg-nc-orange-20': props.color === 'orange',
-      'border-nc-yellow-500 bg-nc-bg-yellow-dark dark:bg-nc-yellow-20': props.color === 'yellow',
-      'border-nc-red-500 bg-nc-bg-red-dark dark:bg-nc-red-20': props.color === 'red',
-      'border-nc-maroon-500 bg-nc-bg-maroon': props.color === 'maroon',
-      'border-nc-gray-500 bg-nc-bg-gray-extralight': props.color === 'gray',
-      'bg-nc-bg-brand text-nc-content-brand': props.color === 'brand',
-      'bg-nc-bg-coloured-purple text-nc-content-purple-medium': props.color === 'ai',
-      'border-nc-border-gray-dark': !props.color,
+      'border-atm-purple-500 bg-atm-bg-purple-dark dark:bg-atm-bg-purple-light': props.color === 'purple',
+      'border-atm-blue-500 bg-atm-bg-blue-dark dark:bg-atm-blue-20': props.color === 'blue',
+      'border-atm-green-500 bg-atm-bg-green-dark dark:bg-atm-green-20': props.color === 'green',
+      'border-atm-orange-500 bg-atm-bg-orange-dark dark:bg-atm-orange-20': props.color === 'orange',
+      'border-atm-yellow-500 bg-atm-bg-yellow-dark dark:bg-atm-yellow-20': props.color === 'yellow',
+      'border-atm-red-500 bg-atm-bg-red-dark dark:bg-atm-red-20': props.color === 'red',
+      'border-atm-maroon-500 bg-atm-bg-maroon': props.color === 'maroon',
+      'border-atm-gray-500 bg-atm-bg-gray-extralight': props.color === 'gray',
+      'bg-atm-bg-brand text-atm-content-brand': props.color === 'brand',
+      'bg-atm-bg-coloured-purple text-atm-content-purple-medium': props.color === 'ai',
+      'border-atm-border-gray-dark': !props.color,
       'border-1': props.border,
       'h-5': props.size === 'xs',
       'h-6': props.size === 'sm',

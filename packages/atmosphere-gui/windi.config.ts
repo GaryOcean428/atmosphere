@@ -11,9 +11,9 @@ import animations from '@windicss/plugin-animations'
 // @ts-expect-error no types for plugin-question-mark
 import questionMark from '@windicss/plugin-question-mark'
 
-import ncTypographyPlugin from './assets/nc-typography-plugin'
+import ncTypographyPlugin from './assets/atm-typography-plugin'
 
-import ncWindicssShortcutsPlugin from './assets/nc-windicss-shortcuts-plugin'
+import ncWindicssShortcutsPlugin from './assets/atm-windicss-shortcuts-plugin'
 
 import {
   theme as colors,
@@ -91,24 +91,24 @@ export default defineConfig({
     'scrollbar-thin-primary':
       'scrollbar scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-primary scrollbar-track-base-white',
     'scrollbar-thin-dull':
-      'scrollbar scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-nc-gray-100 scrollbar-track-base-white',
-    'nc-scrollbar-thin':
+      'scrollbar scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-atm-gray-100 scrollbar-track-base-white',
+    'atm-scrollbar-thin':
       'scrollbar scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-500 hover:scrollbar-thumb-gray-300 dark:hover:scrollbar-thumb-gray-600 scrollbar-track-transparent',
     // A thin scrollbar that stays visible whenever the content overflows.
-    // `nc-scrollbar-thin` above sets `scrollbar-width: thin`, which makes
+    // `atm-scrollbar-thin` above sets `scrollbar-width: thin`, which makes
     // Chromium 121+ honour the standard thin scrollbar and IGNORE the custom
     // `::-webkit-scrollbar` — falling back to the OS overlay bar that only
     // appears on hover/scroll. So this shortcut sets no `scrollbar-width` and
     // uses `scrollbar-gutter: stable` to reserve the lane, which renders the
     // custom bar as a classic, always-visible scrollbar.
-    'nc-scrollbar-visible': {
+    'atm-scrollbar-visible': {
       'scrollbar-gutter': 'stable',
       '&::-webkit-scrollbar': { width: '6px', height: '6px' },
       '&::-webkit-scrollbar-track': { background: 'transparent' },
       '&::-webkit-scrollbar-thumb': { 'border-radius': '9999px', 'background-color': 'rgba(156, 163, 175, 0.7)' },
       '&::-webkit-scrollbar-thumb:hover': { 'background-color': 'rgba(107, 114, 128, 0.9)' },
     },
-    'nc-content-max-w': 'max-w-[97.5rem]',
+    'atm-content-max-w': 'max-w-[97.5rem]',
   },
 
   theme: {
@@ -194,8 +194,8 @@ export default defineConfig({
         'selected': '0px 0px 0px 2px var(--ant-primary-color-outline)',
         'selected-ai': '0px 0px 0px 2px rgba(125, 38, 205, 0.24)',
         'error': '0px 0px 0px 2px var(--ant-error-color-outline)',
-        'focus': '0px 0px 0px 2px var(--nc-bg-default), 0px 0px 0px 4px var(--nc-fill-primary)',
-        'nc-sm': '0px 3px 1px -2px rgba(var(--rgb-base), 0.06), 0px 5px 3px -2px rgba(var(--rgb-base), 0.02)',
+        'focus': '0px 0px 0px 2px var(--atm-bg-default), 0px 0px 0px 4px var(--atm-fill-primary)',
+        'atm-sm': '0px 3px 1px -2px rgba(var(--rgb-base), 0.06), 0px 5px 3px -2px rgba(var(--rgb-base), 0.02)',
         'disabled': '0 0 0 2px rgba(106, 113, 132, 0.24)',
       },
       colors: {
@@ -203,7 +203,7 @@ export default defineConfig({
         ...themeColors,
         ...themeV2Colors,
         ...themeV3Colors,
-        ...ncBuildColorsWithOpacity(themeV4Colors, 'nc'),
+        ...ncBuildColorsWithOpacity(themeV4Colors, 'atm'),
         ...ncBuildColorsWithOpacity(themeVariables.content),
         ...ncBuildColorsWithOpacity(themeVariables.border),
         ...ncBuildColorsWithOpacity(themeVariables.background),

@@ -11,5 +11,5 @@ defineEmits(['update:state', 'update:reload'])
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

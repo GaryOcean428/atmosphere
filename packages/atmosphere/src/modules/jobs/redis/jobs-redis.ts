@@ -49,7 +49,7 @@ export class JobsRedis {
       }
     };
 
-    if (process.env.NC_WORKER_CONTAINER === 'true') {
+    if (process.env.ATMOSPHERE_WORKER_CONTAINER === 'true') {
       await PubSubRedis.subscribe(InstanceTypes.WORKER, async (message) => {
         await onMessage(InstanceTypes.WORKER, message);
       });

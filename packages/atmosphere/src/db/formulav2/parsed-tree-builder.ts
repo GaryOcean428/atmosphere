@@ -6,7 +6,7 @@ import {
   type ParsedFormulaNode,
   UITypes,
   validateDateWithUnknownFormat,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { convertDateFormatForConcat } from 'src/helpers/formulaFnHelper';
 import mapFunctionName from '../mapFunctionName';
 import type {
@@ -14,8 +14,8 @@ import type {
   ComparisonOperator,
   IdentifierNode,
   LiteralNode,
-  NcContext,
-} from 'nocodb-sdk';
+  AtContext,
+} from 'atmosphere-sdk';
 import type { Model } from 'src/models';
 import type {
   FnParsedTreeNode,
@@ -42,7 +42,7 @@ export const callExpressionBuilder = async ({
   model,
   columnIdToUidt,
 }: {
-  context: NcContext;
+  context: AtContext;
   pt: CallExpressionNode;
   fn: (
     pt: FnParsedTreeNode,
@@ -149,9 +149,9 @@ export const callExpressionBuilder = async ({
        *   closing parentheses after escaped characters are parsed correctly.
        *
        * Example Case:
-       * - Without space: `URI::(https://github.com/nocodb/nocodb/pull/10707\)`
+       * - Without space: `URI::(https://github.com/GaryOcean428/atmosphere/pull/10707\)`
        *   - Results in incomplete or invalid group matches.
-       * - With space: `URI::( https://github.com/nocodb/nocodb/pull/10707\ )`
+       * - With space: `URI::( https://github.com/GaryOcean428/atmosphere/pull/10707\ )`
        *   - Handles escaped characters and parses content as expected.
        *
        * How It Works:
@@ -340,7 +340,7 @@ export const binaryExpressionBuilder = async ({
   aliasToColumn,
   model,
 }: {
-  context: NcContext;
+  context: AtContext;
   pt: BinaryExpressionNode;
   fn: (
     pt: FnParsedTreeNode,
@@ -704,7 +704,7 @@ export const binaryExpressionBuilder = async ({
   }
 
   // MSSQL: arithmetic over BIGINT/DECIMAL/NUMERIC preserves the input type,
-  // and tedious returns those as JS strings (precision preservation). NocoDB
+  // and tedious returns those as JS strings (precision preservation). Atmosphere
   // Number maps to BIGINT, so `{Number} + 10` would surface as `'10'`. Cast
   // the result to FLOAT so the formula matches pg/mysql/sqlite, which return
   // these as JS numbers. Only applies to numeric +/-/* — comparisons already

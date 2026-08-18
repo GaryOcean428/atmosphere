@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { BaseType } from 'nocodb-sdk'
+import type { BaseType } from 'atmosphere-sdk'
 
 interface Props {
   bases?: BaseType[]
@@ -14,7 +14,7 @@ const { $e } = useNuxtApp()
 const { getColorByIndex } = useColors(true)
 
 const openProject = async (base: BaseType) => {
-  await navigateTo(`/nc/${base.id}`)
+  await navigateTo(`/atm/${base.id}`)
   $e('a:base:open', { count: bases.length })
 }
 
@@ -43,19 +43,19 @@ const formatTitle = (title?: string) =>
             {{ $t('title.newProj') }}
           </div>
         </template>
-        <v-list class="!py-0 flex flex-col bg-nc-bg-default rounded-lg shadow-md border-1 border-nc-border-gray-dark mt-2 ml-2">
+        <v-list class="!py-0 flex flex-col bg-atm-bg-default rounded-lg shadow-md border-1 border-atm-border-gray-dark mt-2 ml-2">
           <div
-            class="grid grid-cols-12 cursor-pointer hover:bg-nc-bg-gray-medium flex items-center p-2"
+            class="grid grid-cols-12 cursor-pointer hover:bg-atm-bg-gray-medium flex items-center p-2"
             @click="navigateTo('/base/create')"
           >
             <component :is="iconMap.plus" class="col-span-2 mr-1 mt-[1px] text-primary text-lg" />
             <div class="col-span-10 text-sm xl:text-md">{{ $t('activity.createProject') }}</div>
           </div>
           <div
-            class="grid grid-cols-12 cursor-pointer hover:bg-nc-bg-gray-medium flex items-center p-2"
+            class="grid grid-cols-12 cursor-pointer hover:bg-atm-bg-gray-medium flex items-center p-2"
             @click="navigateTo('/base/create-external')"
           >
-            <component :is="iconMap.dtabase" class="col-span-2 mr-1 mt-[1px] text-nc-content-green-medium text-lg" />
+            <component :is="iconMap.dtabase" class="col-span-2 mr-1 mt-[1px] text-atm-content-green-medium text-lg" />
             <div class="col-span-10 text-sm xl:text-md" v-html="$t('activity.createProjectExtended.extDB')" />
           </div>
         </v-list>
@@ -65,7 +65,7 @@ const formatTitle = (title?: string) =>
     <div v-for="(base, i) of bases" :key="base.id" class="group flex flex-col items-center gap-2">
       <div class="thumbnail" :style="{ '--thumbnail-color': getColorByIndex(i) }" @click="openProject(base)">
         {{ formatTitle(base.title) }}
-        <a-dropdown overlay-class-name="nc-dropdown-base-operations" @click.stop>
+        <a-dropdown overlay-class-name="atm-dropdown-base-operations" @click.stop>
           <component :is="iconMap.arrowDown" class="menu-icon" />
           <template #overlay>
             <a-menu>
@@ -115,7 +115,7 @@ const formatTitle = (title?: string) =>
 }
 
 .star-icon {
-  @apply top-1 right-1 transform hover:(scale-120 text-nc-content-yellow-light/75) transition-all duration-100 ease;
+  @apply top-1 right-1 transform hover:(scale-120 text-atm-content-yellow-light/75) transition-all duration-100 ease;
 }
 
 .menu-icon {

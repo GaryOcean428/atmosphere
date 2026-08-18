@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import type { NcBadgeProps } from './index.vue'
+import type { AtBadgeProps } from './index.vue'
 
-const props = withDefaults(defineProps<NcBadgeProps>(), {
+const props = withDefaults(defineProps<AtBadgeProps>(), {
   border: false,
   color: 'gray',
   size: 'xs',
@@ -9,9 +9,9 @@ const props = withDefaults(defineProps<NcBadgeProps>(), {
 </script>
 
 <template>
-  <NcBadge v-bind="props" class="text-bodySm">
+  <AtBadge v-bind="props" class="text-bodySm">
     <slot>
       {{ $t('title.comingSoon') }}
     </slot>
-  </NcBadge>
+  </AtBadge>
 </template>

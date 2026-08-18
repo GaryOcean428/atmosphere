@@ -8,36 +8,36 @@ import {
   EventType,
   extractRolesObj,
   IntegrationsType,
-  NcBaseError,
+  AtBaseError,
   OrgUserRoles,
   SqlUiFactory,
   validateEntityName,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type {
   BaseReqType,
-  NcApiVersion,
+  AtApiVersion,
   ProjectReqType,
   ProjectUpdateReqType,
   UserType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Request } from 'express';
-import type { NcContext, NcRequest } from '~/interface/config';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { populateMeta, validatePayload } from '~/helpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { extractPropsAndSanitize } from '~/helpers/extractProps';
 import { validateAndNormalizeSqliteConfig } from '~/helpers/validateSqliteFilename';
 import { sanitizeBase } from '~/helpers/sanitizeBase';
 import syncMigration from '~/helpers/syncMigration';
 import { Base, BaseUser, Integration, IntegrationLink } from '~/models';
-import Noco from '~/Noco';
-import { getToolDir } from '~/utils/nc-config';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import Atmosphere from '~/Atmosphere';
+import { getToolDir } from '~/utils/atm-config';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { MetaService } from '~/meta/meta.service';
 import { MetaTable, RootScopes } from '~/utils/globals';
 import { TablesService } from '~/services/tables.service';
 import { stringifyMetaProp } from '~/utils/modelUtils';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz_', 4);
 
@@ -52,11 +52,11 @@ export class BasesService {
   ) {}
 
   async baseList(
-    context: NcContext,
+    context: AtContext,
     param: {
       user: { id: string; roles?: string | Record<string, boolean> };
       query?: any;
-      req?: NcRequest;
+      req?: AtRequest;
     },
   ) {
     // Pass workspaceId even for super admin: EE's Base.list override returns
@@ -65,25 +65,25 @@ export class BasesService {
     // empty list. In true CE there is only one workspace, so filtering by
     // it is equivalent to listing all.
     const bases = extractRolesObj(param.user?.roles)[OrgUserRoles.SUPER_ADMIN]
-      ? await Base.list(Noco.ncDefaultWorkspaceId)
+      ? await Base.list(Atmosphere.ncDefaultWorkspaceId)
       : await BaseUser.getProjectsList(param.user.id, {
           ...param.query,
-          workspaceId: Noco.ncDefaultWorkspaceId,
+          workspaceId: Atmosphere.ncDefaultWorkspaceId,
         });
 
-    // `getProjectsList` selects `nc_bases.*`, so the row carries `password`
+    // `getProjectsList` selects `atm_bases.*`, so the row carries `password`
     // (a legacy stored value — no shared-base password feature exists). Strip it
     // here too, not just on baseGet.
     return bases.map((base) => sanitizeBase(base));
   }
 
-  async getProject(context: NcContext, param: { baseId: string }) {
+  async getProject(context: AtContext, param: { baseId: string }) {
     const base = await Base.get(context, param.baseId);
     return base;
   }
 
   async getProjectWithInfo(
-    context: NcContext,
+    context: AtContext,
     param: { baseId: string; includeConfig?: boolean },
   ) {
     const { includeConfig = true } = param;
@@ -97,13 +97,13 @@ export class BasesService {
   }
 
   async baseUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       base: ProjectUpdateReqType;
       user: UserType;
-      req: NcRequest;
-      apiVersion?: NcApiVersion;
+      req: AtRequest;
+      apiVersion?: AtApiVersion;
     },
   ) {
     validatePayload(
@@ -133,7 +133,7 @@ export class BasesService {
     if (data.title) {
       const nameValidation = validateEntityName(data.title, 'Base name');
       if (!nameValidation.valid) {
-        NcError.badRequest(nameValidation.error);
+        AtError.badRequest(nameValidation.error);
       }
     }
 
@@ -157,7 +157,7 @@ export class BasesService {
       context,
     });
 
-    NocoSocket.broadcastEventToBaseUsers(
+    AtmosphereSocket.broadcastEventToBaseUsers(
       context,
       {
         event: EventType.USER_EVENT,
@@ -176,7 +176,7 @@ export class BasesService {
   }
 
   protected async validateProjectTitle(
-    context: NcContext,
+    context: AtContext,
     data: Partial<Base>,
     base: Base,
   ) {
@@ -191,14 +191,14 @@ export class BasesService {
         data.title,
       ))
     ) {
-      NcError.badRequest('Base title already in use');
+      AtError.badRequest('Base title already in use');
     }
   }
 
   async baseSoftDelete(
-    context: NcContext,
-    param: { baseId: any; user: UserType; req: NcRequest },
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    param: { baseId: any; user: UserType; req: AtRequest },
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const base = await Base.getWithInfo(
       context,
@@ -208,7 +208,7 @@ export class BasesService {
     );
 
     if (!base) {
-      NcError.baseNotFound(param.baseId);
+      AtError.baseNotFound(param.baseId);
     }
 
     const transaction = await ncMeta.startTransaction();
@@ -220,9 +220,9 @@ export class BasesService {
       await transaction.commit();
     } catch (e) {
       await transaction.rollback();
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error('Error deleting base', e);
-      NcError.get(context).internalServerError('Failed to delete base');
+      AtError.get(context).internalServerError('Failed to delete base');
     }
 
     this.appHooksService.emit(AppEvents.PROJECT_DELETE, {
@@ -240,9 +240,9 @@ export class BasesService {
       base: ProjectReqType & { version?: BaseVersion };
       user: any;
       req: any;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload(
       'swagger.json#/components/schemas/ProjectReq',
@@ -260,13 +260,13 @@ export class BasesService {
 
     if (!baseBody.external) {
       const ranId = nanoid();
-      baseBody.prefix = `nc_${ranId}__`;
+      baseBody.prefix = `atm_${ranId}__`;
       baseBody.is_meta = true;
-      const dataConfig = await Noco.getConfig()?.meta?.db;
+      const dataConfig = await Atmosphere.getConfig()?.meta?.db;
 
       if (
         dataConfig?.client === 'pg' &&
-        process.env.NC_DISABLE_PG_DATA_REFLECTION !== 'true'
+        process.env.ATMOSPHERE_DISABLE_PG_DATA_REFLECTION !== 'true'
       ) {
         baseBody.prefix = '';
         baseBody.sources = [
@@ -283,23 +283,23 @@ export class BasesService {
         ];
       } else if (
         dataConfig?.client === 'sqlite3' &&
-        process.env.NC_MINIMAL_DBS === 'true'
+        process.env.ATMOSPHERE_MINIMAL_DBS === 'true'
       ) {
-        // if env variable NC_MINIMAL_DBS is set, then create a SQLite file/connection for each base
-        // each file will be named as nc_<random_id>.db
+        // if env variable ATMOSPHERE_MINIMAL_DBS is set, then create a SQLite file/connection for each base
+        // each file will be named as atm_<random_id>.db
         const fs = require('fs');
         const toolDir = getToolDir();
         const nanoidv2 = customAlphabet(
           '1234567890abcdefghijklmnopqrstuvwxyz',
           14,
         );
-        if (!(await promisify(fs.exists)(`${toolDir}/nc_minimal_dbs`))) {
-          await promisify(fs.mkdir)(`${toolDir}/nc_minimal_dbs`);
+        if (!(await promisify(fs.exists)(`${toolDir}/atm_minimal_dbs`))) {
+          await promisify(fs.mkdir)(`${toolDir}/atm_minimal_dbs`);
         }
         const dbId = nanoidv2();
         const baseTitle = DOMPurify.sanitize(baseBody.title);
         // Restrict path component to safe characters so a title cannot
-        // escape the nc_minimal_dbs/ directory via traversal sequences.
+        // escape the atm_minimal_dbs/ directory via traversal sequences.
         const filenameSlug =
           baseTitle.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 64) || 'db';
         baseBody.prefix = '';
@@ -314,7 +314,7 @@ export class BasesService {
                 client: 'sqlite3',
                 database: baseTitle,
                 connection: {
-                  filename: `${toolDir}/nc_minimal_dbs/${filenameSlug}_${dbId}.db`,
+                  filename: `${toolDir}/atm_minimal_dbs/${filenameSlug}_${dbId}.db`,
                 },
               },
             },
@@ -325,12 +325,12 @@ export class BasesService {
       } else {
         // Use `getDataConfig()` (not `meta?.db` directly) so the source's
         // `type` reflects the DATA DB's client when the data DB diverges
-        // from the meta DB. In EE, `getDataConfig` reads `NC_DATA_DB_JSON`
-        // / `NC_DATA_DB` first — without this, an is_meta source on a
+        // from the meta DB. In EE, `getDataConfig` reads `ATMOSPHERE_DATA_DB_JSON`
+        // / `ATMOSPHERE_DATA_DB` first — without this, an is_meta source on a
         // PG-meta + MSSQL-data deployment would persist `type='pg'` and
         // downstream dispatchers (`getSingleQueryReadFn`,
         // `DataOptService.read`) would route to the wrong dialect path.
-        const db = await NcConnectionMgrv2.getDataConfig();
+        const db = await AtConnectionMgrv2.getDataConfig();
         baseBody.sources = [
           {
             type: db?.client as BaseReqType['type'],
@@ -342,8 +342,8 @@ export class BasesService {
         ];
       }
     } else {
-      if (process.env.NC_CONNECT_TO_EXTERNAL_DB_DISABLED) {
-        NcError.badRequest('Connecting to external db is disabled');
+      if (process.env.ATMOSPHERE_CONNECT_TO_EXTERNAL_DB_DISABLED) {
+        AtError.badRequest('Connecting to external db is disabled');
       }
 
       for (const source of baseBody.sources || []) {
@@ -373,7 +373,7 @@ export class BasesService {
 
     const nameValidation = validateEntityName(baseBody?.title, 'Base name');
     if (!nameValidation.valid) {
-      NcError.badRequest(nameValidation.error);
+      AtError.badRequest(nameValidation.error);
     }
 
     baseBody.title = DOMPurify.sanitize(baseBody.title);
@@ -383,8 +383,8 @@ export class BasesService {
 
     // Ensure workspace context: in unlicensed on-prem (EE build), @EEOnly()
     // falls back to this CE code, but the EE Base model needs fk_workspace_id.
-    if (!baseBody.fk_workspace_id && Noco.ncDefaultWorkspaceId) {
-      baseBody.fk_workspace_id = Noco.ncDefaultWorkspaceId;
+    if (!baseBody.fk_workspace_id && Atmosphere.ncDefaultWorkspaceId) {
+      baseBody.fk_workspace_id = Atmosphere.ncDefaultWorkspaceId;
     }
 
     const base = await Base.createProject(baseBody, ncMeta);
@@ -409,7 +409,7 @@ export class BasesService {
 
     // populate metadata if existing table
     for (const source of await base.getSources(undefined, ncMeta)) {
-      if (process.env.NC_CLOUD !== 'true' && !base.is_meta) {
+      if (process.env.ATMOSPHERE_CLOUD !== 'true' && !base.is_meta) {
         const info = await populateMeta(context, {
           source,
           base,
@@ -439,7 +439,7 @@ export class BasesService {
 
   async createDefaultBase(
     param: { user: UserType; req: Request },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const base = await this.baseCreate(
       {

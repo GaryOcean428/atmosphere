@@ -14,7 +14,7 @@ const navItems = [
   {
     name: 'Components',
     path: '/playground/components',
-    description: 'Test NcComponents',
+    description: 'Test AtComponents',
     icon: 'appStore',
   },
   {
@@ -27,12 +27,12 @@ const navItems = [
 </script>
 
 <template>
-  <div class="h-screen w-screen bg-nc-bg-gray-light overflow-auto">
+  <div class="h-screen w-screen bg-atm-bg-gray-light overflow-auto">
     <div class="max-w-6xl mx-auto p-8">
       <div class="mb-8">
-        <h1 class="text-4xl font-bold text-nc-content-gray-emphasis mb-2">NocoDB Playground</h1>
+        <h1 class="text-4xl font-bold text-atm-content-gray-emphasis mb-2">Atmosphere Playground</h1>
         <div>
-          <NcBadge color="purple" :border="false" class="!h-5 max-w-34 text-nc-content-purple-dark"> Development Only </NcBadge>
+          <AtBadge color="purple" :border="false" class="!h-5 max-w-34 text-atm-content-purple-dark"> Development Only </AtBadge>
         </div>
       </div>
 
@@ -41,19 +41,19 @@ const navItems = [
           v-for="item in navItems"
           :key="item.path"
           :href="item.path"
-          class="group block p-6 !no-underline bg-nc-bg-default rounded-lg border-1 border-nc-border-gray-medium hover:border-nc-border-brand transition-all"
+          class="group block p-6 !no-underline bg-atm-bg-default rounded-lg border-1 border-atm-border-gray-medium hover:border-atm-border-brand transition-all"
         >
           <div class="flex items-start gap-3">
-            <div class="flex-none w-10 h-10 rounded-lg bg-nc-bg-brand-light flex items-center justify-center">
-              <GeneralIcon :icon="item.icon" class="w-5 h-5 text-nc-content-brand" />
+            <div class="flex-none w-10 h-10 rounded-lg bg-atm-bg-brand-light flex items-center justify-center">
+              <GeneralIcon :icon="item.icon" class="w-5 h-5 text-atm-content-brand" />
             </div>
             <div class="flex-1">
               <h2
-                class="text-lg font-semibold text-nc-content-gray-emphasis mb-1 group-hover:text-nc-content-brand transition-colors"
+                class="text-lg font-semibold text-atm-content-gray-emphasis mb-1 group-hover:text-atm-content-brand transition-colors"
               >
                 {{ item.name }}
               </h2>
-              <p class="text-sm text-nc-content-gray-subtle">
+              <p class="text-sm text-atm-content-gray-subtle">
                 {{ item.description }}
               </p>
             </div>

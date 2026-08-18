@@ -1,4 +1,4 @@
-import { UITypes } from 'nocodb-sdk'
+import { UITypes } from 'atmosphere-sdk'
 import { estimateFieldHeightPx, estimateRowHeightPx } from '~/components/smartsheet/form/formRowEstimate'
 
 describe('formRowEstimate', () => {

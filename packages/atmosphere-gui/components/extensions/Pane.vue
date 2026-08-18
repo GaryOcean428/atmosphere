@@ -130,7 +130,7 @@ const handleAutoScroll = async (id: string) => {
 
   await nextTick()
 
-  const extension = document.querySelector(`.nc-extension-list-wrapper .nc-extension-item-${id}`)
+  const extension = document.querySelector(`.atm-extension-list-wrapper .atm-extension-item-${id}`)
 
   if (extension) {
     extension.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -161,7 +161,7 @@ onMounted(() => {
     v-show="isPanelExpanded || isReady"
     :size="panelSize"
     max-size="60%"
-    class="nc-extension-pane"
+    class="atm-extension-pane"
     :style="
       !isReady
         ? {
@@ -174,7 +174,7 @@ onMounted(() => {
       <div v-show="isPanelExpanded" class="flex flex-col h-full">
         <div
           ref="extensionHeaderRef"
-          class="h-[var(--toolbar-height)] flex items-center gap-3 px-4 py-2 border-b-1 border-nc-border-gray-medium bg-nc-bg-default"
+          class="h-[var(--toolbar-height)] flex items-center gap-3 px-4 py-2 border-b-1 border-atm-border-gray-medium bg-atm-bg-default"
         >
           <div
             class="flex"
@@ -182,16 +182,16 @@ onMounted(() => {
               'flex-1': !isOpenSearchBox,
             }"
           >
-            <NcTooltip :title="$t('title.hideExtensions')" hide-on-click>
+            <AtTooltip :title="$t('title.hideExtensions')" hide-on-click>
               <div
                 v-e="['c:extension-toggle']"
-                class="flex items-center gap-3 font-weight-700 text-nc-content-gray-subtle text-base cursor-pointer"
+                class="flex items-center gap-3 font-weight-700 text-atm-content-gray-subtle text-base cursor-pointer"
                 @click="toggleExtensionPanel"
               >
-                <GeneralIcon icon="ncPuzzleSolid" class="h-5 w-5 text-nc-content-gray-subtle opacity-85" />
+                <GeneralIcon icon="ncPuzzleSolid" class="h-5 w-5 text-atm-content-gray-subtle opacity-85" />
                 <span v-if="!isOpenSearchBox || width >= 507">{{ $t('general.extensions') }}</span>
               </div>
-            </NcTooltip>
+            </AtTooltip>
           </div>
           <div
             class="flex justify-end"
@@ -199,15 +199,15 @@ onMounted(() => {
               'flex-1': isOpenSearchBox,
             }"
           >
-            <NcButton v-if="!isOpenSearchBox" size="xs" type="text" class="!px-1" @click="handleShowSearchInput">
-              <GeneralIcon icon="search" class="flex-none !text-nc-content-gray-muted" />
-            </NcButton>
+            <AtButton v-if="!isOpenSearchBox" size="xs" type="text" class="!px-1" @click="handleShowSearchInput">
+              <GeneralIcon icon="search" class="flex-none !text-atm-content-gray-muted" />
+            </AtButton>
             <div v-else class="flex flex-grow items-center justify-end !max-w-[300px]">
               <a-input
                 ref="searchExtensionRef"
                 v-model:value="searchQuery"
                 type="text"
-                class="nc-input-border-on-value !h-7 !px-3 !py-1 !rounded-lg"
+                class="atm-input-border-on-value !h-7 !px-3 !py-1 !rounded-lg"
                 placeholder="Search Extension"
                 allow-clear
                 @keydown.esc="handleCloseSearchbox"
@@ -215,39 +215,39 @@ onMounted(() => {
                 <template #prefix>
                   <GeneralIcon
                     icon="search"
-                    class="mr-2 h-4 w-4 text-nc-content-gray-muted group-hover:text-nc-content-gray-extreme"
+                    class="mr-2 h-4 w-4 text-atm-content-gray-muted group-hover:text-atm-content-gray-extreme"
                   />
                 </template>
               </a-input>
             </div>
           </div>
-          <NcButton type="secondary" size="xs" @click="toggleMarket">
+          <AtButton type="secondary" size="xs" @click="toggleMarket">
             <div class="flex items-center gap-1 text-xs max-w-full -ml-3px">
               <GeneralIcon icon="plus" />
               {{ $t('general.add') }}
             </div>
-          </NcButton>
+          </AtButton>
         </div>
         <template v-if="extensionList.length === 0">
-          <div class="flex-1 flex items-center justify-center flex-col gap-4 w-full nc-scrollbar-md text-center p-4">
-            <div class="text-base font-bold text-nc-content-gray">Supercharge Your Workflow with Extensions</div>
-            <div class="text-sm text-nc-content-gray-subtle2">
+          <div class="flex-1 flex items-center justify-center flex-col gap-4 w-full atm-scrollbar-md text-center p-4">
+            <div class="text-base font-bold text-atm-content-gray">Supercharge Your Workflow with Extensions</div>
+            <div class="text-sm text-atm-content-gray-subtle2">
               Unlock powerful scripts and tools to enhance how you work with your databases. Get started by exploring available
               extensions.
             </div>
-            <NcButton size="small" @click="toggleMarket">
+            <AtButton size="small" @click="toggleMarket">
               <div class="flex items-center gap-1 -ml-3px">
                 <GeneralIcon icon="plus" />
                 {{ $t('general.add') }} {{ $t('general.extension') }}
               </div>
-            </NcButton>
+            </AtButton>
             <!-- Todo: add docs link  -->
-            <NcButton size="small" type="secondary">
+            <AtButton size="small" type="secondary">
               <div class="flex items-center gap-1.5">
                 <GeneralIcon icon="externalLink" />
                 {{ $t('activity.goToDocs') }}
               </div>
-            </NcButton>
+            </AtButton>
 
             <img src="~assets/img/placeholder/extension.png" class="!w-full min-w-[250px] max-w-[432px] flex-none" />
           </div>
@@ -256,11 +256,11 @@ onMounted(() => {
           <Draggable
             :model-value="filteredExtensionList"
             v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 100 })"
-            draggable=".nc-extension-item"
+            draggable=".atm-extension-item"
             item-key="id"
-            handle=".nc-extension-drag-handler"
+            handle=".atm-extension-drag-handler"
             ghost-class="ghost"
-            class="nc-extension-list-wrapper flex items-center flex-col gap-3 w-full nc-scrollbar-md py-4"
+            class="atm-extension-list-wrapper flex items-center flex-col gap-3 w-full atm-scrollbar-md py-4"
             :class="{
               'h-full': searchQuery && !filteredExtensionList.length && extensionList.length,
             }"
@@ -269,13 +269,13 @@ onMounted(() => {
             @change="onMove($event)"
           >
             <template #item="{ element: ext }">
-              <div class="nc-extension-item w-full" :class="`nc-extension-item-${ext.id}`">
+              <div class="atm-extension-item w-full" :class="`atm-extension-item-${ext.id}`">
                 <ExtensionsWrapper :extension-id="ext.id" />
               </div>
             </template>
             <template v-if="searchQuery && !filteredExtensionList.length && extensionList.length" #header>
               <div class="w-full h-full flex-1 flex items-center justify-center">
-                <div class="pb-6 text-nc-content-gray-muted flex flex-col items-center gap-6 text-center">
+                <div class="pb-6 text-atm-content-gray-muted flex flex-col items-center gap-6 text-center">
                   <img
                     src="~assets/img/placeholder/no-search-result-found.png"
                     class="!w-[164px] flex-none"
@@ -301,14 +301,14 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.nc-extension-list-wrapper {
+.atm-extension-list-wrapper {
   &:last-child {
     @apply pb-3;
   }
 }
 
-.nc-extension-pane {
-  @apply flex flex-col bg-nc-bg-gray-extralight rounded-l-xl border-1 border-nc-border-gray-medium z-30 -mt-1px;
+.atm-extension-pane {
+  @apply flex flex-col bg-atm-bg-gray-extralight rounded-l-xl border-1 border-atm-border-gray-medium z-30 -mt-1px;
 
   box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.16), 0px 8px 8px -4px rgba(0, 0, 0, 0.04);
 }

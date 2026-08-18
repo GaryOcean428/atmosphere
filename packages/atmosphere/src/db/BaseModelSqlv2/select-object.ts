@@ -1,11 +1,11 @@
 import {
   ButtonActionsType,
   isBtLikeV2Junction,
-  NC_ERROR_SENTINEL,
+  ATMOSPHERE_ERROR_SENTINEL,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import genRollupSelectv2 from '../genRollupSelectv2';
-import type { ColumnType } from 'nocodb-sdk';
+import type { ColumnType } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type {
   BarcodeColumn,
@@ -25,7 +25,7 @@ import {
   shouldSkipField,
 } from '~/helpers/dbHelpers';
 import { sanitize } from '~/helpers/sqlSanitize';
-import { NC_MAX_TEXT_LENGTH } from '~/constants';
+import { ATMOSPHERE_MAX_TEXT_LENGTH } from '~/constants';
 import { FORMULA_DRY_RUN_SKIPPED_MESSAGE } from '~/db/formulav2/formulaQueryBuilderv2';
 
 export const selectObject = (baseModel: IBaseModelSqlV2, logger: Logger) => {
@@ -178,7 +178,7 @@ export const selectObject = (baseModel: IBaseModelSqlV2, logger: Logger) => {
                 ]);
               break;
             } else if (baseModel.isOracle) {
-              // Oracle DATE/TIMESTAMP carry no zone info — NocoDB writes
+              // Oracle DATE/TIMESTAMP carry no zone info — Atmosphere writes
               // them as UTC wall time (`now()` emits an offset-less UTC
               // string), so emit the stored value as text with an explicit
               // +00:00 like the pg/mysql shapes. TZ-aware variants
@@ -234,7 +234,7 @@ export const selectObject = (baseModel: IBaseModelSqlV2, logger: Logger) => {
           if (lookupOpt?.error) {
             qb.select(
               baseModel.dbDriver.raw(`? as ??`, [
-                NC_ERROR_SENTINEL,
+                ATMOSPHERE_ERROR_SENTINEL,
                 getAs(column),
               ]),
             );
@@ -249,7 +249,7 @@ export const selectObject = (baseModel: IBaseModelSqlV2, logger: Logger) => {
           if (qrCodeColumn.error) {
             qb.select(
               baseModel.dbDriver.raw(`? as ??`, [
-                NC_ERROR_SENTINEL,
+                ATMOSPHERE_ERROR_SENTINEL,
                 getAs(column),
               ]),
             );
@@ -259,7 +259,7 @@ export const selectObject = (baseModel: IBaseModelSqlV2, logger: Logger) => {
           if (!qrCodeColumn.fk_qr_value_column_id) {
             qb.select(
               baseModel.dbDriver.raw(`? as ??`, [
-                NC_ERROR_SENTINEL,
+                ATMOSPHERE_ERROR_SENTINEL,
                 getAs(column),
               ]),
             );
@@ -308,7 +308,7 @@ export const selectObject = (baseModel: IBaseModelSqlV2, logger: Logger) => {
           if (barcodeColumn.error) {
             qb.select(
               baseModel.dbDriver.raw(`? as ??`, [
-                NC_ERROR_SENTINEL,
+                ATMOSPHERE_ERROR_SENTINEL,
                 getAs(column),
               ]),
             );
@@ -318,7 +318,7 @@ export const selectObject = (baseModel: IBaseModelSqlV2, logger: Logger) => {
           if (!barcodeColumn.fk_barcode_value_column_id) {
             qb.select(
               baseModel.dbDriver.raw(`? as ??`, [
-                NC_ERROR_SENTINEL,
+                ATMOSPHERE_ERROR_SENTINEL,
                 getAs(column),
               ]),
             );
@@ -662,19 +662,19 @@ export const selectObject = (baseModel: IBaseModelSqlV2, logger: Logger) => {
               res[sanitize(getAs(column) || column.column_name)] =
                 baseModel.dbDriver.raw(`SUBSTR(??::TEXT, 1, ?)`, [
                   colPath,
-                  NC_MAX_TEXT_LENGTH,
+                  ATMOSPHERE_MAX_TEXT_LENGTH,
                 ]);
             } else if (baseModel.isMySQL) {
               res[sanitize(getAs(column) || column.column_name)] =
                 baseModel.dbDriver.raw(`SUBSTR(??, 1, ?)`, [
                   colPath,
-                  NC_MAX_TEXT_LENGTH,
+                  ATMOSPHERE_MAX_TEXT_LENGTH,
                 ]);
             } else if (baseModel.isSqlite) {
               res[sanitize(getAs(column) || column.column_name)] =
                 baseModel.dbDriver.raw(`SUBSTR(??, 1, ?)`, [
                   colPath,
-                  NC_MAX_TEXT_LENGTH,
+                  ATMOSPHERE_MAX_TEXT_LENGTH,
                 ]);
             } else if (baseModel.isMssql) {
               // T-SQL LEFT() rejects legacy text/ntext args
@@ -684,7 +684,7 @@ export const selectObject = (baseModel: IBaseModelSqlV2, logger: Logger) => {
               res[sanitize(getAs(column) || column.column_name)] =
                 baseModel.dbDriver.raw(`SUBSTRING(??, 1, ?)`, [
                   colPath,
-                  NC_MAX_TEXT_LENGTH,
+                  ATMOSPHERE_MAX_TEXT_LENGTH,
                 ]);
             } else if (baseModel.isOracle) {
               // Oracle has no LEFT() (ORA-00904); SUBSTR handles VARCHAR2
@@ -692,14 +692,14 @@ export const selectObject = (baseModel: IBaseModelSqlV2, logger: Logger) => {
               res[sanitize(getAs(column) || column.column_name)] =
                 baseModel.dbDriver.raw(`SUBSTR(??, 1, ?)`, [
                   colPath,
-                  NC_MAX_TEXT_LENGTH,
+                  ATMOSPHERE_MAX_TEXT_LENGTH,
                 ]);
             } else {
               // Snowflake / Databricks / other databases - use LEFT function
               res[sanitize(getAs(column) || column.column_name)] =
                 baseModel.dbDriver.raw(`LEFT(??, ?)`, [
                   colPath,
-                  NC_MAX_TEXT_LENGTH,
+                  ATMOSPHERE_MAX_TEXT_LENGTH,
                 ]);
             }
             break;

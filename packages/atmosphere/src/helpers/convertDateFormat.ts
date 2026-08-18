@@ -1,4 +1,4 @@
-import { dateFormats, dateMonthFormats } from 'nocodb-sdk';
+import { dateFormats, dateMonthFormats } from 'atmosphere-sdk';
 
 const ALLOWED_DATE_FORMATS = new Set([...dateFormats, ...dateMonthFormats]);
 

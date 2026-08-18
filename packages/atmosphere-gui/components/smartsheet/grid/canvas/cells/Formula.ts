@@ -1,4 +1,4 @@
-import { type ColumnType, FormulaDataTypes, getEffectiveDisplayColumn, handleTZ } from 'nocodb-sdk'
+import { type ColumnType, FormulaDataTypes, getEffectiveDisplayColumn, handleTZ } from 'atmosphere-sdk'
 import {
   defaultOffscreen2DContext,
   isBoxHovered,

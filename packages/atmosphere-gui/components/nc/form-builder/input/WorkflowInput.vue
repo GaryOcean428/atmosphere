@@ -2,7 +2,7 @@
 import Placeholder from '@tiptap/extension-placeholder'
 import StarterKit from '@tiptap/starter-kit'
 import { EditorContent, VueRenderer, useEditor } from '@tiptap/vue-3'
-import type { VariableDefinition } from 'nocodb-sdk'
+import type { VariableDefinition } from 'atmosphere-sdk'
 import tippy from 'tippy.js'
 import { WorkflowExpression, WorkflowVariablePicker } from '~/helpers/tiptap-markdown/extensions'
 import { Markdown } from '~/helpers/tiptap-markdown'
@@ -163,7 +163,7 @@ const editor = useEditor({
   autofocus: false,
   editorProps: {
     attributes: {
-      class: 'nc-workflow-input-editor',
+      class: 'atm-workflow-input-editor',
     },
     handleKeyDown(_view, event) {
       if (event.key === 'Enter' && !isMultiline.value) {
@@ -281,19 +281,19 @@ watch(readOnly, (newValue) => {
     :class="{
       multiline: isMultiline,
     }"
-    class="nc-workflow-input relative"
+    class="atm-workflow-input relative"
   >
     <EditorContent
       :editor="editor"
-      class="nc-workflow-input-editor"
+      class="atm-workflow-input-editor"
       :class="{
         multiline: isMultiline,
       }"
     />
 
-    <NcTooltip
+    <AtTooltip
       v-if="!readOnly"
-      class="!absolute nc-workflow-insert-btn-tooltip right-1.5"
+      class="!absolute atm-workflow-insert-btn-tooltip right-1.5"
       :class="{
         'top-1': isMultiline,
         'top-1.5': !isMultiline,
@@ -301,18 +301,18 @@ watch(readOnly, (newValue) => {
       hide-on-click
       title="Insert variable"
     >
-      <NcButton size="xs" type="text" class="nc-workflow-input-insert-btn !px-1.5" @click.stop="insertExpression">
-        <GeneralIcon icon="ncPlusSquareSolid" class="text-nc-content-brand flex-none w-4 h-4" />
-      </NcButton>
-    </NcTooltip>
+      <AtButton size="xs" type="text" class="atm-workflow-input-insert-btn !px-1.5" @click.stop="insertExpression">
+        <GeneralIcon icon="ncPlusSquareSolid" class="text-atm-content-brand flex-none w-4 h-4" />
+      </AtButton>
+    </AtTooltip>
   </div>
 </template>
 
 <style lang="scss">
-.nc-workflow-input {
+.atm-workflow-input {
   @apply relative w-full;
 
-  .nc-workflow-input-editor {
+  .atm-workflow-input-editor {
     &.multiline {
       .ProseMirror {
         @apply h-auto min-h-16;
@@ -330,16 +330,16 @@ watch(readOnly, (newValue) => {
     }
   }
 
-  .nc-workflow-expression {
-    @apply bg-nc-bg-brand text-nc-content-brand rounded px-1.5 py-0.25 mx-0.5 text-small cursor-pointer;
+  .atm-workflow-expression {
+    @apply bg-atm-bg-brand text-atm-content-brand rounded px-1.5 py-0.25 mx-0.5 text-small cursor-pointer;
     @apply inline-flex items-center gap-1;
-    @apply hover:bg-nc-brand-100 transition-colors;
+    @apply hover:bg-atm-brand-100 transition-colors;
     user-select: none;
   }
 
   .ProseMirror {
-    @apply w-full px-3 py-2 outline-none border-1 border-nc-border-gray-medium rounded-lg;
-    @apply focus:border-nc-border-brand transition-colors;
+    @apply w-full px-3 py-2 outline-none border-1 border-atm-border-gray-medium rounded-lg;
+    @apply focus:border-atm-border-brand transition-colors;
 
     &:focus-within {
       @apply !shadow-selected;
@@ -366,19 +366,19 @@ watch(readOnly, (newValue) => {
   }
 
   .tiptap p.is-editor-empty:first-child::before {
-    @apply text-nc-content-gray-disabled;
+    @apply text-atm-content-gray-disabled;
     content: attr(data-placeholder);
     float: left;
     height: 0;
     pointer-events: none;
   }
 
-  .nc-workflow-input-insert-btn {
+  .atm-workflow-input-insert-btn {
     @apply opacity-0 transition-opacity;
   }
 
-  &:hover .nc-workflow-input-insert-btn,
-  &:focus-within .nc-workflow-input-insert-btn {
+  &:hover .atm-workflow-input-insert-btn,
+  &:focus-within .atm-workflow-input-insert-btn {
     @apply opacity-100;
   }
 }

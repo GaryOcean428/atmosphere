@@ -1,4 +1,4 @@
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable, RootScopes } from '~/utils/globals';
 
 export default class Workspace {
@@ -20,7 +20,7 @@ export default class Workspace {
   public static async get(
     workspaceId: string,
     _force?: boolean,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
     _withStats?: boolean,
   ): Promise<Workspace | null> {
     const workspace = await ncMeta.metaGet2(
@@ -67,7 +67,7 @@ export default class Workspace {
   }
 
   public static async getFirstWorkspace(
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Workspace | null> {
     const workspace = await ncMeta
       .knexConnection(MetaTable.WORKSPACE)

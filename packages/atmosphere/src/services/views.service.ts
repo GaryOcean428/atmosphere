@@ -8,18 +8,18 @@ import {
   ProjectRoles,
   ViewLockType,
   ViewTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type {
   SharedViewReqType,
   UserType,
   ViewType,
   ViewUpdateReqType,
-} from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
-import { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { MetaService } from '~/meta/meta.service';
 import { validatePayload } from '~/helpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { assertPersonalViewAllowed } from '~/helpers/checkPersonalViewFeature';
 import {
   BaseUser,
@@ -30,10 +30,10 @@ import {
   View,
 } from '~/models';
 import DateDependency from '~/models/DateDependency';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { MetaDependencyEventHandler } from '~/services/meta-dependency/event-handler.service';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 import {
   type ViewWebhookManager,
   ViewWebhookManagerBuilder,
@@ -43,7 +43,7 @@ import { OperationName } from '~/command-registry/op-names';
 
 // todo: move
 async function xcVisibilityMetaGet(
-  context: NcContext,
+  context: AtContext,
   param: {
     baseId: string;
     includeM2M?: boolean;
@@ -107,7 +107,7 @@ export class ViewsService {
   ) {}
 
   async viewList(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       user: {
@@ -120,7 +120,7 @@ export class ViewsService {
     const model = await Model.get(context, param.tableId);
 
     if (!model) {
-      NcError.get(context).tableNotFound(param.tableId);
+      AtError.get(context).tableNotFound(param.tableId);
     }
 
     const viewList = await xcVisibilityMetaGet(context, {
@@ -148,15 +148,15 @@ export class ViewsService {
   }
 
   async shareView(
-    context: NcContext,
-    param: { viewId: string; user: UserType; req: NcRequest },
+    context: AtContext,
+    param: { viewId: string; user: UserType; req: AtRequest },
   ) {
     const res = await View.share(context, param.viewId);
 
     const view = await View.get(context, param.viewId);
 
     if (!view) {
-      NcError.get(context).viewNotFound(param.viewId);
+      AtError.get(context).viewNotFound(param.viewId);
     }
 
     this.appHooksService.emit(AppEvents.SHARED_VIEW_CREATE, {
@@ -170,21 +170,21 @@ export class ViewsService {
   }
 
   async viewUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       view: ViewUpdateReqType;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     validatePayload(
       'swagger.json#/components/schemas/ViewUpdateReq',
       param.view,
     );
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     // The caller's `req.user` is the source of truth — populated from auth
@@ -197,7 +197,7 @@ export class ViewsService {
     const oldView = await View.get(context, param.viewId, false, ncMeta);
 
     if (!oldView) {
-      NcError.get(context).viewNotFound(param.viewId);
+      AtError.get(context).viewNotFound(param.viewId);
     }
 
     if (param.view.title && param.view.title.trim() !== oldView.title) {
@@ -211,7 +211,7 @@ export class ViewsService {
         ncMeta,
       );
       if (existingView) {
-        NcError.get(context).duplicateAlias({
+        AtError.get(context).duplicateAlias({
           type: 'view',
           alias: param.view.title,
           label: 'title',
@@ -259,7 +259,7 @@ export class ViewsService {
       // Editors inherit viewUpdate permission via ACL but are blocked here so
       // that locked views remain frozen for them.
       if (oldView.lock_type === ViewLockType.Locked && !isCreatorPlus) {
-        NcError.get(context).forbidden(
+        AtError.get(context).forbidden(
           'Only creators or owners can modify a locked view',
         );
       }
@@ -270,7 +270,7 @@ export class ViewsService {
         oldView.lock_type !== ViewLockType.Locked &&
         !isCreatorPlus
       ) {
-        NcError.get(context).forbidden(
+        AtError.get(context).forbidden(
           'Only creators or owners can lock a view',
         );
       }
@@ -282,7 +282,7 @@ export class ViewsService {
         oldView.owned_by &&
         oldView.owned_by !== user?.id
       ) {
-        NcError.get(context).forbidden(
+        AtError.get(context).forbidden(
           'Only the view owner or creator can modify this personal view',
         );
       }
@@ -292,7 +292,7 @@ export class ViewsService {
 
     if (param.view.allow_sync !== undefined) {
       if (oldView.type !== ViewTypes.GRID) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'Allow sync can only be enabled on grid views',
         );
       }
@@ -301,7 +301,7 @@ export class ViewsService {
         oldView.owned_by &&
         oldView.owned_by !== user?.id
       ) {
-        NcError.get(context).forbidden(
+        AtError.get(context).forbidden(
           'Only the view owner can change allow sync on a personal view',
         );
       }
@@ -314,7 +314,7 @@ export class ViewsService {
           ncMeta,
         );
         if (model?.synced) {
-          NcError.get(context).badRequest(
+          AtError.get(context).badRequest(
             'Allow sync cannot be enabled on a synced table',
           );
         }
@@ -354,7 +354,7 @@ export class ViewsService {
         );
 
         if (!otherNonPersonalGridView) {
-          NcError.get(context).badRequest(
+          AtError.get(context).badRequest(
             'Cannot change the last collaborative grid view to personal',
           );
         }
@@ -364,7 +364,7 @@ export class ViewsService {
       const isExistingOwner = !!(ownedBy && ownedBy === user?.id);
 
       if (!isViewCreator && !isExistingOwner && !isCreatorPlus && !isEditor) {
-        NcError.get(context).forbidden(
+        AtError.get(context).forbidden(
           'Insufficient permissions to convert view to personal',
         );
       }
@@ -398,7 +398,7 @@ export class ViewsService {
     // which sets ownedBy = user.id and naturally skips this block.
     if (ownedBy && param.view.owned_by && ownedBy !== param.view.owned_by) {
       if (!isCreatorPlus) {
-        NcError.get(context).forbidden(
+        AtError.get(context).forbidden(
           'Only owner/creator can transfer view ownership',
         );
       }
@@ -415,7 +415,7 @@ export class ViewsService {
       );
 
       if (!baseUser) {
-        NcError.get(context).badRequest('Invalid user');
+        AtError.get(context).badRequest('Invalid user');
       }
 
       includeCreatedByAndUpdateBy = true;
@@ -488,7 +488,7 @@ export class ViewsService {
     // Strip the stored bcrypt password hash from every outbound payload.
     const safeResult = View.maskPasswordForResponse(result);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -508,16 +508,16 @@ export class ViewsService {
   }
 
   async viewDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       skipTrash?: boolean;
-      req: NcRequest;
+      req: AtRequest;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     // The caller's `req.user` is the source of truth — populated from auth
@@ -530,7 +530,7 @@ export class ViewsService {
     const view = await View.get(context, param.viewId, false, ncMeta);
 
     if (!view) {
-      NcError.get(context).viewNotFound(param.viewId);
+      AtError.get(context).viewNotFound(param.viewId);
     }
 
     // Only creators or owners can delete a locked view. Editors inherit
@@ -542,7 +542,7 @@ export class ViewsService {
     );
 
     if (view.lock_type === ViewLockType.Locked && !isCreatorPlus) {
-      NcError.get(context).forbidden(
+      AtError.get(context).forbidden(
         'Only creators or owners can delete a locked view',
       );
     }
@@ -554,7 +554,7 @@ export class ViewsService {
       view.owned_by &&
       view.owned_by !== user?.id
     ) {
-      NcError.get(context).forbidden(
+      AtError.get(context).forbidden(
         'Only the view owner or creator can delete this personal view',
       );
     }
@@ -573,7 +573,7 @@ export class ViewsService {
       );
 
       if (!otherNonPersonalGridView) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'Cannot delete the last collaborative grid view',
         );
       }
@@ -672,7 +672,7 @@ export class ViewsService {
       ncMeta,
     );
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -689,14 +689,14 @@ export class ViewsService {
   }
 
   async shareViewUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       sharedView: SharedViewReqType & {
         custom_url_path?: string;
       };
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload(
@@ -707,7 +707,7 @@ export class ViewsService {
     const view = await View.get(context, param.viewId);
 
     if (!view) {
-      NcError.get(context).viewNotFound(param.viewId);
+      AtError.get(context).viewNotFound(param.viewId);
     }
 
     let customUrl: CustomUrl | undefined = await CustomUrl.get({
@@ -777,17 +777,17 @@ export class ViewsService {
   }
 
   async shareViewDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const view = await View.get(context, param.viewId);
 
     if (!view) {
-      NcError.get(context).viewNotFound(param.viewId);
+      AtError.get(context).viewNotFound(param.viewId);
     }
 
     await View.sharedViewDelete(context, param.viewId);
@@ -818,12 +818,12 @@ export class ViewsService {
 
   @TraceCommand(OperationName.showAllColumns)
   async showAllColumns(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       ignoreIds?: string[];
       levelId?: string;
-      req?: NcRequest;
+      req?: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -849,7 +849,7 @@ export class ViewsService {
       param.levelId,
     );
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -874,12 +874,12 @@ export class ViewsService {
 
   @TraceCommand(OperationName.hideAllColumns)
   async hideAllColumns(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       ignoreIds?: string[];
       levelId?: string;
-      req?: NcRequest;
+      req?: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -906,7 +906,7 @@ export class ViewsService {
       param.levelId,
     );
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -929,25 +929,25 @@ export class ViewsService {
     return true;
   }
 
-  async shareViewList(context: NcContext, param: { tableId: string }) {
+  async shareViewList(context: AtContext, param: { tableId: string }) {
     return await View.shareViewList(context, param.tableId);
   }
 
   @TraceCommand(OperationName.viewColumnsBulkSetVisibility)
   async viewColumnsBulkSetVisibility(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       // Map of view-column id (NOT underlying column id) → desired show flag.
       columnVisibility: Record<string, boolean>;
-      req?: NcRequest;
+      req?: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
   ) {
     const view = await View.get(context, param.viewId, false, ncMeta);
     if (!view) {
-      NcError.get(context).viewNotFound(param.viewId);
+      AtError.get(context).viewNotFound(param.viewId);
     }
 
     const viewWebhookManager: ViewWebhookManager =
@@ -972,7 +972,7 @@ export class ViewsService {
       );
     }
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,

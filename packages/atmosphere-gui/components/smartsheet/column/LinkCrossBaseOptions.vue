@@ -9,5 +9,5 @@ defineEmits(['update:value', 'baseChange'])
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { DependencyTableType, type LinkToAnotherRecordType, type TableType, isLinksOrLTAR } from 'nocodb-sdk'
-import { UITypes, isSystemColumn } from 'nocodb-sdk'
+import { DependencyTableType, type LinkToAnotherRecordType, type TableType, isLinksOrLTAR } from 'atmosphere-sdk'
+import { UITypes, isSystemColumn } from 'atmosphere-sdk'
 
 const props = defineProps<{
   visible: boolean
@@ -159,9 +159,9 @@ const onDelete = async () => {
     <template #entity-preview>
       <div
         v-if="table"
-        class="flex flex-row items-center py-2.25 px-2.5 bg-nc-bg-gray-extralight rounded-lg text-nc-content-gray-subtle"
+        class="flex flex-row items-center py-2.25 px-2.5 bg-atm-bg-gray-extralight rounded-lg text-atm-content-gray-subtle"
       >
-        <GeneralTableIcon :meta="table" class="nc-view-icon text-nc-content-gray-subtle" />
+        <GeneralTableIcon :meta="table" class="atm-view-icon text-atm-content-gray-subtle" />
         <div
           class="capitalize text-ellipsis overflow-hidden select-none w-full pl-1.75"
           :style="{ wordBreak: 'keep-all', whiteSpace: 'nowrap', display: 'inline' }"
@@ -170,7 +170,7 @@ const onDelete = async () => {
         </div>
       </div>
       <div class="mt-4">
-        <NcDependencyList
+        <AtDependencyList
           :status="status"
           :has-breaking-changes="dependency.hasBreakingChanges"
           :entities="dependency.entities"

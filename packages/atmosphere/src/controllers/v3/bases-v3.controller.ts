@@ -11,12 +11,12 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { BaseCreateV3Type, BaseUpdateV3Type } from 'nocodb-sdk';
+import { BaseCreateV3Type, BaseUpdateV3Type } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 import { BasesV3Service } from '~/services/v3/bases-v3.service';
 import { isEE } from '~/utils';
 
@@ -34,9 +34,9 @@ export class BasesV3Controller {
   })
   @Get('/api/v3/meta/workspaces/:workspaceId/bases')
   async list(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Query() queryParams: Record<string, any>,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('workspaceId') workspaceId: string,
   ) {
     const bases = await this.baseV3Service.baseList(context, {
@@ -51,7 +51,7 @@ export class BasesV3Controller {
   @Acl('baseGet')
   @Get('/api/v3/meta/bases/:baseId')
   async baseGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Query('include') qsInclude?: string[],
   ) {
@@ -67,10 +67,10 @@ export class BasesV3Controller {
   @Acl('baseUpdate')
   @Patch('/api/v3/meta/bases/:baseId')
   async baseUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Body() body: BaseUpdateV3Type,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const base = await this.baseV3Service.baseUpdate(context, {
       baseId,
@@ -85,9 +85,9 @@ export class BasesV3Controller {
   @Acl('baseDelete')
   @Delete('/api/v3/meta/bases/:baseId')
   async baseDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const deleted = await this.baseV3Service.baseSoftDelete(context, {
       baseId,
@@ -104,9 +104,9 @@ export class BasesV3Controller {
   @HttpCode(200)
   @Post('/api/v3/meta/workspaces/:workspaceId/bases')
   async baseCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Body() baseBody: BaseCreateV3Type,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Param('workspaceId') workspaceId: string,
   ) {
     const base = await this.baseV3Service.baseCreate({

@@ -19,7 +19,7 @@ export interface OperationLogType {
   base_id?: string;
   fk_user_id?: string;
   /**
-   * Per-tab UUID sourced from the `x-nc-tab-id` request header. Generated
+   * Per-tab UUID sourced from the `x-atm-tab-id` request header. Generated
    * fresh per page load on the GUI side so undo doesn't survive reloads
    * (matches Baserow's ClientSessionId model).
    */

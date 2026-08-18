@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { OPERATION_SCOPES } from '~/controllers/internal/operationScopes';
-import type { NcContext, NcRequest } from 'nocodb-sdk';
+import type { AtContext, AtRequest } from 'atmosphere-sdk';
 import type {
   InternalApiModule,
   InternalGETResponseType,
@@ -17,7 +17,7 @@ export class AttachmentGetOperations
   httpMethod = 'GET' as const;
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     {
       req,
       operation,
@@ -26,7 +26,7 @@ export class AttachmentGetOperations
       baseId: string;
       operation: keyof typeof OPERATION_SCOPES;
       payload: any;
-      req: NcRequest;
+      req: AtRequest;
     },
   ): InternalGETResponseType {
     switch (operation) {

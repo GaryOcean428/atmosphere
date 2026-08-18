@@ -1,5 +1,5 @@
-import type { TableType } from 'nocodb-sdk'
-import { UITypes } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
+import { UITypes } from 'atmosphere-sdk'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 // `~/utils/dataUtils` transitively imports `columnUtils`, which references the

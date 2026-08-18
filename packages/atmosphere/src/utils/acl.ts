@@ -3,7 +3,7 @@ import {
   ProjectRoles,
   SourceRestriction,
   WorkspaceUserRoles,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 
 const roleScopes = {
   org: [OrgUserRoles.VIEWER, OrgUserRoles.CREATOR],

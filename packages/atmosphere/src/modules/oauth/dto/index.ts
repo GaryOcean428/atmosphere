@@ -1,5 +1,5 @@
 import z from 'zod';
-import { OAuthClientType } from 'nocodb-sdk';
+import { OAuthClientType } from 'atmosphere-sdk';
 import { isHttpRedirectUri } from '~/modules/oauth/helpers/redirectUri';
 
 export const CreateOAuthClientSchema = z.object({

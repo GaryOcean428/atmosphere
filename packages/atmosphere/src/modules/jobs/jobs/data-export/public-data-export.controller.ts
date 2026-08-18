@@ -8,7 +8,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ViewTypes } from 'nocodb-sdk';
+import { ViewTypes } from 'atmosphere-sdk';
 import type { DataExportJobData } from '~/interface/Jobs';
 import { BasesService } from '~/services/bases.service';
 import { PublicDatasService } from '~/services/public-datas.service';
@@ -16,8 +16,8 @@ import { View } from '~/models';
 import { JobTypes } from '~/interface/Jobs';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
-import { NcError } from '~/helpers/catchError';
+import { AtContext, AtRequest } from '~/interface/config';
+import { AtError } from '~/helpers/catchError';
 import { PublicApiLimiterGuard } from '~/guards/public-api-limiter.guard';
 
 @Controller()
@@ -32,29 +32,29 @@ export class PublicDataExportController {
   @Post(['/api/v2/public/export/:publicDataUuid/:exportAs'])
   @HttpCode(200)
   async exportModelData(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('publicDataUuid') publicDataUuid: string,
     @Param('exportAs') exportAs: 'csv' | 'json' | 'excel' | 'ics',
     @Body() options: DataExportJobData['options'],
   ) {
     const view = await View.getByUUID(context, publicDataUuid);
 
-    if (!view) NcError.viewNotFound(publicDataUuid);
-    if (view.type === ViewTypes.FORM) NcError.notFound('Not found');
+    if (!view) AtError.viewNotFound(publicDataUuid);
+    if (view.type === ViewTypes.FORM) AtError.notFound('Not found');
 
     if (
       !(await View.verifyPassword(view, req.headers?.['xc-password'] as string))
     ) {
-      NcError.invalidSharedViewPassword();
+      AtError.invalidSharedViewPassword();
     }
 
     // check if download is allowed
     if (!view.meta?.allowCSVDownload) {
-      NcError.forbidden('Download is not allowed for this view');
+      AtError.forbidden('Download is not allowed for this view');
     }
 
-    if (!view) NcError.viewNotFound(publicDataUuid);
+    if (!view) AtError.viewNotFound(publicDataUuid);
 
     const job = await this.jobsService.add(JobTypes.DataExport, {
       context,

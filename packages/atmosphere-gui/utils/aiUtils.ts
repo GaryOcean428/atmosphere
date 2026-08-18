@@ -1,4 +1,4 @@
-import type { UITypes } from 'nocodb-sdk'
+import type { UITypes } from 'atmosphere-sdk'
 
 export enum AiWizardTabsType {
   AUTO_SUGGESTIONS = 'AUTO_SUGGESTIONS',

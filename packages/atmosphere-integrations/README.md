@@ -1,11 +1,11 @@
-# NocoDB Integrations
+# Atmosphere Integrations
 
-This monorepo contains the integration framework and various integrations for NocoDB.
+This monorepo contains the integration framework and various integrations for Atmosphere.
 
 ## Structure
 
 ```
-nocodb-integrations/
+atmosphere-integrations/
 ├── core/                      # Core integration framework
 ├── packages/
 │   ├── auth-github/           # GitHub auth integration
@@ -45,7 +45,7 @@ pnpm test
 pnpm test:coverage
 
 # Run tests for a specific package
-pnpm --filter @noco-integrations/openai-ai test
+pnpm --filter @atmosphere-integrations/openai-ai test
 ```
 
 Each integration package contains its own tests in a `tests/` directory. All tests use Vitest as the testing framework.
@@ -69,12 +69,12 @@ Alternatively, you can create a new package manually:
    └── README.md
    ```
 
-3. Implement the required interfaces from `@noco-integrations/core`
+3. Implement the required interfaces from `@atmosphere-integrations/core`
 4. Add tests for your integration
 
 ## Sync Integration Standardization Guidelines
 
-This document outlines the standards and best practices for creating and maintaining sync integrations in the NocoDB integrations monorepo.
+This document outlines the standards and best practices for creating and maintaining sync integrations in the Atmosphere integrations monorepo.
 
 ### Structure
 
@@ -111,7 +111,7 @@ packages/[provider]-sync/
    - Use provider-specific pagination mechanisms
 
 4. **Data Mapping**
-   - Follow consistent patterns when mapping provider data to NocoDB schema
+   - Follow consistent patterns when mapping provider data to Atmosphere schema
    - Use helper methods for complex mappings
 
 5. **Authentication**

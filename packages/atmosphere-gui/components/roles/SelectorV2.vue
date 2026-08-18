@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ProjectRoles, RoleColors, RoleIcons, RoleLabels } from 'nocodb-sdk'
+import { ProjectRoles, RoleColors, RoleIcons, RoleLabels } from 'atmosphere-sdk'
 import type { SelectValue } from 'ant-design-vue/es/select'
 import type { IconMapKey } from '#imports'
 
@@ -52,8 +52,8 @@ async function onChangeRole(val: SelectValue) {
   newRole.value = null
 }
 
-const roleSelectorOptions = computed<NcListItemType[]>(() => {
-  return (props.disabledRoles || []).concat(props.roles || []).map((role: keyof typeof RoleLabels): NcListItemType => {
+const roleSelectorOptions = computed<AtListItemType[]>(() => {
+  return (props.disabledRoles || []).concat(props.roles || []).map((role: keyof typeof RoleLabels): AtListItemType => {
     return {
       value: role,
       label: t(`objects.roleType.${RoleLabels[role]}`),
@@ -68,8 +68,8 @@ const roleSelectorOptions = computed<NcListItemType[]>(() => {
 </script>
 
 <template>
-  <div class="nc-roles-selector relative flex items-center">
-    <NcListDropdown
+  <div class="atm-roles-selector relative flex items-center">
+    <AtListDropdown
       v-model:visible="isDropdownOpen"
       :default-slot-wrapper="false"
       default-slot-wrapper-class="flex-1 flex items-center gap-3"
@@ -79,7 +79,7 @@ const roleSelectorOptions = computed<NcListItemType[]>(() => {
         <RolesBadge data-testid="roles" :border="false" :role="effectiveRole || role" :size="size" clickable class="flex-none" />
         <div
           v-if="showInherit && role === ProjectRoles.INHERIT && !!inherit"
-          class="flex items-center gap-1 text-xs text-nc-content-gray-muted"
+          class="flex items-center gap-1 text-xs text-atm-content-gray-muted"
         >
           <GeneralIcon icon="role_inherit" class="h-3 w-3" />
           <span>{{
@@ -89,7 +89,7 @@ const roleSelectorOptions = computed<NcListItemType[]>(() => {
       </div>
 
       <template #overlay="{ onEsc }">
-        <NcList
+        <AtList
           v-model:open="isDropdownOpen"
           :value="role"
           :list="roleSelectorOptions"
@@ -102,24 +102,24 @@ const roleSelectorOptions = computed<NcListItemType[]>(() => {
           :is-locked="!!newRole"
           variant="default"
           :focus-search-on-open="getResponsiveValue(false, true)"
-          item-class-name="nc-role-select-dropdown !px-3"
-          :wrapper-class-name="`!h-auto nc-role-selector-dropdown ${!!newRole ? '!cursor-wait' : ''}`"
+          item-class-name="atm-role-select-dropdown !px-3"
+          :wrapper-class-name="`!h-auto atm-role-selector-dropdown ${!!newRole ? '!cursor-wait' : ''}`"
           @update:value="onChangeRole"
           @escape="onEsc"
         >
           <template #listItem="{ option }">
-            <div class="w-full flex flex-col rounded-md" :class="[`nc-role-select-${option.value}`]">
+            <div class="w-full flex flex-col rounded-md" :class="[`atm-role-select-${option.value}`]">
               <div class="w-full flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <GeneralIcon
                     :icon="(option.icon as IconMapKey)"
                     class="flex-none h-4 w-4"
-                    :class="roleColorsMapping[option.color]?.content ?? 'text-nc-content-brand-hover'"
+                    :class="roleColorsMapping[option.color]?.content ?? 'text-atm-content-brand-hover'"
                   />
                   <span
                     class="text-captionDropdownDefault"
                     :class="[
-                      roleColorsMapping[option.color]?.content ?? 'text-nc-content-brand-hover',
+                      roleColorsMapping[option.color]?.content ?? 'text-atm-content-brand-hover',
                       {
                         '!font-semibold': !description,
                       },
@@ -129,23 +129,23 @@ const roleSelectorOptions = computed<NcListItemType[]>(() => {
                   </span>
                 </div>
                 <GeneralLoader v-if="option.value === newRole" size="medium" />
-                <GeneralIcon v-else-if="!newRole && option.value === role" icon="check" class="text-nc-content-brand h-4 w-4" />
+                <GeneralIcon v-else-if="!newRole && option.value === role" icon="check" class="text-atm-content-brand h-4 w-4" />
               </div>
               <div
                 v-if="description"
                 class="text-bodySm !font-light ml-6"
                 :class="
                   option.value === ProjectRoles.INHERIT
-                    ? 'text-nc-content-gray-muted dark:text-nc-content-gray-light'
-                    : 'text-nc-content-gray-muted'
+                    ? 'text-atm-content-gray-muted dark:text-atm-content-gray-light'
+                    : 'text-atm-content-gray-muted'
                 "
               >
                 {{ option.description }}
               </div>
             </div>
           </template>
-        </NcList>
+        </AtList>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </div>
 </template>

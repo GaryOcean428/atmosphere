@@ -1,5 +1,5 @@
-import { EventType } from 'nocodb-sdk'
-import type { FilterType } from 'nocodb-sdk'
+import { EventType } from 'atmosphere-sdk'
+import type { FilterType } from 'atmosphere-sdk'
 import { interfaceDataEventSuffix } from '~/lib/interfaceData'
 
 /**

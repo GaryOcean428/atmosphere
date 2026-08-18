@@ -57,13 +57,13 @@ const renderedText = computedAsync(async () => {
     truncate.value
       ? Description.replace(/[*_~]|\[.*?\]|<\/?[^>]+(>|$)/g, '')
           .replace(/\(https?:\/\/[^\s)]+\)\]\(https?:\/\/[^\s)]+\)/g, '')
-          .replace(/^(\*\*)?#?\s*(\p{Emoji})\s*NocoDB\s*v[\d.]+(\s*-\s*|\*\*$)/u, '# ')
+          .replace(/^(\*\*)?#?\s*(\p{Emoji})\s*Atmosphere\s*v[\d.]+(\s*-\s*|\*\*$)/u, '# ')
           .replace(/(!?\(https?:\/\/[^\s)]+\)(?:\]\(https?:\/\/[^\s)]+(?:\s+"[^"]*")?\))?)/g, '')
           .replace('-', '')
           .substring(0, 100)
           .concat('...')
       : Description.replace(/^\[!\[.*?\]\(https?:\/\/.*?\)\]\(https?:\/\/.*?\)/m, '').replace(
-          /^(\*\*)?#?\s*(\p{Emoji})\s*NocoDB\s*v[\d.]+(\s*-\s*|\*\*$)/u,
+          /^(\*\*)?#?\s*(\p{Emoji})\s*Atmosphere\s*v[\d.]+(\s*-\s*|\*\*$)/u,
           '# ',
         ),
   )
@@ -74,7 +74,7 @@ const { $e } = useNuxtApp()
 const expand = (e) => {
   e.stopPropagation()
   truncate.value = false
-  $e('c:nocodb:feed:changelog:expand', {
+  $e('c:atmosphere:feed:changelog:expand', {
     title: Title,
   })
 }
@@ -86,7 +86,7 @@ const handleOpenUrl = (url: string) => {
 </script>
 
 <template>
-  <div class="relative rounded-xl flex flex-col mt-6.25 bg-nc-bg-default changelog-card">
+  <div class="relative rounded-xl flex flex-col mt-6.25 bg-atm-bg-default changelog-card">
     <div
       class="w-full relative border cursor-pointer border-base-black h-[334px] xl:h-[394px] w-[540px] xl:w-[638px] border-opacity-10 rounded-t-xl overflow-hidden"
       @click="handleOpenUrl(item.Url)"
@@ -99,33 +99,33 @@ const handleOpenUrl = (url: string) => {
     </div>
     <div class="flex my-4 px-4 items-center justify-between">
       <div class="flex items-center flex-wrap gap-3">
-        <NcBadge :border="false" color="brand" class="font-semibold text-[13px] nc-title-badge cursor-pointer whitespace-nowrap">
+        <AtBadge :border="false" color="brand" class="font-semibold text-[13px] atm-title-badge cursor-pointer whitespace-nowrap">
           {{ Title }}
-        </NcBadge>
+        </AtBadge>
         <span
           v-for="tag in tags"
           :key="tag.text"
           :class="{
-            'bg-nc-red-50': tag.color === 'red',
-            'bg-nc-purple-50': tag.color === 'purple',
-            'bg-nc-green-50': tag.color === 'green',
+            'bg-atm-red-50': tag.color === 'red',
+            'bg-atm-purple-50': tag.color === 'purple',
+            'bg-atm-green-50': tag.color === 'green',
           }"
           class="flex gap-2 items-center px-1 rounded-md"
         >
           <component
             :is="tag.icon"
             :class="{
-              'fill-nc-red-700 text-transparent': tag.color === 'red',
-              'fill-nc-purple-700 text-transparent': tag.color === 'purple',
-              'fill-nc-green-700 text-transparent': tag.color === 'green',
+              'fill-atm-red-700 text-transparent': tag.color === 'red',
+              'fill-atm-purple-700 text-transparent': tag.color === 'purple',
+              'fill-atm-green-700 text-transparent': tag.color === 'green',
             }"
             class="w-4 h-4"
           />
           <span
             :class="{
-              'text-nc-content-red-medium': tag.color === 'red',
-              'text-nc-content-purple-medium': tag.color === 'purple',
-              'text-nc-content-green-dark': tag.color === 'green',
+              'text-atm-content-red-medium': tag.color === 'red',
+              'text-atm-content-purple-medium': tag.color === 'purple',
+              'text-atm-content-green-dark': tag.color === 'green',
             }"
             class="leading-5 text-[13px] whitespace-nowrap"
           >
@@ -133,24 +133,24 @@ const handleOpenUrl = (url: string) => {
           </span>
         </span>
       </div>
-      <span class="font-medium text-sm text-nc-content-gray-muted whitespace-nowrap">
+      <span class="font-medium text-sm text-atm-content-gray-muted whitespace-nowrap">
         {{ dayjs(CreatedAt).format('MMM DD, YYYY') }}
       </span>
     </div>
     <div class="flex flex-1 px-4 pb-3 justify-between flex-col gap-2">
       <div class="prose max-w-none" v-html="renderedText"></div>
     </div>
-    <NcButton v-if="truncate" size="small" class="w-29 mx-4 mb-3" type="text" @click="expand">
+    <AtButton v-if="truncate" size="small" class="w-29 mx-4 mb-3" type="text" @click="expand">
       <div class="gap-2 flex items-center">
         {{ $t('general.showMore') }}
         <GeneralIcon icon="arrowDown" />
       </div>
-    </NcButton>
+    </AtButton>
   </div>
 </template>
 
 <style scoped lang="scss">
-.nc-title-badge {
+.atm-title-badge {
   width: fit-content;
 }
 
@@ -166,29 +166,29 @@ a {
 :deep(.prose) {
   @apply !max-w-auto;
   a {
-    @apply text-nc-content-gray-extreme;
+    @apply text-atm-content-gray-extreme;
   }
 
   h1 {
-    @apply text-3xl text-nc-content-gray-emphasis  leading-9 mb-0;
+    @apply text-3xl text-atm-content-gray-emphasis  leading-9 mb-0;
     font-weight: 700;
   }
 
   h2 {
-    @apply text-nc-content-gray-emphasis text-xl leading-6 !my-4;
+    @apply text-atm-content-gray-emphasis text-xl leading-6 !my-4;
   }
   p {
-    @apply text-nc-content-gray-emphasis leading-6;
+    @apply text-atm-content-gray-emphasis leading-6;
     font-size: 14px !important;
   }
 
   li {
-    @apply text-nc-content-gray-emphasis leading-6;
+    @apply text-atm-content-gray-emphasis leading-6;
     font-size: 14px !important;
   }
 
   h3 {
-    @apply text-nc-content-gray-emphasis text-lg leading-6 mb-0;
+    @apply text-atm-content-gray-emphasis text-lg leading-6 mb-0;
   }
 
   img {

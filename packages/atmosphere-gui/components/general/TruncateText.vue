@@ -20,12 +20,12 @@ const shortName = computed(() =>
 </script>
 
 <template>
-  <NcTooltip v-if="enableTooltip" :placement="placement">
+  <AtTooltip v-if="enableTooltip" :placement="placement">
     <template #title>
       <slot />
     </template>
     <div class="w-full">{{ shortName }}</div>
-  </NcTooltip>
+  </AtTooltip>
   <div v-else class="w-full" data-testid="truncate-label">
     <slot />
   </div>

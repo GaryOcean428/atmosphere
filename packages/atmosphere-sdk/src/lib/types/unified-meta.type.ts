@@ -1,5 +1,5 @@
 import { ColumnType, LinkToAnotherRecordType } from '~/lib/Api';
-import { NcContext } from '~/lib/ncTypes';
+import { AtContext } from '~/lib/ncTypes';
 import { ParsedFormulaNode } from '~/lib/formulaHelpers';
 import { RelationTypes } from '~/lib/globals';
 
@@ -19,7 +19,7 @@ export type IColumn = ColumnType & {
   fk_workspace_id?: string;
   meta?: any;
   getColOptions?: <T extends IColumnOptions>(
-    context: NcContext,
+    context: AtContext,
     ncMeta?: any
   ) => Promise<T>;
 };
@@ -30,11 +30,11 @@ export interface IModel {
   id: string;
   title: string;
   columns?: IColumn[];
-  getColumns?: (context: NcContext) => Promise<IColumn[]>;
+  getColumns?: (context: AtContext) => Promise<IColumn[]>;
 }
 
 export interface IGetModel {
-  (context: NcContext, param: { id: string }): Promise<IModel>;
+  (context: AtContext, param: { id: string }): Promise<IModel>;
 }
 
 export interface ILinkToAnotherRecordColumn extends LinkToAnotherRecordType {
@@ -66,7 +66,7 @@ export interface ILinkToAnotherRecordColumn extends LinkToAnotherRecordType {
 
   type: 'hm' | 'bt' | 'mm' | 'oo';
 
-  getRelatedTable?(context: NcContext, ncMeta?: any): Promise<IModel>;
+  getRelatedTable?(context: AtContext, ncMeta?: any): Promise<IModel>;
 }
 
 export interface ILookupColumn {
@@ -74,8 +74,8 @@ export interface ILookupColumn {
   fk_lookup_column_id: string;
   fk_column_id: string;
 
-  getRelationColumn?(context: NcContext, ncMeta?: any): Promise<IColumn>;
-  getLookupColumn?(context: NcContext, ncMeta?: any): Promise<IColumn>;
+  getRelationColumn?(context: AtContext, ncMeta?: any): Promise<IColumn>;
+  getLookupColumn?(context: AtContext, ncMeta?: any): Promise<IColumn>;
 }
 
 export interface IRollupColumn {
@@ -87,8 +87,8 @@ export interface IRollupColumn {
   fk_rollup_column_id?: string;
   rollup_function: string;
 
-  getRelationColumn(context: NcContext, ncMeta?: any): Promise<IColumn>;
-  getRollupColumn(context: NcContext, ncMeta?: any): Promise<IColumn>;
+  getRelationColumn(context: AtContext, ncMeta?: any): Promise<IColumn>;
+  getRollupColumn(context: AtContext, ncMeta?: any): Promise<IColumn>;
 }
 
 export interface IFormulaColumn {
@@ -105,19 +105,19 @@ export interface IFormulaColumn {
 
 export type ILinkInfo = {
   source: {
-    context: NcContext;
+    context: AtContext;
     model: IModel;
     linkColumn: IColumn;
     joinColumn: IColumn;
   };
   mm?: {
-    context: NcContext;
+    context: AtContext;
     sourceJoinColumn: IColumn;
     targetJoinColumn: IColumn;
     model: IModel;
   };
   target: {
-    context: NcContext;
+    context: AtContext;
     model: IModel;
     linkColumn?: IColumn; // cannot be fetched from relation options
     joinColumn: IColumn;

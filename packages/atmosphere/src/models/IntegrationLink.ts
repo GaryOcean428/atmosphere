@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 
 export interface IntegrationLinkType {
@@ -26,17 +26,17 @@ export default class IntegrationLink implements IntegrationLinkType {
     Object.assign(this, body);
   }
 
-  private static getKnex(ncMeta = Noco.ncMeta) {
-    return ncMeta.knex ?? Noco.ncMeta.knex;
+  private static getKnex(ncMeta = Atmosphere.ncMeta) {
+    return ncMeta.knex ?? Atmosphere.ncMeta.knex;
   }
 
   /**
    * Insert a new integration link (integration → base).
    */
   static async insert(
-    _context: NcContext,
+    _context: AtContext,
     body: Partial<IntegrationLinkType>,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<IntegrationLink> {
     const id = `il_${nanoid(14)}`;
 
@@ -57,9 +57,9 @@ export default class IntegrationLink implements IntegrationLinkType {
    * Get a single link by id.
    */
   static async get(
-    context: NcContext,
+    context: AtContext,
     id: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<IntegrationLink | null> {
     const data = await this.getKnex(_ncMeta)(MetaTable.INTEGRATION_LINKS)
       .where('id', id)
@@ -72,9 +72,9 @@ export default class IntegrationLink implements IntegrationLinkType {
    * List all links for a given integration.
    */
   static async listByIntegration(
-    context: NcContext,
+    context: AtContext,
     integrationId: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<IntegrationLink[]> {
     const data = await this.getKnex(_ncMeta)(MetaTable.INTEGRATION_LINKS).where(
       'fk_integration_id',
@@ -88,9 +88,9 @@ export default class IntegrationLink implements IntegrationLinkType {
    * List all links for a given base.
    */
   static async listByBase(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<IntegrationLink[]> {
     const data = await this.getKnex(_ncMeta)(MetaTable.INTEGRATION_LINKS).where(
       'base_id',
@@ -109,13 +109,13 @@ export default class IntegrationLink implements IntegrationLinkType {
    *   - OR integration.is_global = true (checked by caller)
    */
   static async isAvailable(
-    context: NcContext,
+    context: AtContext,
     param: {
       fk_integration_id: string;
       base_id: string;
       is_restricted?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<boolean> {
     // If caller already knows is_restricted, use it directly
     if (param.is_restricted === false) {
@@ -137,10 +137,10 @@ export default class IntegrationLink implements IntegrationLinkType {
    * Delete a specific link (integration + base pair).
    */
   static async deleteByIntegrationAndBase(
-    context: NcContext,
+    context: AtContext,
     integrationId: string,
     baseId: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<boolean> {
     const knex = this.getKnex(_ncMeta);
     const link = await knex(MetaTable.INTEGRATION_LINKS)
@@ -161,9 +161,9 @@ export default class IntegrationLink implements IntegrationLinkType {
    * Delete all links for a given integration.
    */
   static async deleteByIntegration(
-    context: NcContext,
+    context: AtContext,
     integrationId: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     await this.getKnex(_ncMeta)(MetaTable.INTEGRATION_LINKS)
       .where('fk_integration_id', integrationId)
@@ -174,9 +174,9 @@ export default class IntegrationLink implements IntegrationLinkType {
    * Delete all links for a given base.
    */
   static async deleteByBase(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     await this.getKnex(_ncMeta)(MetaTable.INTEGRATION_LINKS)
       .where('base_id', baseId)
@@ -187,14 +187,14 @@ export default class IntegrationLink implements IntegrationLinkType {
    * Replace all links for an integration with a new set of base IDs.
    */
   static async replaceLinksForIntegration(
-    context: NcContext,
+    context: AtContext,
     param: {
       integrationId: string;
       baseIds: string[];
       workspaceId: string;
       userId: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     // Delete existing links
     await this.deleteByIntegration(context, param.integrationId, ncMeta);

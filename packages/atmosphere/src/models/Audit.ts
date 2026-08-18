@@ -1,6 +1,6 @@
-import { type AuditV1OperationTypes } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import { type AuditV1OperationTypes } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
 import { MetaTable, RootScopes } from '~/utils/globals';
 import { stringifyMetaProp } from '~/utils/modelUtils';
@@ -30,7 +30,7 @@ export default class Audit {
     Object.assign(this, audit);
   }
 
-  public static async get(auditId: string, ncAudit = Noco.ncAudit) {
+  public static async get(auditId: string, ncAudit = Atmosphere.ncAudit) {
     const audit = await ncAudit.metaGet2(
       RootScopes.ROOT,
       RootScopes.ROOT,
@@ -43,7 +43,7 @@ export default class Audit {
   // Will only await for Audit insertion if `forceAwait` is true, which will be true in test environment by default
   public static async insert(
     audit: Partial<Audit> | Partial<Audit>[],
-    ncAudit = Noco.ncAudit,
+    ncAudit = Atmosphere.ncAudit,
     {
       forceAwait,
       catchException = false,
@@ -52,7 +52,7 @@ export default class Audit {
     },
   ) {
     try {
-      if (process.env.NC_DISABLE_AUDIT === 'true') {
+      if (process.env.ATMOSPHERE_DISABLE_AUDIT === 'true') {
         return;
       }
       const propsToExtract = [
@@ -121,7 +121,7 @@ export default class Audit {
   }
 
   public static async recordAuditList(
-    context: NcContext,
+    context: AtContext,
     {
       fk_model_id,
       row_id,
@@ -138,7 +138,7 @@ export default class Audit {
 
     const [id, _created_at] = cursor?.split('|') ?? [];
 
-    const query = Noco.ncAudit.knex(MetaTable.AUDIT);
+    const query = Atmosphere.ncAudit.knex(MetaTable.AUDIT);
 
     if (context.workspace_id) {
       query.where('fk_workspace_id', context.workspace_id);
@@ -176,7 +176,7 @@ export default class Audit {
 
   // TODO: remove this - it is deprecated and only used on unit tests
   static async baseAuditList(
-    context: NcContext,
+    context: AtContext,
     {
       page = 1,
       user,
@@ -206,7 +206,7 @@ export default class Audit {
       orderBy.created_at = orderBy.created_at === 'asc' ? 'asc' : 'desc';
     }
 
-    return await Noco.ncAudit.metaList2(
+    return await Atmosphere.ncAudit.metaList2(
       RootScopes.ROOT,
       RootScopes.ROOT,
       MetaTable.AUDIT,

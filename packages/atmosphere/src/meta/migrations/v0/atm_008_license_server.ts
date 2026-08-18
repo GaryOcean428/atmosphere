@@ -31,7 +31,7 @@ const up = async (knex: Knex) => {
 
     table.timestamps(true, true);
 
-    table.index(['license_key'], 'nc_installations_license_key_idx');
+    table.index(['license_key'], 'atm_installations_license_key_idx');
   });
 };
 

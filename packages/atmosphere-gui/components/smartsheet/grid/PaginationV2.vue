@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { type PaginatedType, UITypes } from 'nocodb-sdk'
+import { type PaginatedType, UITypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   scrollLeft?: number
@@ -141,24 +141,24 @@ const getCountWithLabel = (defaultCount: number) => {
 <template>
   <div
     ref="containerElement"
-    class="bg-nc-bg-gray-extralight w-full pr-1 border-t-1 border-nc-border-gray-medium overflow-x-hidden no-scrollbar flex h-9"
+    class="bg-atm-bg-gray-extralight w-full pr-1 border-t-1 border-atm-border-gray-medium overflow-x-hidden no-scrollbar flex h-9"
   >
-    <div class="sticky flex items-center bg-nc-bg-gray-extralight left-0">
-      <NcDropdown
+    <div class="sticky flex items-center bg-atm-bg-gray-extralight left-0">
+      <AtDropdown
         :disabled="
           [UITypes.SpecificDBType, UITypes.ForeignKey, UITypes.Button].includes(displayFieldComputed.column?.uidt!) ||
           isLocked ||
           !isViewOperationsAllowed ||
           isMmTable
         "
-        overlay-class-name="max-h-96 relative scroll-container nc-scrollbar-md overflow-auto"
+        overlay-class-name="max-h-96 relative scroll-container atm-scrollbar-md overflow-auto"
       >
         <div
           v-if="displayFieldComputed.field && displayFieldComputed.column?.id"
-          class="flex items-center overflow-x-hidden text-nc-content-gray-muted justify-end transition-all transition-linear px-3 py-2"
+          class="flex items-center overflow-x-hidden text-atm-content-gray-muted justify-end transition-all transition-linear px-3 py-2"
           :class="{
             'cursor-pointer': !isLocked && isViewOperationsAllowed && !isMmTable,
-            'hover:bg-nc-bg-gray-light': isViewOperationsAllowed && !isMmTable,
+            'hover:bg-atm-bg-gray-light': isViewOperationsAllowed && !isMmTable,
           }"
           :style="{
             'min-width': displayFieldComputed?.width,
@@ -169,50 +169,50 @@ const getCountWithLabel = (defaultCount: number) => {
         >
           <div class="flex relative justify-between gap-2 w-full">
             <template v-if="!disablePagination && !isMmTable">
-              <div v-if="isViewDataLoading" class="nc-pagination-skeleton flex justify-center item-center min-h-10 min-w-16 w-16">
+              <div v-if="isViewDataLoading" class="atm-pagination-skeleton flex justify-center item-center min-h-10 min-w-16 w-16">
                 <a-skeleton :active="true" :title="true" :paragraph="false" class="w-16 max-w-16" />
               </div>
-              <NcTooltip v-else class="flex sticky items-center h-full">
+              <AtTooltip v-else class="flex sticky items-center h-full">
                 <template #title> {{ getCountWithLabel(count).count }} {{ getCountWithLabel(count).label }} </template>
                 <div class="flex items-center gap-1">
                   <span
                     data-testid="grid-pagination"
-                    class="text-nc-content-gray-muted text-ellipsis overflow-hidden pl-1 truncate nc-grid-row-count caption text-xs text-nowrap"
+                    class="text-atm-content-gray-muted text-ellipsis overflow-hidden pl-1 truncate atm-grid-row-count caption text-xs text-nowrap"
                   >
                     {{ Intl.NumberFormat('en', { notation: 'compact' }).format(getCountWithLabel(count).count) }}
                     {{ getCountWithLabel(count).label }}
                   </span>
-                  <NcTooltip v-if="isRlsEnabled">
+                  <AtTooltip v-if="isRlsEnabled">
                     <template #title>
                       {{ $t('tooltip.rowLevelSecurityEnabled') }}
                     </template>
-                    <GeneralIcon icon="ncShield" class="!w-3.5 !h-3.5 text-nc-content-gray-muted" />
-                  </NcTooltip>
+                    <GeneralIcon icon="ncShield" class="!w-3.5 !h-3.5 text-atm-content-gray-muted" />
+                  </AtTooltip>
                 </div>
-              </NcTooltip>
+              </AtTooltip>
             </template>
 
             <template v-else-if="!isMmTable && (+totalRows >= 0 || (selectedCellCount && selectedCellCount > 1))">
-              <NcTooltip class="flex sticky items-center h-full">
+              <AtTooltip class="flex sticky items-center h-full">
                 <template #title>
                   {{ getCountWithLabel(totalRows ?? 0).count }} {{ getCountWithLabel(totalRows ?? 0).label }}
                 </template>
                 <div class="flex items-center gap-1">
                   <span
                     data-testid="grid-pagination"
-                    class="text-nc-content-gray-muted text-ellipsis overflow-hidden pl-1 truncate nc-grid-row-count caption text-xs text-nowrap"
+                    class="text-atm-content-gray-muted text-ellipsis overflow-hidden pl-1 truncate atm-grid-row-count caption text-xs text-nowrap"
                   >
                     {{ Intl.NumberFormat('en', { notation: 'compact' }).format(getCountWithLabel(totalRows ?? 0).count) }}
                     {{ getCountWithLabel(totalRows ?? 0).label }}
                   </span>
-                  <NcTooltip v-if="isRlsEnabled">
+                  <AtTooltip v-if="isRlsEnabled">
                     <template #title>
                       {{ $t('tooltip.rowLevelSecurityEnabled') }}
                     </template>
-                    <GeneralIcon icon="ncShield" class="!w-3.5 !h-3.5 text-nc-content-gray-muted" />
-                  </NcTooltip>
+                    <GeneralIcon icon="ncShield" class="!w-3.5 !h-3.5 text-atm-content-gray-muted" />
+                  </AtTooltip>
                 </div>
-              </NcTooltip>
+              </AtTooltip>
             </template>
 
             <template
@@ -226,19 +226,19 @@ const getCountWithLabel = (defaultCount: number) => {
                 :class="{
                   'group-hover:opacity-100': !isLocked && isViewOperationsAllowed,
                 }"
-                class="text-nc-content-gray-muted opacity-0 transition"
+                class="text-atm-content-gray-muted opacity-0 transition"
               >
-                <GeneralIcon class="text-nc-content-gray-muted" icon="arrowDown" />
+                <GeneralIcon class="text-atm-content-gray-muted" icon="arrowDown" />
                 <span class="text-[10px] font-semibold"> {{ $t('labels.summary') }} </span>
               </div>
-              <NcTooltip
+              <AtTooltip
                 v-else-if="displayFieldComputed.value !== undefined"
                 :style="{
                   maxWidth: `${displayFieldComputed?.width}`,
                 }"
               >
                 <div style="direction: rtl" class="flex gap-2 text-nowrap truncate overflow-hidden items-center">
-                  <span class="text-nc-content-gray-subtle2 text-[12px] font-semibold">
+                  <span class="text-atm-content-gray-subtle2 text-[12px] font-semibold">
                     {{
                       getFormattedAggrationValue(
                         displayFieldComputed.field.aggregation,
@@ -255,7 +255,7 @@ const getCountWithLabel = (defaultCount: number) => {
                       )
                     }}
                   </span>
-                  <span class="text-nc-content-gray-muted text-[12px] leading-4">
+                  <span class="text-atm-content-gray-muted text-[12px] leading-4">
                     {{ $t(`aggregation.${displayFieldComputed.field.aggregation}`) }}
                   </span>
                 </div>
@@ -285,27 +285,27 @@ const getCountWithLabel = (defaultCount: number) => {
                     </span>
                   </div>
                 </template>
-              </NcTooltip>
+              </AtTooltip>
             </template>
           </div>
         </div>
 
         <template #overlay>
-          <NcMenu v-if="displayFieldComputed.field && displayFieldComputed.column?.id" variant="small">
-            <NcMenuItem
+          <AtMenu v-if="displayFieldComputed.field && displayFieldComputed.column?.id" variant="small">
+            <AtMenuItem
               v-for="(agg, index) in getAggregations(displayFieldComputed.column)"
               :key="index"
               @click="updateAggregate(displayFieldComputed.column.id, agg)"
             >
-              <div class="flex !w-full text-[13px] text-nc-content-gray items-center justify-between">
+              <div class="flex !w-full text-[13px] text-atm-content-gray items-center justify-between">
                 {{ $t(`aggregation_type.${agg}`) }}
 
-                <GeneralIcon v-if="displayFieldComputed.field?.aggregation === agg" class="text-nc-content-brand" icon="check" />
+                <GeneralIcon v-if="displayFieldComputed.field?.aggregation === agg" class="text-atm-content-brand" icon="check" />
               </div>
-            </NcMenuItem>
-          </NcMenu>
+            </AtMenuItem>
+          </AtMenu>
         </template>
-      </NcDropdown>
+      </AtDropdown>
     </div>
 
     <template v-for="({ field, width, column, value }, index) in visibleFieldsComputed" :key="index">
@@ -316,7 +316,7 @@ const getCountWithLabel = (defaultCount: number) => {
           true,
         )}px;max-width: ${getAddnlMargin(depth ?? 0, true)}px`"
       ></div>
-      <NcDropdown
+      <AtDropdown
         v-if="field && column?.id"
         :disabled="
           [UITypes.SpecificDBType, UITypes.ForeignKey, UITypes.Button].includes(column?.uidt!) ||
@@ -324,13 +324,13 @@ const getCountWithLabel = (defaultCount: number) => {
           !isViewOperationsAllowed ||
           isMmTable
         "
-        overlay-class-name="max-h-96 relative scroll-container nc-scrollbar-md overflow-auto"
+        overlay-class-name="max-h-96 relative scroll-container atm-scrollbar-md overflow-auto"
       >
         <div
-          class="flex items-center overflow-hidden justify-end group text-nc-content-gray-muted transition-all transition-linear px-3 py-2"
+          class="flex items-center overflow-hidden justify-end group text-atm-content-gray-muted transition-all transition-linear px-3 py-2"
           :class="{
             'cursor-pointer': !isLocked && isViewOperationsAllowed && !isMmTable,
-            'hover:bg-nc-bg-gray-light': isViewOperationsAllowed && !isMmTable,
+            'hover:bg-atm-bg-gray-light': isViewOperationsAllowed && !isMmTable,
           }"
           :style="{
             'min-width': width,
@@ -344,24 +344,24 @@ const getCountWithLabel = (defaultCount: number) => {
               :class="{
                 'group-hover:opacity-100': !isLocked && isViewOperationsAllowed,
               }"
-              class="text-nc-content-gray-muted opacity-0 transition"
+              class="text-atm-content-gray-muted opacity-0 transition"
             >
-              <GeneralIcon class="text-nc-content-gray-muted" icon="arrowDown" />
+              <GeneralIcon class="text-atm-content-gray-muted" icon="arrowDown" />
               <span class="text-[10px] font-semibold"> {{ $t('labels.summary') }} </span>
             </div>
 
-            <NcTooltip
+            <AtTooltip
               v-else-if="value !== undefined"
               :style="{
                 maxWidth: `${field?.width}px`,
               }"
             >
               <div class="flex gap-2 truncate text-nowrap overflow-hidden items-center">
-                <span class="text-nc-content-gray-muted text-[12px] leading-4">
+                <span class="text-atm-content-gray-muted text-[12px] leading-4">
                   {{ $t(`aggregation.${field.aggregation}`).replace('Percent ', '') }}
                 </span>
 
-                <span class="text-nc-content-gray-subtle2 font-semibold text-[12px]">
+                <span class="text-atm-content-gray-subtle2 font-semibold text-[12px]">
                   {{
                     getFormattedAggrationValue(field.aggregation, value, column, [], {
                       meta,
@@ -393,31 +393,31 @@ const getCountWithLabel = (defaultCount: number) => {
                   </span>
                 </div>
               </template>
-            </NcTooltip>
+            </AtTooltip>
           </template>
         </div>
 
         <template #overlay>
-          <NcMenu variant="small">
-            <NcMenuItem v-for="(agg, i) in getAggregations(column)" :key="i" @click="updateAggregate(column.id, agg)">
-              <div class="flex !w-full text-[13px] text-nc-content-gray items-center justify-between">
+          <AtMenu variant="small">
+            <AtMenuItem v-for="(agg, i) in getAggregations(column)" :key="i" @click="updateAggregate(column.id, agg)">
+              <div class="flex !w-full text-[13px] text-atm-content-gray items-center justify-between">
                 {{ $t(`aggregation_type.${agg}`) }}
 
-                <GeneralIcon v-if="field?.aggregation === agg" class="text-nc-content-brand" icon="check" />
+                <GeneralIcon v-if="field?.aggregation === agg" class="text-atm-content-brand" icon="check" />
               </div>
-            </NcMenuItem>
-          </NcMenu>
+            </AtMenuItem>
+          </AtMenu>
         </template>
-      </NcDropdown>
+      </AtDropdown>
     </template>
 
     <div class="!pl-8 pr-60 !w-8 h-1">‎</div>
 
     <div
       v-if="!disablePagination"
-      class="absolute h-9 bg-nc-bg-default border-l-1 border-nc-border-gray-medium px-1 flex items-center right-0"
+      class="absolute h-9 bg-atm-bg-default border-l-1 border-atm-border-gray-medium px-1 flex items-center right-0"
     >
-      <NcPaginationV2
+      <AtPaginationV2
         v-if="count !== Infinity"
         v-model:current="page"
         v-model:page-size="size"
@@ -435,14 +435,14 @@ const getCountWithLabel = (defaultCount: number) => {
 </template>
 
 <style scoped lang="scss">
-:deep(.nc-menu-item-inner) {
+:deep(.atm-menu-item-inner) {
   @apply w-full;
 }
 
-.nc-grid-pagination-wrapper {
+.atm-grid-pagination-wrapper {
   .ant-pagination-item-active {
     a {
-      @apply text-sm !text-nc-content-gray-subtle !hover:text-nc-content-gray;
+      @apply text-sm !text-atm-content-gray-subtle !hover:text-atm-content-gray;
     }
   }
 }

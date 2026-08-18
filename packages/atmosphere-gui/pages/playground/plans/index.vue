@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { OnPremPlanMeta, OnPremPlanTitles, PlanMeta, PlanTitles } from 'nocodb-sdk'
+import { OnPremPlanMeta, OnPremPlanTitles, PlanMeta, PlanTitles } from 'atmosphere-sdk'
 
 if (import.meta.env.PROD) {
   navigateTo('/')
@@ -132,40 +132,40 @@ const enterpriseOrangeBadge = { bg: '#FEE6D6', text: '#C86827' }
 </script>
 
 <template>
-  <div class="h-screen w-screen overflow-auto bg-nc-bg-default">
+  <div class="h-screen w-screen overflow-auto bg-atm-bg-default">
     <div class="max-w-4xl mx-auto p-8">
       <div class="mb-8">
-        <a href="/playground" class="text-sm text-nc-content-brand no-underline">← Playground</a>
-        <h1 class="text-4xl font-bold text-nc-content-gray-emphasis mt-2 mb-1">Plans</h1>
-        <p class="text-sm text-nc-content-gray-subtle">
+        <a href="/playground" class="text-sm text-atm-content-brand no-underline">← Playground</a>
+        <h1 class="text-4xl font-bold text-atm-content-gray-emphasis mt-2 mb-1">Plans</h1>
+        <p class="text-sm text-atm-content-gray-subtle">
           Current-plan billing table and upgrade badges for both Cloud and On-Prem SKUs. Toggle the app theme to check dark mode.
         </p>
       </div>
 
       <!-- ========== CLOUD ========== -->
       <div class="mb-6">
-        <div class="text-[11px] tracking-widest text-nc-content-gray-muted uppercase mb-1">Cloud</div>
-        <div class="text-sm text-nc-content-gray-subtle">PlanMeta · Free · Plus · Business · Enterprise</div>
+        <div class="text-[11px] tracking-widest text-atm-content-gray-muted uppercase mb-1">Cloud</div>
+        <div class="text-sm text-atm-content-gray-subtle">PlanMeta · Free · Plus · Business · Enterprise</div>
       </div>
 
       <div class="flex flex-col gap-8">
         <section v-for="plan in cloudPlans" :key="plan" class="flex flex-col gap-3">
           <div class="flex items-center gap-3">
             <h2
-              class="text-lg font-semibold leading-none !m-0 text-nc-content-gray-emphasis"
+              class="text-lg font-semibold leading-none !m-0 text-atm-content-gray-emphasis"
               :style="{ color: metaForCloud(plan).primary }"
             >
               {{ plan }}
             </h2>
             <template v-if="plan !== PlanTitles.FREE">
               <span
-                class="nc-play-badge"
+                class="atm-play-badge"
                 :style="{
                   background: staticBadge(plan).bg,
                   color: staticBadge(plan).text,
                 }"
               >
-                <svg class="nc-play-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <svg class="atm-play-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                   <path d="M8 0 C8.6 5 11 7.4 16 8 C11 8.6 8.6 11 8 16 C7.4 11 5 8.6 0 8 C5 7.4 7.4 5 8 0 Z" />
                 </svg>
                 {{ plan }}
@@ -175,7 +175,7 @@ const enterpriseOrangeBadge = { bg: '#FEE6D6', text: '#C86827' }
           </div>
 
           <div
-            class="nc-current-plan-table rounded-lg border-1"
+            class="atm-current-plan-table rounded-lg border-1"
             :style="{
               borderColor: metaForCloud(plan).border,
               background: metaForCloud(plan).bgLight,
@@ -192,8 +192,8 @@ const enterpriseOrangeBadge = { bg: '#FEE6D6', text: '#C86827' }
 
       <!-- Old orange Enterprise — for comparison only (not in product) -->
       <div class="mt-14 mb-6">
-        <div class="text-[11px] tracking-widest text-nc-content-gray-muted uppercase mb-1">Legacy · Orange Enterprise</div>
-        <div class="text-sm text-nc-content-gray-subtle">
+        <div class="text-[11px] tracking-widest text-atm-content-gray-muted uppercase mb-1">Legacy · Orange Enterprise</div>
+        <div class="text-sm text-atm-content-gray-subtle">
           For comparison — the pre-teal Enterprise tokens. Not applied in product.
         </div>
       </div>
@@ -202,23 +202,23 @@ const enterpriseOrangeBadge = { bg: '#FEE6D6', text: '#C86827' }
         <div class="flex items-center gap-3">
           <h2 class="text-lg font-semibold leading-none !m-0" :style="{ color: enterpriseOrangeMeta.primary }">Enterprise</h2>
           <span
-            class="nc-play-badge"
+            class="atm-play-badge"
             :style="{
               background: enterpriseOrangeBadge.bg,
               color: enterpriseOrangeBadge.text,
             }"
           >
-            <svg class="nc-play-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <svg class="atm-play-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
               <path d="M8 0 C8.6 5 11 7.4 16 8 C11 8.6 8.6 11 8 16 C7.4 11 5 8.6 0 8 C5 7.4 7.4 5 8 0 Z" />
             </svg>
             Enterprise
           </span>
           <GeneralIcon icon="ncLock" class="h-3.5 w-3.5 cursor-pointer" :style="{ color: enterpriseOrangeBadge.text }" />
-          <span class="text-[11px] tracking-widest text-nc-content-gray-muted uppercase">Old · Orange</span>
+          <span class="text-[11px] tracking-widest text-atm-content-gray-muted uppercase">Old · Orange</span>
         </div>
 
         <div
-          class="nc-current-plan-table rounded-lg border-1"
+          class="atm-current-plan-table rounded-lg border-1"
           :style="{
             borderColor: enterpriseOrangeMeta.border,
             background: enterpriseOrangeMeta.bgLight,
@@ -238,27 +238,27 @@ const enterpriseOrangeBadge = { bg: '#FEE6D6', text: '#C86827' }
 
       <!-- ========== ON-PREM ========== -->
       <div class="mt-14 mb-6">
-        <div class="text-[11px] tracking-widest text-nc-content-gray-muted uppercase mb-1">On-Prem</div>
-        <div class="text-sm text-nc-content-gray-subtle">OnPremPlanMeta · Starter · Scale · Enterprise</div>
+        <div class="text-[11px] tracking-widest text-atm-content-gray-muted uppercase mb-1">On-Prem</div>
+        <div class="text-sm text-atm-content-gray-subtle">OnPremPlanMeta · Starter · Scale · Enterprise</div>
       </div>
 
       <div class="flex flex-col gap-8">
         <section v-for="plan in onPremPlans" :key="plan" class="flex flex-col gap-3">
           <div class="flex items-center gap-3">
             <h2
-              class="text-lg font-semibold leading-none !m-0 text-nc-content-gray-emphasis"
+              class="text-lg font-semibold leading-none !m-0 text-atm-content-gray-emphasis"
               :style="{ color: metaForOnPrem(plan).primary }"
             >
               {{ plan }}
             </h2>
             <span
-              class="nc-play-badge"
+              class="atm-play-badge"
               :style="{
                 background: staticBadge(plan).bg,
                 color: staticBadge(plan).text,
               }"
             >
-              <svg class="nc-play-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <svg class="atm-play-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path d="M8 0 C8.6 5 11 7.4 16 8 C11 8.6 8.6 11 8 16 C7.4 11 5 8.6 0 8 C5 7.4 7.4 5 8 0 Z" />
               </svg>
               {{ plan }}
@@ -267,7 +267,7 @@ const enterpriseOrangeBadge = { bg: '#FEE6D6', text: '#C86827' }
           </div>
 
           <div
-            class="nc-current-plan-table rounded-lg border-1"
+            class="atm-current-plan-table rounded-lg border-1"
             :style="{
               borderColor: metaForOnPrem(plan).border,
               background: metaForOnPrem(plan).bgLight,
@@ -284,19 +284,19 @@ const enterpriseOrangeBadge = { bg: '#FEE6D6', text: '#C86827' }
 
       <!-- Lock-only variant (showAsLock) -->
       <div class="mt-12">
-        <div class="text-[11px] tracking-widest text-nc-content-gray-muted uppercase mb-3">Lock-only variant</div>
-        <div class="p-5 bg-nc-bg-default rounded-xl border border-nc-border-gray-medium">
+        <div class="text-[11px] tracking-widest text-atm-content-gray-muted uppercase mb-3">Lock-only variant</div>
+        <div class="p-5 bg-atm-bg-default rounded-xl border border-atm-border-gray-medium">
           <div class="flex flex-col gap-3">
             <div class="flex items-center justify-between">
-              <span class="text-sm text-nc-content-gray">Data Permissions</span>
+              <span class="text-sm text-atm-content-gray">Data Permissions</span>
               <GeneralIcon icon="ncLock" class="h-3.5 w-3.5 cursor-pointer" style="color: #0d5a5a" />
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-nc-content-gray">Audit Logs</span>
+              <span class="text-sm text-atm-content-gray">Audit Logs</span>
               <GeneralIcon icon="ncLock" class="h-3.5 w-3.5 cursor-pointer" style="color: #0d5a5a" />
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-nc-content-gray">SSO / SAML</span>
+              <span class="text-sm text-atm-content-gray">SSO / SAML</span>
               <GeneralIcon icon="ncLock" class="h-3.5 w-3.5 cursor-pointer" style="color: #0d5a5a" />
             </div>
           </div>
@@ -305,19 +305,19 @@ const enterpriseOrangeBadge = { bg: '#FEE6D6', text: '#C86827' }
 
       <!-- Stand-alone badges strip -->
       <div class="mt-12">
-        <div class="text-[11px] tracking-widest text-nc-content-gray-muted uppercase mb-3">Standalone badges — all SKUs</div>
-        <div class="p-5 bg-nc-bg-default rounded-xl border border-nc-border-gray-medium">
+        <div class="text-[11px] tracking-widest text-atm-content-gray-muted uppercase mb-3">Standalone badges — all SKUs</div>
+        <div class="p-5 bg-atm-bg-default rounded-xl border border-atm-border-gray-medium">
           <div class="flex items-center gap-3 flex-wrap">
             <span
               v-for="plan in [...cloudPlans, ...onPremPlans].filter((p) => p !== PlanTitles.FREE)"
               :key="plan"
-              class="nc-play-badge"
+              class="atm-play-badge"
               :style="{
                 background: staticBadge(plan).bg,
                 color: staticBadge(plan).text,
               }"
             >
-              <svg class="nc-play-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <svg class="atm-play-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path d="M8 0 C8.6 5 11 7.4 16 8 C11 8.6 8.6 11 8 16 C7.4 11 5 8.6 0 8 C5 7.4 7.4 5 8 0 Z" />
               </svg>
               {{ plan }}
@@ -330,12 +330,12 @@ const enterpriseOrangeBadge = { bg: '#FEE6D6', text: '#C86827' }
 </template>
 
 <style scoped lang="scss">
-.nc-play-badge {
+.atm-play-badge {
   @apply inline-flex items-center gap-1 text-[13px] font-medium rounded-full px-2 py-1 leading-none whitespace-nowrap;
   line-height: 1;
 }
 
-.nc-play-icon {
+.atm-play-icon {
   width: 0.85em;
   height: 0.85em;
   flex: none;

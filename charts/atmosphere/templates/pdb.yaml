@@ -2,11 +2,11 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "nocodb.fullname" . }}
+  name: {{ include "atmosphere.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "nocodb.labels" . | nindent 4 }}
-  {{- with include "nocodb.annotations" (dict "context" . "extraAnnotations" dict) }}
+    {{- include "atmosphere.labels" . | nindent 4 }}
+  {{- with include "atmosphere.annotations" (dict "context" . "extraAnnotations" dict) }}
   annotations:
     {{- . | nindent 4 }}
   {{- end }}
@@ -18,19 +18,19 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "nocodb.selectorLabels" . | nindent 6 }}
+      {{- include "atmosphere.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: app
 {{- if .Values.worker.enabled }}
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "nocodb.fullname" . }}-worker
+  name: {{ include "atmosphere.fullname" . }}-worker
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "nocodb.labels" . | nindent 4 }}
+    {{- include "atmosphere.labels" . | nindent 4 }}
     app.kubernetes.io/component: worker
-  {{- with include "nocodb.annotations" (dict "context" . "extraAnnotations" dict) }}
+  {{- with include "atmosphere.annotations" (dict "context" . "extraAnnotations" dict) }}
   annotations:
     {{- . | nindent 4 }}
   {{- end }}
@@ -42,7 +42,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "nocodb.selectorLabels" . | nindent 6 }}
+      {{- include "atmosphere.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: worker
 {{- end }}
 {{- end }}

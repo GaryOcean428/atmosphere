@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Draggable from 'vuedraggable'
-import { type ColumnType, isDateOrDateTimeCol } from 'nocodb-sdk'
-import { PermissionEntity, PermissionKey } from 'nocodb-sdk'
+import { type ColumnType, isDateOrDateTimeCol } from 'atmosphere-sdk'
+import { PermissionEntity, PermissionKey } from 'atmosphere-sdk'
 import { computeLtarNewRowState } from '~/utils/dataUtils'
 
 interface Prop {
@@ -322,7 +322,7 @@ const onCreatedRecord = async (record: any) => {
       h(
         'span',
         {
-          class: 'text-nc-content-gray-muted',
+          class: 'text-atm-content-gray-muted',
         },
         t('activity.gotSavedLinkedSuccessfully', {
           tableName: relatedTableMeta.value?.title,
@@ -523,7 +523,7 @@ const isSearchInputFocused = ref(false)
 const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
   scrollContainerRef,
   filterQueryRef,
-  itemTestId: 'nc-child-list-item',
+  itemTestId: 'atm-child-list-item',
   expandedFormDlg,
   closeModal: () => {
     vModel.value = false
@@ -538,14 +538,14 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
 </script>
 
 <template>
-  <div class="nc-modal-child-list h-full w-full" :class="{ active: vModel }" @keydown.enter.stop>
+  <div class="atm-modal-child-list h-full w-full" :class="{ active: vModel }" @keydown.enter.stop>
     <div class="flex flex-col h-full">
-      <div class="nc-dropdown-link-record-header bg-nc-bg-gray-light py-2 rounded-t-xl flex justify-between pl-3 pr-2 gap-2">
-        <div class="flex-1 nc-dropdown-link-record-search-wrapper flex items-center rounded-md">
+      <div class="atm-dropdown-link-record-header bg-atm-bg-gray-light py-2 rounded-t-xl flex justify-between pl-3 pr-2 gap-2">
+        <div class="flex-1 atm-dropdown-link-record-search-wrapper flex items-center rounded-md">
           <!-- Utilize SmartsheetToolbarFilterInput component to filter the records for Date or DateTime column -->
           <SmartsheetToolbarFilterInput
             v-if="relatedTableDisplayValueColumn && isDateOrDateTimeCol(relatedTableDisplayValueColumn)"
-            class="nc-filter-value-select rounded-md min-w-34"
+            class="atm-filter-value-select rounded-md min-w-34"
             :column="relatedTableDisplayValueColumn"
             :filter="{
               comparison_op: 'eq',
@@ -570,25 +570,25 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
             @keydown.capture.stop="handleKeyDown"
           >
             <template #prefix>
-              <GeneralIcon icon="search" class="nc-search-icon mr-2 h-4 w-4 text-nc-content-gray-muted" />
+              <GeneralIcon icon="search" class="atm-search-icon mr-2 h-4 w-4 text-atm-content-gray-muted" />
             </template>
           </a-input>
         </div>
         <LazyVirtualCellComponentsHeader
-          data-testid="nc-link-count-info"
+          data-testid="atm-link-count-info"
           :linked-records="totalItemsToShow"
           :related-table-title="relatedTableMeta?.title"
           :relation="relation"
           :table-title="meta?.title"
         />
       </div>
-      <div ref="scrollContainerRef" class="flex-1 overflow-auto nc-scrollbar-thin" @scroll="onListScroll">
+      <div ref="scrollContainerRef" class="flex-1 overflow-auto atm-scrollbar-thin" @scroll="onListScroll">
         <div v-if="isDataExist || isChildrenLoading || childrenCachedTotalRows > 0 || showPendingLinks">
           <template v-if="isChildrenLoading && childrenCachedRows.size === 0">
             <div
               v-for="(_x, i) in Array.from({ length: skeletonCount })"
               :key="i"
-              class="flex flex-row gap-3 px-3 py-2 transition-all relative border-b-1 border-nc-border-gray-medium hover:bg-nc-bg-gray-extralight"
+              class="flex flex-row gap-3 px-3 py-2 transition-all relative border-b-1 border-atm-border-gray-medium hover:bg-atm-bg-gray-extralight"
             >
               <div class="flex items-center">
                 <a-skeleton-image class="!h-11 !w-11 !rounded-md overflow-hidden children:(!h-full !w-full)" />
@@ -613,19 +613,19 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
             <Draggable
               v-model="reorderRows"
               :item-key="(r) => getRelatedTableRowId(r)"
-              handle=".nc-ltar-reorder-handle"
-              ghost-class="nc-ltar-reorder-ghost"
+              handle=".atm-ltar-reorder-handle"
+              ghost-class="atm-ltar-reorder-ghost"
               :animation="150"
               @end="onReorderEnd"
             >
               <template #item="{ element, index }">
                 <div
-                  class="flex flex-row items-center border-b-1 border-nc-border-gray-medium hover:bg-nc-bg-gray-extralight"
-                  data-testid="nc-child-list-reorder-item"
+                  class="flex flex-row items-center border-b-1 border-atm-border-gray-medium hover:bg-atm-bg-gray-extralight"
+                  data-testid="atm-child-list-reorder-item"
                 >
                   <div
-                    class="nc-ltar-reorder-handle flex-none flex items-center pl-2 cursor-move text-nc-content-gray-muted hover:text-nc-content-gray"
-                    data-testid="nc-child-list-reorder-handle"
+                    class="atm-ltar-reorder-handle flex-none flex items-center pl-2 cursor-move text-atm-content-gray-muted hover:text-atm-content-gray"
+                    data-testid="atm-child-list-reorder-handle"
                   >
                     <GeneralIcon icon="ncDrag" class="!h-4 !w-4" />
                   </div>
@@ -640,7 +640,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
                     :related-table-display-value-prop="relatedTableDisplayValueProp"
                     :row="element"
                     :allow-expand="allowRecordExpand"
-                    data-testid="nc-child-list-item"
+                    data-testid="atm-child-list-item"
                     @link-or-unlink="unlinkRow(element, index)"
                     @expand="onClick(element)"
                     @close="vModel = false"
@@ -663,7 +663,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
               :related-table-display-value-prop="relatedTableDisplayValueProp"
               :row="pItem"
               :allow-expand="allowRecordExpand"
-              data-testid="nc-child-list-item-pending"
+              data-testid="atm-child-list-item-pending"
               @link-or-unlink="removePendingLink(pItem)"
               @expand="onClick(pItem)"
               @close="vModel = false"
@@ -679,7 +679,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
               <div
                 v-if="item._placeholder"
                 :style="{ height: `${ROW_HEIGHT}px` }"
-                class="flex flex-row gap-3 px-3 py-2 transition-all relative border-b-1 border-nc-border-gray-medium"
+                class="flex flex-row gap-3 px-3 py-2 transition-all relative border-b-1 border-atm-border-gray-medium"
               >
                 <div class="flex items-center">
                   <a-skeleton-image class="!h-11 !w-11 !rounded-md overflow-hidden children:(!h-full !w-full)" />
@@ -701,7 +701,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
                 :related-table-display-value-prop="relatedTableDisplayValueProp"
                 :row="item"
                 :allow-expand="allowRecordExpand"
-                data-testid="nc-child-list-item"
+                data-testid="atm-child-list-item"
                 @link-or-unlink="linkOrUnLink(item, String(item._index))"
                 @expand="onClick(item)"
                 @close="vModel = false"
@@ -714,31 +714,31 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
             <div :style="{ height: `${Math.max(0, childrenCachedTotalRows - rowSlice.end) * ROW_HEIGHT}px` }" />
           </template>
         </div>
-        <div v-else class="h-full flex flex-col gap-2 my-auto items-center justify-center text-nc-content-gray-muted text-center">
+        <div v-else class="h-full flex flex-col gap-2 my-auto items-center justify-center text-atm-content-gray-muted text-center">
           <img
             :alt="$t('msg.clickLinkRecordsToAddLinkFromTable')"
             class="!w-[158px] flex-none"
             src="~assets/img/placeholder/link-records.png"
           />
-          <div class="text-base text-nc-content-inverted-secondary font-bold">{{ $t('msg.noLinkedRecords') }}</div>
-          <div class="text-nc-content-inverted-secondary">
+          <div class="text-base text-atm-content-inverted-secondary font-bold">{{ $t('msg.noLinkedRecords') }}</div>
+          <div class="text-atm-content-inverted-secondary">
             {{ $t('msg.clickLinkRecordsToAddLinkFromTable') }}
           </div>
 
-          <NcButton
+          <AtButton
             v-if="!readOnly && (childrenListCount < 1 || (childrenList?.list ?? state?.[colTitle] ?? []).length > 0)"
             v-e="['c:links:link']"
-            data-testid="nc-child-list-button-link-to"
+            data-testid="atm-child-list-button-link-to"
             size="small"
             @click="emit('attachRecord')"
           >
             <div class="flex items-center gap-1"><MdiPlus /> {{ $t('title.linkRecords') }}</div>
-          </NcButton>
+          </AtButton>
         </div>
       </div>
 
       <div
-        class="nc-dropdown-link-record-footer bg-nc-bg-gray-light p-2 rounded-b-xl flex items-center justify-between gap-3 min-h-11"
+        class="atm-dropdown-link-record-footer bg-atm-bg-gray-light p-2 rounded-b-xl flex items-center justify-between gap-3 min-h-11"
       >
         <div class="flex items-center gap-2">
           <PermissionsTooltip
@@ -758,30 +758,30 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
             :permission="PermissionKey.TABLE_RECORD_ADD"
           >
             <template #default="{ isAllowed }">
-              <NcButton
+              <AtButton
                 v-e="['c:row-expand:open']"
                 size="small"
-                class="!hover:(bg-nc-bg-default text-nc-content-brand) !h-7 !text-small"
+                class="!hover:(bg-atm-bg-default text-atm-content-brand) !h-7 !text-small"
                 type="secondary"
-                data-testid="nc-child-list-button-new-record"
+                data-testid="atm-child-list-button-new-record"
                 :disabled="!isAllowed"
                 @click="addNewRecord"
               >
                 <div class="flex items-center gap-1">
                   <MdiPlus v-if="!isMobileMode" class="h-4 w-4" /> {{ $t('activity.newRecord') }}
                 </div>
-              </NcButton>
+              </AtButton>
             </template>
           </PermissionsTooltip>
-          <NcButton
+          <AtButton
             v-if="
               !readOnly &&
               (childrenListCount > 0 || (childrenList?.list ?? state?.[colTitle] ?? []).length > 0) &&
               !(meta?.synced && column?.readonly)
             "
             v-e="['c:links:link']"
-            data-testid="nc-child-list-button-link-to"
-            class="!hover:(bg-nc-bg-default text-nc-content-brand) !h-7 !text-small"
+            data-testid="atm-child-list-button-link-to"
+            class="!hover:(bg-atm-bg-default text-atm-content-brand) !h-7 !text-small"
             size="small"
             type="secondary"
             @click="emit('attachRecord')"
@@ -790,9 +790,9 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
               <GeneralIcon icon="link2" class="!xs:hidden h-4 w-4" />
               {{ isMobileMode ? $t('title.linkMore') : $t('title.linkMoreRecords') }}
             </div>
-          </NcButton>
+          </AtButton>
         </div>
-        <div v-if="childrenCachedTotalRows > 0" class="text-nc-content-gray-muted text-small">
+        <div v-if="childrenCachedTotalRows > 0" class="text-atm-content-gray-muted text-small">
           {{ childrenCachedTotalRows }} {{ childrenCachedTotalRows === 1 ? 'record' : 'records' }}
         </div>
       </div>
@@ -837,7 +837,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-nested-list-item .ant-card-body) {
+:deep(.atm-nested-list-item .ant-card-body) {
   @apply !px-1 !py-0;
 }
 
@@ -849,25 +849,25 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
   @apply !w-7;
 }
 
-:deep(.nc-filter-input-wrapper) {
+:deep(.atm-filter-input-wrapper) {
   height: 28px;
 }
 </style>
 
 <style lang="scss">
-.nc-dropdown-link-record-search-wrapper {
-  .nc-search-icon {
-    @apply flex-none text-nc-content-gray-muted;
+.atm-dropdown-link-record-search-wrapper {
+  .atm-search-icon {
+    @apply flex-none text-atm-content-gray-muted;
   }
 
   &:focus-within {
-    .nc-search-icon {
-      @apply text-nc-content-gray-subtle2;
+    .atm-search-icon {
+      @apply text-atm-content-gray-subtle2;
     }
   }
   input {
     &::placeholder {
-      @apply text-nc-content-gray-muted;
+      @apply text-atm-content-gray-muted;
     }
   }
 }

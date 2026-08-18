@@ -16,17 +16,17 @@ import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { DataApiLimiterGuard } from '~/guards/data-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 
 @Controller()
 @UseGuards(DataApiLimiterGuard, GlobalGuard)
 export class OldDatasController {
   constructor(private readonly oldDatasService: OldDatasService) {}
 
-  @Get('/nc/:baseId/api/v1/:tableName')
+  @Get('/atm/:baseId/api/v1/:tableName')
   @Acl('dataList')
   async dataList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Request() req,
     @Response() res,
     @Param('baseId') baseId: string,
@@ -41,10 +41,10 @@ export class OldDatasController {
     );
   }
 
-  @Get('/nc/:baseId/api/v1/:tableName/count')
+  @Get('/atm/:baseId/api/v1/:tableName/count')
   @Acl('dataCount')
   async dataCount(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Request() req,
     @Response() res,
     @Param('baseId') baseId: string,
@@ -59,11 +59,11 @@ export class OldDatasController {
     );
   }
 
-  @Post('/nc/:baseId/api/v1/:tableName')
+  @Post('/atm/:baseId/api/v1/:tableName')
   @HttpCode(200)
   @Acl('dataInsert')
   async dataInsert(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Request() req,
     @Response() res,
     @Param('baseId') baseId: string,
@@ -80,10 +80,10 @@ export class OldDatasController {
     );
   }
 
-  @Get('/nc/:baseId/api/v1/:tableName/:rowId')
+  @Get('/atm/:baseId/api/v1/:tableName/:rowId')
   @Acl('dataRead')
   async dataRead(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Request() req,
     @Response() res,
     @Param('baseId') baseId: string,
@@ -100,10 +100,10 @@ export class OldDatasController {
     );
   }
 
-  @Patch('/nc/:baseId/api/v1/:tableName/:rowId')
+  @Patch('/atm/:baseId/api/v1/:tableName/:rowId')
   @Acl('dataUpdate')
   async dataUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Request() req,
     @Response() res,
     @Param('baseId') baseId: string,
@@ -121,10 +121,10 @@ export class OldDatasController {
     );
   }
 
-  @Delete('/nc/:baseId/api/v1/:tableName/:rowId')
+  @Delete('/atm/:baseId/api/v1/:tableName/:rowId')
   @Acl('dataDelete')
   async dataDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Request() req,
     @Response() res,
     @Param('baseId') baseId: string,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { UITypes } from 'nocodb-sdk'
+import { UITypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -42,7 +42,7 @@ vModel.value.au = !!vModel.value.au */
           <a-checkbox
             v-model:checked="vModel.rqd"
             :disabled="vModel.pk || !sqlUi.columnEditable(vModel)"
-            class="nc-column-checkbox-NN"
+            class="atm-column-checkbox-NN"
             @change="onAlter"
           />
         </a-form-item>
@@ -54,7 +54,7 @@ vModel.value.au = !!vModel.value.au */
           <a-checkbox
             v-model:checked="vModel.pk"
             :disabled="!sqlUi.columnEditable(vModel)"
-            class="nc-column-checkbox-PK"
+            class="atm-column-checkbox-PK"
             @change="onAlter"
           />
         </a-form-item>
@@ -66,7 +66,7 @@ vModel.value.au = !!vModel.value.au */
           <a-checkbox
             v-model:checked="vModel.ai"
             :disabled="sqlUi.colPropUNDisabled(vModel) || !sqlUi.columnEditable(vModel)"
-            class="nc-column-checkbox-AI"
+            class="atm-column-checkbox-AI"
             @change="onAlter"
           />
         </a-form-item>
@@ -75,19 +75,19 @@ vModel.value.au = !!vModel.value.au */
           <template #label>
             <span :title="$t('labels.unsigned')">UN</span>
           </template>
-          <a-checkbox v-model:checked="vModel.un" class="nc-column-checkbox-UN" />
+          <a-checkbox v-model:checked="vModel.un" class="atm-column-checkbox-UN" />
         </a-form-item>
 
         <a-form-item :disabled="sqlUi.colPropAuDisabled(vModel) || !sqlUi.columnEditable(vModel)" @change="onAlter">
           <template #label>
             <span :title="$t('labels.autoUpdate')">AU</span>
           </template>
-          <a-checkbox v-model:checked="vModel.au" class="nc-column-checkbox-AU" />
+          <a-checkbox v-model:checked="vModel.au" class="atm-column-checkbox-AU" />
         </a-form-item>
       </div>
 
       <a-form-item :label="$t('labels.databaseType')" v-bind="validateInfos.dt">
-        <a-select v-model:value="vModel.dt" dropdown-class-name="nc-dropdown-db-type" @change="onDataTypeChange">
+        <a-select v-model:value="vModel.dt" dropdown-class-name="atm-dropdown-db-type" @change="onDataTypeChange">
           <template #suffixIcon>
             <GeneralIcon icon="arrowDown" class="text-gray-700" />
           </template>
@@ -98,8 +98,8 @@ vModel.value.au = !!vModel.value.au */
               <component
                 :is="iconMap.check"
                 v-if="vModel.dt === type"
-                id="nc-selected-item-icon"
-                class="text-nc-content-brand w-4 h-4"
+                id="atm-selected-item-icon"
+                class="text-atm-content-brand w-4 h-4"
               />
             </div>
           </a-select-option>

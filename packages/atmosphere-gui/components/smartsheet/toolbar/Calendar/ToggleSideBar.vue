@@ -10,10 +10,10 @@ const toggleSideMenu = () => {
 </script>
 
 <template>
-  <NcTooltip hide-on-click disable-in-mobile placement="left">
+  <AtTooltip hide-on-click disable-in-mobile placement="left">
     <template #title> {{ $t('activity.toggleSidebar') }}</template>
-    <NcButton :shadow="false" data-testid="nc-calendar-side-bar-btn" size="xs" type="text" class="!px-1" @click="toggleSideMenu">
-      <GeneralIcon icon="sidebar" class="h-4 w-4 text-nc-content-subtle2 transition-all" />
-    </NcButton>
-  </NcTooltip>
+    <AtButton :shadow="false" data-testid="atm-calendar-side-bar-btn" size="xs" type="text" class="!px-1" @click="toggleSideMenu">
+      <GeneralIcon icon="sidebar" class="h-4 w-4 text-atm-content-subtle2 transition-all" />
+    </AtButton>
+  </AtTooltip>
 </template>

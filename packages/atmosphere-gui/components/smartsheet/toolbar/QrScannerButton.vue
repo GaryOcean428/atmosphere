@@ -2,8 +2,8 @@
 import type { SelectProps } from 'ant-design-vue'
 import { ref } from 'vue'
 import { StreamBarcodeReader } from 'vue-barcode-reader'
-import type { ColumnType } from 'nocodb-sdk'
-import { UITypes } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
+import { UITypes } from 'atmosphere-sdk'
 
 const meta = inject(MetaInj, ref())
 
@@ -82,7 +82,7 @@ const onDecode = async (codeValue: string) => {
     const selectedColumnToScanFor = getColumnToSearchForByBarOrQrCodeColumnId(idOfSelectedColumnToScanFor.value)
     const whereClause = `(${selectedColumnToScanFor?.title},eq,${codeValue})`
     const foundRowsForCode = (
-      await $api.dbViewRow.list(NOCO, base.value.id!, meta.value!.id!, view.value!.title!, {
+      await $api.dbViewRow.list(ATMOSPHERE, base.value.id!, meta.value!.id!, view.value!.title!, {
         where: whereClause,
       })
     ).list
@@ -122,7 +122,7 @@ const onDecode = async (codeValue: string) => {
 
 <template>
   <div>
-    <a-button class="nc-btn-find-row-by-scan nc-toolbar-btn" @click="showCodeScannerOverlay = true">
+    <a-button class="atm-btn-find-row-by-scan atm-toolbar-btn" @click="showCodeScannerOverlay = true">
       <div class="flex items-center gap-1">
         <component :is="iconMap.qrCode" />
         <span v-if="!isMobileMode" class="!text-xs font-weight-normal"> {{ $t('activity.findRowByCodeScan') }}</span>
@@ -130,18 +130,18 @@ const onDecode = async (codeValue: string) => {
     </a-button>
     <a-modal
       v-model:visible="showCodeScannerOverlay"
-      class="nc-overlay-find-row-by-scan"
+      class="atm-overlay-find-row-by-scan"
       :closable="false"
       width="28rem"
       centered
       :footer="null"
-      wrap-class-name="nc-modal-generate-token"
+      wrap-class-name="atm-modal-generate-token"
       destroy-on-close
       @cancel="scannerIsReady = false"
     >
       <div class="relative flex flex-col h-full">
         <div class="text-left text-wrap mt-2 text-xl mb-4">{{ $t('title.findRowByScanningCode') }}</div>
-        <a-form-item :label="$t('labels.columnToScanFor')" class="nc-dropdown-scanner-column-id">
+        <a-form-item :label="$t('labels.columnToScanFor')" class="atm-dropdown-scanner-column-id">
           <a-select
             v-model:value="idOfSelectedColumnToScanFor"
             class="w-full"

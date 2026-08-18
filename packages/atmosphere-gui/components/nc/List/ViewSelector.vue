@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ViewType } from 'nocodb-sdk'
+import type { ViewType } from 'atmosphere-sdk'
 
 interface Props {
   tableId?: string
@@ -158,8 +158,8 @@ defineExpose({
 <template>
   <a-form-item
     name="viewId"
-    class="!mb-0 nc-view-selector"
-    :class="`nc-force-layout-${forceLayout}`"
+    class="!mb-0 atm-view-selector"
+    :class="`atm-force-layout-${forceLayout}`"
     :validate-status="selectedView?.ncItemDisabled ? 'error' : ''"
     :help="selectedView?.ncItemDisabled ? [selectedView.ncItemTooltip] : []"
     @click.stop
@@ -170,31 +170,31 @@ defineExpose({
         <slot name="label">{{ t('objects.view') }}</slot>
       </div>
     </template>
-    <NcListDropdown v-model:is-open="isOpenViewSelectDropdown" :disabled="disabled" :has-error="!!selectedView?.ncItemDisabled">
+    <AtListDropdown v-model:is-open="isOpenViewSelectDropdown" :disabled="disabled" :has-error="!!selectedView?.ncItemDisabled">
       <div class="flex-1 flex group items-center gap-2 min-w-0">
         <div v-if="selectedView" class="min-w-5 flex items-center justify-center">
-          <NcIconView :view="selectedView" class="text-nc-content-gray-muted" />
+          <AtIconView :view="selectedView" class="text-atm-content-gray-muted" />
         </div>
-        <NcTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
+        <AtTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
           <span
             v-if="selectedView"
             :key="selectedView?.value"
             class="text-sm flex-1 truncate"
-            :class="{ 'text-nc-content-gray-muted': !selectedView }"
+            :class="{ 'text-atm-content-gray-muted': !selectedView }"
           >
             {{ selectedView?.label }}
           </span>
-          <span v-else class="text-sm flex-1 truncate text-nc-content-gray-muted">-- Select view --</span>
+          <span v-else class="text-sm flex-1 truncate text-atm-content-gray-muted">-- Select view --</span>
 
           <template #title>
             {{ selectedView?.label || 'Select view' }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
 
         <GeneralIcon
           v-if="selectedView && allowClear"
           v-e="['c:view-selector:clear']"
-          class="hidden text-nc-content-gray-muted transition group-hover:!block h-4 w-4 cursor-pointer"
+          class="hidden text-atm-content-gray-muted transition group-hover:!block h-4 w-4 cursor-pointer"
           icon="ncXCircle"
           @click.stop="handleValueUpdate(null)"
         />
@@ -206,7 +206,7 @@ defineExpose({
         />
       </div>
       <template #overlay="{ onEsc }">
-        <NcList
+        <AtList
           v-model:open="isOpenViewSelectDropdown"
           :value="modelValue || selectedView?.value || ''"
           :list="viewList"
@@ -218,11 +218,11 @@ defineExpose({
         >
           <template #listItemExtraLeft="{ option }">
             <div class="min-w-5 flex items-center justify-center">
-              <NcIconView :view="option" class="text-nc-content-gray-muted" />
+              <AtIconView :view="option" class="text-atm-content-gray-muted" />
             </div>
           </template>
-        </NcList>
+        </AtList>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </a-form-item>
 </template>

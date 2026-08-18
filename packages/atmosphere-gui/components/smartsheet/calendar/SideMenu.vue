@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { VNodeRef } from '@vue/runtime-core'
-import { PermissionEntity, PermissionKey, UITypes } from 'nocodb-sdk'
+import { PermissionEntity, PermissionKey, UITypes } from 'atmosphere-sdk'
 import dayjs from 'dayjs'
 
 const props = defineProps<{
@@ -465,7 +465,7 @@ const clickSearch = () => {
 }
 
 const toggleSearch = (e) => {
-  if (hasAncestorWithClass(e.target, 'nc-calendar-sidebar-search-btn')) return
+  if (hasAncestorWithClass(e.target, 'atm-calendar-sidebar-search-btn')) return
 
   if (!searchQuery.value.length) {
     showSearch.value = false
@@ -500,13 +500,13 @@ const selectOption = (option) => {
   <div
     :class="{
       '!min-w-[100svw]': props.visible && isMobileMode,
-      'nc-calendar-side-menu-open': props.visible,
+      'atm-calendar-side-menu-open': props.visible,
     }"
-    class="h-full flex flex-col relative border-l-1 min-w-[288px] border-nc-border-gray-medium transition transition-all"
-    data-testid="nc-calendar-side-menu"
+    class="h-full flex flex-col relative border-l-1 min-w-[288px] border-atm-border-gray-medium transition transition-all"
+    data-testid="atm-calendar-side-menu"
   >
     <div v-if="!interfacePageDataApi" class="flex min-w-[288px] flex-col">
-      <NcDateWeekSelector
+      <AtDateWeekSelector
         v-if="activeCalendarView === ('day' as const)"
         v-model:active-dates="activeDates"
         v-model:page-date="pageDate"
@@ -516,7 +516,7 @@ const selectOption = (option) => {
         header="v2"
         :hide-calendar="height < 700"
       />
-      <NcDateWeekSelector
+      <AtDateWeekSelector
         v-else-if="isDayAnchoredMode"
         v-model:active-dates="activeDates"
         v-model:page-date="pageDate"
@@ -526,7 +526,7 @@ const selectOption = (option) => {
         header="v2"
         :hide-calendar="height < 700"
       />
-      <NcDateWeekSelector
+      <AtDateWeekSelector
         v-else-if="activeCalendarView === ('week' as const) || isMultiWeekRange"
         v-model:active-dates="activeDates"
         v-model:page-date="pageDate"
@@ -537,7 +537,7 @@ const selectOption = (option) => {
         header="v2"
         :timezone="timezone"
       />
-      <NcMonthYearSelector
+      <AtMonthYearSelector
         v-else-if="activeCalendarView === ('month' as const)"
         v-model:page-date="pageDate"
         v-model:selected-date="selectedMonth"
@@ -546,7 +546,7 @@ const selectOption = (option) => {
         :timezone="timezone"
         size="medium"
       />
-      <NcMonthYearSelector
+      <AtMonthYearSelector
         v-else-if="activeCalendarView === ('year' as const)"
         v-model:page-date="pageDate"
         v-model:selected-date="selectedDate"
@@ -562,13 +562,13 @@ const selectOption = (option) => {
         '!border-t-0 ': height < 700 || !!interfacePageDataApi,
         'pt-6': height >= 700 && !interfacePageDataApi,
       }"
-      class="border-t-1 !pt-3 border-nc-border-gray-medium relative flex flex-1 min-h-0 flex-col gap-y-3"
+      class="border-t-1 !pt-3 border-atm-border-gray-medium relative flex flex-1 min-h-0 flex-col gap-y-3"
     >
       <div class="flex px-4 h-8 items-center gap-3">
-        <NcDropdown v-model:visible="isDropdownOpen">
+        <AtDropdown v-model:visible="isDropdownOpen">
           <div
-            class="font-medium text-nc-content-gray cursor-pointer gap-2 flex items-center font-bold leading-6"
-            data-testid="nc-calendar-sidebar-filter"
+            class="font-medium text-atm-content-gray cursor-pointer gap-2 flex items-center font-bold leading-6"
+            data-testid="atm-calendar-sidebar-filter"
           >
             <div class="truncate">
               <span class="capitalize">
@@ -580,39 +580,39 @@ const selectOption = (option) => {
             <GeneralIcon :icon="isDropdownOpen ? 'ncChevronUp' : 'ncChevronDown'" />
           </div>
           <template #overlay>
-            <NcMenu class="w-56" variant="small">
-              <NcMenuItem v-for="option in options" :key="option.value" @click="selectOption(option)">
-                <NcTooltip class="capitalize" :title="option.label" placement="left" show-on-truncate-only>
+            <AtMenu class="w-56" variant="small">
+              <AtMenuItem v-for="option in options" :key="option.value" @click="selectOption(option)">
+                <AtTooltip class="capitalize" :title="option.label" placement="left" show-on-truncate-only>
                   <template #title>{{ option.label }}</template>
                   {{ option.label }}
-                </NcTooltip>
+                </AtTooltip>
                 <div class="flex-1" />
 
                 <GeneralIcon
                   v-if="sideBarFilterOption === option.value"
-                  id="nc-selected-item-icon"
+                  id="atm-selected-item-icon"
                   class="text-primary w-4 h-4"
                   icon="check"
                 />
-              </NcMenuItem>
-            </NcMenu>
+              </AtMenuItem>
+            </AtMenu>
           </template>
-        </NcDropdown>
+        </AtDropdown>
 
         <div class="flex-1" />
-        <NcButton
-          data-testid="nc-calendar-sidebar-search-btn"
+        <AtButton
+          data-testid="atm-calendar-sidebar-search-btn"
           size="small"
           :class="{
-            '!bg-nc-brand-50 nc-calendar-sidebar-search-active !text-nc-content-brand': showSearch,
+            '!bg-atm-brand-50 atm-calendar-sidebar-search-active !text-atm-content-brand': showSearch,
           }"
           :shadow="false"
-          class="!h-7 !rounded-md nc-calendar-sidebar-search-btn !border-0"
+          class="!h-7 !rounded-md atm-calendar-sidebar-search-btn !border-0"
           type="secondary"
           @click="clickSearch"
         >
           <GeneralIcon icon="ncSearch" />
-        </NcButton>
+        </AtButton>
       </div>
       <div
         :class="{
@@ -626,18 +626,18 @@ const selectOption = (option) => {
           :class="{
             '!hidden': !showSearch,
           }"
-          class="!rounded-lg !h-8 !placeholder:text-nc-content-gray-muted !px-4"
-          data-testid="nc-calendar-sidebar-search"
+          class="!rounded-lg !h-8 !placeholder:text-atm-content-gray-muted !px-4"
+          data-testid="atm-calendar-sidebar-search"
           :placeholder="$t('placeholder.searchRecords')"
           @keydown.esc="toggleSearch"
         >
           <template #prefix>
-            <component :is="iconMap.search" class="h-4 w-4 mr-1 text-nc-content-gray-muted" />
+            <component :is="iconMap.search" class="h-4 w-4 mr-1 text-atm-content-gray-muted" />
           </template>
           <template v-if="searchQuery.value?.trim() && !searchQuery.isValidFieldQuery" #suffix>
-            <NcTooltip :title="$t('msg.error.invalidSearchQueryForDisplayField')" class="flex" placement="topRight">
-              <GeneralIcon icon="ncInfo" class="flex-noneh-4 w-4 text-nc-content-red-medium" />
-            </NcTooltip>
+            <AtTooltip :title="$t('msg.error.invalidSearchQueryForDisplayField')" class="flex" placement="topRight">
+              <GeneralIcon icon="ncInfo" class="flex-noneh-4 w-4 text-atm-content-red-medium" />
+            </AtTooltip>
           </template>
         </a-input>
       </div>
@@ -657,9 +657,9 @@ const selectOption = (option) => {
           placement="left"
           show-overlay
         >
-          <NcButton
+          <AtButton
             v-e="['c:calendar:calendar-sidemenu-new-record-btn']"
-            data-testid="nc-calendar-side-menu-new-btn"
+            data-testid="atm-calendar-side-menu-new-btn"
             class="!h-7 !rounded-md"
             size="small"
             type="secondary"
@@ -669,21 +669,21 @@ const selectOption = (option) => {
               <GeneralIcon icon="ncPlus" />
               {{ $t('general.record') }}
             </div>
-          </NcButton>
+          </AtButton>
         </PermissionsTooltip>
       </div>
 
       <div
         v-if="calendarRange?.length"
         :ref="sideBarListRef"
-        class="nc-scrollbar-md px-4 pb-4 overflow-y-auto flex-1 min-h-0"
-        data-testid="nc-calendar-side-menu-list"
+        class="atm-scrollbar-md px-4 pb-4 overflow-y-auto flex-1 min-h-0"
+        data-testid="atm-calendar-side-menu-list"
         @scroll="sideBarListScrollHandle"
       >
         <div v-if="renderData.length === 0 || isSidebarLoading" class="flex h-full items-center justify-center">
           <GeneralLoader v-if="isSidebarLoading" size="large" />
 
-          <div v-else class="text-nc-content-gray-muted">
+          <div v-else class="text-atm-content-gray-muted">
             {{ t('msg.noRecordsFound') }}
           </div>
         </div>
@@ -694,7 +694,7 @@ const selectOption = (option) => {
                 :draggable="sideBarFilterOption === 'withoutDates' && activeCalendarView !== 'year'"
                 :row="record"
                 :cal-data-type="calDataType"
-                data-testid="nc-sidebar-record-card"
+                data-testid="atm-sidebar-record-card"
                 @click="emit('expandRecord', record)"
                 @dragstart="dragStart($event, record)"
                 @dragover.prevent
@@ -712,7 +712,7 @@ const selectOption = (option) => {
                   </template>
                 </template>
                 <template v-else>
-                  <span class="text-nc-content-gray-muted"> - </span>
+                  <span class="text-atm-content-gray-muted"> - </span>
                 </template>
                 <template #tooltip>
                   <SmartsheetRecordFieldsTooltip :record="record" :fields="fields" />
@@ -776,7 +776,7 @@ const selectOption = (option) => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-attachment-image) {
+:deep(.atm-attachment-image) {
   @apply rounded-md;
 }
 
@@ -784,14 +784,14 @@ const selectOption = (option) => {
   @apply !h-7;
 }
 
-:deep(.nc-month-picker-pagination) {
+:deep(.atm-month-picker-pagination) {
   @apply !border-b-0;
 }
 
-:deep(.nc-date-week-header) {
+:deep(.atm-date-week-header) {
   @apply !border-b-0;
 }
-:deep(.nc-menu-item-inner) {
+:deep(.atm-menu-item-inner) {
   @apply !w-full;
 }
 </style>

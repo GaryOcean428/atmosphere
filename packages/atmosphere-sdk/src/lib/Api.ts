@@ -443,12 +443,12 @@ export interface WorkflowEdgeV3Type {
 }
 
 /**
- * A node in the workflow graph representing a trigger, action, or flow control operation. Node type IDs follow the pattern '{provider}.{category}.{name}' (e.g. 'nocodb.trigger.after_insert', 'core.flow.if', 'slack.send_message').
+ * A node in the workflow graph representing a trigger, action, or flow control operation. Node type IDs follow the pattern '{provider}.{category}.{name}' (e.g. 'atmosphere.trigger.after_insert', 'core.flow.if', 'slack.send_message').
  */
 export interface WorkflowNodeV3Type {
   /** Unique identifier for this node within the workflow */
   id: string;
-  /** Node type identifier determining behavior and available configuration. Categories: trigger (start events), action (operations), flow (control flow). Examples: 'nocodb.trigger.after_insert', 'core.action.http', 'core.flow.if', 'core.flow.iterate', 'core.flow.delay', 'slack.send_message', 'ai.action.generate-text' */
+  /** Node type identifier determining behavior and available configuration. Categories: trigger (start events), action (operations), flow (control flow). Examples: 'atmosphere.trigger.after_insert', 'core.action.http', 'core.flow.if', 'core.flow.iterate', 'core.flow.delay', 'slack.send_message', 'ai.action.generate-text' */
   type: string;
   /** Position of the node on the workflow canvas */
   position: {
@@ -1615,7 +1615,7 @@ export interface TeamMemberV3ResponseV3Type {
   /**
    * User email address
    * @format email
-   * @example user@nocodb.com
+   * @example user@atmosphere.dev
    */
   user_email: string;
   /**
@@ -2951,7 +2951,7 @@ export interface FieldOptionsPhoneNumberV3Type {
 export interface FieldOptionsLongTextV3Type {
   /** Enable rich text formatting. */
   rich_text?: boolean;
-  /** Enable text generation for this field using NocoAI. */
+  /** Enable text generation for this field using AtmosphereAI. */
   generate_text_using_ai?: boolean;
 }
 
@@ -4455,12 +4455,12 @@ export interface AuditType {
   id?: IdType;
   /**
    * The user name performing the action
-   * @example w@nocodb.com
+   * @example w@atmosphere.dev
    */
   user?: string;
   /**
    * The display name of user performing the action
-   * @example NocoDB
+   * @example Atmosphere
    */
   display_name?: string;
   /**
@@ -4537,7 +4537,7 @@ export interface AuditType {
   status?: string;
   /**
    * Description of the action
-   * @example Table nc_snms___Table_1 : field Date got changed from  2023-03-12 to
+   * @example Table atm_snms___Table_1 : field Date got changed from  2023-03-12 to
    */
   description?: string;
   /**
@@ -6515,7 +6515,7 @@ export interface MapColumnType {
   fk_view_id?: string;
   /**
    * Unique ID of Map Column
-   * @example nc_46xcacqn4rc9xf
+   * @example atm_46xcacqn4rc9xf
    */
   id?: string;
   /**
@@ -6859,7 +6859,7 @@ export interface BaseType {
   order?: number;
   /**
    * Base prefix. Used in XCDB only.
-   * @example nc_vm5q__
+   * @example atm_vm5q__
    */
   prefix?: string;
   type?: 'database' | 'documentation' | 'dashboard';
@@ -7796,7 +7796,7 @@ export interface CommentType {
   created_by?: IdType;
   /**
    * Created By User Email
-   * @example xxx@nocodb.com
+   * @example xxx@atmosphere.dev
    */
   created_by_email?: string;
   /**
@@ -7806,7 +7806,7 @@ export interface CommentType {
   resolved_by?: IdType;
   /**
    * Resolved By User Email
-   * @example xxx@nocodb.com
+   * @example xxx@atmosphere.dev
    */
   resolved_by_email?: string;
   /**
@@ -8400,7 +8400,7 @@ export class HttpClient<SecurityDataType = unknown> {
   }: ApiConfig<SecurityDataType> = {}) {
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || 'https://app.nocodb.com',
+      baseURL: axiosConfig.baseURL || 'https://app.atmosphere.dev',
     });
     this.secure = secure;
     this.format = format;
@@ -8517,11 +8517,11 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title nocodb
+ * @title atmosphere
  * @version 1.0
- * @baseUrl https://app.nocodb.com
+ * @baseUrl https://app.atmosphere.dev
  *
- * NocoDB API Documentation
+ * Atmosphere API Documentation
  */
 export class Api<
   SecurityDataType extends unknown
@@ -9014,13 +9014,13 @@ export class Api<
   \** @example 8354ddba-a769-4d64-8397-eccb2e2b3c06 *\
   invite_token?: string,
   error?: ({
-  \** @example w@nocodb.com *\
+  \** @example w@atmosphere.dev *\
   email?: string,
   \** @example <ERROR_MESSAGE> *\
   error?: string,
 
 })[],
-  \** @example w@nocodb.com *\
+  \** @example w@atmosphere.dev *\
   email?: string,
 
 }` OK
@@ -9045,12 +9045,12 @@ export class Api<
           /** @example 8354ddba-a769-4d64-8397-eccb2e2b3c06 */
           invite_token?: string;
           error?: {
-            /** @example w@nocodb.com */
+            /** @example w@atmosphere.dev */
             email?: string;
             /** @example <ERROR_MESSAGE> */
             error?: string;
           }[];
-          /** @example w@nocodb.com */
+          /** @example w@atmosphere.dev */
           email?: string;
         },
         {
@@ -10626,7 +10626,7 @@ export class Api<
       }),
 
     /**
- * @description Synchronise the meta data difference between NC_DB and external data sources 
+ * @description Synchronise the meta data difference between ATMOSPHERE_DB and external data sources 
  * 
  * @tags Base
  * @name MetaDiffSync
@@ -10661,7 +10661,7 @@ export class Api<
       }),
 
     /**
- * @description Get the meta data difference between NC_DB and external data sources 
+ * @description Get the meta data difference between ATMOSPHERE_DB and external data sources 
  * 
  * @tags Base
  * @name MetaDiffGet
@@ -11019,7 +11019,7 @@ export class Api<
       }),
 
     /**
- * @description Synchronise the meta data difference between NC_DB and external data sources in a given Source
+ * @description Synchronise the meta data difference between ATMOSPHERE_DB and external data sources in a given Source
  * 
  * @tags Source
  * @name MetaDiffSync
@@ -11058,7 +11058,7 @@ export class Api<
       }),
 
     /**
- * @description Get the meta data difference between NC_DB and external data sources in a given Source
+ * @description Get the meta data difference between ATMOSPHERE_DB and external data sources in a given Source
  * 
  * @tags Source
  * @name MetaDiffGet
@@ -11857,7 +11857,7 @@ export class Api<
         /** Whether to use the color as background */
         is_set_as_background: boolean;
         /** Order of the condition */
-        nc_order: number;
+        atm_order: number;
         filter: {
           /** Comparison operator */
           comparison_op:
@@ -11909,7 +11909,7 @@ export class Api<
         /** Whether to use the color as background */
         is_set_as_background: boolean;
         /** Order of the condition */
-        nc_order: number;
+        atm_order: number;
       },
       params: RequestParams = {}
     ) =>
@@ -16140,7 +16140,7 @@ export class Api<
  * @tags Utils
  * @name AppInfo
  * @summary Get App Info
- * @request GET:/api/v1/db/meta/nocodb/info
+ * @request GET:/api/v1/db/meta/atmosphere/info
  * @response `200` `{
   authType?: string,
   baseHasAdmin?: boolean,
@@ -16201,7 +16201,7 @@ export class Api<
           msg: string;
         }
       >({
-        path: `/api/v1/db/meta/nocodb/info`,
+        path: `/api/v1/db/meta/atmosphere/info`,
         method: 'GET',
         format: 'json',
         ...params,
@@ -16263,7 +16263,7 @@ export class Api<
  * @request GET:/api/v1/version
  * @response `200` `{
   \**
-   * Current NocoDB Version
+   * Current Atmosphere Version
    * @example 0.104.0
    *\
   currentVersion?: string,
@@ -16284,7 +16284,7 @@ export class Api<
       this.request<
         {
           /**
-           * Current NocoDB Version
+           * Current Atmosphere Version
            * @example 0.104.0
            */
           currentVersion?: string;
@@ -16584,7 +16584,7 @@ export class Api<
       }),
 
     /**
-     * @description Get All K/V pairs in NocoCache
+     * @description Get All K/V pairs in AtmosphereCache
      *
      * @tags Utils
      * @name CacheGet
@@ -16599,7 +16599,7 @@ export class Api<
       }),
 
     /**
- * @description Delete All K/V pairs in NocoCache
+ * @description Delete All K/V pairs in AtmosphereCache
  * 
  * @tags Utils
  * @name CacheDelete
@@ -17176,7 +17176,7 @@ export class Api<
       query: {
         /**
          * Target File Path
-         * @example download/noco/jango_fett/Table1/attachment/uVbjPVQxC_SSfs8Ctx.jpg
+         * @example download/atmosphere/jango_fett/Table1/attachment/uVbjPVQxC_SSfs8Ctx.jpg
          */
         path: string;
         /**
@@ -17211,7 +17211,7 @@ export class Api<
       query: {
         /**
          * Target File Path
-         * @example download/noco/jango_fett/Table1/attachment/c7z_UF8sZBgJUxMjpN.jpg
+         * @example download/atmosphere/jango_fett/Table1/attachment/c7z_UF8sZBgJUxMjpN.jpg
          */
         path: string;
         /**

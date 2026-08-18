@@ -72,7 +72,7 @@ export const CheckboxCellRenderer: CellRenderer = {
           x: x + tagWidth / 2 - 4,
           y: initialY + 3,
           color: isDark
-            ? getOppositeColorOfBackground(getColor('var(--nc-bg-default)'), columnMetaColor, ['#4a5268', '#d5dce8'])
+            ? getOppositeColorOfBackground(getColor('var(--atm-bg-default)'), columnMetaColor, ['#4a5268', '#d5dce8'])
             : columnMetaColor,
         })
 
@@ -93,7 +93,7 @@ export const CheckboxCellRenderer: CellRenderer = {
         x: x + width / 2 - 7,
         y: y + height / 2 - 7,
         color: isDark
-          ? getOppositeColorOfBackground(getColor('var(--nc-bg-default)'), columnMetaColor, ['#4a5268', '#d5dce8'])
+          ? getOppositeColorOfBackground(getColor('var(--atm-bg-default)'), columnMetaColor, ['#4a5268', '#d5dce8'])
           : columnMetaColor,
         alpha: checked ? 1 : isHover ? 0.7 : 0.3,
       })

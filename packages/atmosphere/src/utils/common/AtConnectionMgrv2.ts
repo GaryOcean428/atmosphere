@@ -1,26 +1,26 @@
 import { Logger } from '@nestjs/common';
-import { OperationSource } from 'nocodb-sdk';
+import { OperationSource } from 'atmosphere-sdk';
 import type Source from '~/models/Source';
 import {
   defaultConnectionConfig,
   defaultConnectionOptions,
-} from '~/utils/nc-config';
+} from '~/utils/atm-config';
 import SqlClientFactory from '~/db/sql-client/lib/SqlClientFactory';
 import { XKnex } from '~/db/CustomKnex';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { RedisVersionTracker } from '~/utils/RedisVersionTracker';
 import { LRUMap } from '~/utils/LRUMap';
 import { applyDbSsrfProtection } from '~/helpers/dbSsrfLookup';
 import { isSsrfProtectionEnabled } from '~/utils/ssrf';
 
 const CONNECTION_CACHE_MAX_SIZE = +(
-  process.env.NC_CONNECTION_CACHE_MAX_SIZE || 500
+  process.env.ATMOSPHERE_CONNECTION_CACHE_MAX_SIZE || 500
 );
 
 export type SourceIdentity = Pick<Source, 'id' | 'base_id'>;
 
-export default class NcConnectionMgrv2 {
-  protected static logger = new Logger('NcConnectionMgrv2');
+export default class AtConnectionMgrv2 {
+  protected static logger = new Logger('AtConnectionMgrv2');
 
   protected static sourceVersionTracker = new RedisVersionTracker(
     'SOURCE_CONN_VER',
@@ -30,7 +30,7 @@ export default class NcConnectionMgrv2 {
     CONNECTION_CACHE_MAX_SIZE,
     (conn) => {
       return conn.destroy().catch((e) => {
-        NcConnectionMgrv2.logger.error({
+        AtConnectionMgrv2.logger.error({
           error: e,
           details: 'Error destroying evicted connection',
         });
@@ -119,12 +119,12 @@ export default class NcConnectionMgrv2 {
     if (!dbVersion) return;
     const major = parseInt(String(dbVersion).split('.')[0], 10);
     if (Number.isFinite(major) && major > 0) {
-      (knex.client.config as any).nocoDbMajorVersion = major;
+      (knex.client.config as any).atmosphereMajorVersion = major;
     }
   }
 
   public static async get(source: Source): Promise<XKnex> {
-    if (source.isMeta()) return Noco.ncMeta.knex;
+    if (source.isMeta()) return Atmosphere.ncMeta.knex;
 
     // Cross-server staleness check via Redis version key
     await this.checkSourceStaleness(source);
@@ -190,6 +190,6 @@ export default class NcConnectionMgrv2 {
   }
 
   public static async getDataConfig?() {
-    return Noco.getConfig()?.meta?.db;
+    return Atmosphere.getConfig()?.meta?.db;
   }
 }

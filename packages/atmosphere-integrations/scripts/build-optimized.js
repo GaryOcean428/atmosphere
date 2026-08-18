@@ -34,8 +34,8 @@ function getPackages() {
 }
 
 /**
- * Returns the @noco-integrations/* workspace dependency short-names for a package.
- * e.g. { "@noco-integrations/smtp-auth": "workspace:*" } → ["smtp-auth"]
+ * Returns the @atmosphere-integrations/* workspace dependency short-names for a package.
+ * e.g. { "@atmosphere-integrations/smtp-auth": "workspace:*" } → ["smtp-auth"]
  */
 function getWorkspaceDependencies(packagePath) {
   const pkgJsonPath = join(packagePath, 'package.json');
@@ -45,10 +45,10 @@ function getWorkspaceDependencies(packagePath) {
     const allDeps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
     return Object.entries(allDeps)
       .filter(([name, version]) =>
-        name.startsWith('@noco-integrations/') &&
+        name.startsWith('@atmosphere-integrations/') &&
         String(version).startsWith('workspace:'),
       )
-      .map(([name]) => name.replace('@noco-integrations/', ''));
+      .map(([name]) => name.replace('@atmosphere-integrations/', ''));
   } catch {
     return [];
   }

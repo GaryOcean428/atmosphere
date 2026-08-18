@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PlanFeatureTypes, PlanTitles, type TableType, ViewTypes, viewTypeAlias } from 'nocodb-sdk'
+import { PlanFeatureTypes, PlanTitles, type TableType, ViewTypes, viewTypeAlias } from 'atmosphere-sdk'
 
 const { $e } = useNuxtApp()
 
@@ -26,7 +26,7 @@ const { loadViews, onOpenViewCreateModal } = viewsStore
 const { activeView, isListViewEnabled } = storeToRefs(viewsStore)
 const { showUpgradeToUseListView } = viewsStore
 
-const { isAiFeaturesEnabled } = useNocoAi()
+const { isAiFeaturesEnabled } = useAtmosphereAi()
 
 const {
   isEEFeatureBlocked,
@@ -212,36 +212,36 @@ const hasDocumentCreateAccess = computed(() => {
 </script>
 
 <template>
-  <div v-if="!isSharedBase" class="nc-mini-sidebar-btn-full-width">
-    <NcDropdown
+  <div v-if="!isSharedBase" class="atm-mini-sidebar-btn-full-width">
+    <AtDropdown
       v-model:visible="isVisibleCreateNew"
       placement="rightBottom"
-      overlay-class-name="!min-w-48 nc-create-new-dropdown"
+      overlay-class-name="!min-w-48 atm-create-new-dropdown"
       :align="{ offset: [12, 3] }"
     >
       <div class="w-full py-1 flex items-center justify-center">
-        <NcTooltip :title="$t('labels.createNew')" placement="right" :arrow="false" :disabled="isVisibleCreateNew">
+        <AtTooltip :title="$t('labels.createNew')" placement="right" :arrow="false" :disabled="isVisibleCreateNew">
           <div
-            class="nc-mini-sidebar-plus-btn border-1 w-7 h-7 flex-none rounded-full overflow-hidden transition-all duration-300 flex items-center justify-center bg-nc-bg-gray-medium cursor-pointer"
+            class="atm-mini-sidebar-plus-btn border-1 w-7 h-7 flex-none rounded-full overflow-hidden transition-all duration-300 flex items-center justify-center bg-atm-bg-gray-medium cursor-pointer"
             :class="{
-              'border-nc-border-gray-dark': !isVisibleCreateNew,
+              'border-atm-border-gray-dark': !isVisibleCreateNew,
               'active border-primary shadow-selected': isVisibleCreateNew,
             }"
           >
             <GeneralIcon icon="ncPlus" />
           </div>
-        </NcTooltip>
+        </AtTooltip>
       </div>
 
       <template #overlay>
-        <NcMenu variant="small" @click="isVisibleCreateNew = false">
-          <NcMenuItemLabel>
+        <AtMenu variant="small" @click="isVisibleCreateNew = false">
+          <AtMenuItemLabel>
             <span class="normal-case">
               {{ $t('labels.createNew') }}
             </span>
-          </NcMenuItemLabel>
+          </AtMenuItemLabel>
           <template v-if="showEEFeatures">
-            <NcTooltip
+            <AtTooltip
               :title="
                 !isWorkflowsTab
                   ? $t('tooltip.switchToWorkflowsTab', { type: $t('general.workflow').toLowerCase() })
@@ -256,7 +256,7 @@ const hasDocumentCreateAccess = computed(() => {
               :disabled="isWorkflowsTab && isBaseHomePage && hasWorkflowCreateAccess"
               placement="right"
             >
-              <NcMenuItem
+              <AtMenuItem
                 data-testid="mini-sidebar--workflow-create"
                 :disabled="!isWorkflowsTab || !isBaseHomePage || !hasWorkflowCreateAccess"
                 inner-class="w-full"
@@ -267,9 +267,9 @@ const hasDocumentCreateAccess = computed(() => {
                   {{ $t('general.workflow') }}
                 </div>
                 <LazyPaymentUpgradeBadge :feature-enabled-callback="() => !isEEFeatureBlocked" show-as-lock remove-click />
-              </NcMenuItem>
-            </NcTooltip>
-            <NcTooltip
+              </AtMenuItem>
+            </AtTooltip>
+            <AtTooltip
               :title="
                 !isWorkflowsTab
                   ? $t('tooltip.switchToWorkflowsTab', { type: $t('general.script').toLowerCase() })
@@ -284,7 +284,7 @@ const hasDocumentCreateAccess = computed(() => {
               :disabled="isWorkflowsTab && isBaseHomePage && hasScriptCreateAccess"
               placement="right"
             >
-              <NcMenuItem
+              <AtMenuItem
                 data-testid="mini-sidebar--script-create"
                 :disabled="!isWorkflowsTab || !isBaseHomePage || !hasScriptCreateAccess"
                 inner-class="w-full"
@@ -296,15 +296,15 @@ const hasDocumentCreateAccess = computed(() => {
                 </div>
 
                 <LazyPaymentUpgradeBadge :feature-enabled-callback="() => !isEEFeatureBlocked" show-as-lock remove-click />
-              </NcMenuItem>
-            </NcTooltip>
-            <NcDivider />
+              </AtMenuItem>
+            </AtTooltip>
+            <AtDivider />
           </template>
 
           <DashboardMiniSidebarInterfaceCreateMenuItem v-if="isEeUI" />
 
           <!-- Data tab items (reads bottom-up: Table → Document → Dashboard → View) -->
-          <NcTooltip
+          <AtTooltip
             :title="
               !isDataTab
                 ? $t('tooltip.switchToDataTab', { type: $t('objects.view').toLowerCase() })
@@ -317,7 +317,7 @@ const hasDocumentCreateAccess = computed(() => {
             :disabled="isDataTab && !!base && !!activeTable && hasViewCreateAccess"
             placement="right"
           >
-            <NcSubMenu
+            <AtSubMenu
               class="py-0"
               data-testid="mini-sidebar-view-create"
               variant="small"
@@ -327,12 +327,12 @@ const hasDocumentCreateAccess = computed(() => {
                 <GeneralIcon icon="grid" />
                 {{ $t('objects.view') }}
               </template>
-              <NcMenuItem data-testid="mini-sidebar-view-create-grid" @click.stop="onOpenModal({ type: ViewTypes.GRID })">
+              <AtMenuItem data-testid="mini-sidebar-view-create-grid" @click.stop="onOpenModal({ type: ViewTypes.GRID })">
                 <GeneralViewIcon :meta="{ type: ViewTypes.GRID }" />
                 <div>{{ $t('objects.viewType.grid') }}</div>
-              </NcMenuItem>
-              <NcTooltip :title="$t('tooltip.sourceDataIsReadonly')" :disabled="!activeSource?.is_data_readonly && !isSqlView">
-                <NcMenuItem
+              </AtMenuItem>
+              <AtTooltip :title="$t('tooltip.sourceDataIsReadonly')" :disabled="!activeSource?.is_data_readonly && !isSqlView">
+                <AtMenuItem
                   :disabled="!!activeSource?.is_data_readonly || isSqlView"
                   data-testid="mini-sidebar-view-create-form"
                   @click="onOpenModal({ type: ViewTypes.FORM })"
@@ -344,25 +344,25 @@ const hasDocumentCreateAccess = computed(() => {
                     }"
                   />
                   <div>{{ $t('objects.viewType.form') }}</div>
-                </NcMenuItem>
-              </NcTooltip>
-              <NcMenuItem data-testid="mini-sidebar-view-create-gallery" @click="onOpenModal({ type: ViewTypes.GALLERY })">
+                </AtMenuItem>
+              </AtTooltip>
+              <AtMenuItem data-testid="mini-sidebar-view-create-gallery" @click="onOpenModal({ type: ViewTypes.GALLERY })">
                 <GeneralViewIcon :meta="{ type: ViewTypes.GALLERY }" />
                 <div>{{ $t('objects.viewType.gallery') }}</div>
-              </NcMenuItem>
-              <NcMenuItem data-testid="mini-sidebar-view-create-kanban" @click="onOpenModal({ type: ViewTypes.KANBAN })">
+              </AtMenuItem>
+              <AtMenuItem data-testid="mini-sidebar-view-create-kanban" @click="onOpenModal({ type: ViewTypes.KANBAN })">
                 <GeneralViewIcon :meta="{ type: ViewTypes.KANBAN }" />
                 <div>{{ $t('objects.viewType.kanban') }}</div>
-              </NcMenuItem>
-              <NcMenuItem data-testid="mini-sidebar-view-create-calendar" @click="onOpenModal({ type: ViewTypes.CALENDAR })">
+              </AtMenuItem>
+              <AtMenuItem data-testid="mini-sidebar-view-create-calendar" @click="onOpenModal({ type: ViewTypes.CALENDAR })">
                 <GeneralViewIcon :meta="{ type: ViewTypes.CALENDAR }" class="!w-4 !h-4" />
                 <div>{{ $t('objects.viewType.calendar') }}</div>
-              </NcMenuItem>
-              <NcMenuItem v-if="isEeUI" data-testid="mini-sidebar-view-create-map" @click="onOpenModal({ type: ViewTypes.MAP })">
+              </AtMenuItem>
+              <AtMenuItem v-if="isEeUI" data-testid="mini-sidebar-view-create-map" @click="onOpenModal({ type: ViewTypes.MAP })">
                 <GeneralViewIcon :meta="{ type: ViewTypes.MAP }" class="!w-4 !h-4" />
                 <div>{{ $t('objects.viewType.map') }}</div>
-              </NcMenuItem>
-              <NcMenuItem
+              </AtMenuItem>
+              <AtMenuItem
                 v-if="isListViewEnabled"
                 data-testid="mini-sidebar-view-create-list"
                 inner-class="w-full"
@@ -383,8 +383,8 @@ const hasDocumentCreateAccess = computed(() => {
                   remove-click
                   show-as-lock
                 />
-              </NcMenuItem>
-              <NcMenuItem
+              </AtMenuItem>
+              <AtMenuItem
                 v-if="showEEFeatures"
                 data-testid="mini-sidebar-view-create-timeline"
                 inner-class="w-full"
@@ -405,8 +405,8 @@ const hasDocumentCreateAccess = computed(() => {
                   remove-click
                   show-as-lock
                 />
-              </NcMenuItem>
-              <NcMenuItem
+              </AtMenuItem>
+              <AtMenuItem
                 v-if="showEEFeatures"
                 data-testid="mini-sidebar-view-create-gantt"
                 inner-class="w-full"
@@ -427,19 +427,19 @@ const hasDocumentCreateAccess = computed(() => {
                   remove-click
                   show-as-lock
                 />
-              </NcMenuItem>
+              </AtMenuItem>
               <template v-if="isAiFeaturesEnabled">
-                <NcDivider />
-                <NcMenuItem data-testid="mini-sidebar-view-create-ai" @click="onOpenModal({ type: 'AI' })">
-                  <GeneralIcon icon="ncAutoAwesome" class="!w-4 !h-4 text-nc-fill-purple-dark" />
-                  <div>{{ $t('labels.useNocoAI') }}</div>
-                </NcMenuItem>
+                <AtDivider />
+                <AtMenuItem data-testid="mini-sidebar-view-create-ai" @click="onOpenModal({ type: 'AI' })">
+                  <GeneralIcon icon="ncAutoAwesome" class="!w-4 !h-4 text-atm-fill-purple-dark" />
+                  <div>{{ $t('labels.useAtmosphereAI') }}</div>
+                </AtMenuItem>
               </template>
-            </NcSubMenu>
-          </NcTooltip>
+            </AtSubMenu>
+          </AtTooltip>
 
           <template v-if="showEEFeatures">
-            <NcTooltip
+            <AtTooltip
               :title="
                 !isDataTab
                   ? $t('tooltip.switchToDataTab', { type: $t('general.dashboard').toLowerCase() })
@@ -454,7 +454,7 @@ const hasDocumentCreateAccess = computed(() => {
               :disabled="isDataTab && isBaseHomePage && hasDashboardCreateAccess"
               placement="right"
             >
-              <NcMenuItem
+              <AtMenuItem
                 data-testid="mini-sidebar--dashboard-create"
                 :disabled="!isDataTab || !isBaseHomePage || !hasDashboardCreateAccess"
                 inner-class="w-full"
@@ -467,12 +467,12 @@ const hasDocumentCreateAccess = computed(() => {
                 </div>
 
                 <LazyPaymentUpgradeBadge :feature-enabled-callback="() => !isEEFeatureBlocked" show-as-lock remove-click />
-              </NcMenuItem>
-            </NcTooltip>
+              </AtMenuItem>
+            </AtTooltip>
           </template>
 
           <template v-if="isEeUI">
-            <NcTooltip
+            <AtTooltip
               :title="
                 !isDataTab
                   ? $t('tooltip.switchToDataTab', { type: $t('objects.document').toLowerCase() })
@@ -485,7 +485,7 @@ const hasDocumentCreateAccess = computed(() => {
               :disabled="isDataTab && isBaseHomePage && hasDocumentCreateAccess"
               placement="right"
             >
-              <NcMenuItem
+              <AtMenuItem
                 data-testid="mini-sidebar--document-create"
                 :disabled="!isDataTab || !isBaseHomePage || !hasDocumentCreateAccess"
                 inner-class="w-full"
@@ -497,11 +497,11 @@ const hasDocumentCreateAccess = computed(() => {
                 </div>
 
                 <LazyPaymentUpgradeBadge :feature-enabled-callback="() => !blockDocs" show-as-lock remove-click />
-              </NcMenuItem>
-            </NcTooltip>
+              </AtMenuItem>
+            </AtTooltip>
           </template>
 
-          <NcTooltip
+          <AtTooltip
             :title="
               !isDataTab
                 ? $t('tooltip.switchToDataTab', { type: $t('objects.table').toLowerCase() })
@@ -516,15 +516,15 @@ const hasDocumentCreateAccess = computed(() => {
             :disabled="isDataTab && isBaseHomePage && hasTableCreateAccess && !tableCreateReason"
             placement="right"
           >
-            <NcMenuItem
+            <AtMenuItem
               data-testid="mini-sidebar-table-create"
               :disabled="!isDataTab || !isBaseHomePage || !hasTableCreateAccess || !!tableCreateReason"
               @click="openTableCreateDialog"
             >
               <GeneralIcon icon="table" />
               {{ $t('objects.table') }}
-            </NcMenuItem>
-          </NcTooltip>
+            </AtMenuItem>
+          </AtTooltip>
 
           <!-- Base-level section (EE) — CE stub renders nothing -->
           <DashboardMiniSidebarSectionCreateMenuItem
@@ -534,23 +534,23 @@ const hasDocumentCreateAccess = computed(() => {
             :base-id="openedProject?.id"
           />
 
-          <NcMenuItem v-if="hasBaseCreateAccess" data-testid="mini-sidebar-base-create" @click="baseCreateDlg = true">
+          <AtMenuItem v-if="hasBaseCreateAccess" data-testid="mini-sidebar-base-create" @click="baseCreateDlg = true">
             <GeneralIcon icon="ncBaseOutline" class="h-4 w-4" />
             {{ $t('objects.project') }}
-          </NcMenuItem>
-        </NcMenu>
+          </AtMenuItem>
+        </AtMenu>
       </template>
-    </NcDropdown>
+    </AtDropdown>
     <WorkspaceCreateProjectDlg v-model="baseCreateDlg" is-create-new-action-menu />
   </div>
 </template>
 
 <style lang="scss">
-.nc-mini-sidebar-plus-btn svg {
+.atm-mini-sidebar-plus-btn svg {
   stroke-width: 2.5;
 }
 
-.nc-create-new-dropdown.nc-create-new-dropdown {
+.atm-create-new-dropdown.atm-create-new-dropdown {
   overflow: visible !important;
 
   &::before {
@@ -562,7 +562,7 @@ const hasDocumentCreateAccess = computed(() => {
     height: 0;
     border-top: 7px solid transparent;
     border-bottom: 7px solid transparent;
-    border-right: 7px solid var(--nc-border-gray-medium);
+    border-right: 7px solid var(--atm-border-gray-medium);
   }
 
   &::after {
@@ -574,7 +574,7 @@ const hasDocumentCreateAccess = computed(() => {
     height: 0;
     border-top: 6px solid transparent;
     border-bottom: 6px solid transparent;
-    border-right: 6px solid var(--nc-bg-default);
+    border-right: 6px solid var(--atm-bg-default);
   }
 }
 </style>

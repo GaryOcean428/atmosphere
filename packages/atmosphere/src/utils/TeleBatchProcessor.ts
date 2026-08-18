@@ -43,7 +43,7 @@ class TeleBatchProcessor {
       return;
     }
 
-    await axios.post('https://telemetry.nocodb.com/api/v1/telemetry', batch);
+    await axios.post('https://telemetry.atmosphere.dev/api/v1/telemetry', batch);
   }
 }
 

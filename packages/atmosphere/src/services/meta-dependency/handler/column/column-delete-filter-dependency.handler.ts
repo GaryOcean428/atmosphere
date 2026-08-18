@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EventType, MetaEventType } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import { EventType, MetaEventType } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type {
   AffectedDependencyResult,
   MetaDependencyEventRequest,
@@ -8,18 +8,18 @@ import type {
 } from '~/services/meta-dependency/types';
 import { Filter, Sort } from '~/models';
 import { MetaTable } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
-import Noco from '~/Noco';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
+import Atmosphere from '~/Atmosphere';
 
 /**
  * Sort + filter cleanup for a deleted column.
  *
  * Sweeps:
- *  - `nc_sorts` rows where `fk_column_id = colId`
- *  - `nc_sorts` rows where `fk_lookup_col_id = colId` (per-lookup sort config —
+ *  - `atm_sorts` rows where `fk_column_id = colId`
+ *  - `atm_sorts` rows where `fk_lookup_col_id = colId` (per-lookup sort config —
  *    its `fk_column_id` points at the related table, so the `fk_column_id`
  *    sweep above never matches it; deleting the Lookup column would orphan it)
- *  - `nc_filter_exp` rows where `fk_column_id = colId` OR `fk_value_col_id = colId`
+ *  - `atm_filter_exp` rows where `fk_column_id = colId` OR `fk_value_col_id = colId`
  *  - filter-group children parented by this column (recursive cache-aware)
  *
  * Broadcasts `sort_delete` per removed sort and `filter_delete` per
@@ -35,9 +35,9 @@ export class ColumnDeleteFilterDependencyHandler implements MetaEventHandler {
   triggerMetaEvents: MetaEventType[] = [MetaEventType.COLUMN_DELETED];
 
   async getAffectedDependency(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<AffectedDependencyResult | undefined> {
     const id = param.oldEntity?.id;
     if (!id) return undefined;
@@ -63,11 +63,11 @@ export class ColumnDeleteFilterDependencyHandler implements MetaEventHandler {
   }
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest & {
       affectedDependencyResult: AffectedDependencyResult;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     const id = param.oldEntity?.id;
     if (!id) return;
@@ -146,12 +146,12 @@ export class ColumnDeleteFilterDependencyHandler implements MetaEventHandler {
   }
 
   private async broadcastDeletes(
-    context: NcContext,
+    context: AtContext,
     sorts: any[],
     filters: any[],
   ): Promise<void> {
     for (const sort of sorts) {
-      NocoSocket.broadcastEvent(context, {
+      AtmosphereSocket.broadcastEvent(context, {
         event: EventType.META_EVENT,
         payload: { action: 'sort_delete', payload: sort },
       });
@@ -162,7 +162,7 @@ export class ColumnDeleteFilterDependencyHandler implements MetaEventHandler {
     for (const filter of filters) {
       if (!filter.id || seen.has(filter.id)) continue;
       seen.add(filter.id);
-      NocoSocket.broadcastEvent(context, {
+      AtmosphereSocket.broadcastEvent(context, {
         event: EventType.META_EVENT,
         payload: { action: 'filter_delete', payload: filter },
       });

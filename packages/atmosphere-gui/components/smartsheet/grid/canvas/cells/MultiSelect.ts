@@ -69,10 +69,10 @@ export const MultiSelectCellRenderer: CellRenderer = {
         ? isDark
           ? getAdaptiveTint(opColor!, { isDarkMode: isDark, shade: -10 })
           : opColor!
-        : getColor('var(--nc-bg-gray-medium)', 'var(--nc-bg-gray-light)')
+        : getColor('var(--atm-bg-gray-medium)', 'var(--atm-bg-gray-light)')
       const opTextColor = isColorCodeEnabled
         ? getOppositeColorOfBackground(opBgColor, opColor)
-        : getColor('var(--nc-content-gray)')
+        : getColor('var(--atm-content-gray)')
 
       renderTag(ctx, {
         x,

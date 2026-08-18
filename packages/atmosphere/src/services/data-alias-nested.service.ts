@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { isLinksOrLTAR, isLinkV2 } from 'nocodb-sdk';
+import { isLinksOrLTAR, isLinkV2 } from 'atmosphere-sdk';
 import type { PathParams } from '~/helpers/dataHelpers';
-import { NcContext } from '~/interface/config';
-import { NcError } from '~/helpers/catchError';
+import { AtContext } from '~/interface/config';
+import { AtError } from '~/helpers/catchError';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import {
   getColumnByIdOrName,
@@ -10,7 +10,7 @@ import {
 } from '~/helpers/dataHelpers';
 import { restrictNestedLinkQueryForColumn } from '~/helpers/nestedLinkQueryHelpers';
 import { Model, Source } from '~/models';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
 
@@ -18,7 +18,7 @@ import { OperationName } from '~/command-registry/op-names';
 export class DataAliasNestedService {
   // todo: handle case where the given column is not ltar
   async mmList(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       query: any;
       columnName: string;
@@ -34,21 +34,21 @@ export class DataAliasNestedService {
     // not on view `show`.
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
 
-    if (!model) NcError.tableNotFound(param.tableName);
+    if (!model) AtError.tableNotFound(param.tableName);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
     const column = await getColumnByIdOrName(context, param.columnName, model);
 
     if (!column || !isLinksOrLTAR(column))
-      NcError.badRequest('Column is not LTAR');
+      AtError.badRequest('Column is not LTAR');
 
     // Strip caller-supplied where/sort references to columns the link doesn't
     // expose (cross-base / visibility-limited related tables). Mutates
@@ -77,7 +77,7 @@ export class DataAliasNestedService {
   }
 
   async mmExcludedList(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       query: any;
       columnName: string;
@@ -85,14 +85,14 @@ export class DataAliasNestedService {
     },
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
-    if (!model) NcError.tableNotFound(param.tableName);
+    if (!model) AtError.tableNotFound(param.tableName);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
     const column = await getColumnByIdOrName(context, param.columnName, model);
@@ -128,7 +128,7 @@ export class DataAliasNestedService {
   }
 
   async hmExcludedList(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       query: any;
       columnName: string;
@@ -137,14 +137,14 @@ export class DataAliasNestedService {
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
 
-    if (!model) NcError.tableNotFound(param.tableName);
+    if (!model) AtError.tableNotFound(param.tableName);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -181,7 +181,7 @@ export class DataAliasNestedService {
   }
 
   async btExcludedList(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       query: any;
       columnName: string;
@@ -189,14 +189,14 @@ export class DataAliasNestedService {
     },
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
-    if (!model) NcError.tableNotFound(param.tableName);
+    if (!model) AtError.tableNotFound(param.tableName);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -232,7 +232,7 @@ export class DataAliasNestedService {
     });
   }
   async ooExcludedList(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       query: any;
       columnName: string;
@@ -240,14 +240,14 @@ export class DataAliasNestedService {
     },
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
-    if (!model) NcError.notFound('Table not found');
+    if (!model) AtError.notFound('Table not found');
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -306,7 +306,7 @@ export class DataAliasNestedService {
 
   // todo: handle case where the given column is not ltar
   async hmList(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       query: any;
       columnName: string;
@@ -315,20 +315,20 @@ export class DataAliasNestedService {
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
 
-    if (!model) NcError.tableNotFound(param.tableName);
+    if (!model) AtError.tableNotFound(param.tableName);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
     const column = await getColumnByIdOrName(context, param.columnName, model);
 
-    if (!isLinksOrLTAR(column)) NcError.badRequest('Column is not LTAR');
+    if (!isLinksOrLTAR(column)) AtError.badRequest('Column is not LTAR');
 
     // Strip caller-supplied where/sort references to columns the link doesn't
     // expose (cross-base / visibility-limited related tables). Mutates
@@ -359,7 +359,7 @@ export class DataAliasNestedService {
 
   @TraceCommand(OperationName.recordLinkRemove)
   async relationDataRemove(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       columnName: string;
       rowId: string;
@@ -368,14 +368,14 @@ export class DataAliasNestedService {
     },
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
-    if (!model) NcError.tableNotFound(param.tableName);
+    if (!model) AtError.tableNotFound(param.tableName);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -394,7 +394,7 @@ export class DataAliasNestedService {
   // todo: Give proper error message when reference row is already related and handle duplicate ref row id in hm
   @TraceCommand(OperationName.recordLinkAdd)
   async relationDataAdd(
-    context: NcContext,
+    context: AtContext,
     param: PathParams & {
       columnName: string;
       rowId: string;
@@ -403,14 +403,14 @@ export class DataAliasNestedService {
     },
   ) {
     const { model, view } = await getViewAndModelByAliasOrId(context, param);
-    if (!model) NcError.tableNotFound(param.tableName);
+    if (!model) AtError.tableNotFound(param.tableName);
 
     const source = await Source.get(context, model.source_id);
 
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const column = await getColumnByIdOrName(context, param.columnName, model);

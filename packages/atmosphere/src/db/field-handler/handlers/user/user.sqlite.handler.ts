@@ -1,4 +1,4 @@
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import { GenericSqliteFieldHandler } from '../generic.sqlite';
 import { UserGeneralHandler } from './user.general.handler';
 import type CustomKnex from 'src/db/CustomKnex';

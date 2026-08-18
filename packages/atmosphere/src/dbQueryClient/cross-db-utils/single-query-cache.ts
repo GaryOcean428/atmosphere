@@ -2,7 +2,7 @@ import { CacheScope } from '~/utils/globals';
 
 /**
  * Sentinel used in singleQuery cache keys when the query is not scoped
- * to a specific view. Namespaced with `nc_` to avoid collision with real
+ * to a specific view. Namespaced with `atm_` to avoid collision with real
  * view IDs.
  *
  * CE stub — the full implementation (cache read/write helpers) lives in
@@ -10,7 +10,7 @@ import { CacheScope } from '~/utils/globals';
  * exists so CE-side consumers (e.g. `View.clearSingleQueryCache`) can
  * import these helpers under the same path in both builds.
  */
-export const SINGLE_QUERY_DEFAULT_VIEW = 'nc_default_view';
+export const SINGLE_QUERY_DEFAULT_VIEW = 'atm_default_view';
 
 /**
  * Redis key (a HASH) holding every compiled single-query plan for one

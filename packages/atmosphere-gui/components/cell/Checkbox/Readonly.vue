@@ -40,7 +40,7 @@ const checkboxMeta = computed(() => {
     result.color =
       result.color === '#777'
         ? getColor(themeV4Colors.gray['600'])
-        : getOppositeColorOfBackground(getColor('var(--nc-bg-default)'), result.color, ['#4a5268', '#d5dce8'])
+        : getOppositeColorOfBackground(getColor('var(--atm-bg-default)'), result.color, ['#4a5268', '#d5dce8'])
   }
 
   return result
@@ -85,7 +85,7 @@ const childClassName = computed(() => {
       <Transition name="layout" mode="out-in" :duration="100">
         <component
           :is="getMdiIcon(modelValue ? checkboxMeta.icon.checked : checkboxMeta.icon.unchecked)"
-          class="nc-checkbox"
+          class="atm-checkbox"
           :style="{
             color: checkboxMeta.color,
           }"

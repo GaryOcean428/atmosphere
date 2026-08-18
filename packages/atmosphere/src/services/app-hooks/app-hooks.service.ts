@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { Logger } from '@nestjs/common';
-import type { AppEvents } from 'nocodb-sdk';
+import type { AppEvents } from 'atmosphere-sdk';
 import type {
   ApiCreatedEvent,
   ApiTokenCreateEvent,
@@ -316,9 +316,9 @@ export class AppHooksService {
   emit(event: AppEvents.WEBHOOK_UPDATE, data: WebhookUpdateEvent): void;
   emit(
     event:
-      | AppEvents.SYNC_SOURCE_UPDATE
-      | AppEvents.SYNC_SOURCE_CREATE
-      | AppEvents.SYNC_SOURCE_DELETE,
+      | AppEvents.SYATMOSPHERE_SOURCE_UPDATE
+      | AppEvents.SYATMOSPHERE_SOURCE_CREATE
+      | AppEvents.SYATMOSPHERE_SOURCE_DELETE,
     data: SyncSourceEvent,
   ): void;
   emit(event: AppEvents.API_TOKEN_CREATE, data: ApiTokenCreateEvent): void;

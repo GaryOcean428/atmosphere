@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { OrgUserRoles } from 'nocodb-sdk'
+import { OrgUserRoles } from 'atmosphere-sdk'
 
 const { orgRoles } = useRoles()
 
@@ -16,10 +16,10 @@ const saveBackRoute = () => {
       v-e="['c:user:admin-panel']"
       to="/admin"
       class="!no-underline"
-      data-testid="nc-sidebar-instance-admin-panel"
+      data-testid="atm-sidebar-instance-admin-panel"
       @click="saveBackRoute"
     >
-      <NcMenuItem> <GeneralIcon class="menu-icon" icon="controlPanel" /> {{ $t('labels.adminPanel') }} </NcMenuItem>
+      <AtMenuItem> <GeneralIcon class="menu-icon" icon="controlPanel" /> {{ $t('labels.adminPanel') }} </AtMenuItem>
     </nuxt-link>
   </template>
   <span v-else></span>

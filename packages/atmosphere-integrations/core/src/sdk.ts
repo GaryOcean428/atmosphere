@@ -1,3 +1,3 @@
-import * as NocoSDK from 'nocodb-sdk';
+import * as AtmosphereSDK from 'atmosphere-sdk';
 
-export { NocoSDK };
+export { AtmosphereSDK };

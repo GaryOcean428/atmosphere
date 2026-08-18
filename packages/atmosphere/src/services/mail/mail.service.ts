@@ -1,15 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ncIsArray, RoleLabels } from 'nocodb-sdk';
+import { ncIsArray, RoleLabels } from 'atmosphere-sdk';
 import { render } from '@react-email/render';
-import type { NcRequest, WhiteLabelConfig } from 'nocodb-sdk';
+import type { AtRequest, WhiteLabelConfig } from 'atmosphere-sdk';
 import type { MailParams, RawMailParams } from '~/interface/Mail';
 import type { ComponentProps } from 'react';
 import * as MailTemplates from '~/services/mail/templates';
 import { MailEvent, SKIP_STORING_MAIL_EVENTS } from '~/interface/Mail';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
-import NocoCache from '~/cache/NocoCache';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheGetType, MetaTable, RootScopes } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import config from '~/app.config';
 import { extractDisplayNameFromEmail } from '~/utils';
 import { ncSiteUrl } from '~/utils/envs';
@@ -25,9 +25,9 @@ type TemplateProps<K extends keyof typeof MailTemplates> = Omit<
 export class MailService {
   protected logger = new Logger(MailService.name);
   private static adapterMissingLogged = false;
-  protected async getAdapter(ncMeta = Noco.ncMeta) {
+  protected async getAdapter(ncMeta = Atmosphere.ncMeta) {
     try {
-      return await NcPluginMgrv2.emailAdapter(undefined, ncMeta);
+      return await AtPluginMgrv2.emailAdapter(undefined, ncMeta);
     } catch (e) {
       if (!MailService.adapterMissingLogged) {
         MailService.adapterMissingLogged = true;
@@ -41,11 +41,11 @@ export class MailService {
     'system:public_url_missing_notified';
 
   protected isPublicUrlConfigured(): boolean {
-    return !!Noco.config?.ncSiteUrl;
+    return !!Atmosphere.config?.ncSiteUrl;
   }
 
-  protected async notifySuperAdmin(ncMeta = Noco.ncMeta): Promise<void> {
-    const cacheFlag = await NocoCache.get(
+  protected async notifySuperAdmin(ncMeta = Atmosphere.ncMeta): Promise<void> {
+    const cacheFlag = await AtmosphereCache.get(
       'root',
       MailService.PUBLIC_URL_NOTIFIED_CACHE_KEY,
       CacheGetType.TYPE_STRING,
@@ -53,7 +53,7 @@ export class MailService {
 
     if (cacheFlag === 'true') return;
 
-    await NocoCache.set(
+    await AtmosphereCache.set(
       'root',
       MailService.PUBLIC_URL_NOTIFIED_CACHE_KEY,
       'true',
@@ -72,27 +72,27 @@ export class MailService {
 
       await mailerAdapter.mailSend({
         to: superUser.email,
-        subject: 'NocoDB: NC_SITE_URL is not configured',
+        subject: 'Atmosphere: ATMOSPHERE_SITE_URL is not configured',
         html: [
-          '<p>Your NocoDB instance does not have <strong>NC_SITE_URL</strong> configured.</p>',
+          '<p>Your Atmosphere instance does not have <strong>ATMOSPHERE_SITE_URL</strong> configured.</p>',
           '<p>Without this setting, emails cannot be sent because the system cannot generate safe URLs. ',
           'The host header from incoming requests can be spoofed, making it unsafe to use as a base URL in emails.</p>',
-          '<p>Please set the <code>NC_SITE_URL</code> environment variable to the publicly accessible URL of your NocoDB instance ',
-          '(e.g. <code>https://nocodb.example.com</code>) and restart the server.</p>',
+          '<p>Please set the <code>ATMOSPHERE_SITE_URL</code> environment variable to the publicly accessible URL of your Atmosphere instance ',
+          '(e.g. <code>https://atmosphere.example.com</code>) and restart the server.</p>',
         ].join(''),
       });
     } catch (e) {
-      this.logger.error('Failed to send NC_SITE_URL notification', e.stack);
+      this.logger.error('Failed to send ATMOSPHERE_SITE_URL notification', e.stack);
     }
   }
 
-  protected async ensurePublicUrl(ncMeta = Noco.ncMeta): Promise<boolean> {
+  protected async ensurePublicUrl(ncMeta = Atmosphere.ncMeta): Promise<boolean> {
     if (this.isPublicUrlConfigured()) return true;
 
     await this.notifySuperAdmin(ncMeta);
 
     this.logger.error(
-      'NC_SITE_URL is not configured. Email cannot be sent because the system cannot generate safe URLs.',
+      'ATMOSPHERE_SITE_URL is not configured. Email cannot be sent because the system cannot generate safe URLs.',
     );
 
     return false;
@@ -100,7 +100,7 @@ export class MailService {
 
   /**
    * Hook: subclasses (EE) override to return the active white-label config.
-   * CE returns null — emails ship with default NocoDB branding.
+   * CE returns null — emails ship with default Atmosphere branding.
    */
   protected async getBranding(): Promise<WhiteLabelConfig | null> {
     return null;
@@ -117,10 +117,10 @@ export class MailService {
   /**
    * Resolve the subject line. Pass a `(productName) => string` builder for any
    * subject that references the product name — it receives the white-label name
-   * when branding is enabled, else "NocoDB". Pass a plain string for subjects
+   * when branding is enabled, else "Atmosphere". Pass a plain string for subjects
    * that don't reference the product name; it is used VERBATIM.
    *
-   * We intentionally do NOT string-replace "NocoDB" in plain strings: that
+   * We intentionally do NOT string-replace "Atmosphere" in plain strings: that
    * blunt substitution would rebrand unintended occurrences and silently miss
    * any subject that doesn't hardcode the literal. Product-name subjects must
    * use the builder form instead.
@@ -131,7 +131,7 @@ export class MailService {
   ): string {
     if (typeof subject === 'function') {
       const productName =
-        (branding?.enabled && branding.productName) || 'NocoDB';
+        (branding?.enabled && branding.productName) || 'Atmosphere';
       return subject(productName);
     }
     return subject;
@@ -148,7 +148,7 @@ export class MailService {
   }
 
   /**
-   * Send via adapter and write an audit row to `nc_mail_sends`.
+   * Send via adapter and write an audit row to `atm_mail_sends`.
    *
    * Re-throws send errors so outer try/catch preserves the existing
    * boolean-return contract of `sendMail()`. Audit-row INSERT failures are
@@ -204,7 +204,7 @@ export class MailService {
         );
       } catch (logError) {
         this.logger.error(
-          'Failed to write nc_mail_sends audit row',
+          'Failed to write atm_mail_sends audit row',
           (logError as Error).stack,
         );
       }
@@ -214,7 +214,7 @@ export class MailService {
   }
 
   buildUrl(
-    req: NcRequest,
+    req: AtRequest,
     params: {
       token?: string;
       workspaceId?: string;
@@ -299,7 +299,7 @@ export class MailService {
     return url;
   }
 
-  async sendMailRaw(params: RawMailParams, ncMeta = Noco.ncMeta) {
+  async sendMailRaw(params: RawMailParams, ncMeta = Atmosphere.ncMeta) {
     const mailerAdapter = await this.getAdapter(ncMeta);
     if (!mailerAdapter) {
       return false;
@@ -330,7 +330,7 @@ export class MailService {
     return true;
   }
 
-  async sendMail(params: MailParams, ncMeta = Noco.ncMeta) {
+  async sendMail(params: MailParams, ncMeta = Atmosphere.ncMeta) {
     const mailerAdapter = await this.getAdapter(ncMeta);
     if (!mailerAdapter) {
       return false;
@@ -338,7 +338,7 @@ export class MailService {
 
     const { payload, mailEvent } = params;
 
-    // Validate NC_SITE_URL is configured for events that generate URLs
+    // Validate ATMOSPHERE_SITE_URL is configured for events that generate URLs
     // FORM_SUBMISSION is exempt — it has no req and builds no links
     if (mailEvent !== MailEvent.FORM_SUBMISSION) {
       if (!(await this.ensurePublicUrl(ncMeta))) return false;

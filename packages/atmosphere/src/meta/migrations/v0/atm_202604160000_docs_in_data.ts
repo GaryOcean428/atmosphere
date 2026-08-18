@@ -2,7 +2,7 @@ import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
 const up = async (knex: Knex) => {
-  // Add document-related columns to nc_models_v2
+  // Add document-related columns to atm_models_v2
   await knex.schema.alterTable(MetaTable.MODELS, (table) => {
     table.string('parent_id', 20).nullable();
     table.string('updated_by', 20);
@@ -17,16 +17,16 @@ const up = async (knex: Knex) => {
     // by type post-seek.
     table.index(
       ['base_id', 'type', 'parent_id', 'order'],
-      'nc_models_v2_tree_idx',
+      'atm_models_v2_tree_idx',
     );
   });
 
-  // Migrate existing documents from nc_docs_v2 into nc_models_v2
-  if (await knex.schema.hasTable('nc_docs_v2')) {
-    const docs = await knex('nc_docs_v2').select('*');
+  // Migrate existing documents from atm_docs_v2 into atm_models_v2
+  if (await knex.schema.hasTable('atm_docs_v2')) {
+    const docs = await knex('atm_docs_v2').select('*');
 
     // Offset root-level docs so they appear AFTER existing tables/dashboards
-    // within each base. Before this migration, nc_models_v2 rows had no
+    // within each base. Before this migration, atm_models_v2 rows had no
     // parent_id, so every existing row is effectively root-level.
     const baseIds = [...new Set(docs.map((d) => d.base_id).filter(Boolean))];
 
@@ -47,7 +47,7 @@ const up = async (knex: Knex) => {
       const isRoot = !doc.parent_id;
       const offset = isRoot ? maxOrderByBase.get(doc.base_id) || 0 : 0;
 
-      // nc_docs_v2.title is varchar(512), nc_models_v2.title is varchar(255).
+      // atm_docs_v2.title is varchar(512), atm_models_v2.title is varchar(255).
       // Truncate to fit and preserve the overflow in description so nothing is lost.
       const title = doc.title?.slice(0, 255);
       const overflow =
@@ -81,13 +81,13 @@ const up = async (knex: Knex) => {
 
 const down = async (knex: Knex) => {
   // Non-destructive rollback: only drop the schema additions.
-  // The original nc_docs_v2 rows are preserved by up() (not deleted),
-  // and the migrated rows in nc_models_v2 are left in place so no data
+  // The original atm_docs_v2 rows are preserved by up() (not deleted),
+  // and the migrated rows in atm_models_v2 are left in place so no data
   // is destroyed on rollback.
   await knex.schema.alterTable(MetaTable.MODELS, (table) => {
     table.dropIndex(
       ['base_id', 'type', 'parent_id', 'order'],
-      'nc_models_v2_tree_idx',
+      'atm_models_v2_tree_idx',
     );
     table.dropColumn('parent_id');
     table.dropColumn('updated_by');

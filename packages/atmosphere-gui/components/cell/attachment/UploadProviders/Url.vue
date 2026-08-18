@@ -76,25 +76,25 @@ watch(url, () => {
 
 <template>
   <div class="py-2 px-2 h-full flex gap-2 flex-col">
-    <div class="flex w-full bg-nc-bg-default border-b-1 py-1 justify-between">
+    <div class="flex w-full bg-atm-bg-default border-b-1 py-1 justify-between">
       <h1 class="font-semibold">
         {{ $t('title.uploadViaUrl') }}
       </h1>
 
-      <NcTooltip>
-        <NcButton type="secondary" class="!border-0" size="xsmall" @click="closeMenu">
+      <AtTooltip>
+        <AtButton type="secondary" class="!border-0" size="xsmall" @click="closeMenu">
           <GeneralIcon icon="close" />
-        </NcButton>
+        </AtButton>
 
         <template #title> {{ $t('general.close') }} </template>
-      </NcTooltip>
+      </AtTooltip>
     </div>
 
-    <div class="flex-grow bg-nc-bg-default">
-      <h1 class="text-nc-content-gray font-semibold">
+    <div class="flex-grow bg-atm-bg-default">
+      <h1 class="text-atm-content-gray font-semibold">
         {{ $t('labels.addFilesFromUrl') }}
       </h1>
-      <div class="flex bg-nc-bg-default gap-2">
+      <div class="flex bg-atm-bg-default gap-2">
         <a-input
           ref="inputRef"
           v-model:value="url"
@@ -105,16 +105,16 @@ watch(url, () => {
           @keydown.enter="uploadAndParseUrl"
         />
 
-        <NcButton :disabled="!isValidUrl" :loading="isParsing" size="small" class="!h-10 !px-4" @click="uploadAndParseUrl">
+        <AtButton :disabled="!isValidUrl" :loading="isParsing" size="small" class="!h-10 !px-4" @click="uploadAndParseUrl">
           {{ $t('general.upload') }}
-        </NcButton>
+        </AtButton>
       </div>
-      <span v-if="url.length > 0 && !isValidUrl" class="text-nc-content-red-medium text-[13px]">
+      <span v-if="url.length > 0 && !isValidUrl" class="text-atm-content-red-medium text-[13px]">
         {{ errorMessage.length > 0 ? errorMessage : $t('labels.enterValidUrl') }}
       </span>
       <template v-if="tempAttachments.length > 0">
-        <div :style="`height: ${!isValidUrl ? '208px' : '230px'}`" class="overflow-y-auto bg-nc-bg-default mt-1 !max-h-[250px]">
-          <h1 class="font-semibold capitalize sticky top-0 bg-nc-bg-default text-nc-content-gray">
+        <div :style="`height: ${!isValidUrl ? '208px' : '230px'}`" class="overflow-y-auto bg-atm-bg-default mt-1 !max-h-[250px]">
+          <h1 class="font-semibold capitalize sticky top-0 bg-atm-bg-default text-atm-content-gray">
             {{ $t('objects.files') }}
           </h1>
 
@@ -127,33 +127,33 @@ watch(url, () => {
               <GeneralIcon icon="file" />
 
               {{ file.title }}
-              <NcTooltip class="hover:underline">
+              <AtTooltip class="hover:underline">
                 <NuxtLink class="flex items-center" target="_blank" @click="openAttachment(file)">
-                  <component :is="iconMap.externalLink" class="w-3.5 h-3.5 text-nc-content-gray-muted" />
+                  <component :is="iconMap.externalLink" class="w-3.5 h-3.5 text-atm-content-gray-muted" />
                 </NuxtLink>
 
                 <template #title> {{ $t('labels.openFile') }} </template>
-              </NcTooltip>
+              </AtTooltip>
             </div>
 
             <div class="flex-grow-1"></div>
 
-            <NcTooltip>
+            <AtTooltip>
               <template #title> {{ $t('title.removeFile') }} </template>
 
-              <NcButton type="text" size="xsmall" @click="deleteAttachment(index)">
+              <AtButton type="text" size="xsmall" @click="deleteAttachment(index)">
                 <GeneralIcon icon="close" />
-              </NcButton>
-            </NcTooltip>
+              </AtButton>
+            </AtTooltip>
           </div>
         </div>
       </template>
     </div>
 
     <div class="flex gap-2 items-center justify-end">
-      <NcButton :disabled="isParsing" type="secondary" size="small" @click="closeMenu"> {{ $t('labels.cancel') }} </NcButton>
-      <NcButton :disabled="isParsing || tempAttachments.length === 0" size="small" @click="onSave">
-        {{ $t('activity.addFiles') }}</NcButton
+      <AtButton :disabled="isParsing" type="secondary" size="small" @click="closeMenu"> {{ $t('labels.cancel') }} </AtButton>
+      <AtButton :disabled="isParsing || tempAttachments.length === 0" size="small" @click="onSave">
+        {{ $t('activity.addFiles') }}</AtButton
       >
     </div>
   </div>
@@ -161,13 +161,13 @@ watch(url, () => {
 
 <style scoped lang="scss">
 .ant-input::placeholder {
-  @apply text-nc-content-gray-muted;
+  @apply text-atm-content-gray-muted;
 }
 
 .ant-input {
-  @apply px-4 rounded-lg py-2 w-full border-1 focus:border-nc-border-brand border-nc-border-gray-medium !ring-0;
+  @apply px-4 rounded-lg py-2 w-full border-1 focus:border-atm-border-brand border-atm-border-gray-medium !ring-0;
 }
 a {
-  @apply !text-nc-content-gray-subtle !no-underline !hover:underline;
+  @apply !text-atm-content-gray-subtle !no-underline !hover:underline;
 }
 </style>

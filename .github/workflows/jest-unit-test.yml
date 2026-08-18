@@ -3,13 +3,13 @@ on:
   push:
     branches: [develop]
     paths:
-      - "packages/nocodb/**"
+      - "packages/atmosphere/**"
       - ".github/workflows/jest-unit-test.yml"
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review, labeled]
     branches: [develop]
     paths:
-      - "packages/nocodb/**"
+      - "packages/atmosphere/**"
       - ".github/workflows/jest-unit-test.yml"
   workflow_call:
   # Triggered manually
@@ -41,11 +41,11 @@ jobs:
         run: sed -i '/^use-node-version/d' .npmrc
       - name: install dependencies
         run: pnpm bootstrap
-      - name: build nocodb-sdk
-        working-directory: ./packages/nocodb-sdk
+      - name: build atmosphere-sdk
+        working-directory: ./packages/atmosphere-sdk
         run: |
           pnpm run generate:sdk
           pnpm run build:main
       - name: run unit tests
-        working-directory: ./packages/nocodb
+        working-directory: ./packages/atmosphere
         run: pnpm run test

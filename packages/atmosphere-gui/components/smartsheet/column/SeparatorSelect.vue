@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SeparatorType } from 'nocodb-sdk'
+import { SeparatorType } from 'atmosphere-sdk'
 
 interface Props {
   value: SeparatorType
@@ -11,7 +11,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   disabled: false,
   integer: false,
-  dropdownClassName: 'nc-dropdown-separator-format',
+  dropdownClassName: 'atm-dropdown-separator-format',
 })
 
 const emit = defineEmits(['update:value'])
@@ -48,7 +48,7 @@ const separatorOptions = computed(() => {
   <a-form-item :label="$t('labels.separator')">
     <a-select v-model:value="vModel" :disabled="disabled" option-label-prop="label" :dropdown-class-name="dropdownClassName">
       <template #suffixIcon>
-        <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+        <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
       </template>
       <a-select-option
         v-for="option of separatorOptions"
@@ -58,7 +58,7 @@ const separatorOptions = computed(() => {
       >
         <div class="flex w-full justify-between items-center">
           <span>{{ option.label }}</span>
-          <span class="text-nc-content-gray-muted">{{ option.preview }}</span>
+          <span class="text-atm-content-gray-muted">{{ option.preview }}</span>
         </div>
       </a-select-option>
     </a-select>

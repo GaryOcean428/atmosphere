@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { MetaEventType } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import { MetaEventType } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type {
   AffectedDependencyResult,
   MetaDependencyEventRequest,
@@ -8,7 +8,7 @@ import type {
 } from '~/services/meta-dependency/types';
 import { Hook } from '~/models';
 import { MetaTable } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 /**
  * Webhook trigger-field junction cleanup. Webhooks that fired on a specific
@@ -22,9 +22,9 @@ export class ColumnDeleteHookTriggerDependencyHandler
   triggerMetaEvents: MetaEventType[] = [MetaEventType.COLUMN_DELETED];
 
   async getAffectedDependency(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<AffectedDependencyResult | undefined> {
     const id = param.oldEntity?.id;
     if (!id) return undefined;
@@ -39,11 +39,11 @@ export class ColumnDeleteHookTriggerDependencyHandler
   }
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest & {
       affectedDependencyResult: AffectedDependencyResult;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     const id = param.oldEntity?.id;
     if (!id) return;

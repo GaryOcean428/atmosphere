@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { BaseType } from 'nocodb-sdk'
+import type { BaseType } from 'atmosphere-sdk'
 
 const props = withDefaults(
   defineProps<{

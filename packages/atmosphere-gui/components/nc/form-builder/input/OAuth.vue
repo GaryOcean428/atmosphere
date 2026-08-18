@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { FormBuilderElement } from 'nocodb-sdk'
+import type { FormBuilderElement } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: {
@@ -180,14 +180,14 @@ const handleOAuth = async () => {
 
 <template>
   <div>
-    <NcButton type="primary" @click="handleOAuth">
+    <AtButton type="primary" @click="handleOAuth">
       <div class="flex items-center gap-2">
         <div class="font-bold">Authenticate With {{ OAuthConfig.provider }}</div>
         <template v-if="haveValue">
           <GeneralIcon icon="circleCheckSolid" class="text-success w-6 h-6" />
         </template>
       </div>
-    </NcButton>
+    </AtButton>
   </div>
 </template>
 

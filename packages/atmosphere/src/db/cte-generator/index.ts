@@ -1,5 +1,5 @@
-import type { ClientType } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import type { ClientType } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Source } from '~/models';
@@ -10,7 +10,7 @@ const CLIENT_DEFAULT = '_default';
 
 export class CTEGenerator implements ICTEGenerator {
   constructor(
-    protected readonly info: { context: NcContext; knex: CustomKnex },
+    protected readonly info: { context: AtContext; knex: CustomKnex },
   ) {}
 
   cteModules = {
@@ -47,7 +47,7 @@ export class CTEGenerator implements ICTEGenerator {
     return this.blocks.get(alias);
   }
 
-  async baseUser(param: { context?: NcContext; include_ws_deleted?: boolean }) {
+  async baseUser(param: { context?: AtContext; include_ws_deleted?: boolean }) {
     const cteBlock = await this.getCteModules<BaseUserGeneralCte>(
       'baseUser',
       await this.getClientType(),

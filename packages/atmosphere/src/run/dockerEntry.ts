@@ -1,7 +1,7 @@
 import dns from 'node:dns';
 import express from 'express';
 import cors from 'cors';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { handleUncaughtErrors } from '~/utils';
 handleUncaughtErrors(process);
 
@@ -16,6 +16,6 @@ server.set('view engine', 'ejs');
 
 (async () => {
   const httpServer = server.listen(process.env.PORT || 8080, async () => {
-    server.use(await Noco.init({}, httpServer, server));
+    server.use(await Atmosphere.init({}, httpServer, server));
   });
 })().catch((e) => console.log(e));

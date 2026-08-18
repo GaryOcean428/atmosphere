@@ -1,4 +1,4 @@
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 
 /**
  * CE stub. Personal views are an EE concept — CE never has
@@ -15,7 +15,7 @@ import type { NcContext } from 'nocodb-sdk';
  * comparison, so widening here avoids per-call-site casts.
  */
 export async function assertPersonalViewAllowed(
-  _context: NcContext,
+  _context: AtContext,
   _lockType?: string,
 ) {
   // no-op in CE

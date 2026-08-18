@@ -1,4 +1,4 @@
-import type { ClientType } from 'nocodb-sdk'
+import type { ClientType } from 'atmosphere-sdk'
 
 export interface RowHandler {
   rowChange?: (event: FilterRowChangeEvent) => Promise<void>

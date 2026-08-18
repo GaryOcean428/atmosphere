@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ncIsString } from 'nocodb-sdk';
+import { ncIsString } from 'atmosphere-sdk';
 import type { NestMiddleware } from '@nestjs/common';
 import type { AppConfig } from '~/interface/config';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { setFrameGuardHeaders } from '~/helpers/frameGuard';
 
 const TAB_ID_RE =
@@ -20,10 +20,10 @@ export class GlobalMiddleware implements NestMiddleware {
     setFrameGuardHeaders(req, res);
 
     req.ncSiteUrl =
-      Noco.config?.ncSiteUrl || req.protocol + '://' + req.get('host');
+      Atmosphere.config?.ncSiteUrl || req.protocol + '://' + req.get('host');
     req.ncFullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 
-    const rawTabId = req.headers?.['x-nc-tab-id'];
+    const rawTabId = req.headers?.['x-atm-tab-id'];
     if (ncIsString(rawTabId) && TAB_ID_RE.test(rawTabId)) {
       req.ncTabId = rawTabId;
     }
@@ -34,7 +34,7 @@ export class GlobalMiddleware implements NestMiddleware {
 
     // used for playwright tests so env is not documented
     req.dashboardUrl =
-      process.env.NC_DASHBOARD_URL || req.ncSiteUrl + dashboardPath;
+      process.env.ATMOSPHERE_DASHBOARD_URL || req.ncSiteUrl + dashboardPath;
     next();
   }
 }

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { BaseType, SourceType } from 'nocodb-sdk'
+import type { BaseType, SourceType } from 'atmosphere-sdk'
 
 const props = withDefaults(
   defineProps<{
@@ -9,7 +9,7 @@ const props = withDefaults(
     titleClass?: string
     submenuClass?: string
     showLabel?: boolean
-    showNocoDbImport?: boolean
+    showAtmosphereImport?: boolean
     popupOffset?: [number, number]
     showSourceSelector?: boolean
   }>(),
@@ -18,7 +18,7 @@ const props = withDefaults(
     titleClass: '',
     submenuClass: '',
     showLabel: false,
-    showNocoDbImport: false,
+    showAtmosphereImport: false,
     showSourceSelector: true,
   },
 )
@@ -95,7 +95,7 @@ function openQuickImportDialog(type: string) {
 
 <template>
   <!-- Quick Import From -->
-  <NcSubMenu
+  <AtSubMenu
     v-if="
       ['airtableImport', 'csvImport', 'jsonImport', 'excelImport'].some((permission) =>
         isUIAllowed(permission, { roles: baseRole, source }),
@@ -103,7 +103,7 @@ function openQuickImportDialog(type: string) {
     "
     class="py-0"
     :class="submenuClass"
-    data-testid="nc-sidebar-base-import"
+    data-testid="atm-sidebar-base-import"
     :variant="variant"
     :title-class="titleClass"
     :popup-offset="popupOffset"
@@ -121,12 +121,12 @@ function openQuickImportDialog(type: string) {
 
     <slot name="label"> </slot>
 
-    <NcTooltip
+    <AtTooltip
       v-if="isUIAllowed('airtableImport', { roles: baseRole, source }) || !!airtableImportReason"
       :title="airtableImportReason ? $t(airtableImportReason) : ''"
       :disabled="!airtableImportReason"
     >
-      <NcMenuItem
+      <AtMenuItem
         key="quick-import-airtable"
         v-e="['c:import:airtable']"
         :disabled="!!airtableImportReason"
@@ -134,15 +134,15 @@ function openQuickImportDialog(type: string) {
       >
         <GeneralIcon icon="airtable" class="max-w-3.75" />
         <div class="ml-0.5">{{ $t('labels.airtableBase') }}</div>
-      </NcMenuItem>
-    </NcTooltip>
+      </AtMenuItem>
+    </AtTooltip>
 
-    <NcTooltip
+    <AtTooltip
       v-if="isUIAllowed('csvImport', { roles: baseRole, source }) || !!csvImportReason"
       :title="csvImportReason ? $t(csvImportReason) : ''"
       :disabled="!csvImportReason"
     >
-      <NcMenuItem
+      <AtMenuItem
         key="quick-import-csv"
         v-e="['c:import:csv']"
         :disabled="!!csvImportReason"
@@ -150,15 +150,15 @@ function openQuickImportDialog(type: string) {
       >
         <GeneralIcon icon="ncFileTypeCsvSmall" class="w-4 h-4" />
         {{ $t('labels.csvFile') }}
-      </NcMenuItem>
-    </NcTooltip>
+      </AtMenuItem>
+    </AtTooltip>
 
-    <NcTooltip
+    <AtTooltip
       v-if="isUIAllowed('jsonImport', { roles: baseRole, source }) || !!jsonImportReason"
       :title="jsonImportReason ? $t(jsonImportReason) : ''"
       :disabled="!jsonImportReason"
     >
-      <NcMenuItem
+      <AtMenuItem
         key="quick-import-json"
         v-e="['c:import:json']"
         :disabled="!!jsonImportReason"
@@ -166,15 +166,15 @@ function openQuickImportDialog(type: string) {
       >
         <GeneralIcon icon="ncFileTypeJson" class="h-4" />
         {{ $t('labels.jsonFile') }}
-      </NcMenuItem>
-    </NcTooltip>
+      </AtMenuItem>
+    </AtTooltip>
 
-    <NcTooltip
+    <AtTooltip
       v-if="isUIAllowed('excelImport', { roles: baseRole, source }) || !!excelImportReason"
       :title="excelImportReason ? $t(excelImportReason) : ''"
       :disabled="!excelImportReason"
     >
-      <NcMenuItem
+      <AtMenuItem
         key="quick-import-excel"
         v-e="['c:import:excel']"
         :disabled="!!excelImportReason"
@@ -182,7 +182,7 @@ function openQuickImportDialog(type: string) {
       >
         <GeneralIcon icon="ncFileTypeExcel" class="w-4 h-4" />
         {{ $t('labels.microsoftExcel') }}
-      </NcMenuItem>
-    </NcTooltip>
-  </NcSubMenu>
+      </AtMenuItem>
+    </AtTooltip>
+  </AtSubMenu>
 </template>

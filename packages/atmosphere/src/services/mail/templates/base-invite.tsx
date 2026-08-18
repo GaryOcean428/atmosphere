@@ -9,7 +9,7 @@ import {
   Text,
 } from '@react-email/components';
 import * as React from 'react';
-import type { WhiteLabelConfig } from 'nocodb-sdk';
+import type { WhiteLabelConfig } from 'atmosphere-sdk';
 import {
   ContentWrapper,
   Footer,
@@ -64,8 +64,8 @@ export const BaseInvite = ({
 BaseInvite.PreviewProps = {
   baseTitle: 'Base Title',
   name: 'John Doe',
-  email: 'johndoe@nocodb.com',
-  link: 'https://app.nocodb.com',
+  email: 'johndoe@atmosphere.dev',
+  link: 'https://app.atmosphere.dev',
 };
 
 export default BaseInvite;

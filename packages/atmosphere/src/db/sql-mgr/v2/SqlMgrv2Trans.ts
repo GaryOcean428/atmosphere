@@ -3,13 +3,13 @@ import SqlMgrv2 from './SqlMgrv2';
 import type { Knex } from 'knex';
 import type { XKnex } from '../../CustomKnex';
 import type Source from '~/models/Source';
-import type { NcContext } from '~/interface/config';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import type { AtContext } from '~/interface/config';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 
 export default class SqlMgrv2Trans extends SqlMgrv2 {
   protected trx: Knex.Transaction;
   // todo: tobe changed
-  protected ncMeta: any; // NcMetaIO;
+  protected ncMeta: any; // AtMetaIO;
   protected baseId: string;
   protected source: Source;
 
@@ -21,7 +21,7 @@ export default class SqlMgrv2Trans extends SqlMgrv2 {
    */
   // todo: tobe changed
   constructor(
-    context: NcContext,
+    context: AtContext,
     args: { id: string },
     ncMeta: any,
     source: Source,
@@ -42,7 +42,7 @@ export default class SqlMgrv2Trans extends SqlMgrv2 {
   }
 
   public async startTransaction(source: Source) {
-    const knex: XKnex = await NcConnectionMgrv2.get(source);
+    const knex: XKnex = await AtConnectionMgrv2.get(source);
     this.trx = await knex.transaction();
   }
 
@@ -61,7 +61,7 @@ export default class SqlMgrv2Trans extends SqlMgrv2 {
   }
 
   protected async getSqlClient(source: Source) {
-    return NcConnectionMgrv2.getSqlClient(source, this.trx);
+    return AtConnectionMgrv2.getSqlClient(source, this.trx);
   }
 
   public async sqlOp(source: Source, op, opArgs): Promise<any> {

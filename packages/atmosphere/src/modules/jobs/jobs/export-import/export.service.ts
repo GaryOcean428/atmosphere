@@ -9,23 +9,23 @@ import {
   isSystemColumn,
   isVirtualCol,
   LongTextAiMetaProp,
-  NcApiVersion,
+  AtApiVersion,
   PermissionEntity,
   RelationTypes,
   UITypes,
   ViewTypes,
   type WidgetType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { unparse } from 'papaparse';
 import * as XLSX from 'xlsx';
 import { elapsedTime, initTime } from '../../helpers';
-import type { LookupType, NcRequest, RollupType } from 'nocodb-sdk';
+import type { LookupType, AtRequest, RollupType } from 'atmosphere-sdk';
 import type { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { Column, LinkToAnotherRecordColumn } from '~/models';
 import type RowColorCondition from '~/models/RowColorCondition';
 import type { GetRowColorConditionsResult } from '~/helpers/rowColorViewHelpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import {
   escapeFormulaeInRows,
   escapeFormulaHeader,
@@ -40,7 +40,7 @@ import {
   getEntityIdentifier,
 } from '~/helpers/exportImportHelpers';
 import { defaultLimitConfig } from '~/helpers/extractLimitAndOffset';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import { RowColorViewHelpers } from '~/helpers/rowColorViewHelpers';
 import {
   Base,
@@ -63,22 +63,22 @@ import {
   icsCalendarHeader,
 } from '~/helpers/icsHelpers';
 import { DatasService } from '~/services/datas.service';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { parseMetaProp } from '~/utils/modelUtils';
 import { getWidgetHandler } from '~/db/widgets';
 import { getQueriedColumns } from '~/helpers/dbHelpers';
 
 @Injectable()
 export class ExportService {
-  protected readonly debugLog = debug('nc:jobs:import');
+  protected readonly debugLog = debug('atm:jobs:import');
 
   constructor(protected datasService: DatasService) {}
 
-  async getDataList(context: NcContext, param: any) {
+  async getDataList(context: AtContext, param: any) {
     return this.datasService.dataList(context, param);
   }
 
-  async serializeScripts(context: NcContext) {
+  async serializeScripts(context: AtContext) {
     const serializedScripts = [];
 
     const scripts = await Script.list(context, context.base_id);
@@ -95,22 +95,22 @@ export class ExportService {
     return serializedScripts;
   }
 
-  async serializeDocuments(_context: NcContext) {
+  async serializeDocuments(_context: AtContext) {
     return [];
   }
 
-  async serializeWorkflows(_context: NcContext, _param: any, _req: NcRequest) {
+  async serializeWorkflows(_context: AtContext, _param: any, _req: AtRequest) {
     return [];
   }
 
   async serializeInterfaces(
-    _context: NcContext,
-    _param: { idMap: Map<string, string>; req: NcRequest },
+    _context: AtContext,
+    _param: { idMap: Map<string, string>; req: AtRequest },
   ) {
     return [];
   }
 
-  async serializeDashboards(context: NcContext, param: any, req: NcRequest) {
+  async serializeDashboards(context: AtContext, param: any, req: AtRequest) {
     const { idMap } = param;
     const serializedDashboards = [];
 
@@ -183,7 +183,7 @@ export class ExportService {
   }
 
   async serializeModels(
-    context: NcContext,
+    context: AtContext,
     param: {
       modelIds: string[];
       excludeViews?: boolean;
@@ -219,7 +219,7 @@ export class ExportService {
     for (const modelId of modelIds) {
       const model = await Model.get(context, modelId);
 
-      if (!model) return NcError.tableNotFound(modelId);
+      if (!model) return AtError.tableNotFound(modelId);
 
       const fndProject = bases.find((p) => p.id === model.base_id);
       const base = fndProject || (await Base.get(context, model.base_id));
@@ -818,12 +818,12 @@ export class ExportService {
     };
   }
 
-  async serializeUsers(context: NcContext, param: { baseId: string }) {
+  async serializeUsers(context: AtContext, param: { baseId: string }) {
     const { baseId } = param;
 
     const base = await Base.get(context, baseId);
 
-    if (!base) return NcError.baseNotFound(baseId);
+    if (!base) return AtError.baseNotFound(baseId);
 
     const users = await BaseUser.getUsersList(context, { base_id: base.id });
 
@@ -838,7 +838,7 @@ export class ExportService {
   }
 
   async streamModelDataAsCsv(
-    context: NcContext,
+    context: AtContext,
     param: {
       dataStream: Readable;
       linkStream: Readable;
@@ -1140,7 +1140,7 @@ export class ExportService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const limit = 200;
@@ -1234,7 +1234,7 @@ export class ExportService {
 
         const mmBaseModel = await Model.getBaseModelSQL(mmContext, {
           id: mmModel.id,
-          dbDriver: await NcConnectionMgrv2.get(mmBase),
+          dbDriver: await AtConnectionMgrv2.get(mmBase),
         });
 
         try {
@@ -1268,7 +1268,7 @@ export class ExportService {
   }
 
   async streamModelDataAsJson(
-    context: NcContext,
+    context: AtContext,
     param: {
       dataStream: Readable;
       baseId: string;
@@ -1378,7 +1378,7 @@ export class ExportService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const limit = 200;
@@ -1408,7 +1408,7 @@ export class ExportService {
   }
 
   async streamModelDataAsIcs(
-    context: NcContext,
+    context: AtContext,
     param: {
       dataStream: Readable;
       baseId: string;
@@ -1432,7 +1432,7 @@ export class ExportService {
     });
 
     if (!view || view.type !== ViewTypes.CALENDAR) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'ICS export is only supported for calendar views',
       );
     }
@@ -1442,7 +1442,7 @@ export class ExportService {
     const range = calendarRange?.ranges?.[0];
 
     if (!range?.fk_from_column_id) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Calendar view has no date field configured for export',
       );
     }
@@ -1463,7 +1463,7 @@ export class ExportService {
       : undefined;
 
     if (!fromColumn) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Calendar view date field is no longer available',
       );
     }
@@ -1510,7 +1510,7 @@ export class ExportService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const dtstamp = new Date().toISOString();
@@ -1605,7 +1605,7 @@ export class ExportService {
               : undefined;
 
           const vEvent = buildVEvent({
-            uid: `${recordId}@${view.id}.nocodb`,
+            uid: `${recordId}@${view.id}.atmosphere`,
             dtstamp,
             summary,
             description: descriptionParts.join('\n') || undefined,
@@ -1637,7 +1637,7 @@ export class ExportService {
   }
 
   async streamModelDataAsExcel(
-    context: NcContext,
+    context: AtContext,
     param: {
       dataStream: Readable;
       baseId: string;
@@ -1732,7 +1732,7 @@ export class ExportService {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const limit = 200;
@@ -1761,7 +1761,7 @@ export class ExportService {
   }
 
   async recursiveReadForExcel(
-    context: NcContext,
+    context: AtContext,
     formatter: (data: any) => Promise<{ data: any }>,
     baseModel: BaseModelSqlv2,
     stream: Readable,
@@ -1854,7 +1854,7 @@ export class ExportService {
   }
 
   async recursiveReadForJson(
-    context: NcContext,
+    context: AtContext,
     formatter: (data: any) => Promise<{ data: any }>,
     baseModel: BaseModelSqlv2,
     stream: Readable,
@@ -1974,7 +1974,7 @@ export class ExportService {
   // default nested page of 25 records (issue #9347). Build a per-relation-column
   // nested query that raises the limit to the system maximum; getListArgs clamps
   // it to defaultLimitConfig.limitMax, matching the V3 API's nested-record
-  // ceiling. Applied to both the optimized (single-query) and nocoExecute read
+  // ceiling. Applied to both the optimized (single-query) and atmosphereExecute read
   // paths since both derive the nested LTAR limit from `query.nested[col].limit`.
   private buildNestedLinkLimitQuery(
     model: Model,
@@ -1989,7 +1989,7 @@ export class ExportService {
   }
 
   async recursiveRead(
-    context: NcContext,
+    context: AtContext,
     formatter: (data: any) => { data: any } | Promise<{ data: any }>,
     baseModel: BaseModelSqlv2,
     stream: Readable,
@@ -2128,7 +2128,7 @@ export class ExportService {
   }
 
   async recursiveLinkRead(
-    context: NcContext,
+    context: AtContext,
     formatter: (data: any) => { data: any },
     baseModel: BaseModelSqlv2,
     linkStream: Readable,
@@ -2148,7 +2148,7 @@ export class ExportService {
           baseModel,
           ignoreViewFilterAndSort: true,
           limitOverride: limit,
-          apiVersion: NcApiVersion.V1,
+          apiVersion: AtApiVersion.V1,
           skipSortBasedOnOrderCol: true,
         })
         .then((result) => {
@@ -2194,14 +2194,14 @@ export class ExportService {
   }
 
   async exportBase(
-    context: NcContext,
+    context: AtContext,
     param: { path: string; sourceId: string },
   ) {
     const hrTime = initTime();
 
     const source = await Source.get(context, param.sourceId);
 
-    if (!source) NcError.sourceNotFound(param.sourceId);
+    if (!source) AtError.sourceNotFound(param.sourceId);
 
     const base = await Base.get(context, source.base_id);
 
@@ -2228,7 +2228,7 @@ export class ExportService {
       models: exportedModels,
     };
 
-    const storageAdapter = await NcPluginMgrv2.storageAdapter();
+    const storageAdapter = await AtPluginMgrv2.storageAdapter();
 
     const destPath = `export/${base.id}/${source.id}/${param.path}`;
 
@@ -2319,7 +2319,7 @@ export class ExportService {
         'exportBase',
       );
     } catch (e) {
-      NcError.get(context).badRequest(e);
+      AtError.get(context).badRequest(e);
     }
 
     return {

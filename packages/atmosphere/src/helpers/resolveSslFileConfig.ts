@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { promisify } from 'util';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { validateDbConnectionSslPaths } from '~/helpers/validateDbConnectionHost';
 
 const readFileAsync = promisify(fs.readFile);
@@ -14,7 +14,7 @@ const readFileAsync = promisify(fs.readFile);
  *
  *  1. Policy guard — {@link validateDbConnectionSslPaths} rejects file-path SSL
  *     where it is an untrusted-input risk (always on Cloud; self-host opt-in via
- *     `NC_DISABLE_DB_SSL_FILE_PATHS`). It runs before any `fs` access, so a
+ *     `ATMOSPHERE_DISABLE_DB_SSL_FILE_PATHS`). It runs before any `fs` access, so a
  *     blocked request never touches the filesystem.
  *
  *  2. Uniform error — a read failure throws a single, code-less error, so the
@@ -36,7 +36,7 @@ export async function resolveSslFileConfig(
     try {
       return (await readFileAsync(filePath)).toString();
     } catch {
-      NcError.badRequest('Failed to load SSL certificate configuration');
+      AtError.badRequest('Failed to load SSL certificate configuration');
     }
   };
 

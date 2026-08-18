@@ -1,4 +1,4 @@
-import { type ColumnType, UITypes, isSystemColumn } from 'nocodb-sdk'
+import { type ColumnType, UITypes, isSystemColumn } from 'atmosphere-sdk'
 const unsupportedUITypes = [UITypes.Button]
 
 export const getValidLookupColumn = ({ lookupColumnId, column }: { lookupColumnId?: string; column: ColumnType }) => {

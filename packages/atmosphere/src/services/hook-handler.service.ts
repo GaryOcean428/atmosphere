@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { UITypes, ViewTypes } from 'nocodb-sdk';
+import { UITypes, ViewTypes } from 'atmosphere-sdk';
 import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import type {
   ColumnType,
@@ -7,8 +7,8 @@ import type {
   FormType,
   HookType,
   LinkToAnotherRecordType,
-} from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import {
   getAffectedColumns,
   transformDataForMailRendering,
@@ -34,12 +34,12 @@ export class HookHandlerService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   public async handleViewHooks(
-    _context: NcContext,
+    _context: AtContext,
     _param: { hookName; prevData; newData; user; viewId; modelId },
   ) {}
 
   public async handleHooks(
-    context: NcContext,
+    context: AtContext,
     param: { hookName; prevData; newData; user; viewId; modelId },
   ): Promise<void> {
     const { hookName, prevData, newData, user, viewId, modelId } = param;
@@ -188,7 +188,7 @@ export class HookHandlerService implements OnModuleInit, OnModuleDestroy {
             newData,
             user,
             hookName,
-            ncSiteUrl: context.nc_site_url,
+            ncSiteUrl: context.atm_site_url,
           });
         } catch (e) {
           this.logger.error({

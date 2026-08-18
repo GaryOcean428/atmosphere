@@ -11,7 +11,7 @@ import {
   isSystemColumn,
   isVirtualCol,
   ncHasProperties,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type {
   ButtonType,
   ColumnType,
@@ -21,7 +21,7 @@ import type {
   TableType,
   UserType,
   ViewType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type { WritableComputedRef } from '@vue/reactivity'
 import { SpriteLoader } from '../loaders/SpriteLoader'
 import { ImageWindowLoader } from '../loaders/ImageLoader'
@@ -256,7 +256,7 @@ export function useCanvasTable({
   const baseRoleLoader = new BaseRoleLoader(getBaseRoles, () => triggerRefreshCanvas())
   const { meta: metaKey, ctrl: ctrlKey } = useMagicKeys()
   const { isDataReadOnly, isUIAllowed } = useRoles()
-  const { isAiFeaturesEnabled, aiIntegrations, isNocoAiAvailable, generateRows: _generateRows } = useNocoAi()
+  const { isAiFeaturesEnabled, aiIntegrations, isAtmosphereAiAvailable, generateRows: _generateRows } = useAtmosphereAi()
   const { isFeatureEnabled } = useBetaFeatureToggle()
   const scriptStore = useScriptStore()
   const tooltipStore = useTooltipStore()
@@ -515,7 +515,7 @@ export function useCanvasTable({
           col: f,
           aiIntegrations: aiIntegrations.value,
           isReadOnly: isPublicView.value || !isDataEditAllowed.value || isSqlView.value,
-          isNocoAiAvailable: isNocoAiAvailable.value,
+          isAtmosphereAiAvailable: isAtmosphereAiAvailable.value,
           columns: meta.value?.columns as ColumnType[],
           isInterfaceUi: !!interfacePageDataApi,
         })

@@ -4,7 +4,7 @@
  * Regression coverage for a security improvement against control-char
  * scheme-smuggling stored XSS: a tab inside the scheme (e.g. a tab between
  * "java" and "script:") slips past a naive scheme test, then the browser
- * strips the tab and executes it as `javascript:` in the nocodb origin.
+ * strips the tab and executes it as `javascript:` in the atmosphere origin.
  *
  * Imports the actual pure function - no mocks.
  */

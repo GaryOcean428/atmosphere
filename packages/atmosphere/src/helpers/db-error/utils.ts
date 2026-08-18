@@ -1,4 +1,4 @@
-import { NcBaseErrorv2, NcErrorType } from 'nocodb-sdk';
+import { AtBaseErrorv2, AtErrorType } from 'atmosphere-sdk';
 
 export type DBErrorExtractResult =
   | {
@@ -38,11 +38,11 @@ export enum DBError {
  * These errors should NOT mark formulas/queries as permanently invalid.
  */
 export function isTransientError(error: any): boolean {
-  // 1. Check for NcBaseErrorv2 with specific transient error types
-  if (error instanceof NcBaseErrorv2) {
+  // 1. Check for AtBaseErrorv2 with specific transient error types
+  if (error instanceof AtBaseErrorv2) {
     const transientErrorTypes = [
-      NcErrorType.ERR_EXTERNAL_DATA_SOURCE_TIMEOUT,
-      NcErrorType.ERR_DATABASE_OP_FAILED,
+      AtErrorType.ERR_EXTERNAL_DATA_SOURCE_TIMEOUT,
+      AtErrorType.ERR_DATABASE_OP_FAILED,
     ];
     if (transientErrorTypes.includes(error.error)) {
       return true;

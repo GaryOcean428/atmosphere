@@ -5,7 +5,7 @@
  * but the builder's properties panel sits outside that tree and still hosts
  * interface UI — its "Edit field" mounts the same column editor the canvas
  * header does — so it flags itself with `IsInterfaceUiInj` instead. Chrome that
- * differs between the interface and the classic data app (e.g. `NcColorPanel`
+ * differs between the interface and the classic data app (e.g. `AtColorPanel`
  * over the legacy picker) must honour both, or the same editor renders
  * differently depending on which affordance opened it.
  */

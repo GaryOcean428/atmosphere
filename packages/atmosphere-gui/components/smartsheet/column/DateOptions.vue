@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { ColumnHelper, UITypes, dateFormats, dateMonthFormats, jalaliDateFormats, jalaliDateMonthFormats } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, dateFormats, dateMonthFormats, jalaliDateFormats, jalaliDateMonthFormats } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -36,8 +36,8 @@ const selectedExample = computed(() => formatExample(vModel.value.meta.date_form
       <div class="flex items-center justify-between w-full gap-2">
         <span class="flex-none">{{ $t('labels.dateFormat') }}</span>
         <span class="flex items-center gap-1.5 min-w-0">
-          <span class="flex-none text-nc-content-gray-muted">{{ $t('labels.preview') }}</span>
-          <span class="truncate text-nc-content-gray font-weight-500">{{ selectedExample }}</span>
+          <span class="flex-none text-atm-content-gray-muted">{{ $t('labels.preview') }}</span>
+          <span class="truncate text-atm-content-gray font-weight-500">{{ selectedExample }}</span>
         </span>
       </div>
     </template>
@@ -45,28 +45,28 @@ const selectedExample = computed(() => formatExample(vModel.value.meta.date_form
       v-model:value="vModel.meta.date_format"
       :disabled="isSystem"
       show-search
-      class="nc-date-select"
-      dropdown-class-name="nc-dropdown-date-format"
+      class="atm-date-select"
+      dropdown-class-name="atm-dropdown-date-format"
     >
       <template #suffixIcon>
-        <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+        <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
       </template>
       <a-select-option v-for="(format, i) of allDateFormats" :key="i" :value="format">
         <div class="w-full flex items-center gap-2">
-          <span class="nc-check-gutter flex-none w-4 h-4 flex items-center justify-center">
+          <span class="atm-check-gutter flex-none w-4 h-4 flex items-center justify-center">
             <component
               :is="iconMap.check"
               v-if="vModel.meta.date_format === format"
-              id="nc-selected-item-icon"
-              class="text-nc-content-brand w-4 h-4"
+              id="atm-selected-item-icon"
+              class="text-atm-content-brand w-4 h-4"
             />
           </span>
-          <span class="nc-date-example flex-1 min-w-0 truncate text-nc-content-gray">{{ formatExample(format) }}</span>
-          <span class="nc-format-token flex-none">{{ format }}</span>
+          <span class="atm-date-example flex-1 min-w-0 truncate text-atm-content-gray">{{ formatExample(format) }}</span>
+          <span class="atm-format-token flex-none">{{ format }}</span>
         </div>
       </a-select-option>
       <template #dropdownRender="{ menuNode: menu }">
-        <div class="px-3 pt-2 pb-1 text-nc-content-gray-muted text-captionSm uppercase">
+        <div class="px-3 pt-2 pb-1 text-atm-content-gray-muted text-captionSm uppercase">
           {{ $t('labels.pickDateFormat') }}
         </div>
         <component :is="menu" />
@@ -77,24 +77,24 @@ const selectedExample = computed(() => formatExample(vModel.value.meta.date_form
 
 <style lang="scss" scoped>
 // In the dropdown list the format token is plain muted text alongside the example
-.nc-format-token {
-  @apply text-nc-content-gray-muted text-captionSm font-mono;
+.atm-format-token {
+  @apply text-atm-content-gray-muted text-captionSm font-mono;
 }
 
 // The closed selector reuses the selected option's markup — render it as a clean
 // "example + format badge": drop the leading checkmark gutter and pill the token
 :deep(.ant-select-selection-item) {
-  .nc-check-gutter {
+  .atm-check-gutter {
     display: none;
   }
 
   // keep the example from stretching so the badge sits right next to it (not pushed to the far end)
-  .nc-date-example {
+  .atm-date-example {
     flex: 0 1 auto;
   }
 
-  .nc-format-token {
-    @apply bg-nc-bg-gray-light rounded px-1.5 py-0.5 leading-tight;
+  .atm-format-token {
+    @apply bg-atm-bg-gray-light rounded px-1.5 py-0.5 leading-tight;
   }
 }
 </style>

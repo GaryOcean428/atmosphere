@@ -1,13 +1,13 @@
 import type { BaseModelSqlv2 } from 'src/db/BaseModelSqlv2';
-import type { ColumnReqType, NcContext, NcRequest, UserType } from 'nocodb-sdk';
+import type { ColumnReqType, AtContext, AtRequest, UserType } from 'atmosphere-sdk';
 import type { Column } from '~/models';
 import type { ReusableParams } from '~/services/columns.service.type';
 
 export interface IFormulaColumnTypeChanger {
   startChangeFormulaColumnType(
-    context: NcContext,
+    context: AtContext,
     params: {
-      req: NcRequest;
+      req: AtRequest;
       formulaColumn: Column;
       user: UserType;
       reuse?: ReusableParams;
@@ -16,7 +16,7 @@ export interface IFormulaColumnTypeChanger {
   ): Promise<void>;
 
   startMigrateData(
-    context: NcContext,
+    context: AtContext,
     {
       formulaColumn,
       destinationColumn,

@@ -7,7 +7,7 @@ const props = defineProps<{
 
 <template>
   <a-tabs
-    class="nc-tabs"
+    class="atm-tabs"
     :class="{
       'centered': props.centered,
       'theme-ai': props.theme === 'ai',
@@ -25,7 +25,7 @@ const props = defineProps<{
 </template>
 
 <style lang="scss">
-.nc-tabs.centered {
+.atm-tabs.centered {
   > .ant-tabs-nav {
     @apply justify-center mb-0;
 
@@ -39,15 +39,15 @@ const props = defineProps<{
   @apply ml-4;
 }
 
-.nc-tabs {
+.atm-tabs {
   .ant-tabs-tab {
-    @apply px-2 text-nc-content-gray-subtle2 !hover:text-nc-content-gray;
+    @apply px-2 text-atm-content-gray-subtle2 !hover:text-atm-content-gray;
   }
   .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-    @apply text-nc-content-brand;
+    @apply text-atm-content-brand;
   }
   .ant-tabs-tab.ant-tabs-tab-active:hover .ant-tabs-tab-btn {
-    @apply text-nc-content-brand-disabled;
+    @apply text-atm-content-brand-disabled;
   }
 
   .ant-tabs-nav {
@@ -55,18 +55,18 @@ const props = defineProps<{
   }
 
   .ant-tabs-ink-bar {
-    @apply bg-nc-content-brand !rounded-t-xl;
+    @apply bg-atm-content-brand !rounded-t-xl;
   }
 
   &.theme-ai {
     .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-      @apply text-nc-purple-600 dark:text-nc-content-purple-medium;
+      @apply text-atm-purple-600 dark:text-atm-content-purple-medium;
     }
     .ant-tabs-tab.ant-tabs-tab-active:hover .ant-tabs-tab-btn {
-      @apply text-nc-content-purple-dark dark:text-nc-content-purple-medium;
+      @apply text-atm-content-purple-dark dark:text-atm-content-purple-medium;
     }
     .ant-tabs-ink-bar {
-      @apply bg-nc-fill-purple-medium;
+      @apply bg-atm-fill-purple-medium;
     }
   }
 }

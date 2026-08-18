@@ -16,7 +16,7 @@ import {
   parseLexingError,
   parseParsingError,
 } from './parser/queryFilter/error-message-parser';
-import { NcContext } from './ncTypes';
+import { AtContext } from './ncTypes';
 import { getNodejsTimezone } from './timezoneUtils';
 import { parseProp } from './helperFunctions';
 export {
@@ -34,7 +34,7 @@ export interface FilterTypeWithMeta extends FilterType {
 }
 
 export function extractFilterFromXwhere(
-  context: Pick<NcContext, 'api_version'> & Pick<NcContext, 'timezone'>,
+  context: Pick<AtContext, 'api_version'> & Pick<AtContext, 'timezone'>,
   {
     str,
     aliasColObjMap,
@@ -63,7 +63,7 @@ export function extractFilterFromXwhere(
 }
 
 function innerExtractFilterFromXwhere(
-  context: Pick<NcContext, 'api_version'> & Pick<NcContext, 'timezone'>,
+  context: Pick<AtContext, 'api_version'> & Pick<AtContext, 'timezone'>,
   {
     str,
     aliasColObjMap,
@@ -173,7 +173,7 @@ function innerExtractFilterFromXwhere(
 }
 
 function mapFilterGroupSubType(
-  context: Pick<NcContext, 'api_version'> & Pick<NcContext, 'timezone'>,
+  context: Pick<AtContext, 'api_version'> & Pick<AtContext, 'timezone'>,
   {
     filter,
     aliasColObjMap,
@@ -219,7 +219,7 @@ function mapFilterGroupSubType(
 }
 
 function mapFilterClauseSubType(
-  context: Pick<NcContext, 'api_version'> & Pick<NcContext, 'timezone'>,
+  context: Pick<AtContext, 'api_version'> & Pick<AtContext, 'timezone'>,
   {
     filter,
     aliasColObjMap,
@@ -297,7 +297,7 @@ function mapFilterClauseSubType(
 }
 
 function handleDataTypes(
-  context: Pick<NcContext, 'api_version'> & Pick<NcContext, 'timezone'>,
+  context: Pick<AtContext, 'api_version'> & Pick<AtContext, 'timezone'>,
   {
     filterType,
     column,

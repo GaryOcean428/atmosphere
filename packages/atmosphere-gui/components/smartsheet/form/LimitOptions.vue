@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Draggable from 'vuedraggable'
-import type { ColumnType, SelectOptionType, SelectOptionsType, UserFieldRecordType } from 'nocodb-sdk'
-import { UITypes } from 'nocodb-sdk'
+import type { ColumnType, SelectOptionType, SelectOptionsType, UserFieldRecordType } from 'atmosphere-sdk'
+import { UITypes } from 'atmosphere-sdk'
 import type { FormFieldsLimitOptionsType } from '~/lib/types'
 
 const props = defineProps<{
@@ -155,24 +155,24 @@ const showOrHideAll = (showAll: boolean) => {
 </script>
 
 <template>
-  <div class="w-full h-full nc-col-select-option nc-scrollbar-thin">
+  <div class="w-full h-full atm-col-select-option atm-scrollbar-thin">
     <div v-if="vModel.length > 12">
       <a-input
         v-model:value="searchQuery"
         class="!h-9 !px-3 !py-1 !rounded-lg mb-2"
         :placeholder="`${$t('placeholder.searchOptions')}...`"
-        name="nc-form-field-limit-option-search-input"
-        data-testid="nc-form-field-limit-option-search-input"
+        name="atm-form-field-limit-option-search-input"
+        data-testid="atm-form-field-limit-option-search-input"
       >
         <template #prefix>
-          <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-nc-content-gray-muted group-hover:text-nc-content-gray-extreme" />
+          <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-atm-content-gray-muted group-hover:text-atm-content-gray-extreme" />
         </template>
         <template #suffix>
           <GeneralIcon
             v-if="searchQuery.length > 0"
             icon="close"
-            class="ml-2 h-4 w-4 text-nc-content-gray-muted group-hover:text-nc-content-gray-extreme"
-            data-testid="nc-form-field-clear-search"
+            class="ml-2 h-4 w-4 text-atm-content-gray-muted group-hover:text-atm-content-gray-extreme"
+            data-testid="atm-form-field-clear-search"
             @click="searchQuery = ''"
           />
         </template>
@@ -181,34 +181,34 @@ const showOrHideAll = (showAll: boolean) => {
 
     <div
       v-if="vModel.length"
-      class="flex items-stretch gap-2 pr-2 pl-3 py-1.5 rounded-t-lg border-1 border-b-0 border-nc-border-gray-medium"
+      class="flex items-stretch gap-2 pr-2 pl-3 py-1.5 rounded-t-lg border-1 border-b-0 border-atm-border-gray-medium"
     >
-      <NcTooltip :disabled="!isRequired">
+      <AtTooltip :disabled="!isRequired">
         <template #title> {{ $t('msg.info.preventHideAllOptions') }} </template>
 
-        <NcButton
+        <AtButton
           type="secondary"
           size="xxsmall"
-          class="!border-none !px-2 !text-xs !text-nc-content-gray-muted !disabled:text-nc-content-brand-hover"
+          class="!border-none !px-2 !text-xs !text-atm-content-gray-muted !disabled:text-atm-content-brand-hover"
           :disabled="isRequired || vModel.filter((o) => !o.show).length === vModel.length"
           :shadow="false"
           @click="showOrHideAll(false)"
         >
           {{ $t('general.hideAll') }}
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
 
       <div>
-        <NcButton
+        <AtButton
           type="secondary"
           size="xxsmall"
-          class="!border-none !px-2 !text-xs !text-nc-content-gray-muted !disabled:text-nc-content-brand-hover"
+          class="!border-none !px-2 !text-xs !text-atm-content-gray-muted !disabled:text-atm-content-brand-hover"
           :disabled="vModel.filter((o) => o.show).length === vModel.length"
           :shadow="false"
           @click="showOrHideAll(true)"
         >
           {{ $t('general.showAll') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
 
@@ -217,9 +217,9 @@ const showOrHideAll = (showAll: boolean) => {
       v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 45 })"
       :model-value="vModel"
       item-key="id"
-      handle=".nc-child-draggable-icon"
-      ghost-class="nc-form-field-limit-option-ghost"
-      class="rounded-b-lg border-1 border-nc-border-gray-medium !max-h-[224px] overflow-y-auto nc-scrollbar-thin"
+      handle=".atm-child-draggable-icon"
+      ghost-class="atm-form-field-limit-option-ghost"
+      class="rounded-b-lg border-1 border-atm-border-gray-medium !max-h-[224px] overflow-y-auto atm-scrollbar-thin"
       @change="onMove($event)"
       @start="drag = true"
       @end="drag = false"
@@ -232,19 +232,19 @@ const showOrHideAll = (showAll: boolean) => {
               : element.title?.toLowerCase().includes(searchQuery.toLowerCase())
           "
           :key="element.id"
-          class="w-full h-10 px-2 py-1.5 flex flex-row items-center gap-3 border-b-1 last:border-none border-nc-border-gray-medium"
+          class="w-full h-10 px-2 py-1.5 flex flex-row items-center gap-3 border-b-1 last:border-none border-atm-border-gray-medium"
           :class="[
-            `nc-form-field-${toSafeClassName(column.title)}-limit-option-${toSafeClassName(element.title)}`,
-            `${element.show ? 'hover:bg-nc-bg-gray-extralight' : 'bg-nc-bg-gray-light'}`,
+            `atm-form-field-${toSafeClassName(column.title)}-limit-option-${toSafeClassName(element.title)}`,
+            `${element.show ? 'hover:bg-atm-bg-gray-extralight' : 'bg-atm-bg-gray-light'}`,
           ]"
-          :data-testid="`nc-form-field-${toSafeClassName(column.title)}-limit-option-${toSafeClassName(element.title)}`"
+          :data-testid="`atm-form-field-${toSafeClassName(column.title)}-limit-option-${toSafeClassName(element.title)}`"
         >
           <component
             :is="iconMap.drag"
-            class="nc-child-draggable-icon flex-none cursor-move !h-4 !w-4 text-nc-content-gray-subtle2"
+            class="atm-child-draggable-icon flex-none cursor-move !h-4 !w-4 text-atm-content-gray-subtle2"
           />
 
-          <NcTooltip :disabled="!isRequired || !(element.show && isRequired && vModel.filter((o) => o.show).length === 1)">
+          <AtTooltip :disabled="!isRequired || !(element.show && isRequired && vModel.filter((o) => o.show).length === 1)">
             <template #title> {{ $t('msg.info.preventHideAllOptions') }} </template>
 
             <div
@@ -259,19 +259,19 @@ const showOrHideAll = (showAll: boolean) => {
             >
               <component
                 :is="element.show ? iconMap.eye : iconMap.eyeSlash"
-                class="flex-none cursor-pointer !h-4 !w-4 text-nc-content-gray-subtle2"
+                class="flex-none cursor-pointer !h-4 !w-4 text-atm-content-gray-subtle2"
               />
             </div>
-          </NcTooltip>
+          </AtTooltip>
 
           <a-tag
             v-if="column.uidt === UITypes.User"
             class="rounded-tag max-w-[calc(100%_-_70px)] !pl-0"
-            :color="getColor('var(--nc-bg-gray-medium)', 'var(--nc-bg-gray-light)')"
+            :color="getColor('var(--atm-bg-gray-medium)', 'var(--atm-bg-gray-light)')"
           >
             <span
               :style="{
-                'color': getSelectTypeOptionTextColor(getColor('var(--nc-bg-gray-medium)', 'var(--nc-bg-gray-light)'), getColor),
+                'color': getSelectTypeOptionTextColor(getColor('var(--atm-bg-gray-medium)', 'var(--atm-bg-gray-light)'), getColor),
                 'font-size': '13px',
               }"
               class="flex items-stretch gap-2"
@@ -279,7 +279,7 @@ const showOrHideAll = (showAll: boolean) => {
               <div>
                 <GeneralUserIcon size="auto" :user="element" class="!text-[0.65rem] !h-[16.8px]" />
               </div>
-              <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+              <AtTooltip class="truncate max-w-full" show-on-truncate-only>
                 <template #title>
                   {{ extractUserDisplayNameOrEmail(element) }}
                 </template>
@@ -293,7 +293,7 @@ const showOrHideAll = (showAll: boolean) => {
                 >
                   {{ extractUserDisplayNameOrEmail(element) }}
                 </span>
-              </NcTooltip>
+              </AtTooltip>
             </span>
           </a-tag>
           <a-tag
@@ -307,7 +307,7 @@ const showOrHideAll = (showAll: boolean) => {
                 'font-size': '13px',
               }"
             >
-              <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+              <AtTooltip class="truncate max-w-full" show-on-truncate-only>
                 <template #title>
                   {{ element.title }}
                 </template>
@@ -321,13 +321,13 @@ const showOrHideAll = (showAll: boolean) => {
                 >
                   {{ element.title }}
                 </span>
-              </NcTooltip>
+              </AtTooltip>
             </span>
           </a-tag>
         </div>
       </template>
       <template v-if="!vModel.length" #footer
-        ><div class="px-0.5 py-2 text-nc-content-gray-muted text-center">{{ $t('title.noOptionsFound') }}</div></template
+        ><div class="px-0.5 py-2 text-atm-content-gray-muted text-center">{{ $t('title.noOptionsFound') }}</div></template
       >
       <template
         v-else-if="
@@ -341,7 +341,7 @@ const showOrHideAll = (showAll: boolean) => {
         "
         #footer
       >
-        <div class="px-0.5 py-2 text-nc-content-gray-muted text-center">
+        <div class="px-0.5 py-2 text-atm-content-gray-muted text-center">
           {{ $t('msg.info.noOptionsFoundWithTitle', { searchQuery }) }}
         </div>
       </template>
@@ -357,7 +357,7 @@ const showOrHideAll = (showAll: boolean) => {
 :deep(.ant-tag) {
   @apply rounded-tag my-[2px];
 }
-.nc-form-field-limit-option-ghost {
-  @apply bg-nc-bg-gray-extralight;
+.atm-form-field-limit-option-ghost {
+  @apply bg-atm-bg-gray-extralight;
 }
 </style>

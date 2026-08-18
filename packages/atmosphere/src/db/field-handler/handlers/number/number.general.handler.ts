@@ -1,8 +1,8 @@
-import { NcError } from 'src/helpers/catchError';
+import { AtError } from 'src/helpers/catchError';
 import { DecimalGeneralHandler } from '../decimal/decimal.general.handler';
 import type { Column } from 'src/models';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { MetaService } from 'src/meta/meta.service';
 
 export class NumberGeneralHandler extends DecimalGeneralHandler {
@@ -12,13 +12,13 @@ export class NumberGeneralHandler extends DecimalGeneralHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
     const value = (await super.parseUserInput(params))?.value;
     if (typeof value === 'number' && Math.floor(value) !== Math.ceil(value)) {
-      NcError.invalidValueForField({
+      AtError.invalidValueForField({
         value: params.value,
         column: params.column.title,
         type: params.column.uidt,

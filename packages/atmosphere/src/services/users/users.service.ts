@@ -1,6 +1,6 @@
 import { promisify } from 'util';
 import { Injectable, Logger } from '@nestjs/common';
-import { AppEvents, OrgUserRoles, validatePassword } from 'nocodb-sdk';
+import { AppEvents, OrgUserRoles, validatePassword } from 'atmosphere-sdk';
 import { v4 as uuidv4 } from 'uuid';
 import isEmail from 'validator/lib/isEmail';
 import bcrypt from 'bcryptjs';
@@ -11,8 +11,8 @@ import type {
   PasswordResetReqType,
   SignUpReqType,
   UserType,
-} from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import {
   ensureUserInDefaultWorkspace,
   verifyDefaultWorkspace,
@@ -28,10 +28,10 @@ import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
 import { MetaService } from '~/meta/meta.service';
 import { MetaTable, RootScopes } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { OAuthToken, PresignedUrl, User, UserRefreshToken } from '~/models';
 import { randomTokenString } from '~/helpers/stringHelpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { isTokenExpired } from '~/helpers/isTokenExpired';
 import { withSignupClaim } from '~/helpers/signupClaim';
 import { BasesService } from '~/services/bases.service';
@@ -55,12 +55,12 @@ export class UsersService {
   // allow signup/signin only if email matches against pattern
   validateEmailPattern(email: string) {
     const emailPattern =
-      process.env.NC_USER_ALLOWED_EMAIL_PATTERN ||
-      process.env.NC_AUTH_EMAIL_PATTERN;
+      process.env.ATMOSPHERE_USER_ALLOWED_EMAIL_PATTERN ||
+      process.env.ATMOSPHERE_AUTH_EMAIL_PATTERN;
     if (emailPattern) {
       const regex = new RegExp(emailPattern);
       if (!regex.test(email)) {
-        NcError.forbidden('Not allowed to signup/signin with this email');
+        AtError.forbidden('Not allowed to signup/signin with this email');
       }
     }
   }
@@ -84,7 +84,7 @@ export class UsersService {
       email: string;
       lastname: any;
     },
-    ncMeta = this.metaService || Noco.ncMeta,
+    ncMeta = this.metaService || Atmosphere.ncMeta,
   ) {
     return ncMeta.metaInsert2(
       RootScopes.ROOT,
@@ -109,7 +109,7 @@ export class UsersService {
       is_new_user?: boolean;
       meta?: MetaType;
     };
-    req: NcRequest;
+    req: AtRequest;
   }) {
     const oldUser = await User.get(id);
     const updateObj = extractProps(params, [
@@ -154,11 +154,11 @@ export class UsersService {
       salt: any;
       password;
       email_verification_token;
-      req: NcRequest;
+      req: AtRequest;
       is_invite?: boolean;
       workspace_invite?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     this.validateEmailPattern(email);
 
@@ -166,19 +166,19 @@ export class UsersService {
 
     const isFirstUser = await User.isFirst(ncMeta);
 
-    if (isFirstUser && process.env.NC_CLOUD !== 'true') {
+    if (isFirstUser && process.env.ATMOSPHERE_CLOUD !== 'true') {
       roles = `${OrgUserRoles.CREATOR},${OrgUserRoles.SUPER_ADMIN}`;
-      // todo: update in nc_store
+      // todo: update in atm_store
       // roles = 'owner,creator,editor'
       T.emit('evt', {
         evt_type: 'base:invite',
         count: 1,
       });
     } else {
-      const settings = await Noco.getAppSettings();
+      const settings = await Atmosphere.getAppSettings();
 
       if (settings?.invite_only_signup && !is_invite && !workspace_invite) {
-        NcError.badRequest('Not allowed to signup, contact super admin.');
+        AtError.badRequest('Not allowed to signup, contact super admin.');
       } else {
         roles = OrgUserRoles.VIEWER;
       }
@@ -225,7 +225,7 @@ export class UsersService {
   async passwordChange(param: {
     body: PasswordChangeReqType;
     user: UserType;
-    req: NcRequest;
+    req: AtRequest;
   }): Promise<any> {
     validatePayload(
       'swagger.json#/components/schemas/PasswordChangeReq',
@@ -235,14 +235,14 @@ export class UsersService {
     const { currentPassword, newPassword } = param.body;
 
     if (!currentPassword || !newPassword) {
-      return NcError.badRequest('Missing new/old password');
+      return AtError.badRequest('Missing new/old password');
     }
 
     // validate password and throw error if password is satisfying the conditions
     const { valid, error } = validatePassword(newPassword);
 
     if (!valid) {
-      NcError.badRequest(`Password : ${error}`);
+      AtError.badRequest(`Password : ${error}`);
     }
 
     const user = await User.getByEmail(param.user.email);
@@ -253,7 +253,7 @@ export class UsersService {
     );
 
     if (!isValid) {
-      return NcError.badRequest('Current password is wrong');
+      return AtError.badRequest('Current password is wrong');
     }
 
     const salt = await promisify(bcrypt.genSalt)(10);
@@ -283,7 +283,7 @@ export class UsersService {
   async passwordForgot(param: {
     body: PasswordForgotReqType;
     siteUrl: string;
-    req: NcRequest;
+    req: AtRequest;
   }): Promise<any> {
     validatePayload(
       'swagger.json#/components/schemas/PasswordForgotReq',
@@ -293,7 +293,7 @@ export class UsersService {
     const _email = sanitizeEmail(param.body.email);
 
     if (!_email) {
-      NcError.badRequest('Please enter your email address.');
+      AtError.badRequest('Please enter your email address.');
     }
 
     const email = _email.toLowerCase();
@@ -316,7 +316,7 @@ export class UsersService {
           },
         });
       } catch (e) {
-        return NcError.badRequest(
+        return AtError.badRequest(
           'Email Plugin is not found. Please contact administrators to configure it in App Store first.',
         );
       }
@@ -336,7 +336,7 @@ export class UsersService {
   async tokenValidate(param: { token: string }): Promise<any> {
     const token = param.token;
 
-    const user = await Noco.ncMeta.metaGet(
+    const user = await Atmosphere.ncMeta.metaGet(
       RootScopes.ROOT,
       RootScopes.ROOT,
       MetaTable.USERS,
@@ -346,10 +346,10 @@ export class UsersService {
     );
 
     if (!user || !user.email) {
-      NcError.badRequest('Invalid reset url');
+      AtError.badRequest('Invalid reset url');
     }
     if (isTokenExpired(user.reset_password_expires)) {
-      NcError.badRequest('Password reset url expired');
+      AtError.badRequest('Password reset url expired');
     }
 
     return true;
@@ -358,7 +358,7 @@ export class UsersService {
   async passwordReset(param: {
     body: PasswordResetReqType;
     token: string;
-    req: NcRequest;
+    req: AtRequest;
   }): Promise<any> {
     validatePayload(
       'swagger.json#/components/schemas/PasswordResetReq',
@@ -367,7 +367,7 @@ export class UsersService {
 
     const { token, body } = param;
 
-    const user = await Noco.ncMeta.metaGet(
+    const user = await Atmosphere.ncMeta.metaGet(
       RootScopes.ROOT,
       RootScopes.ROOT,
       MetaTable.USERS,
@@ -377,19 +377,19 @@ export class UsersService {
     );
 
     if (!user) {
-      NcError.badRequest('Invalid reset url');
+      AtError.badRequest('Invalid reset url');
     }
     if (isTokenExpired(user.reset_password_expires)) {
-      NcError.badRequest('Password reset url expired');
+      AtError.badRequest('Password reset url expired');
     }
     if (user.provider && user.provider !== 'local') {
-      NcError.badRequest('Email registered via social account');
+      AtError.badRequest('Email registered via social account');
     }
 
     // validate password and throw error if password is satisfying the conditions
     const { valid, error } = validatePassword(body.password);
     if (!valid) {
-      NcError.badRequest(`Password : ${error}`);
+      AtError.badRequest(`Password : ${error}`);
     }
 
     const salt = await promisify(bcrypt.genSalt)(10);
@@ -405,7 +405,7 @@ export class UsersService {
     );
 
     if (!consumed) {
-      NcError.badRequest('Invalid reset url');
+      AtError.badRequest('Invalid reset url');
     }
 
     // delete all refresh tokens to invalidate existing sessions
@@ -423,11 +423,11 @@ export class UsersService {
   async emailVerification(param: {
     token: string;
     // todo: exclude
-    req: NcRequest;
+    req: AtRequest;
   }): Promise<any> {
     const { token, req } = param;
 
-    const user = await Noco.ncMeta.metaGet(
+    const user = await Atmosphere.ncMeta.metaGet(
       RootScopes.ROOT,
       RootScopes.ROOT,
       MetaTable.USERS,
@@ -437,7 +437,7 @@ export class UsersService {
     );
 
     if (!user) {
-      NcError.badRequest('Invalid verification url');
+      AtError.badRequest('Invalid verification url');
     }
 
     await User.update(user.id, {
@@ -461,7 +461,7 @@ export class UsersService {
   }): Promise<any> {
     try {
       if (!param.req?.cookies?.refresh_token) {
-        NcError.badRequest(`Missing refresh token`);
+        AtError.badRequest(`Missing refresh token`);
       }
 
       const oldRefreshToken = param.req.cookies.refresh_token;
@@ -471,7 +471,7 @@ export class UsersService {
       );
 
       if (!userRefreshToken) {
-        NcError.unauthorized(`Invalid refresh token`);
+        AtError.unauthorized(`Invalid refresh token`);
       }
 
       // check if refresh token expired and delete it if expired
@@ -480,13 +480,13 @@ export class UsersService {
         new Date(userRefreshToken.expires_at) < new Date()
       ) {
         await UserRefreshToken.deleteToken(oldRefreshToken);
-        NcError.unauthorized(`Refresh token expired`);
+        AtError.unauthorized(`Refresh token expired`);
       }
 
       const user = await User.get(userRefreshToken.fk_user_id);
 
       if (!user) {
-        NcError.unauthorized(`Invalid refresh token`);
+        AtError.unauthorized(`Invalid refresh token`);
       }
 
       const refreshToken = randomTokenString();
@@ -501,7 +501,7 @@ export class UsersService {
         );
       } catch (error) {
         console.error('Failed to update old refresh token:', error);
-        NcError.internalServerError('Failed to update refresh token');
+        AtError.internalServerError('Failed to update refresh token');
       }
 
       if (!rotatedRows) {
@@ -509,7 +509,7 @@ export class UsersService {
         // the user's whole token set: rows are per-login with no lineage column,
         // so that would sign them out on every device for what is usually a
         // benign double-submit.
-        NcError.unauthorized('Invalid refresh token');
+        AtError.unauthorized('Invalid refresh token');
       }
 
       setTokenCookie(param.res, refreshToken, param.req);
@@ -520,11 +520,11 @@ export class UsersService {
             ...user,
             extra: userRefreshToken.meta,
           },
-          Noco.getConfig(),
+          Atmosphere.getConfig(),
         ),
       } as any;
     } catch (e) {
-      NcError.badRequest(e.message);
+      AtError.badRequest(e.message);
     }
   }
 
@@ -543,16 +543,16 @@ export class UsersService {
     // validate password and throw error if password is satisfying the conditions
     const { valid, error } = validatePassword(password);
     if (!valid) {
-      NcError.badRequest(`Password : ${error}`);
+      AtError.badRequest(`Password : ${error}`);
     }
 
     if (!isEmail(_email)) {
-      NcError.badRequest(`Invalid email`);
+      AtError.badRequest(`Invalid email`);
     }
 
     // Reject plus addressing (always abusive)
     if (_email.split('@')[0].includes('+')) {
-      NcError.badRequest('Email aliases with "+" are not allowed');
+      AtError.badRequest('Email aliases with "+" are not allowed');
     }
 
     const email = _email.toLowerCase();
@@ -566,9 +566,9 @@ export class UsersService {
     if (user) {
       if (token) {
         if (token !== user.invite_token) {
-          NcError.badRequest(`Invalid invite url`);
+          AtError.badRequest(`Invalid invite url`);
         } else if (isTokenExpired(user.invite_token_expires)) {
-          NcError.badRequest(
+          AtError.badRequest(
             'Expired invite url, Please contact super admin to get a new invite url',
           );
         }
@@ -598,7 +598,7 @@ export class UsersService {
           email: user.email,
         });
       } else {
-        NcError.badRequest('User already exist');
+        AtError.badRequest('User already exist');
       }
     } else {
       const { createdProject: _createdProject } = await withSignupClaim(
@@ -673,7 +673,7 @@ export class UsersService {
       req,
     });
     return {
-      token: genJwt(user, Noco.getConfig()),
+      token: genJwt(user, Atmosphere.getConfig()),
     };
   }
 
@@ -694,7 +694,7 @@ export class UsersService {
       }
       return { msg: 'Signed out successfully' };
     } catch (e) {
-      NcError.badRequest(e.message);
+      AtError.badRequest(e.message);
     }
   }
 
@@ -706,7 +706,7 @@ export class UsersService {
   private async createDefaultProject(
     user: User,
     req: any,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // create new base for user
     const base = await this.basesService.createDefaultBase(
@@ -720,7 +720,7 @@ export class UsersService {
     return base;
   }
 
-  // Test-only bypass: parallel Playwright workers share user@nocodb.com
+  // Test-only bypass: parallel Playwright workers share user@atmosphere.dev
   // and would otherwise invalidate each other's sessions. EE overrides to
   // add an operator-controlled opt-out as well.
   protected shouldEnforceSingleSession(_req?: any): boolean {

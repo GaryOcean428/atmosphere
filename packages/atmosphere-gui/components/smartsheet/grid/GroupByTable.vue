@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type ColumnType, UITypes, isLinksOrLTAR } from 'nocodb-sdk'
+import { type ColumnType, UITypes, isLinksOrLTAR } from 'atmosphere-sdk'
 import Table from './Table.vue'
 import { NavigateDir } from '~/lib/enums'
 
@@ -346,7 +346,7 @@ defineExpose({
     v-if="vGroup.rows"
     ref="tableRef"
     v-model:selected-all-records="selectedAllRecords"
-    class="nc-group-table"
+    class="atm-group-table"
     :data="vGroup.rows"
     :v-group="vGroup"
     :pagination-data="vGroup.paginationData"

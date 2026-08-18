@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { extractRolesObj, NcApiVersion, ProjectRoles } from 'nocodb-sdk';
-import type { NcContext, NcRequest, UserType } from 'nocodb-sdk';
+import { extractRolesObj, AtApiVersion, ProjectRoles } from 'atmosphere-sdk';
+import type { AtContext, AtRequest, UserType } from 'atmosphere-sdk';
 import type { Request, Response } from 'express';
 import type {
   DataDeleteRequest,
@@ -11,14 +11,14 @@ import type {
   DataUpdateRequest,
 } from '~/services/v3/data-v3.types';
 import { resolveAttachmentFilePath } from '~/helpers/attachmentHelpers';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { BasesV3Service } from '~/services/v3/bases-v3.service';
 import { TablesV3Service } from '~/services/v3/tables-v3.service';
 import { DataV3Service } from '~/services/v3/data-v3.service';
 import { DataTableService } from '~/services/data-table.service';
 import { hasMinimumRole } from '~/utils/roleHelper';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import { serialize } from '~/helpers/serialize';
 import { AuditsService } from '~/services/audits.service';
 import { isEE } from '~/utils';
@@ -36,8 +36,8 @@ export class McpService {
 
   async handleRequest(
     tokenId: string,
-    context: NcContext,
-    req: NcRequest,
+    context: AtContext,
+    req: AtRequest,
     res: Response,
   ) {
     const server = new McpServer({
@@ -65,13 +65,13 @@ export class McpService {
     user,
     req,
   }: {
-    context: NcContext;
+    context: AtContext;
     user: UserType & {
       base_roles?: Record<string, boolean>;
       workspace_roles?: Record<string, boolean>;
     };
     server: McpServer;
-    req: NcRequest;
+    req: AtRequest;
   }) {
     const isEditorPlus = hasMinimumRole(user, ProjectRoles.EDITOR);
 
@@ -276,7 +276,7 @@ export class McpService {
             modelId: tableId,
             rowId: recordId,
             baseId: context.base_id,
-            apiVersion: NcApiVersion.V3,
+            apiVersion: AtApiVersion.V3,
             query: params,
           });
 
@@ -314,7 +314,7 @@ export class McpService {
             baseId: context.base_id,
             modelId: tableId,
             query: params,
-            apiVersion: NcApiVersion.V3,
+            apiVersion: AtApiVersion.V3,
           });
 
           return {
@@ -383,7 +383,7 @@ export class McpService {
                   ]),
                 ),
             )
-            .describe('Array of attachment objects from NocoDB'),
+            .describe('Array of attachment objects from Atmosphere'),
         },
         annotations: {
           readOnlyHint: true,
@@ -400,7 +400,7 @@ export class McpService {
             };
           }
 
-          const storageAdapter = await NcPluginMgrv2.storageAdapter();
+          const storageAdapter = await AtPluginMgrv2.storageAdapter();
 
           const results = await Promise.all(
             files.map(async (file) => {
@@ -425,7 +425,7 @@ export class McpService {
                   file.path ? file.path.replace(/^download[/\\]/i, '') : null,
                 ].filter(Boolean) as string[];
 
-                const fileRef = await Noco.ncMeta
+                const fileRef = await Atmosphere.ncMeta
                   .knex(MetaTable.FILE_REFERENCES)
                   .where({ base_id: context.base_id, deleted: false })
                   .whereIn('file_url', fileUrlCandidates)

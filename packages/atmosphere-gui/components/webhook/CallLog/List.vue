@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { HookLogType, PaginatedType } from 'nocodb-sdk'
+import type { HookLogType, PaginatedType } from 'atmosphere-sdk'
 import { hookLogFormatter } from '../../../utils/datetimeUtils'
 
 interface Props {
@@ -38,7 +38,7 @@ const emit = defineEmits<Emit>()
           <h4 class="font-bold">
             {{ hookLogFormatter(log.created_at) }}
           </h4>
-          <span class="text-nc-content-gray-subtle2 text-small1">
+          <span class="text-atm-content-gray-subtle2 text-small1">
             <template v-if="log.error"> Error occurred {{ log.error_code ?? '' }}</template>
             <template v-else-if="log.execution_time"> Executed in {{ log.execution_time }} ms </template>
           </span>
@@ -52,7 +52,7 @@ const emit = defineEmits<Emit>()
       />
     </template>
     <div class="flex flex-col items-center gap-2 flex-1 justify-end pt-2">
-      <NcPaginationV2
+      <AtPaginationV2
         :current="logPaginationData.page"
         :page-size="logPaginationData.pageSize"
         :total="+logPaginationData.totalRows"
@@ -66,16 +66,16 @@ const emit = defineEmits<Emit>()
 
 <style scoped lang="scss">
 .container {
-  @apply p-2 h-full overflow-auto nc-scrollbar-thin flex flex-col;
+  @apply p-2 h-full overflow-auto atm-scrollbar-thin flex flex-col;
 
   .item {
     @apply cursor-pointer flex gap-2 p-3 rounded-lg;
-    @apply hover:bg-nc-bg-gray-extralight;
+    @apply hover:bg-atm-bg-gray-extralight;
     &.active {
-      @apply bg-nc-bg-brand;
+      @apply bg-atm-bg-brand;
 
       h4 {
-        @apply text-nc-content-brand-disabled;
+        @apply text-atm-content-brand-disabled;
         font-weight: bold;
       }
     }

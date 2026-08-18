@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 
 @Injectable()
 export class CachesService {
   async cacheGet() {
-    return await NocoCache.export();
+    return await AtmosphereCache.export();
   }
 
   async cacheDelete() {
-    await NocoCache.destroy();
+    await AtmosphereCache.destroy();
     return true;
   }
 }

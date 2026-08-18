@@ -107,22 +107,22 @@ export default {
             action:
               repeated[err.message] > 2
                 ? h(
-                    resolveComponent('NcButton'),
+                    resolveComponent('AtButton'),
                     {
                       onClick: navigateToHome,
                       type: 'text',
                       size: 'xsmall',
-                      class: '!text-sm !px-2 !text-nc-content-brand',
+                      class: '!text-sm !px-2 !text-atm-content-brand',
                     },
                     () => 'Home',
                   )
                 : h(
-                    resolveComponent('NcButton'),
+                    resolveComponent('AtButton'),
                     {
                       onClick: reload,
                       type: 'text',
                       size: 'xsmall',
-                      class: '!text-sm !px-2 !text-nc-content-brand',
+                      class: '!text-sm !px-2 !text-atm-content-brand',
                     },
                     () => 'Reload',
                   ),

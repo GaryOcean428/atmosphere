@@ -1,4 +1,4 @@
-import { ColumnHelper, UITypes, ncIsNaN } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, ncIsNaN } from 'atmosphere-sdk'
 import { renderSingleLineText, roundedRect } from '../utils/canvas'
 
 export const PercentCellRenderer: CellRenderer = {
@@ -25,7 +25,7 @@ export const PercentCellRenderer: CellRenderer = {
         // background track ring
         ctx.beginPath()
         ctx.arc(cx, cy, radius, 0, 2 * Math.PI)
-        ctx.strokeStyle = getColor('#E5E5E5', 'var(--nc-bg-brand-inverted)')
+        ctx.strokeStyle = getColor('#E5E5E5', 'var(--atm-bg-brand-inverted)')
         ctx.lineWidth = 1.5
         ctx.stroke()
 
@@ -75,7 +75,7 @@ export const PercentCellRenderer: CellRenderer = {
       const barWidth = (width - padding * 2 - labelWidth - 4) * (percent / 100)
 
       roundedRect(ctx, x + padding, barY, width - padding * 2 - labelWidth - 4, barHeight, barHeight / 2, {
-        backgroundColor: getColor('#E5E5E5', 'var(--nc-bg-brand-inverted)'),
+        backgroundColor: getColor('#E5E5E5', 'var(--atm-bg-brand-inverted)'),
       })
 
       if (percent !== 0) {

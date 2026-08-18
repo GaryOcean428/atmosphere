@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 
 interface Props {
   modelValue?: boolean
@@ -111,11 +111,11 @@ const updateDescription = async () => {
 </script>
 
 <template>
-  <NcModal v-model:visible="dialogShow" size="small" :show-separator="false">
+  <AtModal v-model:visible="dialogShow" size="small" :show-separator="false">
     <template #header>
       <div class="flex flex-row items-center gap-x-2 text-base">
-        <GeneralTableIcon :meta="tableMeta" class="!mx-0 !w-5 !h-5 !text-nc-content-subtle2" />
-        <span class="text-base font-semibold text-nc-content-gray">
+        <GeneralTableIcon :meta="tableMeta" class="!mx-0 !w-5 !h-5 !text-atm-content-subtle2" />
+        <span class="text-base font-semibold text-atm-content-gray">
           {{ tableMeta?.title ?? tableMeta?.table_name }}
         </span>
       </div>
@@ -126,7 +126,7 @@ const updateDescription = async () => {
           <a-textarea
             ref="inputEl"
             v-model:value="formState.description"
-            class="nc-input-sm !py-2 nc-text-area nc-input-shadow"
+            class="atm-input-sm !py-2 atm-text-area atm-input-shadow"
             hide-details
             size="small"
             :placeholder="$t('msg.info.enterTableDescription')"
@@ -135,9 +135,9 @@ const updateDescription = async () => {
         </a-form-item>
       </a-form>
       <div class="flex flex-row justify-end gap-x-2 mt-5">
-        <NcButton type="secondary" size="small" @click="dialogShow = false">{{ $t('general.cancel') }}</NcButton>
+        <AtButton type="secondary" size="small" @click="dialogShow = false">{{ $t('general.cancel') }}</AtButton>
 
-        <NcButton
+        <AtButton
           key="submit"
           type="primary"
           size="small"
@@ -148,19 +148,19 @@ const updateDescription = async () => {
           @click="() => updateDescription()"
         >
           {{ $t('general.save') }}
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style scoped lang="scss">
-.nc-text-area {
+.atm-text-area {
   @apply !py-2 min-h-[120px] max-h-[200px];
 }
 
 :deep(.ant-form-item-label > label) {
-  @apply !text-md font-base  !leading-[20px] text-nc-content-gray flex;
+  @apply !text-md font-base  !leading-[20px] text-atm-content-gray flex;
 
   &.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
     @apply content-[''] m-0;

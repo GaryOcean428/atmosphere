@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { VNodeRef } from '@vue/runtime-core'
-import { ColumnHelper, UITypes, ncIsNaN, roundUpToPrecision } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, ncIsNaN, roundUpToPrecision } from 'atmosphere-sdk'
 
 interface Props {
   modelValue?: number | string | null
@@ -143,7 +143,7 @@ onMounted(() => {
       <input
         :ref="focus"
         v-model="vModel"
-        class="nc-cell-field w-full !border-none !outline-none focus:ring-0 h-full min-h-[18px]"
+        class="atm-cell-field w-full !border-none !outline-none focus:ring-0 h-full min-h-[18px]"
         :class="isExpandedFormOpen ? 'py-1' : ''"
         :type="inputType"
         :placeholder="placeholder"
@@ -167,7 +167,7 @@ onMounted(() => {
     <input
       :ref="focus"
       v-model="vModel"
-      class="nc-cell-field w-full !border-none !outline-none focus:ring-0 py-1"
+      class="atm-cell-field w-full !border-none !outline-none focus:ring-0 py-1"
       :type="inputType"
       :placeholder="placeholder"
       :disabled="readOnly"

@@ -1,7 +1,7 @@
 <h1 align="center" style="border-bottom: none">
     <div>
-        <a style="color:#36f" href="https://www.nocodb.com">
-            <img src="/packages/nc-gui/assets/img/brand/nocodb-full.png" height="80" />
+        <a style="color:#36f" href="https://www.atmosphere.dev">
+            <img src="/packages/atmosphere-gui/assets/img/brand/atmosphere-full.png" height="80" />
             <br>
     Airtable এর ওপেন সোর্স বিকল্প 
         </a>
@@ -10,20 +10,20 @@
 </h1>
 
 <p align="center">
-NocoDB হচ্ছে অনলাইনে ডেটাবেস তৈরির সবচেয়ে দ্রুত এবং সহজ উপায়।
+Atmosphere হচ্ছে অনলাইনে ডেটাবেস তৈরির সবচেয়ে দ্রুত এবং সহজ উপায়।
 </p>
 
 
 <p align="center">
-    <a href="http://www.nocodb.com"><b>ওয়েবসাইট</b></a> •
+    <a href="http://www.atmosphere.dev"><b>ওয়েবসাইট</b></a> •
     <a href="https://discord.gg/c7GEYrvFtT"><b>Discord</b></a> •
-    <a href="https://community.nocodb.com/"><b>কমিউনিটি</b></a> •
-    <a href="https://twitter.com/nocodb"><b>Twitter</b></a> •
-    <a href="https://www.reddit.com/r/NocoDB/"><b>Reddit</b></a> •
-    <a href="https://docs.nocodb.com/"><b>ডকুমেন্টেশন</b></a>
+    <a href="https://community.atmosphere.dev/"><b>কমিউনিটি</b></a> •
+    <a href="https://twitter.com/atmosphere"><b>Twitter</b></a> •
+    <a href="https://www.reddit.com/r/Atmosphere/"><b>Reddit</b></a> •
+    <a href="https://docs.atmosphere.dev/"><b>ডকুমেন্টেশন</b></a>
 </p>
 
-![video avi](https://github.com/nocodb/nocodb/assets/86527202/e2fad786-f211-4dcb-9bd3-aaece83a6783)
+![video avi](https://github.com/GaryOcean428/atmosphere/assets/86527202/e2fad786-f211-4dcb-9bd3-aaece83a6783)
 
 <img src="https://static.scarf.sh/a.png?x-pxid=c12a77cc-855e-4602-8a0f-614b2d0da56a" />
 
@@ -33,7 +33,7 @@ NocoDB হচ্ছে অনলাইনে ডেটাবেস তৈরি�
 <img src="https://discordapp.com/api/guilds/661905455894888490/widget.png?style=banner3" alt="">
 </a>
 
-[![Stargazers repo roster for @nocodb/nocodb](http://reporoster.com/stars/nocodb/nocodb)](https://github.com/nocodb/nocodb/stargazers)
+[![Stargazers repo roster for @atmosphere/atmosphere](http://reporoster.com/stars/atmosphere/atmosphere)](https://github.com/GaryOcean428/atmosphere/stargazers)
 
 # ইনস্টলেশন
 
@@ -41,37 +41,37 @@ NocoDB হচ্ছে অনলাইনে ডেটাবেস তৈরি�
 
 ```bash 
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  nocodb/nocodb:latest
+  atmosphere/atmosphere:latest
   ```
 
 ## Docker এর সাথে PostgreSQL
 ```bash
 docker run -d \
-  --name noco \
-  -v "$(pwd)"/nocodb:/usr/app/data/ \
+  --name atmosphere \
+  -v "$(pwd)"/atmosphere:/usr/app/data/ \
   -p 8080:8080 \
-  -e NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
-  -e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-  nocodb/nocodb:latest
+  -e ATMOSPHERE_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
+  -e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+  atmosphere/atmosphere:latest
 ```
 
 ## Auto-upstall
-Auto-upstall হলো একটি কমান্ড যা সার্ভারে NocoDB সেটআপ করে প্রোডাকশনে ব্যবহার করার জন্য।
+Auto-upstall হলো একটি কমান্ড যা সার্ভারে Atmosphere সেটআপ করে প্রোডাকশনে ব্যবহার করার জন্য।
 বিহাইন্ড দ্য সিন এটি আপনার জন্য স্বয়ংক্রিয়ভাবে docker-compose তৈরি করে।
 
 ```bash
-bash <(curl -sSL http://install.nocodb.com/noco.sh) <(mktemp)
+bash <(curl -sSL http://install.atmosphere.dev/atmosphere.sh) <(mktemp)
 ```
 
 Auto-upstall নিম্নলিখিত কাজগুলো করে: 🕊
 - 🐳 স্বয়ংক্রিয়ভাবে docker, docker-compose এর মতো সকল প্রয়োজনীয় জিনিসপত্র ইনস্টল করে
-- 🚀 স্বয়ংক্রিয়ভাবে Docker Compose ব্যবহার করে PostgreSQL, Redis, Traefik gateway সহ NocoDB ইনস্টল করে। 🐘 🗄️ 🌐
-- 🔄 আবার যখন আপনি কমান্ডটি চালাবেন তখন স্বয়ংক্রিয়ভাবে NocoDB এর সর্বশেষ ভার্সনে আপগ্রেড করে।
+- 🚀 স্বয়ংক্রিয়ভাবে Docker Compose ব্যবহার করে PostgreSQL, Redis, Traefik gateway সহ Atmosphere ইনস্টল করে। 🐘 🗄️ 🌐
+- 🔄 আবার যখন আপনি কমান্ডটি চালাবেন তখন স্বয়ংক্রিয়ভাবে Atmosphere এর সর্বশেষ ভার্সনে আপগ্রেড করে।
 - 🔒 স্বয়ংক্রিয়ভাবে SSL সেটআপ করে এবং এর নবায়নও করে। ইনস্টলেশনের সময় একটি ডোমেইন বা সাবডোমেইন ইনপুট হিসেবে প্রয়োজন।
-> install.nocodb.com/noco.sh স্ক্রিপ্টটি পাওয়া যাবে [আমাদের github এ](https://raw.githubusercontent.com/nocodb/nocodb/develop/docker-compose/1_Auto_Upstall/noco.sh)
+> install.atmosphere.dev/atmosphere.sh স্ক্রিপ্টটি পাওয়া যাবে [আমাদের github এ](https://raw.githubusercontent.com/atmosphere/atmosphere/develop/docker-compose/1_Auto_Upstall/atmosphere.sh)
 
 
 ## অন্যান্য পদ্ধতি
@@ -80,27 +80,27 @@ Auto-upstall নিম্নলিখিত কাজগুলো করে: �
 
 | ইনস্টলেশন পদ্ধতি                | ইনস্টলেশন কমান্ড                                                                                                                                                                                                                                                                                                                                                         |
 |-------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 🍏 MacOS arm64 <br>(Binary)   | `curl http://get.nocodb.com/macos-arm64 -o nocodb -L && chmod +x nocodb && ./nocodb`                                                                                                                                                                                                                                                                                       |
-| 🍏 MacOS x64 <br>(Binary)     | `curl http://get.nocodb.com/macos-x64 -o nocodb -L && chmod +x nocodb && ./nocodb`                                                                                                                                                                                                                                                                                         |
-| 🐧 Linux arm64 <br>(Binary)   | `curl http://get.nocodb.com/linux-arm64 -o nocodb -L && chmod +x nocodb && ./nocodb`                                                                                                                                                                                                                                                                                       |
-| 🐧 Linux x64 <br>(Binary)     | `curl http://get.nocodb.com/linux-x64 -o nocodb -L && chmod +x nocodb && ./nocodb`                                                                                                                                                                                                                                                                                         |
-| 🪟 Windows arm64 <br>(Binary) | `iwr http://get.nocodb.com/win-arm64.exe -OutFile Noco-win-arm64.exe && .\Noco-win-arm64.exe`                                                                                                                                                                                                                                                                              |
-| 🪟 Windows x64 <br>(Binary)   | `iwr http://get.nocodb.com/win-x64.exe -OutFile Noco-win-x64.exe && .\Noco-win-x64.exe`                                                                                                                                                                                                                                                                                    |
+| 🍏 MacOS arm64 <br>(Binary)   | `curl http://get.atmosphere.dev/macos-arm64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`                                                                                                                                                                                                                                                                                       |
+| 🍏 MacOS x64 <br>(Binary)     | `curl http://get.atmosphere.dev/macos-x64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`                                                                                                                                                                                                                                                                                         |
+| 🐧 Linux arm64 <br>(Binary)   | `curl http://get.atmosphere.dev/linux-arm64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`                                                                                                                                                                                                                                                                                       |
+| 🐧 Linux x64 <br>(Binary)     | `curl http://get.atmosphere.dev/linux-x64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere`                                                                                                                                                                                                                                                                                         |
+| 🪟 Windows arm64 <br>(Binary) | `iwr http://get.atmosphere.dev/win-arm64.exe -OutFile Atmosphere-win-arm64.exe && .\Atmosphere-win-arm64.exe`                                                                                                                                                                                                                                                                              |
+| 🪟 Windows x64 <br>(Binary)   | `iwr http://get.atmosphere.dev/win-x64.exe -OutFile Atmosphere-win-x64.exe && .\Atmosphere-win-x64.exe`                                                                                                                                                                                                                                                                                    |
 
 
-> লোকালি চালানোর সময় nocodb অ্যাক্সেস করতে ভিজিট করুন: [http://localhost:8080/dashboard](http://localhost:8080/dashboard)
+> লোকালি চালানোর সময় atmosphere অ্যাক্সেস করতে ভিজিট করুন: [http://localhost:8080/dashboard](http://localhost:8080/dashboard)
 
-আরও ইনস্টলেশন পদ্ধতির জন্য, অনুগ্রহ করে [আমাদের ডকস](https://docs.nocodb.com/category/installation) দেখুন
+আরও ইনস্টলেশন পদ্ধতির জন্য, অনুগ্রহ করে [আমাদের ডকস](https://docs.atmosphere.dev/category/installation) দেখুন
 
 # স্ক্রিনশট
-![2](https://github.com/nocodb/nocodb/assets/86527202/a127c05e-2121-4af2-a342-128e0e2d0291)
-![3](https://github.com/nocodb/nocodb/assets/86527202/674da952-8a06-4848-a0e8-a7b02d5f5c88)
-![4](https://github.com/nocodb/nocodb/assets/86527202/cbc5152a-9caf-4f77-a8f7-92a9d06d025b)
-![5](https://github.com/nocodb/nocodb/assets/86527202/dc75dfdc-c486-4f5a-a853-2a8f9e6b569a)
+![2](https://github.com/GaryOcean428/atmosphere/assets/86527202/a127c05e-2121-4af2-a342-128e0e2d0291)
+![3](https://github.com/GaryOcean428/atmosphere/assets/86527202/674da952-8a06-4848-a0e8-a7b02d5f5c88)
+![4](https://github.com/GaryOcean428/atmosphere/assets/86527202/cbc5152a-9caf-4f77-a8f7-92a9d06d025b)
+![5](https://github.com/GaryOcean428/atmosphere/assets/86527202/dc75dfdc-c486-4f5a-a853-2a8f9e6b569a)
 
 ![5](https://user-images.githubusercontent.com/35857179/194844886-a17006e0-979d-493f-83c4-0e72f5a9b716.png)
-![7](https://github.com/nocodb/nocodb/assets/86527202/be64e619-7295-43e2-aa95-cace4462b17f)
-![8](https://github.com/nocodb/nocodb/assets/86527202/4538bf5a-371f-4ec1-a867-8197e5824286)
+![7](https://github.com/GaryOcean428/atmosphere/assets/86527202/be64e619-7295-43e2-aa95-cace4462b17f)
+![8](https://github.com/GaryOcean428/atmosphere/assets/86527202/4538bf5a-371f-4ec1-a867-8197e5824286)
 
 ![8](https://user-images.githubusercontent.com/35857179/194844893-82d5e21b-ae61-41bd-9990-31ad659bf490.png)
 ![9](https://user-images.githubusercontent.com/35857179/194844897-cfd79946-e413-4c97-b16d-eb4d7678bb79.png)
@@ -123,7 +123,7 @@ Auto-upstall নিম্নলিখিত কাজগুলো করে: �
 
 ### ওয়ার্কফ্লো অটোমেশনের জন্য অ্যাপ স্টোর
 
-আমরা প্রধানত তিনটি বিভাগে বিভিন্ন অনেক ধরনের প্রদান করি। বিস্তারিত জানতে <a href="https://docs.nocodb.com/account-settings/oss-specific-details/#app-store" target="_blank">অ্যাপ স্টোর</a> দেখুন।
+আমরা প্রধানত তিনটি বিভাগে বিভিন্ন অনেক ধরনের প্রদান করি। বিস্তারিত জানতে <a href="https://docs.atmosphere.dev/account-settings/oss-specific-details/#app-store" target="_blank">অ্যাপ স্টোর</a> দেখুন।
 
 - ⚡ &nbsp;চ্যাট: Slack, Discord, Mattermost, এবং আরো
 - ⚡ &nbsp;ইমেইল: AWS SES, SMTP, MailerSend, এবং আরো
@@ -131,14 +131,14 @@ Auto-upstall নিম্নলিখিত কাজগুলো করে: �
 
 ### প্রোগ্রামেটিক অ্যাক্সেস
 
-আমরা ইউজারদের প্রোগ্রামেটিকভাবে অ্যাকশন চালানোর জন্য নিম্নলিখিত উপায় প্রদান করি। NocoDB-তে অথোরাইজেশন জন্য আপনি একটি টোকেন (JWT বা Social Auth) ব্যবহার করে আপনার রিকোয়েস্ট করতে পারেন।
+আমরা ইউজারদের প্রোগ্রামেটিকভাবে অ্যাকশন চালানোর জন্য নিম্নলিখিত উপায় প্রদান করি। Atmosphere-তে অথোরাইজেশন জন্য আপনি একটি টোকেন (JWT বা Social Auth) ব্যবহার করে আপনার রিকোয়েস্ট করতে পারেন।
 
 - ⚡ &nbsp;REST APIs
-- ⚡ &nbsp;NocoDB SDK
+- ⚡ &nbsp;Atmosphere SDK
 
 # কন্ট্রিবিউশন
 
-অনুগ্রহ করে [কন্ট্রিবিউশন গাইড](https://github.com/nocodb/nocodb/blob/master/.github/CONTRIBUTING.md) দেখুন।
+অনুগ্রহ করে [কন্ট্রিবিউশন গাইড](https://github.com/GaryOcean428/atmosphere/blob/master/.github/CONTRIBUTING.md) দেখুন।
 
 # কেন আমরা এটি তৈরি করছি?
 

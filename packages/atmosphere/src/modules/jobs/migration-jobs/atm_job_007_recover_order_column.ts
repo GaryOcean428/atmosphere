@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import PQueue from 'p-queue';
-import { OrderColumnMigration } from './nc_job_005_order_column';
+import { OrderColumnMigration } from './atm_job_005_order_column';
 import type CustomKnex from '~/db/CustomKnex';
 import { MetaTable } from '~/utils/globals';
 import { Column, Model, Source } from '~/models';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import SimpleLRUCache from '~/utils/cache';
 import Upgrader from '~/Upgrader';
 
-const PARALLEL_LIMIT = +process.env.NC_ORDER_MIGRATION_PARALLEL_LIMIT || 10;
+const PARALLEL_LIMIT = +process.env.ATMOSPHERE_ORDER_MIGRATION_PARALLEL_LIMIT || 10;
 
 const dropColumnSql = {
   mysql2: 'ALTER TABLE ?? DROP COLUMN ??',
@@ -27,7 +27,7 @@ export class RecoverOrderColumnMigration {
   constructor(private readonly orderColumnMigration: OrderColumnMigration) {}
 
   log = (...msgs: string[]) => {
-    console.log('[nc_job_007_recover-order-column]: ', ...msgs);
+    console.log('[atm_job_007_recover-order-column]: ', ...msgs);
   };
 
   logExecutionTime(message: string, hrTime) {
@@ -85,7 +85,7 @@ export class RecoverOrderColumnMigration {
                   )
                   .where(`${MetaTable.COLUMNS}.uidt`, 'Decimal')
                   .where(`${MetaTable.COLUMNS}.system`, true)
-                  .where(`${MetaTable.COLUMNS}.column_name`, '=', 'nc_order');
+                  .where(`${MetaTable.COLUMNS}.column_name`, '=', 'atm_order');
               });
           })
           .count('*', { as: 'count' })
@@ -154,7 +154,7 @@ export class RecoverOrderColumnMigration {
                   )
                   .where(`${MetaTable.COLUMNS}.uidt`, 'Decimal')
                   .where(`${MetaTable.COLUMNS}.system`, true)
-                  .where(`${MetaTable.COLUMNS}.column_name`, '=', 'nc_order');
+                  .where(`${MetaTable.COLUMNS}.column_name`, '=', 'atm_order');
               });
           })
           .limit(PARALLEL_LIMIT * 2);
@@ -225,7 +225,7 @@ export class RecoverOrderColumnMigration {
         upgraderQueries: [],
       });
 
-      const dbDriver: CustomKnex = await NcConnectionMgrv2.get(source);
+      const dbDriver: CustomKnex = await AtConnectionMgrv2.get(source);
 
       const model = await Model.get(context, modelData.id);
 
@@ -238,10 +238,10 @@ export class RecoverOrderColumnMigration {
       const tnPath = baseModel.getTnPath(model.table_name);
 
       const query = dbDriver
-        .raw(dropColumnSql[dbDriver.clientType()], [tnPath, 'nc_order'])
+        .raw(dropColumnSql[dbDriver.clientType()], [tnPath, 'atm_order'])
         .toQuery();
 
-      const realDbDriver = await NcConnectionMgrv2.get(
+      const realDbDriver = await AtConnectionMgrv2.get(
         new Source({
           ...source,
           upgraderMode: false,
@@ -256,7 +256,7 @@ export class RecoverOrderColumnMigration {
         (c) =>
           c.uidt === 'Decimal' &&
           c.system &&
-          c.column_name.startsWith('nc_order'),
+          c.column_name.startsWith('atm_order'),
       );
 
       if (decimalOrderCol) {

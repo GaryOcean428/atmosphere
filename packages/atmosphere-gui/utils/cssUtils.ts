@@ -1,23 +1,23 @@
 export const onboardingFlowColoursMapping: Record<string, { lightBg: string; content: string }> = {
   brand: {
-    lightBg: 'bg-nc-bg-brand',
-    content: 'text-nc-content-brand',
+    lightBg: 'bg-atm-bg-brand',
+    content: 'text-atm-content-brand',
   },
   orange: {
-    lightBg: 'bg-nc-bg-orange-light',
-    content: 'text-nc-content-orange-dark',
+    lightBg: 'bg-atm-bg-orange-light',
+    content: 'text-atm-content-orange-dark',
   },
   green: {
-    lightBg: 'bg-nc-bg-green-light',
-    content: 'text-nc-content-green-dark',
+    lightBg: 'bg-atm-bg-green-light',
+    content: 'text-atm-content-green-dark',
   },
   purple: {
-    lightBg: 'bg-nc-bg-purple-light',
-    content: 'text-nc-content-purple-dark',
+    lightBg: 'bg-atm-bg-purple-light',
+    content: 'text-atm-content-purple-dark',
   },
   pink: {
-    lightBg: 'bg-nc-bg-pink-light',
-    content: 'text-nc-content-pink-dark',
+    lightBg: 'bg-atm-bg-pink-light',
+    content: 'text-atm-content-pink-dark',
   },
 }
 
@@ -31,51 +31,51 @@ export const roleColorsMapping: Record<
   }
 > = {
   purple: {
-    bg: 'bg-nc-bg-purple-light',
-    content: 'text-nc-content-purple-dark',
+    bg: 'bg-atm-bg-purple-light',
+    content: 'text-atm-content-purple-dark',
     // Fixed light color for dark tooltip background (doesn't change with theme)
     contentTooltip: 'text-[#CBA8EB]',
   },
   blue: {
-    bg: 'bg-nc-bg-blue-light',
-    content: 'text-nc-content-blue-dark',
+    bg: 'bg-atm-bg-blue-light',
+    content: 'text-atm-content-blue-dark',
     contentTooltip: 'text-[#AFE5FF]',
   },
   green: {
-    bg: 'bg-nc-bg-green-light',
-    content: 'text-nc-content-green-dark',
+    bg: 'bg-atm-bg-green-light',
+    content: 'text-atm-content-green-dark',
     contentTooltip: 'text-[#A9EFC1]',
   },
   orange: {
-    bg: 'bg-nc-bg-orange-light',
-    content: 'text-nc-content-orange-dark',
+    bg: 'bg-atm-bg-orange-light',
+    content: 'text-atm-content-orange-dark',
     contentTooltip: 'text-[#FDCDAD]',
   },
   yellow: {
-    bg: 'bg-nc-bg-yellow-light',
-    content: 'text-nc-content-yellow-dark',
+    bg: 'bg-atm-bg-yellow-light',
+    content: 'text-atm-content-yellow-dark',
     contentTooltip: 'text-[#FEE5B0]',
   },
   red: {
-    bg: 'bg-nc-bg-red-light',
-    content: 'text-nc-content-red-dark',
+    bg: 'bg-atm-bg-red-light',
+    content: 'text-atm-content-red-dark',
     contentTooltip: 'text-[#FFB7B2]',
   },
   maroon: {
-    bg: 'bg-nc-bg-maroon-light',
-    content: 'text-nc-content-maroon-dark',
+    bg: 'bg-atm-bg-maroon-light',
+    content: 'text-atm-content-maroon-dark',
     contentTooltip: 'text-[#FFABD2]',
   },
   disabled: {
-    bg: 'bg-nc-bg-gray-light',
-    content: 'text-nc-content-gray-disabled',
+    bg: 'bg-atm-bg-gray-light',
+    content: 'text-atm-content-gray-disabled',
     contentTooltip: 'text-[#E7E7E9]',
   },
   gray: {
-    bg: 'bg-nc-bg-gray-medium',
-    content: 'text-nc-content-gray-subtle2',
+    bg: 'bg-atm-bg-gray-medium',
+    content: 'text-atm-content-gray-subtle2',
     contentTooltip: 'text-[#E7E7E9]',
-    badgeClass: '!bg-nc-bg-gray-medium !border-nc-border-gray-medium',
+    badgeClass: '!bg-atm-bg-gray-medium !border-atm-border-gray-medium',
   },
 }
 
@@ -84,20 +84,20 @@ export const getTableAndFieldPermissionsColors = (color: string) => {
     case 'purple':
       return 'text-purple-700'
     case 'blue':
-      return 'text-blue-700 dark:text-nc-blue-500'
+      return 'text-blue-700 dark:text-atm-blue-500'
     case 'green':
-      return 'text-green-700 dark:text-nc-green-600'
+      return 'text-green-700 dark:text-atm-green-600'
     case 'orange':
       return 'text-orange-700'
     case 'yellow':
       return 'text-yellow-700'
     case 'red':
-      return 'text-red-700 dark:text-nc-red-500'
+      return 'text-red-700 dark:text-atm-red-500'
     case 'maroon':
       return 'text-maroon-700'
     case 'gray':
     default:
-      return 'text-gray-700 dark:text-nc-gray-600'
+      return 'text-gray-700 dark:text-atm-gray-600'
   }
 }
 
@@ -114,9 +114,9 @@ export const toSafeClassName = (name?: string | null): string => (name ?? '').re
 
 export const extensionClassNames = {
   pageDesignerRemovable:
-    'absolute w-5 h-5 px-2 bg-nc-bg-default rounded-md hover:bg-nc-bg-gray-light border-1 cursor-pointer border-nc-border-gray-medium justify-center items-center gap-2 inline-flex',
+    'absolute w-5 h-5 px-2 bg-atm-bg-default rounded-md hover:bg-atm-bg-gray-light border-1 cursor-pointer border-atm-border-gray-medium justify-center items-center gap-2 inline-flex',
 }
 
 export const erdNodeClassNames = {
-  node: 'rounded-lg border-1 border-nc-border-gray-medium shadow-lg',
+  node: 'rounded-lg border-1 border-atm-border-gray-medium shadow-lg',
 }

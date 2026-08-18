@@ -3,9 +3,9 @@ import {
   AppEvents,
   FORM_ROW_FULL_WIDTH_UI_TYPES,
   FORM_ROW_MAX_FIELDS,
-} from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
-import { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { MetaService } from '~/meta/meta.service';
 import {
   type ViewWebhookManager,
@@ -18,9 +18,9 @@ import { validatePayload } from '~/helpers';
 import { assertNotLockedViewOnSandboxProduction } from '~/helpers/sandboxGuards';
 import { Column, FormViewColumn, View } from '~/models';
 import { extractProps } from '~/helpers/extractProps';
-import { NcError } from '~/helpers/ncError';
-import Noco from '~/Noco';
-import { NcBaseError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/ncError';
+import Atmosphere from '~/Atmosphere';
+import { AtBaseError } from '~/helpers/catchError';
 
 // row_id is a client-generated grouping key for form view columns that
 // share a horizontal row. Format: `fr_<lowercase alphanumerics>`.
@@ -34,18 +34,18 @@ export class FormColumnsService {
 
   @TraceCommand(OperationName.formColumnUpdate)
   async columnUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       formViewColumnId: string;
       // todo: replace with FormColumnReq
       formViewColumn: FormViewColumn;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     validatePayload(
@@ -135,27 +135,27 @@ export class FormColumnsService {
    * on top of this.
    */
   async columnBulkUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       formViewId: string;
       updates: Array<{ id: string; row_id?: string | null; order?: number }>;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     _ncMeta?: MetaService,
   ) {
     // Grid layout is an EE feature. CE builds and unlicensed on-prem fall
     // through here (the EE @EEOnly override is skipped when unlicensed).
-    if (!Noco.isEE()) {
-      NcError.notImplemented('Form grid layout');
+    if (!Atmosphere.isEE()) {
+      AtError.notImplemented('Form grid layout');
     }
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     if (!Array.isArray(param.updates) || param.updates.length === 0) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         'updates must be a non-empty array',
       );
     }
@@ -163,24 +163,24 @@ export class FormColumnsService {
     // Validate each update entry before touching the DB.
     for (const u of param.updates) {
       if (!u.id || typeof u.id !== 'string') {
-        NcError.get(context).invalidRequestBody('each update must have an id');
+        AtError.get(context).invalidRequestBody('each update must have an id');
       }
       if (
         u.row_id != null &&
         (typeof u.row_id !== 'string' || !ROW_ID_PATTERN.test(u.row_id))
       ) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Invalid row_id format: ${u.row_id}`,
         );
       }
       if (u.order !== undefined && typeof u.order !== 'number') {
-        NcError.get(context).invalidRequestBody('order must be a number');
+        AtError.get(context).invalidRequestBody('order must be a number');
       }
     }
 
     const view = await View.get(context, param.formViewId);
     if (!view) {
-      NcError.get(context).viewNotFound(param.formViewId);
+      AtError.get(context).viewNotFound(param.formViewId);
     }
 
     // Validate max fields per row against the final projected state —
@@ -190,7 +190,7 @@ export class FormColumnsService {
 
     for (const u of param.updates) {
       if (!existingById.has(u.id)) {
-        NcError.get(context).genericNotFound('FormViewColumn', u.id);
+        AtError.get(context).genericNotFound('FormViewColumn', u.id);
       }
     }
 
@@ -210,7 +210,7 @@ export class FormColumnsService {
     }
     for (const [rowId, count] of rowCounts) {
       if (count > FORM_ROW_MAX_FIELDS) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Row ${rowId} would contain ${count} fields; maximum is ${FORM_ROW_MAX_FIELDS}`,
         );
       }
@@ -237,7 +237,7 @@ export class FormColumnsService {
         }
         const col = colCache.get(colId)!;
         if (col?.uidt && fullWidthSet.has(col.uidt)) {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             `Field type '${col.uidt}' must occupy its own row; row_id cannot be set`,
           );
         }
@@ -259,7 +259,7 @@ export class FormColumnsService {
 
     // Wrap all writes in a transaction so a partial failure can't leave the
     // form view with mismatched row_ids / orders.
-    const ncMeta = await Noco.ncMeta.startTransaction();
+    const ncMeta = await Atmosphere.ncMeta.startTransaction();
 
     try {
       // Cache Column lookups so the audit payload per form-column update
@@ -319,9 +319,9 @@ export class FormColumnsService {
       return { msg: 'Form columns updated' };
     } catch (e) {
       await ncMeta.rollback();
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error('Error bulk updating form columns', e?.stack);
-      NcError.get(context).badRequest('Failed to update form columns');
+      AtError.get(context).badRequest('Failed to update form columns');
     }
   }
 }

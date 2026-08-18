@@ -10,7 +10,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { IntegrationReqType, IntegrationsType, NcApiVersion } from 'nocodb-sdk';
+import { IntegrationReqType, IntegrationsType, AtApiVersion } from 'atmosphere-sdk';
 // This service is overwritten entirely in the cloud and does not extend there.
 // As a result, it refers to services from OSS to avoid type mismatches.
 import { IntegrationsService } from 'src/services/integrations.service';
@@ -18,10 +18,10 @@ import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 import { Integration } from '~/models';
 import { maskKnexConfig } from '~/helpers/responseHelpers';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -33,11 +33,11 @@ export class IntegrationsController {
     scope: 'workspace',
   })
   async integrationGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('integrationId') integrationId: string,
     @Query('includeConfig') includeConfig: string,
     @Query('includeSources') includeSources: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const integration = await this.integrationsService.integrationGetWithConfig(
       context,
@@ -69,9 +69,9 @@ export class IntegrationsController {
     scope: 'workspace',
   })
   async integrationCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Body() integration: IntegrationReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.integrationsService.integrationCreate(context, {
       integration,
@@ -84,9 +84,9 @@ export class IntegrationsController {
     scope: 'workspace',
   })
   async integrationDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('integrationId') integrationId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Query('force') force: string,
   ) {
     return await this.integrationsService.integrationDelete(context, {
@@ -101,10 +101,10 @@ export class IntegrationsController {
     scope: 'workspace',
   })
   async integrationUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('integrationId') integrationId: string,
     @Body() body: IntegrationReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const integration = await this.integrationsService.integrationUpdate(
       context,
@@ -128,7 +128,7 @@ export class IntegrationsController {
     extendedScope: 'base',
   })
   async integrationList(
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
     @Query('type') type: IntegrationsType,
     @Query('includeDatabaseInfo') includeDatabaseInfo?: string,
     @Query('limit') limit?: string,
@@ -173,8 +173,8 @@ export class IntegrationsController {
     );
 
     if (!integration) {
-      NcError.get({
-        api_version: NcApiVersion.V2,
+      AtError.get({
+        api_version: AtApiVersion.V2,
       }).integrationNotFound(`${type}:${subType}`);
     }
 
@@ -191,7 +191,7 @@ export class IntegrationsController {
     scope: 'workspace',
   })
   async storeIntegration(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('integrationId') integrationId: string,
     @Body()
     payload?:
@@ -211,7 +211,7 @@ export class IntegrationsController {
     const integration = await Integration.get(context, integrationId);
 
     if (!integration) {
-      NcError.get(context).integrationNotFound(integrationId);
+      AtError.get(context).integrationNotFound(integrationId);
     }
 
     return await this.integrationsService.integrationStore(
@@ -226,7 +226,7 @@ export class IntegrationsController {
     scope: 'workspace',
   })
   async integrationEndpointGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('integrationId') integrationId: string,
     @Param('endpoint') endpoint: string,
     @Body() body: any,

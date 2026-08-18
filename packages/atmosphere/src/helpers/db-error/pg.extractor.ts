@@ -1,4 +1,4 @@
-import { NcErrorType } from 'nocodb-sdk';
+import { AtErrorType } from 'atmosphere-sdk';
 import { DBError } from './utils';
 import type { Logger } from '@nestjs/common';
 import type { DBErrorExtractResult, IClientDbErrorExtractor } from './utils';
@@ -150,7 +150,7 @@ export class PgDBErrorExtractor implements IClientDbErrorExtractor {
         // PG sets `error.constraint`; `error.detail` carries the offending
         // key/value: `Key (fk_id)=(123) is not present in table "y".`
         // Strip the physical table reference (the PG name is internal —
-        // e.g. `nc_xyz___tasks`) but keep the key/value so the user can
+        // e.g. `atm_xyz___tasks`) but keep the key/value so the user can
         // see which value they tried to insert/delete.
         const constraint: string | undefined = error.constraint;
         const detail = (error.detail || '').replace(
@@ -383,7 +383,7 @@ export class PgDBErrorExtractor implements IClientDbErrorExtractor {
     }
 
     return {
-      error: NcErrorType.ERR_DATABASE_OP_FAILED,
+      error: AtErrorType.ERR_DATABASE_OP_FAILED,
       message,
       code: error.code,
       httpStatus,

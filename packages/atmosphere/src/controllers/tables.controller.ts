@@ -12,14 +12,14 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { extractRolesObj, NcRequest, TableReqType } from 'nocodb-sdk';
+import { extractRolesObj, AtRequest, TableReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { TablesService } from '~/services/tables.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -34,7 +34,7 @@ export class TablesController {
   ])
   @Acl('tableList')
   async tableList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Param('sourceId') sourceId: string,
     @Query('includeM2M') includeM2M: string,
@@ -61,7 +61,7 @@ export class TablesController {
   @HttpCode(200)
   @Acl('tableCreate')
   async tableCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
     @Param('sourceId') sourceId: string,
     @Body() body: TableReqType,
@@ -81,7 +81,7 @@ export class TablesController {
   @Get(['/api/v1/db/meta/tables/:tableId', '/api/v2/meta/tables/:tableId'])
   @Acl('tableGet')
   async tableGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Request() req,
   ) {
@@ -99,7 +99,7 @@ export class TablesController {
   @Patch(['/api/v1/db/meta/tables/:tableId', '/api/v2/meta/tables/:tableId'])
   @Acl('tableUpdate')
   async tableUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Body() body: TableReqType,
     @Request() req,
@@ -117,7 +117,7 @@ export class TablesController {
   @Delete(['/api/v1/db/meta/tables/:tableId', '/api/v2/meta/tables/:tableId'])
   @Acl('tableDelete')
   async tableDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Request() req,
   ) {
@@ -136,10 +136,10 @@ export class TablesController {
   @Acl('tableReorder')
   @HttpCode(200)
   async tableReorder(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Body() body: { order: number },
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return this.tablesService.reorderTable(context, {
       tableId,

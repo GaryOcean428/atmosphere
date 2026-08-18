@@ -1,13 +1,13 @@
-import type { AttachmentReqType, AttachmentType } from 'nocodb-sdk'
-import { populateUniqueFileName } from 'nocodb-sdk'
+import type { AttachmentReqType, AttachmentType } from 'atmosphere-sdk'
+import { populateUniqueFileName } from 'atmosphere-sdk'
 import DOMPurify from 'isomorphic-dompurify'
 import { zip as fflateZip } from 'fflate'
 import RenameFile from './RenameFile.vue'
-import MdiPdfBox from '~icons/nc-icons-v2/file-type-pdf'
-import MdiFileWordOutline from '~icons/nc-icons-v2/file-type-word'
-import MdiFilePowerpointBox from '~icons/nc-icons-v2/file-type-presentation'
-import MdiFileExcelOutline from '~icons/nc-icons-v2/file-type-csv'
-import IcOutlineInsertDriveFile from '~icons/nc-icons-v2/file-type-unknown'
+import MdiPdfBox from '~icons/atm-icons-v2/file-type-pdf'
+import MdiFileWordOutline from '~icons/atm-icons-v2/file-type-word'
+import MdiFilePowerpointBox from '~icons/atm-icons-v2/file-type-presentation'
+import MdiFileExcelOutline from '~icons/atm-icons-v2/file-type-csv'
+import IcOutlineInsertDriveFile from '~icons/atm-icons-v2/file-type-unknown'
 
 export const [useProvideAttachmentCell, useAttachmentCell] = useInjectionState(
   (updateModelValue: (data: string | Record<string, any>[]) => void) => {
@@ -249,7 +249,7 @@ export const [useProvideAttachmentCell, useAttachmentCell] = useInjectionState(
       if (files.length) {
         uploadingCount.value++
         try {
-          const data = await batchUploadFiles(files, [NOCO, base.value.id, meta.value?.id, column.value?.id].join('/'))
+          const data = await batchUploadFiles(files, [ATMOSPHERE, base.value.id, meta.value?.id, column.value?.id].join('/'))
 
           // add suffix in duplicate file title
           for (const uploadedFile of data) {
@@ -281,7 +281,7 @@ export const [useProvideAttachmentCell, useAttachmentCell] = useInjectionState(
       try {
         const data = await api.storage.uploadByUrl(
           {
-            path: [NOCO, base.value.id, meta.value?.id, column.value?.id].join('/'),
+            path: [ATMOSPHERE, base.value.id, meta.value?.id, column.value?.id].join('/'),
           },
           imageUrl,
         )

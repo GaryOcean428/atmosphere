@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useTitle } from '@vueuse/core'
-import { PlanFeatureTypes, ProjectRoles } from 'nocodb-sdk'
+import { PlanFeatureTypes, ProjectRoles } from 'atmosphere-sdk'
 
 const props = defineProps<{
   baseId?: string
@@ -277,7 +277,7 @@ watch(
   () => {
     if (activeTable.value?.title) return
 
-    useTitle(`${currentBase.value?.title ?? activeWorkspace.value?.title ?? productName.value ?? 'NocoDB'}`)
+    useTitle(`${currentBase.value?.title ?? activeWorkspace.value?.title ?? productName.value ?? 'Atmosphere'}`)
   },
   {
     immediate: true,
@@ -334,17 +334,17 @@ watch(
 </script>
 
 <template>
-  <div class="h-full nc-base-view">
+  <div class="h-full atm-base-view">
     <!-- Full-page breadcrumb header (when entering base settings from admin menu) -->
     <template v-if="isBaseSettingsFullPage && !isAdminPanel">
-      <div class="min-w-0 p-2 h-[var(--topbar-height)] border-b-1 border-nc-border-gray-medium flex items-center gap-2">
+      <div class="min-w-0 p-2 h-[var(--topbar-height)] border-b-1 border-atm-border-gray-medium flex items-center gap-2">
         <GeneralOpenLeftSidebarBtn v-if="isMobileMode" />
-        <div class="flex-1 nc-breadcrumb nc-no-negative-margin pl-1">
-          <div class="nc-breadcrumb-item capitalize truncate">
+        <div class="flex-1 atm-breadcrumb atm-no-negative-margin pl-1">
+          <div class="atm-breadcrumb-item capitalize truncate">
             {{ currentBase?.title }}
           </div>
-          <GeneralIcon icon="ncSlash1" class="nc-breadcrumb-divider" />
-          <h1 class="nc-breadcrumb-item active truncate">
+          <GeneralIcon icon="ncSlash1" class="atm-breadcrumb-divider" />
+          <h1 class="atm-breadcrumb-item active truncate">
             {{ $t('labels.settings') }}
           </h1>
         </div>
@@ -354,14 +354,14 @@ watch(
     <!-- Normal topbar -->
     <div
       v-else-if="!isAdminPanel"
-      class="flex flex-row px-2 py-2 gap-3 justify-between w-full border-b-1 border-nc-border-gray-medium"
-      :class="{ 'nc-table-toolbar-mobile': isMobileMode, 'h-[var(--topbar-height)]': !isMobileMode }"
+      class="flex flex-row px-2 py-2 gap-3 justify-between w-full border-b-1 border-atm-border-gray-medium"
+      :class="{ 'atm-table-toolbar-mobile': isMobileMode, 'h-[var(--topbar-height)]': !isMobileMode }"
     >
       <div class="flex-1 max-w-full md:max-w-[calc(100%_-_100px)] flex flex-row items-center gap-x-3">
         <GeneralOpenLeftSidebarBtn />
         <div v-if="!showEmptySkeleton" class="flex flex-row items-center h-full gap-x-2 px-2 min-w-0">
           <template v-if="props.tab">
-            <span class="font-semibold text-sm text-nc-content-gray truncate">
+            <span class="font-semibold text-sm text-atm-content-gray truncate">
               {{ settingsPageTitle }}
             </span>
           </template>
@@ -376,25 +376,25 @@ watch(
               }"
               class="h-6 w-6 md:(h-4 w-4) flex-none"
             />
-            <NcTooltip
-              class="flex font-bold text-base md:text-sm capitalize truncate max-w-150 text-nc-content-gray"
+            <AtTooltip
+              class="flex font-bold text-base md:text-sm capitalize truncate max-w-150 text-atm-content-gray"
               show-on-truncate-only
             >
               <template #title> {{ currentBase?.title }}</template>
               <span class="truncate">
                 {{ currentBase?.title }}
               </span>
-            </NcTooltip>
-            <NcBadge
+            </AtTooltip>
+            <AtBadge
               v-if="isPrivateBase"
               size="xs"
-              class="!text-bodySm !bg-nc-bg-gray-medium !text-nc-content-gray-subtle2"
+              class="!text-bodySm !bg-atm-bg-gray-medium !text-atm-content-gray-subtle2"
               color="gray"
               :border="false"
             >
               <GeneralIcon icon="ncLock" class="w-3.5 h-3.5 mr-1" />
               {{ $t('general.private') }}
-            </NcBadge>
+            </AtBadge>
           </template>
         </div>
       </div>
@@ -411,12 +411,12 @@ watch(
     </div>
     <div
       v-if="!showEmptySkeleton"
-      class="flex nc-base-view-tab overflow-hidden"
+      class="flex atm-base-view-tab overflow-hidden"
       :style="{
         height: 'calc(100% - var(--topbar-height))',
       }"
     >
-      <NcTabs
+      <AtTabs
         v-model:active-key="projectPageTab"
         class="w-full h-full"
         :class="{ 'hide-tabs': props.tab || showOverviewTab }"
@@ -428,7 +428,7 @@ watch(
         <a-tab-pane
           v-if="showOverviewTab || (!isAdminPanel && !props.tab && isOverviewTabVisible && !isMobileMode)"
           key="overview"
-          class="nc-project-overview-tab-content"
+          class="atm-project-overview-tab-content"
         >
           <template #tab>
             <div class="tab-title" data-testid="proj-view-tab__overview">
@@ -451,7 +451,7 @@ watch(
                 class="tab-info"
                 :class="{
                   'bg-primary-selected': projectPageTab === 'collaborator',
-                  'bg-nc-bg-gray-extralight': projectPageTab !== 'collaborator',
+                  'bg-atm-bg-gray-extralight': projectPageTab !== 'collaborator',
                 }"
               >
                 {{ userCount }}
@@ -482,7 +482,7 @@ watch(
                 class="tab-info"
                 :class="{
                   'bg-primary-selected': projectPageTab === 'workflows',
-                  'bg-nc-bg-gray-extralight': projectPageTab !== 'workflows',
+                  'bg-atm-bg-gray-extralight': projectPageTab !== 'workflows',
                 }"
               >
                 {{ workflowCount }}
@@ -529,7 +529,7 @@ watch(
                 class="tab-info"
                 :class="{
                   'bg-primary-selected': projectPageTab === 'data-source',
-                  'bg-nc-bg-gray-extralight': projectPageTab !== 'data-source',
+                  'bg-atm-bg-gray-extralight': projectPageTab !== 'data-source',
                 }"
               >
                 {{ base.sources.length }}
@@ -563,7 +563,7 @@ watch(
         </a-tab-pane>
         <a-tab-pane v-if="isAuditsTabVisible" key="audits" class="w-full">
           <template #tab>
-            <div class="tab-title" data-testid="nc-workspace-settings-tab-audits">
+            <div class="tab-title" data-testid="atm-workspace-settings-tab-audits">
               <GeneralIcon icon="audit" class="h-4 w-4" />
               {{ $t('title.audits') }}
             </div>
@@ -578,7 +578,7 @@ watch(
               <div>{{ $t('title.mcpServer') }}</div>
             </div>
           </template>
-          <div class="p-6 h-full max-h-full overflow-auto nc-scrollbar-thin">
+          <div class="p-6 h-full max-h-full overflow-auto atm-scrollbar-thin">
             <DashboardSettingsBaseMCP />
           </div>
         </a-tab-pane>
@@ -589,7 +589,7 @@ watch(
               <div>{{ $t('title.baseVariables') }}</div>
             </div>
           </template>
-          <div class="p-6 h-full max-h-full overflow-auto nc-scrollbar-thin">
+          <div class="p-6 h-full max-h-full overflow-auto atm-scrollbar-thin">
             <DashboardSettingsBaseVariables />
           </div>
         </a-tab-pane>
@@ -600,7 +600,7 @@ watch(
               <div>{{ $t('trash.settings') }}</div>
             </div>
           </template>
-          <div class="p-6 h-full max-h-full overflow-auto nc-scrollbar-thin">
+          <div class="p-6 h-full max-h-full overflow-auto atm-scrollbar-thin">
             <DashboardSettingsBaseTrash />
           </div>
         </a-tab-pane>
@@ -614,7 +614,7 @@ watch(
               <div>{{ $t('general.snapshots') }}</div>
             </div>
           </template>
-          <div class="p-6 h-full max-h-full overflow-auto nc-scrollbar-thin">
+          <div class="p-6 h-full max-h-full overflow-auto atm-scrollbar-thin">
             <DashboardSettingsBaseSnapshots />
           </div>
         </a-tab-pane>
@@ -627,7 +627,7 @@ watch(
           </template>
           <DashboardSettingsBase :base-id="base.id!" class="max-h-full" />
         </a-tab-pane>
-      </NcTabs>
+      </AtTabs>
     </div>
   </div>
 </template>
@@ -639,7 +639,7 @@ watch(
 :deep(.ant-tabs-nav) {
   @apply !mb-0 !pl-0;
 }
-:deep(.nc-project-overview-tab-content.ant-tabs-tabpane) {
+:deep(.atm-project-overview-tab-content.ant-tabs-tabpane) {
   @apply !h-full;
 }
 
@@ -669,7 +669,7 @@ watch(
 
   :deep(.ant-tabs-content) {
     > .ant-tabs-tabpane > div {
-      @apply nc-content-max-w mx-auto;
+      @apply atm-content-max-w mx-auto;
     }
   }
 }

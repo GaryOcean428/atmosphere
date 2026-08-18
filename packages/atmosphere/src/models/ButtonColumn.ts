@@ -1,7 +1,7 @@
-import { ButtonActionsType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import { ButtonActionsType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import { parseMetaProp, stringifyMetaProp } from '~/utils/modelUtils';
@@ -38,9 +38,9 @@ export default class ButtonColumn {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     buttonColumn: Partial<ButtonColumn> & { parsed_tree?: any },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const urlProps = ['formula_raw', 'formula', 'error', 'parsed_tree'];
 
@@ -90,13 +90,13 @@ export default class ButtonColumn {
   }
 
   public static async read(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let column =
       columnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.COL_BUTTON}:${columnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -112,7 +112,7 @@ export default class ButtonColumn {
         if (column.type === ButtonActionsType.Url) {
           column.parsed_tree = parseMetaProp(column, 'parsed_tree', null);
         }
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.COL_BUTTON}:${columnId}`,
           column,
@@ -132,10 +132,10 @@ export default class ButtonColumn {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     button: Partial<ButtonColumn> & { parsed_tree?: any },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const urlProps = [
       'fk_column_id',
@@ -193,7 +193,7 @@ export default class ButtonColumn {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.COL_BUTTON}:${columnId}`,
       updateObj,
@@ -205,9 +205,9 @@ export default class ButtonColumn {
   }
 
   public static async buttonUsages(
-    context: NcContext,
+    context: AtContext,
     scriptId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return await ncMeta.metaList2(
       context.workspace_id,

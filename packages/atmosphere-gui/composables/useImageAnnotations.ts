@@ -1,5 +1,5 @@
-import type { AttachmentType, CommentAnnotationRegion, CommentImageAnnotation, CommentType } from 'nocodb-sdk'
-import { getAttachmentAnnotationKey, ncIsString } from 'nocodb-sdk'
+import type { AttachmentType, CommentAnnotationRegion, CommentImageAnnotation, CommentType } from 'atmosphere-sdk'
+import { getAttachmentAnnotationKey, ncIsString } from 'atmosphere-sdk'
 
 export interface AnnotationMarker {
   commentId: string

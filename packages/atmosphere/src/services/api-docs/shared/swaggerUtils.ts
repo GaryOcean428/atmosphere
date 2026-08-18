@@ -1,4 +1,4 @@
-import { ViewTypes } from 'nocodb-sdk';
+import { ViewTypes } from 'atmosphere-sdk';
 import type { SourcesMap } from '~/services/api-docs/types';
 import type {
   Base,
@@ -9,8 +9,8 @@ import type {
   Source,
   View,
 } from '~/models';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { swaggerGetSourcePrefix } from '~/helpers/dbHelpers';
 
 export interface SwaggerView {
@@ -19,7 +19,7 @@ export interface SwaggerView {
 }
 
 export interface SwaggerGenerationContext {
-  context: NcContext;
+  context: AtContext;
   base: Base;
   sourcesMap: SourcesMap;
   models: Model[];
@@ -42,7 +42,7 @@ export async function prepareSwaggerGenerationData({
   context,
   models,
   sourcesMap,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 }: SwaggerGenerationContext): Promise<SwaggerGenerationResult> {
   // Pre-construct table names for all models to avoid repeated construction and handle duplicates
   const tableNamesMap = new Map<string, string>();
@@ -96,7 +96,7 @@ export async function generateSwagger<TSwaggerColumn, TSwaggerView>(
   generationContext: SwaggerGenerationContext,
   swaggerBase: any,
   getSwaggerColumnMetas: (
-    context: NcContext,
+    context: AtContext,
     param: {
       columns: any[];
       model: Model;
@@ -106,7 +106,7 @@ export async function generateSwagger<TSwaggerColumn, TSwaggerView>(
     ncMeta?: any,
   ) => Promise<TSwaggerColumn[]>,
   getPaths: (
-    context: NcContext,
+    context: AtContext,
     params: {
       base?: Base;
       model: Model;
@@ -118,7 +118,7 @@ export async function generateSwagger<TSwaggerColumn, TSwaggerView>(
     ncMeta?: any,
   ) => Promise<any>,
   getSchemas: (
-    context: NcContext,
+    context: AtContext,
     params: {
       base?: Base;
       model: Model;
@@ -136,7 +136,7 @@ export async function generateSwagger<TSwaggerColumn, TSwaggerView>(
     base,
     models,
     sourcesMap,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   } = generationContext;
 
   // base swagger object

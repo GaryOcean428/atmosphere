@@ -1,7 +1,7 @@
-import type { CalendarRangeType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import type { CalendarRangeType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheDelDirection, CacheScope, MetaTable } from '~/utils/globals';
 
@@ -17,9 +17,9 @@ export default class CalendarRange implements CalendarRangeType {
   }
 
   public static async bulkInsert(
-    context: NcContext,
+    context: AtContext,
     data: Partial<CalendarRange>[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const calRanges: {
       fk_from_column_id?: string;
@@ -42,19 +42,19 @@ export default class CalendarRange implements CalendarRangeType {
       insertObj,
     );
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.CALENDAR_VIEW_RANGE}:${insertData.fk_view_id}:list`,
       CacheDelDirection.PARENT_TO_CHILD,
     );
 
-    await NocoCache.set(
+    await AtmosphereCache.set(
       context,
       `${CacheScope.CALENDAR_VIEW_RANGE}:${insertData.id}`,
       insertData,
     );
 
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       context,
       CacheScope.CALENDAR_VIEW_RANGE,
       [insertData.fk_view_id],
@@ -65,11 +65,11 @@ export default class CalendarRange implements CalendarRangeType {
   }
 
   public static async read(
-    context: NcContext,
+    context: AtContext,
     fk_view_id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.CALENDAR_VIEW_RANGE,
       [fk_view_id],
@@ -83,7 +83,7 @@ export default class CalendarRange implements CalendarRangeType {
         MetaTable.CALENDAR_VIEW_RANGE,
         { condition: { fk_view_id } },
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.CALENDAR_VIEW_RANGE,
         [fk_view_id],
@@ -102,8 +102,8 @@ export default class CalendarRange implements CalendarRangeType {
 
   public static async delete(
     rangeId: string,
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const range = await ncMeta.metaGet2(
       context.workspace_id,
@@ -123,13 +123,13 @@ export default class CalendarRange implements CalendarRangeType {
       rangeId,
     );
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.CALENDAR_VIEW_RANGE}:${range.fk_view_id}:list`,
       CacheDelDirection.PARENT_TO_CHILD,
     );
 
-    await NocoCache.del(
+    await AtmosphereCache.del(
       context,
       `${CacheScope.CALENDAR_VIEW_RANGE}:${rangeId}`,
     );
@@ -138,9 +138,9 @@ export default class CalendarRange implements CalendarRangeType {
   }
 
   public static async find(
-    context: NcContext,
+    context: AtContext,
     fk_view_id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<CalendarRange> {
     const data = await ncMeta.metaGet2(
       context.workspace_id,
@@ -155,9 +155,9 @@ export default class CalendarRange implements CalendarRangeType {
   }
 
   public static async IsColumnBeingUsedAsRange(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     return await ncMeta.metaList2(
       context.workspace_id,

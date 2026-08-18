@@ -36,27 +36,27 @@ const onCopyToClipboard = async () => {
 </script>
 
 <template>
-  <div class="nc-mcp-code-tab-wrapper h-80 flex flex-col mt-2">
-    <div class="flex h-9 bg-nc-bg-gray-extralight border-b-1 border-nc-border-gray-medium rounded-t-lg items-center px-3">
-      <div class="flex-1 text-nc-content-gray leading-5">MCP Configuration</div>
-      <NcButton type="text" size="small" class="!hover:bg-nc-bg-gray-medium" @click="onCopyToClipboard">
+  <div class="atm-mcp-code-tab-wrapper h-80 flex flex-col mt-2">
+    <div class="flex h-9 bg-atm-bg-gray-extralight border-b-1 border-atm-border-gray-medium rounded-t-lg items-center px-3">
+      <div class="flex-1 text-atm-content-gray leading-5">MCP Configuration</div>
+      <AtButton type="text" size="small" class="!hover:bg-atm-bg-gray-medium" @click="onCopyToClipboard">
         <div class="flex items-center gap-2 text-small leading-[18px] min-w-80px justify-center">
           <GeneralIcon
             :icon="isCopied ? 'circleCheckSolid' : 'copy'"
             class="h-4 w-4"
             :class="{
-              'text-nc-content-gray-subtle': !isCopied,
+              'text-atm-content-gray-subtle': !isCopied,
               'text-green-700': isCopied,
             }"
           />
           {{ isCopied ? $t('general.copied') : $t('general.copy') }}
         </div>
-      </NcButton>
+      </AtButton>
     </div>
     <Suspense>
       <template #default>
         <MonacoEditor
-          class="h-72 !rounded-b-lg overflow-hidden !bg-nc-bg-gray-extralight"
+          class="h-72 !rounded-b-lg overflow-hidden !bg-atm-bg-gray-extralight"
           :model-value="code"
           :read-only="true"
           lang="json"
@@ -108,8 +108,8 @@ const onCopyToClipboard = async () => {
 </template>
 
 <style lang="scss">
-.nc-mcp-code-tab-wrapper {
-  @apply !bg-nc-bg-gray-extralight border-1 border-nc-border-gray-medium rounded-lg flex-1;
+.atm-mcp-code-tab-wrapper {
+  @apply !bg-atm-bg-gray-extralight border-1 border-atm-border-gray-medium rounded-lg flex-1;
 
   .monaco-editor {
     @apply !border-0 !rounded-b-lg pr-3 outline-none;
@@ -120,8 +120,8 @@ const onCopyToClipboard = async () => {
   .monaco-editor,
   .monaco-diff-editor,
   .monaco-component {
-    --vscode-editor-background: var(--nc-bg-gray-extralight);
-    --vscode-editorGutter-background: var(--nc-bg-gray-extralight);
+    --vscode-editor-background: var(--atm-bg-gray-extralight);
+    --vscode-editorGutter-background: var(--atm-bg-gray-extralight);
   }
 }
 </style>

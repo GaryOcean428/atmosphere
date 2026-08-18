@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SubjectHierarchyScope, TeamV3V3Type } from 'nocodb-sdk'
+import type { SubjectHierarchyScope, TeamV3V3Type } from 'atmosphere-sdk'
 import type { SelectValue } from 'ant-design-vue/es/select'
 
 const props = withDefaults(
@@ -65,9 +65,9 @@ async function onChangeTeam(val: SelectValue) {
   newTeam.value = null
 }
 
-const teamSelectorOptions = computed<NcListItemType[]>(() => {
+const teamSelectorOptions = computed<AtListItemType[]>(() => {
   return (props.teams || teamList.value || []).map(
-    (team): NcListItemType => ({
+    (team): AtListItemType => ({
       ...team,
       value: team.id,
       label: team.title,
@@ -87,44 +87,44 @@ const selectedTeams = computed(() => {
     } else {
       return team.value && team.value === (value.value as string)
     }
-  }) as NcListItemType[]
+  }) as AtListItemType[]
 })
 </script>
 
 <template>
-  <div class="nc-roles-selector relative flex items-center w-full">
-    <NcListDropdown
+  <div class="atm-roles-selector relative flex items-center w-full">
+    <AtListDropdown
       v-model:visible="isDropdownOpen"
       :default-slot-wrapper-class="`w-full ${size === 'lg' ? '!h-10' : ''} ${defaultSlotWrapperClass}`"
       :placement="placement"
     >
       <div class="w-[calc(100%_-_24px)] flex items-center gap-2">
-        <NcRenderVisibleItems v-if="selectedTeams.length" :items="selectedTeams" :icon-width="20" :padding-x="16" class="w-full">
+        <AtRenderVisibleItems v-if="selectedTeams.length" :items="selectedTeams" :icon-width="20" :padding-x="16" class="w-full">
           <template #default="{ visibleItems }">
             <div
               v-for="selectedTeam of visibleItems"
               :key="selectedTeam.value"
-              class="flex items-center gap-2 border-1 border-nc-border-gray-medium rounded-xl pr-2 truncate"
+              class="flex items-center gap-2 border-1 border-atm-border-gray-medium rounded-xl pr-2 truncate"
             >
               <GeneralTeamIcon :team="selectedTeam" class="!rounded-full" />
 
               {{ selectedTeam?.label }}
             </div>
           </template>
-        </NcRenderVisibleItems>
+        </AtRenderVisibleItems>
 
-        <span v-if="!selectedTeams.length" class="text-nc-content-gray-muted">
+        <span v-if="!selectedTeams.length" class="text-atm-content-gray-muted">
           -{{ isMultiSelect ? t('labels.selectOneOrMoreTeams') : t('labels.selectTeam') }}-
         </span>
       </div>
       <GeneralIcon
         icon="chevronDown"
-        class="flex-none h-4 w-4 text-nc-content-gray-muted transition-transform"
+        class="flex-none h-4 w-4 text-atm-content-gray-muted transition-transform"
         :class="{ 'transform rotate-180': isDropdownOpen }"
       />
 
       <template #overlay="{ onEsc }">
-        <NcList
+        <AtList
           v-model:open="isDropdownOpen"
           :value="value"
           :list="teamSelectorOptions"
@@ -137,23 +137,23 @@ const selectedTeams = computed(() => {
             !teamSelectorOptions.length && existingTeamIds?.length ? $t('objects.teams.noMoreTeamsToAdd') : undefined
           "
           variant="default"
-          item-class-name="nc-team-select-dropdown"
-          :wrapper-class-name="`!h-auto nc-team-selector-dropdown ${!!newTeam ? '!cursor-wait' : ''}`"
+          item-class-name="atm-team-select-dropdown"
+          :wrapper-class-name="`!h-auto atm-team-selector-dropdown ${!!newTeam ? '!cursor-wait' : ''}`"
           @update:value="onChangeTeam"
           @escape="onEsc"
         >
           <template #listItem="{ option }">
-            <div class="w-full flex items-center gap-2" :class="`nc-team-select-${option.value}`">
+            <div class="w-full flex items-center gap-2" :class="`atm-team-select-${option.value}`">
               <GeneralTeamInfo :team="option" class="flex-1 max-w-[100%_-_32px]" />
-              <NcBadge
+              <AtBadge
                 v-if="option.scope === 'org'"
                 :border="false"
                 color="blue"
                 class="text-[10px] leading-[14px] !h-[18px] font-semibold flex-none"
               >
                 {{ $t('general.orgBadge') }}
-              </NcBadge>
-              <NcTeamScopeToggle
+              </AtBadge>
+              <AtTeamScopeToggle
                 v-if="showHierarchyScope && compareValue(option.value) && teamHasSubTeams(option.value)"
                 :scope="teamHierarchyScopes?.[option.value]"
                 @toggle="onToggleTeamScope?.(String(option.value))"
@@ -162,8 +162,8 @@ const selectedTeams = computed(() => {
               <GeneralIcon v-else-if="!newTeam && compareValue(option.value)" icon="check" class="text-primary h-4 w-4" />
             </div>
           </template>
-        </NcList>
+        </AtList>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </div>
 </template>

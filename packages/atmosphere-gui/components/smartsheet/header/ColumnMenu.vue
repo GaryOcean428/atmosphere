@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ColumnReqType, ColumnType } from 'nocodb-sdk'
+import type { ColumnReqType, ColumnType } from 'atmosphere-sdk'
 import {
   PlanFeatureTypes,
   PlanLimitTypes,
@@ -17,7 +17,7 @@ import {
   isSystemColumn,
   partialUpdateAllowedTypes,
   readonlyMetaAllowedTypes,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { SmartsheetStoreEvents } from '#imports'
 
 const props = defineProps<{ virtual?: boolean; isOpen: boolean; isHiddenCol?: boolean; column: ColumnType }>()
@@ -579,17 +579,17 @@ const onDeleteColumn = () => {
 </script>
 
 <template>
-  <NcMenu
+  <AtMenu
     variant="small"
-    class="flex flex-col gap-1 border-nc-border-gray-medium nc-column-options !min-w-55 nc-max-h-screen nc-scrollbar-thin"
+    class="flex flex-col gap-1 border-atm-border-gray-medium atm-column-options !min-w-55 atm-max-h-screen atm-scrollbar-thin"
     :class="{
       'min-w-[256px]': isExpandedForm,
     }"
   >
-    <NcMenuItemCopyId
+    <AtMenuItemCopyId
       v-if="column"
       :id="column.id!"
-      data-testid="nc-field-item-action-copy-id"
+      data-testid="atm-field-item-action-copy-id"
       :tooltip="$t('msg.clickToCopyFieldId')"
       :label="
         $t('labels.idColon', {
@@ -598,7 +598,7 @@ const onDeleteColumn = () => {
       "
     />
 
-    <NcDivider />
+    <AtDivider />
     <GeneralSourceRestrictionTooltip
       v-if="isUIAllowed('fieldAlter') || !!fieldAlterReason"
       :message="$t('tooltip.fieldPropertiesCannotBeEdited')"
@@ -614,7 +614,7 @@ const onDeleteColumn = () => {
         </template>
       </template>
 
-      <NcMenuItem
+      <AtMenuItem
         v-if="!isMobileMode"
         :disabled="
           !!fieldAlterReason ||
@@ -626,12 +626,12 @@ const onDeleteColumn = () => {
         :title="linksAssociated?.length ? $t('tooltip.fieldAssociatedWithLinkColumn') : undefined"
         @click="onEditPress($event, false)"
       >
-        <div class="nc-column-edit nc-header-menu-item">
+        <div class="atm-column-edit atm-header-menu-item">
           <component :is="iconMap.ncEdit" class="opacity-80" />
           <!-- Edit -->
           {{ $t('general.edit') }} {{ $t('objects.field').toLowerCase() }}
         </div>
-      </NcMenuItem>
+      </AtMenuItem>
     </GeneralSourceRestrictionTooltip>
     <GeneralSourceRestrictionTooltip
       v-if="
@@ -646,9 +646,9 @@ const onDeleteColumn = () => {
       :enabled="!!isMetaReadOnly"
       :is-sql-view="isSqlView"
     >
-      <NcMenuItem
+      <AtMenuItem
         :disabled="isMetaReadOnly"
-        data-testid="nc-column-convert-link-v2"
+        data-testid="atm-column-convert-link-v2"
         @click="
           () => {
             isOpen = false
@@ -656,11 +656,11 @@ const onDeleteColumn = () => {
           }
         "
       >
-        <div class="nc-column-convert-v2 nc-header-menu-item">
+        <div class="atm-column-convert-v2 atm-header-menu-item">
           <GeneralIcon icon="ncArrowUpCircle" class="opacity-80" />
           {{ $t('labels.convertToNewLink') }}
         </div>
-      </NcMenuItem>
+      </AtMenuItem>
     </GeneralSourceRestrictionTooltip>
     <template v-if="!isExpandedForm">
       <GeneralSourceRestrictionTooltip
@@ -669,54 +669,54 @@ const onDeleteColumn = () => {
         :enabled="!isDuplicateAllowed && isMetaReadOnly"
         :is-sql-view="isSqlView"
       >
-        <NcMenuItem :disabled="!isDuplicateAllowed || isSqlView" @click="openDuplicateDlg">
-          <div v-e="['a:field:duplicate']" class="nc-column-duplicate nc-header-menu-item">
+        <AtMenuItem :disabled="!isDuplicateAllowed || isSqlView" @click="openDuplicateDlg">
+          <div v-e="['a:field:duplicate']" class="atm-column-duplicate atm-header-menu-item">
             <component :is="iconMap.duplicate" class="opacity-80" />
             <!-- Duplicate -->
             {{ $t('general.duplicate') }} {{ $t('objects.field').toLowerCase() }}
           </div>
-        </NcMenuItem>
+        </AtMenuItem>
       </GeneralSourceRestrictionTooltip>
       <GeneralSourceRestrictionTooltip
         v-if="isUIAllowed('duplicateColumn') && isExpandedForm && !column?.pk"
         :message="$t('tooltip.fieldCannotBeDuplicated')"
         :enabled="!isDuplicateAllowed"
       >
-        <NcMenuItem :disabled="!isDuplicateAllowed || isSqlView" @click="openDuplicateDlg">
-          <div v-e="['a:field:duplicate']" class="nc-column-duplicate nc-header-menu-item">
+        <AtMenuItem :disabled="!isDuplicateAllowed || isSqlView" @click="openDuplicateDlg">
+          <div v-e="['a:field:duplicate']" class="atm-column-duplicate atm-header-menu-item">
             <component :is="iconMap.duplicate" class="opacity-80" />
             <!-- Duplicate -->
             {{ $t('general.duplicate') }} {{ $t('objects.field').toLowerCase() }}
           </div>
-        </NcMenuItem>
+        </AtMenuItem>
       </GeneralSourceRestrictionTooltip>
     </template>
 
-    <NcTooltip v-if="isUIAllowed('fieldAlter') && !!column?.pv" :disabled="!isSyncedTable" placement="right">
+    <AtTooltip v-if="isUIAllowed('fieldAlter') && !!column?.pv" :disabled="!isSyncedTable" placement="right">
       <template #title>{{ $t('msg.info.displayValueChangeNotAvailableForSyncedTable') }}</template>
-      <NcMenuItem :disabled="isSyncedTable" :title="$t('tooltip.selectNewFieldAsDisplayValue')" @click="changeTitleField">
-        <div class="nc-column-change-display-value-field nc-header-menu-item">
+      <AtMenuItem :disabled="isSyncedTable" :title="$t('tooltip.selectNewFieldAsDisplayValue')" @click="changeTitleField">
+        <div class="atm-column-change-display-value-field atm-header-menu-item">
           <GeneralIcon icon="star" class="opacity-80 !w-4.25 !h-4.25" />
           {{ $t('labels.changeDisplayValueField') }}
         </div>
-      </NcMenuItem>
-    </NcTooltip>
-    <NcTooltip
+      </AtMenuItem>
+    </AtTooltip>
+    <AtTooltip
       v-if="
         !isMobileMode && (isUIAllowed('fieldAlter') || !!fieldAlterReason) && !isSqlView && column.uidt !== UITypes.ForeignKey
       "
       :disabled="!fieldAlterReason"
     >
       <template #title>{{ fieldAlterReason ? $t(fieldAlterReason) : '' }}</template>
-      <NcMenuItem :disabled="!!fieldAlterReason" :title="$t('tooltip.addFieldDescription')" @click="onEditPress($event, true)">
-        <div class="nc-column-edit-description nc-header-menu-item">
+      <AtMenuItem :disabled="!!fieldAlterReason" :title="$t('tooltip.addFieldDescription')" @click="onEditPress($event, true)">
+        <div class="atm-column-edit-description atm-header-menu-item">
           <GeneralIcon icon="ncAlignLeft" class="opacity-80 !w-4.25 !h-4.25" />
           {{ $t('labels.editFieldDescription') }}
         </div>
-      </NcMenuItem>
-    </NcTooltip>
+      </AtMenuItem>
+    </AtTooltip>
 
-    <NcTooltip
+    <AtTooltip
       v-if="
         isEeUI &&
         (isUIAllowed('fieldAlter') || !!fieldAlterReason) &&
@@ -740,7 +740,7 @@ const onDeleteColumn = () => {
 
       <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_TABLE_AND_FIELD_PERMISSIONS">
         <template #default="{ click }">
-          <NcMenuItem
+          <AtMenuItem
             :disabled="!!fieldAlterReason || !showEditRestrictedColumnTooltip(column) || isSyncedReadonlyField || isUUID(column)"
             @click="
               click(PlanFeatureTypes.FEATURE_TABLE_AND_FIELD_PERMISSIONS, () => {
@@ -748,7 +748,7 @@ const onDeleteColumn = () => {
               })
             "
           >
-            <div class="nc-column-field-permissions nc-header-menu-item w-full">
+            <div class="atm-column-field-permissions atm-header-menu-item w-full">
               <GeneralIcon icon="ncLock" class="opacity-80 !w-4.25 !h-4.25" />
               <div class="flex-1">
                 {{ $t('title.editFieldPermissions') }}
@@ -766,17 +766,17 @@ const onDeleteColumn = () => {
                 size="xs"
               />
             </div>
-          </NcMenuItem>
+          </AtMenuItem>
         </template>
       </PaymentUpgradeBadgeProvider>
-    </NcTooltip>
+    </AtTooltip>
 
-    <NcMenuItem
+    <AtMenuItem
       v-if="!isMobileMode && canUseForLookupLinkField(column, meta?.source_id)"
       :disabled="isSqlView"
       @click="openLookupOrRollupMenuDialog(UITypes.Lookup)"
     >
-      <div v-e="['a:field:lookup:create']" class="nc-column-lookup-create nc-header-menu-item">
+      <div v-e="['a:field:lookup:create']" class="atm-column-lookup-create atm-header-menu-item">
         <SmartsheetHeaderVirtualCellIcon
           :column-meta="{
             uidt: UITypes.Lookup,
@@ -789,13 +789,13 @@ const onDeleteColumn = () => {
         />
         {{ $t('general.addLookupField') }}
       </div>
-    </NcMenuItem>
-    <NcMenuItem
+    </AtMenuItem>
+    <AtMenuItem
       v-if="!isMobileMode && canUseForRollupLinkField(column)"
       :disabled="isSqlView"
       @click="openLookupOrRollupMenuDialog(UITypes.Rollup)"
     >
-      <div v-e="['a:field:rollup:create']" class="nc-column-rollup-create nc-header-menu-item">
+      <div v-e="['a:field:rollup:create']" class="atm-column-rollup-create atm-header-menu-item">
         <SmartsheetHeaderVirtualCellIcon
           :column-meta="{
             uidt: UITypes.Rollup,
@@ -808,17 +808,17 @@ const onDeleteColumn = () => {
         />
         {{ $t('general.addRollupField') }}
       </div>
-    </NcMenuItem>
-    <NcDivider v-if="isUIAllowed('fieldAlter') && !column?.pv" />
-    <NcMenuItem v-if="!column?.pv" :disabled="isLocked" @click="hideOrShowField">
-      <div v-e="['a:field:hide']" class="nc-column-hide-or-show nc-header-menu-item">
+    </AtMenuItem>
+    <AtDivider v-if="isUIAllowed('fieldAlter') && !column?.pv" />
+    <AtMenuItem v-if="!column?.pv" :disabled="isLocked" @click="hideOrShowField">
+      <div v-e="['a:field:hide']" class="atm-column-hide-or-show atm-header-menu-item">
         <GeneralLoader v-if="isLoading === 'hideOrShow'" size="regular" />
         <component :is="isHiddenCol ? iconMap.eye : iconMap.eyeSlash" v-else class="!w-4 !h-4 opacity-80" />
         <!-- Hide Field -->
         {{ isHiddenCol ? $t('general.showField') : $t('general.hideField') }}
       </div>
-    </NcMenuItem>
-    <NcTooltip
+    </AtMenuItem>
+    <AtTooltip
       v-if="column && !column?.pv && !isHiddenCol && (!virtual || column.uidt === UITypes.Formula)"
       :disabled="isSupportedDisplayValueColumn(column) && !isSyncedTable"
       placement="right"
@@ -831,8 +831,8 @@ const onDeleteColumn = () => {
         }}
       </template>
 
-      <NcMenuItem :disabled="isLocked || isSyncedTable || !isSupportedDisplayValueColumn(column)" @click="setAsDisplayValue">
-        <div class="nc-column-set-primary nc-header-menu-item item">
+      <AtMenuItem :disabled="isLocked || isSyncedTable || !isSupportedDisplayValueColumn(column)" @click="setAsDisplayValue">
+        <div class="atm-column-set-primary atm-header-menu-item item">
           <GeneralLoader v-if="isLoading === 'setDisplay'" size="regular" />
           <GeneralIcon v-else icon="star" class="opacity-80 !w-4.25 !h-4.25" />
 
@@ -840,44 +840,44 @@ const onDeleteColumn = () => {
           <!-- Set as Display value -->
           {{ $t('activity.setDisplay') }}
         </div>
-      </NcMenuItem>
-    </NcTooltip>
+      </AtMenuItem>
+    </AtTooltip>
 
     <template v-if="!isExpandedForm">
-      <NcDivider v-if="!isLinksOrLTAR(column) || column.colOptions.type !== RelationTypes.BELONGS_TO" />
+      <AtDivider v-if="!isLinksOrLTAR(column) || column.colOptions.type !== RelationTypes.BELONGS_TO" />
 
       <template v-if="!isLinksOrLTAR(column) || column.colOptions.type !== RelationTypes.BELONGS_TO">
-        <NcTooltip :disabled="isSortSupported">
+        <AtTooltip :disabled="isSortSupported">
           <template #title>
             {{ !isSortSupported ? $t('tooltip.thisFieldTypeDoesNotSupportSorting') : '' }}
           </template>
-          <NcMenuItem :disabled="isLocked || !isSortSupported" @click="sortByColumn('asc')">
-            <div v-e="['a:field:sort', { dir: 'asc' }]" class="nc-header-menu-item">
+          <AtMenuItem :disabled="isLocked || !isSortSupported" @click="sortByColumn('asc')">
+            <div v-e="['a:field:sort', { dir: 'asc' }]" class="atm-header-menu-item">
               <component :is="iconMap.sortDesc" class="opacity-80 transform !rotate-180 !w-4.25 !h-4.25" />
 
               <!-- Sort Ascending -->
               {{ $t('general.sortAsc') }}
             </div>
-          </NcMenuItem>
-        </NcTooltip>
+          </AtMenuItem>
+        </AtTooltip>
 
-        <NcTooltip :disabled="isSortSupported">
+        <AtTooltip :disabled="isSortSupported">
           <template #title>
             {{ !isSortSupported ? $t('tooltip.thisFieldTypeDoesNotSupportSorting') : '' }}
           </template>
-          <NcMenuItem :disabled="isLocked || !isSortSupported" @click="sortByColumn('desc')">
-            <div v-e="['a:field:sort', { dir: 'desc' }]" class="nc-header-menu-item">
+          <AtMenuItem :disabled="isLocked || !isSortSupported" @click="sortByColumn('desc')">
+            <div v-e="['a:field:sort', { dir: 'desc' }]" class="atm-header-menu-item">
               <!-- Sort Descending -->
               <component :is="iconMap.sortDesc" class="opacity-80 !w-4.25 !h-4.25" />
               {{ $t('general.sortDesc').trim() }}
             </div>
-          </NcMenuItem>
-        </NcTooltip>
+          </AtMenuItem>
+        </AtTooltip>
       </template>
 
-      <NcDivider />
+      <AtDivider />
 
-      <NcTooltip v-if="!isMobileMode" :disabled="isFilterSupported && !isFilterLimitExceeded">
+      <AtTooltip v-if="!isMobileMode" :disabled="isFilterSupported && !isFilterLimitExceeded">
         <template #title>
           {{
             !isFilterSupported
@@ -887,19 +887,19 @@ const onDeleteColumn = () => {
               : ''
           }}
         </template>
-        <NcMenuItem
+        <AtMenuItem
           :disabled="isLocked || !isFilterSupported || isFilterLimitExceeded"
           @click="filterOrGroupByThisField(SmartsheetStoreEvents.FILTER_ADD)"
         >
-          <div v-e="['a:field:add:filter']" class="nc-column-filter nc-header-menu-item">
+          <div v-e="['a:field:add:filter']" class="atm-column-filter atm-header-menu-item">
             <component :is="iconMap.filter" class="opacity-80" />
             <!-- Filter by this field -->
             {{ $t('activity.filterByThisField') }}
           </div>
-        </NcMenuItem>
-      </NcTooltip>
+        </AtMenuItem>
+      </AtTooltip>
 
-      <NcTooltip :disabled="(isGroupBySupported && !isGroupByLimitExceeded) || isGroupedByThisField || !(isEeUI && !isPublic)">
+      <AtTooltip :disabled="(isGroupBySupported && !isGroupByLimitExceeded) || isGroupedByThisField || !(isEeUI && !isPublic)">
         <template #title
           >{{
             !isGroupBySupported
@@ -909,7 +909,7 @@ const onDeleteColumn = () => {
               : ''
           }}
         </template>
-        <NcMenuItem
+        <AtMenuItem
           :disabled="
             isLocked || (isEeUI && !isPublic && (!isGroupBySupported || isGroupByLimitExceeded) && !isGroupedByThisField)
           "
@@ -919,32 +919,32 @@ const onDeleteColumn = () => {
             )
           "
         >
-          <div v-e="['a:field:add:groupby']" class="nc-column-groupby nc-header-menu-item">
+          <div v-e="['a:field:add:groupby']" class="atm-column-groupby atm-header-menu-item">
             <component :is="iconMap.group" class="opacity-80" />
             <!-- Group by this field -->
             {{ isGroupedByThisField ? $t('activity.dontGroupByThisField') : $t('activity.groupByThisField') }}
           </div>
-        </NcMenuItem>
-      </NcTooltip>
+        </AtMenuItem>
+      </AtTooltip>
       <template v-if="!isSqlView && !isMobileMode">
-        <NcDivider />
-        <NcMenuItem @click="onInsertAfter">
-          <div v-e="['a:field:insert:after']" class="nc-column-insert-after nc-header-menu-item">
+        <AtDivider />
+        <AtMenuItem @click="onInsertAfter">
+          <div v-e="['a:field:insert:after']" class="atm-column-insert-after atm-header-menu-item">
             <component :is="iconMap.colInsertAfter" class="opacity-80 w-4 h-4" />
             <!-- Insert After -->
             {{ $t('general.insertAfter') }}
           </div>
-        </NcMenuItem>
-        <NcMenuItem v-if="!column?.pv" @click="onInsertBefore">
-          <div v-e="['a:field:insert:before']" class="nc-column-insert-before nc-header-menu-item">
+        </AtMenuItem>
+        <AtMenuItem v-if="!column?.pv" @click="onInsertBefore">
+          <div v-e="['a:field:insert:before']" class="atm-column-insert-before atm-header-menu-item">
             <component :is="iconMap.colInsertBefore" class="opacity-80 w-4 h-4" />
             <!-- Insert Before -->
             {{ $t('general.insertBefore') }}
           </div>
-        </NcMenuItem>
+        </AtMenuItem>
       </template>
     </template>
-    <NcDivider v-if="!column?.pv" />
+    <AtDivider v-if="!column?.pv" />
     <GeneralSourceRestrictionTooltip
       v-if="!column?.pv && (isUIAllowed('fieldDelete') || !!fieldDeleteReason)"
       :message="$t('tooltip.fieldCannotBeDeleted')"
@@ -959,18 +959,18 @@ const onDeleteColumn = () => {
           </div>
         </template>
       </template>
-      <NcMenuItem
+      <AtMenuItem
         :disabled="!!fieldDeleteReason || !isDeleteAllowed || !isColumnUpdateAllowed || linksAssociated?.length"
         :title="linksAssociated ? $t('tooltip.fieldAssociatedWithLinkColumn') : undefined"
         danger
         @click="handleDelete"
       >
-        <div class="nc-column-delete nc-header-menu-item">
+        <div class="atm-column-delete atm-header-menu-item">
           <component :is="iconMap.delete" class="opacity-80" />
           <!-- Delete -->
           {{ $t('general.delete') }} {{ $t('objects.field').toLowerCase() }}
         </div>
-      </NcMenuItem>
+      </AtMenuItem>
     </GeneralSourceRestrictionTooltip>
     <div class="non-menu-items">
       <SmartsheetHeaderDeleteColumnModal key="dc" v-model:visible="showDeleteColumnModal" :on-delete-column="onDeleteColumn" />
@@ -999,25 +999,25 @@ const onDeleteColumn = () => {
         :field-uidt="column.uidt!"
       />
     </div>
-  </NcMenu>
+  </AtMenu>
 </template>
 
 <style scoped lang="scss">
-:deep(.nc-menu-item-inner) {
+:deep(.atm-menu-item-inner) {
   @apply !w-full;
 }
 
-:deep(.nc-header-menu-item) {
+:deep(.atm-header-menu-item) {
   @apply text-dropdown flex items-center gap-2;
 }
 
-.nc-column-options {
-  .nc-icons {
+.atm-column-options {
+  .atm-icons {
     @apply !w-5 !h-5;
   }
 }
 
-:deep(.ant-dropdown-menu-item.ant-dropdown-menu-item-disabled .nc-icon) {
+:deep(.ant-dropdown-menu-item.ant-dropdown-menu-item-disabled .atm-icon) {
   @apply text-current;
 }
 </style>

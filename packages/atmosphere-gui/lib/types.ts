@@ -20,7 +20,7 @@ import {
   type UserType,
   type ViewType,
   type ViewTypes,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type { Composer, I18n } from 'vue-i18n'
 import type { Theme as AntTheme } from 'ant-design-vue/es/config-provider'
 import type { UploadFile } from 'ant-design-vue'
@@ -93,7 +93,7 @@ type Filter = FilterType & {
   readOnly?: boolean
 }
 
-type NocoI18n = I18n<Record<string, unknown>, Record<string, unknown>, Record<string, unknown>, string, false>
+type AtmosphereI18n = I18n<Record<string, unknown>, Record<string, unknown>, Record<string, unknown>, string, false>
 
 interface ThemeConfig extends AntTheme {
   primaryColor: string
@@ -254,7 +254,7 @@ type Nullable<T> = { [K in keyof T]: T[K] | null }
 /**
  * @description: Base type for frontend
  */
-type NcProject = BaseType & {
+type AtProject = BaseType & {
   /**
    * When base is expanded in sidebar
    * */
@@ -341,7 +341,7 @@ type ProjectPageType =
 
 type ViewPageType = 'view' | 'webhook' | 'api' | 'field' | 'relation' | 'permissions'
 
-type NcButtonSize = 'xxsmall' | 'xsmall' | 'small' | 'medium' | 'xs'
+type AtButtonSize = 'xxsmall' | 'xsmall' | 'small' | 'medium' | 'xs'
 
 interface SidebarTableNode extends TableType {
   isMetaLoading?: boolean
@@ -410,7 +410,7 @@ interface AuditLogsQuery {
   }
 }
 
-interface NcTableColumnProps<T extends object = Record<string, any>> {
+interface AtTableColumnProps<T extends object = Record<string, any>> {
   key: 'name' | 'action' | string
   // title is column header cell value and we can also pass i18n value as this is just used to render in UI
   title: string
@@ -821,13 +821,13 @@ interface PermissionSelectorUser {
   hierarchy_scope?: 'self_only' | 'self_and_descendants'
 }
 
-// NcList type starts here
+// AtList type starts here
 
 type MultiSelectRawValueType = Array<string | number>
 
 type RawValueType = string | number | MultiSelectRawValueType
 
-interface NcListItemType {
+interface AtListItemType {
   value?: RawValueType
   label?: string
   ncItemDisabled?: boolean
@@ -843,7 +843,7 @@ interface NcListItemType {
   [key: string]: any
 }
 
-interface NcListSearchBasisOptionType {
+interface AtListSearchBasisOptionType {
   /**
    * The search basis info to use for the list.
    * This will tell user that the search is based on this property.
@@ -852,17 +852,17 @@ interface NcListSearchBasisOptionType {
   /**
    * The filter callback to use for the list.
    */
-  filterCallback: (input: string, option: NcListItemType, index: Number) => boolean
+  filterCallback: (input: string, option: AtListItemType, index: Number) => boolean
 }
 
 /**
- * Props interface for a standalone NcListItem component.
- * Used both by NcList internally and anywhere an individual list-item
+ * Props interface for a standalone AtListItem component.
+ * Used both by AtList internally and anywhere an individual list-item
  * with consistent variant / state styling is needed.
  */
-interface NcListItemProps {
+interface AtListItemProps {
   /** The list item data object */
-  option: NcListItemType
+  option: AtListItemType
   /** Size variant — controls padding and min-height */
   variant?: 'default' | 'small' | 'medium'
   /** Index within the parent list (used for keyboard-active CSS class) */
@@ -877,7 +877,7 @@ interface NcListItemProps {
   showSelectedOption?: boolean
   /**
    * Whether to render the selected-item background highlight.
-   * NcList sets this to false while the user is moving with the keyboard
+   * AtList sets this to false while the user is moving with the keyboard
    * so the hover effect doesn't compete with the keyboard-active highlight.
    */
   showHoverEffect?: boolean
@@ -903,11 +903,11 @@ interface NcListItemProps {
 /**
  * Props interface for the List component
  */
-interface NcListProps {
+interface AtListProps {
   /** The currently selected value */
   value: RawValueType
   /** The list of items to display */
-  list: NcListItemType[]
+  list: AtListItemType[]
   /**
    * The order of the groups in the list, this will be used to sort the groups in the list
    * @example
@@ -952,7 +952,7 @@ interface NcListProps {
   groupHeaderHeight?: number
   variant?: 'default' | 'small' | 'medium'
   /** Custom filter function for list items */
-  filterOption?: (input: string, option: NcListItemType, index: Number) => boolean
+  filterOption?: (input: string, option: AtListItemType, index: Number) => boolean
   /**
    * Indicates whether the component allows multiple selections.
    */
@@ -1015,7 +1015,7 @@ interface NcListProps {
    *
    * @example
    * ```ts
-   * const searchBasisOptions: NcListSearchBasisOptionType[] = [
+   * const searchBasisOptions: AtListSearchBasisOptionType[] = [
    *  {
    *    searchBasisInfo: t('msg.info.matchedByButtonLabel'),
    *    filterCallback: (query, option) => {
@@ -1041,7 +1041,7 @@ interface NcListProps {
    * ]
    * ```
    */
-  searchBasisOptions?: NcListSearchBasisOptionType[]
+  searchBasisOptions?: AtListSearchBasisOptionType[]
 
   /**
    * @default default
@@ -1054,13 +1054,13 @@ interface NcListProps {
   focusSearchOnOpen?: boolean
 }
 
-// NcList type ends here
+// AtList type ends here
 
 /** Which UI the LTAR cells render inside `LinkRecordDropdown` — the classic
  * card modal or the compact single-list picker used by interface inline edit. */
 type LinkRecordDropdownVariant = 'classic' | 'simple'
 
-type NcDropdownPlacement =
+type AtDropdownPlacement =
   | 'bottom'
   | 'top'
   | 'bottomLeft'
@@ -1092,10 +1092,10 @@ interface CreateViewForm {
   fk_cover_image_col_id: string | null | undefined
 }
 
-// NcClipboardDataType type starts here
-type NcClipboardDataType = Record<string, NcClipboardDataItemType>
+// AtClipboardDataType type starts here
+type AtClipboardDataType = Record<string, AtClipboardDataItemType>
 
-interface NcClipboardDataItemType {
+interface AtClipboardDataItemType {
   /**
    * Unique clipboard item id
    */
@@ -1109,7 +1109,7 @@ interface NcClipboardDataItemType {
   columns: Partial<ColumnType>[]
 }
 
-// NcClipboardDataType type ends here
+// AtClipboardDataType type ends here
 
 interface AttachmentCellDropOverType {
   rowIndex: number
@@ -1178,7 +1178,7 @@ export type {
   ProjectMetaInfo,
   Field,
   Filter,
-  NocoI18n,
+  AtmosphereI18n,
   ThemeConfig,
   RowMetaRowColorInfo,
   Row,
@@ -1190,14 +1190,14 @@ export type {
   importFileList,
   streamImportFileList,
   Nullable,
-  NcProject,
+  AtProject,
   ImportWorkerPayload,
   Group,
   GroupNestedIn,
   Users,
   ProjectPageType,
   ViewPageType,
-  NcButtonSize,
+  AtButtonSize,
   SidebarTableNode,
   UsersSortType,
   CommandPaletteType,
@@ -1206,7 +1206,7 @@ export type {
   ImageCropperConfig,
   ImageCropperProps,
   AuditLogsQuery,
-  NcTableColumnProps,
+  AtTableColumnProps,
   SordDirectionType,
   ProductFeedItem,
   Attachment,
@@ -1229,18 +1229,18 @@ export type {
   CanvasScrollToCellFn,
   PermissionConfig,
   PermissionSelectorUser,
-  NcListProps,
-  NcListItemProps,
-  NcListItemType,
-  NcListSearchBasisOptionType,
+  AtListProps,
+  AtListItemProps,
+  AtListItemType,
+  AtListSearchBasisOptionType,
   MultiSelectRawValueType,
   RawValueType,
   LinkRecordDropdownVariant,
-  NcDropdownPlacement,
+  AtDropdownPlacement,
   MakeCellEditableFn,
   CreateViewForm,
-  NcClipboardDataType,
-  NcClipboardDataItemType,
+  AtClipboardDataType,
+  AtClipboardDataItemType,
   AttachmentCellDropOverType,
   GroupKeysStorage,
   ViewScrollPositionStorage,

@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, EventType } from 'nocodb-sdk';
+import { AppEvents, EventType } from 'atmosphere-sdk';
 import { Base, Model } from '../models';
 import type {
   CommentReqType,
   CommentUpdateReqType,
   UserType,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
-import { NcError } from '~/helpers/catchError';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
+import { AtError } from '~/helpers/catchError';
 import { validatePayload } from '~/helpers';
 import { sanitizeCommentBody } from '~/helpers/sanitizeCommentBody';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import Comment from '~/models/Comment';
 import { MailService } from '~/services/mail/mail.service';
 import { MailEvent } from '~/interface/Mail';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 @Injectable()
 export class CommentsService {
@@ -24,11 +24,11 @@ export class CommentsService {
   ) {}
 
   async commentRow(
-    context: NcContext,
+    context: AtContext,
     param: {
       body: CommentReqType;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
       /** Interface-scoped callers stamp their surface — see `RowCommentEvent.source`. */
       source?: { interfaceId: string; pageId: string };
     },
@@ -73,7 +73,7 @@ export class CommentsService {
       ...(param.source ? { source: param.source } : {}),
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.COMMENT_EVENT,
@@ -91,17 +91,17 @@ export class CommentsService {
   }
 
   async commentDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       commentId: string;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     const comment = await Comment.get(context, param.commentId);
 
     if (comment.created_by !== param.user.id || comment.is_deleted) {
-      NcError.get(context).unauthorized('Unauthorized access');
+      AtError.get(context).unauthorized('Unauthorized access');
     }
 
     const res = await Comment.delete(context, param.commentId);
@@ -120,7 +120,7 @@ export class CommentsService {
       context,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.COMMENT_EVENT,
@@ -138,7 +138,7 @@ export class CommentsService {
   }
 
   async commentList(
-    context: NcContext,
+    context: AtContext,
     param: {
       query: {
         row_id: string;
@@ -150,7 +150,7 @@ export class CommentsService {
   }
 
   async commentsCount(
-    context: NcContext,
+    context: AtContext,
     param: { fk_model_id: string; ids: string[] },
   ) {
     return await Comment.commentsCount(context, {
@@ -160,12 +160,12 @@ export class CommentsService {
   }
 
   async commentUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       commentId: string;
       user: UserType;
       body: CommentUpdateReqType;
-      req: NcRequest;
+      req: AtRequest;
       /** Interface-scoped callers stamp their surface — see `RowCommentEvent.source`. */
       source?: { interfaceId: string; pageId: string };
     },
@@ -178,7 +178,7 @@ export class CommentsService {
     const comment = await Comment.get(context, param.commentId);
 
     if (comment.created_by !== param.user.id || comment.is_deleted) {
-      NcError.get(context).unauthorized('Unauthorized access');
+      AtError.get(context).unauthorized('Unauthorized access');
     }
 
     const sanitizedComment = sanitizeCommentBody(param.body.comment);
@@ -225,7 +225,7 @@ export class CommentsService {
       ...(param.source ? { source: param.source } : {}),
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.COMMENT_EVENT,

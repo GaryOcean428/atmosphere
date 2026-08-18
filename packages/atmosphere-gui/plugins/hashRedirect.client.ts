@@ -2,7 +2,7 @@
  * Hash-to-clean-URL redirect plugin.
  *
  * Runs on page load. If the URL contains a hash fragment that looks like
- * a route (e.g. `/#/signin`, `/dashboard/#/nc/view/xxx`), redirect to
+ * a route (e.g. `/#/signin`, `/dashboard/#/atm/view/xxx`), redirect to
  * the equivalent clean URL so old bookmarks and shared links keep working.
  *
  * Resolution (incl. the open-redirect guard) lives in `extractLegacyHashRoute`,

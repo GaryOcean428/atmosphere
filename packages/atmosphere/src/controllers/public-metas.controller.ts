@@ -2,7 +2,7 @@ import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { PublicMetasService } from '~/services/public-metas.service';
 import { PublicApiLimiterGuard } from '~/guards/public-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @UseGuards(PublicApiLimiterGuard)
 @Controller()
@@ -14,8 +14,8 @@ export class PublicMetasController {
     '/api/v2/public/shared-view/:sharedViewUuid/meta',
   ])
   async viewMetaGet(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('sharedViewUuid') sharedViewUuid: string,
   ) {
     return await this.publicMetasService.viewMetaGet(context, {
@@ -29,7 +29,7 @@ export class PublicMetasController {
     '/api/v2/public/shared-base/:sharedBaseUuid/meta',
   ])
   async publicSharedBaseGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('sharedBaseUuid') sharedBaseUuid: string,
   ): Promise<any> {
     return await this.publicMetasService.publicSharedBaseGet(context, {

@@ -1,4 +1,4 @@
-import { NC_ERROR_SENTINEL, UITypes } from 'nocodb-sdk';
+import { ATMOSPHERE_ERROR_SENTINEL, UITypes } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { Knex } from 'knex';
 import type {
@@ -8,13 +8,13 @@ import type {
   QrCodeColumn,
   RollupColumn,
 } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { MetaService } from '~/meta/meta.service';
 import { Column } from '~/models';
 import generateLookupSelectQuery from '~/db/generateLookupSelectQuery';
 import genRollupSelectv2 from '~/db/genRollupSelectv2';
 import { boolSqlLiteral } from '~/helpers/dbHelpers';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 /**
  * Get the column name query for a column
@@ -23,18 +23,18 @@ import Noco from '~/Noco';
  * @param {Object} param0 - The parameters
  * @param {BaseModelSqlv2} param0.baseModelSqlv2 - The base model SQL v2 instance
  * @param {Column} param0.column - The column
- * @param {NcContext} [param0.context] - The context
+ * @param {AtContext} [param0.context] - The context
  * @returns {Promise<string>} - The column name query
  */
 export async function getColumnNameQuery({
   baseModelSqlv2,
   column,
   context,
-  ncMeta = Noco.ncMeta,
+  ncMeta = Atmosphere.ncMeta,
 }: {
   baseModelSqlv2: IBaseModelSqlV2;
   column: Column;
-  context: NcContext;
+  context: AtContext;
   ncMeta?: MetaService;
 }): Promise<{
   builder: Knex.QueryBuilder | string;
@@ -46,11 +46,11 @@ export async function getColumnNameQuery({
       ncMeta,
     );
     if (!colOpt || colOpt.error) {
-      return { builder: NC_ERROR_SENTINEL };
+      return { builder: ATMOSPHERE_ERROR_SENTINEL };
     }
     const valueColumn = await colOpt.getValueColumn(context, ncMeta);
     if (!valueColumn) {
-      return { builder: NC_ERROR_SENTINEL };
+      return { builder: ATMOSPHERE_ERROR_SENTINEL };
     }
     column = new Column({
       ...valueColumn,

@@ -3,19 +3,19 @@ const isBaseListModalOpen = ref(false)
 </script>
 
 <template>
-  <div class="nc-mini-sidebar-btn-full-width">
+  <div class="atm-mini-sidebar-btn-full-width">
     <div
-      data-testid="nc-workspace-menu"
-      class="nc-workspace-menu nc-mini-sidebar-ws-item nc-small-shadow"
+      data-testid="atm-workspace-menu"
+      class="atm-workspace-menu atm-mini-sidebar-ws-item atm-small-shadow"
       @click="isBaseListModalOpen = true"
     >
       <GeneralWorkspaceIcon
         :workspace="{
-          id: 'nc',
+          id: 'atm',
           meta: {},
         }"
-        show-nocodb-icon
-        class="flex-none border-1 border-nc-border-gray-medium"
+        show-atmosphere-icon
+        class="flex-none border-1 border-atm-border-gray-medium"
         size="mini-sidebar"
       />
     </div>

@@ -72,22 +72,22 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="w-full relative h-full">
-    <NcTooltip class="absolute top-3 right-2">
-      <NcButton type="text" class="!border-0" :size="isMobileMode ? 'small' : 'xsmall'" @click="closeMenu">
+    <AtTooltip class="absolute top-3 right-2">
+      <AtButton type="text" class="!border-0" :size="isMobileMode ? 'small' : 'xsmall'" @click="closeMenu">
         <GeneralIcon icon="close" />
-      </NcButton>
+      </AtButton>
 
       <template #title> {{ $t('general.close') }} </template>
-    </NcTooltip>
-    <div v-if="!permissionGranted" class="w-full h-full flex bg-nc-bg-gray-extralight items-center justify-center">
+    </AtTooltip>
+    <div v-if="!permissionGranted" class="w-full h-full flex bg-atm-bg-gray-extralight items-center justify-center">
       <div
-        class="flex flex-col hover:bg-nc-bg-default p-2 cursor-pointer rounded-md !transition-all transition-ease-in-out duration-300 gap-2 items-center justify-center"
+        class="flex flex-col hover:bg-atm-bg-default p-2 cursor-pointer rounded-md !transition-all transition-ease-in-out duration-300 gap-2 items-center justify-center"
         @click="startCamera"
       >
-        <div class="p-5 bg-nc-bg-default rounded-md shadow-sm">
-          <mdi-camera class="text-4xl text-nc-content-gray" />
+        <div class="p-5 bg-atm-bg-default rounded-md shadow-sm">
+          <mdi-camera class="text-4xl text-atm-content-gray" />
         </div>
-        <h1 class="text-nc-content-gray font-semibold text-center text-xl">
+        <h1 class="text-atm-content-gray font-semibold text-center text-xl">
           {{ $t('labels.allowAccessToYourCamera') }}
         </h1>
       </div>
@@ -102,43 +102,43 @@ onBeforeUnmount(() => {
     >
       <div
         v-show="!capturedImage"
-        class="w-full gap-3 h-full flex-col flex items-center justify-between border border-nc-border-red"
+        class="w-full gap-3 h-full flex-col flex items-center justify-between border border-atm-border-red"
       >
         <video ref="videoRef" class="rounded-md w-full aspect-video max-w-md flex-1 object-contain" autoplay></video>
 
-        <NcButton class="!rounded-full !px-0" @click="captureImage">
+        <AtButton class="!rounded-full !px-0" @click="captureImage">
           <mdi-camera class="text-xl" />
-        </NcButton>
+        </AtButton>
       </div>
 
       <div v-show="capturedImage" class="flex group flex-col">
         <canvas ref="canvasRef" class="mb-2 rounded-md w-full aspect-video max-w-md flex-1 object-contain"></canvas>
 
-        <div class="relative text-[12px] font-semibold text-nc-content-gray flex">
+        <div class="relative text-[12px] font-semibold text-atm-content-gray flex">
           <div class="flex-auto truncate line-height-4">
             {{ capturedImage?.name }}
           </div>
-          <div class="flex-none hide-ui transition-all transition-ease-in-out !h-4 flex items-center bg-nc-bg-default">
-            <NcTooltip placement="bottom">
+          <div class="flex-none hide-ui transition-all transition-ease-in-out !h-4 flex items-center bg-atm-bg-default">
+            <AtTooltip placement="bottom">
               <template #title> {{ $t('title.removeFile') }} </template>
-              <component :is="iconMap.delete" class="!text-nc-content-red-medium cursor-pointer" @click="retakeImage" />
-            </NcTooltip>
+              <component :is="iconMap.delete" class="!text-atm-content-red-medium cursor-pointer" @click="retakeImage" />
+            </AtTooltip>
           </div>
         </div>
-        <div class="flex-none text-[10px] font-semibold text-nc-content-gray-muted">
+        <div class="flex-none text-[10px] font-semibold text-atm-content-gray-muted">
           {{ formatBytes(capturedImage?.size, 0) }}
         </div>
       </div>
       <div v-show="capturedImage" class="flex gap-2 pr-2 bottom-1 relative w-full items-center justify-end">
-        <NcButton :disabled="isLoading" type="secondary" size="small" @click="closeMenu">
+        <AtButton :disabled="isLoading" type="secondary" size="small" @click="closeMenu">
           {{ $t('labels.cancel') }}
-        </NcButton>
+        </AtButton>
 
-        <NcButton :loading="isLoading" size="small" @click="emits('upload', [capturedImage] as File[])">
+        <AtButton :loading="isLoading" size="small" @click="emits('upload', [capturedImage] as File[])">
           <template v-if="!isLoading"> {{ $t('labels.uploadImage') }} </template>
 
           <template v-else> {{ $t('labels.uploading') }} </template>
-        </NcButton>
+        </AtButton>
       </div>
     </div>
   </div>

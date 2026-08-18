@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { type ViewType } from 'nocodb-sdk'
-import { ViewTypes, getFirstNonPersonalView } from 'nocodb-sdk'
+import { type ViewType } from 'atmosphere-sdk'
+import { ViewTypes, getFirstNonPersonalView } from 'atmosphere-sdk'
 
 const { extension, tables, getViewsForTable, getData } = useExtensionHelperOrThrow()
 
@@ -97,15 +97,15 @@ onMounted(() => {
 <template>
   <ExtensionsExtensionWrapper>
     <div class="flex flex-col gap-2 p-3">
-      <NcSelect v-model:value="exportPayload.tableId" :options="tableList" placeholder="-select table-" @change="onTableSelect" />
-      <NcSelect v-model:value="exportPayload.viewId" :options="viewList" placeholder="-select view-" @change="onViewSelect" />
-      <NcButton @click="exportJson">Export</NcButton>
+      <AtSelect v-model:value="exportPayload.tableId" :options="tableList" placeholder="-select table-" @change="onTableSelect" />
+      <AtSelect v-model:value="exportPayload.viewId" :options="viewList" placeholder="-select view-" @change="onViewSelect" />
+      <AtButton @click="exportJson">Export</AtButton>
     </div>
   </ExtensionsExtensionWrapper>
 </template>
 
 <style lang="scss">
-.nc-nc-json-exporter .extension-content {
+.atm-atm-json-exporter .extension-content {
   &:not(.fullscreen) {
     @apply p-3;
   }

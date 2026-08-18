@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, EventType, ViewTypes } from 'nocodb-sdk';
-import type { GridUpdateReqType, ViewCreateReqType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
-import { NcContext } from '~/interface/config';
+import { AppEvents, EventType, ViewTypes } from 'atmosphere-sdk';
+import type { GridUpdateReqType, ViewCreateReqType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import { MetaService } from '~/meta/meta.service';
 import {
   type ViewWebhookManager,
@@ -12,13 +12,13 @@ import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
 import { assertPersonalViewAllowed } from '~/helpers/checkPersonalViewFeature';
 import { assertNotSandbox } from '~/helpers/sandboxGuards';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
 import { GridView, Model, User, View } from '~/models';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheScope } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 @Injectable()
 export class GridsService {
@@ -26,11 +26,11 @@ export class GridsService {
 
   @TraceCommand(OperationName.gridViewCreate)
   async gridViewCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       grid: ViewCreateReqType;
-      req: NcRequest;
+      req: AtRequest;
       ownedBy?: string;
       viewWebhookManager?: ViewWebhookManager;
     },
@@ -49,7 +49,7 @@ export class GridsService {
     );
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     await assertPersonalViewAllowed(context, param.grid.lock_type);
@@ -67,7 +67,7 @@ export class GridsService {
       ncMeta,
     );
     if (existingView) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'view',
         alias: param.grid.title,
         label: 'title',
@@ -107,7 +107,7 @@ export class GridsService {
 
     // populate  cache and add to list since the list cache already exist
     const view = await View.get(context, id, false, ncMeta);
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       context,
       CacheScope.VIEW,
       [view.fk_model_id],
@@ -128,7 +128,7 @@ export class GridsService {
 
     await view.getView(context);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -149,11 +149,11 @@ export class GridsService {
 
   @TraceCommand(OperationName.gridViewUpdate)
   async gridViewUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       viewId: string;
       grid: GridUpdateReqType;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -166,7 +166,7 @@ export class GridsService {
     const view = await View.get(context, param.viewId, false, ncMeta);
 
     if (!view) {
-      NcError.viewNotFound(param.viewId);
+      AtError.viewNotFound(param.viewId);
     }
 
     const oldGridView = await GridView.get(context, param.viewId, ncMeta);
@@ -202,7 +202,7 @@ export class GridsService {
     // Strip the stored bcrypt password hash from every outbound payload.
     const safeView = View.maskPasswordForResponse(view);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,

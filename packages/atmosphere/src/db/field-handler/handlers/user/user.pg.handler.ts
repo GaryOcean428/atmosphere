@@ -1,4 +1,4 @@
-import { ClientType } from 'nocodb-sdk';
+import { ClientType } from 'atmosphere-sdk';
 import { GenericPgFieldHandler } from '../generic.pg';
 import { UserGeneralHandler } from './user.general.handler';
 import type CustomKnex from '~/db/CustomKnex';

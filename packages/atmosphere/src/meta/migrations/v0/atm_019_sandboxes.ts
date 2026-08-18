@@ -23,13 +23,13 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
 
     // Indexes for performance
-    table.index(['fk_workspace_id'], 'nc_sandboxes_v2_workspace_id_idx');
-    table.index(['master_base_id'], 'nc_sandboxes_v2_master_base_id_idx');
-    table.index(['sandbox_base_id'], 'nc_sandboxes_v2_sandbox_base_id_idx');
-    table.index(['created_by'], 'nc_sandboxes_v2_created_by_idx');
+    table.index(['fk_workspace_id'], 'atm_sandboxes_v2_workspace_id_idx');
+    table.index(['master_base_id'], 'atm_sandboxes_v2_master_base_id_idx');
+    table.index(['sandbox_base_id'], 'atm_sandboxes_v2_sandbox_base_id_idx');
+    table.index(['created_by'], 'atm_sandboxes_v2_created_by_idx');
   });
 
-  // Add sandbox-related columns to bases table (nc_bases_v2)
+  // Add sandbox-related columns to bases table (atm_bases_v2)
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
     // Is this base a master base that has sandbox(es)?
     table.boolean('is_sandbox_master').defaultTo(false);
@@ -40,16 +40,16 @@ const up = async (knex: Knex) => {
 
   // Add indexes for sandbox relationship columns
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
-    table.index(['is_sandbox'], 'nc_bases_is_sandbox_idx');
-    table.index(['is_sandbox_master'], 'nc_bases_is_sandbox_master_idx');
+    table.index(['is_sandbox'], 'atm_bases_is_sandbox_idx');
+    table.index(['is_sandbox_master'], 'atm_bases_is_sandbox_master_idx');
   });
 };
 
 const down = async (knex: Knex) => {
   // Drop indexes from bases table
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
-    table.dropIndex(['is_sandbox'], 'nc_bases_is_sandbox_idx');
-    table.dropIndex(['is_sandbox_master'], 'nc_bases_is_sandbox_master_idx');
+    table.dropIndex(['is_sandbox'], 'atm_bases_is_sandbox_idx');
+    table.dropIndex(['is_sandbox_master'], 'atm_bases_is_sandbox_master_idx');
   });
 
   // Drop sandbox columns from bases table

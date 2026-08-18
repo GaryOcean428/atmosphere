@@ -1,30 +1,30 @@
 import { Injectable, Logger } from '@nestjs/common';
 import debug from 'debug';
 import PQueue from 'p-queue';
-import { isDeletedCol, UITypes } from 'nocodb-sdk';
+import { isDeletedCol, UITypes } from 'atmosphere-sdk';
 import type CustomKnex from '~/db/CustomKnex';
 import { Model, Source } from '~/models';
 import { MetaTable } from '~/utils/globals';
 import SimpleLRUCache from '~/utils/cache';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
-import Noco from '~/Noco';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
+import Atmosphere from '~/Atmosphere';
 import {
   computeCleanupDueAt,
   parseTrashRetentionEnv,
 } from '~/helpers/trashHelpers';
 
 /**
- * Backfill `nc_trash` with one record-type entry per pre-existing
+ * Backfill `atm_trash` with one record-type entry per pre-existing
  * soft-delete event. Soft-delete events that pre-date the unified BaseTrash
  * registry have rows on the data table flagged `__nc_deleted = true` but no
- * matching metadata row in `nc_trash`. Without this backfill those entries
+ * matching metadata row in `atm_trash`. Without this backfill those entries
  * would only ever be cleaned up by the retention cron — they'd never appear
  * in the unified trash UI.
  *
  * Strategy (per meta-source, EE-only model):
  *   1. SELECT DISTINCT (LMB, LMT) FROM table WHERE __nc_deleted = true
  *   2. For each tuple, build the canonical `${tableId}:${userId}::${lmtIso}`
- *      resource_id and INSERT INTO nc_trash if absent (composite-PK unique
+ *      resource_id and INSERT INTO atm_trash if absent (composite-PK unique
  *      check via metaInsert2's natural id-gen + a pre-INSERT existence
  *      probe).
  *   3. cleanup_due_at is computed from the original `deleted_at` (not now!)
@@ -32,18 +32,18 @@ import {
  *      retention purge on the next cleanup tick instead of getting fresh
  *      windows.
  *
- * Resumable across restarts via `nc_temp_processed_record_trash_backfill`.
+ * Resumable across restarts via `atm_temp_processed_record_trash_backfill`.
  * Each model is marked complete (or failed with the error) in the temp
  * table; restarting the job picks up where it left off.
  *
- * No-op on CE (no `nc_trash` table) and on models without LMT (record trash
+ * No-op on CE (no `atm_trash` table) and on models without LMT (record trash
  * keys off LMT — without it, entries can't be reconstructed).
  */
 
 const PARALLEL_LIMIT =
-  +process.env.NC_RECORD_TRASH_BACKFILL_PARALLEL_LIMIT || 10;
+  +process.env.ATMOSPHERE_RECORD_TRASH_BACKFILL_PARALLEL_LIMIT || 10;
 // TODO: Drop after migration is confirmed complete across all deployments
-const TEMP_TABLE = 'nc_temp_processed_record_trash_backfill';
+const TEMP_TABLE = 'atm_temp_processed_record_trash_backfill';
 // Page size for the per-model tuple scan. DISTINCT (lmt, lmb) reduces a
 // soft-deleted row count to one row per delete event, so 100 events per
 // page is enough to keep memory bounded even on tables with many events.
@@ -55,7 +55,7 @@ const encodeEventId = (
 
 @Injectable()
 export class RecordTrashBackfillMigration {
-  private readonly debugLog = debug('nc:migration-jobs:record-trash-backfill');
+  private readonly debugLog = debug('atm:migration-jobs:record-trash-backfill');
   private readonly logger = new Logger(RecordTrashBackfillMigration.name);
   private readonly log = (...msgs: string[]) =>
     this.logger.log(`${msgs.join(' ')}`);
@@ -67,7 +67,7 @@ export class RecordTrashBackfillMigration {
   private cache = new SimpleLRUCache(1000);
 
   async job() {
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
     if (!(await ncMeta.knexConnection.schema.hasTable(TEMP_TABLE))) {
       await ncMeta.knexConnection.schema.createTable(TEMP_TABLE, (table) => {
         table.increments('id').primary();
@@ -230,7 +230,7 @@ export class RecordTrashBackfillMigration {
       return;
     }
 
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
 
     // Skip Model.get + model.getColumns — getModelsQuery already pre-fetched
     // the model fields, and getColumns does N+1 fetches for col options
@@ -260,7 +260,7 @@ export class RecordTrashBackfillMigration {
       return;
     }
 
-    const dbDriver: CustomKnex = await NcConnectionMgrv2.get(source);
+    const dbDriver: CustomKnex = await AtConnectionMgrv2.get(source);
 
     const model = new Model({
       id: modelId,
@@ -308,7 +308,7 @@ export class RecordTrashBackfillMigration {
       // Build all rows first, then ONE bulk INSERT per page with
       // ON CONFLICT DO NOTHING — collapses 2N round-trips (existence probe
       // + insert) into a single statement. The unique constraint
-      // (base_id, resource_type, resource_id) on `nc_trash` is the natural
+      // (base_id, resource_type, resource_id) on `atm_trash` is the natural
       // dedup key; conflicts are silently ignored, matching the runtime
       // listener's idempotent behaviour.
       const rowsToInsert: Record<string, any>[] = [];
@@ -380,14 +380,14 @@ export class RecordTrashBackfillMigration {
       return perTableOverride;
     }
     const fromEnv = parseTrashRetentionEnv(
-      process.env.NC_RECORD_TRASH_RETENTION_DAYS,
+      process.env.ATMOSPHERE_RECORD_TRASH_RETENTION_DAYS,
     );
     if (fromEnv !== null) return fromEnv;
     return 30;
   }
 
   private getModelsQuery(concurrency: number) {
-    return Noco.ncMeta
+    return Atmosphere.ncMeta
       .knexConnection(MetaTable.MODELS)
       .select([
         `${MetaTable.MODELS}.id`,
@@ -428,7 +428,7 @@ export class RecordTrashBackfillMigration {
     completed: boolean,
     error?: string,
   ) {
-    await Noco.ncMeta
+    await Atmosphere.ncMeta
       .knexConnection(TEMP_TABLE)
       .insert({ fk_model_id: modelId, completed, error });
   }

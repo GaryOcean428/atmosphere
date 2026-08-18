@@ -3,7 +3,7 @@ import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 import { normalizeEmail, sanitizeEmail } from '~/utils/emailUtils';
 
-const logger = new Logger('nc_202606260001_dedupe_user_emails');
+const logger = new Logger('atm_202606260001_dedupe_user_emails');
 
 const BATCH_SIZE = 2000;
 
@@ -21,7 +21,7 @@ const BATCH_SIZE = 2000;
  *     match.
  *
  *  2. **Accumulated duplicates** — repeated invite attempts against a corrupted
- *     row have already created extra `nc_users` rows for the same address. After
+ *     row have already created extra `atm_users` rows for the same address. After
  *     re-sanitizing, several rows collapse to the same canonical email. We pick
  *     one survivor, re-point its memberships onto the survivor, then tombstone +
  *     soft-delete the losers so lookups become deterministic again.

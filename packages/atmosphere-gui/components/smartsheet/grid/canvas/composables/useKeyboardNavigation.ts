@@ -1,4 +1,4 @@
-import { type ColumnType, UITypes } from 'nocodb-sdk'
+import { type ColumnType, UITypes } from 'atmosphere-sdk'
 import { NO_EDITABLE_CELL } from '../utils/cell'
 import { EDIT_INTERACTABLE } from '../utils/constants'
 import { findFirstExpandedGroupWithPath, findGroupByPath, getDefaultGroupData } from '../utils/groupby'
@@ -89,14 +89,14 @@ export function useKeyboardNavigation({
     // Skip keyboard handling during IME composition (e.g. Japanese, Chinese, Korean input)
     if (e.isComposing) return
 
-    if ((e.target as HTMLElement)?.closest?.('.nc-smart-text-panel')) return
+    if ((e.target as HTMLElement)?.closest?.('.atm-smart-text-panel')) return
     if (isViewSearchActive() || isCreateViewActive() || isActiveElementInsideScriptPane() || isActiveElementInsideExtension())
       return
     // Interface editor: keystrokes belong to the properties panel's inputs,
     // not the grid canvas mounted in the page preview.
     if (isActiveElementInsideInterfacePanel() || isInterfaceRecordSheetOpen()) return
     const activeDropdownEl = document.querySelector(
-      '.nc-dropdown-single-select-cell.active,.nc-dropdown-multi-select-cell.active',
+      '.atm-dropdown-single-select-cell.active,.atm-dropdown-multi-select-cell.active',
     )
     if (activeDropdownEl) {
       e.preventDefault()

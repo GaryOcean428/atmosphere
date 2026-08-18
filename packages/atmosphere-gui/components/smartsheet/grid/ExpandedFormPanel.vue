@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { TableType, ViewType } from 'nocodb-sdk'
-import { ExpandedFormMode } from 'nocodb-sdk'
+import type { TableType, ViewType } from 'atmosphere-sdk'
+import { ExpandedFormMode } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import { useStorage } from '@vueuse/core'
 
@@ -415,7 +415,7 @@ function isPickerOrDropdownOpen() {
 // to recover from the two known broken transitions (rate UL traps forward Tab;
 // MultiSelect blur sends focus to BODY).
 function getPanelFocusables(): HTMLElement[] {
-  const panel = document.querySelector('.nc-expanded-form-panel') as HTMLElement | null
+  const panel = document.querySelector('.atm-expanded-form-panel') as HTMLElement | null
   if (!panel) return []
   const candidates = panel.querySelectorAll<HTMLElement>(
     'input:not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), [contenteditable="true"]',
@@ -600,7 +600,7 @@ const panelStyle = computed(() => {
 })
 
 const panelClasses = computed(() => {
-  const base = ['nc-expanded-form-panel', 'flex', 'flex-col', 'bg-nc-bg-default', 'border-l', 'border-nc-border-gray-medium']
+  const base = ['atm-expanded-form-panel', 'flex', 'flex-col', 'bg-atm-bg-default', 'border-l', 'border-atm-border-gray-medium']
   if (isResizing.value) base.push('is-resizing')
   if (isFullscreen.value) {
     base.push('flex-1', 'h-full', 'z-50')
@@ -624,7 +624,7 @@ const hideBlankFields = ref(false)
 // Compact view — when on, fields render as label + plain text (no input box).
 // Persisted across sessions because it's a viewing preference, not transient
 // state.
-const isCompactMode = useStorage('nc-expanded-form-panel-compact', false)
+const isCompactMode = useStorage('atm-expanded-form-panel-compact', false)
 
 const showFieldFilters = computed(() => {
   if (isLoading.value) return false
@@ -650,7 +650,7 @@ watch(activeRowId, () => {
 
 <template>
   <Transition
-    name="nc-slide-right"
+    name="atm-slide-right"
     @after-enter="
       () => {
         panelRef?.focus()
@@ -664,29 +664,29 @@ watch(activeRowId, () => {
       tabindex="-1"
       :class="panelClasses"
       :style="panelStyle"
-      data-testid="nc-expanded-form-panel"
+      data-testid="atm-expanded-form-panel"
       @keydown="onKeydown"
     >
       <!-- Resize handle (left edge) -->
       <div
         v-if="!isFullscreen"
-        class="nc-expanded-form-panel-resize-handle"
-        data-testid="nc-expanded-form-panel-resize"
+        class="atm-expanded-form-panel-resize-handle"
+        data-testid="atm-expanded-form-panel-resize"
         @mousedown.prevent="onResizeStart"
       />
 
       <!-- Header -->
       <div
-        class="flex items-center h-[var(--toolbar-height)] gap-1 px-3 py-2 border-b border-nc-border-gray-medium flex-shrink-0"
+        class="flex items-center h-[var(--toolbar-height)] gap-1 px-3 py-2 border-b border-atm-border-gray-medium flex-shrink-0"
       >
         <!-- Display value (flex-1 pushes header controls to the right) -->
-        <NcTooltip v-if="displayValue && !isNew" show-on-truncate-only class="truncate min-w-0 flex-1">
+        <AtTooltip v-if="displayValue && !isNew" show-on-truncate-only class="truncate min-w-0 flex-1">
           <template #title>{{ displayValue }}</template>
-          <span class="nc-expanded-form-panel-display-value truncate font-bold text-body text-nc-content-gray">
+          <span class="atm-expanded-form-panel-display-value truncate font-bold text-body text-atm-content-gray">
             {{ displayValue }}
           </span>
-        </NcTooltip>
-        <span v-else-if="isNew" class="truncate font-bold text-body text-nc-content-gray flex-1">
+        </AtTooltip>
+        <span v-else-if="isNew" class="truncate font-bold text-body text-atm-content-gray flex-1">
           {{ $t('activity.newRecord') }}
         </span>
         <div v-else class="flex-1" />
@@ -695,52 +695,52 @@ watch(activeRowId, () => {
              which record the title refers to; grouping them avoids Save
              interrupting the record-navigator cluster. -->
         <div v-if="!isNew" class="flex items-center">
-          <NcTooltip :title="$t('labels.prevRow')">
-            <NcButton
+          <AtTooltip :title="$t('labels.prevRow')">
+            <AtButton
               size="xs"
               type="text"
               :disabled="!hasPrev"
               class="!border-0 !px-1"
-              data-testid="nc-expanded-form-prev"
+              data-testid="atm-expanded-form-prev"
               @click="guardedNavigate('prev')"
             >
               <GeneralIcon icon="arrowUp" class="w-3.5 h-3.5" />
-            </NcButton>
-          </NcTooltip>
-          <NcTooltip :title="$t('labels.nextRow')">
-            <NcButton
+            </AtButton>
+          </AtTooltip>
+          <AtTooltip :title="$t('labels.nextRow')">
+            <AtButton
               size="xs"
               type="text"
               :disabled="!hasNext"
               class="!border-0 !px-1"
-              data-testid="nc-expanded-form-next"
+              data-testid="atm-expanded-form-next"
               @click="guardedNavigate('next')"
             >
               <GeneralIcon icon="arrowDown" class="w-3.5 h-3.5" />
-            </NcButton>
-          </NcTooltip>
+            </AtButton>
+          </AtTooltip>
         </div>
 
         <!-- Save — boundary between record navigation and mode switcher.
              Visually prominent (primary type, blue when there are unsaved
              changes), so position is less load-bearing than visual state. -->
-        <NcTooltip
+        <AtTooltip
           v-if="isUIAllowed('dataEdit', baseRoles) && !isSqlView"
           :title="isNew ? $t('general.create') : $t('general.save')"
         >
-          <NcButton
+          <AtButton
             v-e="['c:row-expand-panel:save']"
             :disabled="isSaveDisabled"
             :loading="isSaving"
             class="!px-1"
-            data-testid="nc-expanded-form-save"
+            data-testid="atm-expanded-form-save"
             type="primary"
             size="xs"
             @click="save"
           >
             <GeneralIcon icon="save" class="w-4 h-4" />
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
 
         <!-- EE: Fields / File / Discussion mode selector — shown in both
              side-panel and fullscreen. CE falls through to the legacy
@@ -749,29 +749,29 @@ watch(activeRowId, () => {
           v-if="useEePresenter"
           v-model="activeViewMode"
           :view="view"
-          class="nc-expanded-form-mode-switch"
+          class="atm-expanded-form-mode-switch"
         />
 
         <!-- Show / Hide sidebar — only meaningful in docked mode (fullscreen
              always renders the dual pane). Single-pane state bumps to the
              dual-pane threshold; dual-pane state collapses to a single-pane
              width. Mirrors the left-sidebar toggle pattern. -->
-        <NcTooltip v-if="!isFullscreen" :title="useDualPane ? $t('title.hideSidebar') : $t('title.showSidebar')">
-          <NcButton
+        <AtTooltip v-if="!isFullscreen" :title="useDualPane ? $t('title.hideSidebar') : $t('title.showSidebar')">
+          <AtButton
             v-e="[`c:row-expand-panel:${useDualPane ? 'hide' : 'show'}-sidebar`]"
             size="xs"
             type="text"
-            data-testid="nc-expanded-form-panel-toggle-sidebar"
+            data-testid="atm-expanded-form-panel-toggle-sidebar"
             class="!px-1"
             @click="(e) => { toggleSidebar(); (e.currentTarget as HTMLElement)?.blur?.() }"
           >
             <GeneralIcon
               icon="sidebar"
               class="w-3.5 h-3.5 transform scale-x-[-1]"
-              :class="useDualPane ? '!text-nc-content-brand' : ''"
+              :class="useDualPane ? '!text-atm-content-brand' : ''"
             />
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
 
         <div class="flex items-center gap-1">
           <SmartsheetExpandedFormMoreOptionsMenu
@@ -784,30 +784,30 @@ watch(activeRowId, () => {
             @after-delete="closePanel"
             @duplicate-applied="onAfterDuplicate"
           />
-          <NcTooltip :title="isFullscreen ? $t('labels.exitFullscreen') : $t('labels.enterFullscreen')">
-            <NcButton
+          <AtTooltip :title="isFullscreen ? $t('labels.exitFullscreen') : $t('labels.enterFullscreen')">
+            <AtButton
               v-e="[`c:row-expand-panel:${isFullscreen ? 'exit' : 'enter'}-fullscreen`]"
               size="xs"
               :type="isFullscreen ? 'primary' : 'text'"
-              data-testid="nc-expanded-form-panel-fullscreen"
+              data-testid="atm-expanded-form-panel-fullscreen"
               class="!px-1"
               @click="setFullscreen(!isFullscreen)"
             >
               <GeneralIcon :icon="isFullscreen ? 'ncMinimize' : 'ncMaximize'" class="w-3.5 h-3.5" />
-            </NcButton>
-          </NcTooltip>
-          <NcTooltip :title="$t('general.close')">
-            <NcButton
+            </AtButton>
+          </AtTooltip>
+          <AtTooltip :title="$t('general.close')">
+            <AtButton
               v-e="['c:row-expand-panel:close']"
               size="xs"
               type="text"
-              data-testid="nc-expanded-form-close"
+              data-testid="atm-expanded-form-close"
               class="!px-1"
               @click="onClose"
             >
               <GeneralIcon icon="close" class="w-4 h-4" />
-            </NcButton>
-          </NcTooltip>
+            </AtButton>
+          </AtTooltip>
         </div>
       </div>
 
@@ -906,41 +906,41 @@ watch(activeRowId, () => {
 </template>
 
 <style lang="scss" scoped>
-.nc-panel-mode-tab {
-  @apply flex flex-row items-center h-full justify-center px-2 border-1 border-t-0 border-b-0 border-nc-border-gray-medium text-nc-content-gray-subtle2 cursor-pointer transition-all duration-300 select-none;
+.atm-panel-mode-tab {
+  @apply flex flex-row items-center h-full justify-center px-2 border-1 border-t-0 border-b-0 border-atm-border-gray-medium text-atm-content-gray-subtle2 cursor-pointer transition-all duration-300 select-none;
 
   &.active {
-    @apply bg-nc-bg-brand-inverted text-nc-content-brand-disabled;
+    @apply bg-atm-bg-brand-inverted text-atm-content-brand-disabled;
     box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.06), 0px 5px 3px -2px rgba(0, 0, 0, 0.02);
   }
 
   &:not(.active) {
-    @apply hover:text-nc-content-gray-extreme;
+    @apply hover:text-atm-content-gray-extreme;
   }
 }
 
-.nc-expanded-form-search-input,
-.nc-expanded-form-search-input:focus,
-.nc-expanded-form-search-input:focus-visible {
+.atm-expanded-form-search-input,
+.atm-expanded-form-search-input:focus,
+.atm-expanded-form-search-input:focus-visible {
   outline: none !important;
   box-shadow: none !important;
   border: none !important;
 }
 
 /* Edge tabs need no side border. :first-child / :last-child on the tab itself
-   doesn't work — each tab is wrapped in an NcTooltip, so every tab is the
+   doesn't work — each tab is wrapped in an AtTooltip, so every tab is the
    first-and-only child of its own wrapper. Target via the pill parent. */
-.nc-panel-mode-selector > :first-child .nc-panel-mode-tab,
-.nc-panel-mode-selector > :last-child .nc-panel-mode-tab {
+.atm-panel-mode-selector > :first-child .atm-panel-mode-tab,
+.atm-panel-mode-selector > :last-child .atm-panel-mode-tab {
   @apply border-0;
 }
 
-.nc-panel-mode-tab-icon {
+.atm-panel-mode-tab-icon {
   font-size: 0.875rem !important;
   @apply w-3.5;
 }
 
-.nc-expanded-form-panel {
+.atm-expanded-form-panel {
   outline: none;
   transition: width 0.2s ease;
 
@@ -954,63 +954,63 @@ watch(activeRowId, () => {
   }
 }
 
-.nc-expanded-form-panel-resize-handle {
+.atm-expanded-form-panel-resize-handle {
   @apply absolute left-0 top-0 h-full transition-colors cursor-col-resize;
   width: 4px;
   z-index: 50;
 
   &:hover {
-    @apply bg-nc-border-gray-medium;
+    @apply bg-atm-border-gray-medium;
   }
 }
 
-.nc-expanded-form-panel.is-resizing .nc-expanded-form-panel-resize-handle {
-  @apply bg-nc-border-gray-medium;
+.atm-expanded-form-panel.is-resizing .atm-expanded-form-panel-resize-handle {
+  @apply bg-atm-border-gray-medium;
 }
 
-.nc-expanded-form-panel-display-value {
-  @apply text-body font-bold text-nc-content-gray;
+.atm-expanded-form-panel-display-value {
+  @apply text-body font-bold text-atm-content-gray;
 }
 
 /* Slide-in from right */
-.nc-slide-right-enter-active {
+.atm-slide-right-enter-active {
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
-.nc-slide-right-leave-active {
+.atm-slide-right-leave-active {
   transition: transform 0.2s cubic-bezier(0.4, 0, 1, 1), opacity 0.15s ease;
 }
 
-.nc-slide-right-enter-from {
+.atm-slide-right-enter-from {
   transform: translateX(100%);
   opacity: 0;
 }
 
-.nc-slide-right-leave-to {
+.atm-slide-right-leave-to {
   transform: translateX(100%);
   opacity: 0;
 }
 </style>
 
 <style lang="scss">
-/* Slightly smaller checkbox inside the field-filters strip — NcCheckbox's
+/* Slightly smaller checkbox inside the field-filters strip — AtCheckbox's
    `size` prop is unused, so override the hardcoded 16px (h-4/w-4) with 14px. */
-.nc-expanded-form-field-filters {
-  .nc-checkbox > .ant-checkbox,
-  .nc-checkbox > .ant-checkbox > .ant-checkbox-input,
-  .nc-checkbox > .ant-checkbox::after,
-  .nc-checkbox > .ant-checkbox > .ant-checkbox-inner {
+.atm-expanded-form-field-filters {
+  .atm-checkbox > .ant-checkbox,
+  .atm-checkbox > .ant-checkbox > .ant-checkbox-input,
+  .atm-checkbox > .ant-checkbox::after,
+  .atm-checkbox > .ant-checkbox > .ant-checkbox-inner {
     @apply !h-3.5 !w-3.5;
   }
 }
 
 /* Thinner, subtler grid scrollbar when panel is open (panel is sibling of grid's parent) */
-:has(> .nc-expanded-form-panel) .custom-scrollbar-track.vertical {
+:has(> .atm-expanded-form-panel) .custom-scrollbar-track.vertical {
   width: 4px;
   background: transparent;
 }
 
-:has(> .nc-expanded-form-panel) .custom-scrollbar-thumb.vertical {
+:has(> .atm-expanded-form-panel) .custom-scrollbar-thumb.vertical {
   background: rgba(var(--rgb-base), 0.2);
 
   &:hover {
@@ -1018,12 +1018,12 @@ watch(activeRowId, () => {
   }
 }
 
-:has(> .nc-expanded-form-panel) .custom-scrollbar-track.horizontal {
+:has(> .atm-expanded-form-panel) .custom-scrollbar-track.horizontal {
   height: 4px;
   background: transparent;
 }
 
-:has(> .nc-expanded-form-panel) .custom-scrollbar-thumb.horizontal {
+:has(> .atm-expanded-form-panel) .custom-scrollbar-thumb.horizontal {
   background: rgba(var(--rgb-base), 0.2);
 
   &:hover {
@@ -1032,12 +1032,12 @@ watch(activeRowId, () => {
 }
 
 /* Compact field labels — matching MiniColumnsWrapper pattern */
-.nc-panel-fields-compact {
-  .nc-expanded-cell-header {
+.atm-panel-fields-compact {
+  .atm-expanded-cell-header {
     @apply !bg-transparent;
 
-    .nc-cell-name-wrapper,
-    .nc-virtual-cell-name-wrapper {
+    .atm-cell-name-wrapper,
+    .atm-virtual-cell-name-wrapper {
       @apply !px-0;
 
       .name.truncate {
@@ -1048,62 +1048,62 @@ watch(activeRowId, () => {
         }
       }
 
-      svg.nc-icon:not(.invisible):not(.nc-column-context-menu):not(.nc-column-lock-icon) {
+      svg.atm-icon:not(.invisible):not(.atm-column-context-menu):not(.atm-column-lock-icon) {
         @apply !w-3 !h-3 !mx-0;
       }
     }
   }
 
   /* Tighten label-to-input gap in vertical/compact mode (label container has mb-2 by default) */
-  .nc-expanded-form-row .nc-expanded-cell > :first-child {
+  .atm-expanded-form-row .atm-expanded-cell > :first-child {
     @apply !mb-1;
   }
 }
 
 /* Match grid canvas font (500 13px Inter) — needs high specificity to
  * override scoped Cell.vue styles that use [data-v-*] + !important */
-.nc-expanded-form-panel .nc-expanded-form-row .nc-expanded-cell .nc-data-cell {
+.atm-expanded-form-panel .atm-expanded-form-row .atm-expanded-cell .atm-data-cell {
   font-size: 13px !important;
   font-weight: 500 !important;
 
-  .nc-cell .nc-cell-field,
-  .nc-cell .nc-cell-field-link,
-  .nc-cell input,
-  .nc-cell textarea,
-  .nc-cell select,
-  .nc-cell .ant-tag,
-  .nc-cell .ant-select-selection-item,
-  .nc-virtual-cell .nc-cell-field,
-  .nc-virtual-cell .ant-tag,
-  .nc-virtual-cell .ant-select-selection-item,
-  .nc-virtual-cell input {
+  .atm-cell .atm-cell-field,
+  .atm-cell .atm-cell-field-link,
+  .atm-cell input,
+  .atm-cell textarea,
+  .atm-cell select,
+  .atm-cell .ant-tag,
+  .atm-cell .ant-select-selection-item,
+  .atm-virtual-cell .atm-cell-field,
+  .atm-virtual-cell .ant-tag,
+  .atm-virtual-cell .ant-select-selection-item,
+  .atm-virtual-cell input {
     font-size: 13px !important;
     font-weight: 500 !important;
   }
 }
 
 /* ViewModeSelector — match header icon size (14px) and reduce weight */
-.nc-expanded-form-panel .tab-wrapper .tab .tab-icon {
+.atm-expanded-form-panel .tab-wrapper .tab .tab-icon {
   font-size: 0.875rem !important;
   width: 0.875rem !important;
   height: 0.875rem !important;
 }
 
-/* Match nc-panel-mode-selector pill height (28px) so the header tabs look
+/* Match atm-panel-mode-selector pill height (28px) so the header tabs look
    identical between fullscreen (ViewModeSelector) and side-panel (activity
    selector) modes. ViewModeSelector defaults to h-7, but keep the rule for
    defensiveness against upstream changes. */
-.nc-expanded-form-panel .tab-wrapper {
+.atm-expanded-form-panel .tab-wrapper {
   @apply !h-7;
 }
 
 /* Disable grey hover on audit items in panel */
-.nc-expanded-form-panel .group.hover\:bg-nc-bg-gray-light:hover {
+.atm-expanded-form-panel .group.hover\:bg-atm-bg-gray-light:hover {
   background-color: transparent !important;
 }
 
 /* Sidebar tabs — smaller font for Comments / Revision History */
-.nc-expanded-form-panel .nc-comments-drawer .ant-tabs-tab {
+.atm-expanded-form-panel .atm-comments-drawer .ant-tabs-tab {
   .flex.items-center {
     @apply !text-xs;
 
@@ -1114,16 +1114,16 @@ watch(activeRowId, () => {
 }
 
 /* No shadow at rest, subtle shadow on hover */
-.nc-expanded-form-panel .nc-data-cell {
+.atm-expanded-form-panel .atm-data-cell {
   box-shadow: none !important;
 
   /* Skip borderless cell types — these widgets render no input chrome (just
      icons / buttons / barcodes / image strips), so the hover shadow ring
      reads as wrong. Each :has() targets the actual descendant class set by
      the cell component itself. */
-  &:not(.nc-readonly-div-data-cell):not(.nc-system-field):not(.nc-data-cell-compact):not(:has(.form-attachment-cell)):not(
-      :has(.nc-cell-button)
-    ):not(:has(.barcode-wrapper)):not(:has(.nc-qrcode-container)):not(:has(.nc-cell-longtext-ai .nc-expanded-form-open)):hover {
+  &:not(.atm-readonly-div-data-cell):not(.atm-system-field):not(.atm-data-cell-compact):not(:has(.form-attachment-cell)):not(
+      :has(.atm-cell-button)
+    ):not(:has(.barcode-wrapper)):not(:has(.atm-qrcode-container)):not(:has(.atm-cell-longtext-ai .atm-expanded-form-open)):hover {
     box-shadow: 0px 0px 4px 0px rgba(var(--rgb-base), 0.12) !important;
   }
 }
@@ -1131,23 +1131,23 @@ watch(activeRowId, () => {
 /* Compact view — strip every visible chrome layer (border / background /
    shadow) at all states. Cells stay editable; the inner widget shows its own
    feedback (text cursor, picker overlay, dropdown). Uses `border: none` so
-   the 1px transparent border from `!border-1 !border-nc-border-brand` doesn't
+   the 1px transparent border from `!border-1 !border-atm-border-brand` doesn't
    eat layout space. */
-.nc-expanded-form-panel .nc-data-cell.nc-data-cell-compact,
-.nc-expanded-form-panel .nc-data-cell.nc-data-cell-compact:hover,
-.nc-expanded-form-panel .nc-data-cell.nc-data-cell-compact:focus-within {
+.atm-expanded-form-panel .atm-data-cell.atm-data-cell-compact,
+.atm-expanded-form-panel .atm-data-cell.atm-data-cell-compact:hover,
+.atm-expanded-form-panel .atm-data-cell.atm-data-cell-compact:focus-within {
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
 }
 
 /* Compact view — shrink the label text by 1px (12px -> 11px) and force
-   uppercase. The existing rule chains through .nc-panel-fields-compact >
-   .nc-expanded-cell-header > .nc-cell-name-wrapper > .name.truncate > span
-   (specificity 5 classes + 1 element), so beat it by adding .nc-row-compact
+   uppercase. The existing rule chains through .atm-panel-fields-compact >
+   .atm-expanded-cell-header > .atm-cell-name-wrapper > .name.truncate > span
+   (specificity 5 classes + 1 element), so beat it by adding .atm-row-compact
    AND keeping the full chain. */
-.nc-panel-fields-compact .nc-row-compact .nc-expanded-cell-header .nc-cell-name-wrapper .name.truncate span,
-.nc-panel-fields-compact .nc-row-compact .nc-expanded-cell-header .nc-virtual-cell-name-wrapper .name.truncate span {
+.atm-panel-fields-compact .atm-row-compact .atm-expanded-cell-header .atm-cell-name-wrapper .name.truncate span,
+.atm-panel-fields-compact .atm-row-compact .atm-expanded-cell-header .atm-virtual-cell-name-wrapper .name.truncate span {
   font-size: 11px !important;
   text-transform: uppercase !important;
 }

@@ -5,7 +5,7 @@ const { DOCKER_DB_FILE } = process.env;
 export default {
   title: 'default',
   envs: {
-    _noco: {
+    _atmosphere: {
       db: [
         {
           client: 'sqlite3',
@@ -19,7 +19,7 @@ export default {
             useNullAsDefault: true,
           },
           meta: {
-            tn: 'nc_evolutions',
+            tn: 'atm_evolutions',
             dbAlias: 'primary',
           },
         },
@@ -40,14 +40,14 @@ export default {
             useNullAsDefault: true,
           },
           meta: {
-            tn: 'nc_evolutions',
+            tn: 'atm_evolutions',
             dbAlias: 'primary',
           },
         },
       ],
     },
   },
-  workingEnv: '_noco',
+  workingEnv: '_atmosphere',
   meta: {
     version: '0.5',
     seedsFolder: 'seeds',

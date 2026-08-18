@@ -61,7 +61,7 @@ const columns = [
     justify: 'justify-end',
     align: 'center',
   },
-] as NcTableColumnProps[]
+] as AtTableColumnProps[]
 
 const modalVisible = ref(false)
 const detailsModalVisible = ref(false)
@@ -102,7 +102,7 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col">
-    <NcPageHeader>
+    <AtPageHeader>
       <template #icon>
         <GeneralIcon icon="ncLock" class="flex-none h-5 w-5" />
       </template>
@@ -111,14 +111,14 @@ onMounted(async () => {
           {{ $t('title.oauthClients') }}
         </span>
       </template>
-    </NcPageHeader>
-    <div class="nc-content-max-w p-6 h-[calc(100vh_-_100px)] flex flex-col gap-6 overflow-auto nc-scrollbar-thin">
-      <div class="max-w-202 mx-auto h-full w-full" data-testid="nc-token-list">
+    </AtPageHeader>
+    <div class="atm-content-max-w p-6 h-[calc(100vh_-_100px)] flex flex-col gap-6 overflow-auto atm-scrollbar-thin">
+      <div class="max-w-202 mx-auto h-full w-full" data-testid="atm-token-list">
         <div class="flex gap-4 items-baseline justify-between">
           <h6 class="text-xl text-left font-bold my-0" data-rec="true">{{ $t('title.oauthClients') }}</h6>
-          <NcButton
+          <AtButton
             :disabled="isOauthClientsLoading"
-            data-testid="nc-token-create-top"
+            data-testid="atm-token-create-top"
             size="small"
             type="primary"
             @click="addNewClient"
@@ -129,69 +129,69 @@ onMounted(async () => {
             <span class="flex items-center justify-center md:hidden" data-rec="true">
               <component :is="iconMap.plus" />
             </span>
-          </NcButton>
+          </AtButton>
         </div>
-        <NcTable
+        <AtTable
           v-model:order-by="orderBy"
           :columns="columns"
           header-row-height="44px"
           row-height="44px"
           :data="sortedOAuthClients"
           class="h-full mt-5"
-          body-row-class-name="nc-base-settings-mcp-token-item group no-border-last cursor-pointer"
+          body-row-class-name="atm-base-settings-mcp-token-item group no-border-last cursor-pointer"
           @row-click="(record) => viewClientDetails(record.client_id)"
         >
           <template #bodyCell="{ column, record: oAuthClient }">
             <template v-if="column.key === 'name'">
-              <NcTooltip class="truncate text-nc-content-gray font-semibold text-sm">
+              <AtTooltip class="truncate text-atm-content-gray font-semibold text-sm">
                 {{ oAuthClient.client_name }}
 
                 <template #title>
-                  <div class="text-[10px] leading-[14px] uppercase font-semibold pt-1 text-nc-content-brand-hover">
+                  <div class="text-[10px] leading-[14px] uppercase font-semibold pt-1 text-atm-content-brand-hover">
                     {{ $t('labels.createdOn') }}
                   </div>
                   <div class="mt-1 text-[13px]">
                     {{ dayjs(oAuthClient.created_at).format('D MMMM YYYY, hh:mm A') }}
                   </div>
                 </template>
-              </NcTooltip>
+              </AtTooltip>
             </template>
             <template v-if="column.key === 'created_at'">
-              <div v-if="oAuthClient.created_at" class="text-nc-content-gray-subtle">
+              <div v-if="oAuthClient.created_at" class="text-atm-content-gray-subtle">
                 {{ dayjs(oAuthClient.created_at).format('D MMM YYYY') }}
               </div>
             </template>
 
             <template v-if="column.key === 'action'">
-              <NcDropdown>
-                <NcButton type="secondary" class="!hidden !group-hover:block" size="small" @click.stop>
+              <AtDropdown>
+                <AtButton type="secondary" class="!hidden !group-hover:block" size="small" @click.stop>
                   <GeneralIcon icon="threeDotVertical" />
-                </NcButton>
+                </AtButton>
 
                 <template #overlay>
-                  <NcMenu variant="small">
-                    <NcMenuItem @click.stop="viewClientDetails(oAuthClient.client_id)">
+                  <AtMenu variant="small">
+                    <AtMenuItem @click.stop="viewClientDetails(oAuthClient.client_id)">
                       <GeneralIcon icon="eye" />
                       View Details
-                    </NcMenuItem>
-                    <NcMenuItem
+                    </AtMenuItem>
+                    <AtMenuItem
                       v-if="oAuthClient.client_type === 'confidential'"
                       @click.stop="handleRegenerateSecret(oAuthClient)"
                     >
                       <GeneralIcon icon="refresh" />
                       Regenerate Secret
-                    </NcMenuItem>
-                    <NcDivider />
-                    <NcMenuItem danger @click.stop="handleDeleteClient(oAuthClient)">
+                    </AtMenuItem>
+                    <AtDivider />
+                    <AtMenuItem danger @click.stop="handleDeleteClient(oAuthClient)">
                       <GeneralIcon icon="delete" />
                       Delete Client
-                    </NcMenuItem>
-                  </NcMenu>
+                    </AtMenuItem>
+                  </AtMenu>
                 </template>
-              </NcDropdown>
+              </AtDropdown>
             </template>
           </template>
-        </NcTable>
+        </AtTable>
       </div>
     </div>
 

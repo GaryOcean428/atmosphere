@@ -1,11 +1,11 @@
-import { arrDetailedDiff, type NcContext } from 'nocodb-sdk';
+import { arrDetailedDiff, type AtContext } from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Knex } from '~/db/CustomKnex';
 import type { FilterOptions } from '~/db/field-handler/field-handler.interface';
 import { ComputedFieldHandler } from '~/db/field-handler/handlers/computed';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { dataWrapper } from '~/helpers/dbHelpers';
 import { extractProps } from '~/helpers/extractProps';
 import { type Column, FileReference, type Filter } from '~/models';
@@ -88,7 +88,7 @@ export class AttachmentGeneralHandler extends ComputedFieldHandler {
     oldData?: any;
     column: Column;
     options?: {
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       baseModel?: IBaseModelSqlV2;
     };
@@ -103,7 +103,7 @@ export class AttachmentGeneralHandler extends ComputedFieldHandler {
       return value;
     }
     const throwError = (reason?: string) => {
-      NcError.invalidValueForField({
+      AtError.invalidValueForField({
         value: params.value,
         column: params.column.title,
         type: params.column.uidt,

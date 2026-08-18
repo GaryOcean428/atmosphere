@@ -6,7 +6,7 @@
  * `/^[a-zA-Z][a-zA-Z0-9+.-]*:/` is bypassed by smuggling an ASCII control char
  * into the scheme — `java\tscript:alert(1)` fails the test (treated as a
  * "relative" URL and allowed), yet the browser strips the tab and executes it
- * as `javascript:` in the nocodb origin → stored XSS / token theft.
+ * as `javascript:` in the atmosphere origin → stored XSS / token theft.
  *
  * This helper closes that gap by (1) rejecting any URL containing ASCII control
  * chars, and (2) deciding the allow/deny on the *normalized* protocol via the
@@ -45,7 +45,7 @@ export function isSafeRedirectUrl(rawUrl: unknown): boolean {
  * `isSafeRedirectUrl` deliberately allows scheme-less (relative) URLs — safe to
  * assign to `window.location`, but `new URL(relative)` throws, so a caller that
  * parses the value needs this instead. Mirrors the backend's `isHttpRedirectUri`
- * (`nocodb/src/modules/oauth/helpers/redirectUri.ts`) — keep the two in sync.
+ * (`atmosphere/src/modules/oauth/helpers/redirectUri.ts`) — keep the two in sync.
  */
 export function isHttpRedirectUri(rawUrl: unknown): boolean {
   if (!isSafeRedirectUrl(rawUrl)) return false

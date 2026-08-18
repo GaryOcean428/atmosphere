@@ -1,6 +1,6 @@
 import type { z, ZodTypeAny } from 'zod';
 import type { MetaTable } from '~/utils/globals';
-import type { NcContext, NcRequest } from '~/interface/config';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { ColumnBackupRef } from '~/services/column-data-backup-handler';
 import type { LtarSideEffectIds } from '~/services/columns.service.type';
 import type { OperationName } from './op-names';
@@ -14,7 +14,7 @@ import type { OperationName } from './op-names';
  *  - `sandbox` (opt-in)        — only set if the op flows through sandbox replay.
  *
  * `name@version` is the registry lookup key and the `event` column in
- * `nc_sandbox_changelog`. Bump `version` when the schema or replay semantics
+ * `atm_sandbox_changelog`. Bump `version` when the schema or replay semantics
  * change in a way old changelog rows can't replay against the new contract;
  * v1 and v2 coexist until v1 rows drain.
  */
@@ -64,12 +64,12 @@ export interface OperationEntry<
   readonly description?: string | DescFn;
   /** Pre-call hook: snapshot pre-state for undo / description / skip_if. */
   readonly before?: (
-    context: NcContext,
+    context: AtContext,
     params: z.infer<S>,
   ) => Promise<ResolvedCtx<E>>;
   /** Suppress recording when the call was a no-op (e.g. delete-of-missing-row). */
   readonly skip_if?: (
-    context: NcContext,
+    context: AtContext,
     params: z.infer<S>,
     result: R,
     resolved?: ResolvedCtx<E>,
@@ -83,14 +83,14 @@ export interface OperationUndo<
 > {
   /** Returns the inverse op for undo; `null` skips recording. */
   readonly inverse: (
-    context: NcContext,
+    context: AtContext,
     params: z.infer<S>,
     result: R,
     resolved?: ResolvedCtx<E>,
   ) => Promise<InverseOp | null> | InverseOp | null;
   /**
    * Resolves the per-tab undo/redo stack this op belongs to. Persisted on
-   * `nc_operation_logs.scope_type` / `scope_id`. `UndoRedoService` filters
+   * `atm_operation_logs.scope_type` / `scope_id`. `UndoRedoService` filters
    * by `(user, tab, scope_type, scope_id)` so Cmd-Z while viewing table A
    * only pops ops scoped to table A. Resolved at forward record time —
    * inverse ops consume the existing row's scope.
@@ -165,7 +165,7 @@ export type ParamsOf<C> = C extends OperationContract<
 export type CommandHandler<
   C extends OperationContract<any> = OperationContract<any>,
 > = (
-  context: NcContext,
+  context: AtContext,
   params: ParamsOf<C>,
   meta: HandlerMeta,
 ) => Promise<unknown>;
@@ -182,14 +182,14 @@ export type CommandHandler<
  * cleanup itself are logged and swallowed.
  */
 export type FailureCleanupFn = (
-  context: NcContext,
+  context: AtContext,
   capture: Partial<CaptureBag>,
 ) => Promise<void>;
 
 export interface HandlerMeta {
   entryId: string;
   entityId?: string;
-  originalReq: NcRequest;
+  originalReq: AtRequest;
   createdBy: string;
   extra?: Partial<CaptureBag>;
 }
@@ -440,7 +440,7 @@ export type DescFn = (context: DescCtx) => string;
  * edits inside their respective editors (added so rename-class updates can
  * land on the base stack while content edits stay inside the editor).
  *
- * Scope is set at forward record time on `nc_operation_logs`. Inverse ops
+ * Scope is set at forward record time on `atm_operation_logs`. Inverse ops
  * (macroUndo, trashRestore) inherit the row's scope — no re-resolution.
  */
 export type ScopeType =
@@ -471,5 +471,5 @@ export type ScopeResolver<
   params: z.infer<S>,
   result: R,
   resolved: ResolvedCtx<E> | undefined,
-  context: NcContext,
+  context: AtContext,
 ) => ScopeRef;

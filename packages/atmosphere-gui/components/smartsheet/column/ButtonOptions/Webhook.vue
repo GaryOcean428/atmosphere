@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { HookType } from 'nocodb-sdk'
+import type { HookType } from 'atmosphere-sdk'
 
 const props = defineProps<{
   modelValue: any
@@ -83,20 +83,20 @@ watch(isWebhookModal, (newVal) => {
 
 <template>
   <a-form-item>
-    <div class="mb-2 text-nc-content-gray text-[13px] flex justify-between">
+    <div class="mb-2 text-atm-content-gray text-[13px] flex justify-between">
       {{ $t('labels.webhook') }}
       <a
         class="font-medium"
-        href="https://nocodb.com/docs/product-docs/fields/field-types/custom-types/button#create-a-button-field"
+        href="https://atmosphere.dev/docs/product-docs/fields/field-types/custom-types/button#create-a-button-field"
         target="_blank"
       >
         {{ $t('title.docs') }}
       </a>
     </div>
     <div class="flex rounded-lg">
-      <NcDropdown v-model:visible="isWebHookSelectionDropdownOpen" :trigger="['click']">
+      <AtDropdown v-model:visible="isWebHookSelectionDropdownOpen" :trigger="['click']">
         <template #overlay>
-          <NcListWithSearch
+          <AtListWithSearch
             v-if="isWebHookSelectionDropdownOpen"
             :is-parent-open="isWebHookSelectionDropdownOpen"
             :search-input-placeholder="$t('placeholder.searchFields')"
@@ -111,37 +111,37 @@ watch(isWebhookModal, (newVal) => {
           >
             <template v-if="isUIAllowed('hookCreate') || !!hookCreateReason" #bottom>
               <a-divider style="margin: 4px 0" />
-              <NcTooltip :title="hookCreateReason ? $t(hookCreateReason) : ''" :disabled="!hookCreateReason">
+              <AtTooltip :title="hookCreateReason ? $t(hookCreateReason) : ''" :disabled="!hookCreateReason">
                 <div
                   class="flex items-center text-sm"
                   :class="
-                    hookCreateReason ? 'text-nc-content-gray-muted cursor-not-allowed' : 'text-nc-content-brand cursor-pointer'
+                    hookCreateReason ? 'text-atm-content-gray-muted cursor-not-allowed' : 'text-atm-content-brand cursor-pointer'
                   "
                   @click="!hookCreateReason && newWebhook()"
                 >
-                  <div class="w-full flex justify-between items-center gap-2 px-2 py-2 rounded-md hover:bg-nc-bg-gray-light">
+                  <div class="w-full flex justify-between items-center gap-2 px-2 py-2 rounded-md hover:bg-atm-bg-gray-light">
                     {{ $t('general.create') }} {{ $t('objects.webhook').toLowerCase() }}
                     <GeneralIcon icon="plus" class="flex-none" />
                   </div>
                 </div>
-              </NcTooltip>
+              </AtTooltip>
             </template>
-          </NcListWithSearch>
+          </AtListWithSearch>
         </template>
         <div
           :class="{
-            'nc-button-style-dropdown shadow-dropdown-open remove-right-shadow': isWebHookSelectionDropdownOpen,
+            'atm-button-style-dropdown shadow-dropdown-open remove-right-shadow': isWebHookSelectionDropdownOpen,
           }"
-          class="nc-button-webhook-select border-r-0 flex items-center justify-center border-1 h-8 px-[8px] border-nc-border-gray-dark !w-full transition-all cursor-pointer !rounded-l-lg"
+          class="atm-button-webhook-select border-r-0 flex items-center justify-center border-1 h-8 px-[8px] border-atm-border-gray-dark !w-full transition-all cursor-pointer !rounded-l-lg"
         >
           <div class="flex w-full items-center gap-2">
             <div
               :key="selectedWebhook?.id"
-              class="flex items-center overflow-x-clip truncate text-ellipsis w-full gap-1 text-nc-content-gray"
+              class="flex items-center overflow-x-clip truncate text-ellipsis w-full gap-1 text-atm-content-gray"
             >
-              <NcTooltip
+              <AtTooltip
                 :class="{
-                  'text-nc-content-gray-muted': !selectedWebhook?.title,
+                  'text-atm-content-gray-muted': !selectedWebhook?.title,
                 }"
                 class="truncate max-w-full"
                 show-on-truncate-only
@@ -150,35 +150,35 @@ watch(isWebhookModal, (newVal) => {
                   {{ !selectedWebhook?.title ? $t('labels.selectAWebhook') : selectedWebhook?.title }}
                 </template>
                 {{ !selectedWebhook?.title ? $t('labels.selectAWebhook') : selectedWebhook?.title }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
             <GeneralIcon
               icon="arrowDown"
               :class="{
                 'transform rotate-180': isWebHookSelectionDropdownOpen,
               }"
-              class="text-nc-content-gray-muted transition-all transition-transform"
+              class="text-atm-content-gray-muted transition-all transition-transform"
             />
           </div>
         </div>
-      </NcDropdown>
-      <NcButton
+      </AtDropdown>
+      <AtButton
         size="small"
         type="secondary"
-        class="!rounded-l-none border-l-[#d9d9d9] !hover:bg-nc-bg-default nc-button-style-dropdown"
+        class="!rounded-l-none border-l-[#d9d9d9] !hover:bg-atm-bg-default atm-button-style-dropdown"
         :class="{
-          'nc-button-style-dropdown shadow-dropdown-open remove-left-shadow': isWebHookSelectionDropdownOpen,
+          'atm-button-style-dropdown shadow-dropdown-open remove-left-shadow': isWebHookSelectionDropdownOpen,
         }"
         @click="editWebhook"
       >
         <GeneralIcon
           :class="{
-            'text-nc-content-gray-disabled': !selectedWebhook,
-            'text-nc-content-gray-subtle': selectedWebhook,
+            'text-atm-content-gray-disabled': !selectedWebhook,
+            'text-atm-content-gray-subtle': selectedWebhook,
           }"
           icon="ncEdit"
         />
-      </NcButton>
+      </AtButton>
     </div>
   </a-form-item>
 
@@ -200,7 +200,7 @@ watch(isWebhookModal, (newVal) => {
   }
 }
 
-.nc-list-with-search {
+.atm-list-with-search {
   @apply w-full;
 }
 

@@ -1,15 +1,15 @@
 import debug from 'debug';
 import { Injectable } from '@nestjs/common';
-import { EventType } from 'nocodb-sdk';
+import { EventType } from 'atmosphere-sdk';
 import type { Job } from 'bull';
-import type { NcContext, NcRequest } from '~/interface/config';
+import type { AtContext, AtRequest } from '~/interface/config';
 import { MetaDiffsService } from '~/services/meta-diffs.service';
 import { JobsLogService } from '~/modules/jobs/jobs/jobs-log.service';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 @Injectable()
 export class MetaSyncProcessor {
-  private readonly debugLog = debug('nc:jobs:meta-sync');
+  private readonly debugLog = debug('atm:jobs:meta-sync');
 
   constructor(
     private readonly metaDiffsService: MetaDiffsService,
@@ -20,10 +20,10 @@ export class MetaSyncProcessor {
     this.debugLog(`job started for ${job.id}`);
 
     const info: {
-      context: NcContext;
+      context: AtContext;
       sourceId: string;
       user: any;
-      req: NcRequest;
+      req: AtRequest;
     } = job.data;
 
     const context = info.context;
@@ -49,7 +49,7 @@ export class MetaSyncProcessor {
       });
     }
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -71,10 +71,10 @@ export class MetaSyncProcessor {
     this.debugLog(`job started for ${job.id}`);
 
     const info: {
-      context: NcContext;
+      context: AtContext;
       sourceId: string;
       user: any;
-      req: NcRequest;
+      req: AtRequest;
     } = job.data;
 
     const context = info.context;

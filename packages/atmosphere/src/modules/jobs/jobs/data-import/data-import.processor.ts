@@ -2,12 +2,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   AuditV1OperationTypes,
   isLinksOrLTAR,
-  NcBaseErrorv2,
-  NcErrorType,
+  AtBaseErrorv2,
+  AtErrorType,
   serializeExcelDateValue,
   serializeImportValue,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Job } from 'bull';
 import type {
   ColumnReqType,
@@ -15,11 +15,11 @@ import type {
   FileImportOptions,
   FileImportSheet,
   FileImportType,
-  NcRequest,
+  AtRequest,
   UserType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { DataImportJobData } from '~/interface/Jobs';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import { describeRowError } from '~/modules/jobs/jobs/data-import/error-formatter';
 import {
   deleteImportAttachment,
@@ -31,12 +31,12 @@ import { TablesService } from '~/services/tables.service';
 import { ColumnsService } from '~/services/columns.service';
 import { BulkDataAliasService } from '~/services/bulk-data-alias.service';
 import { Audit, Model, Source } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { elapsedTime, initTime } from '~/modules/jobs/helpers';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { generateAuditV1Payload } from '~/utils/audit';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { processConcurrently } from '~/utils';
 import {
   getLtarDisplayValueContext,
@@ -61,18 +61,18 @@ const LINK_CONCURRENCY = 25;
  */
 const LINK_FLUSH_THRESHOLD_DEFAULT = 50_000;
 const getLinkFlushThreshold = () =>
-  +process.env.NC_DATA_IMPORT_LINK_FLUSH_THRESHOLD ||
+  +process.env.ATMOSPHERE_DATA_IMPORT_LINK_FLUSH_THRESHOLD ||
   LINK_FLUSH_THRESHOLD_DEFAULT;
 /** Default delimiter for multiple display values in one LTAR cell. */
 const DEFAULT_LINK_DELIMITER = ',';
 
 /** Row-level errors are retried one-by-one; everything else fails the batch. */
-const ROW_LEVEL_ERRORS = new Set<NcErrorType>([
-  NcErrorType.ERR_DUPLICATE_RECORD,
-  NcErrorType.FIELD_UNIQUE_CONSTRAINT_VIOLATION,
-  NcErrorType.ERR_INVALID_VALUE_FOR_FIELD,
-  NcErrorType.ERR_INVALID_JSON,
-  NcErrorType.ERR_INVALID_ATTACHMENT_JSON,
+const ROW_LEVEL_ERRORS = new Set<AtErrorType>([
+  AtErrorType.ERR_DUPLICATE_RECORD,
+  AtErrorType.FIELD_UNIQUE_CONSTRAINT_VIOLATION,
+  AtErrorType.ERR_INVALID_VALUE_FOR_FIELD,
+  AtErrorType.ERR_INVALID_JSON,
+  AtErrorType.ERR_INVALID_ATTACHMENT_JSON,
 ]);
 
 interface ColumnMapEntry {
@@ -179,14 +179,14 @@ export class DataImportProcessor {
     const hrTime = initTime();
     const { attachment, importType, sheets, options, user } = data;
 
-    const parentAuditId = await Noco.ncAudit.genNanoid(MetaTable.AUDIT);
-    const req: NcRequest = {
+    const parentAuditId = await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT);
+    const req: AtRequest = {
       user: { id: user?.id, email: user?.email },
       clientIp: data.req?.clientIp,
       ncBaseId: data.baseId,
       ncSourceId: data.sourceId,
       ncParentAuditId: parentAuditId,
-    } as NcRequest;
+    } as AtRequest;
 
     let auditTableNames: string;
     if (options.importDataOnly) {
@@ -306,10 +306,10 @@ export class DataImportProcessor {
       );
       log('Import failed due to an internal error.', true);
 
-      // NcError messages are user-safe; other errors (knex, etc.) may leak
+      // AtError messages are user-safe; other errors (knex, etc.) may leak
       // schema details — fall back to a generic message.
       const safeMessage =
-        e instanceof NcBaseErrorv2
+        e instanceof AtBaseErrorv2
           ? e.message
           : 'Import failed. Please check the file format and try again.';
 
@@ -330,7 +330,7 @@ export class DataImportProcessor {
 
   /** Create-or-lookup the table, build the column map, then stream rows in. */
   private async importSheet(params: {
-    context: NcContext;
+    context: AtContext;
     baseId: string;
     sourceId: string;
     importType: FileImportType;
@@ -339,7 +339,7 @@ export class DataImportProcessor {
     options: FileImportOptions;
     spec: FileImportSheet;
     user: Partial<UserType>;
-    req: NcRequest;
+    req: AtRequest;
     log: (msg: string, verbose?: boolean) => void;
   }): Promise<SheetResult> {
     const {
@@ -365,7 +365,7 @@ export class DataImportProcessor {
       log(`Creating table "${tableName}"...`, true);
 
       const source = await Source.get(context, sourceId);
-      if (!source) NcError.sourceNotFound(sourceId);
+      if (!source) AtError.sourceNotFound(sourceId);
 
       const created = await this.tablesService.tableCreate(context, {
         baseId,
@@ -390,10 +390,10 @@ export class DataImportProcessor {
       log(`Table "${tableName}" created successfully.`, true);
     }
 
-    if (!tableId) NcError.badRequest('Table ID could not be determined');
+    if (!tableId) AtError.badRequest('Table ID could not be determined');
 
     const model = await Model.get(context, tableId);
-    if (!model) NcError.tableNotFound(tableId);
+    if (!model) AtError.tableNotFound(tableId);
     if (!tableName) tableName = model.title;
     await model.getColumns(context);
 
@@ -475,7 +475,7 @@ export class DataImportProcessor {
       Object.keys(colMap).length === 0 &&
       Object.keys(ltarColMap).length === 0
     ) {
-      NcError.badRequest(
+      AtError.badRequest(
         'No valid column mappings found. Please check your column configuration.',
       );
     }
@@ -560,17 +560,17 @@ export class DataImportProcessor {
    * otherwise match a pre-existing column that shares the same name).
    */
   private async createMappedColumns(params: {
-    context: NcContext;
+    context: AtContext;
     tableId: string;
     spec: FileImportSheet;
     user: Partial<UserType>;
-    req: NcRequest;
+    req: AtRequest;
     log: (msg: string, verbose?: boolean) => void;
   }): Promise<Map<string, ColumnType>> {
     const { context, tableId, spec, user, req, log } = params;
 
     const model = await Model.get(context, tableId);
-    if (!model) NcError.tableNotFound(tableId);
+    if (!model) AtError.tableNotFound(tableId);
     await model.getColumns(context);
 
     // Existing titles — a create request matching one of these maps to the
@@ -644,7 +644,7 @@ export class DataImportProcessor {
    * too many system-level failures.
    */
   private async streamSheetData(params: {
-    context: NcContext;
+    context: AtContext;
     baseId: string;
     importType: FileImportType;
     attachment: DataImportJobData['attachment'];
@@ -656,7 +656,7 @@ export class DataImportProcessor {
     model: Model;
     colMap: Record<string, ColumnMapEntry>;
     ltarColMap: Record<string, LtarColMapEntry>;
-    req: NcRequest;
+    req: AtRequest;
     log: (msg: string, verbose?: boolean) => void;
   }) {
     const {
@@ -811,7 +811,7 @@ export class DataImportProcessor {
         );
 
         const isRowLevel =
-          err instanceof NcBaseErrorv2 && ROW_LEVEL_ERRORS.has(err.error);
+          err instanceof AtBaseErrorv2 && ROW_LEVEL_ERRORS.has(err.error);
         const batchStartRow = processedRows - pending.length + 1;
         if (!isRowLevel) {
           stats.rowsFailed += pending.length;
@@ -933,10 +933,10 @@ export class DataImportProcessor {
    * single-link relations take only the first matched value.
    */
   private async processLinks(params: {
-    context: NcContext;
+    context: AtContext;
     model: Model;
     linkAccum: Map<string, LinkAccumEntry[]>;
-    req: NcRequest;
+    req: AtRequest;
     log: (msg: string, verbose?: boolean) => void;
     /**
      * Optional cross-flush cache (colId → display value → pk, or null for
@@ -955,7 +955,7 @@ export class DataImportProcessor {
     const source = await Source.get(context, model.source_id);
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     let linksCreated = 0;

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { IconType, type TeamV3V3Type } from 'nocodb-sdk'
+import { IconType, type TeamV3V3Type } from 'atmosphere-sdk'
 import 'emoji-mart-vue-fast/css/emoji-mart.css'
 import { Icon } from '@iconify/vue'
 import { type IconMapKey, isColorDark, stringToColor } from '#imports'
@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<TeamIconProps>(), {
   user: () => ({}),
   size: 'medium',
   disabled: false,
-  iconBgColor: 'var(--nc-bg-gray-light)',
+  iconBgColor: 'var(--atm-bg-gray-light)',
   showPlaceholderIcon: false,
   isDeleted: false,
   initialsLength: 2,
@@ -82,7 +82,7 @@ const teamIcon = computed<{
 
 const getColor = (color: string) => {
   if (color === 'transparent') {
-    return _getColor('var(--nc-bg-default)')
+    return _getColor('var(--atm-bg-default)')
   }
 
   return _getColor(color)
@@ -129,7 +129,7 @@ const teamInitials = computed(() => {
 
 <template>
   <div
-    class="nc-team-avatar"
+    class="atm-team-avatar"
     :class="[
       {
         'h-full min-h-5 aspect-square': size === 'auto',
@@ -165,7 +165,7 @@ const teamInitials = computed(() => {
 
       <Icon
         v-else
-        :data-testid="`nc-icon-${teamIcon.icon}`"
+        :data-testid="`atm-icon-${teamIcon.icon}`"
         class="!text-inherit flex-none"
         :class="{
           'w-[75%] h-[75%]': size === 'auto',
@@ -212,7 +212,7 @@ const teamInitials = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.nc-team-avatar {
+.atm-team-avatar {
   @apply flex-none rounded-lg text-xs flex items-center justify-center uppercase overflow-hidden;
 }
 </style>

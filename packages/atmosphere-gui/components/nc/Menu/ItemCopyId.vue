@@ -39,7 +39,7 @@ const onClickCopy = async () => {
 
 <template>
   <div class="w-full">
-    <NcTooltip
+    <AtTooltip
       :attrs="{
         class: 'w-full',
       }"
@@ -54,11 +54,11 @@ const onClickCopy = async () => {
       </template>
 
       <div
-        class="flex flex-row justify-between items-center w-[calc(100%_-_8px)] pl-2 pr-1 py-1 mx-1 rounded-md hover:bg-nc-bg-gray-light cursor-pointer group transition-colors duration-300"
+        class="flex flex-row justify-between items-center w-[calc(100%_-_8px)] pl-2 pr-1 py-1 mx-1 rounded-md hover:bg-atm-bg-gray-light cursor-pointer group transition-colors duration-300"
         @click.stop="onClickCopy"
       >
         <div class="w-full flex flex-row justify-between items-center gap-x-2 font-bold text-xs">
-          <div class="flex flex-row text-nc-content-gray-subtle2 text-xs items-baseline gap-x-1 font-bold whitespace-nowrap">
+          <div class="flex flex-row text-atm-content-gray-subtle2 text-xs items-baseline gap-x-1 font-bold whitespace-nowrap">
             <slot v-if="$slots.label" name="label"></slot>
             <template v-else-if="label">
               {{ label }}
@@ -67,16 +67,16 @@ const onClickCopy = async () => {
               {{ id }}
             </template>
           </div>
-          <NcButton size="xsmall" type="secondary" class="!group-hover:bg-nc-bg-gray-light">
+          <AtButton size="xsmall" type="secondary" class="!group-hover:bg-atm-bg-gray-light">
             <div class="flex children:flex-none relative h-4 w-4">
               <Transition name="icon-fade" :duration="200">
                 <GeneralIcon v-if="isCopied" icon="check" class="h-4 w-4 opacity-80" />
                 <GeneralIcon v-else icon="copy" class="h-4 w-4 opacity-80" />
               </Transition>
             </div>
-          </NcButton>
+          </AtButton>
         </div>
       </div>
-    </NcTooltip>
+    </AtTooltip>
   </div>
 </template>

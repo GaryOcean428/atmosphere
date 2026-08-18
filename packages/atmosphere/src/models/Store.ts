@@ -1,14 +1,14 @@
-import type { SortType } from 'nocodb-sdk';
-import { NcError } from '~/helpers/catchError';
+import type { SortType } from 'atmosphere-sdk';
+import { AtError } from '~/helpers/catchError';
 import { extractProps } from '~/helpers/extractProps';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   CacheGetType,
   CacheScope,
   MetaTable,
   RootScopes,
 } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 
 // Store is used for storing key value pairs
 export default class Store {
@@ -27,13 +27,13 @@ export default class Store {
   public static async get(
     key: string,
     lookInCache = false,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Store> {
     // get from cache if lookInCache is true
     if (lookInCache) {
       const storeData =
         key &&
-        (await NocoCache.get(
+        (await AtmosphereCache.get(
           'root',
           `${CacheScope.STORE}:${key}`,
           CacheGetType.TYPE_OBJECT,
@@ -51,14 +51,14 @@ export default class Store {
     );
 
     if (lookInCache)
-      await NocoCache.set('root', `${CacheScope.STORE}:${key}`, storeData);
+      await AtmosphereCache.set('root', `${CacheScope.STORE}:${key}`, storeData);
 
     return storeData;
   }
 
-  static async saveOrUpdate(store: Store, ncMeta = Noco.ncMeta) {
+  static async saveOrUpdate(store: Store, ncMeta = Atmosphere.ncMeta) {
     if (!store.key) {
-      NcError.badRequest('Key is required');
+      AtError.badRequest('Key is required');
     }
 
     const insertObj = extractProps(store, [
@@ -90,6 +90,6 @@ export default class Store {
       );
     }
     if (store.key)
-      await NocoCache.del('root', `${CacheScope.STORE}:${store.key}`);
+      await AtmosphereCache.del('root', `${CacheScope.STORE}:${store.key}`);
   }
 }

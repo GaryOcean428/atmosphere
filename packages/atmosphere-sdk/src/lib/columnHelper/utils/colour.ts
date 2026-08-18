@@ -1,7 +1,7 @@
 /**
  * Shared hex colour validation and normalization utilities.
  *
- * All colour values in NocoDB are stored as uppercase 6-digit hex strings
+ * All colour values in Atmosphere are stored as uppercase 6-digit hex strings
  * with a leading `#` (e.g. `#FF5733`). These helpers centralise the regex
  * and normalisation logic so that the SDK column helper, the backend field
  * handler, and the frontend components all use the same rules.

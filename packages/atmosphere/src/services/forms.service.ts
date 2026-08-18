@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents, EventType, ViewTypes } from 'nocodb-sdk';
+import { AppEvents, EventType, ViewTypes } from 'atmosphere-sdk';
 import type {
   FormUpdateReqType,
   UserType,
   ViewCreateReqType,
-} from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import { MetaService } from '~/meta/meta.service';
-import { NcContext } from '~/interface/config';
+import { AtContext } from '~/interface/config';
 import {
   type ViewWebhookManager,
   ViewWebhookManagerBuilder,
@@ -16,30 +16,30 @@ import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
 import { assertPersonalViewAllowed } from '~/helpers/checkPersonalViewFeature';
 import { assertNotSandbox } from '~/helpers/sandboxGuards';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { TraceCommand } from '~/decorators/trace-command.decorator';
 import { OperationName } from '~/command-registry/op-names';
 import { FormView, Model, Source, User, View } from '~/models';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { CacheScope } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 
 @Injectable()
 export class FormsService {
   constructor(protected readonly appHooksService: AppHooksService) {}
 
-  async formViewGet(context: NcContext, param: { formViewId: string }) {
+  async formViewGet(context: AtContext, param: { formViewId: string }) {
     return await FormView.getWithInfo(context, param.formViewId);
   }
 
   @TraceCommand(OperationName.formViewCreate)
   async formViewCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       body: ViewCreateReqType;
       user: UserType;
-      req: NcRequest;
+      req: AtRequest;
       ownedBy?: string;
       viewWebhookManager?: ViewWebhookManager;
     },
@@ -58,7 +58,7 @@ export class FormsService {
     );
 
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     await assertPersonalViewAllowed(context, param.body.lock_type);
@@ -66,7 +66,7 @@ export class FormsService {
     const model = await Model.get(context, param.tableId, false, ncMeta);
 
     if (model.synced) {
-      NcError._.prohibitedSyncTableOperation({
+      AtError._.prohibitedSyncTableOperation({
         modelName: model.title,
         operation: 'create_form_view',
       });
@@ -75,7 +75,7 @@ export class FormsService {
     const source = await Source.get(context, model.source_id);
 
     if (source.is_data_readonly) {
-      NcError.get(context).sourceDataReadOnly(source.alias);
+      AtError.get(context).sourceDataReadOnly(source.alias);
     }
 
     param.body.title = param.body.title?.trim();
@@ -88,7 +88,7 @@ export class FormsService {
       ncMeta,
     );
     if (existingView) {
-      NcError.get(context).duplicateAlias({
+      AtError.get(context).duplicateAlias({
         type: 'view',
         alias: param.body.title,
         label: 'title',
@@ -126,7 +126,7 @@ export class FormsService {
 
     // populate  cache and add to list since the list cache already exist
     const view = await View.get(context, id, false, ncMeta);
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       context,
       CacheScope.VIEW,
       [view.fk_model_id],
@@ -149,7 +149,7 @@ export class FormsService {
 
     await view.getViewWithInfo(context);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -170,11 +170,11 @@ export class FormsService {
 
   @TraceCommand(OperationName.formViewUpdate)
   async formViewUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       formViewId: string;
       form: FormUpdateReqType;
-      req: NcRequest;
+      req: AtRequest;
       viewWebhookManager?: ViewWebhookManager;
     },
     ncMeta?: MetaService,
@@ -186,7 +186,7 @@ export class FormsService {
     const view = await View.get(context, param.formViewId, false, ncMeta);
 
     if (!view) {
-      NcError.get(context).viewNotFound(param.formViewId);
+      AtError.get(context).viewNotFound(param.formViewId);
     }
 
     const viewWebhookManager =
@@ -223,7 +223,7 @@ export class FormsService {
     // Strip the stored bcrypt password hash from every outbound payload.
     const safeView = View.maskPasswordForResponse(view);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,

@@ -14,7 +14,7 @@ import {
   isSystemColumn,
   isVirtualCol,
   populateUniqueFileName,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { generateUniqueColumnName } from '../../../../../helpers/parsers/parserHelpers'
 import convertCellData from '../../../../../composables/useMultiSelect/convertCellData'
 import type { Cell } from '../../../../../composables/useMultiSelect/cellRange'
@@ -300,7 +300,7 @@ export function useCopyPaste({
     if (clipboardData?.endsWith('\n')) {
       // Remove '\n' from the end of the clipboardData
       // When copying from XLS/XLSX files, there is an extra '\n' appended to the end
-      //   this overwrites one additional cell information when we paste in NocoDB
+      //   this overwrites one additional cell information when we paste in Atmosphere
       clipboardData = clipboardData.replace(/\n$/, '')
     }
 
@@ -1186,7 +1186,7 @@ export function useCopyPaste({
     const newAttachments: AttachmentType[] = []
 
     try {
-      const data = await batchUploadFiles(files, [NOCO, base.value.id, meta.value?.id, columnId].join('/'))
+      const data = await batchUploadFiles(files, [ATMOSPHERE, base.value.id, meta.value?.id, columnId].join('/'))
 
       // add suffix in duplicate file title
       for (const uploadedFile of data) {
@@ -1224,7 +1224,7 @@ export function useCopyPaste({
     const blobHTML = new Blob([copyHTML], { type: 'text/html' })
     const blobPlainText = new Blob([copyPlainText], { type: 'text/plain' })
 
-    const clipboardItem: NcClipboardDataItemType = {
+    const clipboardItem: AtClipboardDataItemType = {
       ...clipboardItemConfig,
       tableId: meta.value?.id,
       id: getClipboardItemId(),
@@ -1358,7 +1358,7 @@ export function useCopyPaste({
 
           await copyMimes({ 'text/plain': plainTextValue, ...clipboardContent })
 
-          const clipboardItem: NcClipboardDataItemType = {
+          const clipboardItem: AtClipboardDataItemType = {
             dbCellValueArr: [[cellValue]],
             columns: [clipboardColumn],
             copiedPlainText: plainTextValue,

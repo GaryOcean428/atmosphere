@@ -2,29 +2,29 @@ import process from 'process';
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { compareVersions, validate } from 'compare-versions';
-import { getCircularReplacer, OperationSource, ViewTypes } from 'nocodb-sdk';
+import { getCircularReplacer, OperationSource, ViewTypes } from 'atmosphere-sdk';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
-import type { ErrorReportReqType } from 'nocodb-sdk';
-import type { AppConfig, NcRequest } from '~/interface/config';
+import type { ErrorReportReqType } from 'atmosphere-sdk';
+import type { AppConfig, AtRequest } from '~/interface/config';
 import { getFilteredAgents } from '~/utils/ssrf';
 import {
-  NC_ATTACHMENT_FIELD_SIZE,
-  NC_DATA_IMPORT_FILE_SIZE,
-  NC_GRID_MAX_SELECTION_LIMIT,
-  NC_MAX_ATTACHMENTS_ALLOWED,
-  NC_MAX_TEXT_LENGTH,
+  ATMOSPHERE_ATTACHMENT_FIELD_SIZE,
+  ATMOSPHERE_DATA_IMPORT_FILE_SIZE,
+  ATMOSPHERE_GRID_MAX_SELECTION_LIMIT,
+  ATMOSPHERE_MAX_ATTACHMENTS_ALLOWED,
+  ATMOSPHERE_MAX_TEXT_LENGTH,
 } from '~/constants';
 import SqlMgrv2 from '~/db/sql-mgr/v2/SqlMgrv2';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { Base, User } from '~/models';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { isCloud, isEE, isOnPrem, T } from '~/utils';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import getInstance from '~/utils/getInstance';
 import { CacheScope, MetaTable, RootScopes } from '~/utils/globals';
-import { jdbcToXcConfig } from '~/utils/nc-config/helpers';
-import { NC_DISABLE_UNDO_REDO } from '~/utils/nc-config/constants';
+import { jdbcToXcConfig } from '~/utils/atm-config/helpers';
+import { ATMOSPHERE_DISABLE_UNDO_REDO } from '~/utils/atm-config/constants';
 import { packageVersion } from '~/utils/packageVersion';
 import {
   defaultGroupByLimitConfig,
@@ -32,10 +32,10 @@ import {
 } from '~/helpers/extractLimitAndOffset';
 import {
   DriverClient,
-  NC_DISABLE_GROUP_BY_AGG,
-  NC_DISABLE_SUPPORT_CHAT,
-} from '~/utils/nc-config';
-import NocoCache from '~/cache/NocoCache';
+  ATMOSPHERE_DISABLE_GROUP_BY_AGG,
+  ATMOSPHERE_DISABLE_SUPPORT_CHAT,
+} from '~/utils/atm-config';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 
 const versionCache = {
   releaseVersion: null,
@@ -44,7 +44,7 @@ const versionCache = {
 
 const defaultConnectionConfig: any = {
   // https://github.com/knex/knex/issues/97
-  // timezone: process.env.NC_TIMEZONE || 'UTC',
+  // timezone: process.env.ATMOSPHERE_TIMEZONE || 'UTC',
   dateStrings: true,
 };
 
@@ -99,7 +99,7 @@ export class UtilsService {
         versionCache.lastFetched < Date.now() - 1000 * 60 * 60)
     ) {
       const nonBetaTags = await axios
-        .get('https://api.github.com/repos/nocodb/nocodb/tags', {
+        .get('https://api.github.com/repos/atmosphere/atmosphere/tags', {
           timeout: 5000,
         })
         .then((response) => {
@@ -229,7 +229,7 @@ export class UtilsService {
       const connectionConfig = jdbcToXcConfig(url);
       return connectionConfig;
     } catch (error) {
-      return NcError.internalServerError(
+      return AtError.internalServerError(
         'Please check server log for more details',
       );
     }
@@ -239,7 +239,7 @@ export class UtilsService {
     // TODO: fix or deprecate for EE
     const [bases, userCount] = await Promise.all([
       Base.list(),
-      Noco.ncMeta.metaCount(RootScopes.ROOT, RootScopes.ROOT, MetaTable.USERS),
+      Atmosphere.ncMeta.metaCount(RootScopes.ROOT, RootScopes.ROOT, MetaTable.USERS),
     ]);
 
     const result: AllMeta = {
@@ -266,7 +266,7 @@ export class UtilsService {
             ] = this.extractResultOrNull(
               await Promise.allSettled([
                 // db tables  count
-                Noco.ncMeta.metaCount(
+                Atmosphere.ncMeta.metaCount(
                   base.fk_workspace_id,
                   base.id,
                   MetaTable.MODELS,
@@ -277,7 +277,7 @@ export class UtilsService {
                   },
                 ),
                 // db views count
-                Noco.ncMeta.metaCount(
+                Atmosphere.ncMeta.metaCount(
                   base.fk_workspace_id,
                   base.id,
                   MetaTable.MODELS,
@@ -289,7 +289,7 @@ export class UtilsService {
                 ),
                 // views count
                 (async () => {
-                  const views = await Noco.ncMeta.metaList2(
+                  const views = await Atmosphere.ncMeta.metaList2(
                     base.fk_workspace_id,
                     base.id,
                     MetaTable.VIEWS,
@@ -340,7 +340,7 @@ export class UtilsService {
                   );
                 })(),
                 // webhooks count (excluding trashed)
-                Noco.ncMeta.metaCount(
+                Atmosphere.ncMeta.metaCount(
                   base.fk_workspace_id,
                   base.id,
                   MetaTable.HOOKS,
@@ -354,13 +354,13 @@ export class UtilsService {
                   },
                 ),
                 // filters count
-                Noco.ncMeta.metaCount(
+                Atmosphere.ncMeta.metaCount(
                   base.fk_workspace_id,
                   base.id,
                   MetaTable.FILTER_EXP,
                 ),
                 // sorts count
-                Noco.ncMeta.metaCount(
+                Atmosphere.ncMeta.metaCount(
                   base.fk_workspace_id,
                   base.id,
                   MetaTable.SORT,
@@ -370,7 +370,7 @@ export class UtilsService {
                   return this.extractResultOrNull(
                     await Promise.allSettled(
                       sources.map(async (source) =>
-                        (await NcConnectionMgrv2.getSqlClient(source))
+                        (await AtConnectionMgrv2.getSqlClient(source))
                           .totalRecords?.()
                           ?.then((result) => result?.data),
                       ),
@@ -378,7 +378,7 @@ export class UtilsService {
                   );
                 }),
                 // base users count
-                Noco.ncMeta.metaCount(
+                Atmosphere.ncMeta.metaCount(
                   base.fk_workspace_id,
                   base.id,
                   MetaTable.PROJECT_USERS,
@@ -427,26 +427,26 @@ export class UtilsService {
     const baseHasAdmin = !(await User.isFirst());
     const instance = await getInstance();
 
-    const settings = await Noco.getAppSettings();
+    const settings = await Atmosphere.getAppSettings();
 
     const oidcAuthEnabled = ['openid', 'oidc'].includes(
-      process.env.NC_SSO?.toLowerCase(),
+      process.env.ATMOSPHERE_SSO?.toLowerCase(),
     );
     const oidcProviderName = oidcAuthEnabled
-      ? process.env.NC_OIDC_PROVIDER_NAME ?? 'OpenID Connect'
+      ? process.env.ATMOSPHERE_OIDC_PROVIDER_NAME ?? 'OpenID Connect'
       : null;
 
     let giftUrl: string;
 
     if (instance.impacted >= 5) {
-      giftUrl = `https://w21dqb1x.nocodb.com/#/nc/form/4d2e0e4b-df97-4c5e-ad8e-f8b8cca90330?Users=${
+      giftUrl = `https://w21dqb1x.atmosphere.dev/#/atm/form/4d2e0e4b-df97-4c5e-ad8e-f8b8cca90330?Users=${
         instance.impacted
       }&Bases=${instance.projectsExt + instance.projectsMeta}`;
     }
 
-    const samlAuthEnabled = process.env.NC_SSO?.toLowerCase() === 'saml';
+    const samlAuthEnabled = process.env.ATMOSPHERE_SSO?.toLowerCase() === 'saml';
     const samlProviderName = samlAuthEnabled
-      ? process.env.NC_SSO_SAML_PROVIDER_NAME ?? 'SAML'
+      ? process.env.ATMOSPHERE_SSO_SAML_PROVIDER_NAME ?? 'SAML'
       : null;
 
     const result = {
@@ -456,15 +456,15 @@ export class UtilsService {
       type: 'rest',
       env: process.env.NODE_ENV,
       googleAuthEnabled: !!(
-        process.env.NC_GOOGLE_CLIENT_ID && process.env.NC_GOOGLE_CLIENT_SECRET
+        process.env.ATMOSPHERE_GOOGLE_CLIENT_ID && process.env.ATMOSPHERE_GOOGLE_CLIENT_SECRET
       ),
       githubAuthEnabled: !!(
-        process.env.NC_GITHUB_CLIENT_ID && process.env.NC_GITHUB_CLIENT_SECRET
+        process.env.ATMOSPHERE_GITHUB_CLIENT_ID && process.env.ATMOSPHERE_GITHUB_CLIENT_SECRET
       ),
       oidcAuthEnabled,
       oidcProviderName,
-      oneClick: !!process.env.NC_ONE_CLICK,
-      connectToExternalDB: !process.env.NC_CONNECT_TO_EXTERNAL_DB_DISABLED,
+      oneClick: !!process.env.ATMOSPHERE_ONE_CLICK,
+      connectToExternalDB: !process.env.ATMOSPHERE_CONNECT_TO_EXTERNAL_DB_DISABLED,
       version: packageVersion,
       defaultLimit: Math.max(
         Math.min(defaultLimitConfig.limitDefault, defaultLimitConfig.limitMax),
@@ -472,29 +472,29 @@ export class UtilsService {
       ),
       defaultGroupByLimit: defaultGroupByLimitConfig,
       timezone: defaultConnectionConfig.timezone,
-      ncMin: !!process.env.NC_MIN,
-      teleEnabled: process.env.NC_DISABLE_TELE !== 'true',
-      errorReportingEnabled: process.env.NC_DISABLE_ERR_REPORTS !== 'true',
+      ncMin: !!process.env.ATMOSPHERE_MIN,
+      teleEnabled: process.env.ATMOSPHERE_DISABLE_TELE !== 'true',
+      errorReportingEnabled: process.env.ATMOSPHERE_DISABLE_ERR_REPORTS !== 'true',
       sentryDSN:
-        process.env.NC_DISABLE_ERR_REPORTS !== 'true'
-          ? process.env.NC_SENTRY_DSN
+        process.env.ATMOSPHERE_DISABLE_ERR_REPORTS !== 'true'
+          ? process.env.ATMOSPHERE_SENTRY_DSN
           : null,
-      auditEnabled: process.env.NC_DISABLE_AUDIT !== 'true',
-      undoRedoEnabled: !NC_DISABLE_UNDO_REDO,
+      auditEnabled: process.env.ATMOSPHERE_DISABLE_AUDIT !== 'true',
+      undoRedoEnabled: !ATMOSPHERE_DISABLE_UNDO_REDO,
       ncSiteUrl: (param.req as any).ncSiteUrl,
-      ee: Noco.isEE(),
-      ncAttachmentFieldSize: NC_ATTACHMENT_FIELD_SIZE,
-      ncMaxAttachmentsAllowed: NC_MAX_ATTACHMENTS_ALLOWED,
-      ncMaxTextLength: NC_MAX_TEXT_LENGTH,
-      ncDataImportFileSize: NC_DATA_IMPORT_FILE_SIZE,
-      ncGridMaxSelectionLimit: NC_GRID_MAX_SELECTION_LIMIT,
+      ee: Atmosphere.isEE(),
+      ncAttachmentFieldSize: ATMOSPHERE_ATTACHMENT_FIELD_SIZE,
+      ncMaxAttachmentsAllowed: ATMOSPHERE_MAX_ATTACHMENTS_ALLOWED,
+      ncMaxTextLength: ATMOSPHERE_MAX_TEXT_LENGTH,
+      ncDataImportFileSize: ATMOSPHERE_DATA_IMPORT_FILE_SIZE,
+      ncGridMaxSelectionLimit: ATMOSPHERE_GRID_MAX_SELECTION_LIMIT,
       isCloud: isCloud,
-      automationLogLevel: process.env.NC_AUTOMATION_LOG_LEVEL || 'OFF',
-      baseHostName: process.env.NC_BASE_HOST_NAME,
+      automationLogLevel: process.env.ATMOSPHERE_AUTOMATION_LOG_LEVEL || 'OFF',
+      baseHostName: process.env.ATMOSPHERE_BASE_HOST_NAME,
       disableEmailAuth: this.configService.get('auth.disableEmailAuth', {
         infer: true,
       }),
-      feedEnabled: process.env.NC_DISABLE_PRODUCT_FEED !== 'true',
+      feedEnabled: process.env.ATMOSPHERE_DISABLE_PRODUCT_FEED !== 'true',
       mainSubDomain: this.configService.get('mainSubDomain', { infer: true }),
       dashboardPath: this.configService.get('dashboardPath', { infer: true }),
       inviteOnlySignup: settings.invite_only_signup,
@@ -503,25 +503,25 @@ export class UtilsService {
       samlProviderName,
       samlAuthEnabled,
       giftUrl,
-      prodReady: Noco.getConfig()?.meta?.db?.client !== DriverClient.SQLITE,
+      prodReady: Atmosphere.getConfig()?.meta?.db?.client !== DriverClient.SQLITE,
       allowLocalUrl:
-        process.env.NC_WEBHOOK_ALLOW_PRIVATE_NETWORK === 'true' ||
-        process.env.NC_ALLOW_LOCAL_HOOKS === 'true',
+        process.env.ATMOSPHERE_WEBHOOK_ALLOW_PRIVATE_NETWORK === 'true' ||
+        process.env.ATMOSPHERE_ALLOW_LOCAL_HOOKS === 'true',
       isOnPrem,
-      disableSupportChat: NC_DISABLE_SUPPORT_CHAT,
-      disableGroupByAggregation: NC_DISABLE_GROUP_BY_AGG,
+      disableSupportChat: ATMOSPHERE_DISABLE_SUPPORT_CHAT,
+      disableGroupByAggregation: ATMOSPHERE_DISABLE_GROUP_BY_AGG,
       /**
        * Allow disabling onboarding flow based on env variable or development mode
        *
        * TODO: @rameshmane7218 remove test env once we enable onboarding flow in playwright
        */
       disableOnboardingFlow:
-        process.env.NC_DISABLE_ONBOARDING_FLOW === 'true' ||
+        process.env.ATMOSPHERE_DISABLE_ONBOARDING_FLOW === 'true' ||
         process.env.NODE_ENV === 'development' ||
         process.env.NODE_ENV === 'test',
       ...(isEE === false
         ? {
-            defaultWorkspaceId: Noco.ncDefaultWorkspaceId || null,
+            defaultWorkspaceId: Atmosphere.ncDefaultWorkspaceId || null,
           }
         : {}),
     };
@@ -529,7 +529,7 @@ export class UtilsService {
     return result;
   }
 
-  async reportErrors(param: { body: ErrorReportReqType; req: NcRequest }) {
+  async reportErrors(param: { body: ErrorReportReqType; req: AtRequest }) {
     for (const error of param.body?.errors ?? []) {
       T.emit('evt', {
         evt_type: 'gui:error',
@@ -542,7 +542,7 @@ export class UtilsService {
     }
   }
 
-  async feed(req: NcRequest) {
+  async feed(req: AtRequest) {
     const {
       type = 'all',
       page = '1',
@@ -558,14 +558,14 @@ export class UtilsService {
 
     const cacheKey = `${CacheScope.PRODUCT_FEED}:${type}:${pageNum}:${perPage}`;
 
-    const cachedData = await NocoCache.get('root', cacheKey, 'json');
+    const cachedData = await AtmosphereCache.get('root', cacheKey, 'json');
 
     if (cachedData) {
       try {
         return JSON.parse(cachedData);
       } catch (e) {
         this.logger.error(e?.message, e);
-        await NocoCache.del('root', cacheKey);
+        await AtmosphereCache.del('root', cacheKey);
       }
     }
 
@@ -582,7 +582,7 @@ export class UtilsService {
 
     try {
       response = await axios.post(
-        'https://product-feed.nocodb.com/api/v1/social/feed',
+        'https://product-feed.atmosphere.dev/api/v1/social/feed',
         payload,
         {
           params: {
@@ -599,29 +599,29 @@ export class UtilsService {
 
     // The feed includes the attachments, which has the presigned URL
     // So the cache should match the presigned URL cache
-    await NocoCache.setExpiring(
+    await AtmosphereCache.setExpiring(
       'root',
       cacheKey,
       JSON.stringify(response.data, getCircularReplacer),
-      Number.isNaN(parseInt(process.env.NC_ATTACHMENT_EXPIRE_SECONDS))
+      Number.isNaN(parseInt(process.env.ATMOSPHERE_ATTACHMENT_EXPIRE_SECONDS))
         ? 2 * 60 * 60
-        : parseInt(process.env.NC_ATTACHMENT_EXPIRE_SECONDS),
+        : parseInt(process.env.ATMOSPHERE_ATTACHMENT_EXPIRE_SECONDS),
     );
 
     return response.data;
   }
 
-  async cloudFeatures(_req: NcRequest) {
+  async cloudFeatures(_req: AtRequest) {
     const cacheKey = `${CacheScope.CLOUD_FEATURES}`;
 
-    const cachedData = await NocoCache.get('root', cacheKey, 'json');
+    const cachedData = await AtmosphereCache.get('root', cacheKey, 'json');
 
     if (cachedData) {
       try {
         return JSON.parse(cachedData);
       } catch (e) {
         this.logger.error(e?.message, e);
-        await NocoCache.del('root', cacheKey);
+        await AtmosphereCache.del('root', cacheKey);
       }
     }
 
@@ -638,7 +638,7 @@ export class UtilsService {
 
     try {
       response = await axios.post(
-        'https://product-feed.nocodb.com/api/v1/cloud/features',
+        'https://product-feed.atmosphere.dev/api/v1/cloud/features',
         payload,
       );
     } catch (e) {
@@ -646,7 +646,7 @@ export class UtilsService {
       return [];
     }
 
-    await NocoCache.setExpiring(
+    await AtmosphereCache.setExpiring(
       'root',
       cacheKey,
       JSON.stringify(response.data, getCircularReplacer),

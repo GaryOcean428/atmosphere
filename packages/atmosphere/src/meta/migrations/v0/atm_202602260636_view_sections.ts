@@ -21,8 +21,8 @@ const up = async (knex: Knex) => {
 
       table.timestamps(true, true);
 
-      table.index(['base_id', 'fk_workspace_id'], 'nc_view_sections_context');
-      table.index('fk_model_id', 'nc_view_sections_model_idx');
+      table.index(['base_id', 'fk_workspace_id'], 'atm_view_sections_context');
+      table.index('fk_model_id', 'atm_view_sections_model_idx');
     });
   }
 

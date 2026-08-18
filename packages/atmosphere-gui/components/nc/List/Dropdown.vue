@@ -79,24 +79,24 @@ watch(vModelIsOpen, (newVal) => {
 </script>
 
 <template>
-  <NcDropdown v-model:visible="vModelIsOpen" :disabled="disabled">
+  <AtDropdown v-model:visible="vModelIsOpen" :disabled="disabled">
     <div
       v-if="defaultSlotWrapper"
       tabindex="0"
-      class="nc-list-dropdown-wrapper border-1 rounded-lg h-8 px-3 py-1 flex items-center justify-between transition-all select-none outline-none"
+      class="atm-list-dropdown-wrapper border-1 rounded-lg h-8 px-3 py-1 flex items-center justify-between transition-all select-none outline-none"
       :class="[
         defaultSlotWrapperClass,
         {
-          'nc-has-error': hasError,
-          'cursor-not-allowed bg-nc-bg-gray-light text-nc-content-gray-muted children:opacity-60': disabled && showAsDisabled,
-          'cursor-pointer text-nc-content-gray': !disabled,
-          'border-nc-border-brand shadow-selected': vModelIsOpen && !disabled && !hasError,
+          'atm-has-error': hasError,
+          'cursor-not-allowed bg-atm-bg-gray-light text-atm-content-gray-muted children:opacity-60': disabled && showAsDisabled,
+          'cursor-pointer text-atm-content-gray': !disabled,
+          'border-atm-border-brand shadow-selected': vModelIsOpen && !disabled && !hasError,
           'border-error shadow-error': vModelIsOpen && !disabled && hasError,
-          'nc-list-dropdown-wrapper-default-state': !vModelIsOpen && !disabled && !borderOnHover,
-          'hover:(border-nc-border-brand shadow-selected)': vModelIsOpen && !disabled && borderOnHover,
+          'atm-list-dropdown-wrapper-default-state': !vModelIsOpen && !disabled && !borderOnHover,
+          'hover:(border-atm-border-brand shadow-selected)': vModelIsOpen && !disabled && borderOnHover,
           'hover:(shadow-default hover:shadow-hover)': !vModelIsOpen && !disabled && borderOnHover,
-          'border-transparent hover:(border-nc-gray-medium)': (borderOnHover || vModelIsOpen) && !disabled,
-          'border-nc-gray-medium': !borderOnHover && !hasError,
+          'border-transparent hover:(border-atm-gray-medium)': (borderOnHover || vModelIsOpen) && !disabled,
+          'border-atm-gray-medium': !borderOnHover && !hasError,
           'border-error': !borderOnHover && hasError,
         },
       ]"
@@ -125,12 +125,12 @@ watch(vModelIsOpen, (newVal) => {
     <template #overlay>
       <slot name="overlay" :is-open="vModelIsOpen" :on-close="() => (vModelIsOpen = false)" :on-esc="onEsc"></slot>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style scoped lang="scss">
-.nc-list-dropdown-wrapper {
-  &.nc-list-dropdown-wrapper-default-state {
+.atm-list-dropdown-wrapper {
+  &.atm-list-dropdown-wrapper-default-state {
     @apply shadow-default;
 
     &:not(:focus-visible):not(:focus-within):not(:focus) {
@@ -142,11 +142,11 @@ watch(vModelIsOpen, (newVal) => {
     &:focus {
       @apply outline-none;
 
-      &:not(.nc-has-error) {
-        @apply border-nc-border-brand shadow-selected;
+      &:not(.atm-has-error) {
+        @apply border-atm-border-brand shadow-selected;
       }
 
-      &.nc-has-error {
+      &.atm-has-error {
         @apply border-error shadow-error;
       }
     }

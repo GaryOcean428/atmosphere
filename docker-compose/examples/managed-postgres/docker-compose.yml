@@ -1,17 +1,17 @@
 services:
 
-  nocodb:
-    image: nocodb/nocodb:latest
+  atmosphere:
+    image: atmosphere/atmosphere:latest
     env_file: docker.env
     deploy:
       mode: replicated
       replicas: 1
     restart: unless-stopped
     volumes:
-      - nocodb_data:/usr/app/data
-      - ./nocodb/db.json:/usr/app/data/db.json
+      - atmosphere_data:/usr/app/data
+      - ./atmosphere/db.json:/usr/app/data/db.json
     networks:
-      - nocodb-network
+      - atmosphere-network
     ports:
       - '8080:8080'
     healthcheck:
@@ -22,23 +22,23 @@ services:
       start_period: 30s
 
   worker:
-    image: nocodb/nocodb:latest
+    image: atmosphere/atmosphere:latest
     env_file: docker.env
     environment:
-      NC_WORKER_CONTAINER: 'true'
+      ATMOSPHERE_WORKER_CONTAINER: 'true'
     depends_on:
-      nocodb:
+      atmosphere:
         condition: service_healthy
     restart: unless-stopped
     volumes:
-      - nocodb_data:/usr/app/data
-      - ./nocodb/db.json:/usr/app/data/db.json
+      - atmosphere_data:/usr/app/data
+      - ./atmosphere/db.json:/usr/app/data/db.json
     networks:
-      - nocodb-network
+      - atmosphere-network
 
 networks:
-  nocodb-network:
+  atmosphere-network:
     driver: bridge
 
 volumes:
-  nocodb_data:
+  atmosphere_data:

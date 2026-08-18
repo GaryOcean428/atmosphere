@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { LinksVersion } from 'nocodb-sdk'
-import type { ColumnType, LinkToAnotherRecordType } from 'nocodb-sdk'
+import { LinksVersion } from 'atmosphere-sdk'
+import type { ColumnType, LinkToAnotherRecordType } from 'atmosphere-sdk'
 
 interface Props {
   visible?: boolean
@@ -81,26 +81,26 @@ async function handleConvert() {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="visible"
     size="small"
     :show-separator="false"
     :centered="false"
-    wrap-class-name="nc-modal-convert-link-v2"
+    wrap-class-name="atm-modal-convert-link-v2"
   >
     <template #header>
       <div class="flex flex-row items-center gap-x-2">{{ $t('title.convertLegacyLink') }}</div>
     </template>
 
     <div class="flex flex-col" @click.stop>
-      <div v-if="column" class="bg-nc-bg-gray-light rounded-lg p-3 mb-3">
+      <div v-if="column" class="bg-atm-bg-gray-light rounded-lg p-3 mb-3">
         <div class="flex items-center gap-2 text-sm">
-          <span class="text-nc-content-gray-subtle">{{ $t('objects.field') }}:</span>
+          <span class="text-atm-content-gray-subtle">{{ $t('objects.field') }}:</span>
           <span class="font-medium">{{ column.title }}</span>
         </div>
       </div>
 
-      <div class="text-nc-content-gray text-sm flex flex-col gap-2 mb-3">
+      <div class="text-atm-content-gray text-sm flex flex-col gap-2 mb-3">
         <template v-if="willAlterExternalSchema">
           <!-- V1 link on an external source: upgrade creates a junction table and drops the FK column in the user's DB -->
           <p>{{ $t('msg.info.convertLinkV1ExternalDescription') }}</p>
@@ -117,7 +117,7 @@ async function handleConvert() {
 
       <div
         class="flex items-center gap-2 mb-3 rounded-lg px-3 py-2"
-        :class="willAlterExternalSchema ? 'bg-nc-red-50 dark:bg-nc-red-20' : 'bg-nc-orange-50 dark:bg-nc-orange-20'"
+        :class="willAlterExternalSchema ? 'bg-atm-red-50 dark:bg-atm-red-20' : 'bg-atm-orange-50 dark:bg-atm-orange-20'"
       >
         <GeneralIcon
           icon="alertTriangle"
@@ -127,42 +127,42 @@ async function handleConvert() {
         <i18n-t
           :keypath="willAlterExternalSchema ? 'msg.info.convertLinkExternalSchemaWarning' : 'msg.info.convertLinkV2Warning'"
           tag="span"
-          class="text-sm text-nc-content-gray"
+          class="text-sm text-atm-content-gray"
         >
           <template #learnMore>
             <a
-              href="https://nocodb.com/docs/product-docs/fields/field-types/links-based/link-to-another-record#upgrade-from-links-v1"
+              href="https://atmosphere.dev/docs/product-docs/fields/field-types/links-based/link-to-another-record#upgrade-from-links-v1"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-nc-content-brand underline"
+              class="text-atm-content-brand underline"
               >{{ $t('msg.learnMore') }}</a
             >
           </template>
         </i18n-t>
       </div>
 
-      <div class="flex flex-row gap-x-2 pt-2.5 justify-end border-t-1 border-nc-border-gray-medium">
-        <NcButton size="small" type="secondary" @click="visible = false">
+      <div class="flex flex-row gap-x-2 pt-2.5 justify-end border-t-1 border-atm-border-gray-medium">
+        <AtButton size="small" type="secondary" @click="visible = false">
           {{ $t('general.cancel') }}
-        </NcButton>
+        </AtButton>
 
-        <NcButton
+        <AtButton
           size="small"
           :type="willAlterExternalSchema ? 'danger' : 'primary'"
           :loading="isConverting"
-          data-testid="nc-convert-link-v2-btn"
+          data-testid="atm-convert-link-v2-btn"
           @click="handleConvert"
         >
           {{ $t('general.upgrade') }}
           <template #loading> {{ $t('general.saving') }}... </template>
-        </NcButton>
+        </AtButton>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss">
-.nc-modal-convert-link-v2 {
+.atm-modal-convert-link-v2 {
   z-index: 1100;
 }
 </style>

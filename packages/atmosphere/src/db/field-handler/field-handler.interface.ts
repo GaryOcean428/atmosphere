@@ -2,7 +2,7 @@ import type CustomKnex from '../CustomKnex';
 import type { Logger } from '@nestjs/common';
 import type { IBaseModelSqlV2 } from '../IBaseModelSqlV2';
 import type { MetaService } from 'src/meta/meta.service';
-import type { FilterType, NcContext } from 'nocodb-sdk';
+import type { FilterType, AtContext } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type { Column, Filter } from '~/models';
 
@@ -20,7 +20,7 @@ export interface ConditionParser {
 export interface FilterOptions {
   alias?: string;
   throwErrorIfInvalid?: boolean; // required by formula and lookup
-  context?: NcContext;
+  context?: AtContext;
   baseModel?: IBaseModelSqlV2; // required by formula and lookup
   metaService?: MetaService;
   knex?: Knex;
@@ -100,7 +100,7 @@ export interface SortOptions {
   alias?: string;
   /** 'FIRST' or 'LAST' — controls SQL NULLS positioning. */
   nulls?: 'FIRST' | 'LAST';
-  context?: NcContext;
+  context?: AtContext;
   knex?: Knex;
   baseModel?: IBaseModelSqlV2;
 }
@@ -134,7 +134,7 @@ export interface FieldHandlerInterface {
     row: any;
     column: Column;
     options?: {
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       logger?: Logger;
       baseModel?: IBaseModelSqlV2;
@@ -149,7 +149,7 @@ export interface FieldHandlerInterface {
     row: any;
     column: Column;
     options?: {
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       logger?: Logger;
       baseModel?: IBaseModelSqlV2;
@@ -205,7 +205,7 @@ export interface IFieldHandler {
     oldData?: any;
     column: Column;
     options?: {
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       baseModel?: IBaseModelSqlV2;
       logger?: Logger;
@@ -217,7 +217,7 @@ export interface IFieldHandler {
     row: any;
     column: Column;
     options?: {
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       baseModel?: IBaseModelSqlV2;
       logger?: Logger;
@@ -232,7 +232,7 @@ export interface IFieldHandler {
     options?: {
       additionalColumns?: Column[];
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
       logger?: Logger;
     };

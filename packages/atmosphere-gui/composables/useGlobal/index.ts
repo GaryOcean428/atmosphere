@@ -70,9 +70,9 @@ export const useGlobal = createGlobalState((): UseGlobalReturn => {
     state.token,
     (newToken) => {
       if (newToken) {
-        document.cookie = `nc_token=${newToken}; path=/api; max-age=${10 * 60 * 60}; samesite=lax`
+        document.cookie = `atm_token=${newToken}; path=/api; max-age=${10 * 60 * 60}; samesite=lax`
       } else {
-        document.cookie = 'nc_token=; path=/api; max-age=0; samesite=lax'
+        document.cookie = 'atm_token=; path=/api; max-age=0; samesite=lax'
       }
     },
     { immediate: true },

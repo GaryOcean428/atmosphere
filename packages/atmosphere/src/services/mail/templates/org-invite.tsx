@@ -8,7 +8,7 @@ import {
   Preview,
   Text,
 } from '@react-email/components';
-import type { WhiteLabelConfig } from 'nocodb-sdk';
+import type { WhiteLabelConfig } from 'atmosphere-sdk';
 import {
   ContentWrapper,
   Footer,
@@ -60,7 +60,7 @@ export const OrganizationInvite = ({
 OrganizationInvite.PreviewProps = {
   name: 'John Doe',
   email: 'johndoe@gmail.com',
-  link: 'https://nocodb.com',
+  link: 'https://atmosphere.dev',
 };
 
 export default OrganizationInvite;

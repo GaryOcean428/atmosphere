@@ -1,10 +1,10 @@
-import { NcApiVersion, type NcContext } from 'nocodb-sdk';
+import { AtApiVersion, type AtContext } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import { HANDLE_WEBHOOK } from '~/services/hook-handler.service';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export type WebhookContext = {
-  context: NcContext;
+  context: AtContext;
   user: any;
   baseModel: IBaseModelSqlV2;
   isSingleUpdate?: boolean;
@@ -56,7 +56,7 @@ export class UpdateWebhookHandler {
       this.rowId,
       false,
       {},
-      { ignoreView: true, apiVersion: NcApiVersion.V3 },
+      { ignoreView: true, apiVersion: AtApiVersion.V3 },
     );
     if (this.webhookContext.ignoreWebhook !== false) {
       this.sendWebhook(hookName, this.prevData);
@@ -70,14 +70,14 @@ export class UpdateWebhookHandler {
       this.rowId,
       false,
       {},
-      { ignoreView: true, apiVersion: NcApiVersion.V3 },
+      { ignoreView: true, apiVersion: AtApiVersion.V3 },
     );
     if (this.webhookContext.ignoreWebhook !== false) {
       this.sendWebhook(hookName, this.prevData, this.nextData);
     }
   }
   sendWebhook(hookName: string, prevData: any, nextData?: any) {
-    Noco.eventEmitter.emit(HANDLE_WEBHOOK, {
+    Atmosphere.eventEmitter.emit(HANDLE_WEBHOOK, {
       context: {
         ...this.webhookContext.context,
         cache: false,

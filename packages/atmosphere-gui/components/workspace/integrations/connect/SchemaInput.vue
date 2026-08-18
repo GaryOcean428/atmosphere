@@ -35,9 +35,9 @@ onMounted(() => {
 
 <template>
   <div
-    class="relative group w-full border-1 border-nc-border-gray-medium rounded-lg bg-nc-bg-gray-extralight h-8 flex items-center text-nc-content-gray-muted"
+    class="relative group w-full border-1 border-atm-border-gray-medium rounded-lg bg-atm-bg-gray-extralight h-8 flex items-center text-atm-content-gray-muted"
   >
-    <NcDropdown v-model:visible="isOpen" overlay-class-name="overflow-hidden max-w-[320px]">
+    <AtDropdown v-model:visible="isOpen" overlay-class-name="overflow-hidden max-w-[320px]">
       <div class="h-full flex-1 px-3 mr-8 flex items-center gap-2 cursor-pointer" @click.stop>
         <div>
           {{ vModel }}
@@ -50,7 +50,7 @@ onMounted(() => {
       </div>
 
       <template #overlay>
-        <NcList
+        <AtList
           v-model:value="vModel"
           v-model:open="isOpen"
           :list="basesList"
@@ -78,26 +78,26 @@ onMounted(() => {
                   readonly
                 >
                 </GeneralBaseIconColorPicker>
-                <div class="truncate text-nc-content-gray">
+                <div class="truncate text-atm-content-gray">
                   {{ option.id }}
                 </div>
               </div>
-              <div class="w-full pl-7 text-nc-content-gray-muted text-small leading-[18px] truncate">
-                <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+              <div class="w-full pl-7 text-atm-content-gray-muted text-small leading-[18px] truncate">
+                <AtTooltip class="truncate max-w-full" show-on-truncate-only>
                   <template #title>
                     {{ option?.title }}
                   </template>
                   {{ option?.title }}
-                </NcTooltip>
+                </AtTooltip>
               </div>
             </div>
           </template>
-        </NcList>
+        </AtList>
       </template>
-    </NcDropdown>
+    </AtDropdown>
 
     <div
-      class="absolute inset-y-0 right-0 flex items-center pr-2 cursor-pointer transition-colors text-nc-content-gray-muted group-hover:text-nc-content-gray-subtle"
+      class="absolute inset-y-0 right-0 flex items-center pr-2 cursor-pointer transition-colors text-atm-content-gray-muted group-hover:text-atm-content-gray-subtle"
       @click="copyValue"
     >
       <GeneralIcon v-if="copied" class="max-h-4 min-w-4 !text-current" icon="check" />

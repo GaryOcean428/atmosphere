@@ -1,4 +1,4 @@
-import { OrgUserRoles, ProjectRoles, SourceRestriction, WorkspaceUserRoles } from 'nocodb-sdk'
+import { OrgUserRoles, ProjectRoles, SourceRestriction, WorkspaceUserRoles } from 'atmosphere-sdk'
 
 const roleScopes = {
   org: [OrgUserRoles.VIEWER, OrgUserRoles.CREATOR],
@@ -105,7 +105,7 @@ const rolePermissions = {
       airtableImport: true,
       jsonImport: true,
       excelImport: true,
-      nocodbImport: true,
+      atmosphereImport: true,
       settingsPage: true,
       webhook: true,
       fieldEdit: true,
@@ -243,7 +243,7 @@ export const sourceRestrictions = {
     csvImport: true,
     jsonImport: true,
     excelImport: true,
-    nocodbImport: true,
+    atmosphereImport: true,
     duplicateColumn: true,
     duplicateModel: true,
     tableDuplicate: true,
@@ -257,7 +257,7 @@ export const sourceRestrictions = {
     csvImport: true,
     jsonImport: true,
     excelImport: true,
-    nocodbImport: true,
+    atmosphereImport: true,
     duplicateColumn: true,
     duplicateModel: true,
   },

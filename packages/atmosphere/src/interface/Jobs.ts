@@ -12,8 +12,8 @@ import type {
   SupportedExportCharset,
   SyncTrigger,
   UserType,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { Filter } from '~/models';
 export const JOBS_QUEUE = 'jobs';
 
@@ -172,8 +172,8 @@ export function parseWorkerConcurrency(value: string | undefined): number {
 }
 
 export const InstanceTypes = {
-  PRIMARY: `${process.env.NC_ENV ?? 'default'}-primary`,
-  WORKER: `${process.env.NC_ENV ?? 'default'}-worker`,
+  PRIMARY: `${process.env.ATMOSPHERE_ENV ?? 'default'}-primary`,
+  WORKER: `${process.env.ATMOSPHERE_ENV ?? 'default'}-worker`,
 };
 
 export enum InstanceCommands {
@@ -191,7 +191,7 @@ export interface JobData {
   _jobAttempt?: number;
   _jobVersion?: number;
   // context
-  context: NcContext;
+  context: AtContext;
   user: Partial<UserType>;
 }
 
@@ -219,7 +219,7 @@ export interface DuplicateBaseJobData extends JobData {
   sourceId: string;
   dupWorkspaceId: string;
   dupProjectId: string;
-  req: NcRequest;
+  req: AtRequest;
   options: {
     excludeData?: boolean;
     excludeViews?: boolean;
@@ -242,7 +242,7 @@ export interface DuplicateModelJobData extends JobData {
   targetSourceId: string;
   modelId: string;
   title: string;
-  req: NcRequest;
+  req: AtRequest;
   options: {
     excludeData?: boolean;
     excludeViews?: boolean;
@@ -257,7 +257,7 @@ export interface DuplicateColumnJobData extends JobData {
   sourceId: string;
   columnId: string;
   extra: Record<string, any>; // extra data
-  req: NcRequest;
+  req: AtRequest;
   options: {
     excludeData?: boolean;
   };
@@ -265,7 +265,7 @@ export interface DuplicateColumnJobData extends JobData {
 
 export interface DuplicateDashboardJobData extends JobData {
   dashboardId: string;
-  req: NcRequest;
+  req: AtRequest;
   options: never;
 }
 
@@ -273,16 +273,16 @@ export interface SandboxMergeJobData extends JobData {
   sandboxBaseId: string;
   productionBaseId: string;
   sandboxId: string;
-  req: NcRequest;
+  req: AtRequest;
   selectedChangelogIds?: string[];
 }
 
 export interface SandboxDeleteJobData extends JobData {
-  context: NcContext;
+  context: AtContext;
   sandboxId: string;
   sandboxBaseId: string;
   productionBaseId: string;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 export interface ManagedAppUpdateJobData extends JobData {
@@ -292,7 +292,7 @@ export interface ManagedAppUpdateJobData extends JobData {
   masterWorkspaceId: string;
   newVersionId: string;
   newVersion: string;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 export interface HandleWebhookJobData extends JobData {
@@ -350,7 +350,7 @@ export interface ThumbnailGeneratorJobData extends JobData {
 export interface CreateSnapshotJobData extends JobData {
   sourceId: string;
   snapshotBaseId: string;
-  req: NcRequest;
+  req: AtRequest;
   snapshot: SnapshotType;
 }
 
@@ -371,7 +371,7 @@ export interface RestoreSnapshotJobData extends JobData {
     base_id: string;
   };
   snapshot: SnapshotType;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 export interface SyncDataSyncModuleJobData extends JobData {
@@ -382,7 +382,7 @@ export interface SyncDataSyncModuleJobData extends JobData {
   /** Force a full fetch this run regardless of the config's sync_type —
    *  set after a config update so added tables/columns backfill. */
   fullResync?: boolean;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 export type TableSyncJobMode = 'full-create' | 'full-resync' | 'incremental';
@@ -391,13 +391,13 @@ export interface TableSyncJobData extends JobData {
   syncId: string;
   mode?: TableSyncJobMode;
   affectedIdsBySource?: Record<string, string[]>;
-  req: NcRequest;
+  req: AtRequest;
 }
 
 export type AttachmentUrlUploadJobData = AttachmentUrlUploadParam & JobData;
 
 export interface ExecuteActionJobData extends JobData {
-  req: NcRequest;
+  req: AtRequest;
   records?: any[];
   hookPayload?: any;
   modelId?: string;
@@ -427,7 +427,7 @@ export interface TestWorkflowNodeJobData extends JobData {
   testTriggerData?: any;
   testMode?: string; // Force specific test mode: SAMPLE_DATA, LISTEN_WEBHOOK, TRIGGER_EVENT
   timeoutMs?: number;
-  req?: NcRequest;
+  req?: AtRequest;
 }
 
 export interface HeartbeatWorkflowJobData extends JobData {
@@ -479,5 +479,5 @@ export interface DataImportJobData extends JobData {
   sheets: FileImportSheet[];
   parserConfig: FileImportParserConfig;
   options: FileImportOptions;
-  req: NcRequest;
+  req: AtRequest;
 }

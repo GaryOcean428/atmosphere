@@ -1,9 +1,9 @@
 import debug from 'debug';
 import { JOBS_QUEUE } from '~/interface/Jobs';
 
-const debugLog = debug('nc:jobs:timings');
+const debugLog = debug('atm:jobs:timings');
 
-export type NocoHrTime = {
+export type AtmosphereHrTime = {
   hrTime: [number, number];
   totalHrTime: bigint;
 };
@@ -12,11 +12,11 @@ export const initTime = () => {
   return {
     hrTime: process.hrtime(),
     totalHrTime: process.hrtime.bigint(),
-  } as NocoHrTime;
+  } as AtmosphereHrTime;
 };
 
 export const elapsedTime = (
-  time: NocoHrTime,
+  time: AtmosphereHrTime,
   label?: string,
   context?: string,
 ) => {

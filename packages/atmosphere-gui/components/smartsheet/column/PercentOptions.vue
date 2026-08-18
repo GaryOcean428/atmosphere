@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ColumnHelper, type ProgressBarShape, UITypes, progressBarShapes, readonlyMetaAllowedTypes } from 'nocodb-sdk'
+import { ColumnHelper, type ProgressBarShape, UITypes, progressBarShapes, readonlyMetaAllowedTypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -55,11 +55,11 @@ const disableConfiguration = computed(
       v-if="vModel.meta?.precision || vModel.meta?.precision === 0"
       v-model:value="vModel.meta.precision"
       :disabled="disableConfiguration"
-      dropdown-class-name="nc-dropdown-percent-precision-format"
+      dropdown-class-name="atm-dropdown-percent-precision-format"
       @change="onPrecisionChange"
     >
       <template #suffixIcon>
-        <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+        <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
       </template>
       <a-select-option v-for="(format, i) of precisionFormats" :key="i" :value="format">
         <div class="flex gap-2 w-full justify-between items-center">
@@ -67,8 +67,8 @@ const disableConfiguration = computed(
           <component
             :is="iconMap.check"
             v-if="vModel.meta.precision === format"
-            id="nc-selected-item-icon"
-            class="text-nc-content-brand w-4 h-4"
+            id="atm-selected-item-icon"
+            class="text-atm-content-brand w-4 h-4"
           />
         </div>
       </a-select-option>
@@ -77,9 +77,9 @@ const disableConfiguration = computed(
 
   <a-form-item>
     <div class="flex items-center gap-1">
-      <NcSwitch v-if="vModel.meta" v-model:checked="vModel.meta.is_progress">
-        <div class="text-sm text-nc-content-gray select-none">{{ $t('labels.displayAsProgress') }}</div>
-      </NcSwitch>
+      <AtSwitch v-if="vModel.meta" v-model:checked="vModel.meta.is_progress">
+        <div class="text-sm text-atm-content-gray select-none">{{ $t('labels.displayAsProgress') }}</div>
+      </AtSwitch>
     </div>
   </a-form-item>
 
@@ -87,25 +87,25 @@ const disableConfiguration = computed(
     <a-select
       v-model:value="vModel.meta.shape"
       :disabled="disableConfiguration"
-      data-testid="nc-percent-progress-shape"
-      dropdown-class-name="nc-dropdown-percent-progress-shape"
+      data-testid="atm-percent-progress-shape"
+      dropdown-class-name="atm-dropdown-percent-progress-shape"
     >
       <template #suffixIcon>
-        <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+        <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
       </template>
       <a-select-option
         v-for="shape of progressBarShapes"
         :key="shape"
         :value="shape"
-        :data-testid="`nc-percent-progress-shape-${shape}`"
+        :data-testid="`atm-percent-progress-shape-${shape}`"
       >
         <div class="flex gap-2 w-full justify-between items-center">
           {{ progressShapeLabels[shape] }}
           <component
             :is="iconMap.check"
             v-if="vModel.meta.shape === shape"
-            id="nc-selected-item-icon"
-            class="text-nc-content-brand w-4 h-4"
+            id="atm-selected-item-icon"
+            class="text-atm-content-brand w-4 h-4"
           />
         </div>
       </a-select-option>

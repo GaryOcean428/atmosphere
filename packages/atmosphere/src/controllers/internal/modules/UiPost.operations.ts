@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { OPERATION_SCOPES } from '~/controllers/internal/operationScopes';
-import type { NcContext, NcRequest } from 'nocodb-sdk';
+import type { AtContext, AtRequest } from 'atmosphere-sdk';
 import type {
   InternalApiModule,
   InternalPOSTResponseType,
@@ -27,9 +27,9 @@ import { CommentsService } from '~/services/comments.service';
 import { BulkDataAliasService } from '~/services/bulk-data-alias.service';
 import { SyncService } from '~/services/sync.service';
 import { SyncSource, View } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { JobTypes } from '~/interface/Jobs';
-import { NocoJobsService } from '~/services/noco-jobs.service';
+import { AtmosphereJobsService } from '~/services/atmosphere-jobs.service';
 import { ExtensionsService } from '~/services/extensions.service';
 import { DataImportService } from '~/services/data-import.service';
 
@@ -72,7 +72,7 @@ export class UiPostOperations
     protected commentsService: CommentsService,
     protected bulkDataAliasService: BulkDataAliasService,
     protected syncService: SyncService,
-    protected readonly nocoJobsService: NocoJobsService,
+    protected readonly atmosphereJobsService: AtmosphereJobsService,
     protected extensionsService: ExtensionsService,
     protected dataImportService: DataImportService,
   ) {}
@@ -174,7 +174,7 @@ export class UiPostOperations
   httpMethod = 'POST' as const;
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     {
       payload,
       req,
@@ -184,7 +184,7 @@ export class UiPostOperations
       baseId: string;
       operation: keyof typeof OPERATION_SCOPES;
       payload: any;
-      req: NcRequest;
+      req: AtRequest;
     },
   ): InternalPOSTResponseType {
     switch (operation) {
@@ -324,7 +324,7 @@ export class UiPostOperations
           condition: {
             color: payload.color,
             is_set_as_background: payload.is_set_as_background,
-            nc_order: payload.nc_order,
+            atm_order: payload.atm_order,
             type: payload.type,
             fk_target_column_id: payload.fk_target_column_id,
           },
@@ -340,7 +340,7 @@ export class UiPostOperations
             condition: {
               color: payload.color,
               is_set_as_background: payload.is_set_as_background,
-              nc_order: payload.nc_order,
+              atm_order: payload.atm_order,
               type: payload.type,
               fk_target_column_id: payload.fk_target_column_id,
             },
@@ -638,10 +638,10 @@ export class UiPostOperations
       case 'dataExport': {
         const view = await View.get(context, req.query.viewId);
 
-        if (!view) NcError.viewNotFound(req.query.viewId);
+        if (!view) AtError.viewNotFound(req.query.viewId);
         const options: DataExportJobData['options'] = payload.options ?? {};
 
-        const job = await this.nocoJobsService.add(JobTypes.DataExport, {
+        const job = await this.atmosphereJobsService.add(JobTypes.DataExport, {
           context,
           options: {
             ...options,
@@ -741,11 +741,11 @@ export class UiPostOperations
           req,
         });
       case 'atImportTrigger': {
-        const jobs = await this.nocoJobsService.getJobList();
+        const jobs = await this.atmosphereJobsService.getJobList();
         const fnd = jobs.find((j) => j.data.syncId === req.query.syncId);
 
         if (fnd) {
-          NcError.badRequest('Sync already in progress');
+          AtError.badRequest('Sync already in progress');
         }
 
         const syncSource = await SyncSource.get(
@@ -760,11 +760,11 @@ export class UiPostOperations
 
         // if environment value avail use it
         // or if it's docker construct using `PORT`
-        if (process.env.NC_DOCKER) {
+        if (process.env.ATMOSPHERE_DOCKER) {
           baseURL = `http://localhost:${process.env.PORT || 8080}`;
         }
 
-        const job = await this.nocoJobsService.add(JobTypes.AtImport, {
+        const job = await this.atmosphereJobsService.add(JobTypes.AtImport, {
           context,
           syncId: req.query.syncId as string,
           ...(syncSource?.details || {}),
@@ -814,7 +814,7 @@ export class UiPostOperations
         // ACL had already accepted the request — the frontend's optimistic
         // create then thought the entity existed until the next page reload
         // proved otherwise. Fail loudly instead.
-        NcError.notImplemented(
+        AtError.notImplemented(
           `Operation '${operation}' is not available in this edition`,
         );
     }

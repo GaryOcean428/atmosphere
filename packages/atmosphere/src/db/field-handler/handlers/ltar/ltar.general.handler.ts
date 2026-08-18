@@ -1,4 +1,4 @@
-import { isMMOrMMLike, RelationTypes } from 'nocodb-sdk';
+import { isMMOrMMLike, RelationTypes } from 'atmosphere-sdk';
 import { LookupGeneralHandler } from '../lookup/lookup.general.handler';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Column, LinkToAnotherRecordColumn } from '~/models';

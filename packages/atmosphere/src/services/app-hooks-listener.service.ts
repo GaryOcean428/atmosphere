@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AppEvents } from 'nocodb-sdk';
+import { AppEvents } from 'atmosphere-sdk';
 import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import type {
   MetaDiffEvent,
@@ -226,11 +226,11 @@ export class AppHooksListenerService implements OnModuleInit, OnModuleDestroy {
         break;
       case AppEvents.PLUGIN_UNINSTALL:
         break;
-      case AppEvents.SYNC_SOURCE_CREATE:
+      case AppEvents.SYATMOSPHERE_SOURCE_CREATE:
         break;
-      case AppEvents.SYNC_SOURCE_UPDATE:
+      case AppEvents.SYATMOSPHERE_SOURCE_UPDATE:
         break;
-      case AppEvents.SYNC_SOURCE_DELETE:
+      case AppEvents.SYATMOSPHERE_SOURCE_DELETE:
         break;
       case AppEvents.RELATION_DELETE:
         break;

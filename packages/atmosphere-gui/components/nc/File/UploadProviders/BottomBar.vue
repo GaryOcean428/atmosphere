@@ -22,18 +22,18 @@ const defaultUploadText = computed(() => {
 </script>
 
 <template>
-  <div class="flex gap-2 pt-2 bg-nc-bg-default w-full items-center justify-end">
-    <NcButton :disabled="isLoading" type="secondary" size="small" @click="closeModal">
+  <div class="flex gap-2 pt-2 bg-atm-bg-default w-full items-center justify-end">
+    <AtButton :disabled="isLoading" type="secondary" size="small" @click="closeModal">
       {{ $t('labels.cancel') }}
-    </NcButton>
+    </AtButton>
 
-    <NcButton :loading="isLoading" :disabled="tempFiles.length === 0 || isLoading" size="small" @click="upload">
+    <AtButton :loading="isLoading" :disabled="tempFiles.length === 0 || isLoading" size="small" @click="upload">
       <template v-if="isLoading">
         {{ $t('labels.uploading') }}
       </template>
       <template v-else>
         {{ uploadText || defaultUploadText }}
       </template>
-    </NcButton>
+    </AtButton>
   </div>
 </template>

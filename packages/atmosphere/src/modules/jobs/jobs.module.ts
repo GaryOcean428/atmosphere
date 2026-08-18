@@ -1,8 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { RecoverDisconnectedTableNames } from './migration-jobs/nc_job_008_recover_disconnected_table_name';
+import { RecoverDisconnectedTableNames } from './migration-jobs/atm_job_008_recover_disconnected_table_name';
 import { MigrateController } from '~/modules/jobs/jobs/export-import/migrate.controller';
 import { MigrateService } from '~/modules/jobs/jobs/export-import/migrate.service';
-import { NocoModule } from '~/modules/noco.module';
+import { AtmosphereModule } from '~/modules/atmosphere.module';
 
 // Jobs
 import { ExportService } from '~/modules/jobs/jobs/export-import/export.service';
@@ -33,19 +33,19 @@ import { JobsMap } from '~/modules/jobs/jobs-map.service';
 
 // Migration Jobs
 import { InitMigrationJobs } from '~/modules/jobs/migration-jobs/init-migration-jobs';
-import { AttachmentMigration } from '~/modules/jobs/migration-jobs/nc_job_001_attachment';
-import { ThumbnailMigration } from '~/modules/jobs/migration-jobs/nc_job_002_thumbnail';
-import { OrderColumnMigration } from '~/modules/jobs/migration-jobs/nc_job_005_order_column';
-import { RecoverOrderColumnMigration } from '~/modules/jobs/migration-jobs/nc_job_007_recover_order_column';
-import { NoOpMigration } from '~/modules/jobs/migration-jobs/nc_job_no_op';
-import { AuditMigration } from '~/modules/jobs/migration-jobs/nc_job_009_audit_migration';
-import { SoftDeleteColumnMigration } from '~/modules/jobs/migration-jobs/nc_job_010_soft_delete_column';
-import { NormalizeSoftDeleteSqliteMigration } from '~/modules/jobs/migration-jobs/nc_job_011_normalize_soft_delete_sqlite';
-import { RecordTrashBackfillMigration } from '~/modules/jobs/migration-jobs/nc_job_012_record_trash_backfill';
-import { CleanupOrphanCrossBaseLinksMigration } from '~/modules/jobs/migration-jobs/nc_job_013_cleanup_orphan_cross_base_links';
-import { CleanupOrphanViewColumnsMigration } from '~/modules/jobs/migration-jobs/nc_job_014_cleanup_orphan_view_columns';
-import { PgSourceSearchPathBackfillMigration } from '~/modules/jobs/migration-jobs/nc_job_015_pg_source_searchpath_backfill';
-import { CreditPlanBackfillMigration } from '~/modules/jobs/migration-jobs/nc_job_016_credit_plan_backfill';
+import { AttachmentMigration } from '~/modules/jobs/migration-jobs/atm_job_001_attachment';
+import { ThumbnailMigration } from '~/modules/jobs/migration-jobs/atm_job_002_thumbnail';
+import { OrderColumnMigration } from '~/modules/jobs/migration-jobs/atm_job_005_order_column';
+import { RecoverOrderColumnMigration } from '~/modules/jobs/migration-jobs/atm_job_007_recover_order_column';
+import { NoOpMigration } from '~/modules/jobs/migration-jobs/atm_job_no_op';
+import { AuditMigration } from '~/modules/jobs/migration-jobs/atm_job_009_audit_migration';
+import { SoftDeleteColumnMigration } from '~/modules/jobs/migration-jobs/atm_job_010_soft_delete_column';
+import { NormalizeSoftDeleteSqliteMigration } from '~/modules/jobs/migration-jobs/atm_job_011_normalize_soft_delete_sqlite';
+import { RecordTrashBackfillMigration } from '~/modules/jobs/migration-jobs/atm_job_012_record_trash_backfill';
+import { CleanupOrphanCrossBaseLinksMigration } from '~/modules/jobs/migration-jobs/atm_job_013_cleanup_orphan_cross_base_links';
+import { CleanupOrphanViewColumnsMigration } from '~/modules/jobs/migration-jobs/atm_job_014_cleanup_orphan_view_columns';
+import { PgSourceSearchPathBackfillMigration } from '~/modules/jobs/migration-jobs/atm_job_015_pg_source_searchpath_backfill';
+import { CreditPlanBackfillMigration } from '~/modules/jobs/migration-jobs/atm_job_016_credit_plan_backfill';
 
 // Jobs Module Related
 import { JobsLogService } from '~/modules/jobs/jobs/jobs-log.service';
@@ -55,11 +55,11 @@ import { JobsEventService } from '~/modules/jobs/jobs-event.service';
 // Fallback Queue (CE only supports fallback queue)
 import { JobsService as FallbackJobsService } from '~/modules/jobs/fallback/jobs.service';
 import { QueueService as FallbackQueueService } from '~/modules/jobs/fallback/fallback-queue.service';
-import { RecoverLinksMigration } from '~/modules/jobs/migration-jobs/nc_job_003_recover_links';
-import { CleanupDuplicateColumnMigration } from '~/modules/jobs/migration-jobs/nc_job_004_cleanup_duplicate_column';
+import { RecoverLinksMigration } from '~/modules/jobs/migration-jobs/atm_job_003_recover_links';
+import { CleanupDuplicateColumnMigration } from '~/modules/jobs/migration-jobs/atm_job_004_cleanup_duplicate_column';
 
 export const JobsModuleMetadata = {
-  imports: [forwardRef(() => NocoModule)],
+  imports: [forwardRef(() => AtmosphereModule)],
   controllers: [
     JobsController,
     DuplicateController,

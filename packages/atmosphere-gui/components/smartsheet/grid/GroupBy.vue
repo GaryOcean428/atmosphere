@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { CommonAggregations } from 'nocodb-sdk'
+import { CommonAggregations } from 'atmosphere-sdk'
 import { shouldRenderCell } from '../../../utils/groupbyUtils'
 import Table from './Table.vue'
 import GroupBy from './GroupBy.vue'
@@ -361,7 +361,7 @@ async function openNewRecordHandler() {
     <div ref="scrollable" :style="`${vGroup.root === true ? 'width: fit-content' : 'width: 100%'}`">
       <div v-if="vGroup.root === true" class="flex sticky top-0 z-5">
         <div
-          class="border-b-1 border-nc-border-gray-medium mb-2 bg-nc-bg-gray-light"
+          class="border-b-1 border-atm-border-gray-medium mb-2 bg-atm-bg-gray-light"
           :style="{ 'padding-left': `${(maxDepth || 1) * 9}px` }"
         ></div>
         <Table ref="tableHeader" class="mb-2" :data="[]" :hide-checkbox="true" :header-only="true" />
@@ -369,14 +369,14 @@ async function openNewRecordHandler() {
       <div :class="{ 'pl-2': vGroup.root === true }">
         <a-collapse
           v-model:active-key="_activeGroupKeys"
-          class="nc-group-wrapper !rounded-lg"
+          class="atm-group-wrapper !rounded-lg"
           :bordered="false"
           @change="findAndLoadSubGroup"
         >
           <a-collapse-panel
             v-for="grp of vGroup?.children ?? []"
             :key="`group-panel-${grp.key}`"
-            class="!border-1 border-nc-border-gray-dark nc-group rounded-[8px] mb-2"
+            class="!border-1 border-atm-border-gray-dark atm-group rounded-[8px] mb-2"
             :style="`background: ${bgColor};`"
             :show-arrow="false"
           >
@@ -393,10 +393,10 @@ async function openNewRecordHandler() {
                     '!rounded-bl-[8px]': !activeGroups.includes(grp.key.toString()),
                   }"
                   :style="`width:${computedWidth};background: ${bgColor};`"
-                  class="!sticky flex z-10 justify-between !h-9.8 border-r-1 !rounded-tl-[8px] group pr-2 border-nc-border-gray-dark overflow-clip items-center !left-0"
+                  class="!sticky flex z-10 justify-between !h-9.8 border-r-1 !rounded-tl-[8px] group pr-2 border-atm-border-gray-dark overflow-clip items-center !left-0"
                 >
                   <div class="flex items-center">
-                    <NcButton class="!border-0 !shadow-none !bg-transparent !hover:bg-transparent" type="secondary" size="small">
+                    <AtButton class="!border-0 !shadow-none !bg-transparent !hover:bg-transparent" type="secondary" size="small">
                       <GeneralIcon
                         icon="chevronDown"
                         class="transition-all"
@@ -404,7 +404,7 @@ async function openNewRecordHandler() {
                           activeGroups.includes(grp.key.toString()) ? 'transform: rotate(360deg)' : 'transform: rotate(270deg)'
                         }`"
                       />
-                    </NcButton>
+                    </AtButton>
 
                     <div class="flex">
                       <template v-if="grp.column.uidt === 'MultiSelect'">
@@ -422,7 +422,7 @@ async function openNewRecordHandler() {
                           "
                         >
                           <span
-                            class="nc-group-value"
+                            class="atm-group-value"
                             :style="{
                               'color': getSelectTypeFieldOptionTextColor({
                                 isDark,
@@ -444,7 +444,7 @@ async function openNewRecordHandler() {
                       >
                         <template v-for="(val, ind) of parseKey(grp)" :key="ind">
                           <GroupByLabel v-if="val" :column="grp.column" :model-value="val" />
-                          <span v-else class="text-nc-content-gray-disabled">{{ $t('labels.noMappedValue') }}</span>
+                          <span v-else class="text-atm-content-gray-disabled">{{ $t('labels.noMappedValue') }}</span>
                         </template>
                       </div>
                       <a-tag
@@ -462,7 +462,7 @@ async function openNewRecordHandler() {
                         "
                       >
                         <span
-                          class="nc-group-value font-semibold text-[13px]"
+                          class="atm-group-value font-semibold text-[13px]"
                           :style="{
                             color: getSelectTypeFieldOptionTextColor({
                               isDark,
@@ -484,41 +484,41 @@ async function openNewRecordHandler() {
                     :style="`background: linear-gradient(to right, hsla(0, 0%, 97%, 0), ${bgColor} 18%);`"
                     class="flex !h-10 absolute right-0 pl-8 pr-2 items-center"
                   >
-                    <div class="text-xs group-hover:hidden text-nc-content-gray-muted nc-group-row-count">
+                    <div class="text-xs group-hover:hidden text-atm-content-gray-muted atm-group-row-count">
                       <span>
                         {{ $t('datatype.Count') }}
                       </span>
-                      <span class="text-nc-content-gray-subtle ml-2"> {{ grp.count }} </span>
+                      <span class="text-atm-content-gray-subtle ml-2"> {{ grp.count }} </span>
                     </div>
 
-                    <NcDropdown class="!hidden !group-hover:block">
-                      <NcButton size="small" type="text" @click.stop>
+                    <AtDropdown class="!hidden !group-hover:block">
+                      <AtButton size="small" type="text" @click.stop>
                         <GeneralIcon icon="threeDotVertical" />
-                      </NcButton>
+                      </AtButton>
 
                       <template #overlay>
-                        <NcMenu variant="small">
-                          <NcMenuItem v-if="activeGroups.includes(grp.key.toString())" @click="collapseGroup(grp.key)">
+                        <AtMenu variant="small">
+                          <AtMenuItem v-if="activeGroups.includes(grp.key.toString())" @click="collapseGroup(grp.key)">
                             <GeneralIcon icon="minimize" />
                             {{ $t('labels.collapseGroup') }}
-                          </NcMenuItem>
-                          <NcMenuItem v-else @click="expandGroup(grp.key)">
+                          </AtMenuItem>
+                          <AtMenuItem v-else @click="expandGroup(grp.key)">
                             <GeneralIcon icon="maximize" />
                             {{ $t('labels.expandGroup') }}
-                          </NcMenuItem>
+                          </AtMenuItem>
                           <!--
-                          <NcMenuItem @click="expandAllGroup">
+                          <AtMenuItem @click="expandAllGroup">
                             <GeneralIcon icon="maximizeAll" />
                             {{ $t('labels.expandAll') }}
-                          </NcMenuItem>
-                          <NcMenuItem @click="collapseAllGroup">
+                          </AtMenuItem>
+                          <AtMenuItem @click="collapseAllGroup">
                             <GeneralIcon icon="minimizeAll" />
                             {{ $t('labels.collapseAll') }}
-                          </NcMenuItem>
+                          </AtMenuItem>
                           -->
-                        </NcMenu>
+                        </AtMenu>
                       </template>
-                    </NcDropdown>
+                    </AtDropdown>
                   </div>
                 </div>
                 <SmartsheetGridAggregation
@@ -600,9 +600,9 @@ async function openNewRecordHandler() {
   ></LazySmartsheetPagination>
 
   <div v-if="depth !== 0" class="absolute bottom-12 z-5 left-2 rtl:(right-2 left-auto)" @click.stop>
-    <NcButton
+    <AtButton
       v-e="['c:row:add:grid']"
-      class="nc-group-grid-add-new-row"
+      class="atm-group-grid-add-new-row"
       size="small"
       type="secondary"
       :shadow="false"
@@ -612,7 +612,7 @@ async function openNewRecordHandler() {
         <GeneralIcon icon="plus" />
         {{ $t('activity.newRecord') }}
       </div>
-    </NcButton>
+    </AtButton>
   </div>
 </template>
 
@@ -622,15 +622,15 @@ async function openNewRecordHandler() {
   border-radius: 0 0 8px 8px !important;
 }
 :deep(.ant-collapse) {
-  @apply !border-nc-border-gray-dark !bg-transparent;
+  @apply !border-atm-border-gray-dark !bg-transparent;
 }
 
 :deep(.ant-collapse-item) {
-  @apply !border-nc-border-gray-dark;
+  @apply !border-atm-border-gray-dark;
 }
 
 :deep(.ant-collapse-header) {
-  @apply !p-0 !border-nc-border-gray-dark !rounded-lg;
+  @apply !p-0 !border-atm-border-gray-dark !rounded-lg;
 }
 :deep(.ant-collapse-item-active > .ant-collapse-header) {
   border-radius: 8px 8px 0 0 !important;

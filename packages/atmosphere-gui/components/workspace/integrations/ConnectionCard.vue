@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IntegrationType, UserType, WorkspaceUserType } from 'nocodb-sdk'
+import type { IntegrationType, UserType, WorkspaceUserType } from 'atmosphere-sdk'
 import dayjs from 'dayjs'
 
 interface Props {
@@ -43,7 +43,7 @@ const formattedDate = computed(() => {
 })
 
 const handleCardClick = () => {
-  if (!isFeatureEnabled(FEATURE_FLAG.DATA_REFLECTION) && props.integration.sub_type === SyncDataType.NOCODB) {
+  if (!isFeatureEnabled(FEATURE_FLAG.DATA_REFLECTION) && props.integration.sub_type === SyncDataType.ATMOSPHERE) {
     return
   }
 
@@ -54,42 +54,42 @@ const handleCardClick = () => {
 <template>
   <div
     v-e="['c:integration:connection-card:click']"
-    class="nc-connection-card"
-    data-testid="nc-connection-card"
+    class="atm-connection-card"
+    data-testid="atm-connection-card"
     @click="handleCardClick"
   >
     <div class="flex items-center gap-3 min-w-0">
-      <div class="nc-connection-card-icon">
+      <div class="atm-connection-card-icon">
         <GeneralIntegrationIcon :type="integration.sub_type" size="lg" />
       </div>
 
       <div class="flex-1 min-w-0">
-        <NcTooltip class="font-semibold text-sm text-nc-content-gray truncate block" show-on-truncate-only>
+        <AtTooltip class="font-semibold text-sm text-atm-content-gray truncate block" show-on-truncate-only>
           <template #title>{{ integration.title }}</template>
           {{ integration.title }}
-        </NcTooltip>
+        </AtTooltip>
 
-        <div class="flex items-center gap-1.5 text-xs text-nc-content-gray-subtle2 mt-0.5 whitespace-nowrap truncate">
+        <div class="flex items-center gap-1.5 text-xs text-atm-content-gray-subtle2 mt-0.5 whitespace-nowrap truncate">
           <div class="flex items-center gap-1">
             <div class="w-1.5 h-1.5 rounded-full bg-green-500 flex-none" />
             <span>{{ $t('general.connected') }}</span>
           </div>
           <template v-if="getUserName(integration.created_by)">
-            <div class="w-[2.5px] h-[2.5px] rounded-full bg-nc-content-gray-muted flex-none" />
-            <NcTooltip class="truncate max-w-full text-xs nc-user-info-email capitalize" show-on-truncate-only>
+            <div class="w-[2.5px] h-[2.5px] rounded-full bg-atm-content-gray-muted flex-none" />
+            <AtTooltip class="truncate max-w-full text-xs atm-user-info-email capitalize" show-on-truncate-only>
               <template #title>{{ getUserName(integration.created_by) }}</template>
               {{ getUserName(integration.created_by) }}
-            </NcTooltip>
+            </AtTooltip>
           </template>
           <template v-if="formattedDate">
-            <div class="w-[2.5px] h-[2.5px] rounded-full bg-nc-content-gray-muted flex-none" />
+            <div class="w-[2.5px] h-[2.5px] rounded-full bg-atm-content-gray-muted flex-none" />
             <span>{{ formattedDate }}</span>
           </template>
         </div>
       </div>
     </div>
 
-    <div v-if="mode === 'workspace' || canEdit || canUnlink" class="nc-connection-card-actions flex-none" @click.stop>
+    <div v-if="mode === 'workspace' || canEdit || canUnlink" class="atm-connection-card-actions flex-none" @click.stop>
       <WorkspaceIntegrationsConnectionActionMenu
         :integration="integration"
         :mode="mode"
@@ -100,33 +100,33 @@ const handleCardClick = () => {
         @base-assignment="emits('base-assignment', $event)"
         @unlink="emits('unlink', $event)"
       >
-        <NcButton size="xs" type="secondary" class="!px-1" @click.stop>
+        <AtButton size="xs" type="secondary" class="!px-1" @click.stop>
           <GeneralIcon icon="threeDotVertical" />
-        </NcButton>
+        </AtButton>
       </WorkspaceIntegrationsConnectionActionMenu>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-connection-card {
-  @apply flex items-center justify-between gap-3 border-1 border-nc-border-gray-medium rounded-xl p-3 cursor-pointer transition-all duration-200;
+.atm-connection-card {
+  @apply flex items-center justify-between gap-3 border-1 border-atm-border-gray-medium rounded-xl p-3 cursor-pointer transition-all duration-200;
 
   &:hover {
-    @apply bg-nc-bg-gray-extralight;
+    @apply bg-atm-bg-gray-extralight;
 
     box-shadow: 0px 4px 8px -2px rgba(var(--rgb-base), 0.08), 0px 2px 4px -2px rgba(var(--rgb-base), 0.04);
   }
 
-  .nc-connection-card-icon {
-    @apply flex-none h-10 w-10 rounded-lg flex items-center justify-center bg-nc-bg-gray-extralight;
+  .atm-connection-card-icon {
+    @apply flex-none h-10 w-10 rounded-lg flex items-center justify-center bg-atm-bg-gray-extralight;
   }
 
-  .nc-connection-card-actions {
+  .atm-connection-card-actions {
     @apply opacity-0 transition-opacity duration-150;
   }
 
-  &:hover .nc-connection-card-actions {
+  &:hover .atm-connection-card-actions {
     @apply opacity-100;
   }
 }

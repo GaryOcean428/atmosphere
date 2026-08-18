@@ -63,7 +63,7 @@ const onCancel = async () => {
 </script>
 
 <template>
-  <NcModalConfirm
+  <AtModalConfirm
     v-model:visible="ssoLoginRequiredDlg"
     title="SSO Login Required"
     content="You are trying to access a workspace that requires SSO login. Please click the button below to continue to SSO login."
@@ -71,5 +71,5 @@ const onCancel = async () => {
     @cancel="onCancel"
     @ok="onOk"
   >
-  </NcModalConfirm>
+  </AtModalConfirm>
 </template>

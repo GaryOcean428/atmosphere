@@ -1,5 +1,5 @@
-import Noco from './Noco';
+import Atmosphere from './Atmosphere';
 
-export default Noco;
+export default Atmosphere;
 
-export { Noco };
+export { Atmosphere };

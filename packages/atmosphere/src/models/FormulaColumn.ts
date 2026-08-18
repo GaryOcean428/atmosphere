@@ -1,6 +1,6 @@
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import { parseMetaProp, stringifyMetaProp } from '~/utils/modelUtils';
@@ -21,9 +21,9 @@ export default class FormulaColumn {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     formulaColumn: Partial<FormulaColumn> & { parsed_tree?: any },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(formulaColumn, [
       'fk_column_id',
@@ -46,13 +46,13 @@ export default class FormulaColumn {
   }
 
   public static async read(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let column =
       columnId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.COL_FORMULA}:${columnId}`,
         CacheGetType.TYPE_OBJECT,
@@ -66,7 +66,7 @@ export default class FormulaColumn {
       );
       if (column) {
         column.parsed_tree = parseMetaProp(column, 'parsed_tree', null);
-        await NocoCache.set(
+        await AtmosphereCache.set(
           context,
           `${CacheScope.COL_FORMULA}:${columnId}`,
           column,
@@ -85,10 +85,10 @@ export default class FormulaColumn {
   id: string;
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     columnId: string,
     formula: Partial<FormulaColumn> & { parsed_tree?: any },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(formula, [
       'formula',
@@ -117,7 +117,7 @@ export default class FormulaColumn {
       updateObj.parsed_tree = parseMetaProp(updateObj, 'parsed_tree', null);
     }
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.COL_FORMULA}:${columnId}`,
       updateObj,

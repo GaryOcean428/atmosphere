@@ -12,13 +12,13 @@ import { extractLegacyHashRoute } from '~/utils/hashRoute'
 describe('extractLegacyHashRoute', () => {
   it('resolves the legacy share-view embed forms', () => {
     // the two formats extensions/url-preview-ee/utils.ts still lists
-    expect(extractLegacyHashRoute('#/nc/view/abc-uuid')).toBe('/nc/view/abc-uuid')
-    expect(extractLegacyHashRoute('#/nc/form/abc-uuid/survey')).toBe('/nc/form/abc-uuid/survey')
-    expect(extractLegacyHashRoute('#/nc/base/abc-uuid')).toBe('/nc/base/abc-uuid')
+    expect(extractLegacyHashRoute('#/atm/view/abc-uuid')).toBe('/atm/view/abc-uuid')
+    expect(extractLegacyHashRoute('#/atm/form/abc-uuid/survey')).toBe('/atm/form/abc-uuid/survey')
+    expect(extractLegacyHashRoute('#/atm/base/abc-uuid')).toBe('/atm/base/abc-uuid')
   })
 
   it('preserves the query string', () => {
-    expect(extractLegacyHashRoute('#/nc/view/abc?embed=true')).toBe('/nc/view/abc?embed=true')
+    expect(extractLegacyHashRoute('#/atm/view/abc?embed=true')).toBe('/atm/view/abc?embed=true')
   })
 
   it('resolves non-share legacy routes too (the guard decides, not this)', () => {
@@ -27,7 +27,7 @@ describe('extractLegacyHashRoute', () => {
   })
 
   it('returns null when the hash is not route-like', () => {
-    for (const h of ['', '#', '#section', '#!/nc/view/x', 'nc/view/x']) {
+    for (const h of ['', '#', '#section', '#!/atm/view/x', 'atm/view/x']) {
       expect(extractLegacyHashRoute(h), h).toBe(null)
     }
   })
@@ -35,13 +35,13 @@ describe('extractLegacyHashRoute', () => {
   // Without this the hash would be assigned straight to location, turning the
   // redirect into an open redirect to an attacker origin.
   it('rejects protocol-relative open-redirect payloads', () => {
-    for (const h of ['#//attacker.com', '#/\\attacker.com', '#//attacker.com/nc/view/x']) {
+    for (const h of ['#//attacker.com', '#/\\attacker.com', '#//attacker.com/atm/view/x']) {
       expect(extractLegacyHashRoute(h), h).toBe(null)
     }
   })
 
   it('always returns a rooted path', () => {
-    const out = extractLegacyHashRoute('#/nc/view/x')
+    const out = extractLegacyHashRoute('#/atm/view/x')
     expect(out?.startsWith('/')).toBe(true)
   })
 })

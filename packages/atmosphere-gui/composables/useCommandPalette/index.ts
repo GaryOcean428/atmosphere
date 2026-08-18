@@ -199,7 +199,7 @@ export const useCommandPalette = createSharedComposable(() => {
           }
 
           refreshCommandPalette.trigger()
-        } else if (route.value.params.typeOrId === 'nc') {
+        } else if (route.value.params.typeOrId === 'atm') {
           if (activeScope.value.data.base_id === route.value.params.baseId) return
 
           activeScope.value = {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { getTrueCircularReplacer } from 'nocodb-sdk';
+import { getTrueCircularReplacer } from 'atmosphere-sdk';
 import type { OnModuleInit } from '@nestjs/common';
 import { QueueService } from '~/modules/jobs/fallback/fallback-queue.service';
 import {
@@ -10,7 +10,7 @@ import {
 } from '~/interface/Jobs';
 import { Job } from '~/models';
 import { MetaTable, RootScopes } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 @Injectable()
 export class JobsService implements OnModuleInit {
@@ -81,7 +81,7 @@ export class JobsService implements OnModuleInit {
     if (!jobData) {
       if (SKIP_STORING_JOB_META.includes(name as JobTypes)) {
         jobData = {
-          id: await Noco.ncMeta.genNanoid(MetaTable.JOBS),
+          id: await Atmosphere.ncMeta.genNanoid(MetaTable.JOBS),
         };
       } else {
         jobData = await Job.insert(context, {

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PlanFeatureTypes } from 'nocodb-sdk'
+import { PlanFeatureTypes } from 'atmosphere-sdk'
 
 const router = useRouter()
 const route = router.currentRoute
@@ -89,11 +89,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="nc-project-home-section">
-    <div class="nc-settings-section-header">
+  <div class="atm-project-home-section">
+    <div class="atm-settings-section-header">
       {{ $t('labels.baseSettings') }}
     </div>
-    <NcSidebarMenuItem
+    <AtSidebarMenuItem
       v-if="isUIAllowed('newUser', { roles: effectiveRoles })"
       v-e="['c:settings:base:add-user']"
       icon="users"
@@ -102,8 +102,8 @@ onMounted(() => {
       @click="navigateToBaseSettings('collaborator')"
     >
       {{ $t('labels.addUserToBase') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isEeUI && isUIAllowed('interfaceUsersMatrix', { roles: effectiveRoles }) && showEEFeatures && !hideInterfaces"
       v-e="['c:settings:base:interface-members']"
       icon="ncUsers"
@@ -112,8 +112,8 @@ onMounted(() => {
       @click="navigateToBaseSettings('interface-members')"
     >
       {{ $t('labels.addUserToInterface') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isEeUI && isUIAllowed('sourceCreate', { roles: effectiveRoles }) && showEEFeatures"
       v-e="['c:settings:base:permissions']"
       icon="ncLock"
@@ -125,8 +125,8 @@ onMounted(() => {
       <template #extraRight>
         <LazyPaymentUpgradeBadge :feature="PlanFeatureTypes.FEATURE_TABLE_AND_FIELD_PERMISSIONS" remove-click />
       </template>
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isEeUI && isUIAllowed('sourceCreate', { roles: effectiveRoles }) && showEEFeatures"
       v-e="['c:settings:base:docs-permissions']"
       icon="ncFileText"
@@ -138,8 +138,8 @@ onMounted(() => {
       <template #extraRight>
         <LazyPaymentUpgradeBadge :feature="PlanFeatureTypes.FEATURE_DOCUMENT_PERMISSIONS" remove-click />
       </template>
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isUIAllowed('sourceCreate', { roles: effectiveRoles }) && !isMobileMode"
       v-e="['c:settings:base:add-data-source']"
       icon="ncDatabase"
@@ -148,8 +148,8 @@ onMounted(() => {
       @click="navigateToBaseSettings('data-source')"
     >
       {{ $t('labels.addDataSource') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isUIAllowed('sourceCreate', { roles: effectiveRoles }) && !isMobileMode"
       v-e="['c:settings:base:integrations']"
       icon="integration"
@@ -158,8 +158,8 @@ onMounted(() => {
       @click="navigateToBaseSettings('integrations')"
     >
       {{ $t('labels.baseIntegrations') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isEeUI && isUIAllowed('sourceCreate', { roles: effectiveRoles }) && !isMobileMode && showEEFeatures"
       v-e="['c:settings:base:syncs']"
       icon="ncZap"
@@ -171,8 +171,8 @@ onMounted(() => {
       <template #extraRight>
         <LazyPaymentUpgradeBadge :feature="PlanFeatureTypes.FEATURE_SYNC" remove-click />
       </template>
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="
         isEeUI && isUIAllowed('baseAuditList', { roles: effectiveRoles }) && isWsAuditEnabled && !isMobileMode && showEEFeatures
       "
@@ -183,8 +183,8 @@ onMounted(() => {
       @click="navigateToBaseSettings('audits')"
     >
       {{ $t('title.audits') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="
         isEeUI &&
         appInfo?.ee &&
@@ -200,8 +200,8 @@ onMounted(() => {
       @click="navigateToBaseSettings('workflows')"
     >
       {{ $t('objects.workflows') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isUIAllowed('manageMCP', { roles: effectiveRoles }) && !isMobileMode"
       v-e="['c:settings:base:mcp']"
       icon="mcp"
@@ -210,8 +210,8 @@ onMounted(() => {
       @click="navigateToBaseSettings('mcp')"
     >
       {{ $t('title.mcpServer') }}
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="isEeUI && isUIAllowed('baseTrashSettingsList', { roles: effectiveRoles }) && !isMobileMode && showEEFeatures"
       v-e="['c:settings:base:record-trash']"
       icon="ncTrash2"
@@ -226,8 +226,8 @@ onMounted(() => {
           :feature-enabled-callback="() => !blockTrashSettings"
         />
       </template>
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="!isMobileMode && showEEFeatures"
       v-e="['c:settings:base:variables']"
       icon="ncSettings"
@@ -242,8 +242,8 @@ onMounted(() => {
           :feature-enabled-callback="() => !blockBaseVariables"
         />
       </template>
-    </NcSidebarMenuItem>
-    <NcSidebarMenuItem
+    </AtSidebarMenuItem>
+    <AtSidebarMenuItem
       v-if="
         isEeUI &&
         showEEFeatures &&
@@ -262,9 +262,9 @@ onMounted(() => {
       <template #extraRight>
         <LazyPaymentUpgradeBadge :feature-enabled-callback="() => !isEEFeatureBlocked" />
       </template>
-    </NcSidebarMenuItem>
+    </AtSidebarMenuItem>
 
-    <NcSidebarMenuItem
+    <AtSidebarMenuItem
       v-if="!isSharedBase && isUIAllowed('baseMiscSettings', { roles: effectiveRoles }) && !isMobileMode"
       v-e="['c:settings:base:more']"
       icon="ncMoreHorizontal"
@@ -273,13 +273,13 @@ onMounted(() => {
       @click="navigateToBaseSettings('base-settings')"
     >
       {{ $t('general.general') }}
-    </NcSidebarMenuItem>
+    </AtSidebarMenuItem>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.nc-settings-section-header {
-  @apply px-3 pt-3 pb-1 font-semibold text-nc-content-brand uppercase tracking-wide;
+.atm-settings-section-header {
+  @apply px-3 pt-3 pb-1 font-semibold text-atm-content-brand uppercase tracking-wide;
   font-size: 13px;
 }
 </style>

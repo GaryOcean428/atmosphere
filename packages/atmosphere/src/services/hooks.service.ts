@@ -3,23 +3,23 @@ import {
   AppEvents,
   EventType,
   MetaEventType,
-  NcBaseError,
+  AtBaseError,
   WebhookEvents,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import View from '../models/View';
 import type {
   FilterReqType,
   HookReqType,
   HookTestReqType,
   HookType,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { MetaService } from '~/meta/meta.service';
-import NocoSocket from '~/socket/NocoSocket';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { captureForTrace } from '~/decorators/trace-command.decorator';
 import { validatePayload } from '~/helpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import {
   populateSampleCommentPayload,
   populateSamplePayload,
@@ -49,10 +49,10 @@ export class HooksService {
   // Comment-source webhooks are an EE-only trigger (the firing handler lives in
   // the EE layer). Reject creating/updating one on a CE backend so a hook that
   // can never fire isn't silently persisted.
-  validateCommentEvent(context: NcContext, hook: HookReqType) {
+  validateCommentEvent(context: AtContext, hook: HookReqType) {
     if (hook?.event === WebhookEvents.COMMENT && !isEE) {
-      NcError.get(context).badRequest(
-        'Comment webhooks are only available in NocoDB Enterprise',
+      AtError.get(context).badRequest(
+        'Comment webhooks are only available in Atmosphere Enterprise',
       );
     }
   }
@@ -69,17 +69,17 @@ export class HooksService {
     if (
       notification.type !== 'URL' &&
       notification.type !== 'Script' &&
-      process.env.NC_CLOUD === 'true'
+      process.env.ATMOSPHERE_CLOUD === 'true'
     ) {
-      NcError.badRequest('Only URL and Script notifications are supported');
+      AtError.badRequest('Only URL and Script notifications are supported');
     }
   }
 
-  async hookList(context: NcContext, param: { tableId: string }) {
+  async hookList(context: AtContext, param: { tableId: string }) {
     return await Hook.list(context, { fk_model_id: param.tableId });
   }
 
-  async hookLogList(context: NcContext, param: { query: any; hookId: string }) {
+  async hookLogList(context: AtContext, param: { query: any; hookId: string }) {
     return await HookLog.list(
       context,
       { fk_hook_id: param.hookId },
@@ -88,18 +88,18 @@ export class HooksService {
   }
 
   async hookCreate(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       hook: HookReqType;
-      req: NcRequest;
+      req: AtRequest;
     },
     option?: {
       isTableDuplicate?: boolean;
     },
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     // if isTableDuplicate, we let v2 to be created
@@ -107,7 +107,7 @@ export class HooksService {
       !option?.isTableDuplicate &&
       !SUPPORTED_HOOK_VERSION.includes((param.hook as any).version)
     ) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'hook version is deprecated / not supported anymore',
       );
     }
@@ -180,7 +180,7 @@ export class HooksService {
       tableId: hook.fk_model_id,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -196,18 +196,18 @@ export class HooksService {
   }
 
   async hookDelete(
-    context: NcContext,
-    param: { hookId: string; req: NcRequest; skipTrash?: boolean },
+    context: AtContext,
+    param: { hookId: string; req: AtRequest; skipTrash?: boolean },
     ncMeta?: MetaService,
   ) {
     if (context.schema_locked) {
-      NcError.get(context).schemaLocked();
+      AtError.get(context).schemaLocked();
     }
 
     const hook = await Hook.get(context, param.hookId, false, ncMeta);
 
     if (!hook) {
-      NcError.get(context).hookNotFound(param.hookId);
+      AtError.get(context).hookNotFound(param.hookId);
     }
 
     await Hook.delete(context, param.hookId, ncMeta);
@@ -230,7 +230,7 @@ export class HooksService {
       tableId: hook.fk_model_id,
     });
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -246,15 +246,15 @@ export class HooksService {
   }
 
   async hookUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       hookId: string;
       hook: HookReqType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     if (!SUPPORTED_HOOK_VERSION.includes((param.hook as any).version)) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'hook version is deprecated / not supported anymore',
       );
     }
@@ -268,7 +268,7 @@ export class HooksService {
     const hook = await Hook.get(context, param.hookId);
 
     if (!hook) {
-      NcError.get(context).hookNotFound(param.hookId);
+      AtError.get(context).hookNotFound(param.hookId);
     }
 
     this.validateCommentEvent(context, param.hook);
@@ -330,7 +330,7 @@ export class HooksService {
 
     const updatedHook = await Hook.get(context, param.hookId);
 
-    NocoSocket.broadcastEvent(
+    AtmosphereSocket.broadcastEvent(
       context,
       {
         event: EventType.META_EVENT,
@@ -349,17 +349,17 @@ export class HooksService {
   }
 
   async hookRestore(
-    _context: NcContext,
-    _param: { hookId: string; req: NcRequest },
+    _context: AtContext,
+    _param: { hookId: string; req: AtRequest },
     _ncMeta?: MetaService,
   ) {
     return false;
   }
 
   async hookTrigger(
-    context: NcContext,
+    context: AtContext,
     param: {
-      req: NcRequest;
+      req: AtRequest;
       hookId: string;
       rowId: string;
     },
@@ -367,7 +367,7 @@ export class HooksService {
     const hook = await Hook.get(context, param.hookId);
 
     if (!hook || hook.event !== 'manual') {
-      NcError.get(context).badRequest('Hook not found');
+      AtError.get(context).badRequest('Hook not found');
     }
 
     const row = await this.dataService.dataRead(context, {
@@ -378,7 +378,7 @@ export class HooksService {
     });
 
     if (!row) {
-      NcError.get(context).badRequest('Row not found');
+      AtError.get(context).badRequest('Row not found');
     }
 
     const model = await Model.get(context, hook.fk_model_id);
@@ -396,7 +396,7 @@ export class HooksService {
         ncSiteUrl: param.req.ncSiteUrl,
       });
     } catch (e) {
-      NcError.get(context).webhookError(
+      AtError.get(context).webhookError(
         e?.message || 'Failed to trigger webhook',
       );
     } finally {
@@ -410,11 +410,11 @@ export class HooksService {
   }
 
   async hookTest(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       hookTest: HookTestReqType;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     validatePayload(
@@ -459,8 +459,8 @@ export class HooksService {
         addJob: this.jobsService.add.bind(this.jobsService),
       });
     } catch (e) {
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
-      NcError.get(context).webhookError(
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
+      AtError.get(context).webhookError(
         e?.message || 'Failed to trigger webhook',
       );
     } finally {
@@ -476,7 +476,7 @@ export class HooksService {
   }
 
   async hookSamplePayload(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       event: string;
@@ -528,7 +528,7 @@ export class HooksService {
   }
 
   async tableSampleData(
-    context: NcContext,
+    context: AtContext,
     param: {
       tableId: string;
       event: HookType['event'][number];
@@ -581,7 +581,7 @@ export class HooksService {
     );
   }
 
-  async hookLogCount(context: NcContext, param: { hookId: string }) {
+  async hookLogCount(context: AtContext, param: { hookId: string }) {
     return await HookLog.count(context, { hookId: param.hookId });
   }
 }

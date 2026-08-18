@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnType, UITypes } from 'nocodb-sdk'
-import { isVirtualCol } from 'nocodb-sdk'
+import type { ColumnType, UITypes } from 'atmosphere-sdk'
+import { isVirtualCol } from 'atmosphere-sdk'
 
 const props = defineProps<{
   column?: ColumnType

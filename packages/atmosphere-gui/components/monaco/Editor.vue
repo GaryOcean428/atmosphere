@@ -292,10 +292,10 @@ watch(isDark, async () => {
     <MonacoLoading v-if="isLoading" class="absolute inset-0" />
 
     <!-- Error State -->
-    <div v-else-if="loadError" class="absolute inset-0 flex items-center justify-center bg-nc-red-50">
+    <div v-else-if="loadError" class="absolute inset-0 flex items-center justify-center bg-atm-red-50">
       <div class="text-center">
-        <div class="text-nc-content-red-dark mb-2">Failed to load Monaco Editor</div>
-        <NcButton @click="retryLoad"> {{ $t('general.retry') }} </NcButton>
+        <div class="text-atm-content-red-dark mb-2">Failed to load Monaco Editor</div>
+        <AtButton @click="retryLoad"> {{ $t('general.retry') }} </AtButton>
       </div>
     </div>
 

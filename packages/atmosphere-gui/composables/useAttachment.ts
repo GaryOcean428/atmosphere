@@ -1,4 +1,4 @@
-import type { AttachmentType } from 'nocodb-sdk'
+import type { AttachmentType } from 'atmosphere-sdk'
 import { getI18n } from '~/plugins/a.i18n'
 
 const useAttachment = () => {

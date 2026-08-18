@@ -4,15 +4,15 @@ import {
   OrgUserRoles,
   ProjectRoles,
   WorkspaceUserRoles,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Observable } from 'rxjs';
 import type {
   CallHandler,
   ExecutionContext,
   NestInterceptor,
 } from '@nestjs/common';
-import Noco from '~/Noco';
-import { NcError } from '~/helpers/catchError';
+import Atmosphere from '~/Atmosphere';
+import { AtError } from '~/helpers/catchError';
 import { MetaTable } from '~/utils/globals';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class UploadAllowedInterceptor implements NestInterceptor {
 
     if (!request['user']?.id) {
       if (!request['user']?.isPublicBase) {
-        NcError.unauthorized('Unauthorized');
+        AtError.unauthorized('Unauthorized');
       }
     }
 
@@ -39,7 +39,7 @@ export class UploadAllowedInterceptor implements NestInterceptor {
         userRoles[ProjectRoles.EDITOR] ||
         wsRoles[WorkspaceUserRoles.CREATOR] ||
         wsRoles[WorkspaceUserRoles.OWNER] ||
-        !!(await Noco.ncMeta
+        !!(await Atmosphere.ncMeta
           .knex(MetaTable.PROJECT_USERS)
           .where(function () {
             this.where('roles', ProjectRoles.OWNER);
@@ -53,6 +53,6 @@ export class UploadAllowedInterceptor implements NestInterceptor {
       }
     } catch {}
 
-    NcError.badRequest('Upload not allowed');
+    AtError.badRequest('Upload not allowed');
   }
 }

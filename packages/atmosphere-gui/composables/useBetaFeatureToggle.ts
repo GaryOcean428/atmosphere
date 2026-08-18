@@ -12,7 +12,7 @@ const FEATURES = [
   {
     id: 'bases_v3',
     title: 'Bases V3',
-    description: 'Experience the next generation of NocoDB with Bases V3 with and enhanced performance and optimizations.',
+    description: 'Experience the next generation of Atmosphere with Bases V3 with and enhanced performance and optimizations.',
     enabled: false,
     version: 1,
   },
@@ -34,7 +34,7 @@ const FEATURES = [
   {
     id: 'ai_beta_features',
     title: 'AI beta features',
-    description: 'Unlock AI beta features to enhance your NocoDB experience.',
+    description: 'Unlock AI beta features to enhance your Atmosphere experience.',
     enabled: false,
     version: 2,
     isEngineering: true,
@@ -79,7 +79,7 @@ const FEATURES = [
   {
     id: 'extensions',
     title: 'Extensions beta features',
-    description: 'Extensions allows you to add new features or functionalities to the NocoDB platform.',
+    description: 'Extensions allows you to add new features or functionalities to the Atmosphere platform.',
     enabled: ncIsPlaywright(),
     version: 4,
     isEngineering: true,

@@ -11,5 +11,5 @@ defineEmits(['update:modelValue'])
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

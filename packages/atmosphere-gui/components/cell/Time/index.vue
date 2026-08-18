@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { isSystemColumn } from 'nocodb-sdk'
+import { isSystemColumn } from 'atmosphere-sdk'
 
 interface Props {
   modelValue?: string | null | undefined
@@ -148,7 +148,7 @@ const handleUpdateValue = (e: Event, save = false) => {
 const randomClass = `picker_${Math.floor(Math.random() * 99999)}`
 
 onClickOutside(datePickerRef, (e) => {
-  if ((e.target as HTMLElement)?.closest(`.${randomClass}, .nc-${randomClass}`)) return
+  if ((e.target as HTMLElement)?.closest(`.${randomClass}, .atm-${randomClass}`)) return
   datePickerRef.value?.blur?.()
   open.value = false
 })
@@ -157,8 +157,8 @@ const onBlur = (e) => {
   handleUpdateValue(e, true)
 
   if (
-    (e?.relatedTarget as HTMLElement)?.closest(`.${randomClass}, .nc-${randomClass}`) ||
-    (e?.target as HTMLElement)?.closest(`.${randomClass}, .nc-${randomClass}`)
+    (e?.relatedTarget as HTMLElement)?.closest(`.${randomClass}, .atm-${randomClass}`) ||
+    (e?.target as HTMLElement)?.closest(`.${randomClass}, .atm-${randomClass}`)
   ) {
     return
   }
@@ -178,7 +178,7 @@ watch(
       datePickerRef.value?.focus?.()
 
       onClickOutside(document.querySelector(`.${randomClass}`)! as HTMLDivElement, (e) => {
-        if ((e?.target as HTMLElement)?.closest(`.nc-${randomClass}`)) {
+        if ((e?.target as HTMLElement)?.closest(`.atm-${randomClass}`)) {
           return
         }
         open.value = false
@@ -329,18 +329,18 @@ const cellValue = computed(() => localState.value?.format(parseProp(column.value
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     :visible="isOpen"
     :auto-close="false"
     :trigger="['click']"
-    class="nc-cell-field"
-    :class="[`nc-${randomClass}`, { 'nc-null': modelValue === null && showNull }]"
-    :overlay-class-name="`${randomClass} nc-picker-time ${isOpen ? 'active' : ''} !min-w-[0]`"
+    class="atm-cell-field"
+    :class="[`atm-${randomClass}`, { 'atm-null': modelValue === null && showNull }]"
+    :overlay-class-name="`${randomClass} atm-picker-time ${isOpen ? 'active' : ''} !min-w-[0]`"
   >
     <div
       v-bind="$attrs"
       :title="localState?.format('HH:mm')"
-      class="nc-time-picker h-full flex items-center justify-between ant-picker-input relative"
+      class="atm-time-picker h-full flex items-center justify-between ant-picker-input relative"
     >
       <input
         v-if="!rawReadOnly"
@@ -348,7 +348,7 @@ const cellValue = computed(() => localState.value?.format(parseProp(column.value
         type="text"
         :value="cellValue"
         :placeholder="placeholder"
-        class="nc-time-input border-none outline-none !text-current bg-transparent !focus:(border-none outline-none ring-transparent)"
+        class="atm-time-input border-none outline-none !text-current bg-transparent !focus:(border-none outline-none ring-transparent)"
         :readonly="readOnly"
         @blur="onBlur"
         @focus="onFocus"
@@ -365,14 +365,14 @@ const cellValue = computed(() => localState.value?.format(parseProp(column.value
       <GeneralIcon
         v-if="localState && !readOnly"
         icon="closeCircle"
-        class="nc-clear-time-icon nc-action-icon absolute right-0 top-[50%] transform -translate-y-1/2 invisible cursor-pointer"
+        class="atm-clear-time-icon atm-action-icon absolute right-0 top-[50%] transform -translate-y-1/2 invisible cursor-pointer"
         @click.stop="handleSelectTime()"
       />
     </div>
 
     <template #overlay>
       <div class="min-w-[120px]">
-        <NcTimeSelector
+        <AtTimeSelector
           :selected-date="localState"
           :min-granularity="30"
           is-min-granularity-picker
@@ -382,13 +382,13 @@ const cellValue = computed(() => localState.value?.format(parseProp(column.value
         />
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
   <div v-if="!editable && isGrid" class="absolute inset-0 z-90 cursor-pointer"></div>
 </template>
 
 <style scoped lang="scss">
-.nc-cell-field {
-  &:hover .nc-clear-time-icon {
+.atm-cell-field {
+  &:hover .atm-clear-time-icon {
     @apply visible;
   }
 }

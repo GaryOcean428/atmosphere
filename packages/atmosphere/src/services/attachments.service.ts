@@ -1,7 +1,7 @@
 import path from 'path';
 import Url from 'url';
 import { Readable } from 'stream';
-import { AppEvents, OperationSource, PublicAttachmentScope } from 'nocodb-sdk';
+import { AppEvents, OperationSource, PublicAttachmentScope } from 'atmosphere-sdk';
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { nanoid } from 'nanoid';
 import mime from 'mime/lite';
@@ -12,22 +12,22 @@ import hash from 'object-hash';
 import moment from 'moment';
 import { imageSize } from 'image-size';
 import { imageSizeFromFile } from 'image-size/fromFile';
-import type { AttachmentReqType, FileType, NcContext } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+import type { AttachmentReqType, FileType, AtContext } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import { getFilteredAgents } from '~/utils/ssrf';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { DataTableService } from '~/services/data-table.service';
-import NcPluginMgrv2 from '~/helpers/NcPluginMgrv2';
+import AtPluginMgrv2 from '~/helpers/AtPluginMgrv2';
 import { mimeIcons } from '~/utils/mimeTypes';
 import { Column, FileReference, PresignedUrl } from '~/models';
 import { utf8ify } from '~/helpers/stringHelpers';
-import { NcBaseError, NcError } from '~/helpers/catchError';
+import { AtBaseError, AtError } from '~/helpers/catchError';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 import { JobTypes } from '~/interface/Jobs';
 import { RootScopes } from '~/utils/globals';
 import { validateAndNormaliseLocalPath } from '~/helpers/attachmentHelpers';
 import { supportsThumbnails } from '~/utils/attachmentUtils';
-import { NC_ATTACHMENT_FIELD_SIZE } from '~/constants';
+import { ATMOSPHERE_ATTACHMENT_FIELD_SIZE } from '~/constants';
 import { UseWorker } from '~/decorators/use-worker.decorator';
 
 interface AttachmentObject {
@@ -60,7 +60,7 @@ export class AttachmentsService {
 
   async upload(param: {
     files: FileType[];
-    req: NcRequest;
+    req: AtRequest;
     path?: string;
     scope?: PublicAttachmentScope;
   }) {
@@ -69,7 +69,7 @@ export class AttachmentsService {
       param.scope &&
       !Object.values(PublicAttachmentScope).includes(param.scope)
     ) {
-      NcError.invalidAttachmentUploadScope();
+      AtError.invalidAttachmentUploadScope();
     }
 
     const userId = param.req?.user?.id || 'anonymous';
@@ -83,12 +83,12 @@ export class AttachmentsService {
       param.path?.toString()?.split('/') || [''],
     );
     const _destPath = path.join(
-      'nc',
+      'atm',
       param.scope ? param.scope : 'uploads',
       ..._filePath,
     );
 
-    const storageAdapter = await NcPluginMgrv2.storageAdapter();
+    const storageAdapter = await AtPluginMgrv2.storageAdapter();
 
     // just in case we want to increase concurrency in future
     const queue = new PQueue({ concurrency: 1 });
@@ -97,7 +97,7 @@ export class AttachmentsService {
     const errors = [];
 
     if (!param.files?.length) {
-      NcError.badRequest('No attachment provided!');
+      AtError.badRequest('No attachment provided!');
     }
 
     queue.addAll(
@@ -107,7 +107,7 @@ export class AttachmentsService {
 
           // For scoped uploads the scope itself must appear in the stored
           // `attachment.path` (otherwise the signed-URL controller falls
-          // back to `nc/uploads/...` because `param.split('/')[2]` won't be a
+          // back to `atm/uploads/...` because `param.split('/')[2]` won't be a
           // known scope, and the file won't be found).
           const filePath = this.sanitizeUrlPath([
             ...(param.scope ? [param.scope] : []),
@@ -201,11 +201,11 @@ export class AttachmentsService {
 
       const firstError = errors[0].error;
 
-      if (firstError instanceof NcError || firstError instanceof NcBaseError) {
+      if (firstError instanceof AtError || firstError instanceof AtBaseError) {
         throw firstError;
       }
 
-      NcError.internalServerError('Failed to upload attachment');
+      AtError.internalServerError('Failed to upload attachment');
     }
 
     const generateThumbnail = attachments.filter((attachment) =>
@@ -234,7 +234,7 @@ export class AttachmentsService {
   @UseWorker()
   async uploadViaURL(param: {
     urls: AttachmentReqType[];
-    req: NcRequest;
+    req: AtRequest;
     path?: string;
     scope?: PublicAttachmentScope;
     /**
@@ -251,7 +251,7 @@ export class AttachmentsService {
       param.scope &&
       !Object.values(PublicAttachmentScope).includes(param.scope)
     ) {
-      NcError.invalidAttachmentUploadScope();
+      AtError.invalidAttachmentUploadScope();
     }
 
     const userId = param.req?.user?.id || 'anonymous';
@@ -265,12 +265,12 @@ export class AttachmentsService {
     );
 
     const destPath = path.join(
-      'nc',
+      'atm',
       param.scope ? param.scope : 'uploads',
       ...filePath,
     );
 
-    const storageAdapter = await NcPluginMgrv2.storageAdapter();
+    const storageAdapter = await AtPluginMgrv2.storageAdapter();
 
     // just in case we want to increase concurrency in future
     const queue = new PQueue({ concurrency: 1 });
@@ -279,7 +279,7 @@ export class AttachmentsService {
     const errors = [];
 
     if (!param.urls?.length) {
-      NcError.badRequest('No attachment provided!');
+      AtError.badRequest('No attachment provided!');
     }
 
     queue.addAll(
@@ -319,10 +319,10 @@ export class AttachmentsService {
               mimeType = response.headers['content-type']?.split(';')[0];
               size = response.headers['content-length'];
 
-              if (size && +size > NC_ATTACHMENT_FIELD_SIZE) {
-                NcError.get().invalidRequestBody(
+              if (size && +size > ATMOSPHERE_ATTACHMENT_FIELD_SIZE) {
+                AtError.get().invalidRequestBody(
                   `File is too large. Maximum allowed size is ${(
-                    NC_ATTACHMENT_FIELD_SIZE /
+                    ATMOSPHERE_ATTACHMENT_FIELD_SIZE /
                     (1024 * 1024)
                   ).toFixed(2)} MB`,
                 );
@@ -335,7 +335,7 @@ export class AttachmentsService {
             }
           } else {
             if (!url.startsWith('data')) {
-              NcError.badRequest('Invalid data URL format');
+              AtError.badRequest('Invalid data URL format');
             }
 
             const [metadata, base64Data] = url.split(',');
@@ -343,7 +343,7 @@ export class AttachmentsService {
             const metadataHelper = metadata.split(':');
 
             if (metadataHelper.length < 2) {
-              NcError.badRequest('Invalid data URL format');
+              AtError.badRequest('Invalid data URL format');
             }
 
             const mimetypeHelper = metadataHelper[1].split(';');
@@ -351,10 +351,10 @@ export class AttachmentsService {
             mimeType = mimetypeHelper[0];
             size = Buffer.byteLength(base64Data, 'base64');
 
-            if (size > NC_ATTACHMENT_FIELD_SIZE) {
-              NcError.get().invalidRequestBody(
+            if (size > ATMOSPHERE_ATTACHMENT_FIELD_SIZE) {
+              AtError.get().invalidRequestBody(
                 `File is too large. Maximum allowed size is ${(
-                  NC_ATTACHMENT_FIELD_SIZE /
+                  ATMOSPHERE_ATTACHMENT_FIELD_SIZE /
                   (1024 * 1024)
                 ).toFixed(2)} MB`,
               );
@@ -474,11 +474,11 @@ export class AttachmentsService {
 
       const firstError = errors[0].error;
 
-      if (firstError instanceof NcError || firstError instanceof NcBaseError) {
+      if (firstError instanceof AtError || firstError instanceof AtBaseError) {
         throw firstError;
       }
 
-      NcError.internalServerError('Failed to upload attachment');
+      AtError.internalServerError('Failed to upload attachment');
     }
 
     const generateThumbnail = attachments.filter((attachment) =>
@@ -517,7 +517,7 @@ export class AttachmentsService {
   }
 
   async downloadAttachment(
-    context: NcContext,
+    context: AtContext,
     param: {
       modelId: string;
       columnId: string;
@@ -530,7 +530,7 @@ export class AttachmentsService {
     });
 
     if (!column) {
-      NcError.fieldNotFound(param.columnId);
+      AtError.fieldNotFound(param.columnId);
     }
 
     const record = await this.dataTableService.dataRead(context, {
@@ -543,7 +543,7 @@ export class AttachmentsService {
     });
 
     if (!record) {
-      NcError.recordNotFound(param.rowId);
+      AtError.recordNotFound(param.rowId);
     }
 
     return this.getAttachmentFromRecord({
@@ -563,7 +563,7 @@ export class AttachmentsService {
     const attachment = record[column.title];
 
     if (!attachment) {
-      NcError.genericNotFound('Attachment', urlOrPath);
+      AtError.genericNotFound('Attachment', urlOrPath);
     }
 
     // The value can be a plain attachment array (direct Attachment column) or a
@@ -587,7 +587,7 @@ export class AttachmentsService {
     );
 
     if (!fileObject) {
-      NcError.genericNotFound('Attachment', urlOrPath);
+      AtError.genericNotFound('Attachment', urlOrPath);
     }
 
     await PresignedUrl.signAttachment({

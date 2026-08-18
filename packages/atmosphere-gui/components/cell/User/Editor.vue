@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { Checkbox, CheckboxGroup, Radio, RadioGroup } from 'ant-design-vue'
 import type { Select as AntSelect } from 'ant-design-vue'
-import { CURRENT_USER_TOKEN, type UserFieldRecordType } from 'nocodb-sdk'
+import { CURRENT_USER_TOKEN, type UserFieldRecordType } from 'atmosphere-sdk'
 import { getOptions, getSelectedUsers, getSystemUserFilterOptions } from './utils'
 import MdiCloseCircle from '~icons/mdi/close-circle'
 
@@ -273,7 +273,7 @@ const handleClose = (e: MouseEvent) => {
     isOpen.value &&
     aselect.value &&
     !aselect.value.$el.contains(e.target) &&
-    !document.querySelector('.nc-dropdown-user-select-cell.active')?.contains(e.target as Node)
+    !document.querySelector('.atm-dropdown-user-select-cell.active')?.contains(e.target as Node)
   ) {
     // loose focus when clicked outside
     isEditable.value = false
@@ -340,32 +340,32 @@ onMounted(() => {
 
 <template>
   <div
-    class="nc-cell-field nc-user-select h-full w-full flex items-center"
+    class="atm-cell-field atm-user-select h-full w-full flex items-center"
     :class="{ 'read-only': readOnly }"
     @click="toggleMenu"
   >
     <div v-if="isFormListView" class="w-full max-w-full">
-      <div class="rounded-lg border-1 border-nc-border-gray-medium w-full max-w-full">
-        <div v-if="nonDeletedOptions.length > 6" class="border-b-1 border-nc-border-gray-medium pl-1 group" @click.stop>
+      <div class="rounded-lg border-1 border-atm-border-gray-medium w-full max-w-full">
+        <div v-if="nonDeletedOptions.length > 6" class="border-b-1 border-atm-border-gray-medium pl-1 group" @click.stop>
           <a-input
             ref="inputRef"
             v-model:value="searchVal"
             :placeholder="$t('general.search')"
-            class="nc-user-select-search-field-input !pl-2 !pr-1.5 flex-1 !py-2"
+            class="atm-user-select-search-field-input !pl-2 !pr-1.5 flex-1 !py-2"
             allow-clear
             autocomplete="off"
             :bordered="false"
           >
             <template #prefix>
-              <GeneralIcon icon="search" class="nc-search-icon text-nc-content-gray-muted opacity-50 h-4 w-4 mr-1.5" /> </template
+              <GeneralIcon icon="search" class="atm-search-icon text-atm-content-gray-muted opacity-50 h-4 w-4 mr-1.5" /> </template
           ></a-input>
         </div>
-        <div class="w-full max-w-full max-h-[328px] nc-scrollbar-thin p-1">
+        <div class="w-full max-w-full max-h-[328px] atm-scrollbar-thin p-1">
           <component
             :is="isMultiple ? CheckboxGroup : RadioGroup"
             :value="vModelListLayout"
             :disabled="readOnly || !editAllowed"
-            class="nc-field-layout-list nc-user-select-list"
+            class="atm-field-layout-list atm-user-select-list"
             @update:value="
               (value) => {
                 vModel = isMultiple ? value : [value]
@@ -381,9 +381,9 @@ onMounted(() => {
                 :value="op.id"
                 :data-testid="`select-option-${column.title}-${location === 'filter' ? 'filter' : rowIndex}`"
                 :class="[
-                  `nc-select-option-${column.title}-${op.email}`,
+                  `atm-select-option-${column.title}-${op.email}`,
                   {
-                    '!hidden nc-hidden-option': !searchCompare([op.display_name, op.email], searchVal ?? ''),
+                    '!hidden atm-hidden-option': !searchCompare([op.display_name, op.email], searchVal ?? ''),
                   },
                 ]"
               >
@@ -392,10 +392,10 @@ onMounted(() => {
 
                   <div class="flex flex-col w-[calc(100%_-_40px)]">
                     <div class="w-full flex gap-3">
-                      <NcTooltip
-                        class="text-bodyDefaultSmBold !leading-5 capitalize truncate max-w-full text-nc-content-gray"
+                      <AtTooltip
+                        class="text-bodyDefaultSmBold !leading-5 capitalize truncate max-w-full text-atm-content-gray"
                         :class="{
-                          '!text-nc-content-gray-muted': !isCollaborator(op.id || op.email),
+                          '!text-atm-content-gray-muted': !isCollaborator(op.id || op.email),
                         }"
                         show-on-truncate-only
                         placement="bottom"
@@ -404,10 +404,10 @@ onMounted(() => {
                           {{ extractUserDisplayNameOrEmail(op) }}
                         </template>
                         {{ extractUserDisplayNameOrEmail(op) }}
-                      </NcTooltip>
+                      </AtTooltip>
                     </div>
-                    <NcTooltip
-                      class="text-xs !leading-4 text-nc-content-gray-muted truncate max-w-full"
+                    <AtTooltip
+                      class="text-xs !leading-4 text-atm-content-gray-muted truncate max-w-full"
                       show-on-truncate-only
                       placement="bottom"
                     >
@@ -424,7 +424,7 @@ onMounted(() => {
                           ? $t(isEditColumn ? 'title.defaultToLoggedInUser' : 'title.filteredByLoggedInUser')
                           : op.email
                       }}
-                    </NcTooltip>
+                    </AtTooltip>
                   </div>
                 </div>
               </component>
@@ -441,7 +441,7 @@ onMounted(() => {
       </div>
       <div
         v-if="!readOnly && !isMultiple && vModel.length"
-        class="inline-block px-2 pt-2 cursor-pointer text-xs text-nc-content-gray-muted hover:text-nc-content-gray"
+        class="inline-block px-2 pt-2 cursor-pointer text-xs text-atm-content-gray-muted hover:text-atm-content-gray"
         @click="vModel = []"
       >
         {{ $t('labels.clearSelection') }}
@@ -462,7 +462,7 @@ onMounted(() => {
       :open="isOpen && editAllowed"
       :disabled="readOnly || !editAllowed"
       :class="{ 'caret-transparent': !hasEditRoles }"
-      :dropdown-class-name="`nc-dropdown-user-select-cell !min-w-256px ${isInFilter ? '!min-w-256px' : '!min-w-180px'}  ${
+      :dropdown-class-name="`atm-dropdown-user-select-cell !min-w-256px ${isInFilter ? '!min-w-256px' : '!min-w-180px'}  ${
         isOpen ? 'active' : ''
       }`"
       :filter-option="filterOption"
@@ -473,7 +473,7 @@ onMounted(() => {
       @keydown="onKeyDown"
     >
       <template #suffixIcon>
-        <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle nc-select-expand-btn" />
+        <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle atm-select-expand-btn" />
       </template>
       <template v-for="op of options" :key="op.id || op.email">
         <a-select-option
@@ -481,16 +481,16 @@ onMounted(() => {
           :value="op.id"
           :data-testid="`select-option-${column.title}-${location === 'filter' ? 'filter' : rowIndex}`"
           :class="[
-            `nc-select-option-${column.title}-${op.email}`,
+            `atm-select-option-${column.title}-${op.email}`,
             {
-              'nc-select-option-current-user mb-2': op.email === CURRENT_USER_TOKEN,
+              'atm-select-option-current-user mb-2': op.email === CURRENT_USER_TOKEN,
             },
           ]"
           @click.stop
         >
           <div
             v-if="op.email === CURRENT_USER_TOKEN"
-            class="absolute -bottom-1 w-[calc(100%_+_16px)] border-b-1 border-nc-border-gray-medium -ml-4"
+            class="absolute -bottom-1 w-[calc(100%_+_16px)] border-b-1 border-atm-border-gray-medium -ml-4"
           ></div>
           <div class="w-full flex gap-2 items-center">
             <GeneralUserIcon :user="op" size="base" class="flex-none" :show-placeholder-icon="op.email === CURRENT_USER_TOKEN" />
@@ -503,11 +503,11 @@ onMounted(() => {
               }"
             >
               <div class="w-full flex gap-3">
-                <NcTooltip
+                <AtTooltip
                   class="text-bodyDefaultSmBold !leading-5 capitalize truncate max-w-full"
                   :class="{
-                    'text-nc-content-brand': op.email === CURRENT_USER_TOKEN,
-                    'text-nc-content-gray': op.email !== CURRENT_USER_TOKEN,
+                    'text-atm-content-brand': op.email === CURRENT_USER_TOKEN,
+                    'text-atm-content-gray': op.email !== CURRENT_USER_TOKEN,
                   }"
                   show-on-truncate-only
                   placement="bottom"
@@ -516,10 +516,10 @@ onMounted(() => {
                     {{ extractUserDisplayNameOrEmail(op) }}
                   </template>
                   {{ extractUserDisplayNameOrEmail(op) }}
-                </NcTooltip>
+                </AtTooltip>
               </div>
-              <NcTooltip
-                class="text-xs !leading-4 text-nc-content-gray-muted truncate max-w-full"
+              <AtTooltip
+                class="text-xs !leading-4 text-atm-content-gray-muted truncate max-w-full"
                 show-on-truncate-only
                 placement="bottom"
               >
@@ -536,11 +536,11 @@ onMounted(() => {
                     ? $t(isEditColumn ? 'title.defaultToLoggedInUser' : 'title.filteredByLoggedInUser')
                     : op.email
                 }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
             <GeneralIcon
               v-if="!!vModel.find((i) => i.email === op.email)"
-              id="nc-selected-item-icon"
+              id="atm-selected-item-icon"
               icon="check"
               class="flex-none text-primary w-4 h-4"
             />
@@ -551,13 +551,13 @@ onMounted(() => {
       <template #tagRender="{ label, value: val, onClose }">
         <a-tag
           v-if="options.find((el) => el.id === val)"
-          class="rounded-tag nc-selected-option !pl-0"
+          class="rounded-tag atm-selected-option !pl-0"
           :class="{
             '!my-0': !rowHeight || rowHeight === 1,
           }"
           :style="{ display: 'flex', alignItems: 'center' }"
           :color="
-            val === CURRENT_USER_TOKEN ? themeV4Colors.brand[50] : getColor('var(--nc-bg-gray-medium)', 'var(--nc-bg-gray-light)')
+            val === CURRENT_USER_TOKEN ? themeV4Colors.brand[50] : getColor('var(--atm-bg-gray-medium)', 'var(--atm-bg-gray-light)')
           "
           :closable="editAllowed && ((vModel?.length ?? 0) > 1 || !column?.rqd)"
           :close-icon="h(MdiCloseCircle, { class: ['ms-close-icon'] })"
@@ -566,7 +566,7 @@ onMounted(() => {
         >
           <span
             :style="{
-              color: getSelectTypeOptionTextColor(getColor('var(--nc-bg-gray-medium)', 'var(--nc-bg-gray-light)'), getColor),
+              color: getSelectTypeOptionTextColor(getColor('var(--atm-bg-gray-medium)', 'var(--atm-bg-gray-light)'), getColor),
             }"
             class="flex items-stretch gap-2"
             :class="{ 'text-sm': isKanban, 'text-small': !isKanban }"
@@ -581,7 +581,7 @@ onMounted(() => {
                 }"
                 class="!text-[0.5rem] !h-[16.8px]"
                 :class="{
-                  '!bg-nc-bg-default': val === CURRENT_USER_TOKEN,
+                  '!bg-atm-bg-default': val === CURRENT_USER_TOKEN,
                 }"
                 :is-deleted="!isCollaborator(val)"
                 :disabled="!isCollaborator(val)"
@@ -590,8 +590,8 @@ onMounted(() => {
             </div>
             <span
               :class="{
-                'text-nc-content-gray-muted': !isCollaborator(val) && val !== CURRENT_USER_TOKEN,
-                'text-nc-content-brand': val === CURRENT_USER_TOKEN,
+                'text-atm-content-gray-muted': !isCollaborator(val) && val !== CURRENT_USER_TOKEN,
+                'text-atm-content-brand': val === CURRENT_USER_TOKEN,
                 'font-600': isInFilter || isEditColumn,
               }"
             >
@@ -637,7 +637,7 @@ onMounted(() => {
 }
 
 .rounded-tag {
-  @apply bg-nc-bg-gray-medium px-2 rounded-[12px];
+  @apply bg-atm-bg-gray-medium px-2 rounded-[12px];
 }
 
 :deep(.ant-tag) {
@@ -652,7 +652,7 @@ onMounted(() => {
   @apply flex-nowrap overflow-hidden max-w-[fit-content];
 }
 
-.nc-user-select:not(.read-only) {
+.atm-user-select:not(.read-only) {
   :deep(.ant-select-selector),
   :deep(.ant-select-selector input) {
     @apply "!cursor-pointer";
@@ -667,17 +667,17 @@ onMounted(() => {
   @apply !text-small;
 }
 
-:deep(.nc-user-avatar) {
+:deep(.atm-user-avatar) {
   @apply min-h-4.2;
 }
 
-:deep(.nc-select-option-current-user) {
+:deep(.atm-select-option-current-user) {
   @apply relative;
 }
 </style>
 
 <style lang="scss">
-.ant-select-dropdown.nc-dropdown-user-select-cell {
+.ant-select-dropdown.atm-dropdown-user-select-cell {
   .ant-select-item-option-content {
     @apply w-full;
   }

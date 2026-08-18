@@ -10,7 +10,7 @@ import type {
   ParsedFormulaNode,
   UITypes,
   UnaryExpressionNode,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { BaseUser, Column, Model, User } from '~/models';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 

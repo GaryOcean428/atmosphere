@@ -61,7 +61,7 @@
   user-select: none;
 }
 
-.nc-fonts-not-loaded {
+.atm-fonts-not-loaded {
   .material-symbols {
     opacity: 0;
     width: 0 !important;

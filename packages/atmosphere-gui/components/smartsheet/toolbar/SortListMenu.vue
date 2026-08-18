@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { type ColumnType, type LinkToAnotherRecordType, UITypesName, ViewLockType, ViewSettingOverrideOptions } from 'nocodb-sdk'
-import { PlanLimitTypes, RelationTypes, UITypes, isColumnInError, isLinksOrLTAR, isSystemColumn } from 'nocodb-sdk'
+import { type ColumnType, type LinkToAnotherRecordType, UITypesName, ViewLockType, ViewSettingOverrideOptions } from 'atmosphere-sdk'
+import { PlanLimitTypes, RelationTypes, UITypes, isColumnInError, isLinksOrLTAR, isSystemColumn } from 'atmosphere-sdk'
 
 const meta = inject(MetaInj, ref())
 const view = inject(ActiveViewInj, ref())
@@ -225,23 +225,23 @@ watch(
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="open"
     :trigger="['click']"
-    overlay-class-name="nc-dropdown-sort-menu nc-toolbar-dropdown overflow-hidden"
+    overlay-class-name="atm-dropdown-sort-menu atm-toolbar-dropdown overflow-hidden"
   >
-    <NcTooltip :disabled="!isMobileMode && !isToolbarIconMode" :class="{ 'nc-active-btn': sorts?.length }">
+    <AtTooltip :disabled="!isMobileMode && !isToolbarIconMode" :class="{ 'atm-active-btn': sorts?.length }">
       <template #title>
         {{ $t('activity.sort') }}
       </template>
-      <NcButton
+      <AtButton
         v-e="['c:sort']"
         :class="{
           '!border-1 !rounded-md': isCalendar,
           '!border-0': !isCalendar,
           [filteredOrSortedAppearanceConfig.SORTED.toolbarBgClass]: sorts?.length,
         }"
-        class="nc-sort-menu-btn nc-toolbar-btn !h-7 group"
+        class="atm-sort-menu-btn atm-toolbar-btn !h-7 group"
         size="small"
         type="secondary"
         :show-as-disabled="isLocked"
@@ -257,7 +257,7 @@ watch(
           </div>
           <span
             v-if="sorts?.length"
-            class="nc-toolbar-btn-chip"
+            class="atm-toolbar-btn-chip"
             :class="{
               [filteredOrSortedAppearanceConfig.SORTED.toolbarChipBgClass]: true,
               [filteredOrSortedAppearanceConfig.SORTED.toolbarTextClass]: true,
@@ -265,13 +265,13 @@ watch(
             >{{ sorts.length }}</span
           >
         </div>
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
 
     <template #overlay>
       <div
         :class="{
-          'nc-locked-view': isLocked,
+          'atm-locked-view': isLocked,
         }"
       >
         <div
@@ -291,10 +291,10 @@ watch(
         />
         <div
           v-else
-          class="pt-2 pb-2 pl-4 nc-filter-list max-h-[max(80vh,30rem)] xs:nc-min-w-screen-95 sm:min-w-102"
-          data-testid="nc-sorts-menu"
+          class="pt-2 pb-2 pl-4 atm-filter-list max-h-[max(80vh,30rem)] xs:atm-min-w-screen-95 sm:min-w-102"
+          data-testid="atm-sorts-menu"
         >
-          <div class="sort-grid max-h-120 nc-scrollbar-thin pr-4 my-2 py-1" @click.stop>
+          <div class="sort-grid max-h-120 atm-scrollbar-thin pr-4 my-2 py-1" @click.stop>
             <!-- Shared, presentational sort rows. Restricted editors (locked /
                  non-owned personal) get the saved sorts read-only; the temp/local
                  sort path is intentionally gone now that editors have direct write
@@ -315,19 +315,19 @@ watch(
           </div>
 
           <div v-if="!isRestrictedEditor" class="flex items-center justify-between empty:hidden pr-4 mt-1 mb-2">
-            <NcDropdown
+            <AtDropdown
               v-if="availableColumns.length"
               v-model:visible="showCreateSort"
               :trigger="['click']"
               :disabled="false"
-              overlay-class-name="nc-toolbar-dropdown"
+              overlay-class-name="atm-toolbar-dropdown"
             >
               <template v-if="appInfo.ee && !isPublic">
-                <NcButton
+                <AtButton
                   v-if="displayedSorts.length < getPlanLimit(PlanLimitTypes.LIMIT_SORT_PER_VIEW) + 10"
                   v-e="['c:sort:add']"
                   :class="{
-                    '!text-nc-content-brand': !isLocked,
+                    '!text-atm-content-brand': !isLocked,
                   }"
                   type="text"
                   size="small"
@@ -339,14 +339,14 @@ watch(
                     <!-- Add Sort Option -->
                     {{ $t('activity.addSort') }}
                   </div>
-                </NcButton>
+                </AtButton>
                 <span v-else></span>
               </template>
               <template v-else>
-                <NcButton
+                <AtButton
                   v-e="['c:sort:add']"
                   :class="{
-                    '!text-nc-content-brand': !isLocked,
+                    '!text-atm-content-brand': !isLocked,
                   }"
                   type="text"
                   size="small"
@@ -358,12 +358,12 @@ watch(
                     <!-- Add Sort Option -->
                     {{ $t('activity.addSort') }}
                   </div>
-                </NcButton>
+                </AtButton>
               </template>
               <template #overlay>
                 <SmartsheetToolbarCreateSort :sorts="displayedSorts" :is-parent-open="showCreateSort" @created="addSort" />
               </template>
-            </NcDropdown>
+            </AtDropdown>
             <LazyGeneralCopyFromAnotherViewActionBtn
               v-if="view && !isList"
               :view="view"
@@ -381,7 +381,7 @@ watch(
         />
         <div
           v-else-if="view && !displayedSorts.length"
-          class="flex items-center justify-end empty:hidden pl-3 pr-2 py-1.5 border-t-1 border-nc-border-gray-medium"
+          class="flex items-center justify-end empty:hidden pl-3 pr-2 py-1.5 border-t-1 border-atm-border-gray-medium"
         >
           <LazyGeneralCopyFromAnotherViewActionBtn
             v-if="!isList"
@@ -392,7 +392,7 @@ watch(
         </div>
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style scoped lang="scss">
@@ -405,10 +405,10 @@ watch(
   }
 }
 
-:deep(.nc-sort-field-select) {
+:deep(.atm-sort-field-select) {
   @apply !w-44;
   .ant-select-selector {
-    @apply !rounded-none !rounded-l-lg !border-r-0 !border-nc-border-gray-medium !shadow-none !w-44;
+    @apply !rounded-none !rounded-l-lg !border-r-0 !border-atm-border-gray-medium !shadow-none !w-44;
 
     &.ant-select-focused:not(.ant-select-disabled) {
       @apply !border-r-transparent;
@@ -420,22 +420,22 @@ watch(
   }
 }
 
-:deep(.nc-select:not(.ant-select-disabled):hover) {
+:deep(.atm-select:not(.ant-select-disabled):hover) {
   &,
   .ant-select-selector {
-    @apply bg-nc-bg-gray-extralight;
+    @apply bg-atm-bg-gray-extralight;
   }
 }
 
-:deep(.nc-sort-dir-select) {
+:deep(.atm-sort-dir-select) {
   .ant-select-selector {
-    @apply !rounded-none !border-nc-border-gray-medium !shadow-none;
+    @apply !rounded-none !border-atm-border-gray-medium !shadow-none;
   }
 }
 
-.nc-sort-disabled-row {
-  .nc-sort-field-select,
-  .nc-sort-dir-select {
+.atm-sort-disabled-row {
+  .atm-sort-field-select,
+  .atm-sort-dir-select {
     @apply opacity-40 pointer-events-none;
   }
 }

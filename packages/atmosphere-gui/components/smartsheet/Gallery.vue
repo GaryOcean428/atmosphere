@@ -7,7 +7,7 @@ import {
   UITypes,
   ViewTypes,
   isVirtualCol,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type { Attachment } from '../../lib/types'
 import type { Row as RowType } from '#imports'
 
@@ -453,7 +453,7 @@ function getCardColorStyle(record: RowType): Record<string, string> {
   // the host CSS (the coverless wash tile) via a custom property.
   const rawColor = record.rowMeta?.rowLeftBorderColor
 
-  return rawColor ? { '--nc-record-color': rawColor } : {}
+  return rawColor ? { '--atm-record-color': rawColor } : {}
 }
 
 const getCellColorStyle = (record: Row, columnId: string) => {
@@ -682,40 +682,40 @@ function hasPosterCover(record: RowType) {
 <template>
   <div
     ref="scrollContainer"
-    data-testid="nc-gallery-wrapper"
-    class="flex flex-col w-full nc-gallery select-none relative nc-view-scrollbar-y bg-nc-bg-gray-extralight h-[calc(100svh-var(--toolbar-height)-var(--topbar-height))]"
-    :style="fixedColumnsPerRow ? { '--nc-gallery-template-columns': `repeat(${fixedColumnsPerRow}, minmax(0, 1fr))` } : undefined"
+    data-testid="atm-gallery-wrapper"
+    class="flex flex-col w-full atm-gallery select-none relative atm-view-scrollbar-y bg-atm-bg-gray-extralight h-[calc(100svh-var(--toolbar-height)-var(--topbar-height))]"
+    :style="fixedColumnsPerRow ? { '--atm-gallery-template-columns': `repeat(${fixedColumnsPerRow}, minmax(0, 1fr))` } : undefined"
   >
-    <NcDropdown
+    <AtDropdown
       v-model:visible="contextMenu"
       :disabled="contextMenuTarget === null"
       :trigger="isSqlView ? [] : ['contextmenu']"
-      overlay-class-name="nc-dropdown-grid-context-menu"
+      overlay-class-name="atm-dropdown-grid-context-menu"
     >
       <template #overlay>
-        <NcMenu
-          :class="interfacePageDataApi ? '!rounded-lg nc-interface-card-context-menu' : ''"
+        <AtMenu
+          :class="interfacePageDataApi ? '!rounded-lg atm-interface-card-context-menu' : ''"
           :variant="interfacePageDataApi ? 'medium' : 'small'"
           @click="contextMenu = false"
         >
-          <NcMenuItem
+          <AtMenuItem
             v-if="contextMenuTarget && canDuplicateRow"
-            data-testid="nc-interface-gallery-menu-duplicate"
+            data-testid="atm-interface-gallery-menu-duplicate"
             @click="interfaceDuplicateRow"
           >
             <div v-e="['c:interface:gallery:record:duplicate']" class="flex items-center gap-2">
               <GeneralIcon icon="duplicate" class="flex" />
               {{ $t('labels.duplicateRecord') }}
             </div>
-          </NcMenuItem>
-          <NcMenuItem v-if="contextMenuTarget && interfaceClickIntoDetails" @click="expandForm(contextMenuTarget.row)">
+          </AtMenuItem>
+          <AtMenuItem v-if="contextMenuTarget && interfaceClickIntoDetails" @click="expandForm(contextMenuTarget.row)">
             <div v-e="['a:row:expand-record']" class="flex items-center gap-2">
               <component :is="iconMap.maximize" class="flex" />
               {{ $t('activity.expandRecord') }}
             </div>
-          </NcMenuItem>
+          </AtMenuItem>
           <!-- Send record is collaborator/data-app vocabulary — hidden on interface pages -->
-          <NcMenuItem
+          <AtMenuItem
             v-if="contextMenuTarget && contextMenuRowId && !isPublic && appInfo.ee && !interfacePageDataApi"
             @click="showSendRecordModal = true"
           >
@@ -723,17 +723,17 @@ function hasPosterCover(record: RowType) {
               <GeneralIcon icon="mail" class="flex" />
               {{ $t('activity.sendRecord') }}
             </div>
-          </NcMenuItem>
+          </AtMenuItem>
           <template v-if="interfacePageDataApi && contextMenuRowId">
-            <NcDivider v-if="contextMenuTarget && (canDuplicateRow || interfaceClickIntoDetails)" />
-            <NcMenuItem data-testid="nc-interface-gallery-menu-copy-url" @click="interfaceCopyRecordUrl">
+            <AtDivider v-if="contextMenuTarget && (canDuplicateRow || interfaceClickIntoDetails)" />
+            <AtMenuItem data-testid="atm-interface-gallery-menu-copy-url" @click="interfaceCopyRecordUrl">
               <div v-e="['c:interface:gallery:record:copy-url']" class="flex items-center gap-2">
                 <GeneralIcon icon="ncLink" class="flex" />
                 {{ $t('labels.copyRecordURL') }}
               </div>
-            </NcMenuItem>
+            </AtMenuItem>
           </template>
-          <NcDivider v-if="canAddDeleteRows" />
+          <AtDivider v-if="canAddDeleteRows" />
           <PermissionsTooltip
             v-if="contextMenuTarget?.index !== undefined && canAddDeleteRows"
             :entity="PermissionEntity.TABLE"
@@ -742,9 +742,9 @@ function hasPosterCover(record: RowType) {
             placement="right"
           >
             <template #default="{ isAllowed }">
-              <NcMenuItem
+              <AtMenuItem
                 danger
-                data-testid="nc-gallery-context-menu-delete"
+                data-testid="atm-gallery-context-menu-delete"
                 :disabled="!isAllowed"
                 @click="deleteRow(contextMenuTarget.index)"
               >
@@ -752,15 +752,15 @@ function hasPosterCover(record: RowType) {
                   <GeneralIcon icon="delete" />
                   {{ $t('activity.deleteRow') }}
                 </div>
-              </NcMenuItem>
+              </AtMenuItem>
             </template>
           </PermissionsTooltip>
-        </NcMenu>
+        </AtMenu>
       </template>
       <div class="flex-1" @contextmenu.capture="resetContextMenuTarget">
         <div :key="containerHeight" class="relative" :style="{ height: `${containerHeight}px` }">
           <div :style="{ height: `${placeholderAboveHeight}px` }"></div>
-          <div class="nc-gallery-container grid gap-3 p-3">
+          <div class="atm-gallery-container grid gap-3 p-3">
             <div
               v-for="record in visibleRows"
               :key="`record-${record.rowMeta.rowIndex}`"
@@ -776,16 +776,16 @@ function hasPosterCover(record: RowType) {
             >
               <LazySmartsheetRow :row="record">
                 <a-card
-                  class="relative !rounded-xl h-full !border-nc-border-gray-medium !bg-nc-bg-default border-1 group overflow-hidden break-all cursor-pointer flex flex-col"
+                  class="relative !rounded-xl h-full !border-atm-border-gray-medium !bg-atm-bg-default border-1 group overflow-hidden break-all cursor-pointer flex flex-col"
                   :class="[
                     fixedColumnsPerRow ? '!max-w-none' : 'max-w-[450px]',
                     {
                       '!cursor-default': !interfaceShowRowExpand,
-                      'nc-interface-card-selected': isCardSelected(record),
+                      'atm-interface-card-selected': isCardSelected(record),
                     },
                   ]"
                   :body-style="{ padding: cardBodyPadding, flex: 1, display: 'flex' }"
-                  :data-testid="`nc-gallery-card-${record.rowMeta.rowIndex}`"
+                  :data-testid="`atm-gallery-card-${record.rowMeta.rowIndex}`"
                   :style="[getCardColorStyle(record), isPosterTheme ? { height: `${cardHeight}px` } : {}]"
                   @click="expandFormClick($event, record)"
                   @contextmenu="showContextMenu($event, { row: record, index: record.rowMeta.rowIndex })"
@@ -794,7 +794,7 @@ function hasPosterCover(record: RowType) {
                   <template v-if="showCover" #cover>
                     <a-carousel
                       v-if="isMounted && !reloadAttachments && attachments(record).length"
-                      class="gallery-carousel !border-b-1 !border-nc-border-gray-medium min-h-52 !bg-nc-bg-default"
+                      class="gallery-carousel !border-b-1 !border-atm-border-gray-medium min-h-52 !bg-atm-bg-default"
                       :style="{
                         ...extractRowBackgroundColorStyle(record).rowBgColor,
                         ...extractRowBackgroundColorStyle(record).rowBorderColor,
@@ -810,24 +810,24 @@ function hasPosterCover(record: RowType) {
                       </template>
                       <template #prevArrow>
                         <div class="z-10 arrow">
-                          <NcButton
+                          <AtButton
                             type="secondary"
                             size="xsmall"
                             class="!absolute !left-1.5 !bottom-[-90px] !opacity-0 !group-hover:opacity-100 !rounded-lg cursor-pointer"
                           >
-                            <GeneralIcon icon="arrowLeft" class="text-nc-content-inverted-secondary w-4 h-4" />
-                          </NcButton>
+                            <GeneralIcon icon="arrowLeft" class="text-atm-content-inverted-secondary w-4 h-4" />
+                          </AtButton>
                         </div>
                       </template>
                       <template #nextArrow>
                         <div class="z-10 arrow">
-                          <NcButton
+                          <AtButton
                             type="secondary"
                             size="xsmall"
                             class="!absolute !right-1.5 !bottom-[-90px] !opacity-0 !group-hover:opacity-100 !rounded-lg cursor-pointer"
                           >
-                            <GeneralIcon icon="arrowRight" class="text-nc-content-inverted-secondary w-4 h-4" />
-                          </NcButton>
+                            <GeneralIcon icon="arrowRight" class="text-atm-content-inverted-secondary w-4 h-4" />
+                          </AtButton>
                         </div>
                       </template>
                       <template
@@ -846,7 +846,7 @@ function hasPosterCover(record: RowType) {
                     </a-carousel>
                     <div
                       v-else
-                      class="h-52 w-full !flex flex-row !border-b-1 !border-nc-border-gray-medium items-center justify-center !bg-nc-bg-default"
+                      class="h-52 w-full !flex flex-row !border-b-1 !border-atm-border-gray-medium items-center justify-center !bg-atm-bg-default"
                     >
                       <img class="object-contain w-[48px] h-[48px]" src="~assets/icons/FileIconImageBox.png" />
                     </div>
@@ -857,30 +857,30 @@ function hasPosterCover(record: RowType) {
                        with the title centered. Body fields never render. -->
                   <div
                     v-if="isPosterTheme"
-                    class="nc-gallery-poster-tile relative w-full h-full overflow-hidden"
-                    :class="{ 'nc-has-record-color': !!record.rowMeta?.rowLeftBorderColor }"
+                    class="atm-gallery-poster-tile relative w-full h-full overflow-hidden"
+                    :class="{ 'atm-has-record-color': !!record.rowMeta?.rowLeftBorderColor }"
                   >
                     <template v-if="hasPosterCover(record)">
                       <LazyCellAttachmentPreviewThumbnail
                         :attachment="attachments(record)[0]"
-                        class="nc-gallery-poster-image !absolute !inset-0"
+                        class="atm-gallery-poster-image !absolute !inset-0"
                         image-class="!w-full !h-full"
                         thumbnail="card_cover"
                         object-fit="cover"
                       />
-                      <div class="nc-gallery-poster-scrim absolute inset-x-0 bottom-0 h-2/5 pointer-events-none"></div>
+                      <div class="atm-gallery-poster-scrim absolute inset-x-0 bottom-0 h-2/5 pointer-events-none"></div>
                     </template>
 
                     <h2
                       v-if="displayField"
-                      class="nc-card-display-value-wrapper absolute z-1 p-3"
+                      class="atm-card-display-value-wrapper absolute z-1 p-3"
                       :class="[
                         hasPosterCover(record)
-                          ? 'nc-gallery-poster-title-overlay inset-x-0 bottom-0'
-                          : 'nc-gallery-poster-title-centered inset-0 flex flex-col justify-center',
+                          ? 'atm-gallery-poster-title-overlay inset-x-0 bottom-0'
+                          : 'atm-gallery-poster-title-centered inset-0 flex flex-col justify-center',
                         {
-                          'nc-card-title-large': cardTitleSize === 'large',
-                          'nc-card-title-interface': !!interfacePageDataApi,
+                          'atm-card-title-large': cardTitleSize === 'large',
+                          'atm-card-title-interface': !!interfacePageDataApi,
                         },
                       ]"
                     >
@@ -894,27 +894,27 @@ function hasPosterCover(record: RowType) {
                         <LazySmartsheetVirtualCell
                           v-if="isVirtualCol(displayField)"
                           v-model="record.row[displayField.title]"
-                          class="!text-nc-content-brand"
+                          class="!text-atm-content-brand"
                           :column="displayField"
                           :row="record"
                         />
-                        <NcTooltip
+                        <AtTooltip
                           v-else
                           class="!w-full max-w-full"
                           placement="top"
                           show-on-truncate-only
-                          truncate-selector=".nc-cell-field"
+                          truncate-selector=".atm-cell-field"
                           :disabled="!isDisplayFieldTextOrNumber"
                           :title="`${record.row[displayField.title] ?? ''}`"
                         >
                           <LazySmartsheetCell
                             v-model="record.row[displayField.title]"
-                            class="!text-nc-content-brand"
+                            class="!text-atm-content-brand"
                             :column="displayField"
                             :edit-enabled="false"
                             :read-only="true"
                           />
-                        </NcTooltip>
+                        </AtTooltip>
                       </template>
                       <template v-else> - </template>
                     </h2>
@@ -946,10 +946,10 @@ function hasPosterCover(record: RowType) {
                           :style="getCellLeftBorderStyle(record, displayField.id)"
                         ></div>
                         <h2
-                          class="nc-card-display-value-wrapper flex-1 min-w-0 !children:pointer-events-auto"
+                          class="atm-card-display-value-wrapper flex-1 min-w-0 !children:pointer-events-auto"
                           :class="{
-                            'nc-card-title-large': cardTitleSize === 'large',
-                            'nc-card-title-interface': !!interfacePageDataApi,
+                            'atm-card-title-large': cardTitleSize === 'large',
+                            'atm-card-title-interface': !!interfacePageDataApi,
                           }"
                         >
                           <template
@@ -962,27 +962,27 @@ function hasPosterCover(record: RowType) {
                             <LazySmartsheetVirtualCell
                               v-if="isVirtualCol(displayField)"
                               v-model="record.row[displayField.title]"
-                              class="!text-nc-content-brand"
+                              class="!text-atm-content-brand"
                               :column="displayField"
                               :row="record"
                             />
-                            <NcTooltip
+                            <AtTooltip
                               v-else
                               class="!w-full max-w-full"
                               placement="top"
                               show-on-truncate-only
-                              truncate-selector=".nc-cell-field"
+                              truncate-selector=".atm-cell-field"
                               :disabled="!isDisplayFieldTextOrNumber"
                               :title="`${record.row[displayField.title] ?? ''}`"
                             >
                               <LazySmartsheetCell
                                 v-model="record.row[displayField.title]"
-                                class="!text-nc-content-brand"
+                                class="!text-atm-content-brand"
                                 :column="displayField"
                                 :edit-enabled="false"
                                 :read-only="true"
                               />
-                            </NcTooltip>
+                            </AtTooltip>
                           </template>
                           <template v-else> - </template>
                         </h2>
@@ -990,13 +990,13 @@ function hasPosterCover(record: RowType) {
                       <div
                         v-for="col in cardFields(record)"
                         :key="`record-${record.rowMeta.rowIndex}-${col.id}`"
-                        class="nc-card-col-wrapper"
+                        class="atm-card-col-wrapper"
                         :class="{
                           '!children:pointer-events-auto': resetPointerEvent(record, col),
                         }"
                         @click="handleClick(col, $event)"
                       >
-                        <NcTooltip
+                        <AtTooltip
                           hide-on-click
                           :disabled="isActiveViewFieldHeaderVisible"
                           class="w-full z-10 flex"
@@ -1012,14 +1012,14 @@ function hasPosterCover(record: RowType) {
                               :column="col"
                               :hide-menu="true"
                               hide-icon-tooltip
-                              class="!text-gray-100 nc-record-cell-tooltip"
+                              class="!text-gray-100 atm-record-cell-tooltip"
                             />
                             <LazySmartsheetHeaderCell
                               v-else
                               :column="col"
                               :hide-menu="true"
                               hide-icon-tooltip
-                              class="!text-gray-100 nc-record-cell-tooltip"
+                              class="!text-gray-100 atm-record-cell-tooltip"
                             />
                           </template>
                           <div
@@ -1039,8 +1039,8 @@ function hasPosterCover(record: RowType) {
                               <div class="flex flex-row w-full justify-start">
                                 <div
                                   v-if="isActiveViewFieldHeaderVisible"
-                                  class="nc-card-col-header w-full !children:text-gray-500"
-                                  :class="{ 'nc-card-col-header-no-icon': !!interfacePageDataApi }"
+                                  class="atm-card-col-header w-full !children:text-gray-500"
+                                  :class="{ 'atm-card-col-header-no-icon': !!interfacePageDataApi }"
                                 >
                                   <!-- Interface cards label with the field NAME only — no type icon -->
                                   <LazySmartsheetHeaderVirtualCell
@@ -1059,14 +1059,14 @@ function hasPosterCover(record: RowType) {
                               </div>
                               <div
                                 v-if="!isRowEmpty(record, col) || isAllowToRenderRowEmptyField(col)"
-                                class="flex flex-row w-full text-nc-content-gray items-center justify-start min-h-7 py-1"
+                                class="flex flex-row w-full text-atm-content-gray items-center justify-start min-h-7 py-1"
                               >
                                 <LazySmartsheetVirtualCell
                                   v-if="isVirtualCol(col)"
                                   v-model="record.row[col.title]"
                                   :column="col"
                                   :row="record"
-                                  class="!text-nc-content-gray"
+                                  class="!text-atm-content-gray"
                                 />
                                 <LazySmartsheetCell
                                   v-else
@@ -1074,13 +1074,13 @@ function hasPosterCover(record: RowType) {
                                   :column="col"
                                   :edit-enabled="false"
                                   :read-only="true"
-                                  class="!text-nc-content-gray"
+                                  class="!text-atm-content-gray"
                                 />
                               </div>
                               <div v-else class="flex flex-row w-full h-7 items-center justify-start">-</div>
                             </div>
                           </div>
-                        </NcTooltip>
+                        </AtTooltip>
                       </div>
                     </div>
                   </div>
@@ -1089,12 +1089,12 @@ function hasPosterCover(record: RowType) {
             </div>
 
             <template v-if="visibleRows.length <= 4">
-              <div v-for="index of Array(8 - visibleRows.length)" :key="index" class="nc-empty-card"></div>
+              <div v-for="index of Array(8 - visibleRows.length)" :key="index" class="atm-empty-card"></div>
             </template>
           </div>
         </div>
       </div>
-    </NcDropdown>
+    </AtDropdown>
     <!-- Floating new-record button — not shown in interfaces -->
     <div class="sticky bottom-4 w-[fit-content] z-10">
       <PermissionsTooltip
@@ -1104,7 +1104,7 @@ function hasPosterCover(record: RowType) {
         :permission="PermissionKey.TABLE_RECORD_ADD"
       >
         <template #default="{ isAllowed }">
-          <NcButton
+          <AtButton
             size="xs"
             type="secondary"
             class="ml-4 rtl:(mr-4 ml-0)"
@@ -1115,7 +1115,7 @@ function hasPosterCover(record: RowType) {
               <component :is="iconMap.plus" class="" />
               {{ $t('activity.newRecord') }}
             </div>
-          </NcButton>
+          </AtButton>
         </template>
       </PermissionsTooltip>
     </div>
@@ -1155,10 +1155,10 @@ function hasPosterCover(record: RowType) {
 </template>
 
 <style lang="scss" scoped>
-.nc-interface-card-context-menu {
+.atm-interface-card-context-menu {
   // Target the inner wrapper — it carries its own `text-sm`, so a size set on
   // the item element would lose to it via inheritance.
-  :deep(.nc-menu-item-inner) {
+  :deep(.atm-menu-item-inner) {
     @apply text-[13px];
 
     svg {
@@ -1167,12 +1167,12 @@ function hasPosterCover(record: RowType) {
   }
 }
 
-.nc-gallery-container,
-.nc-gallery-container-skeleton {
+.atm-gallery-container,
+.atm-gallery-container-skeleton {
   @apply auto-rows-[1fr];
   // Interface `columns_per_row` pins the track list via the CSS var; the
   // auto-fit fallback must keep in sync with the `columnsPerRow` math.
-  grid-template-columns: var(--nc-gallery-template-columns, repeat(auto-fit, minmax(250px, 1fr)));
+  grid-template-columns: var(--atm-gallery-template-columns, repeat(auto-fit, minmax(250px, 1fr)));
 }
 
 .has-cell-bg-color {
@@ -1188,16 +1188,16 @@ function hasPosterCover(record: RowType) {
 }
 
 .ant-carousel.gallery-carousel :deep(.slick-dots) {
-  @apply !w-full max-w-[calc(100%_-_36%)] absolute left-0 right-0 bottom-[-18px] h-6 overflow-x-auto nc-scrollbar-thin !mx-auto;
+  @apply !w-full max-w-[calc(100%_-_36%)] absolute left-0 right-0 bottom-[-18px] h-6 overflow-x-auto atm-scrollbar-thin !mx-auto;
 }
 
 .ant-carousel.gallery-carousel :deep(.slick-dots li div > div) {
-  @apply rounded-full border-0 cursor-pointer block opacity-100 p-0 outline-none transition-all duration-500 text-transparent h-2 w-2 bg-nc-bg-gray-medium;
+  @apply rounded-full border-0 cursor-pointer block opacity-100 p-0 outline-none transition-all duration-500 text-transparent h-2 w-2 bg-atm-bg-gray-medium;
   font-size: 0;
 }
 
 .ant-carousel.gallery-carousel :deep(.slick-dots li.slick-active div > div) {
-  @apply bg-nc-content-brand opacity-100;
+  @apply bg-atm-content-brand opacity-100;
 }
 
 .ant-carousel.gallery-carousel :deep(.slick-dots li) {
@@ -1217,33 +1217,33 @@ function hasPosterCover(record: RowType) {
   box-shadow: 0px 2px 4px -2px rgba(0, 0, 0, 0.06), 0px 4px 4px -2px rgba(0, 0, 0, 0.02);
 
   &:hover {
-    @apply !border-nc-border-gray-dark;
+    @apply !border-atm-border-gray-dark;
     box-shadow: 0px 0px 24px 0px rgba(0, 0, 0, 0.1), 0px 0px 8px 0px rgba(0, 0, 0, 0.04);
 
-    .nc-action-icon {
+    .atm-action-icon {
       @apply invisible;
     }
   }
 }
 
-.nc-card-display-value-wrapper {
-  @apply my-0 text-subHeading2 text-nc-content-gray-subtle2;
+.atm-card-display-value-wrapper {
+  @apply my-0 text-subHeading2 text-atm-content-gray-subtle2;
 
   // Interface `title_size: large` — one typography step up (20px). The
   // `:not()` arm mirrors the base rule below: both are !important, and
   // without it the base's :not() variant ties on specificity and wins by
   // source order — the large size never rendered.
-  &.nc-card-title-large {
+  &.atm-card-title-large {
     @apply text-subHeading1;
 
-    :deep(.nc-cell),
-    :deep(.nc-virtual-cell) {
+    :deep(.atm-cell),
+    :deep(.atm-virtual-cell) {
       @apply text-subHeading1;
 
-      .nc-cell-field,
+      .atm-cell-field,
       input,
       textarea,
-      .nc-cell-field-link {
+      .atm-cell-field-link {
         @apply !text-subHeading1;
 
         &:not(.ant-select-selection-search-input) {
@@ -1258,16 +1258,16 @@ function hasPosterCover(record: RowType) {
   // stamps only under an interface adapter, so the data-app keeps the
   // subHeading sizes above. Extra class depth out-ranks both base and
   // large rules deterministically.
-  &.nc-card-title-interface {
+  &.atm-card-title-interface {
     font-size: 14px !important;
     line-height: 20px !important;
 
-    :deep(.nc-cell),
-    :deep(.nc-virtual-cell) {
-      .nc-cell-field,
+    :deep(.atm-cell),
+    :deep(.atm-virtual-cell) {
+      .atm-cell-field,
       input,
       textarea,
-      .nc-cell-field-link {
+      .atm-cell-field-link {
         &,
         &:not(.ant-select-selection-search-input) {
           font-size: 14px !important;
@@ -1276,16 +1276,16 @@ function hasPosterCover(record: RowType) {
       }
     }
 
-    &.nc-card-title-large {
+    &.atm-card-title-large {
       font-size: 18px !important;
       line-height: 26px !important;
 
-      :deep(.nc-cell),
-      :deep(.nc-virtual-cell) {
-        .nc-cell-field,
+      :deep(.atm-cell),
+      :deep(.atm-virtual-cell) {
+        .atm-cell-field,
         input,
         textarea,
-        .nc-cell-field-link {
+        .atm-cell-field-link {
           &,
           &:not(.ant-select-selection-search-input) {
             font-size: 18px !important;
@@ -1296,34 +1296,34 @@ function hasPosterCover(record: RowType) {
     }
   }
 
-  :deep(.nc-cell),
-  :deep(.nc-virtual-cell) {
+  :deep(.atm-cell),
+  :deep(.atm-virtual-cell) {
     @apply text-subHeading2;
 
-    .nc-cell-field,
+    .atm-cell-field,
     input,
     textarea,
-    .nc-cell-field-link {
-      @apply !text-subHeading2 text-nc-content-gray-subtle2;
+    .atm-cell-field-link {
+      @apply !text-subHeading2 text-atm-content-gray-subtle2;
 
       &:not(.ant-select-selection-search-input) {
-        @apply !text-subHeading2 text-nc-content-gray-subtle2;
+        @apply !text-subHeading2 text-atm-content-gray-subtle2;
       }
     }
   }
 }
 
-.nc-card-col-wrapper {
+.atm-card-col-wrapper {
   @apply !text-small !leading-[18px];
 
-  .nc-cell,
-  .nc-virtual-cell {
+  .atm-cell,
+  .atm-virtual-cell {
     @apply !text-small !leading-[18px];
 
-    :deep(.nc-cell-field),
+    :deep(.atm-cell-field),
     :deep(input),
     :deep(textarea),
-    :deep(.nc-cell-field-link) {
+    :deep(.atm-cell-field-link) {
       @apply !text-small leading-[18px];
 
       &:not(.ant-select-selection-search-input) {
@@ -1333,30 +1333,30 @@ function hasPosterCover(record: RowType) {
   }
 }
 
-.nc-card-col-header {
-  :deep(.nc-cell-icon),
-  :deep(.nc-virtual-cell-icon) {
+.atm-card-col-header {
+  :deep(.atm-cell-icon),
+  :deep(.atm-virtual-cell-icon) {
     @apply ml-0 !w-3.5 !h-3.5;
   }
 }
 
 // Icon hidden (interface) — drop the name's icon-gap padding (left in LTR,
 // right in RTL) so the label aligns with the value rendered below it.
-.nc-card-col-header-no-icon {
+.atm-card-col-header-no-icon {
   :deep(.name) {
     padding-left: 0;
     padding-right: 0;
   }
 }
 
-:deep(.nc-cell) {
-  &.nc-cell-longtext {
+:deep(.atm-cell) {
+  &.atm-cell-longtext {
     .long-text-wrapper {
       @apply min-h-1;
-      .nc-readonly-rich-text-wrapper {
+      .atm-readonly-rich-text-wrapper {
         @apply !min-h-1;
       }
-      .nc-rich-text {
+      .atm-rich-text {
         @apply pl-0;
         .tiptap.ProseMirror {
           @apply -ml-1 min-h-1;
@@ -1364,28 +1364,28 @@ function hasPosterCover(record: RowType) {
       }
     }
   }
-  &.nc-cell-checkbox {
+  &.atm-cell-checkbox {
     @apply children:pl-0;
   }
-  &.nc-cell-singleselect .nc-cell-field > div {
+  &.atm-cell-singleselect .atm-cell-field > div {
     @apply flex items-center;
   }
-  &.nc-cell-multiselect .nc-cell-field > div {
+  &.atm-cell-multiselect .atm-cell-field > div {
     @apply h-5;
   }
-  &.nc-cell-email,
-  &.nc-cell-phonenumber {
+  &.atm-cell-email,
+  &.atm-cell-phonenumber {
     @apply flex items-center;
   }
 
-  &.nc-cell-email,
-  &.nc-cell-phonenumber,
-  &.nc-cell-url {
-    .nc-cell-field-link {
+  &.atm-cell-email,
+  &.atm-cell-phonenumber,
+  &.atm-cell-url {
+    .atm-cell-field-link {
       @apply py-0;
     }
   }
-  &.nc-cell-datetime {
+  &.atm-cell-datetime {
     @apply !w-auto;
     & > div {
       @apply !w-auto;
@@ -1395,7 +1395,7 @@ function hasPosterCover(record: RowType) {
     }
   }
 
-  .nc-date-picker > div > div {
+  .atm-date-picker > div > div {
     &:first-child {
       @apply pl-0;
     }
@@ -1406,11 +1406,11 @@ function hasPosterCover(record: RowType) {
   }
 }
 
-:deep(.nc-virtual-cell) {
-  .nc-links-wrapper {
+:deep(.atm-virtual-cell) {
+  .atm-links-wrapper {
     @apply py-0 children:min-h-4;
   }
-  &.nc-virtual-cell-linktoanotherrecord {
+  &.atm-virtual-cell-linktoanotherrecord {
     .chips-wrapper {
       @apply min-h-4 !children:min-h-4;
       .chip.group {
@@ -1418,39 +1418,39 @@ function hasPosterCover(record: RowType) {
       }
     }
   }
-  &.nc-virtual-cell-lookup {
-    .nc-lookup-cell {
-      &:has(.nc-attachment-wrapper) {
+  &.atm-virtual-cell-lookup {
+    .atm-lookup-cell {
+      &:has(.atm-attachment-wrapper) {
         @apply !h-auto;
 
-        .nc-attachment-cell {
+        .atm-attachment-cell {
           @apply !h-auto;
 
-          .nc-attachment-wrapper {
+          .atm-attachment-wrapper {
             @apply py-0;
           }
         }
       }
-      &:not(:has(.nc-attachment-wrapper)) {
+      &:not(:has(.atm-attachment-wrapper)) {
         @apply !h-5.5;
       }
-      .nc-cell-lookup-scroll {
+      .atm-cell-lookup-scroll {
         @apply py-0 h-auto;
       }
     }
   }
-  &.nc-virtual-cell-formula {
-    .nc-cell-field {
+  &.atm-virtual-cell-formula {
+    .atm-cell-field {
       @apply py-0;
     }
   }
 
-  &.nc-virtual-cell-qrcode,
-  &.nc-virtual-cell-barcode {
+  &.atm-virtual-cell-qrcode,
+  &.atm-virtual-cell-barcode {
     @apply children:justify-start;
   }
 
-  .nc-date-picker > div > div {
+  .atm-date-picker > div > div {
     &:first-child {
       @apply pl-0;
     }
@@ -1461,26 +1461,26 @@ function hasPosterCover(record: RowType) {
   }
 }
 
-.nc-record-cell-tooltip {
+.atm-record-cell-tooltip {
   @apply !bg-transparent !hover:bg-transparent;
 
-  :deep(.nc-cell-icon) {
+  :deep(.atm-cell-icon) {
     @apply !ml-0 h-3.5 w-3.5;
   }
   :deep(.name) {
     @apply text-captionSm;
   }
 
-  :deep(.nc-cell-name-wrapper),
-  :deep(.nc-virtual-cell-name-wrapper) {
+  :deep(.atm-cell-name-wrapper),
+  :deep(.atm-virtual-cell-name-wrapper) {
     @apply !max-w-full;
   }
 }
 
 // Compound + :hover so the selection outlives the card's own hover styling
 // (the gallery hover forces a gray border with !important).
-.ant-card.nc-interface-card-selected,
-.ant-card.nc-interface-card-selected:hover {
-  border-color: var(--nc-border-brand) !important;
+.ant-card.atm-interface-card-selected,
+.ant-card.atm-interface-card-selected:hover {
+  border-color: var(--atm-border-brand) !important;
 }
 </style>

@@ -12,13 +12,13 @@ import {
   Text,
 } from '@react-email/components';
 import * as React from 'react';
-import type { WhiteLabelConfig } from 'nocodb-sdk';
+import type { WhiteLabelConfig } from 'atmosphere-sdk';
 import {
   ContentWrapper,
   Footer,
   RootWrapper,
 } from '~/services/mail/templates/components';
-import { NC_EMAIL_ASSETS_BASE_URL } from '~/constants';
+import { ATMOSPHERE_EMAIL_ASSETS_BASE_URL } from '~/constants';
 
 interface BaseRoleUpdateTemplateProps {
   baseTitle: string;
@@ -55,13 +55,13 @@ export const BaseRoleUpdate = ({
             <Row>
               <Column className="flex max-w-[210px] mx-auto">
                 <Img
-                  src={`${NC_EMAIL_ASSETS_BASE_URL}/badges/${oldRole}.png`}
+                  src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/badges/${oldRole}.png`}
                   alt={oldRole}
                   className="h-7"
                 />
                 <Text className="h-5 text-gray-800 !mt-0.5 !ml-2">➜</Text>
                 <Img
-                  src={`${NC_EMAIL_ASSETS_BASE_URL}/badges/${newRole}.png`}
+                  src={`${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/badges/${newRole}.png`}
                   alt={newRole}
                   className="h-7 ml-2"
                 />
@@ -91,8 +91,8 @@ BaseRoleUpdate.PreviewProps = {
   oldRole: 'creator',
   newRole: 'editor',
   name: 'John Doe',
-  email: 'johndoe@nocodb.com',
-  link: 'www.nocodb.com',
+  email: 'johndoe@atmosphere.dev',
+  link: 'www.atmosphere.dev',
 };
 
 export default BaseRoleUpdate;

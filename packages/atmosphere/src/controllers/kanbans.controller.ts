@@ -9,13 +9,13 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ViewCreateReqType } from 'nocodb-sdk';
+import { ViewCreateReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { KanbansService } from '~/services/kanbans.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -28,7 +28,7 @@ export class KanbansController {
   ])
   @Acl('kanbanViewGet')
   async kanbanViewGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('kanbanViewId') kanbanViewId: string,
   ) {
     return await this.kanbansService.kanbanViewGet(context, {
@@ -43,10 +43,10 @@ export class KanbansController {
   @HttpCode(200)
   @Acl('kanbanViewCreate')
   async kanbanViewCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('tableId') tableId: string,
     @Body() body: ViewCreateReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.kanbansService.kanbanViewCreate(context, {
       tableId,
@@ -62,11 +62,11 @@ export class KanbansController {
   ])
   @Acl('kanbanViewUpdate')
   async kanbanViewUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('kanbanViewId') kanbanViewId: string,
     @Body() body,
 
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.kanbansService.kanbanViewUpdate(context, {
       kanbanViewId,

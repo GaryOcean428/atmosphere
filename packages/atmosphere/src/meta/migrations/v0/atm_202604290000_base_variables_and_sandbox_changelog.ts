@@ -22,11 +22,11 @@ const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.BASE_VARIABLES, (table) => {
     table.unique(
       ['fk_workspace_id', 'base_id', 'key'],
-      'nc_base_variables_ws_base_key_unique',
+      'atm_base_variables_ws_base_key_unique',
     );
     table.index(
       ['base_id', 'fk_workspace_id'],
-      'nc_base_variables_base_ws_index',
+      'atm_base_variables_base_ws_index',
     );
   });
 
@@ -53,9 +53,9 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.SANDBOX_CHANGELOG, (table) => {
-    table.index(['fk_sandbox_id', 'seq'], 'nc_scl_sandbox_seq_index');
-    table.index(['base_id'], 'nc_scl_base_id_index');
-    table.index(['entity_type', 'entity_id'], 'nc_scl_entity_type_id_index');
+    table.index(['fk_sandbox_id', 'seq'], 'atm_scl_sandbox_seq_index');
+    table.index(['base_id'], 'atm_scl_base_id_index');
+    table.index(['entity_type', 'entity_id'], 'atm_scl_entity_type_id_index');
   });
 
   // Re-scope subscriber unique index to include base_id so sandbox and
@@ -64,13 +64,13 @@ const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.AUTOMATION_SUBSCRIBERS, (table) => {
     table.dropUnique(
       ['fk_automation_id', 'fk_user_id'],
-      'nc_automation_subscribers_unique_idx',
+      'atm_automation_subscribers_unique_idx',
     );
   });
 
   await knex.schema.alterTable(MetaTable.AUTOMATION_SUBSCRIBERS, (table) => {
     table.unique(['base_id', 'fk_automation_id', 'fk_user_id'], {
-      indexName: 'nc_automation_subscribers_unique_idx',
+      indexName: 'atm_automation_subscribers_unique_idx',
     });
   });
 
@@ -78,7 +78,7 @@ const up = async (knex: Knex) => {
   // tables. Managed-app `managed_app_master` is a separate concept (template
   // vs installed instance) and is left unchanged.
   await knex.schema.alterTable(MetaTable.SANDBOXES, (table) => {
-    table.dropIndex(['master_base_id'], 'nc_sandboxes_v2_master_base_id_idx');
+    table.dropIndex(['master_base_id'], 'atm_sandboxes_v2_master_base_id_idx');
   });
   await knex.schema.alterTable(MetaTable.SANDBOXES, (table) => {
     table.renameColumn('master_base_id', 'production_base_id');
@@ -86,12 +86,12 @@ const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.SANDBOXES, (table) => {
     table.index(
       ['production_base_id'],
-      'nc_sandboxes_v2_production_base_id_idx',
+      'atm_sandboxes_v2_production_base_id_idx',
     );
   });
 
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
-    table.dropIndex(['is_sandbox_master'], 'nc_bases_is_sandbox_master_idx');
+    table.dropIndex(['is_sandbox_master'], 'atm_bases_is_sandbox_master_idx');
   });
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
     table.renameColumn('is_sandbox_master', 'is_sandbox_production');
@@ -99,7 +99,7 @@ const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
     table.index(
       ['is_sandbox_production'],
-      'nc_bases_is_sandbox_production_idx',
+      'atm_bases_is_sandbox_production_idx',
     );
   });
 };
@@ -109,39 +109,39 @@ const down = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
     table.dropIndex(
       ['is_sandbox_production'],
-      'nc_bases_is_sandbox_production_idx',
+      'atm_bases_is_sandbox_production_idx',
     );
   });
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
     table.renameColumn('is_sandbox_production', 'is_sandbox_master');
   });
   await knex.schema.alterTable(MetaTable.PROJECT, (table) => {
-    table.index(['is_sandbox_master'], 'nc_bases_is_sandbox_master_idx');
+    table.index(['is_sandbox_master'], 'atm_bases_is_sandbox_master_idx');
   });
 
   await knex.schema.alterTable(MetaTable.SANDBOXES, (table) => {
     table.dropIndex(
       ['production_base_id'],
-      'nc_sandboxes_v2_production_base_id_idx',
+      'atm_sandboxes_v2_production_base_id_idx',
     );
   });
   await knex.schema.alterTable(MetaTable.SANDBOXES, (table) => {
     table.renameColumn('production_base_id', 'master_base_id');
   });
   await knex.schema.alterTable(MetaTable.SANDBOXES, (table) => {
-    table.index(['master_base_id'], 'nc_sandboxes_v2_master_base_id_idx');
+    table.index(['master_base_id'], 'atm_sandboxes_v2_master_base_id_idx');
   });
 
   await knex.schema.alterTable(MetaTable.AUTOMATION_SUBSCRIBERS, (table) => {
     table.dropUnique(
       ['base_id', 'fk_automation_id', 'fk_user_id'],
-      'nc_automation_subscribers_unique_idx',
+      'atm_automation_subscribers_unique_idx',
     );
   });
 
   await knex.schema.alterTable(MetaTable.AUTOMATION_SUBSCRIBERS, (table) => {
     table.unique(['fk_automation_id', 'fk_user_id'], {
-      indexName: 'nc_automation_subscribers_unique_idx',
+      indexName: 'atm_automation_subscribers_unique_idx',
     });
   });
 

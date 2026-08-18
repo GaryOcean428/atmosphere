@@ -1,22 +1,22 @@
 services:
 
-  nocodb:
-    image: nocodb/nocodb:latest
+  atmosphere:
+    image: atmosphere/atmosphere:latest
     env_file: docker.env
     deploy:
       mode: replicated
       replicas: 1
     restart: unless-stopped
     volumes:
-      - nocodb_data:/usr/app/data
-      - ./nocodb/db.json:/usr/app/data/db.json
+      - atmosphere_data:/usr/app/data
+      - ./atmosphere/db.json:/usr/app/data/db.json
     networks:
-      - nocodb-network
+      - atmosphere-network
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.nocodb.rule=Host(`nocodb.example.com`)'
-      - 'traefik.http.routers.nocodb.entrypoints=websecure'
-      - 'traefik.http.routers.nocodb.tls=true'
+      - 'traefik.http.routers.atmosphere.rule=Host(`atmosphere.example.com`)'
+      - 'traefik.http.routers.atmosphere.entrypoints=websecure'
+      - 'traefik.http.routers.atmosphere.tls=true'
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --tries=1 --spider http://localhost:8080/api/v1/health || exit 1']
       interval: 30s
@@ -25,19 +25,19 @@ services:
       start_period: 30s
 
   worker:
-    image: nocodb/nocodb:latest
+    image: atmosphere/atmosphere:latest
     env_file: docker.env
     environment:
-      NC_WORKER_CONTAINER: 'true'
+      ATMOSPHERE_WORKER_CONTAINER: 'true'
     depends_on:
-      nocodb:
+      atmosphere:
         condition: service_healthy
     restart: unless-stopped
     volumes:
-      - nocodb_data:/usr/app/data
-      - ./nocodb/db.json:/usr/app/data/db.json
+      - atmosphere_data:/usr/app/data
+      - ./atmosphere/db.json:/usr/app/data/db.json
     networks:
-      - nocodb-network
+      - atmosphere-network
 
   traefik:
     image: traefik:v3.6
@@ -58,11 +58,11 @@ services:
       - ./certs.yml:/etc/traefik/certs.yml:ro
     restart: unless-stopped
     networks:
-      - nocodb-network
+      - atmosphere-network
 
 networks:
-  nocodb-network:
+  atmosphere-network:
     driver: bridge
 
 volumes:
-  nocodb_data:
+  atmosphere_data:

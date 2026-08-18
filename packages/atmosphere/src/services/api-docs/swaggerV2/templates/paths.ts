@@ -1,4 +1,4 @@
-import { ModelTypes } from 'nocodb-sdk';
+import { ModelTypes } from 'atmosphere-sdk';
 import {
   fieldsParam,
   getNestedParams,
@@ -13,11 +13,11 @@ import {
 } from './params';
 import type { SwaggerColumn } from '../getSwaggerColumnMetas';
 import type { SwaggerView } from '~/services/api-docs/shared/swaggerUtils';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import { isRelationExist } from '~/services/api-docs/swagger/templates/paths';
 
 export const getModelPaths = async (
-  context: NcContext,
+  context: AtContext,
   ctx: {
     tableName: string;
     type: ModelTypes;

@@ -1,6 +1,6 @@
-import type { PluginType } from 'nocodb-sdk';
-import Noco from '~/Noco';
-import NocoCache from '~/cache/NocoCache';
+import type { PluginType } from 'atmosphere-sdk';
+import Atmosphere from '~/Atmosphere';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 import {
   CacheGetType,
@@ -33,10 +33,10 @@ export default class Plugin implements PluginType {
     Object.assign(this, audit);
   }
 
-  public static async get(pluginId: string, ncMeta = Noco.ncMeta) {
+  public static async get(pluginId: string, ncMeta = Atmosphere.ncMeta) {
     let plugin =
       pluginId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         'root',
         `${CacheScope.PLUGIN}:${pluginId}`,
         CacheGetType.TYPE_OBJECT,
@@ -48,13 +48,13 @@ export default class Plugin implements PluginType {
         MetaTable.PLUGIN,
         pluginId,
       );
-      await NocoCache.set('root', `${CacheScope.PLUGIN}:${pluginId}`, plugin);
+      await AtmosphereCache.set('root', `${CacheScope.PLUGIN}:${pluginId}`, plugin);
     }
     return plugin && new Plugin(plugin);
   }
 
-  static async list(ncMeta = Noco.ncMeta) {
-    const cachedList = await NocoCache.getList('root', CacheScope.PLUGIN, []);
+  static async list(ncMeta = Atmosphere.ncMeta) {
+    const cachedList = await AtmosphereCache.getList('root', CacheScope.PLUGIN, []);
     let { list: pluginList } = cachedList;
     const { isNoneList } = cachedList;
     if (!isNoneList && !pluginList.length) {
@@ -63,12 +63,12 @@ export default class Plugin implements PluginType {
         RootScopes.ROOT,
         MetaTable.PLUGIN,
       );
-      await NocoCache.setList('root', CacheScope.PLUGIN, [], pluginList);
+      await AtmosphereCache.setList('root', CacheScope.PLUGIN, [], pluginList);
     }
     return pluginList;
   }
 
-  static async count(ncMeta = Noco.ncMeta): Promise<number> {
+  static async count(ncMeta = Atmosphere.ncMeta): Promise<number> {
     return (await ncMeta.knex(MetaTable.PLUGIN).count('id', { as: 'count' }))
       ?.count;
   }
@@ -81,7 +81,7 @@ export default class Plugin implements PluginType {
     }
 
     // set meta
-    await Noco.ncMeta.metaUpdate(
+    await Atmosphere.ncMeta.metaUpdate(
       RootScopes.ROOT,
       RootScopes.ROOT,
       MetaTable.PLUGIN,
@@ -89,7 +89,7 @@ export default class Plugin implements PluginType {
       pluginId,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       'root',
       `${CacheScope.PLUGIN}:${pluginId}`,
       updateObj,
@@ -98,7 +98,7 @@ export default class Plugin implements PluginType {
     return this.get(pluginId);
   }
 
-  public static async isPluginActive(id: string, ncMeta = Noco.ncMeta) {
+  public static async isPluginActive(id: string, ncMeta = Atmosphere.ncMeta) {
     return !!(
       (await this.getPlugin(id, ncMeta)) ||
       (await this.getPluginByTitle(id, ncMeta))
@@ -108,10 +108,10 @@ export default class Plugin implements PluginType {
   /**
    * get plugin by id
    */
-  public static async getPlugin(id: string, ncMeta = Noco.ncMeta) {
+  public static async getPlugin(id: string, ncMeta = Atmosphere.ncMeta) {
     let plugin =
       id &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         'root',
         `${CacheScope.PLUGIN}:${id}`,
         CacheGetType.TYPE_OBJECT,
@@ -123,13 +123,13 @@ export default class Plugin implements PluginType {
         MetaTable.PLUGIN,
         id,
       );
-      await NocoCache.set('root', `${CacheScope.PLUGIN}:${id}`, plugin);
+      await AtmosphereCache.set('root', `${CacheScope.PLUGIN}:${id}`, plugin);
     }
     return plugin;
   }
 
   // keeping it for backward compatibility, if someone configured google auth via plugin it still relies on this
-  static async getPluginByTitle(title: string, ncMeta = Noco.ncMeta) {
+  static async getPluginByTitle(title: string, ncMeta = Atmosphere.ncMeta) {
     return await ncMeta.metaGet2(
       RootScopes.ROOT,
       RootScopes.ROOT,

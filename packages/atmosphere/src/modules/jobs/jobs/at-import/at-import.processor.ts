@@ -5,12 +5,12 @@ import {
   OperationSource,
   SqlUiFactory,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import hash from 'object-hash';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import tinycolor from 'tinycolor2';
-import { isLinksOrLTAR } from 'nocodb-sdk';
+import { isLinksOrLTAR } from 'atmosphere-sdk';
 import debug from 'debug';
 import { Injectable, Logger } from '@nestjs/common';
 import PQueue from 'p-queue';
@@ -22,10 +22,10 @@ import { ATImportEngine } from './engine';
 import type {
   AirtableImportFailPayload,
   AirtableImportPayload,
-  NcRequest,
-} from 'nocodb-sdk';
+  AtRequest,
+} from 'atmosphere-sdk';
 import type { Job } from 'bull';
-import type { UserType } from 'nocodb-sdk';
+import type { UserType } from 'atmosphere-sdk';
 import type { AtImportJobData } from '~/interface/Jobs';
 import {
   extractNonSystemProps,
@@ -50,8 +50,8 @@ import { ViewsService } from '~/services/views.service';
 import { FormsService } from '~/services/forms.service';
 import { GridColumnsService } from '~/services/grid-columns.service';
 import { TelemetryService } from '~/services/telemetry.service';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
-import Noco from '~/Noco';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable } from '~/utils/globals';
 import { Audit } from '~/models';
 
@@ -108,7 +108,7 @@ const selectColors = {
 
 @Injectable()
 export class AtImportProcessor {
-  private readonly debugLog = debug('nc:jobs:at-import');
+  private readonly debugLog = debug('atm:jobs:at-import');
   private attachmentQueue = new PQueue({ concurrency: 1 });
 
   constructor(
@@ -138,7 +138,7 @@ export class AtImportProcessor {
 
     const syncDB = job.data;
 
-    const parentAuditId = await Noco.ncAudit.genNanoid(MetaTable.AUDIT);
+    const parentAuditId = await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT);
     const req = {
       user: {
         id: syncDB.user.id,
@@ -148,9 +148,9 @@ export class AtImportProcessor {
       ncSourceId: syncDB.sourceId,
       ncBaseId: syncDB.baseId,
       ncParentAuditId: parentAuditId,
-    } as NcRequest;
+    } as AtRequest;
 
-    if (Noco.isEE()) {
+    if (Atmosphere.isEE()) {
       await Audit.insert(
         await generateAuditV1Payload<AirtableImportPayload>(
           AuditV1OperationTypes.AIRTABLE_IMPORT,
@@ -179,17 +179,17 @@ export class AtImportProcessor {
         await sMapEM.addRow({ aTblId, ncId, ncName, ncParent });
       },
 
-      // get NcID from airtable ID
+      // get AtID from airtable ID
       async getNcIdFromAtId(aId) {
         return (await sMapEM.getRow('aTblId', aId, ['ncId']))?.ncId;
       },
 
-      // get nc Parent from airtable ID
+      // get atm Parent from airtable ID
       async getNcParentFromAtId(aId) {
         return (await sMapEM.getRow('aTblId', aId, ['ncParent']))?.ncParent;
       },
 
-      // get nc-title from airtable ID
+      // get atm-title from airtable ID
       async getNcNameFromAtId(aId) {
         return (await sMapEM.getRow('aTblId', aId, ['ncName']))?.ncName;
       },
@@ -316,7 +316,7 @@ export class AtImportProcessor {
       if (!sDB.shareId)
         throw {
           message:
-            'Invalid Shared Base ID :: Ensure www.airtable.com/<SharedBaseID> is accessible. Refer https://dub.sh/import-airtable-to-nocodb for details',
+            'Invalid Shared Base ID :: Ensure www.airtable.com/<SharedBaseID> is accessible. Refer https://dub.sh/import-airtable-to-atmosphere for details',
         };
 
       if (sDB.shareId.startsWith('exp')) {
@@ -333,7 +333,7 @@ export class AtImportProcessor {
       if (!ft.baseId) {
         throw {
           message:
-            'Invalid Shared Base ID :: Ensure www.airtable.com/<SharedBaseID> is accessible. Refer https://dub.sh/import-airtable-to-nocodb for details',
+            'Invalid Shared Base ID :: Ensure www.airtable.com/<SharedBaseID> is accessible. Refer https://dub.sh/import-airtable-to-atmosphere for details',
         };
       }
 
@@ -394,7 +394,7 @@ export class AtImportProcessor {
     // aTbl helper routines
     //
 
-    const nc_getSanitizedColumnName = (name, table_name) => {
+    const atm_getSanitizedColumnName = (name, table_name) => {
       const uniqueColNameGen = getUniqueNameGenerator('column', table_name);
       const uniqueFieldNameGen = getUniqueNameGenerator('field', table_name);
 
@@ -429,9 +429,9 @@ export class AtImportProcessor {
       }
     };
 
-    // retrieve nc column schema from using aTbl field ID as reference
+    // retrieve atm column schema from using aTbl field ID as reference
     //
-    const nc_getColumnSchema = async (aTblFieldId) => {
+    const atm_getColumnSchema = async (aTblFieldId) => {
       const ncTblId = await sMap.getNcParentFromAtId(aTblFieldId);
       const ncColId = await sMap.getNcIdFromAtId(aTblFieldId);
 
@@ -441,16 +441,16 @@ export class AtImportProcessor {
       return ncSchema.tablesById[ncTblId].columns.find((x) => x.id === ncColId);
     };
 
-    // retrieve nc table schema using table name
+    // retrieve atm table schema using table name
     // optimize: create a look-up table & re-use information
     //
-    const nc_getTableSchema = async (tableName) => {
+    const atm_getTableSchema = async (tableName) => {
       return ncSchema.tables.find((x) => x.title === tableName);
     };
 
     // map UIDT
     //
-    const getNocoType = (col) => {
+    const getAtmosphereType = (col) => {
       // start with default map
       let ncType = aTblNcTypeMap[col.type];
 
@@ -500,7 +500,7 @@ export class AtImportProcessor {
 
     // retrieve additional options associated with selected data types
     //
-    const getNocoTypeOptions = async (col: any): Promise<any> => {
+    const getAtmosphereTypeOptions = async (col: any): Promise<any> => {
       switch (col.type) {
         case 'select':
         case 'multiSelect': {
@@ -520,7 +520,7 @@ export class AtImportProcessor {
             }
             // we don't allow empty records, placeholder instead
             if ((value as any).name === '') {
-              (value as any).name = 'nc_empty';
+              (value as any).name = 'atm_empty';
             }
             // skip duplicates (we don't allow them)
             if (options.find((el) => el.title === (value as any).name)) {
@@ -623,7 +623,7 @@ export class AtImportProcessor {
 
         for (const sysCol of sysColumns) {
           // call to avoid clash with system columns
-          nc_getSanitizedColumnName(sysCol.title, table.table_name);
+          atm_getSanitizedColumnName(sysCol.title, table.table_name);
           addFieldAlias(table.title, sysCol.title, sysCol.title);
         }
 
@@ -636,7 +636,7 @@ export class AtImportProcessor {
           }
 
           // base column schema
-          const ncName: any = nc_getSanitizedColumnName(
+          const ncName: any = atm_getSanitizedColumnName(
             col.name,
             table.table_name,
           );
@@ -647,7 +647,7 @@ export class AtImportProcessor {
             // Enable to use aTbl identifiers as is: id: col.id,
             title: ncName.title,
             column_name: ncName.column_name,
-            uidt: getNocoType(col),
+            uidt: getAtmosphereType(col),
           };
 
           // Add description to column
@@ -716,7 +716,7 @@ export class AtImportProcessor {
           }
 
           // additional column parameters when applicable
-          const colOptions = await getNocoTypeOptions(col);
+          const colOptions = await getAtmosphereTypeOptions(col);
 
           switch (colOptions.type) {
             case 'select':
@@ -745,11 +745,11 @@ export class AtImportProcessor {
       return tables;
     };
 
-    const nocoCreateBaseSchema = async (aTblSchema) => {
+    const atmosphereCreateBaseSchema = async (aTblSchema) => {
       // base schema preparation: exclude
       const tables: any[] = await tablesPrepare(aTblSchema);
 
-      // for each table schema, create nc table
+      // for each table schema, create atm table
       for (let idx = 0; idx < tables.length; idx++) {
         logBasic(`:: [${idx + 1}/${tables.length}] ${tables[idx].title}`);
 
@@ -835,7 +835,7 @@ export class AtImportProcessor {
       return tables;
     };
 
-    const nocoCreateLinkToAnotherRecord = async (aTblSchema) => {
+    const atmosphereCreateLinkToAnotherRecord = async (aTblSchema) => {
       // Link to another RECORD
       for (let idx = 0; idx < aTblSchema.length; idx++) {
         const aTblLinkColumns = aTblSchema[idx].columns.filter(
@@ -864,7 +864,7 @@ export class AtImportProcessor {
             }
 
             // check if link already established?
-            if (!nc_isLinkExists(aTblLinkColumns[i].id)) {
+            if (!atm_isLinkExists(aTblLinkColumns[i].id)) {
               // parent table ID
               const srcTableId = await sMap.getNcIdFromAtId(aTblSchema[idx].id);
 
@@ -874,10 +874,10 @@ export class AtImportProcessor {
                 aTblLinkColumns[i].typeOptions?.symmetricColumnId,
               );
 
-              // retrieve child table ID (nc) from table name
+              // retrieve child table ID (atm) from table name
               let childTableId = srcTableId;
               if (childTable) {
-                childTableId = (await nc_getTableSchema(childTable.tn)).id;
+                childTableId = (await atm_getTableSchema(childTable.tn)).id;
               }
 
               // check if already a column exists with this name?
@@ -890,7 +890,7 @@ export class AtImportProcessor {
               recordPerfStats(_perfStart, 'dbTable.read');
 
               // create link
-              const ncName = nc_getSanitizedColumnName(
+              const ncName = atm_getSanitizedColumnName(
                 aTblLinkColumns[i].name,
                 srcTbl.table_name,
               );
@@ -934,7 +934,7 @@ export class AtImportProcessor {
               // store link information in separate table
               // this information will be helpful in identifying relation pair
               const link = {
-                nc: {
+                atm: {
                   title: ncName.title,
                   parentId: srcTableId,
                   childId: childTableId,
@@ -966,7 +966,7 @@ export class AtImportProcessor {
               let _perfStart = recordPerfStart();
               const childTblSchema: any =
                 await this.tablesService.getTableWithAccessibleViews(context, {
-                  tableId: ncLinkMappingTable[x].nc.childId,
+                  tableId: ncLinkMappingTable[x].atm.childId,
                   user: { ...syncDB.user, base_roles: { owner: true } },
                 });
               recordPerfStats(_perfStart, 'dbTable.read');
@@ -974,19 +974,19 @@ export class AtImportProcessor {
               _perfStart = recordPerfStart();
               const parentTblSchema: any =
                 await this.tablesService.getTableWithAccessibleViews(context, {
-                  tableId: ncLinkMappingTable[x].nc.parentId,
+                  tableId: ncLinkMappingTable[x].atm.parentId,
                   user: { ...syncDB.user, base_roles: { owner: true } },
                 });
               recordPerfStats(_perfStart, 'dbTable.read');
 
               let parentLinkColumn = parentTblSchema.columns.find(
-                (col) => col.title === ncLinkMappingTable[x].nc.title,
+                (col) => col.title === ncLinkMappingTable[x].atm.title,
               );
 
               if (parentLinkColumn === undefined) {
                 updateMigrationSkipLog(
                   parentTblSchema?.title,
-                  ncLinkMappingTable[x].nc.title,
+                  ncLinkMappingTable[x].atm.title,
                   UITypes.LinkToAnotherRecord,
                   'Link error',
                 );
@@ -996,7 +996,7 @@ export class AtImportProcessor {
               // hack // fix me
               if (!isLinksOrLTAR(parentLinkColumn)) {
                 parentLinkColumn = parentTblSchema.columns.find(
-                  (col) => col.title === ncLinkMappingTable[x].nc.title + '_2',
+                  (col) => col.title === ncLinkMappingTable[x].atm.title + '_2',
                 );
               }
 
@@ -1033,7 +1033,7 @@ export class AtImportProcessor {
               // rename
               // note that: current rename API requires us to send all parameters,
               // not just title being renamed
-              const ncName = nc_getSanitizedColumnName(
+              const ncName = atm_getSanitizedColumnName(
                 aTblLinkColumns[i].name,
                 childTblSchema.table_name,
               );
@@ -1074,7 +1074,7 @@ export class AtImportProcessor {
       }
     };
 
-    const nocoCreateLookups = async (aTblSchema) => {
+    const atmosphereCreateLookups = async (aTblSchema) => {
       // LookUps
       for (let idx = 0; idx < aTblSchema.length; idx++) {
         const aTblColumns = aTblSchema[idx].columns.filter(
@@ -1124,7 +1124,7 @@ export class AtImportProcessor {
               continue;
             }
 
-            const ncName = nc_getSanitizedColumnName(
+            const ncName = atm_getSanitizedColumnName(
               aTblColumns[i].name,
               srcTableSchema.table_name,
             );
@@ -1202,7 +1202,7 @@ export class AtImportProcessor {
             continue;
           }
 
-          const ncName = nc_getSanitizedColumnName(
+          const ncName = atm_getSanitizedColumnName(
             nestedLookupTbl[0].name,
             srcTableSchema.table_name,
           );
@@ -1273,7 +1273,7 @@ export class AtImportProcessor {
       return aTbl_ncRollUp[fn];
     };
 
-    const nocoCreateRollup = async (aTblSchema) => {
+    const atmosphereCreateRollup = async (aTblSchema) => {
       // Rollup
       for (let idx = 0; idx < aTblSchema.length; idx++) {
         const aTblColumns = aTblSchema[idx].columns.filter(
@@ -1337,7 +1337,7 @@ export class AtImportProcessor {
             );
 
             if (!ncRollupColumnId && aTblColumns[i].type === 'count') {
-              const ncRelationColumn = await nc_getColumnSchema(
+              const ncRelationColumn = await atm_getColumnSchema(
                 aTblColumns[i].typeOptions.relationColumnId,
               );
               const ncRelatedModelId =
@@ -1356,7 +1356,7 @@ export class AtImportProcessor {
             }
 
             // skip, if rollup column was pointing to another virtual column
-            const ncColSchema = await nc_getColumnSchema(
+            const ncColSchema = await atm_getColumnSchema(
               aTblColumns[i].typeOptions.foreignTableRollupColumnId,
             );
             if (
@@ -1374,7 +1374,7 @@ export class AtImportProcessor {
               continue;
             }
 
-            const ncName = nc_getSanitizedColumnName(
+            const ncName = atm_getSanitizedColumnName(
               aTblColumns[i].name,
               srcTableSchema.table_name,
             );
@@ -1420,7 +1420,7 @@ export class AtImportProcessor {
       logDetailed(`Nested rollup: ${nestedRollupTbl.length}`);
     };
 
-    const nocoLookupForRollup = async () => {
+    const atmosphereLookupForRollup = async () => {
       const nestedCnt = nestedLookupTbl.length;
       for (let i = 0; i < nestedLookupTbl.length; i++) {
         const srcTableId = nestedLookupTbl[0].srcTableId;
@@ -1438,7 +1438,7 @@ export class AtImportProcessor {
           continue;
         }
 
-        const ncName = nc_getSanitizedColumnName(
+        const ncName = atm_getSanitizedColumnName(
           nestedLookupTbl[0].name,
           srcTableSchema.table_name,
         );
@@ -1483,7 +1483,7 @@ export class AtImportProcessor {
       }
     };
 
-    const nocoSetPrimary = async (aTblSchema) => {
+    const atmosphereSetPrimary = async (aTblSchema) => {
       for (let idx = 0; idx < aTblSchema.length; idx++) {
         logDetailed(
           `[${idx + 1}/${aTblSchema.length}] Configuring Display value : ${
@@ -1511,8 +1511,8 @@ export class AtImportProcessor {
       }
     };
 
-    // retrieve nc-view column ID from corresponding nc-column ID
-    const nc_getViewColumnId = async (viewId, viewType, ncColumnId) => {
+    // retrieve atm-view column ID from corresponding atm-column ID
+    const atm_getViewColumnId = async (viewId, viewType, ncColumnId) => {
       // retrieve view Info
       let viewDetails;
 
@@ -1541,13 +1541,13 @@ export class AtImportProcessor {
 
     //////////  Data processing
 
-    const nocoBaseDataProcessing_v2 = async (sDB, table, record) => {
+    const atmosphereBaseDataProcessing_v2 = async (sDB, table, record) => {
       const recordHash = hash(record);
       const rec = { ...record.fields };
 
       // kludge -
       // trim spaces on either side of column name
-      // leads to error in NocoDB
+      // leads to error in Atmosphere
       Object.keys(rec).forEach((key) => {
         const replacedKey = getNcFieldAlias(
           table.title,
@@ -1640,7 +1640,7 @@ export class AtImportProcessor {
 
           case UITypes.SingleSelect:
             if (value === '') {
-              rec[key] = 'nc_empty';
+              rec[key] = 'atm_empty';
             }
             rec[key] = value?.trim();
             break;
@@ -1649,7 +1649,7 @@ export class AtImportProcessor {
             rec[key] = value
               ?.map((v) => {
                 if (v === '') {
-                  return 'nc_empty';
+                  return 'atm_empty';
                 }
                 return `${v.replace(/,/g, '.').trim()}`;
               })
@@ -1737,13 +1737,13 @@ export class AtImportProcessor {
       return rec;
     };
 
-    const nc_isLinkExists = (airtableFieldId) => {
+    const atm_isLinkExists = (airtableFieldId) => {
       return !!ncLinkMappingTable.find(
         (x) => x.aTbl.typeOptions.symmetricColumnId === airtableFieldId,
       );
     };
 
-    const nocoCreateProject = async (projName) => {
+    const atmosphereCreateProject = async (projName) => {
       // create empty base (XC-DB)
       logDetailed(`Create Base: ${projName}`);
       const _perfStart = recordPerfStart();
@@ -1757,7 +1757,7 @@ export class AtImportProcessor {
       recordPerfStats(_perfStart, 'base.create');
     };
 
-    const nocoGetProject = async (projId) => {
+    const atmosphereGetProject = async (projId) => {
       // create empty base (XC-DB)
       logDetailed(`Getting base meta: ${projId}`);
       const _perfStart = recordPerfStart();
@@ -1770,10 +1770,10 @@ export class AtImportProcessor {
       recordPerfStats(_perfStart, 'base.read');
     };
 
-    const nocoConfigureGalleryView = async (sDB, aTblSchema) => {
+    const atmosphereConfigureGalleryView = async (sDB, aTblSchema) => {
       if (!sDB.options.syncViews) return;
       for (let idx = 0; idx < aTblSchema.length; idx++) {
-        const tblId = (await nc_getTableSchema(aTblSchema[idx].name)).id;
+        const tblId = (await atm_getTableSchema(aTblSchema[idx].name)).id;
         const galleryViews = aTblSchema[idx].views.filter(
           (x) => x.type === 'gallery',
         );
@@ -1824,7 +1824,7 @@ export class AtImportProcessor {
       }
     };
 
-    const nocoConfigureFormView = async (sDB, aTblSchema) => {
+    const atmosphereConfigureFormView = async (sDB, aTblSchema) => {
       if (!sDB.options.syncViews) return;
       for (let idx = 0; idx < aTblSchema.length; idx++) {
         const tblId = await sMap.getNcIdFromAtId(aTblSchema[idx].id);
@@ -1905,12 +1905,12 @@ export class AtImportProcessor {
           await updateNcTblSchemaById(tblId);
 
           logDetailed(`   Configure show/hide columns`);
-          await nc_configureFields(f.id, vData, aTblSchema[idx].name, 'form');
+          await atm_configureFields(f.id, vData, aTblSchema[idx].name, 'form');
         }
       }
     };
 
-    const nocoConfigureGridView = async (sDB, aTblSchema) => {
+    const atmosphereConfigureGridView = async (sDB, aTblSchema) => {
       for (let idx = 0; idx < aTblSchema.length; idx++) {
         const tblId = await sMap.getNcIdFromAtId(aTblSchema[idx].id);
         const gridViews = aTblSchema[idx].views.filter(
@@ -1995,7 +1995,7 @@ export class AtImportProcessor {
           }
 
           logDetailed(`   Configure show/hide columns`);
-          await nc_configureFields(
+          await atm_configureFields(
             ncViewId,
             vData,
             aTblSchema[idx].name,
@@ -2008,27 +2008,27 @@ export class AtImportProcessor {
 
             // skip filters if nested
             if (!vData.filters.filterSet.find((x) => x?.type === 'nested')) {
-              await nc_configureFilters(ncViewId, vData.filters);
+              await atm_configureFilters(ncViewId, vData.filters);
             }
           }
 
           // configure sort
           if (vData?.lastSortsApplied?.sortSet.length) {
             logDetailed(`   Configure sort set`);
-            await nc_configureSort(ncViewId, vData.lastSortsApplied);
+            await atm_configureSort(ncViewId, vData.lastSortsApplied);
           }
 
           // configure group
           if (vData?.groupLevels) {
             logDetailed(`   Configure group set`);
-            await nc_configureGroup(ncViewId, vData.groupLevels);
+            await atm_configureGroup(ncViewId, vData.groupLevels);
           }
         }
       }
     };
 
     /* TODO: AT import user handling
-    const nocoAddUsers = async (aTblSchema) => {
+    const atmosphereAddUsers = async (aTblSchema) => {
       const userRoles = {
         owner: 'owner',
         create: 'creator',
@@ -2117,7 +2117,7 @@ export class AtImportProcessor {
           lookup: 0,
           rollup: 0,
         },
-        nc: {
+        atm: {
           columns: 0,
           links: 0,
           lookup: 0,
@@ -2159,35 +2159,35 @@ export class AtImportProcessor {
         migrationStatsObj.aTbl.lookup = aTblLookup.length;
         migrationStatsObj.aTbl.rollup = aTblRollup.length;
 
-        const ncTbl = await nc_getTableSchema(aTblSchema[idx].name);
+        const ncTbl = await atm_getTableSchema(aTblSchema[idx].name);
         const linkColumn = ncTbl.columns.filter((x) => isLinksOrLTAR(x));
         const lookup = ncTbl.columns.filter((x) => x.uidt === UITypes.Lookup);
         const rollup = ncTbl.columns.filter((x) => x.uidt === UITypes.Rollup);
 
         // all links hardwired as m2m. m2m generates additional tables per link
         // hence link/2
-        migrationStatsObj.nc.columns =
+        migrationStatsObj.atm.columns =
           ncTbl.columns.length - linkColumn.length / 2;
-        migrationStatsObj.nc.links = linkColumn.length / 2;
-        migrationStatsObj.nc.lookup = lookup.length;
-        migrationStatsObj.nc.rollup = rollup.length;
-        migrationStatsObj.nc.invalidColumn = invalidColumnId;
+        migrationStatsObj.atm.links = linkColumn.length / 2;
+        migrationStatsObj.atm.lookup = lookup.length;
+        migrationStatsObj.atm.rollup = rollup.length;
+        migrationStatsObj.atm.invalidColumn = invalidColumnId;
 
         const temp = JSON.parse(JSON.stringify(migrationStatsObj));
         migrationStats.push(temp);
       }
 
       const columnSum = migrationStats.reduce((accumulator, object) => {
-        return accumulator + object.nc.columns;
+        return accumulator + object.atm.columns;
       }, 0);
       const linkSum = migrationStats.reduce((accumulator, object) => {
-        return accumulator + object.nc.links;
+        return accumulator + object.atm.links;
       }, 0);
       const lookupSum = migrationStats.reduce((accumulator, object) => {
-        return accumulator + object.nc.lookup;
+        return accumulator + object.atm.lookup;
       }, 0);
       const rollupSum = migrationStats.reduce((accumulator, object) => {
-        return accumulator + object.nc.rollup;
+        return accumulator + object.atm.rollup;
       }, 0);
 
       logBasic(`Quick Summary:`);
@@ -2261,10 +2261,10 @@ export class AtImportProcessor {
       '&': 'allof',
     };
 
-    const nc_configureFilters = async (viewId, f) => {
+    const atm_configureFilters = async (viewId, f) => {
       for (let i = 0; i < f.filterSet.length; i++) {
         const filter = f.filterSet[i];
-        const colSchema = await nc_getColumnSchema(filter.columnId);
+        const colSchema = await atm_getColumnSchema(filter.columnId);
 
         // column not available;
         // one of not migrated column;
@@ -2283,7 +2283,7 @@ export class AtImportProcessor {
 
         // logger.log(filter)
         if (datatype === UITypes.LinkToAnotherRecord) {
-          // skip filters for links; Link filters in NocoDB are only rollup counts
+          // skip filters for links; Link filters in Atmosphere are only rollup counts
           // where-as in airtable, filter can be textual
           updateMigrationSkipLog(
             await sMap.getNcNameFromAtId(viewId),
@@ -2383,12 +2383,12 @@ export class AtImportProcessor {
     //////////////////////////////
     // group
 
-    const nc_configureGroup = async (viewId, g) => {
+    const atm_configureGroup = async (viewId, g) => {
       const ncGroup = [];
 
       for (let i = 0; i < g.length; i++) {
         const group = g[i];
-        const colSchema = await nc_getColumnSchema(group.columnId);
+        const colSchema = await atm_getColumnSchema(group.columnId);
 
         // column not available;
         // one of not migrated column;
@@ -2460,9 +2460,9 @@ export class AtImportProcessor {
 
     //////////////////////////////
 
-    const nc_configureSort = async (viewId, s) => {
+    const atm_configureSort = async (viewId, s) => {
       for (let i = 0; i < s.sortSet.length; i++) {
-        const columnId = (await nc_getColumnSchema(s.sortSet[i].columnId))?.id;
+        const columnId = (await atm_getColumnSchema(s.sortSet[i].columnId))?.id;
 
         if (columnId) {
           const _perfStart = recordPerfStart();
@@ -2480,14 +2480,14 @@ export class AtImportProcessor {
       }
     };
 
-    const nc_configureFields = async (viewId, _c, tblName, viewType?) => {
+    const atm_configureFields = async (viewId, _c, tblName, viewType?) => {
       // force hide PK column
       const hiddenColumns = [ncSysFields.id, ncSysFields.hash];
       const c = _c.columnOrder;
 
       // column order corrections
       // retrieve table schema
-      const ncTbl = await nc_getTableSchema(tblName);
+      const ncTbl = await atm_getTableSchema(tblName);
 
       let viewDetails;
 
@@ -2511,7 +2511,7 @@ export class AtImportProcessor {
         recordPerfStats(_perfStart, 'dbView.gridColumnsList');
       }
 
-      // nc-specific columns; default hide.
+      // atm-specific columns; default hide.
       for (let j = 0; j < hiddenColumns.length; j++) {
         const ncColumnId = ncTbl.columns.find(
           (x) => x.title === hiddenColumns[j],
@@ -2539,7 +2539,7 @@ export class AtImportProcessor {
       // rest of the columns from airtable- retain order & visibility property
       for (let j = 0; j < c.length; j++) {
         const ncColumnId = await sMap.getNcIdFromAtId(c[j].columnId);
-        const ncViewColumnId = await nc_getViewColumnId(
+        const ncViewColumnId = await atm_getViewColumnId(
           viewId,
           viewType,
           ncColumnId,
@@ -2609,10 +2609,10 @@ export class AtImportProcessor {
       if (!syncDB.baseId) {
         if (!syncDB.baseName) throw new Error('Base name or id not provided');
         // create empty base
-        await nocoCreateProject(syncDB.baseName);
+        await atmosphereCreateProject(syncDB.baseName);
         logDetailed('Base created');
       } else {
-        await nocoGetProject(syncDB.baseId);
+        await atmosphereGetProject(syncDB.baseId);
         syncDB.baseName = ncCreatedProjectSchema?.title;
         syncDB.sourceId =
           syncDB.sourceId || ncCreatedProjectSchema.sources[0].id;
@@ -2636,55 +2636,55 @@ export class AtImportProcessor {
 
       logBasic('Importing Tables...');
       // prepare table schema (source)
-      await nocoCreateBaseSchema(aTblSchema);
+      await atmosphereCreateBaseSchema(aTblSchema);
       logDetailed('Table creation completed');
 
       logDetailed('Configuring Links');
       // add LTAR
-      await nocoCreateLinkToAnotherRecord(aTblSchema);
+      await atmosphereCreateLinkToAnotherRecord(aTblSchema);
       logDetailed('Migrating LTAR columns completed');
 
       if (syncDB.options.syncLookup) {
         logDetailed(`Configuring Lookup`);
         // add look-ups
-        await nocoCreateLookups(aTblSchema);
+        await atmosphereCreateLookups(aTblSchema);
         logDetailed('Migrating Lookup columns completed');
       }
 
       if (syncDB.options.syncRollup) {
         logDetailed('Configuring Rollup');
         // add roll-ups
-        await nocoCreateRollup(aTblSchema);
+        await atmosphereCreateRollup(aTblSchema);
         logDetailed('Migrating Rollup columns completed');
 
         if (syncDB.options.syncLookup) {
           logDetailed('Migrating Lookup form Rollup columns');
           // lookups for rollup
-          await nocoLookupForRollup();
+          await atmosphereLookupForRollup();
           logDetailed('Migrating Lookup form Rollup columns completed');
         }
       }
       logDetailed('Configuring Display Value column');
       // configure Display Value
-      await nocoSetPrimary(aTblSchema);
+      await atmosphereSetPrimary(aTblSchema);
       logDetailed('Configuring Display Value column completed');
 
       /* TODO implement user part
       if (syncDB.options.syncUsers) {
         logBasic('Configuring User(s)');
         // add users
-        await nocoAddUsers(schema);
+        await atmosphereAddUsers(schema);
         logDetailed('Adding users completed');
       } */
 
       // hide-fields
-      // await nocoReconfigureFields(aTblSchema);
+      // await atmosphereReconfigureFields(aTblSchema);
 
       logBasic('Syncing views');
       // configure views
-      await nocoConfigureGridView(syncDB, aTblSchema);
-      await nocoConfigureFormView(syncDB, aTblSchema);
-      await nocoConfigureGalleryView(syncDB, aTblSchema);
+      await atmosphereConfigureGridView(syncDB, aTblSchema);
+      await atmosphereConfigureFormView(syncDB, aTblSchema);
+      await atmosphereConfigureGalleryView(syncDB, aTblSchema);
       logDetailed('Syncing views completed');
 
       if (syncDB.options.syncData) {
@@ -2730,7 +2730,7 @@ export class AtImportProcessor {
               baseName: syncDB.baseId,
               table: ncTbl,
               atBase,
-              nocoBaseDataProcessing_v2,
+              atmosphereBaseDataProcessing_v2,
               syncDB,
               source,
               services: {
@@ -2753,7 +2753,7 @@ export class AtImportProcessor {
               const baseModel = await Model.getBaseModelSQL(context, {
                 id: ncTblList.list[i].id,
                 viewId: null,
-                dbDriver: await NcConnectionMgrv2.get(source),
+                dbDriver: await AtConnectionMgrv2.get(source),
               });
               await baseModel.dbDriver.raw(
                 `SELECT setval(pg_get_serial_sequence('??', ?), ?);`,
@@ -2783,7 +2783,7 @@ export class AtImportProcessor {
         await generateMigrationStats(aTblSchema);
       }
     } catch (e) {
-      if (Noco.isEE()) {
+      if (Atmosphere.isEE()) {
         await Audit.insert(
           await generateAuditV1Payload<AirtableImportFailPayload>(
             AuditV1OperationTypes.AIRTABLE_IMPORT_ERROR,

@@ -9,14 +9,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import type { ExtensionReqType } from 'nocodb-sdk';
+import type { ExtensionReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { ExtensionsService } from '~/services/extensions.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -26,9 +26,9 @@ export class ExtensionsController {
   @Get(['/api/v2/extensions/:baseId'])
   @Acl('extensionList')
   async extensionList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
-    @Req() _req: NcRequest,
+    @Req() _req: AtRequest,
   ) {
     return new PagedResponseImpl(
       await this.extensionsService.extensionList(context, { baseId }),
@@ -38,10 +38,10 @@ export class ExtensionsController {
   @Post(['/api/v2/extensions/:baseId'])
   @Acl('extensionCreate')
   async extensionCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') _baseId: string,
     @Body() body: Partial<ExtensionReqType>,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.extensionsService.extensionCreate(context, {
       extension: body,
@@ -52,7 +52,7 @@ export class ExtensionsController {
   @Get(['/api/v2/extensions/:extensionId'])
   @Acl('extensionRead')
   async extensionRead(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('extensionId') extensionId: string,
   ) {
     return await this.extensionsService.extensionRead(context, { extensionId });
@@ -61,10 +61,10 @@ export class ExtensionsController {
   @Patch(['/api/v2/extensions/:extensionId'])
   @Acl('extensionUpdate')
   async extensionUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('extensionId') extensionId: string,
     @Body() body: Partial<ExtensionReqType>,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.extensionsService.extensionUpdate(context, {
       extensionId,
@@ -76,9 +76,9 @@ export class ExtensionsController {
   @Delete(['/api/v2/extensions/:extensionId'])
   @Acl('extensionDelete')
   async extensionDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('extensionId') extensionId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return await this.extensionsService.extensionDelete(context, {
       extensionId,

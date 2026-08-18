@@ -3,7 +3,7 @@ import tinycolor from 'tinycolor2'
 /**
  * White-label brand-scale generation.
  *
- * NocoDB's entire accented surface (buttons, hovers, links, selected rows,
+ * Atmosphere's entire accented surface (buttons, hovers, links, selected rows,
  * focus rings, brand-tinted backgrounds) is driven by the `--color-brand-*`
  * reference palette (see assets/css/variables.css). A white-label admin only
  * picks a single seed hex, so we derive the full 20→900 ramp from it — for
@@ -29,9 +29,9 @@ const AUTOFILL_SELECTORS = [
 ].join(',\n')
 
 const AUTOFILL_NEUTRALIZE = `${AUTOFILL_SELECTORS} {
-  -webkit-box-shadow: inset 0 0 0 1000px var(--nc-bg-default) !important;
-  box-shadow: inset 0 0 0 1000px var(--nc-bg-default) !important;
-  -webkit-text-fill-color: var(--nc-content-gray) !important;
+  -webkit-box-shadow: inset 0 0 0 1000px var(--atm-bg-default) !important;
+  box-shadow: inset 0 0 0 1000px var(--atm-bg-default) !important;
+  -webkit-text-fill-color: var(--atm-content-gray) !important;
 }`
 
 /**
@@ -125,7 +125,7 @@ function clampL(v: number): number {
 /**
  * Whether white button text stays legible on the seed colour (it's the 500 fill
  * behind `text-white` primary buttons). Uses WCAG AA at "large" size (3:1) —
- * NocoDB button labels are 14px medium-weight, which qualifies as large text —
+ * Atmosphere button labels are 14px medium-weight, which qualifies as large text —
  * so reasonable brand colours pass and only egregiously light/low-contrast
  * picks (pale tints, bright yellow) are flagged. Returns null for invalid hex.
  */
@@ -239,7 +239,7 @@ function staticBrandOverrides(light: Record<number, BrandStop>): string {
   // Scope to the enabled state so the `!important` doesn't bleed the brand
   // colour onto the disabled / show-as-disabled grey (those keep ant-btn-primary
   // but should stay neutral grey).
-  const enabled = '.nc-button.ant-btn-primary.theme-default:not([disabled]):not(.nc-show-as-disabled)'
+  const enabled = '.atm-button.ant-btn-primary.theme-default:not([disabled]):not(.atm-show-as-disabled)'
   lines.push(`${enabled} { background-color: ${light[500].hex} !important; }`)
   lines.push(`${enabled}:hover { background-color: ${light[600].hex} !important; }`)
 
@@ -248,7 +248,7 @@ function staticBrandOverrides(light: Record<number, BrandStop>): string {
 
 /**
  * Build the full stylesheet that overrides the brand ramp (light under :root,
- * dark under [theme='dark']), the mode-independent --nc-brand-accent (which
+ * dark under [theme='dark']), the mode-independent --atm-brand-accent (which
  * backs the hand-written #3366ff literals: checkbox fill, focus rings,
  * box-shadows, text selection), the static `brand-*` utilities, and the Ant
  * Design primary tokens. Returns null for an invalid seed so callers can fall
@@ -268,9 +268,9 @@ export function buildBrandStyleCss(seedHex: string): string | null {
     // Mode-independent (defined only here under :root, NOT in the [theme='dark']
     // block below — so they stay constant across light/dark, mirroring the
     // source literals #3366ff / #2952cc).
-    `  --nc-brand-accent: ${accent.hex};`,
-    `  --nc-brand-accent-rgb: ${accent.rgb};`,
-    `  --nc-brand-accent-hover: ${accentHover.hex};`,
+    `  --atm-brand-accent: ${accent.hex};`,
+    `  --atm-brand-accent-rgb: ${accent.rgb};`,
+    `  --atm-brand-accent-hover: ${accentHover.hex};`,
     '}',
     "[theme='dark'] {",
     brandVars(scale.dark),

@@ -3,9 +3,9 @@
   "connection": {
     "host": "your-managed-db-host.rds.amazonaws.com",
     "port": "5432",
-    "user": "nocodb",
+    "user": "atmosphere",
     "password": "CHANGE_ME_db_password",
-    "database": "nocodb",
+    "database": "atmosphere",
     "ssl": {
       "rejectUnauthorized": true
     }

@@ -10,7 +10,7 @@ import {
   isSystemColumn,
   isVirtualCol,
   workerWithTimezone,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type {
   Api,
   CalendarRangeType,
@@ -20,7 +20,7 @@ import type {
   PaginatedType,
   TableType,
   ViewType,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type dayjs from 'dayjs'
 import type { InterfacePageDataApi } from '~/lib/interfaceData'
 import { isInterfaceSyntheticViewId } from '~/lib/interfaceData'
@@ -298,7 +298,7 @@ const [useProvideCalendarViewStore, useCalendarViewStore] = useInjectionState(
     // Per-view, per-user override for the active mode — kept in localStorage so a
     // reload or new tab restores the user's last choice without overwriting the
     // view creator's default (`viewMetaProperties.active_view`).
-    const CALENDAR_MODE_STORAGE_PREFIX = 'nc-calendar-mode:'
+    const CALENDAR_MODE_STORAGE_PREFIX = 'atm-calendar-mode:'
     const validCalendarModes = ['day', '3day', 'week', '2week', 'month', '6week', 'year', 'custom'] as const
     type CalendarMode = (typeof validCalendarModes)[number]
 
@@ -764,7 +764,7 @@ const [useProvideCalendarViewStore, useCalendarViewStore] = useInjectionState(
               nestedFiltersArr: sideBarFilter.value,
             })
           : !isPublic.value
-          ? await api.dbViewRow.list('noco', base.value.id!, meta.value!.id!, viewMeta.value!.id, {
+          ? await api.dbViewRow.list('atmosphere', base.value.id!, meta.value!.id!, viewMeta.value!.id, {
               ...params,
               offset: params.offset,
               where: queryParams.value.where,
@@ -849,7 +849,7 @@ const [useProvideCalendarViewStore, useCalendarViewStore] = useInjectionState(
               filtersArr: nestedFilters.value,
             })
           : !isPublic.value
-          ? await api.dbCalendarViewRowCount.dbCalendarViewRowCount('noco', base.value.id!, meta.value!.id!, viewMeta.value.id, {
+          ? await api.dbCalendarViewRowCount.dbCalendarViewRowCount('atmosphere', base.value.id!, meta.value!.id!, viewMeta.value.id, {
               ...queryParams.value,
               from_date: fromDate,
               to_date: toDate,
@@ -1053,7 +1053,7 @@ const [useProvideCalendarViewStore, useCalendarViewStore] = useInjectionState(
               filtersArr: nestedFilters.value,
             })
           : !isPublic.value
-          ? await api.dbCalendarViewRow.list('noco', base.value.id!, meta.value!.id!, viewMeta.value!.id!, {
+          ? await api.dbCalendarViewRow.list('atmosphere', base.value.id!, meta.value!.id!, viewMeta.value!.id!, {
               prev_date: prevDate,
               next_date: nextDate,
               to_date: toDate,
@@ -1250,7 +1250,7 @@ const [useProvideCalendarViewStore, useCalendarViewStore] = useInjectionState(
               nestedFiltersArr: sideBarFilter.value,
             })
           : !isPublic.value
-          ? await api.dbViewRow.list('noco', base.value.id!, meta.value!.id!, viewMeta.value.id, {
+          ? await api.dbViewRow.list('atmosphere', base.value.id!, meta.value!.id!, viewMeta.value.id, {
               ...queryParams.value,
               ...{ filterArrJson: stringifyFilterOrSortArr([...sideBarFilter.value]) },
               whereTz: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -1300,7 +1300,7 @@ const [useProvideCalendarViewStore, useCalendarViewStore] = useInjectionState(
         const updatedRowData = interfaceDataApi
           ? await interfaceDataApi.updateRow(id, updateObj)
           : await $api.dbViewRow.update(
-              NOCO,
+              ATMOSPHERE,
               base?.value.id as string,
               meta.value?.id as string,
               viewMeta?.value?.id as string,

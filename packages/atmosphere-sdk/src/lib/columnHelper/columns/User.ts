@@ -1,7 +1,7 @@
 import { SilentTypeConversionError } from '~/lib/error';
 import { parseProp } from '~/lib/helperFunctions';
 import { ncIsArray, ncIsObject, ncIsString } from '~/lib/is';
-import { NcRecord } from '~/lib/ncTypes';
+import { AtRecord } from '~/lib/ncTypes';
 import AbstractColumnHelper, {
   SerializerOrParserFnProps,
 } from '../column.interface';
@@ -16,7 +16,7 @@ export class UserHelper extends AbstractColumnHelper {
   serializeValue(
     value: any,
     params: SerializerOrParserFnProps['params']
-  ): string | null | NcRecord {
+  ): string | null | AtRecord {
     if (params.serializeSearchQuery) {
       return serializeStringValue(value);
     }
@@ -40,12 +40,12 @@ export class UserHelper extends AbstractColumnHelper {
         value = [value];
       }
 
-      value = (value as NcRecord[]).reduce((acc, user) => {
+      value = (value as AtRecord[]).reduce((acc, user) => {
         if (user.email) {
           acc.push(user);
         }
         return acc;
-      }, [] as NcRecord[]);
+      }, [] as AtRecord[]);
 
       if (!value.length) return null;
 

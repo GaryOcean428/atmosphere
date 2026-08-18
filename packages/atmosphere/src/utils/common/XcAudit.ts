@@ -1,12 +1,12 @@
-import type Noco from '~/Noco';
+import type Atmosphere from '~/Atmosphere';
 
 export default class XcAudit {
-  public static init(app: Noco) {
+  public static init(app: Atmosphere) {
     this.app = app;
   }
 
   // @ts-ignore
-  private static app: Noco;
+  private static app: Atmosphere;
 
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

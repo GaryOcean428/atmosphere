@@ -1,7 +1,7 @@
 import dns from 'node:dns';
 import cors from 'cors';
 import express from 'express';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { handleUncaughtErrors } from '~/utils';
 handleUncaughtErrors(process);
 
@@ -25,15 +25,15 @@ const date = new Date();
 const metaDb = `meta_v2_${date.getFullYear()}_${(date.getMonth() + 1)
   .toString()
   .padStart(2, '0')}_${date.getDate().toString().padStart(2, '0')}`;
-process.env[`NC_DB`] = `pg://localhost:5432?u=postgres&p=password&d=${metaDb}`;
-// process.env[`NC_MINIMAL_DBS`] = `true`;
-// process.env[`NC_TRY`] = 'true';
-// process.env[`NC_DASHBOARD_URL`] = '/test';
+process.env[`ATMOSPHERE_DB`] = `pg://localhost:5432?u=postgres&p=password&d=${metaDb}`;
+// process.env[`ATMOSPHERE_MINIMAL_DBS`] = `true`;
+// process.env[`ATMOSPHERE_TRY`] = 'true';
+// process.env[`ATMOSPHERE_DASHBOARD_URL`] = '/test';
 
 // process.env[`DEBUG`] = 'xc*';
 
 (async () => {
   const httpServer = server.listen(process.env.PORT || 8080, async () => {
-    server.use(await Noco.init({}, httpServer, server));
+    server.use(await Atmosphere.init({}, httpServer, server));
   });
 })().catch((e) => console.log(e));

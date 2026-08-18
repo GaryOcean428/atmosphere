@@ -6,14 +6,14 @@ import {
   isMMOrMMLike,
   ncIsNullOrUndefined,
   RelationTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import BigNumber from 'bignumber.js';
-import type { AuditOperationSubTypes, NcRequest } from 'nocodb-sdk';
+import type { AuditOperationSubTypes, AtRequest } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { LinkToAnotherRecordColumn } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { Column } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import {
   _wherePk,
   dataWrapper,
@@ -26,12 +26,12 @@ import { Model } from '~/models';
 
 /**
  * Extract the corresponding link column in the referencing table using a given LTAR column and the referenced table
- * @param context - The NcContext
+ * @param context - The AtContext
  * @param param - Object containing ltarColumn and optionally referencedTable or referencedTableColumns
  * @returns The corresponding link column in the referenced table, or null if not found
  */
 export const extractCorrespondingLinkColumn = async (
-  context: NcContext,
+  context: AtContext,
   param: {
     ltarColumn: Column;
     referencedTable?: Model;
@@ -172,7 +172,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
               dataWrapper(refId).getByColumnNameTitleOrId(primaryKey),
             )
           ) {
-            NcError.get(baseModel.context).unprocessableEntity(
+            AtError.get(baseModel.context).unprocessableEntity(
               `Validation failed: Missing primary key column "${
                 primaryKey.title
               }" in request for model "${
@@ -182,7 +182,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
           }
         }
       } else if (ncIsNullOrUndefined(refId)) {
-        NcError.get(baseModel.context).unprocessableEntity(
+        AtError.get(baseModel.context).unprocessableEntity(
           `Validation failed: Invalid id "${JSON.stringify(
             refId,
           )}" for model "${refModel.title}".`,
@@ -206,7 +206,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
     const column = baseModel.model.columnsById[colId];
 
     if (!column || !isLinksOrLTAR(column))
-      NcError.get(baseModel.context).fieldNotFound(colId);
+      AtError.get(baseModel.context).fieldNotFound(colId);
 
     const row = await baseModel.readByPk(
       rowId,
@@ -217,7 +217,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
 
     // validate rowId
     if (!row) {
-      NcError.get(baseModel.context).recordNotFound(rowId);
+      AtError.get(baseModel.context).recordNotFound(rowId);
     }
 
     if (!_childIds.length) return;
@@ -413,7 +413,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
                   !childRows.find((r) => r[parentColumn.column_name] === id),
               );
 
-              NcError.get(baseModel.context).recordNotFound(
+              AtError.get(baseModel.context).recordNotFound(
                 extractIds(missingIds),
               );
             }
@@ -805,7 +805,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
                   !childRows.find((r) => r[parentColumn.column_name] === id),
               );
 
-              NcError.get(baseModel.context).recordNotFound(
+              AtError.get(baseModel.context).recordNotFound(
                 extractIds(missingIds),
               );
             }
@@ -890,7 +890,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
             );
 
             if (!childRow) {
-              NcError.get(baseModel.context).recordNotFound(
+              AtError.get(baseModel.context).recordNotFound(
                 extractIds(childIds, true),
               );
             }
@@ -1012,7 +1012,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
     const column = baseModel.model.columnsById[colId];
 
     if (!column || !isLinksOrLTAR(column))
-      NcError.get(baseModel.context).fieldNotFound(colId);
+      AtError.get(baseModel.context).fieldNotFound(colId);
 
     const row = await baseModel.readByPk(
       rowId,
@@ -1023,7 +1023,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
 
     // validate rowId
     if (!row) {
-      NcError.get(baseModel.context).recordNotFound(rowId);
+      AtError.get(baseModel.context).recordNotFound(rowId);
     }
 
     if (!_childIds.length) return;
@@ -1074,7 +1074,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
       refColumnTitle?: string;
       rowId: unknown;
       refRowId: unknown;
-      req: NcRequest;
+      req: AtRequest;
       model: Model;
       refModel?: Model;
       displayValue?: unknown;
@@ -1172,7 +1172,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
                   ),
               );
 
-              NcError.get(baseModel.context).recordNotFound(
+              AtError.get(baseModel.context).recordNotFound(
                 extractIds(missingIds),
               );
             }
@@ -1299,7 +1299,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
                   ),
               );
 
-              NcError.get(baseModel.context).recordNotFound(
+              AtError.get(baseModel.context).recordNotFound(
                 extractIds(missingIds),
               );
             }
@@ -1360,7 +1360,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
           // validate Ids
           {
             if (childIds.length > 1)
-              NcError.get(baseModel.context).unprocessableEntity(
+              AtError.get(baseModel.context).unprocessableEntity(
                 'Request must contain only one parent id',
               );
 
@@ -1380,7 +1380,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
             );
 
             if (!childRow) {
-              NcError.get(baseModel.context).recordNotFound(
+              AtError.get(baseModel.context).recordNotFound(
                 extractIds(childIds, true),
               );
             }
@@ -1513,7 +1513,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
       (c) => c.id === colId,
     );
     if (!column || !isLinksOrLTAR(column)) {
-      NcError.get(context).unprocessableEntity(
+      AtError.get(context).unprocessableEntity(
         `Link column not found: ${colId}`,
       );
     }
@@ -1522,12 +1522,12 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
     )) as LinkToAnotherRecordColumn;
 
     // Ordering lives on the junction Order column — only present for v2
-    // junction-based links on NocoDB-managed sources. Its absence gates out
+    // junction-based links on Atmosphere-managed sources. Its absence gates out
     // hm/bt, v1 links, and external junctions with a clear error.
     const { mmContext } = colOptions.getRelContext(context);
     const orderCol = await colOptions.getMMChildOrderColumn(mmContext);
     if (!orderCol) {
-      NcError.get(context).unprocessableEntity(
+      AtError.get(context).unprocessableEntity(
         'This link does not support ordering',
       );
     }
@@ -1574,7 +1574,7 @@ export const addOrRemoveLinks = (baseModel: IBaseModelSqlV2) => {
         .where(vParentCol.column_name, before)
         .first();
       if (!beforeRow) {
-        NcError.get(context).recordNotFound(`${before}`);
+        AtError.get(context).recordNotFound(`${before}`);
       }
       const beforeOrder = new BigNumber(beforeRow[orderCol.column_name] ?? 0);
       const prevRes = await partitionQb()

@@ -8,13 +8,13 @@ import {
 } from '@nestjs/common';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { JobTypes } from '~/interface/Jobs';
 import { SourcesService } from '~/services/sources.service';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -30,9 +30,9 @@ export class SourceDeleteController {
   ])
   @Acl('baseDelete')
   async baseDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('sourceId') sourceId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const jobs = await this.jobsService.jobList();
     const fnd = jobs.find(
@@ -40,7 +40,7 @@ export class SourceDeleteController {
     );
 
     if (fnd) {
-      NcError.badRequest('There is already a job running to delete this base.');
+      AtError.badRequest('There is already a job running to delete this base.');
     }
 
     await this.sourcesService.baseSoftDelete(context, { sourceId });

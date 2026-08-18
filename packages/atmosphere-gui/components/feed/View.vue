@@ -59,7 +59,7 @@ const tabs: Array<{
 const router = useRouter()
 
 watch(activeTab, (val) => {
-  $e(`c:nocodb:feed:${val}`)
+  $e(`c:atmosphere:feed:${val}`)
   router.push({ query: { tab: val } })
 })
 
@@ -80,21 +80,21 @@ onBeforeUnmount(() => {
   <FeedHeader />
 
   <div class="flex flex-col h-full">
-    <NcTabs v-model:active-key="activeTab" centered>
-      <a-tab-pane v-for="tab in tabs" :key="tab.key" class="bg-nc-bg-gray-extralight !h-full">
+    <AtTabs v-model:active-key="activeTab" centered>
+      <a-tab-pane v-for="tab in tabs" :key="tab.key" class="bg-atm-bg-gray-extralight !h-full">
         <template #tab>
           <div class="flex gap-2 items-center">
             <GeneralIcon
               :class="{
-                'text-nc-content-brand': activeTab === tab.key,
-                'text-nc-content-gray-subtle2': activeTab !== tab.key,
+                'text-atm-content-brand': activeTab === tab.key,
+                'text-atm-content-gray-subtle2': activeTab !== tab.key,
               }"
               :icon="tab.icon as any"
             />
             <span
               :class="{
-                'text-nc-content-brand font-medium': activeTab === tab.key,
-                'text-nc-content-gray-subtle': activeTab !== tab.key,
+                'text-atm-content-brand font-medium': activeTab === tab.key,
+                'text-atm-content-gray-subtle': activeTab !== tab.key,
               }"
               class="text-sm"
               >{{ tab.title }}
@@ -113,7 +113,7 @@ onBeforeUnmount(() => {
           <component :is="tab.container" :type="tab.key" />
         </div>
       </a-tab-pane>
-    </NcTabs>
+    </AtTabs>
   </div>
 </template>
 

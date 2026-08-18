@@ -27,18 +27,18 @@ const onColorChange = (value: string) => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-model:visible="isOpenColorPicker"
     :auto-close="false"
     :disabled="disabled"
-    overlay-class-name="nc-select-option-color-picker"
+    overlay-class-name="atm-select-option-color-picker"
     use-backdrop
   >
     <slot></slot>
     <template v-if="!slotHasChildren()">
       <button
         type="button"
-        class="p-1 inline-flex content-center items-center justify-center aspect-square rounded-md min-w-[30px] min-h-[30px] hover:border-nc-border-gray-medium border-2"
+        class="p-1 inline-flex content-center items-center justify-center aspect-square rounded-md min-w-[30px] min-h-[30px] hover:border-atm-border-gray-medium border-2"
         :style="{
           ...vModel ? ({'background-color': vModel!}) : {},
         }"
@@ -57,5 +57,5 @@ const onColorChange = (value: string) => {
       <GeneralAdvanceColorPicker v-model="vModel" :is-open="isOpenColorPicker" @input="onColorChange">
       </GeneralAdvanceColorPicker>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>

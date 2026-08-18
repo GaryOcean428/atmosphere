@@ -61,7 +61,7 @@ const onToggleLink = () => {
     }
 
     setTimeout(() => {
-      const linkInput = document.querySelector('.nc-text-area-rich-link-option-input')
+      const linkInput = document.querySelector('.atm-text-area-rich-link-option-input')
       if (linkInput) {
         ;(linkInput as any).focus()
       }
@@ -94,7 +94,7 @@ const newMentionNode = () => {
 
 <template>
   <div class="comment-bubble-menu bg-transparent flex-row rounded-lg flex">
-    <NcTooltip hide-on-click>
+    <AtTooltip hide-on-click>
       <template #title>
         <div class="flex flex-col items-center">
           <div>
@@ -103,19 +103,19 @@ const newMentionNode = () => {
           <div class="text-xs">{{ cmdOrCtrlKey }} B</div>
         </div>
       </template>
-      <NcButton
+      <AtButton
         :class="{ 'is-active': editor?.isActive('bold') }"
         :tabindex="tabIndex"
-        class="!h-7 !w-7 !hover:bg-nc-bg-gray-medium"
+        class="!h-7 !w-7 !hover:bg-atm-bg-gray-medium"
         size="xsmall"
         type="text"
         @click="editor?.chain().focus().toggleBold().run()"
       >
         <GeneralIcon icon="lucideBold" class="h-3.5 w-3.5" />
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
 
-    <NcTooltip hide-on-click :disabled="editor?.isActive('italic')">
+    <AtTooltip hide-on-click :disabled="editor?.isActive('italic')">
       <template #title>
         <div class="flex flex-col items-center">
           <div>
@@ -124,18 +124,18 @@ const newMentionNode = () => {
           <div>{{ cmdOrCtrlKey }} I</div>
         </div>
       </template>
-      <NcButton
+      <AtButton
         :class="{ 'is-active': editor?.isActive('italic') }"
         :tabindex="tabIndex"
-        class="!h-7 !w-7 !hover:bg-nc-bg-gray-medium"
+        class="!h-7 !w-7 !hover:bg-atm-bg-gray-medium"
         size="xsmall"
         type="text"
         @click=";(editor?.chain().focus() as any).toggleItalic().run()"
       >
         <GeneralIcon icon="lucideItalic" class="h-3.5 w-3.5" />
-      </NcButton>
-    </NcTooltip>
-    <NcTooltip hide-on-click>
+      </AtButton>
+    </AtTooltip>
+    <AtTooltip hide-on-click>
       <template #title>
         <div class="flex flex-col items-center">
           <div>
@@ -145,18 +145,18 @@ const newMentionNode = () => {
         </div>
       </template>
 
-      <NcButton
+      <AtButton
         :class="{ 'is-active': editor?.isActive('underline') }"
         :tabindex="tabIndex"
-        class="!h-7 !w-7 !hover:bg-nc-bg-gray-medium"
+        class="!h-7 !w-7 !hover:bg-atm-bg-gray-medium"
         size="xsmall"
         type="text"
         @click="editor?.chain().focus().toggleUnderline().run()"
       >
         <GeneralIcon icon="lucideUnderline" class="h-3.5 w-3.5" />
-      </NcButton>
-    </NcTooltip>
-    <NcTooltip hide-on-click>
+      </AtButton>
+    </AtTooltip>
+    <AtTooltip hide-on-click>
       <template #title>
         <div class="flex flex-col items-center">
           <div>
@@ -165,32 +165,32 @@ const newMentionNode = () => {
           <div>{{ shiftKey }} {{ cmdOrCtrlKey }} S</div>
         </div>
       </template>
-      <NcButton
+      <AtButton
         :class="{ 'is-active': editor?.isActive('strike') }"
         :tabindex="tabIndex"
-        class="!h-7 !w-7 !hover:bg-nc-bg-gray-medium"
+        class="!h-7 !w-7 !hover:bg-atm-bg-gray-medium"
         size="xsmall"
         type="text"
         @click="editor?.chain().focus().toggleStrike().run()"
       >
         <GeneralIcon icon="lucideStrikethrough" class="h-3.5 w-3.5" />
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
 
-    <NcTooltip hide-on-click>
+    <AtTooltip hide-on-click>
       <template #title> {{ $t('general.link') }}</template>
-      <NcButton
+      <AtButton
         :class="{ 'is-active': editor?.isActive('link') }"
         :tabindex="tabIndex"
-        class="!h-7 !w-7 !hover:bg-nc-bg-gray-medium"
+        class="!h-7 !w-7 !hover:bg-atm-bg-gray-medium"
         size="xsmall"
         type="text"
         @click="onToggleLink"
       >
         <GeneralIcon icon="lucideLink" class="h-3.5 w-3.5"></GeneralIcon>
-      </NcButton>
-    </NcTooltip>
-    <NcTooltip v-if="appInfo.ee && !disableMention" hide-on-click>
+      </AtButton>
+    </AtTooltip>
+    <AtTooltip v-if="appInfo.ee && !disableMention" hide-on-click>
       <template #title>
         <div class="flex flex-col items-center">
           <div>
@@ -199,17 +199,17 @@ const newMentionNode = () => {
           <div>@</div>
         </div>
       </template>
-      <NcButton
+      <AtButton
         :class="{ 'is-active': editor?.isActive('suggestions') }"
         :tabindex="tabIndex"
-        class="!h-7 !w-7 !hover:bg-nc-bg-gray-medium"
+        class="!h-7 !w-7 !hover:bg-atm-bg-gray-medium"
         size="xsmall"
         type="text"
         @click="newMentionNode"
       >
         <GeneralIcon icon="lucideAtSign" class="h-3.5 w-3.5" />
-      </NcButton>
-    </NcTooltip>
+      </AtButton>
+    </AtTooltip>
   </div>
 </template>
 
@@ -217,8 +217,8 @@ const newMentionNode = () => {
 .comment-bubble-menu {
   @apply !border-none;
 
-  .nc-button.is-active {
-    @apply text-nc-content-brand;
+  .atm-button.is-active {
+    @apply text-atm-content-brand;
     outline: 1px;
   }
   .ant-select-selector {

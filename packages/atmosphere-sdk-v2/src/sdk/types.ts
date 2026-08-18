@@ -1,6 +1,6 @@
 import type { InternalApi as Api } from './lib/Api';
 
-export interface NocoDBOptions {
+export interface AtmosphereOptions {
   endPointURL?: string;
   apiKey?: string;
 }

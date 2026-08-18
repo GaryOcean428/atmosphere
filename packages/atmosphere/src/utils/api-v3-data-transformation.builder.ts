@@ -1,4 +1,4 @@
-// Re-export from nocodb-sdk — the builder now lives in the SDK
+// Re-export from atmosphere-sdk — the builder now lives in the SDK
 // so both frontend and backend can use it.
 export {
   ApiV3DataTransformationBuilder,
@@ -11,6 +11,6 @@ export {
   filterBuilder,
   filterRevBuilder,
   viewColumnBuilder,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 
-export type { ViewColumnTransformType } from 'nocodb-sdk';
+export type { ViewColumnTransformType } from 'atmosphere-sdk';

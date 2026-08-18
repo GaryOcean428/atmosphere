@@ -11,7 +11,7 @@ defineProps<Props>()
 
     <div class="content">
       <div class="detail-headers">
-        <span class="text-nc-content-gray-muted font-weight-bold text-small1">Header</span>
+        <span class="text-atm-content-gray-muted font-weight-bold text-small1">Header</span>
         <div class="log-details">
           <a-skeleton
             v-for="idx in 2"
@@ -26,7 +26,7 @@ defineProps<Props>()
         </div>
       </div>
       <div class="detail-payload -mt-1">
-        <div class="text-sm text-nc-content-gray-muted font-weight-bold pb-2 flex justify-between items-center">
+        <div class="text-sm text-atm-content-gray-muted font-weight-bold pb-2 flex justify-between items-center">
           <span class="text-xs leading-[18px]">Payload</span>
           <GeneralCopyButton content="" size="xs" class="!px-1" disabled />
         </div>
@@ -50,17 +50,17 @@ defineProps<Props>()
 
 <style lang="scss" scoped>
 .detail-card {
-  @apply flex-1 flex flex-col border-1 border-nc-border-gray-medium rounded-lg bg-nc-bg-gray-extralight h-full;
+  @apply flex-1 flex flex-col border-1 border-atm-border-gray-medium rounded-lg bg-atm-bg-gray-extralight h-full;
 
   & > .detail-title {
-    @apply border-b border-nc-border-gray-medium px-3 py-2;
+    @apply border-b border-atm-border-gray-medium px-3 py-2;
   }
 
   .content {
-    @apply flex-1 overflow-auto nc-scrollbar-thin flex flex-col;
+    @apply flex-1 overflow-auto atm-scrollbar-thin flex flex-col;
 
     & > div:not(:last-child) {
-      @apply border-b border-nc-border-gray-medium;
+      @apply border-b border-atm-border-gray-medium;
     }
 
     & > div {
@@ -72,11 +72,11 @@ defineProps<Props>()
       .log-detail-item {
         @apply flex flex-row w-full;
         .label {
-          @apply min-w-40 font-weight-600 text-nc-content-gray-subtle text-small1 lowercase;
+          @apply min-w-40 font-weight-600 text-atm-content-gray-subtle text-small1 lowercase;
         }
 
         .value {
-          @apply min-w-0 text-nc-content-gray-subtle2 font-500 text-small1;
+          @apply min-w-0 text-atm-content-gray-subtle2 font-500 text-small1;
         }
       }
     }

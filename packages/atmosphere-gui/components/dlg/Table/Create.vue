@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 import { AiWizardTabsType } from '#imports'
 
 const props = withDefaults(
@@ -76,7 +76,7 @@ const {
   aiError,
   generateTables,
   predictNextTables: _predictNextTables,
-} = useNocoAi()
+} = useAtmosphereAi()
 
 const aiMode = ref(false)
 
@@ -387,7 +387,7 @@ const fullAuto = async (e) => {
     !aiIntegrationAvailable.value ||
     aiLoading.value ||
     aiError.value ||
-    target.closest('button, input, .nc-button, textarea, .ant-tag')
+    target.closest('button, input, .atm-button, textarea, .ant-tag')
   ) {
     return
   }
@@ -435,22 +435,22 @@ watch(_baseId, () => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="dialogShow"
     :header="$t('activity.createTable')"
     size="xs"
     height="auto"
     :centered="false"
-    nc-modal-class-name="!p-0"
+    atm-modal-class-name="!p-0"
     class="!top-[25vh]"
     :mask-closable="!isAiSaving"
-    wrap-class-name="nc-modal-table-create-wrapper"
+    wrap-class-name="atm-modal-table-create-wrapper"
     @keydown.esc="dialogShow = false"
   >
     <div class="py-5 flex flex-col gap-5" @dblclick.stop="fullAuto">
       <div class="px-5 flex justify-between w-full items-center">
-        <div class="flex flex-row items-center gap-x-2 text-base font-semibold text-nc-content-gray">
-          <GeneralIcon icon="table" class="!text-nc-content-gray-subtle2 w-5 h-5" />
+        <div class="flex flex-row items-center gap-x-2 text-base font-semibold text-atm-content-gray">
+          <GeneralIcon icon="table" class="!text-atm-content-gray-subtle2 w-5 h-5" />
           {{ aiMode ? $t('activity.createTable(s)') : $t('activity.createTable') }}
         </div>
         <AiToggleButton
@@ -475,18 +475,18 @@ watch(_baseId, () => {
       >
         <div class="flex flex-col gap-5">
           <template v-if="!aiMode">
-            <a-form-item v-bind="validateInfos.title" class="relative nc-table-input-wrapper relative">
+            <a-form-item v-bind="validateInfos.title" class="relative atm-table-input-wrapper relative">
               <a-input
                 ref="inputEl"
                 v-model:value="table.title"
-                class="nc-table-input nc-input-sm nc-input-shadow"
+                class="atm-table-input atm-input-sm atm-input-shadow"
                 hide-details
                 data-testid="create-table-title-input"
                 :placeholder="$t('msg.info.enterTableName')"
               />
             </a-form-item>
 
-            <NcListSourceSelector
+            <AtListSourceSelector
               ref="sourceSelectorRef"
               v-model:source-id="sourceIdRef"
               :base-id="baseId"
@@ -497,8 +497,8 @@ watch(_baseId, () => {
           <!-- Ai table wizard  -->
           <template v-if="aiMode">
             <div v-if="!aiIntegrationAvailable" class="flex items-center gap-3 px-5 pt-2.5 pb-4.5">
-              <GeneralIcon icon="alertTriangleSolid" class="!text-nc-content-orange-medium w-4 h-4" />
-              <div class="text-sm text-nc-content-gray-subtle flex-1">{{ $t('title.noAiIntegrationAvailable') }}</div>
+              <GeneralIcon icon="alertTriangleSolid" class="!text-atm-content-orange-medium w-4 h-4" />
+              <div class="text-sm text-atm-content-gray-subtle flex-1">{{ $t('title.noAiIntegrationAvailable') }}</div>
             </div>
 
             <AiWizardTabs v-else v-model:active-tab="activeAiTab">
@@ -507,46 +507,46 @@ watch(_baseId, () => {
                   <div v-if="aiError" class="w-full flex items-center gap-3">
                     <GeneralIcon icon="ncInfoSolid" class="flex-none !text-red-700 w-4 h-4" />
 
-                    <NcTooltip class="truncate flex-1 text-sm text-nc-content-gray-subtle" show-on-truncate-only>
+                    <AtTooltip class="truncate flex-1 text-sm text-atm-content-gray-subtle" show-on-truncate-only>
                       <template #title>
                         {{ aiError }}
                       </template>
                       {{ aiError }}
-                    </NcTooltip>
+                    </AtTooltip>
 
-                    <NcButton size="small" type="text" class="!text-nc-content-brand" @click.stop="handleRefreshOnError">
+                    <AtButton size="small" type="text" class="!text-atm-content-brand" @click.stop="handleRefreshOnError">
                       {{ $t('general.refresh') }}
-                    </NcButton>
+                    </AtButton>
                   </div>
 
                   <div v-else-if="aiModeStep === 'init'">
-                    <div class="text-nc-content-purple-light text-sm h-7 flex items-center gap-2">
-                      <GeneralLoader size="regular" class="!text-nc-content-purple-dark" />
+                    <div class="text-atm-content-purple-light text-sm h-7 flex items-center gap-2">
+                      <GeneralLoader size="regular" class="!text-atm-content-purple-dark" />
 
-                      <div class="nc-animate-dots">Auto suggesting tables for {{ base?.title }}</div>
+                      <div class="atm-animate-dots">Auto suggesting tables for {{ base?.title }}</div>
                     </div>
                   </div>
                   <div v-else-if="aiModeStep === 'pick'" class="flex gap-3 items-start">
                     <div class="flex-1 flex gap-2 flex-wrap">
                       <template v-if="activeTabPredictedTables.length">
                         <template v-for="tb of activeTabPredictedTables" :key="tb.title">
-                          <NcTooltip :disabled="activeTabSelectedTables.length < maxSelectionCount || tb.selected">
+                          <AtTooltip :disabled="activeTabSelectedTables.length < maxSelectionCount || tb.selected">
                             <template #title>
                               <div class="w-[150px]">You can only select {{ maxSelectionCount }} tables to create at a time.</div>
                             </template>
 
                             <a-tag
-                              class="nc-ai-suggested-tag"
+                              class="atm-ai-suggested-tag"
                               :class="{
-                                'nc-disabled':
+                                'atm-disabled':
                                   isAiSaving || (!tb.selected && activeTabSelectedTables.length >= maxSelectionCount),
-                                'nc-selected': tb.selected,
+                                'atm-selected': tb.selected,
                               }"
                               :disabled="activeTabSelectedTables.length >= maxSelectionCount"
                               @click="onToggleTag(tb)"
                             >
                               <div class="flex flex-row items-center gap-1.5 py-[3px] text-small leading-[18px]">
-                                <NcCheckbox
+                                <AtCheckbox
                                   :checked="tb.selected"
                                   theme="ai"
                                   :disabled="isAiSaving || (tb.selected && activeTabSelectedTables.length >= maxSelectionCount)"
@@ -555,13 +555,13 @@ watch(_baseId, () => {
                                 <div>{{ tb.title }}</div>
                               </div>
                             </a-tag>
-                          </NcTooltip>
+                          </AtTooltip>
                         </template>
                       </template>
-                      <div v-else class="text-nc-content-gray-subtle2">{{ $t('labels.noData') }}</div>
+                      <div v-else class="text-atm-content-gray-subtle2">{{ $t('labels.noData') }}</div>
                     </div>
                     <div class="flex items-center gap-1">
-                      <NcTooltip
+                      <AtTooltip
                         v-if="
                           activeTabPredictHistory.length < activeTabSelectedTables.length
                             ? activeTabPredictHistory.length + activeTabSelectedTables.length < 10
@@ -570,7 +570,7 @@ watch(_baseId, () => {
                         title="Suggest more"
                         placement="top"
                       >
-                        <NcButton
+                        <AtButton
                           v-e="['a:table:ai:predict-more']"
                           size="xs"
                           class="!px-1"
@@ -584,10 +584,10 @@ watch(_baseId, () => {
                           <template #icon>
                             <GeneralIcon icon="ncPlusAi" class="!text-current" />
                           </template>
-                        </NcButton>
-                      </NcTooltip>
-                      <NcTooltip title="Clear all and Re-suggest" placement="top">
-                        <NcButton
+                        </AtButton>
+                      </AtTooltip>
+                      <AtTooltip title="Clear all and Re-suggest" placement="top">
+                        <AtButton
                           v-e="['a:table:ai:predict-refresh']"
                           size="xs"
                           class="!px-1"
@@ -608,8 +608,8 @@ watch(_baseId, () => {
                               'animate-infinite animate-spin': aiLoading && calledFunction === 'predictRefresh',
                             }"
                           />
-                        </NcButton>
-                      </NcTooltip>
+                        </AtButton>
+                      </AtTooltip>
                     </div>
                   </div>
                 </div>
@@ -622,12 +622,12 @@ watch(_baseId, () => {
                       v-model:value="prompt"
                       :disabled="isAiSaving"
                       placeholder="Enter your prompt to get table suggestions.."
-                      class="nc-ai-input nc-input-shadow !px-3 !pt-2 !pb-3 !text-sm !min-h-[120px] !rounded-lg"
+                      class="atm-ai-input atm-input-shadow !px-3 !pt-2 !pb-3 !text-sm !min-h-[120px] !rounded-lg"
                       @keydown.enter.stop
                     >
                     </a-textarea>
 
-                    <NcButton
+                    <AtButton
                       size="xs"
                       type="primary"
                       theme="ai"
@@ -648,51 +648,51 @@ watch(_baseId, () => {
                       "
                     >
                       <template #loadingIcon>
-                        <GeneralLoader class="!text-nc-content-purple-dark" size="medium" />
+                        <GeneralLoader class="!text-atm-content-purple-dark" size="medium" />
                       </template>
                       <template #icon>
                         <GeneralIcon icon="send" class="flex-none h-4 w-4" />
                       </template>
-                    </NcButton>
+                    </AtButton>
                   </div>
 
                   <div v-if="aiError" class="w-full flex items-center gap-3">
                     <GeneralIcon icon="ncInfoSolid" class="flex-none !text-red-700 w-4 h-4" />
 
-                    <NcTooltip class="truncate flex-1 text-sm text-nc-content-gray-subtle" show-on-truncate-only>
+                    <AtTooltip class="truncate flex-1 text-sm text-atm-content-gray-subtle" show-on-truncate-only>
                       <template #title>
                         {{ aiError }}
                       </template>
                       {{ aiError }}
-                    </NcTooltip>
+                    </AtTooltip>
 
-                    <NcButton size="small" type="text" class="!text-nc-content-brand" @click.stop="handleRefreshOnError">
+                    <AtButton size="small" type="text" class="!text-atm-content-brand" @click.stop="handleRefreshOnError">
                       {{ $t('general.refresh') }}
-                    </NcButton>
+                    </AtButton>
                   </div>
 
                   <div v-else-if="isPromtAlreadyGenerated" class="flex flex-col gap-3">
-                    <div class="text-nc-content-purple-dark font-semibold text-xs">Generated Table(s)</div>
+                    <div class="text-atm-content-purple-dark font-semibold text-xs">Generated Table(s)</div>
                     <div class="flex gap-2 flex-wrap">
                       <template v-if="activeTabPredictedTables.length">
                         <template v-for="tb of activeTabPredictedTables" :key="tb.title">
-                          <NcTooltip :disabled="activeTabSelectedTables.length < maxSelectionCount || tb.selected">
+                          <AtTooltip :disabled="activeTabSelectedTables.length < maxSelectionCount || tb.selected">
                             <template #title>
                               <div class="w-[150px]">You can only select {{ maxSelectionCount }} tables to create at a time.</div>
                             </template>
 
                             <a-tag
-                              class="nc-ai-suggested-tag"
+                              class="atm-ai-suggested-tag"
                               :class="{
-                                'nc-disabled':
+                                'atm-disabled':
                                   isAiSaving || (!tb.selected && activeTabSelectedTables.length >= maxSelectionCount),
-                                'nc-selected': tb.selected,
+                                'atm-selected': tb.selected,
                               }"
                               :disabled="activeTabSelectedTables.length >= maxSelectionCount"
                               @click="onToggleTag(tb)"
                             >
                               <div class="flex flex-row items-center gap-1.5 py-[3px] text-small leading-[18px]">
-                                <NcCheckbox
+                                <AtCheckbox
                                   :checked="tb.selected"
                                   theme="ai"
                                   :disabled="isAiSaving || (!tb.selected && activeTabSelectedTables.length >= maxSelectionCount)"
@@ -701,10 +701,10 @@ watch(_baseId, () => {
                                 <div>{{ tb.title }}</div>
                               </div>
                             </a-tag>
-                          </NcTooltip>
+                          </AtTooltip>
                         </template>
                       </template>
-                      <div v-else class="text-nc-content-gray-subtle2">{{ $t('labels.noData') }}</div>
+                      <div v-else class="text-atm-content-gray-subtle2">{{ $t('labels.noData') }}</div>
                     </div>
                   </div>
                 </div>
@@ -716,19 +716,19 @@ watch(_baseId, () => {
             v-bind="validateInfos.description"
             :class="{ '!mb-1': isSnowflake(sourceIdRef), '!mb-0': !isSnowflake(sourceIdRef) }"
           >
-            <div class="flex gap-3 text-nc-content-gray h-7 mb-1 items-center justify-between">
+            <div class="flex gap-3 text-atm-content-gray h-7 mb-1 items-center justify-between">
               <span>
                 {{ $t('labels.description') }}
               </span>
-              <NcButton type="text" class="!h-6 !w-5" size="xsmall" @click="removeDescription">
-                <GeneralIcon icon="delete" class="text-nc-content-gray-subtle w-3.5 h-3.5" />
-              </NcButton>
+              <AtButton type="text" class="!h-6 !w-5" size="xsmall" @click="removeDescription">
+                <GeneralIcon icon="delete" class="text-atm-content-gray-subtle w-3.5 h-3.5" />
+              </AtButton>
             </div>
 
             <a-textarea
               ref="inputEl"
               v-model:value="table.description"
-              class="nc-input-sm nc-input-text-area nc-input-shadow px-3 !text-nc-content-gray max-h-[150px] min-h-[100px]"
+              class="atm-input-sm atm-input-text-area atm-input-shadow px-3 !text-atm-content-gray max-h-[150px] min-h-[100px]"
               hide-details
               data-testid="create-table-title-input"
               :placeholder="$t('msg.info.enterTableDescription')"
@@ -739,7 +739,7 @@ watch(_baseId, () => {
             <a-checkbox v-model:checked="table.is_hybrid" class="!flex flex-row items-center"> Hybrid Table </a-checkbox>
           </template>
         </div>
-        <div v-if="isAdvanceOptVisible && !aiMode" class="nc-table-advanced-options" :class="{ active: isAdvanceOptVisible }">
+        <div v-if="isAdvanceOptVisible && !aiMode" class="atm-table-advanced-options" :class="{ active: isAdvanceOptVisible }">
           <div>
             <div class="mb-1">
               <!-- Add Default Columns -->
@@ -773,22 +773,22 @@ watch(_baseId, () => {
             'px-5 -mt-2': aiMode,
           }"
         >
-          <NcButton v-if="!enableDescription && !aiMode" size="small" type="text" @click.stop="toggleDescription">
-            <div class="flex !text-nc-content-gray-subtle items-center gap-2">
+          <AtButton v-if="!enableDescription && !aiMode" size="small" type="text" @click.stop="toggleDescription">
+            <div class="flex !text-atm-content-gray-subtle items-center gap-2">
               <GeneralIcon icon="plus" class="h-4 w-4" />
 
               <span class="first-letter:capitalize">
                 {{ $t('labels.addDescription').toLowerCase() }}
               </span>
             </div>
-          </NcButton>
+          </AtButton>
           <div v-else></div>
           <div class="flex gap-2 items-center">
-            <NcButton type="secondary" size="small" :disabled="creating || isAiSaving" @click="dialogShow = false">
+            <AtButton type="secondary" size="small" :disabled="creating || isAiSaving" @click="dialogShow = false">
               {{ $t('general.cancel') }}
-            </NcButton>
+            </AtButton>
 
-            <NcButton
+            <AtButton
               v-if="!aiMode"
               v-e="['a:table:create']"
               type="primary"
@@ -801,8 +801,8 @@ watch(_baseId, () => {
             >
               {{ $t('activity.createTable') }}
               <template #loading> {{ $t('title.creatingTable') }} </template>
-            </NcButton>
-            <NcButton
+            </AtButton>
+            <AtButton
               v-else-if="aiIntegrationAvailable"
               type="primary"
               theme="ai"
@@ -825,14 +825,14 @@ watch(_baseId, () => {
                 }}
               </div>
               <template #loading> {{ $t('title.creatingTable') }} </template>
-            </NcButton>
+            </AtButton>
 
-            <NcButton v-else type="primary" size="small" @click="handleNavigateToIntegrations"> Add AI integration </NcButton>
+            <AtButton v-else type="primary" size="small" @click="handleNavigateToIntegrations"> Add AI integration </AtButton>
           </div>
         </div>
       </a-form>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style scoped lang="scss">
@@ -840,11 +840,11 @@ watch(_baseId, () => {
   @apply mb-0;
 }
 
-.nc-input-text-area {
+.atm-input-text-area {
   padding-block: 8px !important;
 }
 
-.nc-table-advanced-options {
+.atm-table-advanced-options {
   max-height: 0;
   transition: 0.3s max-height;
   overflow: hidden;
@@ -854,30 +854,30 @@ watch(_baseId, () => {
   }
 }
 
-.nc-nocoai-footer {
-  @apply px-6 py-1 flex items-center gap-2 text-nc-content-purple-dark border-t-1 border-purple-100;
+.atm-atmosphereai-footer {
+  @apply px-6 py-1 flex items-center gap-2 text-atm-content-purple-dark border-t-1 border-purple-100;
 
-  .nc-nocoai-settings {
+  .atm-atmosphereai-settings {
     &:not(:disabled) {
-      @apply hover:!bg-nc-bg-purple-light;
+      @apply hover:!bg-atm-bg-purple-light;
     }
-    &.nc-ai-loading {
+    &.atm-ai-loading {
       @apply !cursor-wait;
     }
   }
 }
 
-:deep(.ant-form-item.nc-table-input-wrapper) {
-  &.nc-ai-mode {
-    .nc-ai-mode-table-input-wrapper {
-      @apply shadow-default hover:shadow-hover focus-within:(!shadow-selected border-nc-border-brand);
+:deep(.ant-form-item.atm-table-input-wrapper) {
+  &.atm-ai-mode {
+    .atm-ai-mode-table-input-wrapper {
+      @apply shadow-default hover:shadow-hover focus-within:(!shadow-selected border-atm-border-brand);
     }
   }
 }
 </style>
 
 <style lang="scss">
-.nc-modal-wrapper.nc-modal-table-create-wrapper {
+.atm-modal-wrapper.atm-modal-table-create-wrapper {
   .ant-modal-content {
     border-radius: 1.25rem !important;
   }

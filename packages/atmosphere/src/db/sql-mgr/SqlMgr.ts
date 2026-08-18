@@ -14,7 +14,7 @@ import SqlClientFactory from '~/db/sql-client/lib/SqlClientFactory';
 // @ts-expect-error
 import KnexMigrator from '~/db/sql-migrator/lib/KnexMigrator';
 // @ts-expect-error
-import NcConnectionMgr from '~/utils/common/NcConnectionMgr';
+import AtConnectionMgr from '~/utils/common/AtConnectionMgr';
 
 const randomID = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz_', 20);
 
@@ -300,7 +300,7 @@ export default class SqlMgr {
           this.currentProjectConnections[connectionKey] =
             await SqlClientFactory.create({
               ...connectionConfig,
-              knex: await NcConnectionMgr.get({
+              knex: await AtConnectionMgr.get({
                 dbAlias: this.currentProjectJson.envs[env].db[i].meta.dbAlias,
                 env: env,
                 config: args,
@@ -564,7 +564,7 @@ export default class SqlMgr {
 
       config.connection = {};
       config.meta = {
-        tn: 'nc_evolutions',
+        tn: 'atm_evolutions',
         dbAlias: 'db',
       };
 
@@ -602,14 +602,14 @@ export default class SqlMgr {
       const baseJson = {
         title: '',
         envs: {
-          _noco: {
+          _atmosphere: {
             db: [],
             apiClient: {
               data: [],
             },
           },
         },
-        workingEnv: '_noco',
+        workingEnv: '_atmosphere',
         meta: {
           version: '0.5',
           seedsFolder: 'seeds',
@@ -638,7 +638,7 @@ export default class SqlMgr {
           config.meta.dbAlias = i > 1 ? `secondary${i}` : `secondary`;
         }
 
-        baseJson.envs._noco.db.push(config);
+        baseJson.envs._atmosphere.db.push(config);
       }
 
       return baseJson;
@@ -783,7 +783,7 @@ export default class SqlMgr {
         down: sqlMigrationFiles.down,
       });
 
-      // mark as migration done in nc_evolutions table
+      // mark as migration done in atm_evolutions table
       console.log(
         `TODO: write sql migration files for '${op}' with`,
         sqlMigrationStatements,
@@ -878,13 +878,13 @@ export default class SqlMgr {
 
   public async copyAuthMigrations(args) {
     try {
-      const dbs = this.currentProjectJson.envs._noco.db;
+      const dbs = this.currentProjectJson.envs._atmosphere.db;
       const dbType = dbs[0].client;
 
       console.time('Copy and delete auth user migrations');
 
       const sqlClient = await this.baseGetSqlClient({
-        env: '_noco',
+        env: '_atmosphere',
         dbAlias: 'db',
       });
       const usersTableExists = await sqlClient.hasTable({ tn: 'xc_users' });
@@ -1112,8 +1112,8 @@ export default class SqlMgr {
     try {
       const op = (
         args.sqlOpPlus &&
-        !process.env.NC_TRY &&
-        !('NC_MIGRATIONS_DISABLED' in process.env)
+        !process.env.ATMOSPHERE_TRY &&
+        !('ATMOSPHERE_MIGRATIONS_DISABLED' in process.env)
           ? this.sqlOpPlus
           : this.sqlOp
       ).bind(this);

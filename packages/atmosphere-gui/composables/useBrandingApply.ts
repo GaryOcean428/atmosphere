@@ -25,8 +25,8 @@ export const useBrandingApply = createSharedComposable(() => {
 
   const { clearColorCache } = useTheme()
 
-  const FAVICON_ID = 'nc-favicon'
-  const STYLE_ID = 'nc-brand-color-override'
+  const FAVICON_ID = 'atm-favicon'
+  const STYLE_ID = 'atm-brand-color-override'
 
   const DEFAULT_FAVICON = '/favicon.ico'
   const DEFAULT_THEME_COLOR = '#3366FF'
@@ -58,7 +58,7 @@ export const useBrandingApply = createSharedComposable(() => {
     if (el.getAttribute('href') !== next) el.setAttribute('href', next)
 
     // iOS home-screen icon — point it at the white-label favicon too (better a
-    // small brand icon than the NocoDB one); restore the default when off.
+    // small brand icon than the Atmosphere one); restore the default when off.
     const apple = document.querySelector("link[rel~='apple-touch-icon']") as HTMLLinkElement | null
     if (apple) {
       const appleNext = url || DEFAULT_APPLE_TOUCH_ICON
@@ -67,7 +67,7 @@ export const useBrandingApply = createSharedComposable(() => {
   }
 
   // Mobile browser chrome / PWA splash colour. Follows the brand colour; resets
-  // to the built-in NocoDB blue when white-labelling is off / no colour set.
+  // to the built-in Atmosphere blue when white-labelling is off / no colour set.
   function applyThemeColor(hex: string | null) {
     const meta = document.querySelector("meta[name='theme-color']") as HTMLMetaElement | null
     if (!meta) return
@@ -80,7 +80,7 @@ export const useBrandingApply = createSharedComposable(() => {
     const css = hex ? buildBrandStyleCss(hex) : null
 
     // No colour (or invalid hex) → drop the override and reset Ant Design's
-    // ConfigProvider back to the built-in NocoDB blue.
+    // ConfigProvider back to the built-in Atmosphere blue.
     if (!css) {
       style?.remove()
       setTheme()
@@ -107,7 +107,7 @@ export const useBrandingApply = createSharedComposable(() => {
       applyBrandColor(v)
       applyThemeColor(v)
 
-      // The brand-colour CSS vars (--color-brand-*, --rgb-color-brand-*, --nc-brand-accent*)
+      // The brand-colour CSS vars (--color-brand-*, --rgb-color-brand-*, --atm-brand-accent*)
       // just changed (or were removed on reset). Canvas surfaces can't read CSS vars, so
       // useTheme.getColor() memoises getComputedStyle-resolved brand rgb in colorCache, keyed
       // only by the var name — it stays stale until cleared (today only on dark-mode toggle).

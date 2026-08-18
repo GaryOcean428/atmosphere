@@ -1,5 +1,5 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { type TableType } from 'nocodb-sdk'
+import { type TableType } from 'atmosphere-sdk'
 import type { SidebarTableNode } from '~/lib/types'
 import { DlgTableCreate } from '#components'
 
@@ -137,11 +137,11 @@ export const useTablesStore = defineStore('tablesStore', () => {
 
     await getMeta(table.base_id!, table.id as string)
 
-    // const typeOrId = (route.value.params.typeOrId as string) || 'nc'
+    // const typeOrId = (route.value.params.typeOrId as string) || 'atm'
 
     let workspaceIdOrType = workspaceId
 
-    if (['nc', 'base'].includes(route.value.params.typeOrId as string)) {
+    if (['atm', 'base'].includes(route.value.params.typeOrId as string)) {
       workspaceIdOrType = route.value.params.typeOrId as string
     }
 

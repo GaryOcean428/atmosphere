@@ -1,4 +1,4 @@
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   CacheDelDirection,
   CacheScope,
@@ -6,7 +6,7 @@ import {
   RootScopes,
 } from '~/utils/globals';
 import { extractProps } from '~/helpers/extractProps';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 
 export default class WorkspaceUser {
   fk_workspace_id?: string;
@@ -22,7 +22,7 @@ export default class WorkspaceUser {
 
   public static async insert(
     workspaceUser: Partial<WorkspaceUser>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(workspaceUser, [
       'fk_user_id',
@@ -44,7 +44,7 @@ export default class WorkspaceUser {
     workspaceId: string,
     userId: string,
     _options: { include_deleted?: boolean } = {},
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<WorkspaceUser | null> {
     const wsUser = await ncMeta.metaGet2(
       RootScopes.WORKSPACE,
@@ -67,7 +67,7 @@ export default class WorkspaceUser {
     }: {
       fk_workspace_id: string;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<any[]> {
     const queryBuilder = ncMeta
       .knexConnection(MetaTable.USERS)
@@ -101,7 +101,7 @@ export default class WorkspaceUser {
 
   static async count(
     workspaceId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<number> {
     const result = await ncMeta
       .knexConnection(MetaTable.WORKSPACE_USER)
@@ -116,7 +116,7 @@ export default class WorkspaceUser {
     workspaceId: string,
     userId: string,
     data: Partial<WorkspaceUser>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(data, ['roles']);
 
@@ -133,7 +133,7 @@ export default class WorkspaceUser {
   static async softDelete(
     workspaceId: string,
     userId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta
       .knexConnection(MetaTable.WORKSPACE_USER)
@@ -147,7 +147,7 @@ export default class WorkspaceUser {
     await this.clearBaseUserCacheForWorkspace(workspaceId, ncMeta);
   }
 
-  static async softDeleteByUser(userId: string, ncMeta = Noco.ncMeta) {
+  static async softDeleteByUser(userId: string, ncMeta = Atmosphere.ncMeta) {
     const entries = await ncMeta
       .knexConnection(MetaTable.WORKSPACE_USER)
       .where('fk_user_id', userId)
@@ -169,13 +169,13 @@ export default class WorkspaceUser {
 
   static async clearBaseUserCacheForWorkspace(
     workspaceId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const { default: Base } = await import('~/models/Base');
     const bases = await Base.list(null, ncMeta);
     for (const base of bases) {
       if (base.fk_workspace_id === workspaceId) {
-        await NocoCache.deepDel(
+        await AtmosphereCache.deepDel(
           { workspace_id: workspaceId, base_id: base.id },
           `${CacheScope.BASE_USER}:${base.id}:list`,
           CacheDelDirection.PARENT_TO_CHILD,

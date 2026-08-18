@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EventType, MetaEventType, SqlUiFactory } from 'nocodb-sdk';
-import type { NcContext, UITypes } from 'nocodb-sdk';
+import { EventType, MetaEventType, SqlUiFactory } from 'atmosphere-sdk';
+import type { AtContext, UITypes } from 'atmosphere-sdk';
 import type {
   AffectedDependencyResult,
   MetaDependencyEventRequest,
@@ -8,8 +8,8 @@ import type {
 } from '~/services/meta-dependency/types';
 import { Filter, Source } from '~/models';
 import { MetaTable } from '~/utils/globals';
-import NocoSocket from '~/socket/NocoSocket';
-import Noco from '~/Noco';
+import AtmosphereSocket from '~/socket/AtmosphereSocket';
+import Atmosphere from '~/Atmosphere';
 import { FiltersService } from '~/services/filters.service';
 
 /**
@@ -35,9 +35,9 @@ export class ColumnUpdateFilterOperatorDependencyHandler
   constructor(private readonly filtersService: FiltersService) {}
 
   async getAffectedDependency(
-    _context: NcContext,
+    _context: AtContext,
     param: MetaDependencyEventRequest,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<AffectedDependencyResult | undefined> {
     const oldCol = param.oldEntity;
     const newCol = param.newEntity;
@@ -48,11 +48,11 @@ export class ColumnUpdateFilterOperatorDependencyHandler
   }
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest & {
       affectedDependencyResult: AffectedDependencyResult;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     const oldCol = param.oldEntity;
     const newCol = param.newEntity;
@@ -97,18 +97,18 @@ export class ColumnUpdateFilterOperatorDependencyHandler
   }
 
   private async broadcastFilterChanges(
-    context: NcContext,
+    context: AtContext,
     beforeFilters: any[],
   ): Promise<void> {
     for (const before of beforeFilters) {
-      const after = await Filter.get(context, before.id, Noco.ncMeta);
+      const after = await Filter.get(context, before.id, Atmosphere.ncMeta);
       if (after) {
-        NocoSocket.broadcastEvent(context, {
+        AtmosphereSocket.broadcastEvent(context, {
           event: EventType.META_EVENT,
           payload: { action: 'filter_update', payload: after },
         });
       } else {
-        NocoSocket.broadcastEvent(context, {
+        AtmosphereSocket.broadcastEvent(context, {
           event: EventType.META_EVENT,
           payload: { action: 'filter_delete', payload: before },
         });

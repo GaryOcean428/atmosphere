@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Draggable from 'vuedraggable'
-import { type FilterType, UITypes, parseProp } from 'nocodb-sdk'
+import { type FilterType, UITypes, parseProp } from 'atmosphere-sdk'
 import { type GroupEmits, type GroupProps } from './types'
 import { SmartsheetToolbarFilterGroupRow } from '#components'
 
@@ -351,7 +351,7 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
 
 <template>
   <div
-    data-testid="nc-filter"
+    data-testid="atm-filter"
     class="menu-filter-dropdown w-min"
     :class="{
       'max-h-[max(80vh,500px)] min-w-122 py-2 pl-4': !nested && !queryFilter,
@@ -363,50 +363,50 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
     <div v-if="nested" class="flex min-w-full w-min items-center gap-1 mb-2">
       <slot name="nestedRow"></slot>
       <template v-if="!slotHasChildren('nestedRow')">
-        <div :class="[`nc-filter-logical-op-level-${nestedLevel}`]">
+        <div :class="[`atm-filter-logical-op-level-${nestedLevel}`]">
           <slot name="nestedRowStart"></slot>
         </div>
         <div class="flex-grow"></div>
-        <NcDropdown
+        <AtDropdown
           :trigger="['hover']"
-          overlay-class-name="nc-dropdown-filter-group-sub-menu"
+          overlay-class-name="atm-dropdown-filter-group-sub-menu"
           :disabled="disableAddNewFilter || isLockedView || disabled"
         >
-          <NcButton size="xs" type="text" :disabled="disableAddNewFilter || isLockedView || disabled">
+          <AtButton size="xs" type="text" :disabled="disableAddNewFilter || isLockedView || disabled">
             <GeneralIcon icon="plus" class="cursor-pointer" data-testid="filter-add-icon" />
-          </NcButton>
+          </AtButton>
 
           <template #overlay>
-            <NcMenu>
+            <AtMenu>
               <template v-if="!isEeUI && !isPublic">
                 <template v-if="filtersCount < filterPerViewLimit">
-                  <NcMenuItem data-testid="add-filter-menu" @click.stop="addFilter">
+                  <AtMenuItem data-testid="add-filter-menu" @click.stop="addFilter">
                     <div class="flex items-center gap-1">
                       <component :is="iconMap.plus" data-testid="filter-add-icon" />
                       <!-- Add Filter -->
                       {{ isForm && !webHook ? $t('activity.addCondition') : $t('activity.addFilter') }}
                     </div>
-                  </NcMenuItem>
+                  </AtMenuItem>
 
-                  <NcMenuItem v-if="nestedLevel < 5" data-testid="add-filter-group-menu" @click.stop="addFilterGroup">
+                  <AtMenuItem v-if="nestedLevel < 5" data-testid="add-filter-group-menu" @click.stop="addFilterGroup">
                     <div class="flex items-center gap-1">
                       <!-- Add Filter Group -->
                       <component :is="iconMap.plusSquare" />
                       {{ isForm && !webHook ? $t('activity.addConditionGroup') : $t('activity.addFilterGroup') }}
                     </div>
-                  </NcMenuItem>
+                  </AtMenuItem>
                 </template>
               </template>
               <template v-else>
-                <NcMenuItem data-testid="add-filter-menu" @click.stop="addFilter">
+                <AtMenuItem data-testid="add-filter-menu" @click.stop="addFilter">
                   <div class="flex items-center gap-1">
                     <component :is="iconMap.plus" data-testid="filter-add-icon" />
                     <!-- Add Filter -->
                     {{ isForm && !webHook ? $t('activity.addCondition') : $t('activity.addFilter') }}
                   </div>
-                </NcMenuItem>
+                </AtMenuItem>
 
-                <NcMenuItem
+                <AtMenuItem
                   v-if="!webHook && nestedLevel < MAX_NESTED_LEVEL"
                   data-testid="add-filter-group-menu"
                   @click.stop="addFilterGroup"
@@ -416,11 +416,11 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
                     <component :is="iconMap.plusSquare" />
                     {{ isForm && !webHook ? $t('activity.addConditionGroup') : $t('activity.addFilterGroup') }}
                   </div>
-                </NcMenuItem>
+                </AtMenuItem>
               </template>
-            </NcMenu>
+            </AtMenu>
           </template>
-        </NcDropdown>
+        </AtDropdown>
         <div>
           <slot name="nestedRowEnd"></slot>
         </div>
@@ -435,13 +435,13 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
       ref="wrapperDomRef"
       :list="vModel"
       v-bind="getDraggableAutoScrollOptions({ scrollSensitivity: 100 })"
-      group="nc-filter-group-rows"
-      ghost-class="bg-nc-bg-gray-extralight"
-      draggable=".nc-filter-group-row"
-      handle=".nc-filter-group-row-drag-handler"
-      class="flex flex-col gap-y-1.5 nc-filter-grid min-w-full w-min"
+      group="atm-filter-group-rows"
+      ghost-class="bg-atm-bg-gray-extralight"
+      draggable=".atm-filter-group-row"
+      handle=".atm-filter-group-row-drag-handler"
+      class="flex flex-col gap-y-1.5 atm-filter-grid min-w-full w-min"
       :class="{
-        'max-h-420px nc-scrollbar-thin nc-filter-top-wrapper pr-4 mt-1 mb-2 py-1': !nested && !queryFilter,
+        'max-h-420px atm-scrollbar-thin atm-filter-top-wrapper pr-4 mt-1 mb-2 py-1': !nested && !queryFilter,
         '!pr-0': webHook && !nested,
       }"
       :move="onMoveCallback"
@@ -449,7 +449,7 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
       @click.stop
     >
       <template #item="{ element: filter, index: i }">
-        <div v-if="filter.status !== 'delete'" :key="i" class="nc-filter-group-row min-w-full w-min max-w-full">
+        <div v-if="filter.status !== 'delete'" :key="i" class="atm-filter-group-row min-w-full w-min max-w-full">
           <template v-if="filter.is_group">
             <slot name="filterGroupRow"> </slot>
             <template v-if="!slotHasChildren('filterGroupRow')">
@@ -524,11 +524,11 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
             'cursor-wait': isLoadingFilter,
           }"
         >
-          <NcButton
+          <AtButton
             size="small"
             :type="actionBtnType"
             :disabled="disableAddNewFilter || isLockedView || readOnly"
-            class="nc-btn-focus"
+            class="atm-btn-focus"
             data-testid="add-filter"
             :class="{ 'pointer-events-none': isLoadingFilter }"
             @click.stop="addFilter()"
@@ -538,11 +538,11 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
               <!-- Add Filter -->
               {{ isForm && !webHook ? $t('activity.addCondition') : $t('activity.addFilter') }}
             </div>
-          </NcButton>
+          </AtButton>
 
-          <NcButton
+          <AtButton
             v-if="nestedLevel < MAX_NESTED_LEVEL && !disabled"
-            class="nc-btn-focus"
+            class="atm-btn-focus"
             :class="{ 'pointer-events-none': isLoadingFilter }"
             :disabled="disableAddNewFilter || isLockedView"
             :type="actionBtnType"
@@ -555,7 +555,7 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
               <component :is="iconMap.plus" />
               {{ isForm && !webHook ? $t('activity.addConditionGroup') : $t('activity.addFilterGroup') }}
             </div>
-          </NcButton>
+          </AtButton>
           <slot name="root-add-filter-row"></slot>
         </div>
       </template>
@@ -569,8 +569,8 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
             'cursor-wait': isLoadingFilter,
           }"
         >
-          <NcButton
-            class="nc-btn-focus"
+          <AtButton
+            class="atm-btn-focus"
             :class="{ 'pointer-events-none': isLoadingFilter }"
             size="small"
             :type="actionBtnType"
@@ -583,11 +583,11 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
               <!-- Add Filter -->
               {{ isForm && !webHook ? $t('activity.addCondition') : $t('activity.addFilter') }}
             </div>
-          </NcButton>
+          </AtButton>
 
-          <NcButton
+          <AtButton
             v-if="!link && !webHook && !widget && nestedLevel < MAX_NESTED_LEVEL"
-            class="nc-btn-focus"
+            class="atm-btn-focus"
             :class="{ 'pointer-events-none': isLoadingFilter }"
             :type="actionBtnType"
             size="small"
@@ -600,20 +600,20 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
               <component :is="iconMap.plus" />
               {{ isForm && !webHook ? $t('activity.addConditionGroup') : $t('activity.addFilterGroup') }}
             </div>
-          </NcButton>
+          </AtButton>
           <slot name="root-add-filter-row"></slot>
         </div>
       </template>
     </template>
     <div
       v-if="!visibleFilters || !visibleFilters.length"
-      class="flex flex-row text-nc-content-gray-disabled mt-2"
+      class="flex flex-row text-atm-content-gray-disabled mt-2"
       :class="{
         'ml-1': nested,
         'ml-0.5': !nested,
       }"
     >
-      {{ isForm && !webHook ? $t('title.noConditionsAdded') : $t('title.noFiltersAdded') }}
+      {{ isForm && !webHook ? $t('title.atmospherenditionsAdded') : $t('title.noFiltersAdded') }}
     </div>
 
     <slot />
@@ -630,17 +630,17 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
 </template>
 
 <style lang="scss" scoped>
-.nc-filter-where-label {
-  @apply text-nc-content-gray-disabled;
+.atm-filter-where-label {
+  @apply text-atm-content-gray-disabled;
 }
 
-.nc-filter-item-remove-btn,
-.nc-filter-item-reorder-btn,
-.nc-filter-item-copy-btn {
-  @apply text-nc-content-gray-subtle2 hover:text-nc-content-gray;
+.atm-filter-item-remove-btn,
+.atm-filter-item-reorder-btn,
+.atm-filter-item-copy-btn {
+  @apply text-atm-content-gray-subtle2 hover:text-atm-content-gray;
 }
 
-.nc-filter-grid {
+.atm-filter-grid {
   @apply items-center w-full;
 }
 
@@ -652,32 +652,32 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
   @apply !min-h-8;
 }
 
-.nc-disabled-logical-op :deep(.ant-select-arrow) {
+.atm-disabled-logical-op :deep(.ant-select-arrow) {
   @apply hidden;
 }
 
-.nc-filter-wrapper {
-  @apply bg-nc-bg-default !rounded-lg border-1px border-nc-border-gray-medium;
+.atm-filter-wrapper {
+  @apply bg-atm-bg-default !rounded-lg border-1px border-atm-border-gray-medium;
 
   & > *,
-  .nc-filter-value-select {
+  .atm-filter-value-select {
     @apply !border-none;
   }
 
   & > div > :deep(.ant-select-selector),
-  :deep(.nc-filter-field-select) > div {
+  :deep(.atm-filter-field-select) > div {
     border: none !important;
     box-shadow: none !important;
   }
 
   & > :not(:last-child):not(:empty) {
-    border-right: 1px solid var(--nc-border-gray-medium) !important;
+    border-right: 1px solid var(--atm-border-gray-medium) !important;
     border-bottom-right-radius: 0 !important;
     border-top-right-radius: 0 !important;
   }
 
-  .nc-settings-dropdown {
-    border-left: 1px solid var(--nc-border-gray-medium) !important;
+  .atm-settings-dropdown {
+    border-left: 1px solid var(--atm-border-gray-medium) !important;
     border-radius: 0 !important;
   }
 
@@ -690,7 +690,7 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
     @apply relative;
     &::after {
       content: '';
-      @apply absolute h-full w-1px bg-[var(--nc-bg-gray-medium)] -left-1px top-0;
+      @apply absolute h-full w-1px bg-[var(--atm-bg-gray-medium)] -left-1px top-0;
     }
   }
 
@@ -706,66 +706,66 @@ const onMove = async (event: { moved: { newIndex: number; oldIndex: number; elem
     @apply text-sm;
   }
 
-  :deep(.nc-select:not(.nc-disabled-logical-op):not(.ant-select-disabled):hover) {
+  :deep(.atm-select:not(.atm-disabled-logical-op):not(.ant-select-disabled):hover) {
     &,
     .ant-select-selector {
-      @apply bg-nc-bg-gray-extralight;
+      @apply bg-atm-bg-gray-extralight;
     }
   }
 }
 
-.nc-filter-nested-level-0 {
-  @apply bg-nc-bg-gray-extralight;
+.atm-filter-nested-level-0 {
+  @apply bg-atm-bg-gray-extralight;
 }
 
-.nc-filter-nested-level-1,
-.nc-filter-nested-level-3 {
-  @apply bg-nc-bg-gray-light;
+.atm-filter-nested-level-1,
+.atm-filter-nested-level-3 {
+  @apply bg-atm-bg-gray-light;
 }
 
-.nc-filter-nested-level-2,
-.nc-filter-nested-level-4 {
-  @apply bg-nc-bg-gray-medium;
+.atm-filter-nested-level-2,
+.atm-filter-nested-level-4 {
+  @apply bg-atm-bg-gray-medium;
 }
 
-.nc-filter-logical-op-level-3,
-.nc-filter-logical-op-level-5 {
-  :deep(.nc-select.ant-select .ant-select-selector) {
+.atm-filter-logical-op-level-3,
+.atm-filter-logical-op-level-5 {
+  :deep(.atm-select.ant-select .ant-select-selector) {
     @apply border-[#d9d9d9];
   }
 }
 
-.nc-filter-where-label {
-  @apply text-nc-content-gray-disabled;
+.atm-filter-where-label {
+  @apply text-atm-content-gray-disabled;
 }
 
 :deep(.ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
-  @apply bg-transparent text-nc-content-gray-disabled;
+  @apply bg-transparent text-atm-content-gray-disabled;
 }
 
-:deep(.nc-filter-logical-op .nc-select.ant-select .ant-select-selector) {
+:deep(.atm-filter-logical-op .atm-select.ant-select .ant-select-selector) {
   @apply shadow-none;
 }
 
-:deep(.nc-select-expand-btn) {
-  @apply text-nc-content-gray-muted;
+:deep(.atm-select-expand-btn) {
+  @apply text-atm-content-gray-muted;
 }
 
 .menu-filter-dropdown {
   input:not(:disabled),
   select:not(:disabled),
   .ant-select:not(.ant-select-disabled) {
-    @apply text-nc-content-gray-subtle2;
+    @apply text-atm-content-gray-subtle2;
   }
 }
 
-.nc-filter-input-wrapper :deep(input) {
+.atm-filter-input-wrapper :deep(input) {
   &:not(.ant-select-selection-search-input) {
     @apply !px-2;
   }
 }
 
-.nc-btn-focus:focus {
-  @apply !text-nc-content-brand !shadow-none;
+.atm-btn-focus:focus {
+  @apply !text-atm-content-brand !shadow-none;
 }
 </style>

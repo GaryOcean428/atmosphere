@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { ColumnType } from 'nocodb-sdk'
-import { PermissionEntity, PermissionKey, isBtLikeV2Junction, isDateOrDateTimeCol } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
+import { PermissionEntity, PermissionKey, isBtLikeV2Junction, isDateOrDateTimeCol } from 'atmosphere-sdk'
 import { computeLtarNewRowState } from '~/utils/dataUtils'
-import InboxIcon from '~icons/nc-icons/inbox'
+import InboxIcon from '~icons/atm-icons/inbox'
 
 const props = withDefaults(
   defineProps<{
@@ -351,7 +351,7 @@ const onCreatedRecord = (record: any) => {
       h(
         'span',
         {
-          class: 'text-nc-content-gray-muted',
+          class: 'text-atm-content-gray-muted',
         },
         t('activity.gotSavedLinkedSuccessfully', {
           tableName: relatedTableMeta.value?.title,
@@ -473,7 +473,7 @@ const isSearchInputFocused = ref(false)
 const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
   scrollContainerRef,
   filterQueryRef,
-  itemTestId: 'nc-excluded-list-item',
+  itemTestId: 'atm-excluded-list-item',
   expandedFormDlg,
   closeModal: () => {
     vModel.value = false
@@ -488,23 +488,23 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
 </script>
 
 <template>
-  <div class="nc-modal-link-record h-full w-full overflow-hidden" :class="{ active: vModel }" @keydown.enter.stop>
+  <div class="atm-modal-link-record h-full w-full overflow-hidden" :class="{ active: vModel }" @keydown.enter.stop>
     <div class="flex flex-col h-full">
-      <div class="nc-dropdown-link-record-header bg-nc-bg-gray-light py-2 rounded-t-xl flex justify-between pl-3 pr-2 gap-2">
+      <div class="atm-dropdown-link-record-header bg-atm-bg-gray-light py-2 rounded-t-xl flex justify-between pl-3 pr-2 gap-2">
         <div class="flex-1 gap-2 flex items-center">
           <button
             v-if="!hideBackBtn"
-            class="!text-nc-content-brand hover:!text-nc-brand-700 p-1.5 flex"
+            class="!text-atm-content-brand hover:!text-atm-brand-700 p-1.5 flex"
             @click="emit('attachLinkedRecord')"
           >
             <GeneralIcon icon="ncArrowLeft" class="flex-none h-4 w-4" />
           </button>
 
-          <div class="flex-1 nc-dropdown-link-record-search-wrapper flex items-center rounded-md">
+          <div class="flex-1 atm-dropdown-link-record-search-wrapper flex items-center rounded-md">
             <!-- Utilize SmartsheetToolbarFilterInput component to filter the records for Date or DateTime column -->
             <SmartsheetToolbarFilterInput
               v-if="relatedTableDisplayValueColumn && isDateOrDateTimeCol(relatedTableDisplayValueColumn)"
-              class="nc-filter-value-select rounded-md min-w-34"
+              class="atm-filter-value-select rounded-md min-w-34"
               :column="relatedTableDisplayValueColumn"
               :filter="{
                 comparison_op: 'eq',
@@ -520,7 +520,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
               v-model:value="childrenExcludedListPagination.query"
               :bordered="false"
               placeholder="Search records to link..."
-              class="w-full nc-excluded-search min-h-4 !pl-0"
+              class="w-full atm-excluded-search min-h-4 !pl-0"
               size="small"
               autocomplete="off"
               @focus="isSearchInputFocused = true"
@@ -529,20 +529,20 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
               @keydown.capture.stop="handleKeyDown"
             >
               <template #prefix>
-                <GeneralIcon icon="search" class="nc-search-icon mr-2 h-4 w-4 text-nc-content-gray-muted" />
+                <GeneralIcon icon="search" class="atm-search-icon mr-2 h-4 w-4 text-atm-content-gray-muted" />
               </template>
             </a-input>
           </div>
         </div>
         <LazyVirtualCellComponentsHeader
-          data-testid="nc-link-count-info"
+          data-testid="atm-link-count-info"
           :linked-records="totalItemsToShow"
           :related-table-title="relatedTableMeta?.title"
           :relation="relation"
           :table-title="meta?.title"
         />
       </div>
-      <div ref="scrollContainerRef" class="flex-1 overflow-auto nc-scrollbar-thin" @scroll="onListScroll">
+      <div ref="scrollContainerRef" class="flex-1 overflow-auto atm-scrollbar-thin" @scroll="onListScroll">
         <!-- Removed (unsaved) records — shown at the top so they can be re-linked until save -->
         <LazyVirtualCellComponentsListItem
           v-for="(uItem, ui) in showPendingUnlinks ? pendingUnlinkRows : []"
@@ -555,7 +555,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
           :is-loading="false"
           :related-table-display-value-prop="relatedTableDisplayValueProp"
           :row="uItem"
-          data-testid="nc-excluded-list-item-pending-unlink"
+          data-testid="atm-excluded-list-item-pending-unlink"
           @link-or-unlink="relinkRow(uItem)"
           @expand="
             () => {
@@ -574,7 +574,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
             <div
               v-for="(_x, i) in Array.from({ length: 10 })"
               :key="i"
-              class="flex flex-row gap-3 px-3 py-2 transition-all relative border-b-1 border-nc-border-gray-medium hover:c"
+              class="flex flex-row gap-3 px-3 py-2 transition-all relative border-b-1 border-atm-border-gray-medium hover:c"
             >
               <div class="flex items-center">
                 <a-skeleton-image class="!h-11 !w-11 !rounded-md overflow-hidden children:(!h-full !w-full)" />
@@ -602,7 +602,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
               <div
                 v-if="item._placeholder"
                 :style="{ height: `${ROW_HEIGHT}px` }"
-                class="flex flex-row gap-3 px-3 py-2 transition-all relative border-b-1 border-nc-border-gray-medium"
+                class="flex flex-row gap-3 px-3 py-2 transition-all relative border-b-1 border-atm-border-gray-medium"
               >
                 <div class="flex items-center">
                   <a-skeleton-image class="!h-11 !w-11 !rounded-md overflow-hidden children:(!h-full !w-full)" />
@@ -623,7 +623,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
                 :is-selected="!!(isSearchInputFocused && childrenExcludedListPagination.query && item._index === 0)"
                 :related-table-display-value-prop="relatedTableDisplayValueProp"
                 :row="item"
-                data-testid="nc-excluded-list-item"
+                data-testid="atm-excluded-list-item"
                 @link-or-unlink="onClick(item, String(item._index))"
                 @expand="
                   () => {
@@ -644,7 +644,7 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
         </template>
         <div
           v-else-if="!showPendingUnlinks"
-          class="h-full my-auto py-2 flex flex-col gap-3 items-center justify-center text-nc-content-gray-muted"
+          class="h-full my-auto py-2 flex flex-col gap-3 items-center justify-center text-atm-content-gray-muted"
         >
           <InboxIcon class="w-16 h-16 mx-auto" />
 
@@ -669,22 +669,22 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
               :permission="PermissionKey.TABLE_RECORD_ADD"
             >
               <template #default="{ isAllowed }">
-                <NcButton
+                <AtButton
                   v-e="['c:row-expand:open']"
                   size="small"
-                  class="!hover:(bg-nc-bg-default text-nc-content-brand) !h-7 !text-small"
+                  class="!hover:(bg-atm-bg-default text-atm-content-brand) !h-7 !text-small"
                   type="secondary"
                   :disabled="!isAllowed"
                   @click="addNewRecord"
                 >
                   <div class="flex items-center gap-1"><MdiPlus v-if="!isMobileMode" /> {{ $t('activity.newRecord') }}</div>
-                </NcButton>
+                </AtButton>
               </template>
             </PermissionsTooltip>
           </div>
         </div>
       </div>
-      <div class="nc-dropdown-link-record-footer bg-nc-bg-gray-light p-2 rounded-b-xl flex items-center justify-between min-h-11">
+      <div class="atm-dropdown-link-record-footer bg-atm-bg-gray-light p-2 rounded-b-xl flex items-center justify-between min-h-11">
         <div class="flex">
           <PermissionsTooltip
             v-if="
@@ -702,20 +702,20 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
             :permission="PermissionKey.TABLE_RECORD_ADD"
           >
             <template #default="{ isAllowed }">
-              <NcButton
+              <AtButton
                 v-e="['c:row-expand:open']"
                 size="small"
-                class="!hover:(bg-nc-bg-default text-nc-content-brand) !h-7 !text-small"
+                class="!hover:(bg-atm-bg-default text-atm-content-brand) !h-7 !text-small"
                 type="secondary"
                 :disabled="!isAllowed"
                 @click="addNewRecord"
               >
                 <div class="flex items-center gap-1"><MdiPlus v-if="!isMobileMode" /> {{ $t('activity.newRecord') }}</div>
-              </NcButton>
+              </AtButton>
             </template>
           </PermissionsTooltip>
         </div>
-        <div v-if="excludedTotalRows > 0" class="text-nc-content-gray-muted text-small">
+        <div v-if="excludedTotalRows > 0" class="text-atm-content-gray-muted text-small">
           {{ excludedTotalRows }} {{ excludedTotalRows === 1 ? 'record' : 'records' }}
         </div>
       </div>
@@ -762,26 +762,26 @@ const { handleSearchKeydown: handleKeyDown } = useLTARListKeyNav({
 :deep(.ant-skeleton-element .ant-skeleton-image-svg) {
   @apply !w-7;
 }
-:deep(.nc-filter-input-wrapper) {
+:deep(.atm-filter-input-wrapper) {
   height: 28px;
 }
 </style>
 
 <style lang="scss">
-.nc-dropdown-link-record-search-wrapper {
-  .nc-search-icon {
-    @apply flex-none text-nc-content-gray-muted;
+.atm-dropdown-link-record-search-wrapper {
+  .atm-search-icon {
+    @apply flex-none text-atm-content-gray-muted;
   }
 
   &:focus-within {
-    .nc-search-icon {
-      @apply text-nc-content-gray-subtle2;
+    .atm-search-icon {
+      @apply text-atm-content-gray-subtle2;
     }
   }
 
   input {
     &::placeholder {
-      @apply text-nc-content-gray-muted;
+      @apply text-atm-content-gray-muted;
     }
   }
 }

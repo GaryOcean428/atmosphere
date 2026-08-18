@@ -1,4 +1,4 @@
-import { type NcContext } from 'nocodb-sdk';
+import { type AtContext } from 'atmosphere-sdk';
 import type CustomKnex from '~/db/CustomKnex';
 import type { LinkUnlinkRequest } from '~/db/links/types';
 import { getBaseModelSqlFromModelId } from '~/helpers/dbHelpers';
@@ -6,7 +6,7 @@ import { Column, Model } from '~/models';
 
 export class LinksRequestHandler {
   async validateLinkRequest(
-    _context: NcContext,
+    _context: AtContext,
     payload: LinkUnlinkRequest,
     _knex: CustomKnex,
   ) {
@@ -14,7 +14,7 @@ export class LinksRequestHandler {
   }
 
   async generateLinkRequest(
-    context: NcContext,
+    context: AtContext,
     payload: Omit<LinkUnlinkRequest, 'unlinks'> & { replaceMode?: boolean },
     _knex?: CustomKnex,
   ) {
@@ -41,7 +41,7 @@ export class LinksRequestHandler {
   }
 
   async handle(
-    _context: NcContext,
+    _context: AtContext,
     _payload: LinkUnlinkRequest,
     _knex?: CustomKnex,
   ) {}

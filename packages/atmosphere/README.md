@@ -1,16 +1,16 @@
 <h1 align="center" style="border-bottom: none">
     <div>
-        <a href="https://www.nocodb.com">
-            <img src="/packages/nc-gui/assets/img/icons/512x512.png" width="80" />
+        <a href="https://www.atmosphere.dev">
+            <img src="/packages/atmosphere-gui/assets/img/icons/512x512.png" width="80" />
             <br>
-            NocoDB
+            Atmosphere
         </a>
         ✨ Free & Self-hostable Airtable alternative ✨ <br>
     </div>
 </h1>
 
 <p align="center">
-NocoDB is the fastest and easiest way to build databases online.
+Atmosphere is the fastest and easiest way to build databases online.
 </p>
 
 <div align="center">
@@ -21,12 +21,12 @@ NocoDB is the fastest and easiest way to build databases online.
 </div>
 
 <p align="center">
-    <a href="http://www.nocodb.com"><b>Website</b></a> •
+    <a href="http://www.atmosphere.dev"><b>Website</b></a> •
     <a href="https://discord.gg/c7GEYrvFtT"><b>Discord</b></a> •
-    <a href="https://community.nocodb.com/"><b>Community</b></a> •
-    <a href="https://twitter.com/nocodb"><b>Twitter</b></a> •
-    <a href="https://www.reddit.com/r/NocoDB/"><b>Reddit</b></a> •
-    <a href="https://docs.nocodb.com/"><b>Documentation</b></a>
+    <a href="https://community.atmosphere.dev/"><b>Community</b></a> •
+    <a href="https://twitter.com/atmosphere"><b>Twitter</b></a> •
+    <a href="https://www.reddit.com/r/Atmosphere/"><b>Reddit</b></a> •
+    <a href="https://docs.atmosphere.dev/"><b>Documentation</b></a>
 </p>
 
 ![All Views](https://user-images.githubusercontent.com/35857179/194825053-3aa3373d-3e0f-4b42-b3f1-42928332054a.gif)
@@ -51,7 +51,7 @@ NocoDB is the fastest and easiest way to build databases online.
 
 # Join Our Team
 
-<p align=""><a href="http://careers.nocodb.com" target="_blank"><img src="https://user-images.githubusercontent.com/61551451/169663818-45643495-e95b-48e2-be13-01d6a77dc2fd.png" width="250"/></a></p>
+<p align=""><a href="http://careers.atmosphere.dev" target="_blank"><img src="https://user-images.githubusercontent.com/61551451/169663818-45643495-e95b-48e2-be13-01d6a77dc2fd.png" width="250"/></a></p>
 
 # Join Our Community
 
@@ -59,7 +59,7 @@ NocoDB is the fastest and easiest way to build databases online.
 <img src="https://discordapp.com/api/guilds/661905455894888490/widget.png?style=banner3" alt="">
 </a>
 
-[![Stargazers repo roster for @nocodb/nocodb](https://reporoster.com/stars/nocodb/nocodb)](https://github.com/nocodb/nocodb/stargazers)
+[![Stargazers repo roster for @atmosphere/atmosphere](https://reporoster.com/stars/atmosphere/atmosphere)](https://github.com/GaryOcean428/atmosphere/stargazers)
 
 # Quick try
 
@@ -67,79 +67,79 @@ NocoDB is the fastest and easiest way to build databases online.
 
 ```bash
 # for SQLite
-docker run -d --name nocodb \
--v "$(pwd)"/nocodb:/usr/app/data/ \
+docker run -d --name atmosphere \
+-v "$(pwd)"/atmosphere:/usr/app/data/ \
 -p 8080:8080 \
-nocodb/nocodb:latest
+atmosphere/atmosphere:latest
 
 
 # for PostgreSQL
-docker run -d --name nocodb-postgres \
--v "$(pwd)"/nocodb:/usr/app/data/ \
+docker run -d --name atmosphere-postgres \
+-v "$(pwd)"/atmosphere:/usr/app/data/ \
 -p 8080:8080 \
--e NC_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
--e NC_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
-nocodb/nocodb:latest
+-e ATMOSPHERE_DB="pg://host.docker.internal:5432?u=root&p=password&d=d1" \
+-e ATMOSPHERE_AUTH_JWT_SECRET="569a1821-0a93-45e8-87ab-eb857f20a010" \
+atmosphere/atmosphere:latest
 ```
 
 > To persist data in docker you can mount volume at `/usr/app/data/` since 0.10.6. Otherwise your data will be lost after recreating the container.
 
-> If you plan to input some special characters, you may need to change the character set and collation yourself when creating the database. Please check out the examples for [MySQL Docker](https://github.com/nocodb/nocodb/issues/1340#issuecomment-1049481043).
+> If you plan to input some special characters, you may need to change the character set and collation yourself when creating the database. Please check out the examples for [MySQL Docker](https://github.com/GaryOcean428/atmosphere/issues/1340#issuecomment-1049481043).
 
 ## Binaries
 
 ##### MacOS (x64)
 
 ```bash
-curl http://get.nocodb.com/macos-x64 -o nocodb -L && chmod +x nocodb && ./nocodb
+curl http://get.atmosphere.dev/macos-x64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere
 ```
 
 ##### MacOS (arm64)
 
 ```bash
-curl http://get.nocodb.com/macos-arm64 -o nocodb -L && chmod +x nocodb && ./nocodb
+curl http://get.atmosphere.dev/macos-arm64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere
 ```
 
 ##### Linux (x64)
 
 ```bash
-curl http://get.nocodb.com/linux-x64 -o nocodb -L && chmod +x nocodb && ./nocodb
+curl http://get.atmosphere.dev/linux-x64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere
 ```
 
 ##### Linux (arm64)
 
 ```bash
-curl http://get.nocodb.com/linux-arm64 -o nocodb -L && chmod +x nocodb && ./nocodb
+curl http://get.atmosphere.dev/linux-arm64 -o atmosphere -L && chmod +x atmosphere && ./atmosphere
 ```
 
 ##### Windows (x64)
 
 ```bash
-iwr http://get.nocodb.com/win-x64.exe
-.\Noco-win-x64.exe
+iwr http://get.atmosphere.dev/win-x64.exe
+.\Atmosphere-win-x64.exe
 ```
 
 ##### Windows (arm64)
 
 ```bash
-iwr http://get.nocodb.com/win-arm64.exe
-.\Noco-win-arm64.exe
+iwr http://get.atmosphere.dev/win-arm64.exe
+.\Atmosphere-win-arm64.exe
 ```
 
 ## Docker Compose
 
-We provide different docker-compose.yml files under [this directory](https://github.com/nocodb/nocodb/tree/master/docker-compose). Here are some examples.
+We provide different docker-compose.yml files under [this directory](https://github.com/GaryOcean428/atmosphere/tree/master/docker-compose). Here are some examples.
 
 ```bash
-git clone https://github.com/nocodb/nocodb
+git clone https://github.com/GaryOcean428/atmosphere
 # for PostgreSQL
-cd nocodb/docker-compose/2_pg
+cd atmosphere/docker-compose/2_pg
 docker compose up -d
 ```
 
 > To persist data in docker, you can mount volume at `/usr/app/data/` since 0.10.6. Otherwise your data will be lost after recreating the container.
 
-> If you plan to input some special characters, you may need to change the character set and collation yourself when creating the database. Please check out the examples for [MySQL Docker Compose](https://github.com/nocodb/nocodb/issues/1313#issuecomment-1046625974).
+> If you plan to input some special characters, you may need to change the character set and collation yourself when creating the database. Please check out the examples for [MySQL Docker Compose](https://github.com/GaryOcean428/atmosphere/issues/1313#issuecomment-1046625974).
 
 # GUI
 
@@ -201,7 +201,7 @@ Access Dashboard using: [http://localhost:8080/dashboard](http://localhost:8080/
 
 ### App Store for Workflow Automations
 
-We provide different integrations in three main categories. See <a href="https://docs.nocodb.com/setup-and-usages/account-settings#app-store" target="_blank">App Store</a> for details.
+We provide different integrations in three main categories. See <a href="https://docs.atmosphere.dev/setup-and-usages/account-settings#app-store" target="_blank">App Store</a> for details.
 
 - ⚡ &nbsp;Chat: Slack, Discord, Mattermost, and etc
 - ⚡ &nbsp;Email: AWS SES, SMTP, MailerSend, and etc
@@ -209,34 +209,34 @@ We provide different integrations in three main categories. See <a href="https:/
 
 ### Programmatic Access
 
-We provide the following ways to let users programmatically invoke actions. You can use a token (either JWT or Social Auth) to sign your requests for authorization to NocoDB.
+We provide the following ways to let users programmatically invoke actions. You can use a token (either JWT or Social Auth) to sign your requests for authorization to Atmosphere.
 
 - ⚡ &nbsp;REST APIs
-- ⚡ &nbsp;NocoDB SDK
+- ⚡ &nbsp;Atmosphere SDK
 
 ### Sync Schema
 
-We allow you to sync schema changes if you have made changes outside NocoDB GUI. However, it has to be noted then you will have to bring your own schema migrations for moving from one environment to another. See <a href="https://docs.nocodb.com/data-sources/sync-with-data-source" target="_blank">Sync Schema</a> for details.
+We allow you to sync schema changes if you have made changes outside Atmosphere GUI. However, it has to be noted then you will have to bring your own schema migrations for moving from one environment to another. See <a href="https://docs.atmosphere.dev/data-sources/sync-with-data-source" target="_blank">Sync Schema</a> for details.
 
 ### Audit
 
-We are keeping all the user operation logs in one place. See <a href="https://docs.nocodb.com/data-sources/actions-on-data-sources/#audit-logs" target="_blank">Audit</a> for details.
+We are keeping all the user operation logs in one place. See <a href="https://docs.atmosphere.dev/data-sources/actions-on-data-sources/#audit-logs" target="_blank">Audit</a> for details.
 
 # Production Setup
 
-By default, SQLite is used for storing metadata. However, you can specify your database. The connection parameters for this database can be specified in `NC_DB` environment variable. Moreover, we also provide the below environment variables for configuration.
+By default, SQLite is used for storing metadata. However, you can specify your database. The connection parameters for this database can be specified in `ATMOSPHERE_DB` environment variable. Moreover, we also provide the below environment variables for configuration.
 
 ## Environment variables
 
-Please refer to the [Environment variables](https://docs.nocodb.com/getting-started/self-hosted/environment-variables)
+Please refer to the [Environment variables](https://docs.atmosphere.dev/getting-started/self-hosted/environment-variables)
 
 # Development Setup
 
-Please refer to [Development Setup](https://docs.nocodb.com/engineering/development-setup)
+Please refer to [Development Setup](https://docs.atmosphere.dev/engineering/development-setup)
 
 # Contributing
 
-Please refer to [Contribution Guide](https://github.com/nocodb/nocodb/blob/master/.github/CONTRIBUTING.md).
+Please refer to [Contribution Guide](https://github.com/GaryOcean428/atmosphere/blob/master/.github/CONTRIBUTING.md).
 
 # Why are we building this?
 
@@ -256,6 +256,6 @@ This project is licensed under <a href="./LICENSE">Sustainable Use License</a>.
 
 Thank you for your contributions! We appreciate all the contributions from the community.
 
-<a href="https://github.com/nocodb/nocodb/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=nocodb/nocodb" />
+<a href="https://github.com/GaryOcean428/atmosphere/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=atmosphere/atmosphere" />
 </a>

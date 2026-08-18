@@ -37,13 +37,13 @@ const copyUrl = async () => {
 
 <template>
   <div
-    class="flex flex-row items-center justify-end text-nc-content-gray-subtle2 gap-x-1.5 py-1.5 px-1.5 bg-nc-bg-gray-extralight rounded-md border-1 border-nc-border-gray-medium"
+    class="flex flex-row items-center justify-end text-atm-content-gray-subtle2 gap-x-1.5 py-1.5 px-1.5 bg-atm-bg-gray-extralight rounded-md border-1 border-atm-border-gray-medium"
   >
     <div class="flex flex-row block flex-1 overflow-hidden pl-3 cursor-pointer" @click="copyUrl">
-      <div class="overflow-hidden whitespace-nowrap text-nc-content-gray-muted">{{ url }}</div>
+      <div class="overflow-hidden whitespace-nowrap text-atm-content-gray-muted">{{ url }}</div>
     </div>
     <div class="flex flex-row gap-x-1">
-      <NcTooltip>
+      <AtTooltip>
         <template #title>
           {{ $t('activity.openInANewTab') }}
         </template>
@@ -51,21 +51,21 @@ const copyUrl = async () => {
         <div class="button" @click="openUrl">
           <RiExternalLinkLine class="h-3.75" />
         </div>
-      </NcTooltip>
-      <NcTooltip>
+      </AtTooltip>
+      <AtTooltip>
         <template #title>
           {{ $t('activity.copyIFrameCode') }}
         </template>
         <div
           class="button"
           :class="{
-            '!text-nc-content-brand-hover !border-nc-border-gray-medium !cursor-not-allowed': isCopied.embed,
+            '!text-atm-content-brand-hover !border-atm-border-gray-medium !cursor-not-allowed': isCopied.embed,
           }"
           @click="embedHtml"
         >
           <MdiCodeTags class="h-4" />
         </div>
-      </NcTooltip>
+      </AtTooltip>
       <div class="button" data-testid="docs-share-page-copy-link" @click="copyUrl">
         <MdiCheck v-if="isCopied.link" class="h-3.5" />
         <MdiContentCopy v-else class="h-3.5" />
@@ -80,6 +80,6 @@ const copyUrl = async () => {
 
 <style lang="scss" scoped>
 .button {
-  @apply flex flex-row py-1.5 px-1.5 bg-nc-bg-default hover:bg-nc-bg-gray-light cursor-pointer rounded-md border-1 border-nc-border-gray-light gap-x-1 items-center shadow-sm;
+  @apply flex flex-row py-1.5 px-1.5 bg-atm-bg-default hover:bg-atm-bg-gray-light cursor-pointer rounded-md border-1 border-atm-border-gray-light gap-x-1 items-center shadow-sm;
 }
 </style>

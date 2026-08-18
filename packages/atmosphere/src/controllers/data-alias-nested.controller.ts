@@ -13,7 +13,7 @@ import { GlobalGuard } from '~/guards/global/global.guard';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { DataApiLimiterGuard } from '~/guards/data-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(DataApiLimiterGuard, GlobalGuard)
@@ -30,8 +30,8 @@ export class DataAliasNestedController {
   ])
   @Acl('mmList')
   async mmList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('columnName') columnName: string,
     @Param('rowId') rowId: string,
     @Param('baseName') baseName: string,
@@ -54,8 +54,8 @@ export class DataAliasNestedController {
   ])
   @Acl('mmExcludedList')
   async mmExcludedList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('columnName') columnName: string,
     @Param('rowId') rowId: string,
     @Param('baseName') baseName: string,
@@ -75,8 +75,8 @@ export class DataAliasNestedController {
   ])
   @Acl('hmExcludedList')
   async hmExcludedList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('columnName') columnName: string,
     @Param('rowId') rowId: string,
     @Param('baseName') baseName: string,
@@ -96,8 +96,8 @@ export class DataAliasNestedController {
   ])
   @Acl('btExcludedList')
   async btExcludedList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('columnName') columnName: string,
     @Param('rowId') rowId: string,
     @Param('baseName') baseName: string,
@@ -117,8 +117,8 @@ export class DataAliasNestedController {
   ])
   @Acl('ooExcludedList')
   async ooExcludedList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('columnName') columnName: string,
     @Param('rowId') rowId: string,
     @Param('baseName') baseName: string,
@@ -138,8 +138,8 @@ export class DataAliasNestedController {
   @Get(['/api/v1/db/data/:orgs/:baseName/:tableName/:rowId/hm/:columnName'])
   @Acl('hmList')
   async hmList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('columnName') columnName: string,
     @Param('rowId') rowId: string,
     @Param('baseName') baseName: string,
@@ -159,8 +159,8 @@ export class DataAliasNestedController {
   ])
   @Acl('relationDataRemove')
   async relationDataRemove(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('columnName') columnName: string,
     @Param('rowId') rowId: string,
     @Param('baseName') baseName: string,
@@ -186,8 +186,8 @@ export class DataAliasNestedController {
   @Acl('relationDataAdd')
   @HttpCode(200)
   async relationDataAdd(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('columnName') columnName: string,
     @Param('rowId') rowId: string,
     @Param('baseName') baseName: string,

@@ -1,6 +1,6 @@
-import { parseProp } from 'nocodb-sdk';
+import { parseProp } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { Column } from '~/models';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import Sort from '~/models/Sort';
@@ -32,7 +32,7 @@ export interface LookupSortLimitConfig {
 }
 
 export async function loadLookupSortAndLimit(
-  context: NcContext,
+  context: AtContext,
   column: Column,
 ): Promise<LookupSortLimitConfig> {
   const meta = (parseProp(column.meta) || {}) as {

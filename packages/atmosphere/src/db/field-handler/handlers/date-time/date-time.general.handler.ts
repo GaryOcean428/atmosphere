@@ -6,9 +6,9 @@ import {
   isDateTimeStringHasTimezone,
   parseDateTimeValue,
   parseProp,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import debug from 'debug';
-import type { NcContext } from 'nocodb-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { MetaService } from '~/meta/meta.service';
 import type {
@@ -20,13 +20,13 @@ import type { Filter } from '~/models';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Knex } from '~/db/CustomKnex';
 import type { Column } from '~/models';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { GenericFieldHandler } from '~/db/field-handler/handlers/generic';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const dateTimeHandlerDebug = debug('nc:DateTimeGeneralHandler');
+const dateTimeHandlerDebug = debug('atm:DateTimeGeneralHandler');
 
 export class DateTimeGeneralHandler extends GenericFieldHandler {
   dateValueFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -111,7 +111,7 @@ export class DateTimeGeneralHandler extends GenericFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }) {
@@ -152,7 +152,7 @@ export class DateTimeGeneralHandler extends GenericFieldHandler {
       }
     }
     if (!dayjsUtcValue || !dayjsUtcValue.isValid()) {
-      NcError.invalidValueForField({
+      AtError.invalidValueForField({
         value: params.value,
         column: params.column.title,
         type: params.column.uidt,
@@ -167,7 +167,7 @@ export class DateTimeGeneralHandler extends GenericFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {

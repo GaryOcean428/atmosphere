@@ -1,9 +1,9 @@
-import { isLinksOrLTAR, NcApiVersion, RelationTypes } from 'nocodb-sdk';
+import { isLinksOrLTAR, AtApiVersion, RelationTypes } from 'atmosphere-sdk';
 import type { Column, LinkToAnotherRecordColumn } from '~/models';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import { Filter, Model, Source } from '~/models';
-import { NcError } from '~/helpers/catchError';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import { AtError } from '~/helpers/catchError';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import { dataWrapper } from '~/helpers/dbHelpers';
 import { FieldHandler } from '~/db/field-handler';
 
@@ -18,7 +18,7 @@ export interface LtarDisplayValueContext {
   column: Column;
   colOptions: LinkToAnotherRecordColumn;
   /** Context of the related (child) table — may differ from the parent's. */
-  refContext: NcContext;
+  refContext: AtContext;
   relatedModel: Model;
   relatedBaseModel: Awaited<ReturnType<typeof Model.getBaseModelSQL>>;
   /** Column of the related table whose values are matched against. */
@@ -42,11 +42,11 @@ export interface LtarDisplayValueContext {
  * support has-many / belongs-to relations too.
  */
 export async function getLtarDisplayValueContext(
-  context: NcContext,
+  context: AtContext,
   column: Column,
 ): Promise<LtarDisplayValueContext> {
   if (!isLinksOrLTAR(column)) {
-    NcError.get(context).invalidRequestBody(
+    AtError.get(context).invalidRequestBody(
       `Column '${column.title ?? column.id}' is not a link column`,
     );
   }
@@ -65,7 +65,7 @@ export async function getLtarDisplayValueContext(
     relatedModel.columns?.find((c) => c.id === customDisplayColId);
   const displayValueColumn = customDisplayCol ?? relatedModel.displayValue;
   if (!displayValueColumn) {
-    NcError.get(context).badRequest(
+    AtError.get(context).badRequest(
       'Related table has no display value column',
     );
   }
@@ -79,7 +79,7 @@ export async function getLtarDisplayValueContext(
   const relatedSource = await Source.get(refContext, relatedModel.source_id);
   const relatedBaseModel = await Model.getBaseModelSQL(refContext, {
     id: relatedModel.id,
-    dbDriver: await NcConnectionMgrv2.get(relatedSource),
+    dbDriver: await AtConnectionMgrv2.get(relatedSource),
   });
 
   return {
@@ -167,7 +167,7 @@ export async function resolveLtarDisplayValuesToPks(
 
   if (eqFilterArr.length > 0) {
     const exactRows = await relatedBaseModel.list(
-      { ...listOpts, filterArr: eqFilterArr, apiVersion: NcApiVersion.V3 },
+      { ...listOpts, filterArr: eqFilterArr, apiVersion: AtApiVersion.V3 },
       listFlags,
     );
 
@@ -193,7 +193,7 @@ export async function resolveLtarDisplayValuesToPks(
 
     if (likeFilterArr.length > 0) {
       const candidateRows = await relatedBaseModel.list(
-        { ...listOpts, filterArr: likeFilterArr, apiVersion: NcApiVersion.V3 },
+        { ...listOpts, filterArr: likeFilterArr, apiVersion: AtApiVersion.V3 },
         listFlags,
       );
 

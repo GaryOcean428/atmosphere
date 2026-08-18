@@ -1,6 +1,6 @@
-import { FormulaDataTypes } from 'nocodb-sdk';
+import { FormulaDataTypes } from 'atmosphere-sdk';
 import type CustomKnex from '~/db/CustomKnex';
-import { NC_MAX_TEXT_LENGTH } from '~/constants';
+import { ATMOSPHERE_MAX_TEXT_LENGTH } from '~/constants';
 
 export interface IGetAggregateFn {
   (fnName: string): (args: { qb; knex?: CustomKnex; cn }) => any;
@@ -62,17 +62,17 @@ export const formulaOutputsRawJson = (node: any): boolean => {
 // (via SUBSTR) guarantees the driver never streams back more than this many
 // characters per cell, regardless of the database platform.
 //
-// Defaults to NC_MAX_TEXT_LENGTH (100k) — the same limit LongText columns are
+// Defaults to ATMOSPHERE_MAX_TEXT_LENGTH (100k) — the same limit LongText columns are
 // truncated to on read (see select-object.ts) — so a formula's string value
 // stays consistent with other text values and can be pasted into a text field.
-// A dedicated NC_FORMULA_MAX_OUTPUT_LENGTH env var can override this when a
+// A dedicated ATMOSPHERE_FORMULA_MAX_OUTPUT_LENGTH env var can override this when a
 // different formula-specific cap is needed.
 export const getFormulaOutputMaxLength = (): number => {
-  const override = Number(process.env.NC_FORMULA_MAX_OUTPUT_LENGTH);
+  const override = Number(process.env.ATMOSPHERE_FORMULA_MAX_OUTPUT_LENGTH);
   if (Number.isFinite(override) && override > 0) {
     return Math.floor(override);
   }
-  return NC_MAX_TEXT_LENGTH;
+  return ATMOSPHERE_MAX_TEXT_LENGTH;
 };
 
 // Wrap a formula's final string expression so the database truncates the value
@@ -109,7 +109,7 @@ export const wrapFormulaWithMaxLength = ({
       // truncating every value to one character, and `CAST(<clob> AS CHAR)`
       // raises ORA-25137. SUBSTR over TO_CLOB(x) keeps the result a CLOB (TO_CLOB
       // is identity on CLOB/VARCHAR2/NUMBER), so it can carry the full
-      // NC_MAX_TEXT_LENGTH (100k) — a plain SQL VARCHAR2 caps at 4000/32767 and
+      // ATMOSPHERE_MAX_TEXT_LENGTH (100k) — a plain SQL VARCHAR2 caps at 4000/32767 and
       // would truncate. A CLOB can't be used in GROUP BY / DISTINCT (ORA-22849),
       // but no caller groups by the raw formula output: the widget category
       // path narrows it to a VARCHAR2 separately (oracleWidgetCategoryExpr).
@@ -171,7 +171,7 @@ export const getAggregateFn: IGetAggregateFn = (parentFn) => {
     //       );
     case 'FIRST':
       // Return the first linked value in display order.  The subquery already
-      // has ORDER BY nc_order, so LIMIT 1 gives the first record.
+      // has ORDER BY atm_order, so LIMIT 1 gives the first record.
       return ({ qb, cn }) => qb.clear('select').select(cn).limit(1);
 
     case 'CONCAT':

@@ -1,5 +1,5 @@
-import { isDeletedCol, UniqueConstraintViolationError } from 'nocodb-sdk';
-import { ViewTypes } from 'nocodb-sdk';
+import { isDeletedCol, UniqueConstraintViolationError } from 'atmosphere-sdk';
+import { ViewTypes } from 'atmosphere-sdk';
 import type { Column } from '~/models';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { XKnex } from '~/db/CustomKnex';
@@ -13,7 +13,7 @@ import { deletedColValue } from '~/helpers/dbHelpers';
  * For callers that use a unique index as a concurrency primitive — insert and
  * treat a collision as "someone else already did this" — rather than to report
  * a validation failure to a user. See {@link handleUniqueConstraintError} for
- * the latter, which resolves the offending column for an NcError.
+ * the latter, which resolves the offending column for an AtError.
  *
  * The message-matching fallback is deliberate: wrapper layers sometimes lose
  * the driver code, and a missed detection turns an idempotent no-op into a

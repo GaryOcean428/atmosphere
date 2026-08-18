@@ -27,18 +27,18 @@ watch(isReloading, () => {
 </script>
 
 <template>
-  <NcTooltip placement="bottom">
+  <AtTooltip placement="bottom">
     <template #title> {{ $t('general.reload') }} </template>
 
     <div
-      class="flex ml-1 items-center justify-center select-none cursor-pointer text-gray-500 w-5.5 h-5.5 hover:(bg-nc-bg-gray-light text-nc-content-gray-extreme) rounded"
+      class="flex ml-1 items-center justify-center select-none cursor-pointer text-gray-500 w-5.5 h-5.5 hover:(bg-atm-bg-gray-light text-atm-content-gray-extreme) rounded"
     >
       <component
         :is="iconMap.reload"
-        class="group-hover:(text-primary) h-4 nc-icon-reload text-gray-400"
+        class="group-hover:(text-primary) h-4 atm-icon-reload text-gray-400"
         :class="isReloading ? 'animate-spin' : ''"
         @click="onClick"
       />
     </div>
-  </NcTooltip>
+  </AtTooltip>
 </template>

@@ -1,5 +1,5 @@
-import { PluginCategory } from 'nocodb-sdk';
-import { NcError } from './catchError';
+import { PluginCategory } from 'atmosphere-sdk';
+import { AtError } from './catchError';
 import type {
   IEmailAdapter,
   IStorageAdapterV2,
@@ -8,7 +8,7 @@ import type {
   // XcPlugin,
   // XcStoragePlugin,
   // XcWebhookNotificationPlugin
-} from '~/types/nc-plugin';
+} from '~/types/atm-plugin';
 import BackblazePluginConfig from '~/plugins/backblaze';
 import DiscordPluginConfig from '~/plugins/discord';
 import GcsPluginConfig from '~/plugins/gcs';
@@ -29,7 +29,7 @@ import UpcloudPluginConfig from '~/plugins/upcloud';
 import VultrPluginConfig from '~/plugins/vultr';
 import SESPluginConfig from '~/plugins/ses';
 import R2PluginConfig from '~/plugins/r2';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import Local from '~/plugins/storage/Local';
 import { MetaTable, RootScopes } from '~/utils/globals';
 import Plugin from '~/models/Plugin';
@@ -57,16 +57,16 @@ const defaultPlugins = [
   R2PluginConfig,
 ];
 
-class NcPluginMgrv2 {
+class AtPluginMgrv2 {
   /* active plugins */
 
-  // constructor(app: Noco, ncMeta: NcMetaIO) {
+  // constructor(app: Atmosphere, ncMeta: AtMetaIO) {
   //   this.app = app;
   //   this.ncMeta = ncMeta;
   //   this.activePlugins = [];
   // }
 
-  public static async init(ncMeta = Noco.ncMeta): Promise<void> {
+  public static async init(ncMeta = Atmosphere.ncMeta): Promise<void> {
     // extract duplicate plugin ids from default plugins and throw error
     const duplicateIds = defaultPlugins
       .map((p) => p.id)
@@ -80,7 +80,7 @@ class NcPluginMgrv2 {
       );
     }
 
-    /* Populate rows into nc_plugins table if not present */
+    /* Populate rows into atm_plugins table if not present */
     for (const plugin of defaultPlugins) {
       const pluginConfig = await ncMeta.metaGet(
         RootScopes.ROOT,
@@ -130,30 +130,30 @@ class NcPluginMgrv2 {
 
   private static async initPluginsFromEnv() {
     /*
-     * NC_S3_BUCKET_NAME
-     * NC_S3_REGION
-     * NC_S3_ENDPOINT
-     * NC_S3_ACCESS_KEY
-     * NC_S3_ACCESS_SECRET
+     * ATMOSPHERE_S3_BUCKET_NAME
+     * ATMOSPHERE_S3_REGION
+     * ATMOSPHERE_S3_ENDPOINT
+     * ATMOSPHERE_S3_ACCESS_KEY
+     * ATMOSPHERE_S3_ACCESS_SECRET
      * */
 
     if (
-      process.env.NC_S3_BUCKET_NAME &&
-      (process.env.NC_S3_REGION || process.env.NC_S3_ENDPOINT)
+      process.env.ATMOSPHERE_S3_BUCKET_NAME &&
+      (process.env.ATMOSPHERE_S3_REGION || process.env.ATMOSPHERE_S3_ENDPOINT)
     ) {
       const s3Plugin = await Plugin.getPlugin(S3PluginConfig.id);
 
       const s3CfgData: Record<string, any> = {
-        bucket: process.env.NC_S3_BUCKET_NAME,
-        region: process.env.NC_S3_REGION,
-        endpoint: process.env.NC_S3_ENDPOINT,
-        force_path_style: process.env.NC_S3_FORCE_PATH_STYLE === 'true',
-        acl: process.env.NC_S3_ACL,
+        bucket: process.env.ATMOSPHERE_S3_BUCKET_NAME,
+        region: process.env.ATMOSPHERE_S3_REGION,
+        endpoint: process.env.ATMOSPHERE_S3_ENDPOINT,
+        force_path_style: process.env.ATMOSPHERE_S3_FORCE_PATH_STYLE === 'true',
+        acl: process.env.ATMOSPHERE_S3_ACL,
       };
 
-      if (process.env.NC_S3_ACCESS_KEY && process.env.NC_S3_ACCESS_SECRET) {
-        s3CfgData.access_key = process.env.NC_S3_ACCESS_KEY;
-        s3CfgData.access_secret = process.env.NC_S3_ACCESS_SECRET;
+      if (process.env.ATMOSPHERE_S3_ACCESS_KEY && process.env.ATMOSPHERE_S3_ACCESS_SECRET) {
+        s3CfgData.access_key = process.env.ATMOSPHERE_S3_ACCESS_KEY;
+        s3CfgData.access_secret = process.env.ATMOSPHERE_S3_ACCESS_SECRET;
       }
 
       await Plugin.update(s3Plugin.id, {
@@ -163,30 +163,30 @@ class NcPluginMgrv2 {
     }
 
     if (
-      process.env.NC_SMTP_FROM &&
-      process.env.NC_SMTP_HOST &&
-      process.env.NC_SMTP_PORT
+      process.env.ATMOSPHERE_SMTP_FROM &&
+      process.env.ATMOSPHERE_SMTP_HOST &&
+      process.env.ATMOSPHERE_SMTP_PORT
     ) {
       const smtpPlugin = await Plugin.getPlugin(SMTPPluginConfig.id);
       await Plugin.update(smtpPlugin.id, {
         active: true,
         input: JSON.stringify({
-          from: process.env.NC_SMTP_FROM,
-          host: process.env.NC_SMTP_HOST,
-          port: process.env.NC_SMTP_PORT,
-          username: process.env.NC_SMTP_USERNAME,
-          password: process.env.NC_SMTP_PASSWORD,
-          secure: process.env.NC_SMTP_SECURE === 'true',
-          ignoreTLS: process.env.NC_SMTP_IGNORE_TLS === 'true',
+          from: process.env.ATMOSPHERE_SMTP_FROM,
+          host: process.env.ATMOSPHERE_SMTP_HOST,
+          port: process.env.ATMOSPHERE_SMTP_PORT,
+          username: process.env.ATMOSPHERE_SMTP_USERNAME,
+          password: process.env.ATMOSPHERE_SMTP_PASSWORD,
+          secure: process.env.ATMOSPHERE_SMTP_SECURE === 'true',
+          ignoreTLS: process.env.ATMOSPHERE_SMTP_IGNORE_TLS === 'true',
           rejectUnauthorized:
-            process.env.NC_SMTP_REJECT_UNAUTHORIZED === 'true',
+            process.env.ATMOSPHERE_SMTP_REJECT_UNAUTHORIZED === 'true',
         }),
       });
     }
   }
 
   public static async storageAdapter(
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<IStorageAdapterV2> {
     const pluginData = await ncMeta.metaGet2(
       RootScopes.ROOT,
@@ -216,7 +216,7 @@ class NcPluginMgrv2 {
 
   public static async emailAdapter(
     isUserInvite = true,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<IEmailAdapter> {
     const pluginData = await ncMeta.metaGet2(
       RootScopes.ROOT,
@@ -251,7 +251,7 @@ class NcPluginMgrv2 {
 
   public static async webhookNotificationAdapters(
     title: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<IWebhookNotificationAdapter> {
     const pluginData = await ncMeta.metaGet2(
       RootScopes.ROOT,
@@ -296,11 +296,11 @@ class NcPluginMgrv2 {
           const plugin = defaultPlugins.find(
             (pluginConfig) => pluginConfig?.title === args.title,
           );
-          const tempPlugin = new plugin.builder(Noco.ncMeta, plugin);
+          const tempPlugin = new plugin.builder(Atmosphere.ncMeta, plugin);
           await tempPlugin.init(args?.input);
 
           if (!tempPlugin?.getAdapter()?.test)
-            NcError.notImplemented('Plugin Test');
+            AtError.notImplemented('Plugin Test');
 
           return tempPlugin?.getAdapter()?.test?.();
         }
@@ -310,11 +310,11 @@ class NcPluginMgrv2 {
           const plugin = defaultPlugins.find(
             (pluginConfig) => pluginConfig?.title === args.title,
           );
-          const tempPlugin = new plugin.builder(Noco.ncMeta, plugin);
+          const tempPlugin = new plugin.builder(Atmosphere.ncMeta, plugin);
           await tempPlugin.init(args?.input);
 
           if (!tempPlugin?.getAdapter()?.test)
-            NcError.notImplemented('Plugin Test');
+            AtError.notImplemented('Plugin Test');
 
           return tempPlugin?.getAdapter()?.test?.();
         }
@@ -323,11 +323,11 @@ class NcPluginMgrv2 {
         const plugin = defaultPlugins.find(
           (pluginConfig) => pluginConfig?.title === args.title,
         );
-        const tempPlugin = new plugin.builder(Noco.ncMeta, plugin);
+        const tempPlugin = new plugin.builder(Atmosphere.ncMeta, plugin);
         await tempPlugin.init(args?.input);
 
         if (!tempPlugin?.getAdapter()?.test)
-          NcError.notImplemented('Plugin Test');
+          AtError.notImplemented('Plugin Test');
 
         return tempPlugin?.getAdapter()?.test?.();
       }
@@ -335,4 +335,4 @@ class NcPluginMgrv2 {
   }
 }
 
-export default NcPluginMgrv2;
+export default AtPluginMgrv2;

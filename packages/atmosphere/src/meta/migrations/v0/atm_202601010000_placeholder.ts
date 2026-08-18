@@ -1,10 +1,10 @@
 import type { Knex } from 'knex';
 
 /**
- * nc_202601010000_placeholder
+ * atm_202601010000_placeholder
  * this is empty placeholder migration
  * to mark the change from sequential numbering to timestamp
- * the format is nc_YYYYMMDDHHmm_{title}, where:
+ * the format is atm_YYYYMMDDHHmm_{title}, where:
  * YYYY: 4 digit year, ex: 2026
  * MM: 2 digit month, 01 to 12
  * DD: 2 digit day, 01 to 31

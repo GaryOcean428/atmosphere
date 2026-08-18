@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { AppEvents } from 'nocodb-sdk';
-import type { VisibilityRuleReqType } from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+import { AppEvents } from 'atmosphere-sdk';
+import type { VisibilityRuleReqType } from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { UIAclEvent } from '~/services/app-hooks/interfaces';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { validatePayload } from '~/helpers';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { assertNotSandbox } from '~/helpers/sandboxGuards';
 import { Base, Model, ModelRoleVisibility, View } from '~/models';
 
@@ -14,11 +14,11 @@ export class ModelVisibilitiesService {
   constructor(private readonly appHooksService: AppHooksService) {}
 
   async xcVisibilityMetaSetAll(
-    context: NcContext,
+    context: AtContext,
     param: {
       visibilityRule: VisibilityRuleReqType;
       baseId: string;
-      req: NcRequest;
+      req: AtRequest;
     },
   ) {
     await assertNotSandbox(context);
@@ -31,7 +31,7 @@ export class ModelVisibilitiesService {
     const base = await Base.getWithInfo(context, param.baseId);
 
     if (!base) {
-      NcError.baseNotFound(param.baseId);
+      AtError.baseNotFound(param.baseId);
     }
 
     for (const d of param.visibilityRule) {
@@ -39,7 +39,7 @@ export class ModelVisibilitiesService {
         const view = await View.get(context, d.id);
 
         if (view.base_id !== param.baseId) {
-          NcError.badRequest('View does not belong to the base');
+          AtError.badRequest('View does not belong to the base');
         }
 
         const dataInDb = await ModelRoleVisibility.get(context, {
@@ -80,7 +80,7 @@ export class ModelVisibilitiesService {
   }
 
   async xcVisibilityMetaGet(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       includeM2M?: boolean;

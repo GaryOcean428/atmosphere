@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ColumnType, LinkToAnotherRecordType, LookupType, TableType } from 'nocodb-sdk'
-import { PlanFeatureTypes, PlanTitles, UITypes, getLookupResultType, getUITypesForLookupResultType } from 'nocodb-sdk'
+import type { ColumnType, LinkToAnotherRecordType, LookupType, TableType } from 'atmosphere-sdk'
+import { PlanFeatureTypes, PlanTitles, UITypes, getLookupResultType, getUITypesForLookupResultType } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -351,10 +351,10 @@ const handleScrollIntoView = () => {
 
 <template>
   <div v-if="refTables.length" class="w-full">
-    <NcTabs v-model:active-key="activeTabKey" class="nc-lookup-options-tabs">
+    <AtTabs v-model:active-key="activeTabKey" class="atm-lookup-options-tabs">
       <a-tab-pane key="configuration">
         <template #tab>
-          <div class="tab" data-testid="nc-lookup-tab-configuration">{{ $t('labels.configuration') }}</div>
+          <div class="tab" data-testid="atm-lookup-tab-configuration">{{ $t('labels.configuration') }}</div>
         </template>
         <div class="w-full flex flex-col gap-4 pt-3">
           <div class="w-full flex flex-row space-x-2">
@@ -366,34 +366,34 @@ const handleScrollIntoView = () => {
               <a-select
                 v-model:value="vModel.fk_relation_column_id"
                 :placeholder="$t('placeholder.select')"
-                dropdown-class-name="!w-64 !rounded-md nc-dropdown-relation-table"
+                dropdown-class-name="!w-64 !rounded-md atm-dropdown-relation-table"
                 @change="onRelationColChange"
               >
                 <template #suffixIcon>
-                  <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+                  <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
                 </template>
                 <a-select-option v-for="(table, i) of refTables" :key="i" :value="table.col.fk_column_id">
                   <div class="flex gap-2 w-full justify-between truncate items-center">
                     <div class="min-w-1/2 flex items-center gap-2">
-                      <SmartsheetHeaderIcon :column="table.column" class="!mx-0" color="text-nc-content-gray-subtle2" />
+                      <SmartsheetHeaderIcon :column="table.column" class="!mx-0" color="text-atm-content-gray-subtle2" />
 
-                      <NcTooltip class="truncate min-w-[calc(100%_-_24px)]" show-on-truncate-only>
+                      <AtTooltip class="truncate min-w-[calc(100%_-_24px)]" show-on-truncate-only>
                         <template #title>{{ table.column.title }}</template>
                         {{ table.column.title }}
-                      </NcTooltip>
+                      </AtTooltip>
                     </div>
                     <div class="inline-flex items-center truncate gap-2">
-                      <div class="text-[0.65rem] leading-4 flex-1 truncate text-nc-content-gray-subtle2 nc-relation-details">
-                        <NcTooltip class="truncate" show-on-truncate-only>
+                      <div class="text-[0.65rem] leading-4 flex-1 truncate text-atm-content-gray-subtle2 atm-relation-details">
+                        <AtTooltip class="truncate" show-on-truncate-only>
                           <template #title>{{ table.title || table.table_name }}</template>
                           {{ table.title || table.table_name }}
-                        </NcTooltip>
+                        </AtTooltip>
                       </div>
                       <component
                         :is="iconMap.check"
                         v-if="vModel.fk_relation_column_id === table.col.fk_column_id"
-                        id="nc-selected-item-icon"
-                        class="text-nc-content-brand w-4 h-4"
+                        id="atm-selected-item-icon"
+                        class="text-atm-content-brand w-4 h-4"
                       />
                     </div>
                   </div>
@@ -413,11 +413,11 @@ const handleScrollIntoView = () => {
                 :disabled="!vModel.fk_relation_column_id"
                 show-search
                 :filter-option="antSelectFilterOption"
-                dropdown-class-name="nc-dropdown-relation-column !rounded-md"
+                dropdown-class-name="atm-dropdown-relation-column !rounded-md"
                 @change="onDataTypeChange"
               >
                 <template #suffixIcon>
-                  <GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" />
+                  <GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" />
                 </template>
                 <a-select-option v-for="column of columns" :key="column.title" :value="column.id">
                   <div class="w-full flex gap-2 truncate items-center justify-between">
@@ -430,8 +430,8 @@ const handleScrollIntoView = () => {
                     <component
                       :is="iconMap.check"
                       v-if="vModel.fk_lookup_column_id === column.id"
-                      id="nc-selected-item-icon"
-                      class="text-nc-content-brand w-4 h-4"
+                      id="atm-selected-item-icon"
+                      class="text-atm-content-brand w-4 h-4"
                     />
                   </div>
                 </a-select-option>
@@ -441,15 +441,15 @@ const handleScrollIntoView = () => {
           <div v-if="canUseRecursiveEvaluation" class="w-full flex flex-row space-x-2">
             <a-form-item class="w-full">
               <div class="flex items-center gap-2">
-                <NcSwitch v-model:checked="useRecursiveEvaluation">
-                  <NcTooltip>
+                <AtSwitch v-model:checked="useRecursiveEvaluation">
+                  <AtTooltip>
                     <template #title>
                       {{ $t('msg.evaluateRecursivelyTooltip') }}
                     </template>
                     {{ $t('msg.evaluateRecursively') }}
-                    <GeneralIcon icon="info" class="h-4 w-4 text-nc-content-gray-disabled" />
-                  </NcTooltip>
-                </NcSwitch>
+                    <GeneralIcon icon="info" class="h-4 w-4 text-atm-content-gray-disabled" />
+                  </AtTooltip>
+                </AtSwitch>
               </div>
             </a-form-item>
           </div>
@@ -458,11 +458,11 @@ const handleScrollIntoView = () => {
               <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_LOOKUP_LIMIT_RECORDS_BY_FILTER">
                 <template #default="{ click }">
                   <div class="flex gap-1 items-center whitespace-nowrap">
-                    <NcSwitch
+                    <AtSwitch
                       :checked="limitRecToCond"
                       :disabled="!selectedTable"
                       size="small"
-                      data-testid="nc-lookup-limit-record-filters"
+                      data-testid="atm-lookup-limit-record-filters"
                       @change="
                         (value) => {
                           if (value && click(PlanFeatureTypes.FEATURE_LOOKUP_LIMIT_RECORDS_BY_FILTER)) return
@@ -471,7 +471,7 @@ const handleScrollIntoView = () => {
                       "
                     >
                       {{ $t('labels.onlyIncludeLinkedRecordsThatMeetSpecificConditions') }}
-                    </NcSwitch>
+                    </AtSwitch>
 
                     <LazyPaymentUpgradeBadge
                       v-if="!limitRecToCond"
@@ -487,7 +487,7 @@ const handleScrollIntoView = () => {
                 </template>
               </PaymentUpgradeBadgeProvider>
 
-              <div v-if="limitRecToCond" class="overflow-auto nc-scrollbar-thin">
+              <div v-if="limitRecToCond" class="overflow-auto atm-scrollbar-thin">
                 <LazySmartsheetToolbarColumnFilter
                   ref="filterRef"
                   class="!pl-10 !p-0 max-w-620px"
@@ -512,11 +512,11 @@ const handleScrollIntoView = () => {
               <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_LOOKUP_SORT_LIMIT">
                 <template #default="{ click }">
                   <div class="flex gap-1 items-center whitespace-nowrap">
-                    <NcSwitch
+                    <AtSwitch
                       :checked="lookupLimitEnabled"
                       :disabled="!selectedTable"
                       size="small"
-                      data-testid="nc-lookup-limit-items"
+                      data-testid="atm-lookup-limit-items"
                       @change="
                         (value) => {
                           if (value && click(PlanFeatureTypes.FEATURE_LOOKUP_SORT_LIMIT)) return
@@ -525,7 +525,7 @@ const handleScrollIntoView = () => {
                       "
                     >
                       {{ $t('labels.limitNumberOfItemsShown') }}
-                    </NcSwitch>
+                    </AtSwitch>
                     <LazyPaymentUpgradeBadge
                       v-if="!lookupLimitEnabled"
                       :feature="PlanFeatureTypes.FEATURE_LOOKUP_SORT_LIMIT"
@@ -540,18 +540,18 @@ const handleScrollIntoView = () => {
                 </template>
               </PaymentUpgradeBadgeProvider>
               <div v-if="lookupLimitEnabled" class="flex items-center gap-2 pl-10">
-                <span class="text-nc-content-gray-subtle2">{{ $t('labels.limitToThe') }}</span>
-                <NcSelect
+                <span class="text-atm-content-gray-subtle2">{{ $t('labels.limitToThe') }}</span>
+                <AtSelect
                   v-model:value="lookupLimitType"
-                  class="!w-28 nc-lookup-limit-type"
-                  data-testid="nc-lookup-limit-type"
-                  dropdown-class-name="nc-dropdown-lookup-limit-type"
+                  class="!w-28 atm-lookup-limit-type"
+                  data-testid="atm-lookup-limit-type"
+                  dropdown-class-name="atm-dropdown-lookup-limit-type"
                 >
                   <a-select-option value="first">{{ $t('general.first') }}</a-select-option>
                   <a-select-option value="last">{{ $t('general.last') }}</a-select-option>
-                </NcSelect>
-                <div data-testid="nc-lookup-limit-value">
-                  <a-input-number v-model:value="lookupLimitValue" :min="1" class="!w-20 nc-lookup-limit-value" />
+                </AtSelect>
+                <div data-testid="atm-lookup-limit-value">
+                  <a-input-number v-model:value="lookupLimitValue" :min="1" class="!w-20 atm-lookup-limit-value" />
                 </div>
               </div>
 
@@ -564,7 +564,7 @@ const handleScrollIntoView = () => {
               <PaymentUpgradeBadgeProvider :feature="PlanFeatureTypes.FEATURE_LOOKUP_SORT_LIMIT">
                 <template #default="{ click }">
                   <div class="flex gap-1 items-center whitespace-nowrap">
-                    <span class="text-nc-content-gray-subtle2">{{ $t('labels.sortRecords') }}</span>
+                    <span class="text-atm-content-gray-subtle2">{{ $t('labels.sortRecords') }}</span>
                     <LazyPaymentUpgradeBadge
                       :feature="PlanFeatureTypes.FEATURE_LOOKUP_SORT_LIMIT"
                       :content="
@@ -589,7 +589,7 @@ const handleScrollIntoView = () => {
                   >
                     <LazySmartsheetColumnLookupSort ref="sortRef" :column-id="vModel.id" :target-meta="lookupTargetMeta" />
                   </div>
-                  <div v-else class="pl-10 text-nc-content-gray-subtle2 text-bodySm">
+                  <div v-else class="pl-10 text-atm-content-gray-subtle2 text-bodySm">
                     {{ $t('labels.selectRelatedFieldToConfigureSort') }}
                   </div>
                 </template>
@@ -601,34 +601,34 @@ const handleScrollIntoView = () => {
 
       <a-tab-pane key="formatting" :disabled="!vModel.fk_lookup_column_id">
         <template #tab>
-          <div class="tab" data-testid="nc-lookup-tab-formatting">{{ $t('labels.formatting') }}</div>
+          <div class="tab" data-testid="atm-lookup-tab-formatting">{{ $t('labels.formatting') }}</div>
         </template>
         <div class="w-full flex flex-col gap-4 pt-3">
           <template v-if="isFormattable">
             <a-form-item class="!mb-0" :label="$t('general.format')">
-              <NcSelect
+              <AtSelect
                 v-model:value="vModel.meta.display_type"
                 v-e="['c:lookup:format-type:select']"
-                class="w-full nc-select-shadow"
+                class="w-full atm-select-shadow"
                 :placeholder="$t('labels.selectAFormatType')"
                 allow-clear
-                data-testid="nc-lookup-format-type"
+                data-testid="atm-lookup-format-type"
               >
                 <a-select-option v-for="option in displayTypeOptions" :key="option.value" :value="option.value">
                   <div class="flex w-full items-center gap-2 justify-between">
                     <div class="w-full flex items-center gap-2">
-                      <component :is="option.icon" class="w-4 h-4" color="text-nc-content-gray-subtle2" />
+                      <component :is="option.icon" class="w-4 h-4" color="text-atm-content-gray-subtle2" />
                       {{ option.label }}
                     </div>
                     <component
                       :is="iconMap.check"
                       v-if="option.value === vModel.meta?.display_type"
-                      id="nc-selected-item-icon"
-                      class="text-nc-content-brand w-4 h-4"
+                      id="atm-selected-item-icon"
+                      class="text-atm-content-brand w-4 h-4"
                     />
                   </div>
                 </a-select-option>
-              </NcSelect>
+              </AtSelect>
             </a-form-item>
 
             <SmartsheetColumnCurrencyOptions
@@ -657,12 +657,12 @@ const handleScrollIntoView = () => {
             />
           </template>
 
-          <div v-else class="text-nc-content-gray-subtle2 text-bodySm max-w-[440px]" data-testid="nc-lookup-not-formattable">
+          <div v-else class="text-atm-content-gray-subtle2 text-bodySm max-w-[440px]" data-testid="atm-lookup-not-formattable">
             {{ $t('msg.info.lookupResultTypeNotFormattable') }}
           </div>
         </div>
       </a-tab-pane>
-    </NcTabs>
+    </AtTabs>
   </div>
   <div v-else>
     <a-alert type="warning" show-icon>
@@ -680,17 +680,17 @@ const handleScrollIntoView = () => {
 </template>
 
 <style scoped lang="scss">
-:deep(.ant-select-selector .ant-select-selection-item .nc-relation-details) {
+:deep(.ant-select-selector .ant-select-selection-item .atm-relation-details) {
   @apply hidden;
 }
 
-:deep(.nc-filter-grid) {
+:deep(.atm-filter-grid) {
   @apply !pr-0;
 }
 
 // Keep the "Limit to the [First/Last] [N]" controls visually consistent — the
-// NcSelect and the number input should share the same height + corner radius.
-:deep(.nc-lookup-limit-value) {
+// AtSelect and the number input should share the same height + corner radius.
+:deep(.atm-lookup-limit-value) {
   @apply !h-8 !rounded-lg;
 
   .ant-input-number-input-wrap,
@@ -699,7 +699,7 @@ const handleScrollIntoView = () => {
   }
 }
 
-.nc-lookup-options-tabs {
+.atm-lookup-options-tabs {
   :deep(.ant-tabs-nav) {
     @apply !mb-0 !pl-0;
   }

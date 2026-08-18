@@ -10,7 +10,7 @@ interface HandlerType<T> {
  * @param param1 Configuration object with optional concurrency limit.
  * @returns Promise resolving to an array of results from the handlers.
  */
-export const NcConcurrent = async <T>(
+export const AtConcurrent = async <T>(
   handlers: HandlerType<T>[],
   { concurrency }: { concurrency?: number } = { concurrency: 3 },
 ) => {

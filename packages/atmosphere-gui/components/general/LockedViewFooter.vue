@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ViewLockType, type ViewType } from 'nocodb-sdk'
+import { ViewLockType, type ViewType } from 'atmosphere-sdk'
 
 const props = withDefaults(
   defineProps<{
@@ -51,7 +51,7 @@ const handleUnlockView = () => {
 
 <template>
   <div
-    class="nc-locked-view-footer flex items-center gap-1 bg-nc-bg-gray-light pl-3 pr-2 py-1.5 text-nc-content-gray-subtle2 text-small leading-[18px]"
+    class="atm-locked-view-footer flex items-center gap-1 bg-atm-bg-gray-light pl-3 pr-2 py-1.5 text-atm-content-gray-subtle2 text-small leading-[18px]"
   >
     <slot name="icon">
       <component
@@ -73,19 +73,19 @@ const handleUnlockView = () => {
           })
         }}
       </slot>
-      <NcTooltip v-if="lockMessage || personalViewOwnerLabel" placement="top">
+      <AtTooltip v-if="lockMessage || personalViewOwnerLabel" placement="top">
         <template #title>
           <div class="whitespace-pre-wrap max-w-80">{{ lockMessage || personalViewOwnerLabel }}</div>
         </template>
-        <GeneralIcon icon="info" class="flex-none w-3.5 h-3.5 text-nc-content-gray-muted cursor-help -mt-0.5" />
-      </NcTooltip>
+        <GeneralIcon icon="info" class="flex-none w-3.5 h-3.5 text-atm-content-gray-muted cursor-help -mt-0.5" />
+      </AtTooltip>
     </div>
 
-    <NcButton
+    <AtButton
       v-if="view?.lock_type === ViewLockType.Locked && isUIAllowed('fieldAdd') && showUnlockButton"
       type="text"
       size="xs"
-      class="!text-nc-content-brand !hover:bg-nc-bg-gray-medium"
+      class="!text-atm-content-brand !hover:bg-atm-bg-gray-medium"
       @click="handleUnlockView"
     >
       <div class="flex items-center gap-1">
@@ -93,6 +93,6 @@ const handleUnlockView = () => {
 
         {{ $t('general.unlock') }}
       </div>
-    </NcButton>
+    </AtButton>
   </div>
 </template>

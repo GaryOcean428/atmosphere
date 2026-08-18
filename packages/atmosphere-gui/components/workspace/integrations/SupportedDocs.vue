@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { IntegrationsType } from 'nocodb-sdk'
+import { IntegrationsType } from 'atmosphere-sdk'
 const { activeIntegrationItem } = useIntegrationStore()
 
 const { t } = useI18n()
@@ -8,18 +8,18 @@ const supportedDocs = computed(() => {
   const docs = [
     {
       title: t('general.integrations'),
-      href: 'https://nocodb.com/docs/product-docs/integrations',
+      href: 'https://atmosphere.dev/docs/product-docs/integrations',
     },
     {
       title: 'Create new connection',
-      href: 'https://nocodb.com/docs/product-docs/integrations/create-connection',
+      href: 'https://atmosphere.dev/docs/product-docs/integrations/create-connection',
     },
   ]
 
   if (activeIntegrationItem.value?.type === IntegrationsType.Database) {
     docs.push({
       title: 'Add new Data source',
-      href: 'https://nocodb.com/docs/product-docs/data-sources/connect-to-data-source',
+      href: 'https://atmosphere.dev/docs/product-docs/data-sources/connect-to-data-source',
     })
   }
 
@@ -31,7 +31,7 @@ const supportedDocs = computed(() => {
 </script>
 
 <template>
-  <NcModalSupportedDocs :docs="supportedDocs">
+  <AtModalSupportedDocs :docs="supportedDocs">
     <template #title> {{ $t('title.relevantDocumentation') }} </template>
-  </NcModalSupportedDocs>
+  </AtModalSupportedDocs>
 </template>

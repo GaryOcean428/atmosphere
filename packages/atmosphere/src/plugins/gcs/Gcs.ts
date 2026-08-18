@@ -3,13 +3,13 @@ import { promisify } from 'util';
 import { Readable } from 'stream';
 import { Storage } from '@google-cloud/storage';
 import axios from 'axios';
-import { OperationSource } from 'nocodb-sdk';
+import { OperationSource } from 'atmosphere-sdk';
 import type { GetSignedUrlConfig, StorageOptions } from '@google-cloud/storage';
-import type { IStorageAdapterV2, XcFile } from '~/types/nc-plugin';
+import type { IStorageAdapterV2, XcFile } from '~/types/atm-plugin';
 import { getFilteredAgents } from '~/utils/ssrf';
 import { generateTempFilePath, waitForStreamClose } from '~/utils/pluginUtils';
-import { NcError } from '~/helpers/ncError';
-import { NC_ATTACHMENT_FIELD_SIZE } from '~/constants';
+import { AtError } from '~/helpers/ncError';
+import { ATMOSPHERE_ATTACHMENT_FIELD_SIZE } from '~/constants';
 
 interface GoogleCloudStorageInput {
   client_email: string;
@@ -67,7 +67,7 @@ export default class Gcs implements IStorageAdapterV2 {
       const tempFile = generateTempFilePath();
       const createStream = fs.createWriteStream(tempFile);
       await waitForStreamClose(createStream);
-      await this.fileCreate('nc-test-file.txt', {
+      await this.fileCreate('atm-test-file.txt', {
         path: tempFile,
         mimetype: 'text/plain',
         originalname: 'temp.txt',
@@ -76,7 +76,7 @@ export default class Gcs implements IStorageAdapterV2 {
       await promisify(fs.unlink)(tempFile);
       return true;
     } catch (e) {
-      NcError.pluginTestError(e?.message);
+      AtError.pluginTestError(e?.message);
     }
   }
 
@@ -87,14 +87,14 @@ export default class Gcs implements IStorageAdapterV2 {
         .file(this.patchKey(key));
       const [exists] = await file.exists();
       if (!exists) {
-        NcError._.storageFileReadError(
+        AtError._.storageFileReadError(
           `File ${this.patchKey(key)} does not exist`,
         );
       }
       const [data] = await file.download();
       return data;
     } catch (e) {
-      NcError._.storageFileReadError(e.message);
+      AtError._.storageFileReadError(e.message);
     }
   }
 
@@ -114,7 +114,7 @@ export default class Gcs implements IStorageAdapterV2 {
 
       return uploadResponse.publicUrl();
     } catch (e) {
-      NcError._.storageFileCreateError(e.message);
+      AtError._.storageFileCreateError(e.message);
     }
   }
 
@@ -148,7 +148,7 @@ export default class Gcs implements IStorageAdapterV2 {
 
       return file.publicUrl();
     } catch (e) {
-      NcError._.storageFileStreamError(e.message);
+      AtError._.storageFileStreamError(e.message);
     }
   }
 
@@ -161,7 +161,7 @@ export default class Gcs implements IStorageAdapterV2 {
       const response = await axios.get(url, {
         ...getFilteredAgents({ url, source: OperationSource.PLUGINS }),
         responseType: buffer ? 'arraybuffer' : 'stream',
-        maxContentLength: NC_ATTACHMENT_FIELD_SIZE,
+        maxContentLength: ATMOSPHERE_ATTACHMENT_FIELD_SIZE,
       });
 
       const file = this.storageClient.bucket(this.bucketName).file(destPath);
@@ -169,7 +169,7 @@ export default class Gcs implements IStorageAdapterV2 {
 
       return { url: file.publicUrl(), data: response.data };
     } catch (e) {
-      NcError._.storageFileCreateError(
+      AtError._.storageFileCreateError(
         `Failed to create file from URL: ${e.message}`,
       );
     }
@@ -179,7 +179,7 @@ export default class Gcs implements IStorageAdapterV2 {
     try {
       await this.storageClient.bucket(this.bucketName).file(path).delete();
     } catch (e) {
-      NcError._.storageFileDeleteError(e.message);
+      AtError._.storageFileDeleteError(e.message);
     }
   }
 
@@ -191,7 +191,7 @@ export default class Gcs implements IStorageAdapterV2 {
     // Check if file exists before creating stream
     const [exists] = await file.exists();
     if (!exists) {
-      NcError._.storageFileReadError(
+      AtError._.storageFileReadError(
         `File ${this.patchKey(key)} does not exist`,
       );
     }
@@ -208,7 +208,7 @@ export default class Gcs implements IStorageAdapterV2 {
         });
       return files.map((file) => file.name);
     } catch (e) {
-      NcError._.storageFileReadError(`Failed to list directory: ${e.message}`);
+      AtError._.storageFileReadError(`Failed to list directory: ${e.message}`);
     }
   }
 
@@ -233,7 +233,7 @@ export default class Gcs implements IStorageAdapterV2 {
 
       return url;
     } catch (e) {
-      NcError._.storageFileReadError(
+      AtError._.storageFileReadError(
         `Failed to generate signed URL: ${e.message}`,
       );
     }
@@ -246,9 +246,9 @@ export default class Gcs implements IStorageAdapterV2 {
     // Remove the leading slash
     globPattern = globPattern.replace(/^\//, '');
 
-    // Make sure pattern starts with nc/uploads/
-    if (!globPattern.startsWith('nc/uploads/')) {
-      globPattern = `nc/uploads/${globPattern}`;
+    // Make sure pattern starts with atm/uploads/
+    if (!globPattern.startsWith('atm/uploads/')) {
+      globPattern = `atm/uploads/${globPattern}`;
     }
 
     const stream = new Readable({
@@ -279,7 +279,7 @@ export default class Gcs implements IStorageAdapterV2 {
       return stream;
     } catch (e) {
       stream.destroy(new Error(`Failed to scan files: ${e.message}`));
-      NcError._.storageFileReadError(`Failed to scan files: ${e.message}`);
+      AtError._.storageFileReadError(`Failed to scan files: ${e.message}`);
     }
   }
 

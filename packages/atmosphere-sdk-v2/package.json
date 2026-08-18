@@ -1,14 +1,14 @@
 {
-  "name": "nocodb-sdk-v2",
+  "name": "atmosphere-sdk-v2",
   "version": "0.0.1",
-  "description": "NocoDB SDK",
+  "description": "Atmosphere SDK",
   "type": "module",
   "license": "Sustainable Use License",
   "author": {
-    "name": "NocoDB Inc",
-    "url": "https://nocodb.com/"
+    "name": "Atmosphere Inc",
+    "url": "https://atmosphere.dev/"
   },
-  "homepage": "https://github.com/nocodb/nocodb",
+  "homepage": "https://github.com/GaryOcean428/atmosphere",
   "files": ["dist"],
   "exports": {
     ".": {

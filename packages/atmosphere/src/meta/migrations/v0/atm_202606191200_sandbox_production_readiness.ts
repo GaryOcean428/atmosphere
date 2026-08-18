@@ -1,4 +1,4 @@
-// src/meta/migrations/v0/nc_202606191200_sandbox_production_readiness.ts
+// src/meta/migrations/v0/atm_202606191200_sandbox_production_readiness.ts
 import type { Knex } from 'knex';
 import { MetaTable } from '~/utils/globals';
 
@@ -34,7 +34,7 @@ const up = async (knex: Knex) => {
   }
 
   await knex.schema.alterTable(MetaTable.SANDBOXES, (table) => {
-    table.unique(['production_base_id'], 'nc_sandboxes_production_base_unique');
+    table.unique(['production_base_id'], 'atm_sandboxes_production_base_unique');
   });
 
   // Renumber any duplicate seq per sandbox before adding the unique constraint.
@@ -59,18 +59,18 @@ const up = async (knex: Knex) => {
   }
 
   await knex.schema.alterTable(MetaTable.SANDBOX_CHANGELOG, (table) => {
-    table.unique(['fk_sandbox_id', 'seq'], 'nc_scl_sandbox_seq_unique');
+    table.unique(['fk_sandbox_id', 'seq'], 'atm_scl_sandbox_seq_unique');
   });
 };
 
 const down = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.SANDBOX_CHANGELOG, (table) => {
-    table.dropUnique(['fk_sandbox_id', 'seq'], 'nc_scl_sandbox_seq_unique');
+    table.dropUnique(['fk_sandbox_id', 'seq'], 'atm_scl_sandbox_seq_unique');
   });
   await knex.schema.alterTable(MetaTable.SANDBOXES, (table) => {
     table.dropUnique(
       ['production_base_id'],
-      'nc_sandboxes_production_base_unique',
+      'atm_sandboxes_production_base_unique',
     );
     table.dropColumn('merge_state');
     table.dropColumn('merge_error');

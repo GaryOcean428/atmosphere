@@ -1,16 +1,16 @@
 <script lang="ts" setup>
 import { useVirtualList } from '@vueuse/core'
-import type { NcListProps } from '#imports'
+import type { AtListProps } from '#imports'
 
 interface Emits {
   (e: 'update:value', value: RawValueType): void
   (e: 'update:open', open: boolean): void
-  (e: 'change', option: NcListItemType): void
+  (e: 'change', option: AtListItemType): void
   (e: 'escape', event: KeyboardEvent): void
 }
 
-const props = withDefaults(defineProps<NcListProps>(), {
-  list: () => [] as NcListItemType[],
+const props = withDefaults(defineProps<AtListProps>(), {
+  list: () => [] as AtListItemType[],
   open: false,
   closeOnSelect: true,
   searchInputPlaceholder: 'Search',
@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<NcListProps>(), {
   hideTopDivider: false,
   itemFullWidth: false,
   stopPropagationOnItemClick: false,
-  searchBasisOptions: () => [] as NcListSearchBasisOptionType[],
+  searchBasisOptions: () => [] as AtListSearchBasisOptionType[],
   theme: 'default',
   groupOrder: () => [] as string[],
   groupHeaderHeight: 28,
@@ -116,7 +116,7 @@ const listGroups = computed(() => {
  *
  * @returns {boolean} - True if the item matches the search query, false otherwise
  */
-const defaultFilter = (item: NcListItemType, i: number, _array: NcListItemType[], query: string) => {
+const defaultFilter = (item: AtListItemType, i: number, _array: AtListItemType[], query: string) => {
   if (props?.filterOption) {
     return props.filterOption(query, item, i)
   }
@@ -124,7 +124,7 @@ const defaultFilter = (item: NcListItemType, i: number, _array: NcListItemType[]
   return searchCompare(item[optionLabelKey], query)
 }
 
-const applyFilterOnList = (listToFilter: NcListItemType[], query: string) => {
+const applyFilterOnList = (listToFilter: AtListItemType[], query: string) => {
   return listToFilter.filter((item, i, array) => {
     // Step 1: apply default filter
     if (defaultFilter(item, i, array, query)) return true
@@ -186,7 +186,7 @@ const list = computed(() => {
     acc.push(...groupList)
 
     return acc
-  }, [] as NcListItemType[])
+  }, [] as AtListItemType[])
 
   return listWithGroups
 })
@@ -276,7 +276,7 @@ const handleResetHoverEffect = (clearActiveOption = false, newActiveIndex?: numb
  * This function is responsible for handling the selection of an option from the list.
  * It updates the model value, emits a change event, and optionally closes the dropdown.
  */
-const handleSelectOption = (option: NcListItemType, index?: number, e?: MouseEvent) => {
+const handleSelectOption = (option: AtListItemType, index?: number, e?: MouseEvent) => {
   if (e && props.stopPropagationOnItemClick) {
     e.stopPropagation()
   }
@@ -476,7 +476,7 @@ const handleResetHoverEffectOnMouseLeave = () => {
   <div
     ref="listRef"
     tabindex="-1"
-    class="flex flex-col nc-list-root w-64 !focus:(shadow-none outline-none ring-0)"
+    class="flex flex-col atm-list-root w-64 !focus:(shadow-none outline-none ring-0)"
     :class="{
       'pt-1': variant === 'small',
       'pt-2': variant !== 'small',
@@ -501,24 +501,24 @@ const handleResetHoverEffectOnMouseLeave = () => {
           ref="inputRef"
           v-model:value="searchQuery"
           :placeholder="searchInputPlaceholder"
-          class="nc-list-search-input nc-toolbar-dropdown-search-field-input !pl-2 !pr-1.5 flex-1"
-          :class="`nc-theme-${theme}`"
+          class="atm-list-search-input atm-toolbar-dropdown-search-field-input !pl-2 !pr-1.5 flex-1"
+          :class="`atm-theme-${theme}`"
           allow-clear
           :bordered="inputBordered"
           autocomplete="off"
           @keydown.enter.stop="handleKeydownEnter"
           @change="handleResetHoverEffect(false, 0)"
         >
-          <template #prefix> <GeneralIcon icon="search" class="nc-search-icon h-3.5 w-3.5 mr-1" /> </template>
+          <template #prefix> <GeneralIcon icon="search" class="atm-search-icon h-3.5 w-3.5 mr-1" /> </template>
         </a-input>
         <slot name="headerExtraRight"> </slot>
       </div>
-      <NcDivider v-if="!hideTopDivider" class="!my-1" />
+      <AtDivider v-if="!hideTopDivider" class="!my-1" />
     </template>
 
     <slot name="listHeader"></slot>
     <div
-      class="nc-list-wrapper"
+      class="atm-list-wrapper"
       :class="[
         listWrapperClassName,
         {
@@ -529,7 +529,7 @@ const handleResetHoverEffectOnMouseLeave = () => {
       ]"
     >
       <template v-if="!list.length && isLoading">
-        <div class="flex flex-col justify-center items-center gap-2 py-6 text-nc-content-gray-muted">
+        <div class="flex flex-col justify-center items-center gap-2 py-6 text-atm-content-gray-muted">
           <a-spin />
           <span class="text-center">{{ $t('general.loading') }}</span>
         </div>
@@ -538,7 +538,7 @@ const handleResetHoverEffectOnMouseLeave = () => {
         <div class="h-auto !max-h-[247px]">
           <div
             v-bind="containerProps"
-            class="nc-list !h-auto w-full nc-scrollbar-thin !max-h-[247px]"
+            class="atm-list !h-auto w-full atm-scrollbar-thin !max-h-[247px]"
             :class="[
               containerClassName,
               {
@@ -549,7 +549,7 @@ const handleResetHoverEffectOnMouseLeave = () => {
             ]"
           >
             <div v-bind="revisedWrapperProps" :class="wrapperClassName">
-              <NcListItem
+              <AtListItem
                 v-for="{ data: option, index: idx } in virtualList"
                 :key="idx"
                 :option="option"
@@ -588,7 +588,7 @@ const handleResetHoverEffectOnMouseLeave = () => {
                 <template #listItemSelectedIcon="slotProps">
                   <slot name="listItemSelectedIcon" v-bind="slotProps" />
                 </template>
-              </NcListItem>
+              </AtListItem>
             </div>
           </div>
         </div>
@@ -606,9 +606,9 @@ const handleResetHoverEffectOnMouseLeave = () => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-toolbar-dropdown-search-field-input) {
+:deep(.atm-toolbar-dropdown-search-field-input) {
   .ant-input {
-    @apply placeholder-nc-content-gray-muted;
+    @apply placeholder-atm-content-gray-muted;
   }
 }
 </style>

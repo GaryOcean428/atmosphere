@@ -2,7 +2,7 @@
 import { Form } from 'ant-design-vue'
 import type { SelectHandler } from 'ant-design-vue/es/vc-select/Select'
 import { diff } from 'deep-object-diff'
-import { IntegrationsType, validateAndExtractSSLProp } from 'nocodb-sdk'
+import { IntegrationsType, validateAndExtractSSLProp } from 'atmosphere-sdk'
 import { defineAsyncComponent } from 'vue'
 import {
   type CertTypes,
@@ -500,7 +500,7 @@ const handleUpdateUseSslExpannsionPanel = (open: boolean) => {
 const handleUpdateAdvancedOptionsExpansionPanel = (open: boolean) => {
   if (open) {
     advancedOptionsExpansionPanel.value = ['1']
-    handleAutoScroll(true, 'nc-connection-advanced-options')
+    handleAutoScroll(true, 'atm-connection-advanced-options')
   } else {
     advancedOptionsExpansionPanel.value = []
   }
@@ -514,7 +514,7 @@ function handleAutoScroll(scroll: boolean, className: string) {
     }
 
     nextTick(() => {
-      const el = document.querySelector(`.nc-edit-or-add-connection .${className}`)
+      const el = document.querySelector(`.atm-edit-or-add-connection .${className}`)
 
       if (!el) return
 
@@ -623,19 +623,19 @@ watch(
 
 <template>
   <div v-if="activeIntegration" class="h-full">
-    <div class="p-4 w-full flex items-center justify-between gap-3 border-b-1 border-nc-border-gray-medium">
+    <div class="p-4 w-full flex items-center justify-between gap-3 border-b-1 border-atm-border-gray-medium">
       <div class="flex-1 flex items-center gap-3">
-        <NcButton
+        <AtButton
           v-if="!isEditMode && !isFromIntegrationPage"
           type="text"
           size="small"
           @click="pageMode = IntegrationsPageMode.LIST"
         >
           <GeneralIcon icon="arrowLeft" />
-        </NcButton>
+        </AtButton>
         <div
           v-if="activeIntegrationIcon"
-          class="h-8 w-8 flex items-center justify-center children:flex-none bg-nc-bg-gray-medium rounded-lg"
+          class="h-8 w-8 flex items-center justify-center children:flex-none bg-atm-bg-gray-medium rounded-lg"
         >
           <component :is="activeIntegrationIcon" class="!stroke-transparent w-4 h-4" />
         </div>
@@ -644,15 +644,15 @@ watch(
       </div>
       <div class="flex items-center gap-3">
         <div class="w-[15px] h-[15px] cursor-pointer" @dblclick="onEasterEgg"></div>
-        <NcTooltip :disabled="!testConnectionError">
+        <AtTooltip :disabled="!testConnectionError">
           <template #title>
             {{ testConnectionError }}
           </template>
 
-          <NcButton
+          <AtButton
             type="secondary"
             size="small"
-            class="nc-extdb-btn-test-connection"
+            class="atm-extdb-btn-test-connection"
             :class="{ 'pointer-events-none': testSuccess }"
             :loading="testingConnection"
             :disabled="isLoading || maskedPassword"
@@ -667,29 +667,29 @@ watch(
             <span>
               {{ testSuccess ? 'Test successful' : 'Test connection' }}
             </span>
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
 
-        <NcButton
+        <AtButton
           size="small"
           type="primary"
           :disabled="isDisabledSubmitBtn || isLoading"
           :loading="creatingSource"
-          class="nc-extdb-btn-submit"
+          class="atm-extdb-btn-submit"
           @click="createOrUpdateIntegration"
         >
           {{ pageMode === IntegrationsPageMode.ADD ? 'Create connection' : 'Update connection' }}
-        </NcButton>
-        <NcButton size="small" type="text" @click="vOpen = false">
-          <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-        </NcButton>
+        </AtButton>
+        <AtButton size="small" type="text" @click="vOpen = false">
+          <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+        </AtButton>
       </div>
     </div>
 
     <div class="h-[calc(100%_-_66px)] flex">
-      <div class="nc-edit-or-add-integration-left-panel nc-scrollbar-thin relative">
+      <div class="atm-edit-or-add-integration-left-panel atm-scrollbar-thin relative">
         <div class="w-full gap-8 max-w-[768px]">
-          <div class="nc-edit-or-add-connection bg-nc-bg-default relative flex flex-col justify-center gap-2 w-full">
+          <div class="atm-edit-or-add-connection bg-atm-bg-default relative flex flex-col justify-center gap-2 w-full">
             <a-form
               ref="form"
               :model="formState"
@@ -698,9 +698,9 @@ watch(
               layout="vertical"
               class="flex flex-col gap-8"
             >
-              <div class="nc-form-section">
-                <div class="nc-form-section-title">{{ $t('general.general') }}</div>
-                <div class="nc-form-section-body">
+              <div class="atm-form-section">
+                <div class="atm-form-section-title">{{ $t('general.general') }}</div>
+                <div class="atm-form-section-body">
                   <a-row :gutter="24">
                     <a-col :span="12">
                       <a-form-item label="Connection name" v-bind="validateInfos.title">
@@ -711,30 +711,30 @@ watch(
                 </div>
               </div>
 
-              <div class="nc-form-section">
+              <div class="atm-form-section">
                 <div class="flex items-center justify-between">
-                  <div class="nc-form-section-title">Connection details</div>
+                  <div class="atm-form-section-title">Connection details</div>
 
                   <!-- Use Connection URL -->
-                  <NcDropdown
+                  <AtDropdown
                     v-if="![ClientType.SQLITE, ClientType.SNOWFLAKE, ClientType.DATABRICKS].includes(formState.dataSource.client)"
                     v-model:visible="importURLDlg"
                     placement="bottomRight"
                   >
-                    <NcButton
+                    <AtButton
                       type="text"
                       size="small"
-                      class="nc-extdb-btn-import-url !rounded-md !px-2 flex-none -my-1.5"
+                      class="atm-extdb-btn-import-url !rounded-md !px-2 flex-none -my-1.5"
                       @click.stop="importURLDlg = true"
                     >
                       <div class="flex items-center gap-2">
                         <GeneralIcon icon="ncLink" class="flex-none" />
                         {{ $t('activity.useConnectionUrl') }}
                       </div>
-                    </NcButton>
+                    </AtButton>
                     <template #overlay>
                       <div class="p-4 w-[448px] flex flex-col gap-3">
-                        <div class="text-sm text-nc-content-gray-subtle">
+                        <div class="text-sm text-atm-content-gray-subtle">
                           Auto populate connection configuration using database connection URL
                         </div>
 
@@ -745,11 +745,11 @@ watch(
                             }
                           "
                           v-model:value="importURL"
-                          class="!rounded-lg !min-h-[120px] !max-h-[250px] nc-scrollbar-thin"
+                          class="!rounded-lg !min-h-[120px] !max-h-[250px] atm-scrollbar-thin"
                         ></a-textarea>
 
                         <div class="flex items-center gap-2 justify-end">
-                          <NcButton
+                          <AtButton
                             size="small"
                             type="secondary"
                             @click="
@@ -759,28 +759,28 @@ watch(
                               }
                             "
                           >
-                            {{ $t('general.cancel') }}</NcButton
+                            {{ $t('general.cancel') }}</AtButton
                           >
-                          <NcButton size="small" @click="handleImportURL"> {{ $t('general.import') }}</NcButton>
+                          <AtButton size="small" @click="handleImportURL"> {{ $t('general.import') }}</AtButton>
                         </div>
                       </div>
                     </template>
-                  </NcDropdown>
+                  </AtDropdown>
                 </div>
-                <div class="nc-form-section-body">
+                <div class="atm-form-section-body">
                   <a-row v-if="easterEgg" :gutter="24">
                     <a-col :span="12">
                       <a-form-item :label="$t('labels.dbType')" v-bind="validateInfos['dataSource.client']">
-                        <NcSelect
+                        <AtSelect
                           v-model:value="formState.dataSource.client"
-                          class="nc-select-shadow nc-extdb-db-type"
-                          dropdown-class-name="nc-dropdown-ext-db-type"
+                          class="atm-select-shadow atm-extdb-db-type"
+                          dropdown-class-name="atm-dropdown-ext-db-type"
                           @change="onClientChange"
                         >
                           <a-select-option v-for="client in clientTypes" :key="client.value" :value="client.value"
                             >{{ client.text }}
                           </a-select-option>
-                        </NcSelect>
+                        </AtSelect>
                       </a-form-item>
                     </a-col>
                   </a-row>
@@ -807,7 +807,7 @@ watch(
                         <a-form-item :label="$t('labels.account')" v-bind="validateInfos['dataSource.connection.account']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as SnowflakeConnection).account"
-                            class="nc-extdb-host-address"
+                            class="atm-extdb-host-address"
                           />
                         </a-form-item>
                       </a-col>
@@ -818,7 +818,7 @@ watch(
                         <a-form-item :label="$t('labels.username')" v-bind="validateInfos['dataSource.connection.username']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as SnowflakeConnection).username"
-                            class="nc-extdb-host-user"
+                            class="atm-extdb-host-user"
                           />
                         </a-form-item>
                       </a-col>
@@ -826,7 +826,7 @@ watch(
                         <!-- Password -->
                         <a-form-item
                           :label="$t('labels.password')"
-                          class="nc-form-item-connection-password"
+                          class="atm-form-item-connection-password"
                           v-bind="validateInfos['dataSource.connection.password']"
                         >
                           <template #help>
@@ -834,7 +834,7 @@ watch(
                           </template>
                           <a-input-password
                             v-model:value="(formState.dataSource.connection as SnowflakeConnection).password"
-                            class="nc-extdb-host-password"
+                            class="atm-extdb-host-password"
                             @focus="onFocusPassword"
                           />
                         </a-form-item>
@@ -846,7 +846,7 @@ watch(
                         <a-form-item label="Warehouse" v-bind="validateInfos['dataSource.connection.warehouse']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as SnowflakeConnection).warehouse"
-                            class="nc-extdb-host-database"
+                            class="atm-extdb-host-database"
                           />
                         </a-form-item>
                       </a-col>
@@ -855,7 +855,7 @@ watch(
                         <a-form-item :label="$t('labels.database')" v-bind="validateInfos['dataSource.connection.database']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as SnowflakeConnection).database"
-                            class="nc-extdb-host-database"
+                            class="atm-extdb-host-database"
                             :placeholder="`${$t('labels.database')} ${$t('general.name').toLowerCase()}`"
                           />
                         </a-form-item>
@@ -867,7 +867,7 @@ watch(
                         <a-form-item :label="$t('labels.schema')" v-bind="validateInfos['dataSource.connection.schema']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as SnowflakeConnection).schema"
-                            class="nc-extdb-host-database"
+                            class="atm-extdb-host-database"
                           />
                         </a-form-item>
                       </a-col>
@@ -880,7 +880,7 @@ watch(
                         <a-form-item :label="$t('labels.token')" v-bind="validateInfos['dataSource.connection.token']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as DatabricksConnection).token"
-                            class="nc-extdb-host-token"
+                            class="atm-extdb-host-token"
                           />
                         </a-form-item>
                       </a-col>
@@ -888,7 +888,7 @@ watch(
                         <a-form-item label="Host" v-bind="validateInfos['dataSource.connection.host']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as DatabricksConnection).host"
-                            class="nc-extdb-host-address"
+                            class="atm-extdb-host-address"
                           />
                         </a-form-item>
                       </a-col>
@@ -898,7 +898,7 @@ watch(
                         <a-form-item label="Path" v-bind="validateInfos['dataSource.connection.path']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as DatabricksConnection).path"
-                            class="nc-extdb-host-path"
+                            class="atm-extdb-host-path"
                           />
                         </a-form-item>
                       </a-col>
@@ -907,7 +907,7 @@ watch(
                           <a-input
                             v-model:value="(formState.dataSource.connection as DatabricksConnection).database"
                             :placeholder="`${$t('labels.database')} ${$t('general.name').toLowerCase()}`"
-                            class="nc-extdb-host-database"
+                            class="atm-extdb-host-database"
                           />
                         </a-form-item>
                       </a-col>
@@ -917,7 +917,7 @@ watch(
                         <a-form-item :label="$t('labels.schema')" v-bind="validateInfos['dataSource.connection.schema']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as DatabricksConnection).schema"
-                            class="nc-extdb-host-schema"
+                            class="atm-extdb-host-schema"
                           />
                         </a-form-item>
                       </a-col>
@@ -930,7 +930,7 @@ watch(
                         <a-form-item :label="$t('labels.hostAddress')" v-bind="validateInfos['dataSource.connection.host']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as DefaultConnection).host"
-                            class="nc-extdb-host-address"
+                            class="atm-extdb-host-address"
                           />
                         </a-form-item>
                       </a-col>
@@ -938,12 +938,12 @@ watch(
                         <!-- Port Number -->
                         <a-form-item
                           :label="$t('labels.port')"
-                          class="nc-form-item-connection-port"
+                          class="atm-form-item-connection-port"
                           v-bind="validateInfos['dataSource.connection.port']"
                         >
                           <a-input-number
                             v-model:value="(formState.dataSource.connection as DefaultConnection).port"
-                            class="!w-full nc-extdb-host-port !rounded-md"
+                            class="!w-full atm-extdb-host-port !rounded-md"
                           />
                         </a-form-item>
                       </a-col>
@@ -954,7 +954,7 @@ watch(
                         <a-form-item :label="$t('labels.username')" v-bind="validateInfos['dataSource.connection.user']">
                           <a-input
                             v-model:value="(formState.dataSource.connection as DefaultConnection).user"
-                            class="nc-extdb-host-user"
+                            class="atm-extdb-host-user"
                           />
                         </a-form-item>
                       </a-col>
@@ -966,7 +966,7 @@ watch(
                           </template>
                           <a-input-password
                             v-model:value="(formState.dataSource.connection as DefaultConnection).password"
-                            class="nc-extdb-host-password"
+                            class="atm-extdb-host-password"
                             @focus="onFocusPassword"
                           />
                         </a-form-item>
@@ -980,7 +980,7 @@ watch(
                           <a-input
                             v-model:value="formState.dataSource.connection.database"
                             :placeholder="`${$t('labels.database')} ${$t('general.name').toLowerCase()}`"
-                            class="nc-extdb-host-database"
+                            class="atm-extdb-host-database"
                           />
                         </a-form-item>
                       </a-col>
@@ -991,7 +991,7 @@ watch(
                           :label="$t('labels.schemaName')"
                           v-bind="validateInfos['dataSource.searchPath.0']"
                         >
-                          <a-input v-model:value="formState.dataSource.searchPath[0]" data-testid="nc-extdb-schema-name" />
+                          <a-input v-model:value="formState.dataSource.searchPath[0]" data-testid="atm-extdb-schema-name" />
                         </a-form-item>
                       </a-col>
                     </a-row>
@@ -1005,7 +1005,7 @@ watch(
                       <a-col :span="24">
                         <!-- Extra connection parameters -->
                         <a-form-item
-                          class="nc-form-extra-connectin-parameters mb-2"
+                          class="atm-form-extra-connectin-parameters mb-2"
                           label="Connection parameters"
                           v-bind="validateInfos.extraParameters"
                         >
@@ -1019,21 +1019,21 @@ watch(
                                   <div class="flex gap-2">
                                     <a-input v-model:value="item.value" :placeholder="$t('placeholder.value')" />
 
-                                    <NcButton type="text" size="small" @click="removeParam(index)">
+                                    <AtButton type="text" size="small" @click="removeParam(index)">
                                       <GeneralIcon icon="delete" class="flex-none text-gray-500" />
-                                    </NcButton>
+                                    </AtButton>
                                   </div>
                                 </a-col>
                               </a-row>
                             </div>
 
                             <div>
-                              <NcButton size="small" type="secondary" class="" @click="addNewParam">
+                              <AtButton size="small" type="secondary" class="" @click="addNewParam">
                                 <div class="flex items-center">
                                   <GeneralIcon icon="plus" />
                                   Add
                                 </div>
-                              </NcButton>
+                              </AtButton>
                             </div>
                           </div>
                         </a-form-item>
@@ -1046,7 +1046,7 @@ watch(
               <template
                 v-if="![ClientType.SQLITE, ClientType.SNOWFLAKE, ClientType.DATABRICKS].includes(formState.dataSource.client)"
               >
-                <NcDivider />
+                <AtDivider />
 
                 <a-collapse v-model:active-key="useSslExpansionPanel" ghost class="!mt-4">
                   <template #expandIcon="{ isActive }">
@@ -1056,7 +1056,7 @@ watch(
                     <template #header>
                       <div class="flex">
                         <div
-                          class="nc-form-section-title cursor-pointer"
+                          class="atm-form-section-title cursor-pointer"
                           @click="handleUpdateUseSslExpannsionPanel(!useSslExpansionPanel.length)"
                         >
                           Use SSL
@@ -1064,14 +1064,14 @@ watch(
                       </div>
                     </template>
 
-                    <div class="border-1 border-nc-border-gray-medium rounded-lg p-3">
+                    <div class="border-1 border-atm-border-gray-medium rounded-lg p-3">
                       <a-row :gutter="24">
                         <a-col :span="12">
                           <a-form-item label="SSL mode">
-                            <NcSelect
+                            <AtSelect
                               v-model:value="formState.sslUse"
-                              class="nc-select-shadow"
-                              dropdown-class-name="nc-dropdown-ssl-mode"
+                              class="atm-select-shadow"
+                              dropdown-class-name="atm-dropdown-ssl-mode"
                               @select="onSSLModeChange"
                             >
                               <a-select-option v-for="opt in Object.values(SSLUsage)" :key="opt" :value="opt">
@@ -1083,12 +1083,12 @@ watch(
                                   <component
                                     :is="iconMap.check"
                                     v-if="formState.sslUse === opt"
-                                    id="nc-selected-item-icon"
+                                    id="atm-selected-item-icon"
                                     class="text-primary w-4 h-4"
                                   />
                                 </div>
                               </a-select-option>
-                            </NcSelect>
+                            </AtSelect>
                           </a-form-item>
                         </a-col>
                       </a-row>
@@ -1101,13 +1101,13 @@ watch(
                             class="!mt-3"
                           >
                             <div class="flex gap-2 w-full">
-                              <NcTooltip placement="top">
+                              <AtTooltip placement="top">
                                 <!-- Select .cert file -->
                                 <template #title>
                                   <span>{{ $t('tooltip.clientCert') }}</span>
                                 </template>
 
-                                <NcButton
+                                <AtButton
                                   size="small"
                                   type="secondary"
                                   :disabled="!sslFilesRequired"
@@ -1115,15 +1115,15 @@ watch(
                                   @click="certFileInput?.click()"
                                 >
                                   {{ $t('labels.clientCert') }}
-                                </NcButton>
-                              </NcTooltip>
+                                </AtButton>
+                              </AtTooltip>
 
-                              <NcTooltip placement="top">
+                              <AtTooltip placement="top">
                                 <!-- Select .key file -->
                                 <template #title>
                                   <span>{{ $t('tooltip.clientKey') }}</span>
                                 </template>
-                                <NcButton
+                                <AtButton
                                   size="small"
                                   type="secondary"
                                   :disabled="!sslFilesRequired"
@@ -1131,16 +1131,16 @@ watch(
                                   @click="keyFileInput?.click()"
                                 >
                                   {{ $t('labels.clientKey') }}
-                                </NcButton>
-                              </NcTooltip>
+                                </AtButton>
+                              </AtTooltip>
 
-                              <NcTooltip placement="top">
+                              <AtTooltip placement="top">
                                 <!-- Select CA file -->
                                 <template #title>
                                   <span>{{ $t('tooltip.clientCA') }}</span>
                                 </template>
 
-                                <NcButton
+                                <AtButton
                                   size="small"
                                   type="secondary"
                                   :disabled="!sslFilesRequired"
@@ -1148,8 +1148,8 @@ watch(
                                   @click="caFileInput?.click()"
                                 >
                                   {{ $t('labels.serverCA') }}
-                                </NcButton>
-                              </NcTooltip>
+                                </AtButton>
+                              </AtTooltip>
                             </div>
                           </a-form-item>
                         </a-col>
@@ -1184,11 +1184,11 @@ watch(
               </template>
 
               <!-- Todo: Enable later when we plan to introduce private connection -->
-              <!-- <div class="nc-form-section">
+              <!-- <div class="atm-form-section">
                 <a-form-item class="!my-0">
                   <div class="flex items-center gap-3">
                     <a-switch v-if="isEeUI" v-model:checked="formState.is_private" size="small" />
-                    <NcTooltip v-else>
+                    <AtTooltip v-else>
                       <template #title>
                         <div class="text-center">
                           {{ $t('msg.info.thisFeatureIsOnlyAvailableInEnterpriseEdition') }}
@@ -1196,20 +1196,20 @@ watch(
                       </template>
 
                       <a-switch :checked="formState.is_private" disabled size="small" />
-                    </NcTooltip>
+                    </AtTooltip>
 
-                    <NcTooltip placement="right" class="cursor-pointer">
+                    <AtTooltip placement="right" class="cursor-pointer">
                       <template #title>
                         {{ $t('tooltip.privateConnection') }}
                       </template>
 
                       <div
-                        class="nc-form-section-title"
+                        class="atm-form-section-title"
                         @click="isEeUI ? (formState.is_private = !formState.is_private) : undefined"
                       >
                         Private connection
                       </div>
-                    </NcTooltip>
+                    </AtTooltip>
                   </div>
                 </a-form-item>
               </div> -->
@@ -1217,22 +1217,22 @@ watch(
               <template
                 v-if="![ClientType.SQLITE, ClientType.SNOWFLAKE, ClientType.DATABRICKS].includes(formState.dataSource.client)"
               >
-                <a-collapse v-model:active-key="advancedOptionsExpansionPanel" ghost class="nc-connection-advanced-options !mt-4">
+                <a-collapse v-model:active-key="advancedOptionsExpansionPanel" ghost class="atm-connection-advanced-options !mt-4">
                   <template #expandIcon="{ isActive }">
-                    <NcButton
+                    <AtButton
                       type="text"
                       size="small"
                       class="!-ml-1.5"
                       @click="handleUpdateAdvancedOptionsExpansionPanel(!advancedOptionsExpansionPanel.length)"
                     >
-                      <div class="nc-form-section-title">Advanced options</div>
+                      <div class="atm-form-section-title">Advanced options</div>
 
                       <GeneralIcon
                         icon="chevronDown"
                         class="ml-2 flex-none cursor-pointer transform transition-transform duration-500"
                         :class="{ '!rotate-180': isActive }"
                       />
-                    </NcButton>
+                    </AtButton>
                   </template>
                   <a-collapse-panel key="1" collapsible="disabled">
                     <template #header>
@@ -1241,10 +1241,10 @@ watch(
 
                     <div class="flex flex-col gap-2">
                       <div>{{ $t('activity.editConnJson') }}</div>
-                      <div class="border-1 border-nc-border-gray-medium !rounded-lg shadow-sm overflow-hidden">
+                      <div class="border-1 border-atm-border-gray-medium !rounded-lg shadow-sm overflow-hidden">
                         <Suspense>
                           <template #default>
-                            <MonacoEditor v-model="customJsonFormState" class="nc-connection-json-editor h-[400px] w-full" />
+                            <MonacoEditor v-model="customJsonFormState" class="atm-connection-json-editor h-[400px] w-full" />
                           </template>
                           <template #fallback>
                             <MonacoLoading class="h-[400px] w-full" />
@@ -1261,18 +1261,18 @@ watch(
           </div>
         </div>
         <general-overlay :model-value="isLoading" inline transition class="!bg-opacity-15">
-          <div class="flex items-center justify-center h-full w-full !bg-nc-bg-default !bg-opacity-85 z-1000">
+          <div class="flex items-center justify-center h-full w-full !bg-atm-bg-default !bg-opacity-85 z-1000">
             <a-spin size="large" />
           </div>
         </general-overlay>
       </div>
-      <div class="nc-edit-or-add-integration-right-panel">
+      <div class="atm-edit-or-add-integration-right-panel">
         <template v-if="appInfo.isCloud && !appInfo.isOnPrem">
           <DashboardSettingsDataSourcesInfo varient="new" />
-          <NcDivider />
+          <AtDivider />
         </template>
         <WorkspaceIntegrationsSupportedDocs />
-        <NcDivider />
+        <AtDivider />
       </div>
     </div>
   </div>
@@ -1310,7 +1310,7 @@ watch(
   @apply font-weight-400;
 }
 
-.nc-edit-or-add-connection {
+.atm-edit-or-add-connection {
   :deep(.ant-input-affix-wrapper),
   :deep(.ant-input),
   :deep(.ant-select) {
@@ -1323,23 +1323,23 @@ watch(
     }
   }
 
-  .nc-connection-json-editor {
+  .atm-connection-json-editor {
     @apply min-h-[300px] max-h-[600px];
     resize: vertical;
     overflow-y: auto;
   }
 
   :deep(.ant-form-item-label > label.ant-form-item-required:after) {
-    @apply content-['*'] inline-block text-inherit text-nc-content-red-medium ml-1;
+    @apply content-['*'] inline-block text-inherit text-atm-content-red-medium ml-1;
   }
 
-  .nc-form-extra-connectin-parameters {
+  .atm-form-extra-connectin-parameters {
     :deep(.ant-input) {
       &:not(:hover):not(:focus):not(:disabled) {
-        @apply !shadow-default !border-nc-border-gray-medium;
+        @apply !shadow-default !border-atm-border-gray-medium;
       }
       &:hover:not(:focus):not(:disabled) {
-        @apply !border-nc-border-gray-medium !shadow-hover;
+        @apply !border-atm-border-gray-medium !shadow-hover;
       }
       &:focus {
         @apply !shadow-selected !ring-0;
@@ -1377,10 +1377,10 @@ watch(
     &:not(.ant-form-item-has-error) {
       &:not(:has(.ant-input-password)) .ant-input {
         &:not(:hover):not(:focus):not(:disabled) {
-          @apply shadow-default border-nc-border-gray-medium;
+          @apply shadow-default border-atm-border-gray-medium;
         }
         &:hover:not(:focus):not(:disabled) {
-          @apply border-nc-border-gray-medium shadow-hover;
+          @apply border-atm-border-gray-medium shadow-hover;
         }
         &:focus {
           @apply shadow-selected ring-0;
@@ -1389,10 +1389,10 @@ watch(
       .ant-input-number,
       .ant-input-affix-wrapper.ant-input-password {
         &:not(:hover):not(:focus-within):not(:disabled) {
-          @apply shadow-default border-nc-border-gray-medium;
+          @apply shadow-default border-atm-border-gray-medium;
         }
         &:hover:not(:focus-within):not(:disabled) {
-          @apply border-nc-border-gray-medium shadow-hover;
+          @apply border-atm-border-gray-medium shadow-hover;
         }
         &:focus-within {
           @apply shadow-selected ring-0;

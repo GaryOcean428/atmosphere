@@ -78,7 +78,7 @@ const docLinks = computed(() => {
   return [
     {
       title: 'Application Setup',
-      url: `https://nocodb.com/docs/product-docs/account-settings/oss-specific-details#configure-${plugin.value?.category?.toLowerCase()}`,
+      url: `https://atmosphere.dev/docs/product-docs/account-settings/oss-specific-details#configure-${plugin.value?.category?.toLowerCase()}`,
     },
     ...(plugin.value?.formDetails?.docs || []),
   ]
@@ -86,8 +86,8 @@ const docLinks = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full h-[calc(100vh_-_40px)]" data-testid="nc-setup-config">
-    <NcPageHeader>
+  <div class="flex flex-col h-full h-[calc(100vh_-_40px)]" data-testid="atm-setup-config">
+    <AtPageHeader>
       <template #title>
         <div class="flex gap-3 items-center">
           <AccountSetupAppIcon :app="plugin" class="h-8 w-8" />
@@ -97,15 +97,15 @@ const docLinks = computed(() => {
           </span>
         </div>
       </template>
-    </NcPageHeader>
+    </AtPageHeader>
     <div class="h-full flex h-[calc(100%_-_48px)]">
-      <div class="nc-config-left-panel nc-scrollbar-thin relative h-full flex flex-col">
-        <div class="w-full flex items-center gap-3 border-nc-border-gray-medium py-6 px-6">
+      <div class="atm-config-left-panel atm-scrollbar-thin relative h-full flex flex-col">
+        <div class="w-full flex items-center gap-3 border-atm-border-gray-medium py-6 px-6">
           <span class="font-semibold text-base">{{ $t('labels.configuration') }}</span>
           <div class="flex-grow" />
 
           <div class="flex gap-2">
-            <NcButton
+            <AtButton
               v-for="(action, i) in plugin.formDetails.actions"
               :key="i"
               :loading="loadingAction === action.key"
@@ -113,11 +113,11 @@ const docLinks = computed(() => {
               size="small"
               :text-color="action.key !== Action.Save ? 'primary' : undefined"
               :disabled="!!loadingAction || !isValid"
-              :data-testid="`nc-setup-config-action-${action.key?.toLowerCase()}`"
+              :data-testid="`atm-setup-config-action-${action.key?.toLowerCase()}`"
               @click="doAction(action.key)"
             >
               {{ action.label }}
-            </NcButton>
+            </AtButton>
           </div>
         </div>
         <div class="h-[calc(100%_-_48px)] flex py-4 flex-col p-6 overflow-auto">
@@ -126,13 +126,13 @@ const docLinks = computed(() => {
           </div>
 
           <div v-else class="flex">
-            <NcFormBuilder class="w-229 px-2 mx-auto" />
+            <AtFormBuilder class="w-229 px-2 mx-auto" />
           </div>
         </div>
       </div>
-      <div class="nc-config-right-panel">
+      <div class="atm-config-right-panel">
         <div class="flex-grow flex flex-col gap-3">
-          <div class="text-nc-content-gray-muted text-capitalize">{{ $t('labels.documentation') }}</div>
+          <div class="text-atm-content-gray-muted text-capitalize">{{ $t('labels.documentation') }}</div>
           <a
             v-for="doc of docLinks"
             :key="doc.title"
@@ -141,13 +141,13 @@ const docLinks = computed(() => {
             rel="noopener noreferrer"
             class="!no-underline !text-current flex gap-2 items-center"
           >
-            <GeneralIcon icon="bookOpen" class="text-nc-content-gray-muted" />
+            <GeneralIcon icon="bookOpen" class="text-atm-content-gray-muted" />
             {{ doc.title }}
           </a>
 
-          <NcDivider />
+          <AtDivider />
 
-          <div class="text-nc-content-gray-muted text-capitalize">{{ $t('labels.modifiedOn') }}</div>
+          <div class="text-atm-content-gray-muted text-capitalize">{{ $t('labels.modifiedOn') }}</div>
           <div class="">
             {{ dayjs(plugin.created_at).format('DD MMM YYYY HH:mm') }}
           </div>
@@ -158,11 +158,11 @@ const docLinks = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.nc-config-left-panel {
+.atm-config-left-panel {
   @apply w-full flex-1 flex justify-stretch;
 }
 
-.nc-config-right-panel {
-  @apply p-5 w-[320px] border-l-1 border-nc-border-gray-medium flex flex-col gap-4 bg-nc-bg-gray-extralight rounded-br-2xl;
+.atm-config-right-panel {
+  @apply p-5 w-[320px] border-l-1 border-atm-border-gray-medium flex flex-col gap-4 bg-atm-bg-gray-extralight rounded-br-2xl;
 }
 </style>

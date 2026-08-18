@@ -1,11 +1,11 @@
 packages:
-  - "packages/nocodb-sdk"
-  - "packages/nocodb-sdk-v2"
-  - "packages/nc-gui"
-  - "packages/nc-mail-templates"
-  - "packages/nocodb"
+  - "packages/atmosphere-sdk"
+  - "packages/atmosphere-sdk-v2"
+  - "packages/atmosphere-gui"
+  - "packages/atm-mail-templates"
+  - "packages/atmosphere"
 
-  - "packages/nc-secret-mgr"
+  - "packages/atmosphere-secret-mgr"
 
 # Supply chain security settings (pnpm 10.16+)
 # Quarantine newly published versions for 7 days before allowing install.

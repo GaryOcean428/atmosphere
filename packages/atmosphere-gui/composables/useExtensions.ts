@@ -1,6 +1,6 @@
 import { useStorage } from '@vueuse/core'
-import type { ProjectRoles } from 'nocodb-sdk'
-import { PlanLimitTypes, getProjectRole, hasMinimumRoleAccess } from 'nocodb-sdk'
+import type { ProjectRoles } from 'atmosphere-sdk'
+import { PlanLimitTypes, getProjectRole, hasMinimumRoleAccess } from 'atmosphere-sdk'
 import { usePlugin } from './usePlugin'
 import { ExtensionsEvents } from '#imports'
 import { extensionUserPrefsManager } from '~/helpers/extensionUserPrefsManager'
@@ -16,7 +16,7 @@ interface ExtensionPanelState {
   isOpen: boolean
 }
 const extensionsPanelState = createGlobalState(() =>
-  useStorage<Record<string, ExtensionPanelState>>('nc-extensions-global-state', {}),
+  useStorage<Record<string, ExtensionPanelState>>('atm-extensions-global-state', {}),
 )
 
 export interface IKvStore<T extends Record<string, any>> {
@@ -324,7 +324,7 @@ export const useExtensions = createSharedComposable(() => {
     let defaultKvStore = {}
 
     switch (extension.extensionId) {
-      case 'nc-data-exporter': {
+      case 'atm-data-exporter': {
         defaultKvStore = {
           ...defaultKvStore,
           deletedExports: extension.kvStore.get('deletedExports') || [],

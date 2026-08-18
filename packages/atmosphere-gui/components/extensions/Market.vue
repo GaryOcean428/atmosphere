@@ -79,25 +79,25 @@ onMounted(() => {
 </script>
 
 <template>
-  <NcModal v-model:visible="vModel" :footer="null" size="lg" wrap-class-name="nc-modal-extension-market">
+  <AtModal v-model:visible="vModel" :footer="null" size="lg" wrap-class-name="atm-modal-extension-market">
     <div class="h-full">
-      <div class="nc-extension-market-header flex items-center gap-3 px-4 py-3 border-b-1 border-nc-border-gray-medium">
+      <div class="atm-extension-market-header flex items-center gap-3 px-4 py-3 border-b-1 border-atm-border-gray-medium">
         <div
           class="flex items-center gap-3 flex-none"
           :style="{
             width: 'calc(\(100% - 358px - 24px\) / 2)',
           }"
         >
-          <GeneralIcon icon="ncPuzzleSolid" class="h-6 w-6 flex-none text-nc-content-gray-subtle" />
+          <GeneralIcon icon="ncPuzzleSolid" class="h-6 w-6 flex-none text-atm-content-gray-subtle" />
           <div class="flex-1 font-semibold text-xl">{{ $t('general.marketplace') }}</div>
         </div>
-        <div class="flex bg-nc-bg-gray-medium rounded-lg p-1">
+        <div class="flex bg-atm-bg-gray-medium rounded-lg p-1">
           <div class="flex items-center">
-            <NcTooltip
+            <AtTooltip
               v-for="(tab, idx) of tabs"
               :key="idx"
               :disabled="!tab.isDisabled"
-              class="nc-extension-market-header-tab-item"
+              class="atm-extension-market-header-tab-item"
               :class="{
                 'selected ': activeTab === tab.tabKey,
               }"
@@ -106,8 +106,8 @@ onMounted(() => {
               <div
                 class="px-3 py-1 flex items-center gap-2 text-xs rounded-md select-none"
                 :class="{
-                  'bg-nc-bg-default text-nc-content-gray-emphasis': activeTab === tab.tabKey,
-                  'text-nc-content-gray-subtle2': activeTab !== tab.tabKey,
+                  'bg-atm-bg-default text-atm-content-gray-emphasis': activeTab === tab.tabKey,
+                  'text-atm-content-gray-subtle2': activeTab !== tab.tabKey,
                   'cursor-not-allowed opacity-60': tab.isDisabled,
                   'cursor-pointer': !tab.isDisabled,
                 }"
@@ -116,35 +116,35 @@ onMounted(() => {
                 <GeneralIcon :icon="tab.icon" class="h-4 w-4 flex-none !stroke-transparent opacity-75" />
                 {{ tab.title }}
               </div>
-            </NcTooltip>
+            </AtTooltip>
           </div>
         </div>
         <div class="flex-1 flex gap-3 justify-end">
           <div v-if="activeTab !== 'build-an-extension'" ref="searchWrapperRef" class="flex-1 flex max-w-[290px] justify-end">
-            <NcButton v-if="!searchQuery && !showSearchBox" class="!px-1" type="text" size="small" @click="handleShowSearchInput">
+            <AtButton v-if="!searchQuery && !showSearchBox" class="!px-1" type="text" size="small" @click="handleShowSearchInput">
               <GeneralIcon icon="search" class="h-4 w-4 text-current" />
-            </NcButton>
+            </AtButton>
 
             <a-input
               v-if="searchQuery || showSearchBox"
               ref="searchRef"
               v-model:value="searchQuery"
               type="text"
-              class="nc-input-border-on-value !h-8 !px-3 !py-1 !rounded-lg"
+              class="atm-input-border-on-value !h-8 !px-3 !py-1 !rounded-lg"
               :placeholder="`Search for ${activeTab === 'extensions' ? 'an extension' : 'a script'}`"
               allow-clear
             >
               <template #prefix>
                 <GeneralIcon
                   icon="search"
-                  class="mr-2 h-4 w-4 text-nc-content-gray-muted group-hover:text-nc-content-gray-extreme"
+                  class="mr-2 h-4 w-4 text-atm-content-gray-muted group-hover:text-atm-content-gray-extreme"
                 />
               </template>
             </a-input>
           </div>
-          <NcButton size="small" type="text" @click="vModel = false">
-            <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-          </NcButton>
+          <AtButton size="small" type="text" @click="vModel = false">
+            <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+          </AtButton>
         </div>
       </div>
 
@@ -163,7 +163,7 @@ onMounted(() => {
         </template>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss" scoped>
@@ -178,7 +178,7 @@ onMounted(() => {
   @apply pt-2 pb-3;
 }
 :deep(.ant-tabs-content) {
-  @apply nc-content-max-w;
+  @apply atm-content-max-w;
 }
 :deep(.ant-tabs-content-top) {
   @apply !h-full;
@@ -192,18 +192,18 @@ onMounted(() => {
 </style>
 
 <style lang="scss">
-.nc-modal-extension-market {
-  .nc-modal {
+.atm-modal-extension-market {
+  .atm-modal {
     @apply !p-0;
   }
 
-  .nc-extension-market-header {
-    .nc-extension-market-header-tab-item {
+  .atm-extension-market-header {
+    .atm-extension-market-header-tab-item {
       @apply relative;
 
       // Add vertical line to all items except the last one
       &:not(:last-child)::after {
-        @apply absolute right-0 top-[4px] h-[16px] w-[1px] bg-nc-bg-gray-dark; // Use WindiCSS utilities for line
+        @apply absolute right-0 top-[4px] h-[16px] w-[1px] bg-atm-bg-gray-dark; // Use WindiCSS utilities for line
 
         content: '';
         transform: scaleY(0); // Hide by default

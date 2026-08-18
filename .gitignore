@@ -81,20 +81,20 @@ mongod
 *.sln
 
 .history
-/packages/nocodb/docker/main.js.LICENSE.txt
-/packages/nocodb/noco_log.db
+/packages/atmosphere/docker/main.js.LICENSE.txt
+/packages/atmosphere/atmosphere_log.db
 
-# NC_DBs
+# ATMOSPHERE_DBs
 #=========
-nc_minimal_dbs/
-test_noco.db
+atm_minimal_dbs/
+test_atmosphere.db
 
 # ngrok config
 httpbin
 .run/test-debug.run.xml
 
-/packages/nc-secret-mgr/dist/index.js
-/packages/nc-secret-mgr/dist/index.js.map
+/packages/atmosphere-secret-mgr/dist/index.js
+/packages/atmosphere-secret-mgr/dist/index.js.map
 
 # nix
 result
@@ -110,20 +110,20 @@ antd.variable.css
 # Claude - per-branch working memory (ephemeral, local only)
 .claude/branches/
 
-# nocodb-api skill runtime state
-.claude/skills/nocodb-dev-api/.state.json
+# atmosphere-api skill runtime state
+.claude/skills/atmosphere-dev-api/.state.json
 /.claude/worktrees/
 .playwright-mcp
 .playwright-cli
-.claude/skills/nocodb-dev-api/.credentials.json
+.claude/skills/atmosphere-dev-api/.credentials.json
 .claude/**.lock
 
-# nc-dev
-.nc-dev-config.json
-.nc-dev-registry.json
-.nc-dev-proxy.pid
-.nc-dev-proxy.log
-.nc-dev-logs/
+# atm-dev
+.atm-dev-config.json
+.atm-dev-registry.json
+.atm-dev-proxy.pid
+.atm-dev-proxy.log
+.atm-dev-logs/
 
 # Local-only payment-dev secrets (license-server private key, etc.) — never commit
 scripts/.payment-dev-secrets.env

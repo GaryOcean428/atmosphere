@@ -489,7 +489,7 @@ defineExpose({
 <template>
   <div
     style="z-index: 100"
-    class="sticky flex top-0 bg-nc-bg-default border-b-1 border-nc-border-gray-medium shadow-sm prevent-select"
+    class="sticky flex top-0 bg-atm-bg-default border-b-1 border-atm-border-gray-medium shadow-sm prevent-select"
   >
     <div
       :style="{
@@ -500,14 +500,14 @@ defineExpose({
         'p-2': activeCalendarView === 'day',
         'py-2 pr-1': activeCalendarView === 'week',
       }"
-      class="text-xs top-0 text-right z-50 !sticky h-full left-0 text-nc-content-gray"
+      class="text-xs top-0 text-right z-50 !sticky h-full left-0 text-atm-content-gray"
     >
       {{ $t('labels.allDay') }}
 
-      <NcButton size="xsmall" class="mt-2" type="text" @click="isExpanded = !isExpanded">
-        <GeneralIcon v-if="!isExpanded" class="w-4 h-4 text-nc-content-gray" icon="maximize" />
-        <GeneralIcon v-else-if="isExpanded" class="w-4 h-4 text-nc-content-gray" icon="minimize" />
-      </NcButton>
+      <AtButton size="xsmall" class="mt-2" type="text" @click="isExpanded = !isExpanded">
+        <GeneralIcon v-if="!isExpanded" class="w-4 h-4 text-atm-content-gray" icon="maximize" />
+        <GeneralIcon v-else-if="isExpanded" class="w-4 h-4 text-atm-content-gray" icon="minimize" />
+      </AtButton>
     </div>
     <div
       ref="container"
@@ -515,8 +515,8 @@ defineExpose({
         width: `calc(100% - ${activeCalendarView === 'week' ? '64' : '66'}px)`,
       }"
       :class="{
-        'border-nc-border-gray-light': activeCalendarView === 'day',
-        'border-nc-border-gray-medium': activeCalendarView === 'week',
+        'border-atm-border-gray-light': activeCalendarView === 'day',
+        'border-atm-border-gray-medium': activeCalendarView === 'week',
         'min-h-32 max-h-32 ': isExpanded,
         'h-20': !isExpanded,
       }"
@@ -525,7 +525,7 @@ defineExpose({
       <div class="pointer-events-none h-full inset-y-0 relative">
         <div
           v-if="maxVisibleDays === 7"
-          class="absolute !right-0 h-full bg-nc-bg-gray-light inset-y-0"
+          class="absolute !right-0 h-full bg-atm-bg-gray-light inset-y-0"
           :style="{
             width: `${(containerWidth / 7) * 2}px`,
           }"
@@ -533,12 +533,12 @@ defineExpose({
         <template v-for="(record, id) in calendarData" :key="id">
           <div
             v-if="record.rowMeta.style?.display !== 'none'"
-            :data-testid="`nc-calendar-week-record-${record.row[displayField!.title!]}`"
+            :data-testid="`atm-calendar-week-record-${record.row[displayField!.title!]}`"
             :data-unique-id="record.rowMeta.id"
             :style="{
               ...record.rowMeta.style,
             }"
-            class="absolute group draggable-record pointer-events-auto nc-calendar-week-record-card"
+            class="absolute group draggable-record pointer-events-auto atm-calendar-week-record-card"
             @mouseleave="hoverRecord = null"
             @mouseover="hoverRecord = record.rowMeta.id"
             @mousedown.stop="dragStart($event, record)"

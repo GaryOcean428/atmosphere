@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import { dateFormats, isJalaliFormat, isSystemColumn, parseJalaliToGregorian, timeFormats } from 'nocodb-sdk'
+import { dateFormats, isJalaliFormat, isSystemColumn, parseJalaliToGregorian, timeFormats } from 'atmosphere-sdk'
 import { timeCellMaxWidthMap, timeFormatsObj } from './utils'
 const { modelValue, isPk, isUpdatedFromCopyNPaste } = defineProps<Props>()
 
@@ -265,7 +265,7 @@ const handleUpdateValue = (e: Event, _isDatePicker: boolean, save = false) => {
 const randomClass = `picker_${Math.floor(Math.random() * 99999)}`
 
 onClickOutside(datePickerRef, (e) => {
-  if ((e.target as HTMLElement)?.closest(`.${randomClass}, .nc-${randomClass}`)) return
+  if ((e.target as HTMLElement)?.closest(`.${randomClass}, .atm-${randomClass}`)) return
   datePickerRef.value?.blur?.()
   timePickerRef.value?.blur?.()
   open.value = false
@@ -289,7 +289,7 @@ watch(
       isDatePicker.value ? datePickerRef.value?.focus?.() : timePickerRef.value?.focus?.()
 
       onClickOutside(document.querySelector(`.${randomClass}`)! as HTMLDivElement, (e) => {
-        if ((e?.target as HTMLElement)?.closest(`.nc-${randomClass}`)) {
+        if ((e?.target as HTMLElement)?.closest(`.atm-${randomClass}`)) {
           return
         }
         open.value = false
@@ -512,19 +512,19 @@ const minimizeMaxWidth = computed(() => {
 </script>
 
 <template>
-  <div v-bind="$attrs" class="nc-cell-field relative flex items-center gap-2">
-    <NcDropdown
+  <div v-bind="$attrs" class="atm-cell-field relative flex items-center gap-2">
+    <AtDropdown
       :visible="isOpen"
       :placement="isDatePicker ? 'bottomLeft' : 'bottomRight'"
       :auto-close="false"
       :trigger="['click']"
-      class="nc-cell-picker-datetime"
-      :class="[`nc-${randomClass}`, { 'nc-null': modelValue === null && showNull }]"
-      :overlay-class-name="`${randomClass} nc-picker-datetime ${open ? 'active' : ''} !min-w-[0] overflow-hidden`"
+      class="atm-cell-picker-datetime"
+      :class="[`atm-${randomClass}`, { 'atm-null': modelValue === null && showNull }]"
+      :overlay-class-name="`${randomClass} atm-picker-datetime ${open ? 'active' : ''} !min-w-[0] overflow-hidden`"
     >
       <div
         :title="localState?.format(dateTimeFormat)"
-        class="nc-date-picker ant-picker-input flex items-center relative gap-2 !truncate !w-auto"
+        class="atm-date-picker ant-picker-input flex items-center relative gap-2 !truncate !w-auto"
         :class="{
           'max-w-[calc(100%_-_70px)]': minimizeMaxWidth,
         }"
@@ -542,7 +542,7 @@ const minimizeMaxWidth = computed(() => {
             ref="datePickerRef"
             :value="localState?.format(dateFormat) ?? ''"
             :placeholder="typeof placeholder === 'string' ? placeholder : placeholder?.date"
-            class="nc-date-input w-full !truncate border-transparent outline-none !text-current !bg-transparent !focus:(border-none ring-transparent)"
+            class="atm-date-input w-full !truncate border-transparent outline-none !text-current !bg-transparent !focus:(border-none ring-transparent)"
             :readonly="isColDisabled || !!isMobileMode"
             @focus="onFocus(true)"
             @blur="onBlur($event, true)"
@@ -572,7 +572,7 @@ const minimizeMaxWidth = computed(() => {
             ref="timePickerRef"
             :value="cellValue"
             :placeholder="typeof placeholder === 'string' ? placeholder : placeholder?.time"
-            class="nc-time-input w-full !truncate border-transparent outline-none !text-current !bg-transparent !focus:(border-none ring-transparent)"
+            class="atm-time-input w-full !truncate border-transparent outline-none !text-current !bg-transparent !focus:(border-none ring-transparent)"
             :readonly="isColDisabled || !!isMobileMode"
             @focus="onFocus(false)"
             @blur="onBlur($event, false)"
@@ -595,7 +595,7 @@ const minimizeMaxWidth = computed(() => {
             width: isDatePicker ? '256px' : `${timePickerWidth + 8}px`,
           }"
         >
-          <NcDatePicker
+          <AtDatePicker
             v-if="isDatePicker"
             v-model:page-date="tempDate"
             :selected-date="localState"
@@ -610,7 +610,7 @@ const minimizeMaxWidth = computed(() => {
           />
 
           <template v-else>
-            <NcTimeSelector
+            <AtTimeSelector
               :selected-date="localState"
               :min-granularity="30"
               is-min-granularity-picker
@@ -624,13 +624,13 @@ const minimizeMaxWidth = computed(() => {
           </template>
         </div>
       </template>
-    </NcDropdown>
+    </AtDropdown>
 
     <div
       v-if="timeZoneDisplay"
-      class="nc-timezone-field text-nc-content-gray-muted whitespace-nowrap text-tiny transition-all duration-300 text-right flex-1"
+      class="atm-timezone-field text-atm-content-gray-muted whitespace-nowrap text-tiny transition-all duration-300 text-right flex-1"
       :class="{
-        'nc-flex-1': minimizeMaxWidth,
+        'atm-flex-1': minimizeMaxWidth,
       }"
     >
       {{ timeZoneDisplay }}
@@ -639,19 +639,19 @@ const minimizeMaxWidth = computed(() => {
     <GeneralIcon
       v-if="localState && minimizeMaxWidth && !readOnly"
       icon="closeCircle"
-      class="nc-clear-date-time-icon nc-action-icon h-4 w-4 absolute right-0 top-[50%] transform -translate-y-1/2 invisible cursor-pointer"
+      class="atm-clear-date-time-icon atm-action-icon h-4 w-4 absolute right-0 top-[50%] transform -translate-y-1/2 invisible cursor-pointer"
       @click.stop="handleSelectDate()"
     />
   </div>
 </template>
 
 <style scoped lang="scss">
-.nc-cell-field {
+.atm-cell-field {
   &:hover {
-    .nc-clear-date-time-icon {
+    .atm-clear-date-time-icon {
       @apply visible;
     }
-    &:has(.nc-clear-date-time-icon) .nc-timezone-field {
+    &:has(.atm-clear-date-time-icon) .atm-timezone-field {
       @apply pr-5;
     }
   }

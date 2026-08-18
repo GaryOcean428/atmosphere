@@ -6,7 +6,7 @@ import {
   type DataPayload,
   EventType,
   type FilterType,
-  NcApiVersion,
+  AtApiVersion,
   type PaginatedType,
   type TableType,
   UITypes,
@@ -18,7 +18,7 @@ import {
   isCreatedOrLastModifiedTimeCol,
   isOrderCol,
   isSystemColumn,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import type { CanvasGroup } from '../lib/types'
 import type { InterfacePageDataApi } from '../lib/interfaceData'
 import { isInterfaceSyntheticViewId } from '../lib/interfaceData'
@@ -112,7 +112,7 @@ export function useInfiniteData(args: {
   isPublic?: Ref<boolean>
   groupByColumns?: ComputedRef<{ column: ColumnType; sort: string; order?: number }[]>
 }) {
-  const NOCO = 'noco'
+  const ATMOSPHERE = 'atmosphere'
   const { meta, viewMeta, callbacks, where, disableSmartsheet, isPublic, groupByColumns = ref(null) } = args
 
   const { $api, $ncSocket } = useNuxtApp()
@@ -310,7 +310,7 @@ export function useInfiniteData(args: {
 
   const computedWhereFilter = computed(() => {
     const { filters: filter } = extractFilterFromXwhere(
-      { api_version: NcApiVersion.V1, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone },
+      { api_version: AtApiVersion.V1, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone },
       where?.value ?? '',
       columnsByAlias.value,
     )
@@ -853,7 +853,7 @@ export function useInfiniteData(args: {
             nestedFiltersArr: jsonWhereFilterArr,
           })
         : !isPublic?.value
-        ? await $api.dbViewRow.list('noco', base.value.id!, meta.value!.id!, viewMeta.value!.id!, {
+        ? await $api.dbViewRow.list('atmosphere', base.value.id!, meta.value!.id!, viewMeta.value!.id!, {
             ...params,
             ...(isUIAllowed('sortSync') ? {} : { sortArrJson: stringifyFilterOrSortArr(sorts.value?.filter((s) => !s.id)) }),
             ...(isUIAllowed('filterSync')
@@ -1391,7 +1391,7 @@ export function useInfiniteData(args: {
         const fullRecord = interfaceDataApi
           ? await interfaceDataApi.fetchRecord?.(id as string)
           : await $api.dbTableRow.read(
-              NOCO,
+              ATMOSPHERE,
               meta.value?.base_id ?? (base?.value.id as string),
               meta.value?.id as string,
               encodeURIComponent(id as string),
@@ -1498,7 +1498,7 @@ export function useInfiniteData(args: {
       const insertedData = interfaceDataApi
         ? await interfaceDataApi.insertRow({ ...insertObj, ...(ltarState || {}) }, { before: beforeRowID })
         : await $api.dbViewRow.create(
-            NOCO,
+            ATMOSPHERE,
             metaValue?.base_id ?? (base?.value.id as string),
             metaValue?.id as string,
             viewMetaValue?.id as string,
@@ -1584,7 +1584,7 @@ export function useInfiniteData(args: {
       const updatedRowData: Record<string, any> = interfaceDataApi
         ? await interfaceDataApi.updateRow(id, { [property]: toUpdate.row[property] ?? null })
         : await $api.dbViewRow.update(
-            NOCO,
+            ATMOSPHERE,
             metaValue?.base_id ?? (base?.value.id as string),
             metaValue?.id as string,
             viewMetaValue?.id as string,
@@ -1833,7 +1833,7 @@ export function useInfiniteData(args: {
       throw new Error('View meta value is missing')
     }
 
-    await $api.dbTableRow.bulkUpdateAll(NOCO, metaValue?.base_id as string, metaValue?.id as string, data, {
+    await $api.dbTableRow.bulkUpdateAll(ATMOSPHERE, metaValue?.base_id as string, metaValue?.id as string, data, {
       viewId: viewMetaValue.id,
     })
 
@@ -1860,7 +1860,7 @@ export function useInfiniteData(args: {
       const res: any = interfaceDataApi
         ? await interfaceDataApi.deleteRow(id)
         : await $api.dbViewRow.delete(
-            'noco',
+            'atmosphere',
             metaValue?.base_id ?? (base.value.id as string),
             metaValue?.id as string,
             viewMetaValue?.id as string,
@@ -1920,7 +1920,7 @@ export function useInfiniteData(args: {
             filtersArr: [...(nestedFilters.value || []), ...jsonWhereFilterArr],
             where: whereFilter,
           })
-        : await $api.dbViewRow.count(NOCO, base?.value?.id as string, meta.value!.id as string, viewMeta?.value?.id as string, {
+        : await $api.dbViewRow.count(ATMOSPHERE, base?.value?.id as string, meta.value!.id as string, viewMeta?.value?.id as string, {
             where: whereFilter,
             ...(isUIAllowed('filterSync')
               ? { filterArrJson: stringifyFilterOrSortArr(jsonWhereFilterArr) }
@@ -1939,7 +1939,7 @@ export function useInfiniteData(args: {
               filtersArr: [...(nestedFilters.value || []), ...jsonWhereFilterArr],
               where: whereQueryFromUrl.value as string,
             })
-          : await $api.dbViewRow.count(NOCO, base?.value?.id as string, meta.value!.id as string, viewMeta?.value?.id as string, {
+          : await $api.dbViewRow.count(ATMOSPHERE, base?.value?.id as string, meta.value!.id as string, viewMeta?.value?.id as string, {
               where: whereQueryFromUrl.value as string,
               ...(isUIAllowed('filterSync')
                 ? {
@@ -2233,7 +2233,7 @@ export function useInfiniteData(args: {
           let insertAtIndex = dataCache.totalRows.value
 
           if (!sorts.value.length && orderField && payload[orderField] != null) {
-            // Default sort by nc_order — find the right position
+            // Default sort by atm_order — find the right position
             const payloadOrder = Number(payload[orderField])
             const entries = Array.from(dataCache.cachedRows.value.entries()).sort((a, b) => a[0] - b[0])
             for (const [idx, cachedRow] of entries) {
@@ -2266,7 +2266,7 @@ export function useInfiniteData(args: {
           dataCache.totalRows.value++
           dataCache.actualTotalRows.value = Math.max(dataCache.actualTotalRows.value || 0, dataCache.totalRows.value)
 
-          // If explicit sorts exist, apply them (nc_order handled above)
+          // If explicit sorts exist, apply them (atm_order handled above)
           if (sorts.value.length) {
             applySorting(newRow)
           }

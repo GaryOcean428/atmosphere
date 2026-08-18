@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from '@vue/reactivity'
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { forcedNextTick } from '../../utils/browserUtils'
@@ -199,9 +199,9 @@ onMounted(() => {
     forcedNextTick(() => {
       if (onCellEvent(canvasCellEventData.event)) return
 
-      if (getElementAtMouse('.nc-canvas-table-editable-cell-wrapper .nc-canvas-links-icon-plus', clientMousePosition)) {
+      if (getElementAtMouse('.atm-canvas-table-editable-cell-wrapper .atm-canvas-links-icon-plus', clientMousePosition)) {
         openListDlg()
-      } else if (getElementAtMouse('.nc-canvas-table-editable-cell-wrapper .nc-canvas-links-text', clientMousePosition)) {
+      } else if (getElementAtMouse('.atm-canvas-table-editable-cell-wrapper .atm-canvas-links-text', clientMousePosition)) {
         openChildList()
       } else if (hasEditPermission.value) {
         openListDlg()
@@ -218,7 +218,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="nc-cell-field flex w-full group items-center nc-links-wrapper py-1" @dblclick.stop="openChildList">
+  <div class="atm-cell-field flex w-full group items-center atm-links-wrapper py-1" @dblclick.stop="openChildList">
     <VirtualCellComponentsLinkRecordDropdown v-model:is-open="isOpen" :variant="isSimpleLinkRecordList ? 'simple' : 'classic'">
       <div class="flex w-full group items-center min-h-4">
         <div class="block flex-shrink truncate">
@@ -226,8 +226,8 @@ onUnmounted(() => {
             :is="isUnderLookup ? 'span' : 'a'"
             v-e="['c:cell:links:modal:open']"
             :title="textVal"
-            class="text-center nc-datatype-link underline-transparent nc-canvas-links-text font-weight-500"
-            :class="{ '!text-nc-content-brand-hover': !textVal }"
+            class="text-center atm-datatype-link underline-transparent atm-canvas-links-text font-weight-500"
+            :class="{ '!text-atm-content-brand-hover': !textVal }"
             :tabindex="readOnly ? -1 : 0"
             @click.stop.prevent="isForm && !isExpandedFormOpen && hasEditPermission ? openListDlg() : openChildList()"
             @keydown.enter.stop.prevent="isForm && !isExpandedFormOpen && hasEditPermission ? openListDlg() : openChildList"
@@ -241,13 +241,13 @@ onUnmounted(() => {
           v-if="hasEditPermission || isSimpleLinkRecordList"
           :class="{ hidden: isUnderLookup }"
           :tabindex="readOnly ? -1 : 0"
-          class="flex group justify-end group-hover:flex items-center nc-canvas-links-icon-plus"
+          class="flex group justify-end group-hover:flex items-center atm-canvas-links-icon-plus"
           @keydown.enter.stop="hasEditPermission ? openListDlg() : openChildList()"
         >
           <GeneralIcon
             :icon="isSimpleLinkRecordList ? 'chevronDown' : 'plus'"
-            class="select-none !text-md text-nc-content-gray-subtle nc-action-icon nc-plus !xs:visible invisible group-hover:visible group-focus:visible"
-            :class="{ '!text-nc-content-gray-muted': isSimpleLinkRecordList }"
+            class="select-none !text-md text-atm-content-gray-subtle atm-action-icon atm-plus !xs:visible invisible group-hover:visible group-focus:visible"
+            :class="{ '!text-atm-content-gray-muted': isSimpleLinkRecordList }"
             @click.stop="hasEditPermission ? openListDlg() : openChildList()"
           />
         </div>

@@ -4,11 +4,11 @@
  *
  * Imports the actual pure functions from utils/ltarDeferredOps.ts — no mocks.
  *
- * Brought in from upstream nocodb/nocodb#14058 by Aakash Gautam (@aakashgautam-git).
+ * Brought in from upstream atmosphere/atmosphere#14058 by Aakash Gautam (@aakashgautam-git).
  */
 
 import { describe, expect, it } from 'vitest'
-import { RelationTypes } from 'nocodb-sdk'
+import { RelationTypes } from 'atmosphere-sdk'
 import {
   type PendingLtarOp,
   reconcilePendingLtarOp,

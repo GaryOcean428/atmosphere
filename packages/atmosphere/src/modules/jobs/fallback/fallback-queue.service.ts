@@ -37,13 +37,13 @@ export class QueueService {
     @Inject(forwardRef(() => JobsMap)) protected readonly jobsMap: JobsMap,
   ) {
     // Concurrency defaults to 2 (production fallback). Overridable via
-    // NC_FALLBACK_QUEUE_CONCURRENCY — set higher under test so a single
+    // ATMOSPHERE_FALLBACK_QUEUE_CONCURRENCY — set higher under test so a single
     // process-global queue shared by every suite doesn't starve the jobs
     // that flip state (e.g. table-sync status → active). Read here (runtime,
     // post-dotenv) rather than at the static field initializer (module load,
     // pre-dotenv) so the test env actually applies.
     const concurrencyOverride = Number(
-      process.env.NC_FALLBACK_QUEUE_CONCURRENCY,
+      process.env.ATMOSPHERE_FALLBACK_QUEUE_CONCURRENCY,
     );
     if (Number.isFinite(concurrencyOverride) && concurrencyOverride > 0) {
       QueueService.queue.concurrency = concurrencyOverride;

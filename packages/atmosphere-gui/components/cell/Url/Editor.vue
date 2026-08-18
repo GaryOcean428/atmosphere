@@ -96,9 +96,9 @@ const formFieldAutocomplete = inject(FormFieldAutocompleteInj, ref(undefined))
       v-model="vModel"
       inputmode="url"
       :autocomplete="formFieldAutocomplete"
-      class="nc-cell-field outline-none w-full py-1 bg-transparent h-full"
+      class="atm-cell-field outline-none w-full py-1 bg-transparent h-full"
       :class="{
-        'nc-text-transparent': showClicableLink,
+        'atm-text-transparent': showClicableLink,
       }"
       :disabled="readOnly"
       @blur="onBlur"
@@ -114,7 +114,7 @@ const formFieldAutocomplete = inject(FormFieldAutocompleteInj, ref(undefined))
     />
     <div
       v-if="showClicableLink"
-      class="nc-cell-field nc-cell-link-preview absolute inset-0 flex items-center max-w-full overflow-hidden pointer-events-none"
+      class="atm-cell-field atm-cell-link-preview absolute inset-0 flex items-center max-w-full overflow-hidden pointer-events-none"
     >
       <a
         class="truncate text-primary cursor-pointer pointer-events-auto no-user-select"

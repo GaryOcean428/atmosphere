@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { stringToViewTypeMap } from 'nocodb-sdk'
+import { stringToViewTypeMap } from 'atmosphere-sdk'
 
 interface Props {
   dialogShow: boolean
   aiMode: boolean | null
-  baseCreateMode: NcBaseCreateMode | null
+  baseCreateMode: AtBaseCreateMode | null
   workspaceId?: string
   isCreateNewActionMenu?: boolean
   initialValue?: {
@@ -40,7 +40,7 @@ const { t } = useI18n()
 
 const { isWorkspaceLoading } = storeToRefs(useWorkspace())
 
-const { aiIntegrationAvailable, aiError, aiLoading, createSchema, predictSchema } = useNocoAi()
+const { aiIntegrationAvailable, aiError, aiLoading, createSchema, predictSchema } = useAtmosphereAi()
 
 const callFunction = ref<string | null>(null)
 
@@ -279,7 +279,7 @@ const onCreateSchema = async () => {
     if (base?.id) {
       navigateToProject({
         baseId: base.id!,
-        workspaceId: isEeUI ? workspaceId.value : 'nc',
+        workspaceId: isEeUI ? workspaceId.value : 'atm',
       })
 
       dialogShow.value = false
@@ -362,36 +362,36 @@ onMounted(() => {
 
 <template>
   <div class="h-full">
-    <div class="flex items-center gap-2.5 px-4 py-2 border-b-1 border-nc-border-purple-light">
-      <div class="flex-1 flex items-center gap-3 text-nc-content-purple-dark dark:text-nc-content-purple-medium">
+    <div class="flex items-center gap-2.5 px-4 py-2 border-b-1 border-atm-border-purple-light">
+      <div class="flex-1 flex items-center gap-3 text-atm-content-purple-dark dark:text-atm-content-purple-medium">
         <GeneralIcon icon="ncAutoAwesome" class="flex-none h-5 w-5 !text-current" />
-        <div class="text-base leading-8 font-bold">{{ $t('title.nocoAiBaseBuilder') }}</div>
+        <div class="text-base leading-8 font-bold">{{ $t('title.atmosphereAiBaseBuilder') }}</div>
       </div>
 
-      <NcButton size="small" type="text" @click.stop="dialogShow = false">
-        <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-      </NcButton>
+      <AtButton size="small" type="text" @click.stop="dialogShow = false">
+        <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+      </AtButton>
     </div>
 
     <div class="h-[calc(100%_-_49px)] flex">
       <div
         ref="leftPaneContentRef"
-        class="w-[480px] h-full relative flex flex-col nc-scrollbar-thin border-r-1 border-nc-border-purple-light"
+        class="w-[480px] h-full relative flex flex-col atm-scrollbar-thin border-r-1 border-atm-border-purple-light"
       >
         <!-- create base config panel -->
         <div class="flex-1 p-6 flex flex-col gap-6">
-          <div class="text-sm font-bold text-nc-content-purple-dark dark:text-nc-content-purple-medium">
+          <div class="text-sm font-bold text-atm-content-purple-dark dark:text-atm-content-purple-medium">
             Tell us more about your usecase
           </div>
-          <div class="flex flex-wrap gap-3 max-h-[188px] nc-scrollbar-thin pt-1">
+          <div class="flex flex-wrap gap-3 max-h-[188px] atm-scrollbar-thin pt-1">
             <!-- Predefined tags -->
 
             <template v-for="prompt of predefinedBasePrompts" :key="prompt.tag">
               <a-tag
-                class="nc-ai-base-schema-tag nc-ai-suggested-tag relative"
+                class="atm-ai-base-schema-tag atm-ai-suggested-tag relative"
                 :class="{
-                  'nc-selected': prompt.description === aiFormState.prompt.trim(),
-                  'nc-disabled': !aiIntegrationAvailable || (aiLoading && callFunction === 'onPredictSchema'),
+                  'atm-selected': prompt.description === aiFormState.prompt.trim(),
+                  'atm-disabled': !aiIntegrationAvailable || (aiLoading && callFunction === 'onPredictSchema'),
                 }"
                 :disabled="!aiIntegrationAvailable || (aiLoading && callFunction === 'onPredictSchema')"
                 @mouseover="handleMouseOverTag(prompt.description)"
@@ -403,7 +403,7 @@ onMounted(() => {
                 </div>
                 <div
                   v-if="prompt.description === aiFormState.prompt.trim()"
-                  class="bg-nc-fill-purple-dark text-nc-content-inverted-primary rounded-full absolute -right-[3px] -top-[4px] h-3 w-3 grid place-items-center"
+                  class="bg-atm-fill-purple-dark text-atm-content-inverted-primary rounded-full absolute -right-[3px] -top-[4px] h-3 w-3 grid place-items-center"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none">
                     <path
@@ -418,20 +418,20 @@ onMounted(() => {
               </a-tag>
             </template>
 
-            <NcButton size="xs" type="text" icon-position="right" class="nc-show-more-tags-btn" @click="onToggleShowMore">
+            <AtButton size="xs" type="text" icon-position="right" class="atm-show-more-tags-btn" @click="onToggleShowMore">
               {{ isExpandedPredefiendBasePromts ? $t('general.showLess') : $t('general.showMore') }}
 
               <template #icon>
                 <GeneralIcon :icon="isExpandedPredefiendBasePromts ? 'minusCircle' : 'plusCircle'" class="opacity-80" />
               </template>
-            </NcButton>
+            </AtButton>
           </div>
           <div>
             <a-textarea
               ref="aiPromptInputRef"
               :value="aiFormState.onHoverTagPrompt || aiFormState.prompt"
               placeholder="Type something..."
-              class="!w-full !min-h-[120px] !rounded-lg mt-2 overflow-y-auto nc-scrollbar-thin nc-input-shadow nc-ai-input"
+              class="!w-full !min-h-[120px] !rounded-lg mt-2 overflow-y-auto atm-scrollbar-thin atm-input-shadow atm-ai-input"
               size="middle"
               :disabled="!aiIntegrationAvailable || (aiLoading && callFunction === 'onPredictSchema')"
               :maxlength="8192"
@@ -444,7 +444,7 @@ onMounted(() => {
             <a-collapse-panel :key="ExpansionPanelKeys.additionalDetails" collapsible="disabled">
               <template #header>
                 <div class="flex">
-                  <NcButton
+                  <AtButton
                     size="small"
                     type="text"
                     icon-position="right"
@@ -461,16 +461,16 @@ onMounted(() => {
                         }"
                       />
                     </template>
-                  </NcButton>
+                  </AtButton>
                 </div>
               </template>
 
               <div class="flex flex-col gap-6 pt-6">
                 <div v-for="field of additionalDetails" :key="field.title" class="flex items-center gap-2">
-                  <div class="min-w-[120px] text-nc-content-gray">{{ field.title }}</div>
+                  <div class="min-w-[120px] text-atm-content-gray">{{ field.title }}</div>
                   <a-input
                     v-model:value="aiFormState[field.key]"
-                    class="nc-input-sm nc-input-shadow nc-ai-input"
+                    class="atm-input-sm atm-input-shadow atm-ai-input"
                     hide-details
                     :placeholder="field.placeholder"
                     :disabled="!aiIntegrationAvailable || (aiLoading && callFunction === 'onPredictSchema')"
@@ -481,27 +481,27 @@ onMounted(() => {
           </a-collapse>
         </div>
         <div
-          class="sticky bottom-0 w-full bg-nc-bg-default px-6 pt-3 pb-6 border-t-1 flex flex-col gap-3"
+          class="sticky bottom-0 w-full bg-atm-bg-default px-6 pt-3 pb-6 border-t-1 flex flex-col gap-3"
           :class="{
-            'border-nc-border-gray-medium': showBtnTopBorder,
+            'border-atm-border-gray-medium': showBtnTopBorder,
             'border-transparent': !showBtnTopBorder,
           }"
         >
-          <div v-if="aiError" class="w-full flex items-start gap-3 bg-nc-bg-red-light rounded-lg p-4">
-            <GeneralIcon icon="ncInfoSolid" class="flex-none !text-nc-content-red-dark w-6 h-6" />
+          <div v-if="aiError" class="w-full flex items-start gap-3 bg-atm-bg-red-light rounded-lg p-4">
+            <GeneralIcon icon="ncInfoSolid" class="flex-none !text-atm-content-red-dark w-6 h-6" />
 
             <div class="w-[calc(100%_-_36px)] flex flex-col gap-1">
-              <div class="font-bold text-base text-nc-content-gray">{{ $t('msg.error.somethingWentWrong') }}</div>
-              <NcTooltip class="truncate text-sm text-nc-content-gray-subtle" show-on-truncate-only>
+              <div class="font-bold text-base text-atm-content-gray">{{ $t('msg.error.somethingWentWrong') }}</div>
+              <AtTooltip class="truncate text-sm text-atm-content-gray-subtle" show-on-truncate-only>
                 <template #title>
                   {{ aiError }}
                 </template>
                 {{ aiError }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
           </div>
           <div v-if="aiIntegrationAvailable" class="flex items-center gap-3">
-            <NcButton
+            <AtButton
               size="small"
               :type="aiStep !== AI_STEP.MODIFY || isOldPromptChanged ? 'primary' : 'secondary'"
               theme="ai"
@@ -514,8 +514,8 @@ onMounted(() => {
                 <GeneralIcon icon="ncAutoAwesome" class="h-4 w-4" />
               </template>
               {{ $t('labels.suggestTablesViews') }}
-            </NcButton>
-            <NcButton
+            </AtButton>
+            <AtButton
               v-e="['a:base:ai:create']"
               type="primary"
               size="small"
@@ -531,32 +531,32 @@ onMounted(() => {
               @click="onCreateSchema"
             >
               {{ $t('activity.createProject') }}
-            </NcButton>
+            </AtButton>
           </div>
           <AiIntegrationNotFound v-else class="justify-between" @on-navigate="dialogShow = false">
             <template #icon>
-              <GeneralIcon icon="alertTriangleSolid" class="flex-none !text-nc-content-orange-medium w-6 h-6" />
+              <GeneralIcon icon="alertTriangleSolid" class="flex-none !text-atm-content-orange-medium w-6 h-6" />
             </template>
             <template #title>
-              <div class="text-base font-bold text-nc-content-gray">{{ $t('title.aiIntegrationMissing') }}</div>
+              <div class="text-base font-bold text-atm-content-gray">{{ $t('title.aiIntegrationMissing') }}</div>
             </template>
             <template #description>
-              <div class="text-sm text-nc-content-gray-subtle">{{ $t('title.noAiIntegrationsHaveBeenAdded') }}</div>
+              <div class="text-sm text-atm-content-gray-subtle">{{ $t('title.noAiIntegrationsHaveBeenAdded') }}</div>
             </template>
           </AiIntegrationNotFound>
         </div>
       </div>
-      <div class="w-[calc(100%_-_480px)] h-full p-6 nc-scrollbar-thin flex flex-col gap-6">
+      <div class="w-[calc(100%_-_480px)] h-full p-6 atm-scrollbar-thin flex flex-col gap-6">
         <!-- create base preview panel -->
 
         <template v-if="aiStep === AI_STEP.LOADING || aiStep === AI_STEP.PROMPT">
           <div
             v-if="aiStep === AI_STEP.LOADING"
-            class="text-sm font-bold text-nc-content-purple-dark dark:text-nc-content-purple-medium"
+            class="text-sm font-bold text-atm-content-purple-dark dark:text-atm-content-purple-medium"
           >
             {{ $t('title.generatingBaseTailoredToYourRequirement') }}
           </div>
-          <div v-else class="text-sm font-bold text-nc-content-purple-dark dark:text-nc-content-purple-medium">
+          <div v-else class="text-sm font-bold text-atm-content-purple-dark dark:text-atm-content-purple-medium">
             {{ $t('labels.preview') }}
           </div>
 
@@ -564,26 +564,26 @@ onMounted(() => {
             <div
               v-for="(loadingText, idx) of activeLoadingText"
               :key="idx"
-              class="text-sm text-nc-content-purple-light flex items-center"
+              class="text-sm text-atm-content-purple-light flex items-center"
             >
               {{ loadingText }}
-              <div v-if="loadingText.length === loadingMessages[idx]?.length" class="nc-animate-dots"></div>
+              <div v-if="loadingText.length === loadingMessages[idx]?.length" class="atm-animate-dots"></div>
             </div>
 
-            <div class="rounded-xl border-1 border-nc-border-purple-light">
+            <div class="rounded-xl border-1 border-atm-border-purple-light">
               <div
                 v-for="idx in 7"
                 :key="idx"
-                class="px-3 py-2 flex items-center gap-2 border-b-1 border-nc-border-purple-light !last-of-type:border-b-0"
+                class="px-3 py-2 flex items-center gap-2 border-b-1 border-atm-border-purple-light !last-of-type:border-b-0"
               >
                 <div class="flex-1 flex items-center gap-2">
                   <a-skeleton-input
                     :active="aiStep === AI_STEP.LOADING"
-                    class="!w-4 !h-4 !rounded overflow-hidden !bg-nc-bg-purple-light"
+                    class="!w-4 !h-4 !rounded overflow-hidden !bg-atm-bg-purple-light"
                   />
                   <a-skeleton-input
                     :active="aiStep === AI_STEP.LOADING"
-                    class="!h-4 !rounded overflow-hidden !bg-nc-bg-purple-light"
+                    class="!h-4 !rounded overflow-hidden !bg-atm-bg-purple-light"
                     :class="{
                       '!w-[133px]': idx % 2 === 0,
                       '!w-[90px]': idx % 2 !== 0,
@@ -591,17 +591,17 @@ onMounted(() => {
                   />
                 </div>
                 <div class="grid place-items-center h-6 w-6">
-                  <GeneralIcon icon="arrowDown" class="text-nc-content-purple-light" />
+                  <GeneralIcon icon="arrowDown" class="text-atm-content-purple-light" />
                 </div>
               </div>
             </div>
           </template>
           <div v-else class="flex-1 grid place-items-center">
-            <GeneralIcon icon="ncAutoAwesome" class="h-[188px] w-[188px] !text-nc-purple-100" />
+            <GeneralIcon icon="ncAutoAwesome" class="h-[188px] w-[188px] !text-atm-purple-100" />
           </div>
         </template>
         <template v-if="aiStep === AI_STEP.MODIFY">
-          <div class="text-sm font-bold text-nc-content-purple-dark dark:text-nc-content-purple-medium">
+          <div class="text-sm font-bold text-atm-content-purple-dark dark:text-atm-content-purple-medium">
             {{ $t('title.hereYourCrmBase') }}
           </div>
 
@@ -616,7 +616,7 @@ onMounted(() => {
                 <a-collapse
                   v-if="activePreviewTab === SchemaPreviewTabs.TABLES_AND_VIEWS"
                   v-model:active-key="previewExpansionPanel"
-                  class="nc-schema-preview-table flex flex-col"
+                  class="atm-schema-preview-table flex flex-col"
                 >
                   <template #expandIcon> </template>
 
@@ -627,20 +627,20 @@ onMounted(() => {
                         @click="handleUpdatePreviewExpansionPanel(table.title, !viewsGrouped[table.title]?.length)"
                       >
                         <div
-                          class="flex-1 flex items-center gap-3 text-nc-content-purple-dark dark:text-nc-content-purple-medium"
+                          class="flex-1 flex items-center gap-3 text-atm-content-purple-dark dark:text-atm-content-purple-medium"
                         >
-                          <NcCheckbox :checked="!table.excluded" theme="ai" @click.stop="onExcludeTable(table)" />
+                          <AtCheckbox :checked="!table.excluded" theme="ai" @click.stop="onExcludeTable(table)" />
 
                           <GeneralIcon icon="table" class="flex-none !h-4 opacity-85" />
 
-                          <NcTooltip show-on-truncate-only class="truncate text-sm font-weight-500">
+                          <AtTooltip show-on-truncate-only class="truncate text-sm font-weight-500">
                             <template #title>
                               {{ table.title }}
                             </template>
                             {{ table.title }}
-                          </NcTooltip>
+                          </AtTooltip>
                         </div>
-                        <NcButton
+                        <AtButton
                           size="xs"
                           type="text"
                           theme="ai"
@@ -659,7 +659,7 @@ onMounted(() => {
                               }"
                             />
                           </template>
-                        </NcButton>
+                        </AtButton>
                       </div>
                     </template>
 
@@ -667,16 +667,16 @@ onMounted(() => {
                       <!-- Views -->
                       <template v-for="view in viewsGrouped[table.title]" :key="view.title">
                         <div class="w-full pl-11 pr-4 py-2 flex items-center gap-3">
-                          <NcCheckbox :checked="!view.excluded" theme="ai" @click.stop="onExcludeView(view)" />
+                          <AtCheckbox :checked="!view.excluded" theme="ai" @click.stop="onExcludeView(view)" />
 
                           <GeneralViewIcon :meta="{ type: stringToViewTypeMap[view.type] }" />
 
-                          <NcTooltip show-on-truncate-only class="truncate text-sm font-weight-500">
+                          <AtTooltip show-on-truncate-only class="truncate text-sm font-weight-500">
                             <template #title>
                               {{ view.title }}
                             </template>
                             {{ view.title }}
-                          </NcTooltip>
+                          </AtTooltip>
 
                           <div class="flex-1"></div>
                         </div>
@@ -701,7 +701,7 @@ onMounted(() => {
   @apply !p-0 flex items-center !cursor-default children:first:flex;
 }
 
-:deep(.nc-schema-preview-table .ant-collapse-header) {
+:deep(.atm-schema-preview-table .ant-collapse-header) {
   @apply !cursor-pointer;
 }
 
@@ -713,11 +713,11 @@ onMounted(() => {
   @apply !p-0;
 }
 
-:deep(.ant-collapse.nc-schema-preview-table) {
+:deep(.ant-collapse.atm-schema-preview-table) {
   @apply !border-0 bg-transparent overflow-hidden;
 
   .ant-collapse-item {
-    @apply border-b-nc-border-purple-light last:(border-b-0 !rounded-b-lg overflow-hidden);
+    @apply border-b-atm-border-purple-light last:(border-b-0 !rounded-b-lg overflow-hidden);
 
     .ant-collapse-content {
       @apply border-0;
@@ -725,17 +725,17 @@ onMounted(() => {
   }
 }
 
-:deep(.nc-schema-preview-table .nc-checkbox > .ant-checkbox) {
+:deep(.atm-schema-preview-table .atm-checkbox > .ant-checkbox) {
   @apply !mr-0;
 }
 
-:deep(.ant-tag.nc-ai-base-schema-tag) {
-  &.nc-selected {
-    @apply !bg-nc-bg-purple-dark;
+:deep(.ant-tag.atm-ai-base-schema-tag) {
+  &.atm-selected {
+    @apply !bg-atm-bg-purple-dark;
   }
 }
 
-.nc-show-more-tags-btn {
-  @apply !bg-nc-bg-gray-light !hover:bg-nc-bg-gray-medium;
+.atm-show-more-tags-btn {
+  @apply !bg-atm-bg-gray-light !hover:bg-atm-bg-gray-medium;
 }
 </style>

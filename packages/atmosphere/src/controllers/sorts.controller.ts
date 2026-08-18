@@ -10,14 +10,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { SortReqType } from 'nocodb-sdk';
+import { SortReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { PagedResponseImpl } from '~/helpers/PagedResponse';
 import { SortsService } from '~/services/sorts.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -30,7 +30,7 @@ export class SortsController {
   ])
   @Acl('sortList')
   async sortList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
   ) {
     return new PagedResponseImpl(
@@ -47,10 +47,10 @@ export class SortsController {
   @HttpCode(200)
   @Acl('sortCreate')
   async sortCreate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('viewId') viewId: string,
     @Body() body: SortReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const sort = await this.sortsService.sortCreate(context, {
       sort: body,
@@ -63,7 +63,7 @@ export class SortsController {
   @Get(['/api/v1/db/meta/sorts/:sortId', '/api/v2/meta/sorts/:sortId'])
   @Acl('sortGet')
   async sortGet(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('sortId') sortId: string,
   ) {
     const sort = await this.sortsService.sortGet(context, {
@@ -75,10 +75,10 @@ export class SortsController {
   @Patch(['/api/v1/db/meta/sorts/:sortId', '/api/v2/meta/sorts/:sortId'])
   @Acl('sortUpdate')
   async sortUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('sortId') sortId: string,
     @Body() body: SortReqType,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const sort = await this.sortsService.sortUpdate(context, {
       sortId,
@@ -91,9 +91,9 @@ export class SortsController {
   @Delete(['/api/v1/db/meta/sorts/:sortId', '/api/v2/meta/sorts/:sortId'])
   @Acl('sortDelete')
   async sortDelete(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('sortId') sortId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     const sort = await this.sortsService.sortDelete(context, {
       sortId,

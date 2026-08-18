@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { PaginatedType } from 'nocodb-sdk'
+import type { PaginatedType } from 'atmosphere-sdk'
 
 const usePaginationShortcuts = ({
   changePage,

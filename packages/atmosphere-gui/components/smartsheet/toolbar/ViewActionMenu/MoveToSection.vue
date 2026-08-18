@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TableType, ViewType } from 'nocodb-sdk'
+import type { TableType, ViewType } from 'atmosphere-sdk'
 
 interface Props {
   view: ViewType
@@ -13,5 +13,5 @@ defineEmits(['closeModal'])
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

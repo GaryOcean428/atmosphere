@@ -8,8 +8,8 @@ export {
 } from '~/lib/parser/queryFilter/query-filter-lexer';
 import { extractFilterFromXwhere as parserExtract } from './filterHelpers_withparser';
 import { extractFilterFromXwhere as oldExtract } from './filterHelpers_old';
-import { NcContext } from './ncTypes';
-import { NcApiVersion } from './enums';
+import { AtContext } from './ncTypes';
+import { AtApiVersion } from './enums';
 
 export interface FilterParseError {
   message: string;
@@ -58,13 +58,13 @@ export function buildFilterTree(items: FilterType[]) {
 }
 
 export function extractFilterFromXwhere(
-  context: Pick<NcContext, 'api_version'> & Pick<NcContext, 'timezone'>,
+  context: Pick<AtContext, 'api_version'> & Pick<AtContext, 'timezone'>,
   str: string | string[],
   aliasColObjMap: { [columnAlias: string]: ColumnType },
   throwErrorIfInvalid = false,
   errors: FilterParseError[] = []
 ): { filters?: FilterType[]; errors?: FilterParseError[] } {
-  if (context.api_version === NcApiVersion.V3) {
+  if (context.api_version === AtApiVersion.V3) {
     return parserExtract(context, {
       // Strip leading '@' — it's a v1/v2 escape prefix to opt into the new
       // parser and has no meaning in the V3 context where the new parser is

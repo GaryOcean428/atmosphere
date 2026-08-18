@@ -1,8 +1,8 @@
-import { BaseVersion, type IntegrationType, type SerializedAiViewType, type TableType } from 'nocodb-sdk'
+import { BaseVersion, type IntegrationType, type SerializedAiViewType, type TableType } from 'atmosphere-sdk'
 
 const aiIntegrationNotFound = 'AI integration not found'
 
-export const useNocoAi = createSharedComposable(() => {
+export const useAtmosphereAi = createSharedComposable(() => {
   const { $api, $poller } = useNuxtApp()
 
   const { handleAiCreditError, handleAiCreditErrorRaw } = useCredits()
@@ -29,7 +29,7 @@ export const useNocoAi = createSharedComposable(() => {
 
   const aiIntegrationAvailable = computed(() => !!aiIntegrations.value.length)
 
-  const isNocoAiAvailable = computed(() => aiIntegrations.value.some((integration) => integration.id?.startsWith('global_')))
+  const isAtmosphereAiAvailable = computed(() => aiIntegrations.value.some((integration) => integration.id?.startsWith('global_')))
 
   const isAiIntegrationAvailableInList = (integrationId?: string) => {
     if (!aiIntegrationAvailable.value) return false
@@ -66,7 +66,7 @@ export const useNocoAi = createSharedComposable(() => {
       }
 
       if (!skipMsgToast) {
-        message.warning(error || 'NocoAI: Underlying GPT API are busy. Please try after sometime.')
+        message.warning(error || 'AtmosphereAI: Underlying GPT API are busy. Please try after sometime.')
       }
     } finally {
       aiLoading.value = false
@@ -102,7 +102,7 @@ export const useNocoAi = createSharedComposable(() => {
       }
 
       if (!skipMsgToast) {
-        message.warning(error || 'NocoAI: Underlying GPT API are busy. Please try after sometime.')
+        message.warning(error || 'AtmosphereAI: Underlying GPT API are busy. Please try after sometime.')
       }
     } finally {
       aiLoading.value = false
@@ -140,7 +140,7 @@ export const useNocoAi = createSharedComposable(() => {
       }
 
       if (!skipMsgToast) {
-        message.warning(error || 'NocoAI: Underlying GPT API are busy. Please try after sometime.')
+        message.warning(error || 'AtmosphereAI: Underlying GPT API are busy. Please try after sometime.')
       }
     } finally {
       aiLoading.value = false
@@ -254,7 +254,7 @@ export const useNocoAi = createSharedComposable(() => {
         await onTableCreate?.(res[0])
       }
     } catch (e: any) {
-      message.warning('NocoAI: Underlying GPT API are busy. Please try after sometime.')
+      message.warning('AtmosphereAI: Underlying GPT API are busy. Please try after sometime.')
     }
   }
 
@@ -274,7 +274,7 @@ export const useNocoAi = createSharedComposable(() => {
       return res
     } catch (e: any) {
       console.error(e)
-      message.warning('NocoAI: Underlying GPT API are busy. Please try after sometime.')
+      message.warning('AtmosphereAI: Underlying GPT API are busy. Please try after sometime.')
     }
   }
 
@@ -414,7 +414,7 @@ export const useNocoAi = createSharedComposable(() => {
       }
 
       if (!skipMsgToast) {
-        message.warning(error || 'NocoAI: Underlying GPT API are busy. Please try after sometime.')
+        message.warning(error || 'AtmosphereAI: Underlying GPT API are busy. Please try after sometime.')
       }
     } finally {
       aiLoading.value = false
@@ -442,7 +442,7 @@ export const useNocoAi = createSharedComposable(() => {
     } catch (e) {
       if (!(await handleAiCreditError(e))) {
         message.warning(
-          (await extractSdkResponseErrorMsg(e)) || 'NocoAI: Underlying GPT API are busy. Please try after sometime.',
+          (await extractSdkResponseErrorMsg(e)) || 'AtmosphereAI: Underlying GPT API are busy. Please try after sometime.',
         )
       }
       throw e
@@ -543,7 +543,7 @@ export const useNocoAi = createSharedComposable(() => {
 
   return {
     aiIntegrationAvailable,
-    isNocoAiAvailable,
+    isAtmosphereAiAvailable,
     isAiIntegrationAvailableInList,
     aiLoading,
     aiError,

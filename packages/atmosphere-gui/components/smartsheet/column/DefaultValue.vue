@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { UITypes } from 'nocodb-sdk'
+import { UITypes } from 'atmosphere-sdk'
 
 const props = defineProps<{
   value: any
@@ -80,7 +80,7 @@ const handleShowInput = () => {
   nextTick(() => {
     ncDelay(300).then(() => {
       if (defaultValueWrapperRef.value) {
-        focusInputEl('.nc-cell', defaultValueWrapperRef.value)
+        focusInputEl('.atm-cell', defaultValueWrapperRef.value)
       }
     })
   })
@@ -89,18 +89,18 @@ const handleShowInput = () => {
 
 <template>
   <div v-if="!isVisibleDefaultValueInput">
-    <NcTooltip :disabled="!isSyncedField" placement="right">
-      <NcTooltip :disabled="!vModel.unique" placement="right">
+    <AtTooltip :disabled="!isSyncedField" placement="right">
+      <AtTooltip :disabled="!vModel.unique" placement="right">
         <template #title>
           <div class="max-w-xs">
             {{ $t('msg.info.defaultValueNotAllowedForUniqueFields') }}
           </div>
         </template>
-        <NcButton
+        <AtButton
           size="small"
           type="text"
-          class="!text-nc-content-gray-subtle"
-          data-testid="nc-show-default-value-btn"
+          class="!text-atm-content-gray-subtle"
+          data-testid="atm-show-default-value-btn"
           :disabled="isSystem || isSyncedField || vModel.unique"
           @click.stop="handleShowInput"
         >
@@ -108,33 +108,33 @@ const handleShowInput = () => {
             <GeneralIcon icon="plus" class="flex-none h-4 w-4" />
             <span>{{ $t('general.set') }} {{ $t('placeholder.defaultValue').toLowerCase() }}</span>
           </div>
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
       <template #title>
         {{ $t('msg.info.defaultValSyncedCol') }}
       </template>
-    </NcTooltip>
+    </AtTooltip>
   </div>
 
   <div v-else>
     <div class="w-full flex items-center gap-2 mb-2">
-      <div class="text-small leading-[18px] flex-1 text-nc-content-gray-subtle">{{ $t('placeholder.defaultValue') }}</div>
+      <div class="text-small leading-[18px] flex-1 text-atm-content-gray-subtle">{{ $t('placeholder.defaultValue') }}</div>
     </div>
     <div class="flex flex-row gap-2 relative">
       <div
-        class="nc-default-value-wrapper border-1 flex items-center w-full px-3 border-nc-border-gray-dark rounded-lg sm:min-h-[32px] xs:min-h-13 focus-within:(border-nc-border-brand shadow-selected ring-0) transition-all duration-0.3s"
+        class="atm-default-value-wrapper border-1 flex items-center w-full px-3 border-atm-border-gray-dark rounded-lg sm:min-h-[32px] xs:min-h-13 focus-within:(border-atm-border-brand shadow-selected ring-0) transition-all duration-0.3s"
         :class="{
-          'bg-nc-bg-default': isAiModeFieldModal,
-          'bg-nc-bg-gray-light opacity-60': vModel.unique,
+          'bg-atm-bg-default': isAiModeFieldModal,
+          'bg-atm-bg-gray-light opacity-60': vModel.unique,
         }"
       >
         <div ref="defaultValueWrapperRef" class="relative flex-grow max-w-full">
           <div
             v-if="isCurrentDate"
-            class="absolute pointer-events-none h-full w-full bg-nc-bg-default z-2 top-0 left-0 rounded-full items-center flex bg-nc-bg-default"
+            class="absolute pointer-events-none h-full w-full bg-atm-bg-default z-2 top-0 left-0 rounded-full items-center flex bg-atm-bg-default"
           >
             <div class="-ml-2">
-              <NcBadge>{{ $t('labels.currentDate') }}</NcBadge>
+              <AtBadge>{{ $t('labels.currentDate') }}</AtBadge>
             </div>
           </div>
           <LazySmartsheetCell
@@ -150,7 +150,7 @@ const handleShowInput = () => {
             @click="editEnabled = !vModel.unique"
           />
         </div>
-        <NcTooltip :title="$t('general.clear')" class="flex">
+        <AtTooltip :title="$t('general.clear')" class="flex">
           <component
             :is="iconMap.close"
             v-if="
@@ -159,15 +159,15 @@ const handleShowInput = () => {
               ) || isCurrentDate
             "
             :class="{
-              'w-4 h-4 cursor-pointer rounded-full z-3 text-nc-content-gray-muted hover:bg-nc-bg-gray-extralight dark:hover:bg-nc-bg-gray-medium default-value-clear':
+              'w-4 h-4 cursor-pointer rounded-full z-3 text-atm-content-gray-muted hover:bg-atm-bg-gray-extralight dark:hover:bg-atm-bg-gray-medium default-value-clear':
                 !vModel.unique,
-              'w-4 h-4 rounded-full z-3 text-nc-content-gray-muted opacity-50 pointer-events-none': vModel.unique,
+              'w-4 h-4 rounded-full z-3 text-atm-content-gray-muted opacity-50 pointer-events-none': vModel.unique,
             }"
             @click.stop="!vModel.unique && updateCdfValue(null)"
           />
-        </NcTooltip>
+        </AtTooltip>
       </div>
     </div>
-    <div v-if="validationError" class="text-nc-content-red-medium text-small leading-[18px] mt-1">{{ $t(validationError) }}</div>
+    <div v-if="validationError" class="text-atm-content-red-medium text-small leading-[18px] mt-1">{{ $t(validationError) }}</div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ColumnReqType, ColumnType } from 'nocodb-sdk'
-import { UITypes } from 'nocodb-sdk'
+import type { ColumnReqType, ColumnType } from 'atmosphere-sdk'
+import { UITypes } from 'atmosphere-sdk'
 import { computed } from 'vue'
 
 const props = defineProps<{
@@ -178,60 +178,60 @@ const isDuplicateAllowed = computed(() => {
 </script>
 
 <template>
-  <NcDropdown
+  <AtDropdown
     v-if="!isLocked"
     v-model:visible="isOpen"
     :trigger="['click']"
     placement="bottomLeft"
-    overlay-class-name="nc-dropdown-form-column-operations !border-1 rounded-lg !shadow-xl"
+    overlay-class-name="atm-dropdown-form-column-operations !border-1 rounded-lg !shadow-xl"
     @click.stop="isOpen = !isOpen"
   >
-    <NcButton
+    <AtButton
       type="secondary"
       size="small"
-      class="nc-form-add-field"
-      data-testid="nc-form-add-field"
+      class="atm-form-add-field"
+      data-testid="atm-form-add-field"
       @click.stop="showAddColumnDropdown = true"
     >
       <component :is="iconMap.threeDotVertical" class="flex-none w-4 h-4" />
-    </NcButton>
+    </AtButton>
     <template #overlay>
-      <NcMenu class="nc-column-options" variant="small">
+      <AtMenu class="atm-column-options" variant="small">
         <!-- Todo: Duplicate column with form column settings -->
         <!-- eslint-disable vue/no-constant-condition -->
-        <NcMenuItem v-if="false" :disabled="!isDuplicateAllowed" @click="openDuplicateDlg">
-          <div class="nc-column-duplicate nc-form-header-menu-item">
+        <AtMenuItem v-if="false" :disabled="!isDuplicateAllowed" @click="openDuplicateDlg">
+          <div class="atm-column-duplicate atm-form-header-menu-item">
             <component :is="iconMap.duplicate" />
             <!-- Duplicate -->
             {{ t('general.duplicate') }}
           </div>
-        </NcMenuItem>
+        </AtMenuItem>
 
-        <NcMenuItem :disabled="isRequired" @click="hideField">
-          <div class="nc-column-hide-or-show nc-form-header-menu-item">
+        <AtMenuItem :disabled="isRequired" @click="hideField">
+          <div class="atm-column-hide-or-show atm-form-header-menu-item">
             <component :is="iconMap.eyeSlash" class="!w-3.75 !h-3.75" />
             <!-- Hide Field -->
             {{ $t('general.hideField') }}
           </div>
-        </NcMenuItem>
+        </AtMenuItem>
 
         <template v-if="!column?.pv">
-          <NcDivider />
+          <AtDivider />
 
-          <NcMenuItem :disabled="!isDeleteAllowed" danger @click="handleDelete">
-            <div class="nc-column-delete nc-form-header-menu-item">
+          <AtMenuItem :disabled="!isDeleteAllowed" danger @click="handleDelete">
+            <div class="atm-column-delete atm-form-header-menu-item">
               <GeneralIcon icon="delete" />
               <!-- Delete -->
               {{ $t('general.delete') }}
             </div>
-          </NcMenuItem>
+          </AtMenuItem>
         </template>
-      </NcMenu>
+      </AtMenu>
     </template>
-  </NcDropdown>
+  </AtDropdown>
   <SmartsheetHeaderDeleteColumnModal
     v-model:visible="showDeleteColumnModal"
-    class="nc-form-column-delete-dropdown"
+    class="atm-form-column-delete-dropdown"
     :on-delete-column="onDelete"
   />
   <DlgColumnDuplicate
@@ -244,7 +244,7 @@ const isDuplicateAllowed = computed(() => {
 </template>
 
 <style scoped>
-.nc-form-header-menu-item {
+.atm-form-header-menu-item {
   @apply flex items-center gap-2;
 }
 </style>

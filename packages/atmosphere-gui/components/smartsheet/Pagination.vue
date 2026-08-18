@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
-import type { PaginatedType } from 'nocodb-sdk'
+import type { PaginatedType } from 'atmosphere-sdk'
 
 interface Props {
   paginationData: PaginatedType
@@ -86,7 +86,7 @@ const tempPageVal = ref(page.value)
 
 <template>
   <div
-    class="flex items-center bg-nc-bg-default border-nc-border-gray-medium nc-grid-pagination-wrapper"
+    class="flex items-center bg-atm-bg-default border-atm-border-gray-medium atm-grid-pagination-wrapper"
     :class="{ 'border-t-1': !isGroupBy, 'h-13': isMobileMode, 'h-10': !isMobileMode }"
     :style="`${fixedSize ? `width: ${fixedSize}px;` : ''}${
       isGroupBy ? 'margin-top:1px; border-radius: 0 0 8px 8px !important;' : ''
@@ -102,7 +102,7 @@ const tempPageVal = ref(page.value)
       <slot name="add-record" />
       <span
         v-if="!alignCountOnRight && count !== null && count !== Infinity"
-        class="caption ml-2.5 text-nc-content-gray-muted text-xs"
+        class="caption ml-2.5 text-atm-content-gray-muted text-xs"
         data-testid="grid-pagination"
       >
         {{ count }} {{ customLabel ? customLabel : count !== 1 ? $t('objects.records') : $t('objects.record') }}
@@ -119,10 +119,10 @@ const tempPageVal = ref(page.value)
         'left-[32px]': isGroupBy && !$slots['add-record'],
       }"
     >
-      <div v-if="isViewDataLoading" class="nc-pagination-skeleton flex flex-row justify-center item-center min-h-10 min-w-42">
+      <div v-if="isViewDataLoading" class="atm-pagination-skeleton flex flex-row justify-center item-center min-h-10 min-w-42">
         <a-skeleton :active="true" :title="true" :paragraph="false" class="-mt-1 max-w-60" />
       </div>
-      <NcPagination
+      <AtPagination
         v-else-if="count !== Infinity"
         v-model:current="page"
         v-model:page-size="size"
@@ -156,7 +156,7 @@ const tempPageVal = ref(page.value)
       <div class="text-right">
         <span
           v-if="alignCountOnRight && count !== Infinity"
-          class="caption nc-grid-row-count mr-2.5 text-nc-content-gray-muted text-xs"
+          class="caption atm-grid-row-count mr-2.5 text-atm-content-gray-muted text-xs"
           data-testid="grid-pagination"
         >
           {{ selectedCellCount && selectedCellCount > 1 ? selectedCellCount : count }}
@@ -176,10 +176,10 @@ const tempPageVal = ref(page.value)
 </template>
 
 <style lang="scss">
-.nc-grid-pagination-wrapper {
+.atm-grid-pagination-wrapper {
   .ant-pagination-item-active {
     a {
-      @apply text-sm !text-nc-content-gray-subtle !hover:text-nc-content-gray;
+      @apply text-sm !text-atm-content-gray-subtle !hover:text-atm-content-gray;
     }
   }
 }
@@ -190,17 +190,17 @@ const tempPageVal = ref(page.value)
   @apply text-sm !leading-[21px] !no-underline;
 }
 
-:deep(.nc-pagination .ant-pagination-item) {
+:deep(.atm-pagination .ant-pagination-item) {
   @apply !border-0 !pt-0.25;
 }
 
 :deep(.ant-pagination-item:not(.ant-pagination-item-active) a) {
   line-height: 21px !important;
-  @apply text-sm !text-nc-content-gray-disabled;
+  @apply text-sm !text-atm-content-gray-disabled;
 }
 
 :deep(.ant-pagination-item-link) {
-  @apply text-nc-content-gray flex items-center justify-center;
+  @apply text-atm-content-gray flex items-center justify-center;
 }
 
 :deep(.ant-pagination-item.ant-pagination-item-active) {

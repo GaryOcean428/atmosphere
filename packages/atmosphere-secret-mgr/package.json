@@ -1,12 +1,12 @@
 {
-  "name": "nc-secret-mgr",
+  "name": "atmosphere-secret-mgr",
   "version": "0.0.1",
   "description": "",
   "main": "dist/cli.js",
   "bin": "dist/cli.js",
   "scripts": {
     "build": "pnpm dlx webpack-cli --config webpack.config.js",
-    "dev": "cross-env NC_DB=\"pg://localhost:5432?u=postgres&p=password&d=meta_2024_09_07\" nodemon --watch 'src/**/*.ts' --exec 'ts-node --project tsconfig.json' src/index.ts -- a b --nc-db abc",
+    "dev": "cross-env ATMOSPHERE_DB=\"pg://localhost:5432?u=postgres&p=password&d=meta_2024_09_07\" nodemon --watch 'src/**/*.ts' --exec 'ts-node --project tsconfig.json' src/index.ts -- a b --atm-db abc",
     "test": "mocha --require ts-node/register src/**/*.spec.ts",
     "build:pkg": "npx @yao-pkg/pkg . --out-path dist-pkg --compress GZip",
     "npm:publish": "npm publish .",

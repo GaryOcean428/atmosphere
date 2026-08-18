@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { OPERATION_SCOPES } from '~/controllers/internal/operationScopes';
-import type { NcContext, NcRequest } from 'nocodb-sdk';
+import type { AtContext, AtRequest } from 'atmosphere-sdk';
 import type {
   InternalApiModule,
   InternalPOSTResponseType,
@@ -26,7 +26,7 @@ export class OAuthPostOperations
   httpMethod = 'POST' as const;
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     {
       req,
       operation,
@@ -36,7 +36,7 @@ export class OAuthPostOperations
       baseId: string;
       operation: keyof typeof OPERATION_SCOPES;
       payload: any;
-      req: NcRequest;
+      req: AtRequest;
     },
   ): InternalPOSTResponseType {
     switch (operation) {

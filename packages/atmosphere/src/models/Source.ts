@@ -1,20 +1,20 @@
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import type { DriverClient } from '~/utils/nc-config';
-import type { BoolType, SourceType } from 'nocodb-sdk';
-import { NcContext } from '~/interface/config';
+import type { DriverClient } from '~/utils/atm-config';
+import type { BoolType, SourceType } from 'atmosphere-sdk';
+import { AtContext } from '~/interface/config';
 import { Base, Model, SyncSource } from '~/models';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import {
   CacheDelDirection,
   CacheGetType,
   CacheScope,
   MetaTable,
 } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
-import { NcError } from '~/helpers/catchError';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import { AtError } from '~/helpers/catchError';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import {
   parseMetaProp,
   prepareForDb,
@@ -28,7 +28,7 @@ import {
   encryptPropIfRequired,
   isEncryptionRequired,
 } from '~/utils';
-import { NcCache } from '~/decorators/nc-cache.decorator';
+import { AtCache } from '~/decorators/atm-cache.decorator';
 
 export default class Source implements SourceType {
   id?: string;
@@ -71,7 +71,7 @@ export default class Source implements SourceType {
   }
 
   public static async createBase(
-    context: NcContext,
+    context: AtContext,
     source: SourceType & {
       baseId: string;
       created_at?;
@@ -79,7 +79,7 @@ export default class Source implements SourceType {
       meta?: any;
       is_encrypted?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // `id` is deliberately absent — metaInsert2 generates it. A caller-chosen
     // id can collide with a source in another base, and the connection cache
@@ -120,7 +120,7 @@ export default class Source implements SourceType {
 
     const returnBase = await this.get(context, id, false, ncMeta);
 
-    await NocoCache.appendToList(
+    await AtmosphereCache.appendToList(
       context,
       CacheScope.SOURCE,
       [source.baseId],
@@ -131,7 +131,7 @@ export default class Source implements SourceType {
   }
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     sourceId: string,
     source: SourceType & {
       meta?: any;
@@ -139,11 +139,11 @@ export default class Source implements SourceType {
       fk_sql_executor_id?: string;
       is_encrypted?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const oldSource = await this.get(context, sourceId, false, ncMeta);
 
-    if (!oldSource) NcError.sourceNotFound(sourceId);
+    if (!oldSource) AtError.sourceNotFound(sourceId);
 
     const updateObj = extractProps(source, [
       'alias',
@@ -196,7 +196,7 @@ export default class Source implements SourceType {
     // keep order 1 for default source
     if (!oldSource.isMeta()) {
       if (updateObj.order <= 1) {
-        NcError.badRequest('Cannot change order to 1 or less');
+        AtError.badRequest('Cannot change order to 1 or less');
       }
 
       // if order is 1 for non-default source, move it to last
@@ -215,7 +215,7 @@ export default class Source implements SourceType {
       oldSource.id,
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.SOURCE}:${sourceId}`,
       prepareForResponse(updateObj),
@@ -231,17 +231,17 @@ export default class Source implements SourceType {
     // for metadata-only changes (readonly flags, alias, order) where the
     // connection config hasn't changed. Callers that change connection config
     // (integrations service, sourceCleanup) call resetSource() directly.
-    await NcConnectionMgrv2.bumpSourceVersion(oldSource);
+    await AtConnectionMgrv2.bumpSourceVersion(oldSource);
 
     return await this.get(context, oldSource.id, false, ncMeta);
   }
 
   static async list(
-    context: NcContext,
+    context: AtContext,
     args: { baseId: string; includeDeleted?: boolean },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Source[]> {
-    const cachedList = await NocoCache.getList(context, CacheScope.SOURCE, [
+    const cachedList = await AtmosphereCache.getList(context, CacheScope.SOURCE, [
       args.baseId,
     ]);
     let { list: sourceDataList } = cachedList;
@@ -271,7 +271,7 @@ export default class Source implements SourceType {
         source.meta = parseMetaProp(source, 'meta');
       }
 
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.SOURCE,
         [args.baseId],
@@ -288,18 +288,18 @@ export default class Source implements SourceType {
     });
   }
 
-  @NcCache({
+  @AtCache({
     key: (args) => args[1],
   })
   static async get(
-    context: NcContext,
+    context: AtContext,
     id: string,
     force = false,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Source> {
     let sourceData =
       id &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.SOURCE}:${id}`,
         CacheGetType.TYPE_OBJECT,
@@ -327,14 +327,14 @@ export default class Source implements SourceType {
         sourceData.meta = parseMetaProp(sourceData, 'meta');
       }
 
-      await NocoCache.set(context, `${CacheScope.SOURCE}:${id}`, sourceData);
+      await AtmosphereCache.set(context, `${CacheScope.SOURCE}:${id}`, sourceData);
     }
     return this.castType(sourceData);
   }
 
   public async getConnectionConfig(): Promise<any> {
     if (this.is_meta || this.is_local) {
-      const metaConfig = await NcConnectionMgrv2.getDataConfig();
+      const metaConfig = await AtConnectionMgrv2.getDataConfig();
       const config = { ...metaConfig };
       if (config.client === 'sqlite3') {
         config.connection = metaConfig;
@@ -418,7 +418,7 @@ export default class Source implements SourceType {
 
   public getConfig(skipIntegrationConfig = false): any {
     if (this.is_meta) {
-      const metaConfig = Noco.getConfig()?.meta?.db;
+      const metaConfig = Atmosphere.getConfig()?.meta?.db;
       const config = { ...metaConfig };
       if (config.client === 'sqlite3') {
         config.connection = metaConfig;
@@ -478,20 +478,20 @@ export default class Source implements SourceType {
     return this.getConfig(true);
   }
 
-  getProject(context: NcContext, ncMeta = Noco.ncMeta): Promise<Base> {
+  getProject(context: AtContext, ncMeta = Atmosphere.ncMeta): Promise<Base> {
     return Base.get(context, this.base_id, ncMeta);
   }
 
-  async sourceCleanup(_ncMeta = Noco.ncMeta) {
-    await NcConnectionMgrv2.deleteAwait(this);
+  async sourceCleanup(_ncMeta = Atmosphere.ncMeta) {
+    await AtConnectionMgrv2.deleteAwait(this);
 
     // Bump Redis version so all servers invalidate on next read
-    await NcConnectionMgrv2.bumpSourceVersion(this);
+    await AtConnectionMgrv2.bumpSourceVersion(this);
   }
 
   async delete(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
     { force }: { force?: boolean } = {},
   ) {
     const sources = await Source.list(
@@ -501,7 +501,7 @@ export default class Source implements SourceType {
     );
 
     if ((sources[0].id === this.id || this.isMeta()) && !force) {
-      NcError.badRequest('Cannot delete first source');
+      AtError.badRequest('Cannot delete first source');
     }
 
     const models = await Model.list(
@@ -566,7 +566,7 @@ export default class Source implements SourceType {
           fk_column_id: relCol.col.id,
         },
       );
-      await NocoCache.deepDel(
+      await AtmosphereCache.deepDel(
         context,
         `${relCol.cacheScopeName}:${relCol.col.id}`,
         CacheDelDirection.CHILD_TO_PARENT,
@@ -596,7 +596,7 @@ export default class Source implements SourceType {
       this.id,
     );
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.SOURCE}:${this.id}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -606,8 +606,8 @@ export default class Source implements SourceType {
   }
 
   async softDelete(
-    context: NcContext,
-    ncMeta = Noco.ncMeta,
+    context: AtContext,
+    ncMeta = Atmosphere.ncMeta,
     { force }: { force?: boolean } = {},
   ) {
     const sources = await Source.list(
@@ -617,7 +617,7 @@ export default class Source implements SourceType {
     );
 
     if ((sources[0].id === this.id || this.isMeta()) && !force) {
-      NcError.badRequest('Cannot delete first base');
+      AtError.badRequest('Cannot delete first base');
     }
 
     await Source.update(context, this.id, { deleted: true }, ncMeta);
@@ -625,14 +625,14 @@ export default class Source implements SourceType {
     // Release the Knex connection pool so it doesn't leak memory
     await this.sourceCleanup(ncMeta);
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.SOURCE}:${this.id}`,
       CacheDelDirection.CHILD_TO_PARENT,
     );
   }
 
-  async getModels(context: NcContext, ncMeta = Noco.ncMeta) {
+  async getModels(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     return await Model.list(
       context,
       { base_id: this.base_id, source_id: this.id },
@@ -640,7 +640,7 @@ export default class Source implements SourceType {
     );
   }
 
-  async shareErd(context: NcContext, ncMeta = Noco.ncMeta) {
+  async shareErd(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     if (!this.erd_uuid) {
       const uuid = uuidv4();
       this.erd_uuid = uuid;
@@ -656,14 +656,14 @@ export default class Source implements SourceType {
         this.id,
       );
 
-      await NocoCache.update(context, `${CacheScope.SOURCE}:${this.id}`, {
+      await AtmosphereCache.update(context, `${CacheScope.SOURCE}:${this.id}`, {
         erd_uuid: this.erd_uuid,
       });
     }
     return this;
   }
 
-  async disableShareErd(context: NcContext, ncMeta = Noco.ncMeta) {
+  async disableShareErd(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     if (this.erd_uuid) {
       this.erd_uuid = null;
 
@@ -678,7 +678,7 @@ export default class Source implements SourceType {
         this.id,
       );
 
-      await NocoCache.update(context, `${CacheScope.SOURCE}:${this.id}`, {
+      await AtmosphereCache.update(context, `${CacheScope.SOURCE}:${this.id}`, {
         erd_uuid: this.erd_uuid,
       });
     }
@@ -696,7 +696,7 @@ export default class Source implements SourceType {
     }
   }
 
-  protected static extendQb(qb: any, _context: NcContext) {
+  protected static extendQb(qb: any, _context: AtContext) {
     qb.select(
       `${MetaTable.INTEGRATIONS}.config as integration_config`,
       `${MetaTable.INTEGRATIONS}.title as integration_title`,
@@ -708,9 +708,9 @@ export default class Source implements SourceType {
   }
 
   private static async updateRelatedCaches(
-    context: NcContext,
+    context: AtContext,
     sourceId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // get models
     const models = await Model.list(

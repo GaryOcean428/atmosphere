@@ -6,7 +6,7 @@ interface Node {
   children: Record<string, Node>
 }
 
-export class NcAutocompleteTree {
+export class AtAutocompleteTree {
   trie: Record<string, any>
   suggestions: Record<string, any>[]
 

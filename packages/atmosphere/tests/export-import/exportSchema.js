@@ -1,5 +1,5 @@
-const Api = require('nocodb-sdk').Api;
-const { UITypes } = require('nocodb-sdk');
+const Api = require('atmosphere-sdk').Api;
+const { UITypes } = require('atmosphere-sdk');
 const jsonfile = require('jsonfile');
 const {fromEntries} = require("../../src/ee/utils");
 
@@ -147,7 +147,7 @@ function addViewDetails(v) {
     // skip hm & mm columns
     view.columns = view.columns
       ?.filter(a => a.title?.includes('_nc_m2m_') === false)
-      .filter(a => a.title?.includes('nc_') === false);
+      .filter(a => a.title?.includes('atm_') === false);
   }
 
   // filter & sort configurations

@@ -67,7 +67,7 @@ const baseDevConfig = {
       configFile: resolve('tsconfig.json'),
     },
     alias: {
-      '@noco-local-integrations': resolve(__dirname, '../noco-integrations/packages'),
+      '@atmosphere-local-integrations': resolve(__dirname, '../atmosphere-integrations/packages'),
     },
   },
   optimization: {

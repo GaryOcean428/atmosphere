@@ -1,14 +1,14 @@
-import type { ModelRoleVisibilityType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { ModelRoleVisibilityType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import View from '~/models/View';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import {
   CacheDelDirection,
   CacheGetType,
   CacheScope,
   MetaTable,
 } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { extractProps } from '~/helpers/extractProps';
 
 export default class ModelRoleVisibility implements ModelRoleVisibilityType {
@@ -26,10 +26,10 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
   }
 
   static async list(
-    context: NcContext,
+    context: AtContext,
     baseId,
   ): Promise<ModelRoleVisibility[]> {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.MODEL_ROLE_VISIBILITY,
       [baseId],
@@ -37,12 +37,12 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
     let { list: data } = cachedList;
     const { isNoneList } = cachedList;
     if (!isNoneList && !data.length) {
-      data = await Noco.ncMeta.metaList2(
+      data = await Atmosphere.ncMeta.metaList2(
         context.workspace_id,
         context.base_id,
         MetaTable.MODEL_ROLE_VISIBILITY,
       );
-      await NocoCache.setList(
+      await AtmosphereCache.setList(
         context,
         CacheScope.MODEL_ROLE_VISIBILITY,
         [baseId],
@@ -54,14 +54,14 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
   }
 
   static async get(
-    context: NcContext,
+    context: AtContext,
     args: { role: string; fk_view_id: any },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let data =
       args.fk_view_id &&
       args.role &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.MODEL_ROLE_VISIBILITY}:${args.fk_view_id}:${args.role}`,
         CacheGetType.TYPE_OBJECT,
@@ -82,7 +82,7 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
           role: args.role,
         },
       );
-      await NocoCache.set(
+      await AtmosphereCache.set(
         context,
         `${CacheScope.MODEL_ROLE_VISIBILITY}:${args.fk_view_id}:${args.role}`,
         data,
@@ -92,11 +92,11 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     fk_view_id: string,
     role: string,
     body: { disabled: any },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     // set meta
     const res = await ncMeta.metaUpdate(
@@ -112,7 +112,7 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.MODEL_ROLE_VISIBILITY}:${fk_view_id}:${role}`,
       {
@@ -123,7 +123,7 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
     return res;
   }
 
-  async delete(context: NcContext, ncMeta = Noco.ncMeta) {
+  async delete(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     return await ModelRoleVisibility.delete(
       context,
       this.fk_view_id,
@@ -132,10 +132,10 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
     );
   }
   static async delete(
-    context: NcContext,
+    context: AtContext,
     fk_view_id: string,
     role: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const res = await ncMeta.metaDelete(
       context.workspace_id,
@@ -146,7 +146,7 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
         role,
       },
     );
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.MODEL_ROLE_VISIBILITY}:${fk_view_id}:${role}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -155,9 +155,9 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
   }
 
   static async deleteByBaseId(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const rows = await ncMeta.metaList2(
       context.workspace_id,
@@ -175,9 +175,9 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     body: Partial<ModelRoleVisibilityType>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(body, [
       'role',
@@ -211,7 +211,7 @@ export default class ModelRoleVisibility implements ModelRoleVisibilityType {
       ncMeta,
     ).then(async (modelRoleVisibility) => {
       const key = `${CacheScope.MODEL_ROLE_VISIBILITY}:${body.fk_view_id}:${body.role}`;
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.MODEL_ROLE_VISIBILITY,
         [context.base_id],

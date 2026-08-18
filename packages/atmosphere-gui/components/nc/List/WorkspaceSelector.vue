@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { WorkspaceType } from 'nocodb-sdk'
+import type { WorkspaceType } from 'atmosphere-sdk'
 
 interface Props {
   value?: string | null | undefined
@@ -106,8 +106,8 @@ defineExpose({
 <template>
   <a-form-item
     name="workspaceId"
-    class="!mb-0 nc-workspace-selector"
-    :class="`nc-force-layout-${forceLayout}`"
+    class="!mb-0 atm-workspace-selector"
+    :class="`atm-force-layout-${forceLayout}`"
     :validate-status="selectedWorkspace?.ncItemDisabled ? 'error' : ''"
     :help="selectedWorkspace?.ncItemDisabled ? [selectedWorkspace.ncItemTooltip] : []"
     @click.stop
@@ -118,7 +118,7 @@ defineExpose({
         <slot name="label">{{ t('objects.workspace') }}</slot>
       </div>
     </template>
-    <NcListDropdown
+    <AtListDropdown
       v-model:is-open="isOpenWorkspaceSelectDropdown"
       :disabled="disabled"
       :has-error="!!selectedWorkspace?.ncItemDisabled"
@@ -127,23 +127,23 @@ defineExpose({
         <div v-if="selectedWorkspace" class="min-w-5 flex items-center justify-center">
           <GeneralWorkspaceIcon :workspace="selectedWorkspace" size="account-sidebar" />
         </div>
-        <NcTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
+        <AtTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
           <span
             v-if="selectedWorkspace"
             :key="selectedWorkspace?.value"
             class="text-sm flex-1 truncate"
-            :class="{ 'text-nc-content-gray-muted': !selectedWorkspace }"
+            :class="{ 'text-atm-content-gray-muted': !selectedWorkspace }"
           >
             {{ selectedWorkspace?.label }}
           </span>
-          <span v-else class="text-sm flex-1 truncate text-nc-content-gray-muted">
+          <span v-else class="text-sm flex-1 truncate text-atm-content-gray-muted">
             <slot name="placeholder">{{ placeholder || '-- Select workspace --' }}</slot>
           </span>
 
           <template #title>
             {{ selectedWorkspace?.label || 'Select workspace' }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
 
         <GeneralIcon
           icon="ncChevronDown"
@@ -152,7 +152,7 @@ defineExpose({
         />
       </div>
       <template #overlay="{ onEsc }">
-        <NcList
+        <AtList
           v-model:open="isOpenWorkspaceSelectDropdown"
           :value="modelValue || selectedWorkspace?.value || ''"
           :list="workspaceList"
@@ -167,8 +167,8 @@ defineExpose({
               <GeneralWorkspaceIcon :workspace="option as WorkspaceType" size="account-sidebar" class="flex-none" />
             </div>
           </template>
-        </NcList>
+        </AtList>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </a-form-item>
 </template>

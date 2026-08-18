@@ -976,7 +976,7 @@ watch(
     if (dragRecord.value || resizeRecord.value) return
     const records = document.querySelectorAll('.draggable-record')
     if (records.length) records.item(0)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    else document.querySelectorAll('.nc-calendar-day-hour').item(9)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    else document.querySelectorAll('.atm-calendar-day-hour').item(9)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   },
   { immediate: true },
 )
@@ -1008,8 +1008,8 @@ watch(
 <template>
   <div
     ref="scrollContainer"
-    class="prevent-select h-[calc(100vh-5.4rem)] overflow-y-auto nc-scrollbar-md relative flex flex-col w-full"
-    data-testid="nc-calendar-week-view"
+    class="prevent-select h-[calc(100vh-5.4rem)] overflow-y-auto atm-scrollbar-md relative flex flex-col w-full"
+    data-testid="atm-calendar-week-view"
     @drop="dropEvent"
   >
     <div
@@ -1024,23 +1024,23 @@ watch(
     >
       <div class="flex w-full items-center">
         <span
-          class="text-nc-content-inverted-primary bg-nc-content-brand rounded-md leading-3.5 font-bold text-xs pointer-events-auto p-0.5 cursor-pointer"
+          class="text-atm-content-inverted-primary bg-atm-content-brand rounded-md leading-3.5 font-bold text-xs pointer-events-auto p-0.5 cursor-pointer"
           @click="addRecord(timezoneDayjs.dayjsTz())"
         >
           {{ currTime.format(is12hrAxis ? 'hh:mm A' : 'HH:mm') }}
         </span>
-        <div class="flex-1 relative ml-1 nc-calendar-border-line border-b-2 border-nc-border-brand"></div>
+        <div class="flex-1 relative ml-1 atm-calendar-border-line border-b-2 border-atm-border-brand"></div>
       </div>
     </div>
-    <div class="flex sticky h-6 z-4 top-0 pl-16 bg-nc-bg-gray-extralight w-full">
+    <div class="flex sticky h-6 z-4 top-0 pl-16 bg-atm-bg-gray-extralight w-full">
       <div
         v-for="(date, index) in datesHours"
         :key="date[0].toISOString()"
         :class="{
-          'text-nc-content-brand': date[0].isSame(timezoneDayjs.dayjsTz(), 'date'),
+          'text-atm-content-brand': date[0].isSame(timezoneDayjs.dayjsTz(), 'date'),
         }"
         :style="{ width: columnWidthPct(index) }"
-        class="text-center text-[10px] font-semibold leading-4 flex items-center justify-center uppercase text-nc-content-gray-muted py-1 border-nc-border-gray-medium last:border-r-0 border-b-1 border-l-1 border-r-0 bg-nc-bg-gray-extralight"
+        class="text-center text-[10px] font-semibold leading-4 flex items-center justify-center uppercase text-atm-content-gray-muted py-1 border-atm-border-gray-medium last:border-r-0 border-b-1 border-l-1 border-r-0 bg-atm-bg-gray-extralight"
       >
         {{ timezoneDayjs.dayjsTz(date[0]).format('DD ddd') }}
       </div>
@@ -1051,19 +1051,19 @@ watch(
         'top-32': isExpanded && isRangeEnabled,
         '!top-0': !recordsAcrossAllRange.spanningRecords?.length,
       }"
-      class="absolute bg-nc-bg-default w-16 z-1"
+      class="absolute bg-atm-bg-default w-16 z-1"
     >
       <div
         v-for="(hour, index) in datesHours[0]"
         :key="index"
-        class="h-13 first:mt-0 pt-7.1 nc-calendar-day-hour text-right pr-2 font-semibold text-xs text-nc-content-gray-muted py-1"
+        class="h-13 first:mt-0 pt-7.1 atm-calendar-day-hour text-right pr-2 font-semibold text-xs text-atm-content-gray-muted py-1"
       >
         {{ hour.format(is12hrAxis ? 'hh a' : 'HH:00') }}
       </div>
     </div>
     <div
       v-if="isRangeEnabled && recordsAcrossAllRange.spanningRecords?.length"
-      class="sticky top-6 nc-bg-default z-4 inset-x-0 w-full"
+      class="sticky top-6 atm-bg-default z-4 inset-x-0 w-full"
     >
       <SmartsheetCalendarDateTimeSpanningContainer
         ref="spanningRecordsContainer"
@@ -1086,20 +1086,20 @@ watch(
         :key="index"
         :style="{ width: columnWidthPct(index) }"
         class="h-full mt-5.95"
-        data-testid="nc-calendar-week-day"
+        data-testid="atm-calendar-week-day"
       >
         <div
           v-for="(hour, hourIndex) in date"
           :key="hourIndex"
           :class="{
-            'border-1 !border-nc-border-brand !bg-nc-bg-gray-light':
+            'border-1 !border-atm-border-brand !bg-atm-bg-gray-light':
               hour.isSame(selectedTime, 'hour') && (hour.get('day') === 6 || hour.get('day') === 0),
             'selected-hour': hour.isSame(selectedTime, 'hour'),
-            'bg-nc-bg-gray-extralight hover:nc-bg-gray-light': hour.get('day') === 0 || hour.get('day') === 6,
-            'hover:bg-nc-bg-gray-extralight': hour.get('day') !== 0 && hour.get('day') !== 6,
+            'bg-atm-bg-gray-extralight hover:atm-bg-gray-light': hour.get('day') === 0 || hour.get('day') === 6,
+            'hover:bg-atm-bg-gray-extralight': hour.get('day') !== 0 && hour.get('day') !== 6,
           }"
-          class="text-center relative transition h-13 text-sm text-nc-content-gray-muted w-full py-1 border-transparent border-1 border-x-nc-border-gray-light border-t-nc-border-gray-light border-l-nc-border-gray-light"
-          data-testid="nc-calendar-week-hour"
+          class="text-center relative transition h-13 text-sm text-atm-content-gray-muted w-full py-1 border-transparent border-1 border-x-atm-border-gray-light border-t-atm-border-gray-light border-l-atm-border-gray-light"
+          data-testid="atm-calendar-week-hour"
           @dblclick="addRecord(hour)"
           @click="selectHour(hour)"
         ></div>
@@ -1107,12 +1107,12 @@ watch(
 
       <div
         class="absolute pointer-events-none z-2 inset-0 overflow-hidden !mt-5.95"
-        data-testid="nc-calendar-week-record-container"
+        data-testid="atm-calendar-week-record-container"
       >
         <template v-for="record in recordsAcrossAllRange.records" :key="record.rowMeta.id">
           <div
             v-if="record.rowMeta.style?.display !== 'none' && !record.rowMeta.capHidden"
-            :data-testid="`nc-calendar-week-record-${record.row[displayField!.title!]}`"
+            :data-testid="`atm-calendar-week-record-${record.row[displayField!.title!]}`"
             :data-unique-id="record.rowMeta!.id"
             :style="{
               ...record.rowMeta.style,
@@ -1159,7 +1159,7 @@ watch(
                   <SmartsheetRecordFieldsTooltip :record="record" :fields="fields" />
                 </template>
                 <template #time>
-                  <span v-if="!isCardTooThinToRender(record)" class="text-xs font-medium text-nc-content-gray-disabled">
+                  <span v-if="!isCardTooThinToRender(record)" class="text-xs font-medium text-atm-content-gray-disabled">
                     {{
                       timezoneDayjs
                         .timezonize(record.row[record.rowMeta.range?.fk_from_col!.title!])
@@ -1187,8 +1187,8 @@ watch(
               top: `${band.top}px`,
               height: `${band.height}px`,
             }"
-            class="nc-dense-day-overlay group absolute pointer-events-auto cursor-pointer flex items-center justify-center transition-colors"
-            data-testid="nc-calendar-week-dense-overlay"
+            class="atm-dense-day-overlay group absolute pointer-events-auto cursor-pointer flex items-center justify-center transition-colors"
+            data-testid="atm-calendar-week-dense-overlay"
             @click="openDayViewForColumn(band.dayIndex)"
           >
             <span
@@ -1206,7 +1206,7 @@ watch(
 <style lang="scss" scoped>
 // Subtle highlight when hovering a dense day's "view all in day view" overlay; the thin
 // slivers underneath stay faintly visible.
-.nc-dense-day-overlay:hover {
+.atm-dense-day-overlay:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
 
@@ -1217,11 +1217,11 @@ watch(
 }
 
 .selected-hour {
-  @apply relative !bg-nc-bg-brand;
+  @apply relative !bg-atm-bg-brand;
 }
 
-.nc-calendar-border-line::after {
-  @apply absolute bg-nc-content-brand w-0.5 h-3;
+.atm-calendar-border-line::after {
+  @apply absolute bg-atm-content-brand w-0.5 h-3;
   content: '';
   top: -5px;
   bottom: -6px;

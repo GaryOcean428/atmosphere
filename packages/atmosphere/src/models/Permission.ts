@@ -5,9 +5,9 @@ import type {
   PermissionRole,
   ProjectRoles,
   WorkspaceUserRoles,
-} from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+} from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 
 export default class Permission {
   id: string;
@@ -31,16 +31,16 @@ export default class Permission {
     Object.assign(this, permission);
   }
   public static async list(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<Permission[]> {
     return [];
   }
 
   // placeholder for actual permission check logic
   static async isAllowed(
-    _context: NcContext,
+    _context: AtContext,
     _permissionObj: Permission,
     _user: {
       id: string;

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 
 defineProps<{
   baseId: string
@@ -12,5 +12,5 @@ defineEmits<{
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

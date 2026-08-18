@@ -12,7 +12,7 @@ async function registerIntegrations(EE = false) {
   const packageJsonPath = path.join(__dirname, '..', 'package.json');
   const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
 
-  // Get all dependencies that start with @noco-integrations/ from package.json
+  // Get all dependencies that start with @atmosphere-integrations/ from package.json
   const integrationDeps = {};
   const allDeps = {
     ...packageJson.dependencies,
@@ -21,22 +21,22 @@ async function registerIntegrations(EE = false) {
 
   for (const [dep, _version] of Object.entries(allDeps)) {
     if (
-      dep.startsWith('@noco-integrations/') &&
-      dep !== '@noco-integrations/core'
+      dep.startsWith('@atmosphere-integrations/') &&
+      dep !== '@atmosphere-integrations/core'
     ) {
-      // Extract the package name without the @noco-integrations/ prefix
-      const packageName = dep.replace('@noco-integrations/', '');
+      // Extract the package name without the @atmosphere-integrations/ prefix
+      const packageName = dep.replace('@atmosphere-integrations/', '');
       integrationDeps[packageName] = dep;
     }
   }
 
-  // Get all local integrations from ../noco-integrations/packages
+  // Get all local integrations from ../atmosphere-integrations/packages
   try {
     const localIntegrationsPath = path.join(
       __dirname,
       '..',
       '..',
-      'noco-integrations',
+      'atmosphere-integrations',
       'packages',
     );
 
@@ -71,7 +71,7 @@ async function registerIntegrations(EE = false) {
       }
 
       const packageName = dirent.name;
-      integrationDeps[packageName] = `@noco-local-integrations/${packageName}`;
+      integrationDeps[packageName] = `@atmosphere-local-integrations/${packageName}`;
 
       // check if the dependencies of local integrations are present in the package.json
       const integrationPackageJsonPath = path.join(
@@ -86,7 +86,7 @@ async function registerIntegrations(EE = false) {
       const dependencies = integrationPackageJson.dependencies;
 
       for (const [dep, version] of Object.entries(dependencies)) {
-        if (dep.startsWith('@noco-integrations/')) {
+        if (dep.startsWith('@atmosphere-integrations/')) {
           continue;
         }
 
@@ -151,7 +151,7 @@ async function registerIntegrations(EE = false) {
   indexContent += importStatements.join('\n');
   indexContent += '\n\n';
   // Import IntegrationEntry type
-  indexContent += `import type { IntegrationEntry } from '@noco-local-integrations/core';\n\n`;
+  indexContent += `import type { IntegrationEntry } from '@atmosphere-local-integrations/core';\n\n`;
 
   // Add export statement with array flattening
   // Some packages export an array of entries (e.g., workflow-node packages)

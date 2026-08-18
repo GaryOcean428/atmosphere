@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { marked } from 'marked'
 import DOMPurify from 'isomorphic-dompurify'
-import { PlanFeatureTypes } from 'nocodb-sdk'
+import { PlanFeatureTypes } from 'atmosphere-sdk'
 
 interface Prop {
   modelValue: boolean
@@ -73,53 +73,53 @@ const detailsBody = computed(() => {
 </script>
 
 <template>
-  <NcModal v-model:visible="vModel" :footer="null" size="lg" wrap-class-name="nc-modal-extension-details">
+  <AtModal v-model:visible="vModel" :footer="null" size="lg" wrap-class-name="atm-modal-extension-details">
     <div v-if="activeExtension" class="flex flex-col w-full h-full">
-      <div class="flex items-center gap-3 px-4 py-3 border-b-1 border-nc-border-gray-medium">
-        <NcButton v-if="from === 'market'" size="small" type="text" @click="onBack">
+      <div class="flex items-center gap-3 px-4 py-3 border-b-1 border-atm-border-gray-medium">
+        <AtButton v-if="from === 'market'" size="small" type="text" @click="onBack">
           <GeneralIcon icon="arrowLeft" />
-        </NcButton>
+        </AtButton>
 
         <img :src="getExtensionAssetsUrl(activeExtension.iconUrl)" alt="icon" class="h-[50px] w-[50px] object-contain" />
         <div class="flex-1 flex flex-col">
           <div class="flex items-center gap-2">
             <div class="font-semibold text-xl truncate">{{ activeExtension.title }}</div>
-            <NcBadgeBeta v-if="activeExtension.showAsBeta" />
+            <AtBadgeBeta v-if="activeExtension.showAsBeta" />
           </div>
-          <div class="text-small leading-[18px] text-nc-content-gray-muted truncate">{{ activeExtension.subTitle }}</div>
+          <div class="text-small leading-[18px] text-atm-content-gray-muted truncate">{{ activeExtension.subTitle }}</div>
         </div>
         <div class="self-start flex items-center gap-2.5">
-          <NcTooltip v-if="!blockAddNewExtension" :disabled="extensionAccess.create">
+          <AtTooltip v-if="!blockAddNewExtension" :disabled="extensionAccess.create">
             <template #title>
               {{ $t('tooltip.youDoNotHaveSufficientPermissionToAddExtension') }}
             </template>
-            <NcButton size="small" class="w-full" :disabled="!extensionAccess.create" @click="onAddExtension(activeExtension)">
+            <AtButton size="small" class="w-full" :disabled="!extensionAccess.create" @click="onAddExtension(activeExtension)">
               <div class="flex items-center justify-center gap-1 -ml-3px">
                 <GeneralIcon icon="plus" /> {{ $t('general.add') }} {{ $t('general.extension') }}
               </div>
-            </NcButton>
-          </NcTooltip>
-          <NcTooltip v-else>
+            </AtButton>
+          </AtTooltip>
+          <AtTooltip v-else>
             <template #title>
               {{ $t('upgrade.upgradeToAddMoreExtensions') }}
             </template>
-            <NcButton size="small" class="w-full nc-upgrade-plan-btn" @click="onUpgradeToAdd">
+            <AtButton size="small" class="w-full atm-upgrade-plan-btn" @click="onUpgradeToAdd">
               <div class="flex items-center justify-center gap-2">
                 <GeneralIcon icon="ncArrowUpCircle" class="h-4 w-4" />
 
                 {{ isWsOwner ? $t('upgrade.upgradeToAdd') : $t('upgrade.requestUpgradeToAdd') }}
               </div>
-            </NcButton>
-          </NcTooltip>
-          <NcButton size="small" type="text" @click="vModel = false">
-            <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-          </NcButton>
+            </AtButton>
+          </AtTooltip>
+          <AtButton size="small" type="text" @click="vModel = false">
+            <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+          </AtButton>
         </div>
       </div>
 
       <div class="extension-details">
         <div class="extension-details-left">
-          <div class="nc-extension-details-body" v-html="detailsBody"></div>
+          <div class="atm-extension-details-body" v-html="detailsBody"></div>
         </div>
         <div class="extension-details-right">
           <div class="extension-details-right-section">
@@ -127,7 +127,7 @@ const detailsBody = computed(() => {
             <div class="extension-details-right-subtitle">{{ activeExtension.version }}</div>
           </div>
 
-          <NcDivider />
+          <AtDivider />
           <div v-if="activeExtension.publisher" class="extension-details-right-section">
             <div class="extension-details-right-title">Publisher</div>
             <div class="flex items-center gap-2">
@@ -143,7 +143,7 @@ const detailsBody = computed(() => {
               />
               <div class="extension-details-right-subtitle">{{ activeExtension.publisher.name }}</div>
             </div>
-            <div class="flex items-center gap-3 text-sm font-semibold text-nc-content-brand">
+            <div class="flex items-center gap-3 text-sm font-semibold text-atm-content-brand">
               <a
                 v-if="activeExtension.publisher?.url"
                 :href="activeExtension.publisher.url"
@@ -154,7 +154,7 @@ const detailsBody = computed(() => {
                 Website
               </a>
               <template v-if="activeExtension.publisher?.email">
-                <div class="border-l-1 border-nc-border-gray-medium h-5"></div>
+                <div class="border-l-1 border-atm-border-gray-medium h-5"></div>
                 <a
                   :href="`mailto:${activeExtension.publisher.email}`"
                   target="_blank"
@@ -167,19 +167,19 @@ const detailsBody = computed(() => {
             </div>
           </div>
           <template v-if="activeExtension.links && activeExtension.links.length">
-            <NcDivider />
+            <AtDivider />
             <div class="extension-details-right-section">
               <div class="extension-details-right-title">{{ $t('general.links') }}</div>
               <div>
                 <div v-for="(doc, idx) of activeExtension.links" :key="idx" class="flex items-center gap-1">
                   <div class="h-7 w-7 flex items-center justify-center">
-                    <GeneralIcon icon="bookOpen" class="flex-none w-4 h-4 text-nc-content-gray-subtle2" />
+                    <GeneralIcon icon="bookOpen" class="flex-none w-4 h-4 text-atm-content-gray-subtle2" />
                   </div>
                   <a
                     :href="doc.href"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="!text-nc-content-gray-subtle text-sm !no-underline !hover:underline"
+                    class="!text-atm-content-gray-subtle text-sm !no-underline !hover:underline"
                   >
                     {{ doc.title }}
                   </a>
@@ -190,7 +190,7 @@ const detailsBody = computed(() => {
         </div>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss" scoped>
@@ -198,40 +198,40 @@ const detailsBody = computed(() => {
   @apply flex w-full h-[calc(100%_-_75px)];
 
   .extension-details-left {
-    @apply p-6 flex-1 flex flex-col gap-6 nc-scrollbar-thin;
+    @apply p-6 flex-1 flex flex-col gap-6 atm-scrollbar-thin;
   }
 
   .extension-details-right {
-    @apply p-5 w-[320px] flex flex-col space-y-4 border-l-1 border-nc-border-gray-medium bg-nc-bg-gray-extralight nc-scrollbar-thin;
+    @apply p-5 w-[320px] flex flex-col space-y-4 border-l-1 border-atm-border-gray-medium bg-atm-bg-gray-extralight atm-scrollbar-thin;
 
     .extension-details-right-section {
       @apply flex flex-col gap-3;
     }
 
     .extension-details-right-title {
-      @apply text-sm font-semibold text-nc-content-gray;
+      @apply text-sm font-semibold text-atm-content-gray;
     }
     .extension-details-right-subtitle {
-      @apply text-sm font-weight-500 text-nc-content-gray-subtle2;
+      @apply text-sm font-weight-500 text-atm-content-gray-subtle2;
     }
   }
 }
 </style>
 
 <style lang="scss">
-.nc-modal-extension-details {
+.atm-modal-extension-details {
   .ant-modal-content {
     @apply overflow-hidden;
   }
-  .nc-modal {
+  .atm-modal {
     @apply !p-0;
   }
 
-  .nc-extension-details-body {
+  .atm-extension-details-body {
     @apply max-w-[768px] mx-auto;
 
     p {
-      @apply !m-0 !leading-5 text-nc-content-gray;
+      @apply !m-0 !leading-5 text-atm-content-gray;
     }
 
     ul {
@@ -255,11 +255,11 @@ const detailsBody = computed(() => {
 
     // Pre tag is the parent wrapper for Code block
     pre {
-      @apply overflow-auto mt-3 bg-nc-bg-gray-light;
+      @apply overflow-auto mt-3 bg-atm-bg-gray-light;
 
       border-color: #d0d5dd;
       border: 1px;
-      color: var(--nc-content-gray-extreme);
+      color: var(--atm-content-gray-extreme);
       font-family: 'JetBrainsMono', monospace;
       padding: 1rem;
       border-radius: 0.5rem;
@@ -271,7 +271,7 @@ const detailsBody = computed(() => {
     }
 
     code {
-      @apply rounded-md px-2 py-1 bg-nc-bg-gray-light;
+      @apply rounded-md px-2 py-1 bg-atm-bg-gray-light;
 
       color: inherit;
       font-size: 0.8rem;
@@ -286,12 +286,12 @@ const detailsBody = computed(() => {
     }
 
     hr {
-      @apply !border-nc-gray-300 !border-t-1;
+      @apply !border-atm-gray-300 !border-t-1;
       margin: 1.5em 0;
     }
 
     h1 {
-      @apply text-nc-content-gray;
+      @apply text-atm-content-gray;
       font-weight: 700;
       font-size: 1.85rem;
       margin-bottom: 0.1rem;
@@ -299,7 +299,7 @@ const detailsBody = computed(() => {
     }
 
     h2 {
-      @apply text-nc-content-gray;
+      @apply text-atm-content-gray;
       font-weight: 600;
       font-size: 1.55rem;
       margin-bottom: 0.1em;
@@ -307,7 +307,7 @@ const detailsBody = computed(() => {
     }
 
     h3 {
-      @apply text-nc-content-gray;
+      @apply text-atm-content-gray;
       font-weight: 600;
       font-size: 1.15rem;
       margin-bottom: 0.1em;

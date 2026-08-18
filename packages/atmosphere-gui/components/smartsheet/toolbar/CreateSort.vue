@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { type ColumnType, type LinkToAnotherRecordType, type SortType, UITypesName } from 'nocodb-sdk'
-import { RelationTypes, UITypes, isColumnInError, isHiddenCol, isLinksOrLTAR, isSystemColumn } from 'nocodb-sdk'
+import { type ColumnType, type LinkToAnotherRecordType, type SortType, UITypesName } from 'atmosphere-sdk'
+import { RelationTypes, UITypes, isColumnInError, isHiddenCol, isLinksOrLTAR, isSystemColumn } from 'atmosphere-sdk'
 
 const props = defineProps<{
   // As we need to focus search box when the parent is opened
@@ -88,7 +88,7 @@ const onClick = (column: ColumnType) => {
 </script>
 
 <template>
-  <div class="nc-sort-create-modal">
+  <div class="atm-sort-create-modal">
     <SmartsheetToolbarFieldListWithSearch
       :is-parent-open="isParentOpen"
       :search-input-placeholder="$t('msg.selectFieldToSort')"

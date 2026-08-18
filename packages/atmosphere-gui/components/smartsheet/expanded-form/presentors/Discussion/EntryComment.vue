@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type CommentType } from 'nocodb-sdk'
+import { type CommentType } from 'atmosphere-sdk'
 
 /* interface */
 
@@ -161,7 +161,7 @@ async function copyComment(comment: CommentType) {
 </script>
 
 <template>
-  <div class="relative my-4 nc-audit-comment-block">
+  <div class="relative my-4 atm-audit-comment-block">
     <div class="absolute left-0 rtl:(left-auto right-0)">
       <GeneralUserIcon
         :user="{
@@ -174,102 +174,102 @@ async function copyComment(comment: CommentType) {
       />
     </div>
     <div
-      class="flex-1 bg-nc-bg-default rounded-lg border-1 group ml-11.5 rtl:(mr-11.5 ml-0)"
+      class="flex-1 bg-atm-bg-default rounded-lg border-1 group ml-11.5 rtl:(mr-11.5 ml-0)"
       :class="{
-        'border-nc-brand-200/70 dark:!border-[#388bfd4b]': isCreatedByYou,
-        'border-nc-border-gray-medium': !isCreatedByYou,
+        'border-atm-brand-200/70 dark:!border-[#388bfd4b]': isCreatedByYou,
+        'border-atm-border-gray-medium': !isCreatedByYou,
       }"
     >
       <div
-        class="flex items-center gap-2 bg-nc-bg-gray-extralight px-4 py-0.5 border-b rounded-t-lg text-nc-content-gray min-h-[28px]"
+        class="flex items-center gap-2 bg-atm-bg-gray-extralight px-4 py-0.5 border-b rounded-t-lg text-atm-content-gray min-h-[28px]"
         :class="{
-          '!bg-nc-bg-brand border-nc-brand-200/70 dark:(!bg-[#151b23] !border-[#388bfd4b])': isCreatedByYou,
-          'border-nc-border-gray-medium': !isCreatedByYou,
+          '!bg-atm-bg-brand border-atm-brand-200/70 dark:(!bg-[#151b23] !border-[#388bfd4b])': isCreatedByYou,
+          'border-atm-border-gray-medium': !isCreatedByYou,
         }"
       >
-        <span class="font-medium text-xs" :class="{ 'text-nc-content-brand-disabled': isCreatedByYou }">
+        <span class="font-medium text-xs" :class="{ 'text-atm-content-brand-disabled': isCreatedByYou }">
           {{ createdBy(props.comment) }}
         </span>
-        <span class="text-xs text-nc-content-gray-muted">
-          <NcTooltip>
+        <span class="text-xs text-atm-content-gray-muted">
+          <AtTooltip>
             <template #title>{{ parseStringDateTime(props.comment.created_at) }}</template>
             {{ timeAgo(props.comment.created_at) }}
-          </NcTooltip>
+          </AtTooltip>
         </span>
 
         <div class="flex-1" />
 
         <div v-if="!editCommentValue" class="flex items-center gap-2">
-          <NcTooltip
+          <AtTooltip
             v-if="user && props.comment.created_by_email === user.email && hasEditPermission"
             class="opacity-0 transition !duration-150 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"
           >
-            <NcButton
-              class="!w-6 !h-6 !bg-transparent !hover:bg-nc-bg-gray-medium"
+            <AtButton
+              class="!w-6 !h-6 !bg-transparent !hover:bg-atm-bg-gray-medium"
               size="xsmall"
               type="text"
               @click="editComment(props.comment)"
             >
               <GeneralIcon class="!w-3.5 !h-3.5" icon="pencil" />
-            </NcButton>
+            </AtButton>
             <template #title>{{ $t('tooltip.clickToEdit') }}</template>
-          </NcTooltip>
+          </AtTooltip>
 
-          <NcDropdown
+          <AtDropdown
             v-if="!editCommentValue"
             class="opacity-0 transition !duration-150 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"
             overlay-class-name="!min-w-[160px]"
             placement="bottomRight"
           >
-            <NcButton class="!w-6 !h-6 !bg-transparent !hover:bg-nc-bg-gray-medium" size="xsmall" type="text">
+            <AtButton class="!w-6 !h-6 !bg-transparent !hover:bg-atm-bg-gray-medium" size="xsmall" type="text">
               <GeneralIcon class="!w-3.5 !h-3.5" icon="threeDotVertical" />
-            </NcButton>
+            </AtButton>
             <template #overlay>
-              <NcMenu variant="small">
-                <NcMenuItem v-e="['c:comment-expand:comment:copy']" @click="copyComment(props.comment)">
+              <AtMenu variant="small">
+                <AtMenuItem v-e="['c:comment-expand:comment:copy']" @click="copyComment(props.comment)">
                   <div class="flex gap-2 items-center">
                     <component :is="iconMap.copy" class="cursor-pointer" />
                     {{ $t('general.copy') }} {{ $t('datatype.URL') }}
                   </div>
-                </NcMenuItem>
+                </AtMenuItem>
                 <template v-if="user && props.comment.created_by_email === user.email && hasEditPermission">
-                  <NcDivider />
-                  <NcMenuItem v-e="['c:row-expand:comment:delete']" danger @click="deleteComment(props.comment.id!)">
+                  <AtDivider />
+                  <AtMenuItem v-e="['c:row-expand:comment:delete']" danger @click="deleteComment(props.comment.id!)">
                     <div class="flex gap-2 items-center">
                       <component :is="iconMap.delete" class="cursor-pointer" />
                       {{ $t('general.delete') }}
                     </div>
-                  </NcMenuItem>
+                  </AtMenuItem>
                 </template>
-              </NcMenu>
+              </AtMenu>
             </template>
-          </NcDropdown>
+          </AtDropdown>
 
-          <NcTooltip
+          <AtTooltip
             v-if="!props.comment.resolved_by && hasEditPermission"
             class="opacity-0 transition !duration-150 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto"
           >
-            <NcButton
-              class="!w-6 !h-6 !bg-transparent !hover:bg-nc-bg-gray-medium"
+            <AtButton
+              class="!w-6 !h-6 !bg-transparent !hover:bg-atm-bg-gray-medium"
               size="xsmall"
               type="text"
               @click="resolveComment(props.comment.id)"
             >
               <GeneralIcon class="!w-3.5 !h-3.5" icon="checkCircle" />
-            </NcButton>
+            </AtButton>
             <template #title>{{ $t('activity.clickToResolve') }}</template>
-          </NcTooltip>
-          <NcTooltip v-else-if="props.comment.resolved_by">
+          </AtTooltip>
+          <AtTooltip v-else-if="props.comment.resolved_by">
             <template #title>{{ $t('tooltip.resolvedBy', { name: props.comment.resolved_display_name_short }) }}</template>
-            <NcButton
-              class="!h-6 !w-6 !bg-transparent !hover:bg-nc-bg-gray-medium text-semibold"
+            <AtButton
+              class="!h-6 !w-6 !bg-transparent !hover:bg-atm-bg-gray-medium text-semibold"
               size="xsmall"
               type="text"
               @click="resolveComment(props.comment.id!)"
             >
-              <GeneralIcon class="!w-3.5 !h-3.5 rounded-full bg-nc-fill-green-dark text-white" icon="checkFill" />
-            </NcButton>
-          </NcTooltip>
+              <GeneralIcon class="!w-3.5 !h-3.5 rounded-full bg-atm-fill-green-dark text-white" icon="checkFill" />
+            </AtButton>
+          </AtTooltip>
         </div>
       </div>
       <div
@@ -284,7 +284,7 @@ async function copyComment(comment: CommentType) {
           autofocus-to-end
           :hide-options="false"
           :extra-save-enabled="editAttachments.length > 0"
-          class="cursor-text expanded-form-comment-input !py-3 !px-4 !pr-3 !m-0 w-full !border-1 !border-nc-border-gray-medium !rounded-lg !bg-nc-bg-default !text-nc-content-gray !text-small !leading-18px !max-h-[240px]"
+          class="cursor-text expanded-form-comment-input !py-3 !px-4 !pr-3 !m-0 w-full !border-1 !border-atm-border-gray-medium !rounded-lg !bg-atm-bg-default !text-atm-content-gray !text-small !leading-18px !max-h-[240px]"
           data-testid="expanded-form-comment-input"
           sync-value-change
           @save="onEditComment"
@@ -302,18 +302,18 @@ async function copyComment(comment: CommentType) {
             />
           </template>
           <template v-if="isCommentAttachmentsEnabled" #bottom-bar-start>
-            <NcButton
+            <AtButton
               v-e="['c:comment:attach-file']"
               type="text"
               size="xsmall"
-              class="nc-comment-attach-btn !h-7 !w-7"
+              class="atm-comment-attach-btn !h-7 !w-7"
               :loading="isEditAttachmentUploading"
               :disabled="isEditAttachmentUploading"
-              data-testid="nc-comment-attach-btn"
+              data-testid="atm-comment-attach-btn"
               @click="openEditFilePicker"
             >
               <GeneralIcon v-if="!isEditAttachmentUploading" icon="ncPaperclip" class="text-md" />
-            </NcButton>
+            </AtButton>
           </template>
         </SmartsheetExpandedFormRichComment>
       </div>
@@ -321,7 +321,7 @@ async function copyComment(comment: CommentType) {
         <SmartsheetExpandedFormRichComment
           :key="`${props.comment.id}-${props.comment.comment}`"
           :value="`${props.comment.comment}  ${editedAt(props.comment)}`"
-          class="!text-small !leading-18px !text-nc-content-gray px-4 py-3"
+          class="!text-small !leading-18px !text-atm-content-gray px-4 py-3"
           read-only
           sync-value-change
         />
@@ -337,28 +337,28 @@ async function copyComment(comment: CommentType) {
 </template>
 
 <style scoped lang="scss">
-.nc-audit-comment-block {
+.atm-audit-comment-block {
   &::before {
     content: '';
-    @apply absolute -top-4 left-15.8 h-4 border-l-1 border-nc-border-gray-dark;
+    @apply absolute -top-4 left-15.8 h-4 border-l-1 border-atm-border-gray-dark;
   }
 }
-.nc-audit-comment-block {
+.atm-audit-comment-block {
   &::after {
     content: '';
-    @apply absolute -bottom-4 left-15.8 h-4 border-l-1 border-nc-border-gray-dark;
+    @apply absolute -bottom-4 left-15.8 h-4 border-l-1 border-atm-border-gray-dark;
   }
 }
 </style>
 
 <style lang="scss">
-.rtl .nc-audit-comment-block {
+.rtl .atm-audit-comment-block {
   &::before,
   &::after {
     left: auto;
     right: 63.2px;
     border-left: 0;
-    border-right: 1px solid var(--nc-border-gray-dark);
+    border-right: 1px solid var(--atm-border-gray-dark);
   }
 }
 </style>

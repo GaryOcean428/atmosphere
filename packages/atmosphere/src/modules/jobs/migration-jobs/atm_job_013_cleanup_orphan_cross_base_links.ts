@@ -2,16 +2,16 @@ import { Injectable, Logger } from '@nestjs/common';
 import debug from 'debug';
 import { Column } from '~/models';
 import { MetaTable } from '~/utils/globals';
-import { DriverClient } from '~/utils/nc-config';
-import Noco from '~/Noco';
+import { DriverClient } from '~/utils/atm-config';
+import Atmosphere from '~/Atmosphere';
 
 /**
  * One-time cleanup of orphaned cross-base link columns.
  *
- * A cross-base link (its `nc_col_relations_v2` row carries
+ * A cross-base link (its `atm_col_relations_v2` row carries
  * `fk_related_base_id` pointing at a DIFFERENT base) whose related model has
  * since been deleted/trashed leaves the owning link column — and any
- * Rollup/Lookup built on it — dangling. Reads then degrade to `NC_ERROR` and,
+ * Rollup/Lookup built on it — dangling. Reads then degrade to `ATMOSPHERE_ERROR` and,
  * once the related table is permanently purged, fail outright. Deletes created
  * after the teardown fix are cleaned at delete time; this reaps the ones that
  * predate it.
@@ -35,14 +35,14 @@ import Noco from '~/Noco';
 @Injectable()
 export class CleanupOrphanCrossBaseLinksMigration {
   private readonly debugLog = debug(
-    'nc:migration-jobs:cleanup-orphan-cross-base-links',
+    'atm:migration-jobs:cleanup-orphan-cross-base-links',
   );
   private readonly logger = new Logger(
     CleanupOrphanCrossBaseLinksMigration.name,
   );
 
   async job() {
-    const ncMeta = Noco.ncMeta;
+    const ncMeta = Atmosphere.ncMeta;
 
     // Cross-base links are a Postgres-only feature, so a non-PG meta DB can't
     // hold any — skip the scan entirely and mark the migration complete.

@@ -44,44 +44,44 @@ const isNarrow = computed(() => sidebarWidth.value > 0 && sidebarWidth.value < T
 </script>
 
 <template>
-  <div ref="sidebarRef" class="flex flex-col bg-nc-bg-default !h-full w-full rounded-br-2xl overflow-hidden">
-    <NcTabs v-model:active-key="tab" class="h-full">
+  <div ref="sidebarRef" class="flex flex-col bg-atm-bg-default !h-full w-full rounded-br-2xl overflow-hidden">
+    <AtTabs v-model:active-key="tab" class="h-full">
       <a-tab-pane v-if="props.showFieldsTab" key="fields" class="w-full h-full">
         <template #tab>
-          <NcTooltip :disabled="!isNarrow" :title="$t('objects.fields')">
+          <AtTooltip :disabled="!isNarrow" :title="$t('objects.fields')">
             <div v-e="['c:row-expand:fields']" class="flex items-center gap-2">
               <GeneralIcon icon="fields" class="w-4 h-4" />
               <span v-show="!isNarrow"> {{ $t('objects.fields') }} </span>
             </div>
-          </NcTooltip>
+          </AtTooltip>
         </template>
         <SmartsheetExpandedFormPresentorsFieldsMiniColumnsWrapper :compact-mode="compactMode" />
       </a-tab-pane>
 
       <a-tab-pane v-if="!isSqlView" key="comments" class="w-full h-full">
         <template #tab>
-          <NcTooltip :disabled="!isNarrow" :title="$t('general.comments')">
+          <AtTooltip :disabled="!isNarrow" :title="$t('general.comments')">
             <div v-e="['c:row-expand:comment']" class="flex items-center gap-2">
               <GeneralIcon icon="messageCircle" class="w-4 h-4" />
               <span v-show="!isNarrow"> {{ $t('general.comments') }} </span>
             </div>
-          </NcTooltip>
+          </AtTooltip>
         </template>
         <SmartsheetExpandedFormSidebarComments />
       </a-tab-pane>
 
       <a-tab-pane v-if="!isSqlView && isAuditEnabled" key="audits" class="w-full">
         <template #tab>
-          <NcTooltip :disabled="!isNarrow" :title="$t('labels.revisionHistory')">
+          <AtTooltip :disabled="!isNarrow" :title="$t('labels.revisionHistory')">
             <div v-e="['c:row-expand:audit']" class="flex items-center gap-2">
               <GeneralIcon icon="audit" class="w-4 h-4" />
               <span v-show="!isNarrow"> {{ $t('labels.revisionHistory') }} </span>
             </div>
-          </NcTooltip>
+          </AtTooltip>
         </template>
         <SmartsheetExpandedFormSidebarAudits />
       </a-tab-pane>
-    </NcTabs>
+    </AtTabs>
   </div>
 </template>
 
@@ -104,7 +104,7 @@ const isNarrow = computed(() => sidebarWidth.value > 0 && sidebarWidth.value < T
 :deep(.ant-tabs) {
   @apply !overflow-visible;
   .ant-tabs-nav {
-    @apply px-3 bg-nc-bg-default;
+    @apply px-3 bg-atm-bg-default;
     .ant-tabs-nav-list {
       @apply w-[99%] mx-auto gap-6;
 
@@ -136,7 +136,7 @@ const isNarrow = computed(() => sidebarWidth.value > 0 && sidebarWidth.value < T
 .ant-tabs-dropdown {
   @apply overflow-hidden;
   .ant-tabs-dropdown-content {
-    @apply !rounded-lg overflow-hidden border-1 border-nc-border-gray-medium;
+    @apply !rounded-lg overflow-hidden border-1 border-atm-border-gray-medium;
   }
 }
 </style>

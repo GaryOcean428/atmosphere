@@ -172,8 +172,8 @@ BEGIN
 END;
 /
 
--- No BEFORE UPDATE last_update trigger: NocoDB backfills system columns
--- (nc_order, etc.) via a bulk UPDATE during base setup, which would otherwise
+-- No BEFORE UPDATE last_update trigger: Atmosphere backfills system columns
+-- (atm_order, etc.) via a bulk UPDATE during base setup, which would otherwise
 -- fire the trigger and reset every seeded last_update to current_date. The
 -- sakila fixture is static reference data, so auto-touch on update is unwanted.
 

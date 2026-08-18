@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PlanFeatureTypes, PlanTitles, type TableType, type ViewType, ViewTypes, viewTypeAlias } from 'nocodb-sdk'
+import { PlanFeatureTypes, PlanTitles, type TableType, type ViewType, ViewTypes, viewTypeAlias } from 'atmosphere-sdk'
 
 const { $e } = useNuxtApp()
 
@@ -15,7 +15,7 @@ const { activeView, views, isListViewEnabled } = storeToRefs(viewsStore)
 
 const { navigateToView, onOpenViewCreateModal, showUpgradeToUseListView } = viewsStore
 
-const { isAiFeaturesEnabled } = useNocoAi()
+const { isAiFeaturesEnabled } = useAtmosphereAi()
 
 const {
   showEEFeatures,
@@ -96,7 +96,7 @@ const filterOption = (input = '', view: ViewType) => {
  * It handles the dialog state, view creation, and navigation to the newly created view.
  * After creating a view, it refreshes the command palette and reloads the views.
  *
- * @see {@link packages/nc-gui/components/dashboard/TreeView/CreateViewBtn.vue} for a similar implementation of view creation dialog.
+ * @see {@link packages/atmosphere-gui/components/dashboard/TreeView/CreateViewBtn.vue} for a similar implementation of view creation dialog.
  * If this function is updated, consider updating the other implementations as well.
  */
 async function onOpenModal({
@@ -136,7 +136,7 @@ async function onOpenModal({
 </script>
 
 <template>
-  <NcDropdown v-if="activeView" v-model:visible="isOpen" overlay-class-name="max-w-64">
+  <AtDropdown v-if="activeView" v-model:visible="isOpen" overlay-class-name="max-w-64">
     <slot name="default" :is-open="isOpen"></slot>
     <template #overlay>
       <LazyNcList
@@ -159,27 +159,27 @@ async function onOpenModal({
               </template>
             </LazyGeneralEmojiPicker>
           </div>
-          <NcTooltip class="truncate flex-1" show-on-truncate-only>
+          <AtTooltip class="truncate flex-1" show-on-truncate-only>
             <template #title>
               {{ option?.title }}
             </template>
             {{ option?.title }}
-          </NcTooltip>
+          </AtTooltip>
           <GeneralIcon
             v-if="option.id === activeView.id"
-            id="nc-selected-item-icon"
+            id="atm-selected-item-icon"
             icon="check"
             class="flex-none text-primary w-4 h-4"
           />
         </template>
 
         <template v-if="isUIAllowed('viewCreateOrEdit')" #listFooter>
-          <NcDivider class="!mt-0 !mb-2" />
+          <AtDivider class="!mt-0 !mb-2" />
           <div class="overflow-hidden mb-2">
-            <a-menu class="nc-viewlist-menu">
-              <a-sub-menu popup-class-name="nc-viewlist-submenu-popup" :popup-offset="[8, -2]">
+            <a-menu class="atm-viewlist-menu">
+              <a-sub-menu popup-class-name="atm-viewlist-submenu-popup" :popup-offset="[8, -2]">
                 <template #title>
-                  <div class="flex items-center justify-between gap-2 text-sm font-weight-500 !text-nc-content-brand">
+                  <div class="flex items-center justify-between gap-2 text-sm font-weight-500 !text-atm-content-brand">
                     <div class="flex items-center gap-2">
                       <GeneralIcon icon="plus" />
                       <div>
@@ -192,7 +192,7 @@ async function onOpenModal({
                     </div>
                     <GeneralIcon
                       icon="arrowRight"
-                      class="text-base text-nc-content-gray-subtle2 group-hover:text-nc-content-gray"
+                      class="text-base text-atm-content-gray-subtle2 group-hover:text-atm-content-gray"
                     />
                   </div>
                 </template>
@@ -200,13 +200,13 @@ async function onOpenModal({
                 <template #expandIcon> </template>
 
                 <a-menu-item @click.stop="onOpenModal({ type: ViewTypes.GRID })">
-                  <div class="nc-viewlist-submenu-popup-item" data-testid="topbar-view-create-grid">
+                  <div class="atm-viewlist-submenu-popup-item" data-testid="topbar-view-create-grid">
                     <GeneralViewIcon :meta="{ type: ViewTypes.GRID }" />
                     {{ $t('objects.viewType.grid') }}
                   </div>
                 </a-menu-item>
 
-                <NcTooltip
+                <AtTooltip
                   :title="
                     isSyncedTable ? $t('tooltip.formViewCreationNotSupportedForSyncedTable') : $t('tooltip.sourceDataIsReadonly')
                   "
@@ -218,7 +218,7 @@ async function onOpenModal({
                     @click="onOpenModal({ type: ViewTypes.FORM })"
                   >
                     <div
-                      class="nc-viewlist-submenu-popup-item"
+                      class="atm-viewlist-submenu-popup-item"
                       data-testid="topbar-view-create-form"
                       :class="{
                         'opacity-50': !!activeSource?.is_data_readonly || isSqlView || isSyncedTable,
@@ -228,32 +228,32 @@ async function onOpenModal({
                       {{ $t('objects.viewType.form') }}
                     </div>
                   </a-menu-item>
-                </NcTooltip>
+                </AtTooltip>
                 <a-menu-item @click="onOpenModal({ type: ViewTypes.GALLERY })">
-                  <div class="nc-viewlist-submenu-popup-item" data-testid="topbar-view-create-gallery">
+                  <div class="atm-viewlist-submenu-popup-item" data-testid="topbar-view-create-gallery">
                     <GeneralViewIcon :meta="{ type: ViewTypes.GALLERY }" />
                     {{ $t('objects.viewType.gallery') }}
                   </div>
                 </a-menu-item>
                 <a-menu-item data-testid="topbar-view-create-kanban" @click="onOpenModal({ type: ViewTypes.KANBAN })">
-                  <div class="nc-viewlist-submenu-popup-item">
+                  <div class="atm-viewlist-submenu-popup-item">
                     <GeneralViewIcon :meta="{ type: ViewTypes.KANBAN }" />
                     {{ $t('objects.viewType.kanban') }}
                   </div>
                 </a-menu-item>
                 <a-menu-item data-testid="topbar-view-create-calendar" @click="onOpenModal({ type: ViewTypes.CALENDAR })">
-                  <div class="nc-viewlist-submenu-popup-item">
+                  <div class="atm-viewlist-submenu-popup-item">
                     <GeneralViewIcon :meta="{ type: ViewTypes.CALENDAR }" class="!w-4 !h-4" />
                     {{ $t('objects.viewType.calendar') }}
                   </div>
                 </a-menu-item>
                 <a-menu-item v-if="isEeUI" data-testid="topbar-view-create-map" @click="onOpenModal({ type: ViewTypes.MAP })">
-                  <div class="nc-viewlist-submenu-popup-item">
+                  <div class="atm-viewlist-submenu-popup-item">
                     <GeneralViewIcon :meta="{ type: ViewTypes.MAP }" />
                     {{ $t('objects.viewType.map') }}
                   </div>
                 </a-menu-item>
-                <NcTooltip
+                <AtTooltip
                   v-if="isListViewEnabled"
                   :title="$t('tooltip.listViewOnlyPg')"
                   :disabled="isPgSource"
@@ -270,7 +270,7 @@ async function onOpenModal({
                         })
                     "
                   >
-                    <div class="nc-viewlist-submenu-popup-item justify-between" :class="{ 'opacity-50': !isPgSource }">
+                    <div class="atm-viewlist-submenu-popup-item justify-between" :class="{ 'opacity-50': !isPgSource }">
                       <div class="flex items-center gap-2">
                         <GeneralViewIcon :meta="{ type: ViewTypes.LIST }" />
                         {{ $t('objects.viewType.list') }}
@@ -284,7 +284,7 @@ async function onOpenModal({
                       />
                     </div>
                   </a-menu-item>
-                </NcTooltip>
+                </AtTooltip>
                 <a-menu-item
                   v-if="showEEFeatures"
                   data-testid="topbar-view-create-timeline"
@@ -295,7 +295,7 @@ async function onOpenModal({
                     })
                   "
                 >
-                  <div class="nc-viewlist-submenu-popup-item justify-between">
+                  <div class="atm-viewlist-submenu-popup-item justify-between">
                     <div class="flex items-center gap-2">
                       <GeneralViewIcon :meta="{ type: ViewTypes.TIMELINE }" class="!w-4 !h-4" />
                       {{ $t('objects.viewType.timeline') }}
@@ -319,7 +319,7 @@ async function onOpenModal({
                     })
                   "
                 >
-                  <div class="nc-viewlist-submenu-popup-item justify-between">
+                  <div class="atm-viewlist-submenu-popup-item justify-between">
                     <div class="flex items-center gap-2">
                       <GeneralViewIcon :meta="{ type: ViewTypes.GANTT }" class="!w-4 !h-4" />
                       {{ $t('objects.viewType.gantt') }}
@@ -335,18 +335,18 @@ async function onOpenModal({
                 </a-menu-item>
 
                 <template v-if="isAiFeaturesEnabled">
-                  <NcDivider />
-                  <NcTooltip
+                  <AtDivider />
+                  <AtTooltip
                     :title="$t('tooltip.autoSuggestViewsFor', { tableName: activeTable?.title || $t('labels.theCurrentTable') })"
                     placement="right"
                   >
                     <a-menu-item data-testid="sidebar-view-create-ai" @click="onOpenModal({ type: 'AI' })">
-                      <div class="nc-viewlist-submenu-popup-item">
-                        <GeneralIcon icon="ncAutoAwesome" class="!w-4 !h-4 text-nc-fill-purple-dark" />
-                        <div>{{ $t('labels.useNocoAI') }}</div>
+                      <div class="atm-viewlist-submenu-popup-item">
+                        <GeneralIcon icon="ncAutoAwesome" class="!w-4 !h-4 text-atm-fill-purple-dark" />
+                        <div>{{ $t('labels.useAtmosphereAI') }}</div>
                       </div>
                     </a-menu-item>
-                  </NcTooltip>
+                  </AtTooltip>
                 </template>
               </a-sub-menu>
             </a-menu>
@@ -354,18 +354,18 @@ async function onOpenModal({
         </template>
       </LazyNcList>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style lang="scss">
-.nc-viewlist-menu {
+.atm-viewlist-menu {
   @apply !border-r-0;
 
   .ant-menu-submenu {
     @apply !mx-2;
 
     .ant-menu-submenu-title {
-      @apply flex items-center gap-2 py-1.5 px-2 my-0 h-auto hover:bg-nc-bg-gray-light cursor-pointer rounded-md;
+      @apply flex items-center gap-2 py-1.5 px-2 my-0 h-auto hover:bg-atm-bg-gray-light cursor-pointer rounded-md;
 
       .ant-menu-title-content {
         @apply w-full;
@@ -374,22 +374,22 @@ async function onOpenModal({
   }
 }
 
-.nc-viewlist-submenu-popup {
-  @apply !rounded-lg border-1 border-nc-border-gray-medium;
+.atm-viewlist-submenu-popup {
+  @apply !rounded-lg border-1 border-atm-border-gray-medium;
 
   .ant-menu.ant-menu-sub {
-    @apply p-1 !rounded-lg !shadow-lg shadow-nc-border-gray-medium;
+    @apply p-1 !rounded-lg !shadow-lg shadow-atm-border-gray-medium;
   }
 
   .ant-menu-item {
-    @apply h-auto min-h-8.5 !my-0 text-sm !leading-5 py-1 px-2 hover:!bg-nc-bg-gray-light cursor-pointer rounded-md flex items-center;
+    @apply h-auto min-h-8.5 !my-0 text-sm !leading-5 py-1 px-2 hover:!bg-atm-bg-gray-light cursor-pointer rounded-md flex items-center;
 
     .ant-menu-title-content {
       @apply w-full px-0;
     }
 
-    .nc-viewlist-submenu-popup-item {
-      @apply flex items-center gap-2 !text-nc-content-gray;
+    .atm-viewlist-submenu-popup-item {
+      @apply flex items-center gap-2 !text-atm-content-gray;
     }
 
     &.ant-menu-item-selected {
@@ -398,7 +398,7 @@ async function onOpenModal({
   }
 }
 
-.nc-viewlist-submenu-popup .ant-dropdown-menu.ant-dropdown-menu-sub {
-  @apply !rounded-lg !shadow-lg shadow-nc-border-gray-medium;
+.atm-viewlist-submenu-popup .ant-dropdown-menu.ant-dropdown-menu-sub {
+  @apply !rounded-lg !shadow-lg shadow-atm-border-gray-medium;
 }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { StringOrNullType } from 'nocodb-sdk'
+import type { StringOrNullType } from 'atmosphere-sdk'
 
 interface Props {
   /**
@@ -36,12 +36,12 @@ defineProps<Props>()
 </script>
 
 <template>
-  <div class="flex flex-col justify-between mt-1 py-2 px-3 bg-nc-bg-gray-extralight rounded-md">
+  <div class="flex flex-col justify-between mt-1 py-2 px-3 bg-atm-bg-gray-extralight rounded-md">
     <div class="flex flex-row items-center justify-between">
-      <div class="flex text-nc-content-gray-extreme items-center gap-1">
+      <div class="flex text-atm-content-gray-extreme items-center gap-1">
         {{ $t('title.customUrl') }}
       </div>
-      <NcTooltip>
+      <AtTooltip>
         <template #title>
           <div class="text-center">
             {{ $t('msg.info.thisFeatureIsOnlyAvailableInEnterpriseEdition') }}
@@ -54,7 +54,7 @@ defineProps<Props>()
           data-testid="share-custom-url-toggle"
           size="small"
         />
-      </NcTooltip>
+      </AtTooltip>
     </div>
   </div>
 </template>

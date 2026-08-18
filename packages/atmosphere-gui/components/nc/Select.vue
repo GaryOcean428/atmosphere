@@ -33,7 +33,7 @@ const emits = defineEmits(['update:value', 'change', 'search'])
 const placeholder = computed(() => props.placeholder)
 
 const dropdownClassName = computed(() => {
-  let className = 'nc-select-dropdown'
+  let className = 'atm-select-dropdown'
   if (props.dropdownClassName) {
     className += ` ${props.dropdownClassName}`
   }
@@ -68,13 +68,13 @@ const onSearch = (value: string) => {
     :placeholder="placeholder"
     :show-search="showSearch"
     :max-tag-count="maxTagCount"
-    class="nc-select nc-select-shadow"
+    class="atm-select atm-select-shadow"
     @change="onChange as any"
     @search="onSearch"
   >
     <template #suffixIcon>
       <GeneralLoader v-if="loading" />
-      <GeneralIcon v-else class="text-nc-content-gray nc-select-expand-btn" :icon="suffixIcon" />
+      <GeneralIcon v-else class="text-atm-content-gray atm-select-expand-btn" :icon="suffixIcon" />
     </template>
 
     <template v-if="$slots.dropdownRender" #dropdownRender="{ menuNode }">
@@ -96,11 +96,11 @@ const onSearch = (value: string) => {
   @apply !rounded-md;
 }
 
-.nc-select.ant-select {
+.atm-select.ant-select {
   height: fit-content;
   .ant-select-selector {
     box-shadow: 0px 5px 3px -2px rgba(0, 0, 0, 0.02), 0px 3px 1px -2px rgba(0, 0, 0, 0.06);
-    @apply border-1 border-nc-border-gray-medium rounded-lg shadow-default;
+    @apply border-1 border-atm-border-gray-medium rounded-lg shadow-default;
   }
 
   .ant-select-selection-item {
@@ -108,10 +108,10 @@ const onSearch = (value: string) => {
   }
 
   .ant-select-selection-placeholder {
-    @apply text-nc-content-gray-subtle2;
+    @apply text-atm-content-gray-subtle2;
   }
   .ant-select-selection-item-remove {
-    @apply text-nc-content-gray !pb-1;
+    @apply text-atm-content-gray !pb-1;
   }
 
   .ant-select-clear {
@@ -122,15 +122,15 @@ const onSearch = (value: string) => {
     }
   }
 }
-.nc-select.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
-  @apply border-nc-border-brand;
+.atm-select.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  @apply border-atm-border-brand;
 }
 
-.nc-select.ant-select.ant-select-disabled .nc-select-expand-btn {
-  @apply text-nc-content-brand-hover;
+.atm-select.ant-select.ant-select-disabled .atm-select-expand-btn {
+  @apply text-atm-content-brand-hover;
 }
 
-.nc-select-dropdown {
+.atm-select-dropdown {
   @apply !rounded-lg py-1.5;
 
   .rc-virtual-list-holder {
@@ -154,10 +154,10 @@ const onSearch = (value: string) => {
     }
     &::-webkit-scrollbar-thumb {
       width: 4px;
-      @apply bg-nc-bg-gray-dark rounded-md;
+      @apply bg-atm-bg-gray-dark rounded-md;
     }
     &::-webkit-scrollbar-thumb:hover {
-      @apply bg-nc-bg-gray-extra-dark;
+      @apply bg-atm-bg-gray-extra-dark;
     }
   }
 }

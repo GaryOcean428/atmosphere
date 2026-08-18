@@ -1,4 +1,4 @@
-import { ColumnHelper, UITypes } from 'nocodb-sdk'
+import { ColumnHelper, UITypes } from 'atmosphere-sdk'
 import type { WritableComputedRef } from '@vue/reactivity'
 import type { RuleObject } from 'ant-design-vue/es/form'
 import { AiWizardTabsType, type PredictedFieldType } from '#imports'
@@ -18,7 +18,7 @@ export const usePredictFields = createSharedComposable(
 
     const { t } = useI18n()
 
-    const { aiLoading, aiError, predictNextFields: _predictNextFields, predictNextFormulas, predictNextButtons } = useNocoAi()
+    const { aiLoading, aiError, predictNextFields: _predictNextFields, predictNextFormulas, predictNextButtons } = useAtmosphereAi()
 
     const { meta, view } = useSmartsheetStoreOrThrow()
 

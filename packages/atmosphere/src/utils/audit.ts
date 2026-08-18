@@ -9,7 +9,7 @@ import {
   ncIsObject,
   ratingIconList,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { diff } from 'deep-object-diff';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
 import type {
@@ -18,12 +18,12 @@ import type {
   ColumnType,
   DataUpdatePayload,
   LinkToAnotherRecordType,
-  NcContext,
-  NcRequest,
+  AtContext,
+  AtRequest,
   SelectOptionsType,
   UpdateDestructedPayload,
   UpdatePayload,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Request } from 'express';
 import { Column, Hook } from '~/models';
 import { Model, View } from '~/models';
@@ -47,7 +47,7 @@ export function fromEntries<T = any>(
   }, {} as { [key: string]: T });
 }
 
-// Properties that must never end up in nc_audit.details, regardless of which
+// Properties that must never end up in atm_audit.details, regardless of which
 // emit path produced them. Stripped both by removeBlankPropsAndMask (top-level
 // payloads) and extractNonSystemProps (diffs), so any current or future audit
 // path is safe even if a service forgets to mask its event payload.
@@ -169,12 +169,12 @@ export async function generateAuditV1Payload<T = any>(
   opType: AuditV1OperationTypes,
   params: {
     details?: T & { table_title?: string };
-    context?: NcContext & {
+    context?: AtContext & {
       source_id?: string;
       fk_model_id?: string;
       row_id?: string;
     };
-    req?: NcRequest & Partial<Request>;
+    req?: AtRequest & Partial<Request>;
     id?: string;
     base_id?: string;
     source_id?: string;
@@ -331,7 +331,7 @@ export const extractRefColumnIfFound = async ({
 }: {
   columns: ColumnType[];
   column: any;
-  context: NcContext;
+  context: AtContext;
 }) => {
   if (column.uidt === UITypes.Barcode) {
     const barcodeValueColumnId =
@@ -505,7 +505,7 @@ export const extractViewRelatedProps = async ({
   context,
 }: {
   view: any;
-  context: NcContext;
+  context: AtContext;
 }) => {
   if (!view) return {};
 
@@ -1150,7 +1150,7 @@ export const generateUpdateAuditV1Payload = async ({
   rowId: any;
   oldData: any;
   data: any;
-  req?: NcRequest & Partial<Request>;
+  req?: AtRequest & Partial<Request>;
 }) => {
   const formattedOldData = formatDataForAudit(
     oldData,

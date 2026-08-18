@@ -3,16 +3,16 @@ import { promisify } from 'util';
 import { Injectable } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-import { OAuthClientType } from 'nocodb-sdk';
+import { OAuthClientType } from 'atmosphere-sdk';
 import {
   OAuthAuthorizationCode,
   OAuthClient,
   OAuthToken,
   User,
 } from '~/models';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { buildOAuthAccessTokenClaims } from '~/modules/oauth/services/oauth-token.claims';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export interface TokenResponse {
   access_token: string;
@@ -78,7 +78,7 @@ export class OauthTokenService {
         nowSeconds: now,
         expiresInSeconds: this.ACCESS_TOKEN_EXPIRES_IN,
       }),
-      Noco.config.auth.jwt.secret,
+      Atmosphere.config.auth.jwt.secret,
       {
         algorithm: 'HS256',
       },
@@ -258,21 +258,21 @@ export class OauthTokenService {
   }): Promise<TokenResponse> {
     const { refreshToken, clientId, clientSecret } = params;
 
-    // TODO: refresh-grant failures below reject via NcError.badRequest, while the
+    // TODO: refresh-grant failures below reject via AtError.badRequest, while the
     // authorization-code grant throws RFC-6749 `invalid_grant: …` codes. Align the
     // whole refresh flow on RFC-6749 error codes in a dedicated change (kept out of
     // the GHSA-353r advisory fix to avoid altering response shapes here).
-    // https://github.com/nocodb/nocohub/pull/9337#discussion_r3435641193
+    // https://github.com/GaryOcean428/atmospherehub/pull/9337#discussion_r3435641193
 
     // Get token by refresh token
     const tokenRecord = await OAuthToken.getByRefreshToken(refreshToken);
     if (!tokenRecord) {
-      NcError.badRequest('Invalid refresh token');
+      AtError.badRequest('Invalid refresh token');
     }
 
     // Check if token is revoked
     if (tokenRecord.is_revoked) {
-      NcError.badRequest('Refresh token has been revoked');
+      AtError.badRequest('Refresh token has been revoked');
     }
 
     // Check if refresh token is expired
@@ -280,7 +280,7 @@ export class OauthTokenService {
       tokenRecord.refresh_token_expires_at &&
       new Date(tokenRecord.refresh_token_expires_at) < new Date()
     ) {
-      NcError.badRequest('Refresh token has expired');
+      AtError.badRequest('Refresh token has expired');
     }
 
     await this.authenticateClient({
@@ -290,7 +290,7 @@ export class OauthTokenService {
 
     // Validate client ID
     if (tokenRecord.fk_client_id !== clientId) {
-      NcError.badRequest('Invalid client_id');
+      AtError.badRequest('Invalid client_id');
     }
 
     const now = Date.now();
@@ -321,7 +321,7 @@ export class OauthTokenService {
     // (GHSA-353r).
     const revoked = await OAuthToken.revokeIfActive(tokenRecord.id);
     if (!revoked) {
-      NcError.badRequest('Refresh token has been revoked');
+      AtError.badRequest('Refresh token has been revoked');
     }
 
     // Create new token record
@@ -380,7 +380,7 @@ export class OauthTokenService {
 
     // Validate client ID
     if (tokenRecord.fk_client_id !== clientId) {
-      NcError.badRequest('Invalid client_id');
+      AtError.badRequest('Invalid client_id');
     }
 
     // Revoke the token
@@ -418,11 +418,11 @@ export class OauthTokenService {
     const token = await OAuthToken.get(tokenId);
 
     if (!token) {
-      NcError.notFound('OAuth authorization not found');
+      AtError.notFound('OAuth authorization not found');
     }
 
     if (token.fk_user_id !== userId) {
-      NcError.forbidden(
+      AtError.forbidden(
         'You do not have permission to revoke this authorization',
       );
     }

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TableType } from 'nocodb-sdk'
+import type { TableType } from 'atmosphere-sdk'
 
 const { openedProject, isDataSourceLimitReached } = storeToRefs(useBases())
 
@@ -80,11 +80,11 @@ const onCreateBaseClick = () => {
 </script>
 
 <template>
-  <div class="nc-all-tables-view py-4 px-6 nc-scrollbar-thin h-full overflow-y-auto">
-    <div class="text-subHeading2 text-nc-content-gray mb-5 -mt-1.5">{{ tabActionLabel }} {{ $t('labels.actions') }}</div>
+  <div class="atm-all-tables-view py-4 px-6 atm-scrollbar-thin h-full overflow-y-auto">
+    <div class="text-subHeading2 text-atm-content-gray mb-5 -mt-1.5">{{ tabActionLabel }} {{ $t('labels.actions') }}</div>
 
     <div
-      class="nc-overview-actions flex flex-row gap-6 flex-wrap max-w-[1000px]"
+      class="atm-overview-actions flex flex-row gap-6 flex-wrap max-w-[1000px]"
       :class="{
         'pointer-events-none': base?.isLoading,
       }"
@@ -95,7 +95,7 @@ const onCreateBaseClick = () => {
       <template v-else>
         <!-- Data actions (shown on Data tab) -->
         <template v-if="activeSidebarTab === 'data'">
-          <NcTooltip
+          <AtTooltip
             v-if="isUIAllowed('tableCreate', { source: base?.sources?.[0] }) || !!tableCreateReason"
             :title="tableCreateReason ? $t(tableCreateReason) : ''"
             :disabled="!tableCreateReason"
@@ -108,10 +108,10 @@ const onCreateBaseClick = () => {
               @click="tableCreateReason ? undefined : openTableCreateDialog()"
             >
               <template #icon>
-                <GeneralIcon icon="addOutlineBox" class="!h-8 !w-8 !text-nc-content-brand" />
+                <GeneralIcon icon="addOutlineBox" class="!h-8 !w-8 !text-atm-content-brand" />
               </template>
             </ProjectActionItem>
-          </NcTooltip>
+          </AtTooltip>
 
           <ProjectActionItem
             v-if="isUIAllowed('tableCreate', { source: base?.sources?.[0] })"
@@ -122,7 +122,7 @@ const onCreateBaseClick = () => {
             @click="isImportModalOpen = true"
           >
             <template #icon>
-              <GeneralIcon icon="download" class="!h-7.5 !w-7.5 !text-nc-content-orange-dark" />
+              <GeneralIcon icon="download" class="!h-7.5 !w-7.5 !text-atm-content-orange-dark" />
             </template>
           </ProjectActionItem>
 
@@ -132,7 +132,7 @@ const onCreateBaseClick = () => {
 
           <ProjectActionCreateNewSync v-if="!isMobileMode && showEEFeatures" :base-id="base?.id" />
 
-          <NcTooltip
+          <AtTooltip
             v-if="!isMobileMode && isUIAllowed('sourceCreate')"
             placement="bottom"
             :disabled="!isDataSourceLimitReached"
@@ -152,33 +152,33 @@ const onCreateBaseClick = () => {
               @click="onCreateBaseClick"
             >
               <template #icon>
-                <GeneralIcon icon="server1" class="!h-7 !w-7 !text-nc-content-green-dark" />
+                <GeneralIcon icon="server1" class="!h-7 !w-7 !text-atm-content-green-dark" />
               </template>
               <template #label>
-                <NcTooltip
+                <AtTooltip
                   :title="$t('labels.connectDataSource')"
                   :disabled="isDataSourceLimitReached"
                   show-on-truncate-only
                   class="min-w-0 truncate"
                 >
                   {{ $t('labels.connectDataSource') }}
-                </NcTooltip>
+                </AtTooltip>
               </template>
             </ProjectActionItem>
-          </NcTooltip>
+          </AtTooltip>
         </template>
 
         <!-- Automation actions (shown on Automation tab) -->
         <template v-if="activeSidebarTab === 'workflows' && !isMobileMode && showEEFeatures">
           <ProjectActionCreateEmptyWorkflow />
           <ProjectActionCreateEmptyScript />
-          <ProjectActionScriptsByNocoDB />
+          <ProjectActionScriptsByAtmosphere />
         </template>
       </template>
     </div>
 
-    <div v-if="!base.isLoading" class="nc-overview-empty-placeholder">
-      <NcEmptyPlaceholder :title="$t('msg.noActionsAvailable')" />
+    <div v-if="!base.isLoading" class="atm-overview-empty-placeholder">
+      <AtEmptyPlaceholder :title="$t('msg.noActionsAvailable')" />
     </div>
 
     <ProjectImportModal v-if="defaultBase" v-model:visible="isImportModalOpen" :source="defaultBase" />
@@ -187,12 +187,12 @@ const onCreateBaseClick = () => {
 </template>
 
 <style lang="scss" scoped>
-.nc-overview-empty-placeholder {
+.atm-overview-empty-placeholder {
   @apply mt-10;
   display: none;
 }
 
-.nc-overview-actions:empty ~ .nc-overview-empty-placeholder {
+.atm-overview-actions:empty ~ .atm-overview-empty-placeholder {
   display: block;
 }
 </style>

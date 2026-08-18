@@ -12,7 +12,7 @@ import {
   UITypes,
   type ViewType,
   ViewTypes,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 import { setI18nLanguage } from '~/plugins/a.i18n'
 
 export function useSharedView() {

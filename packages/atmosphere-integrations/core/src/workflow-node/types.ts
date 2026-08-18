@@ -1,7 +1,7 @@
 import { IntegrationWrapper } from '../integration';
-import { NocoSDK } from '../sdk';
-import type { NocoDBContext } from '../nocodb';
-import { WorkflowNodeDefinition, WorkflowNodeCategory, WorkflowNodeCategoryType, VariableDefinition, TriggerActivationType, TriggerTestMode, LoopContext } from 'nocodb-sdk'
+import { AtmosphereSDK } from '../sdk';
+import type { AtmosphereContext } from '../atmosphere';
+import { WorkflowNodeDefinition, WorkflowNodeCategory, WorkflowNodeCategoryType, VariableDefinition, TriggerActivationType, TriggerTestMode, LoopContext } from 'atmosphere-sdk'
 
 
 export interface WorkflowNodeLog {
@@ -114,7 +114,7 @@ export interface WorkflowNodeValidationResult {
 }
 
 export interface WorkflowNodeConfig {
-  _nocodb: NocoDBContext;
+  _atmosphere: AtmosphereContext;
 }
 
 export {
@@ -126,8 +126,8 @@ export {
 }
 
 export abstract class WorkflowNodeIntegration<TConfig extends WorkflowNodeConfig = WorkflowNodeConfig> extends IntegrationWrapper<TConfig> {
-  protected get nocodb(): NocoDBContext {
-    return this._config._nocodb;
+  protected get atmosphere(): AtmosphereContext {
+    return this._config._atmosphere;
   }
 
   /**
@@ -208,7 +208,7 @@ export abstract class WorkflowNodeIntegration<TConfig extends WorkflowNodeConfig
    * @param runtimeInputs - Optional runtime data with interpolated config and actual outputs
    */
   public async generateInputVariables?(
-    context: NocoSDK.VariableGeneratorContext,
+    context: AtmosphereSDK.VariableGeneratorContext,
     runtimeInputs?: any,
   ): Promise<VariableDefinition[]>;
 
@@ -221,7 +221,7 @@ export abstract class WorkflowNodeIntegration<TConfig extends WorkflowNodeConfig
    * @param runtimeInputs - Optional runtime data with interpolated config and actual outputs
    */
   public async generateOutputVariables?(
-    context: NocoSDK.VariableGeneratorContext,
+    context: AtmosphereSDK.VariableGeneratorContext,
     runtimeInputs?: any,
   ): Promise<VariableDefinition[]>;
 

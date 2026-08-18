@@ -60,7 +60,7 @@ vModel.value.meta = {
         <a-input
           v-model:value="vModel.meta.singular"
           :placeholder="$t('general.link')"
-          class="!w-full nc-link-singular !rounded-md"
+          class="!w-full atm-link-singular !rounded-md"
         />
       </a-form-item>
     </a-col>
@@ -70,7 +70,7 @@ vModel.value.meta = {
         <a-input
           v-model:value="vModel.meta.plural"
           :placeholder="$t('general.links')"
-          class="!w-full nc-link-plural !rounded-md"
+          class="!w-full atm-link-plural !rounded-md"
         />
       </a-form-item>
     </a-col>

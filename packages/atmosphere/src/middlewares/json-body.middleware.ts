@@ -8,7 +8,7 @@ export class JsonBodyMiddleware implements NestMiddleware {
 
   use(req: any, res: any, next: () => void) {
     express.json({
-      limit: process.env.NC_REQUEST_BODY_SIZE || '50mb',
+      limit: process.env.ATMOSPHERE_REQUEST_BODY_SIZE || '50mb',
       type: ['application/json', 'application/scim+json'],
     })(req, res, next);
   }

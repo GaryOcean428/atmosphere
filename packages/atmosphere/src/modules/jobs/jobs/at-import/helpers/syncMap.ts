@@ -15,17 +15,17 @@ export const addToMappingTbl = function addToMappingTbl(
   };
 };
 
-// get NcID from airtable ID
+// get AtID from airtable ID
 export const getNcIdFromAtId = function getNcIdFromAtId(aId) {
   return mapTbl[aId]?.ncId;
 };
 
-// get nc Parent from airtable ID
+// get atm Parent from airtable ID
 export const getNcParentFromAtId = function getNcParentFromAtId(aId) {
   return mapTbl[aId]?.ncParent;
 };
 
-// get nc-title from airtable ID
+// get atm-title from airtable ID
 export const getNcNameFromAtId = function getNcNameFromAtId(aId) {
   return mapTbl[aId]?.ncName;
 };

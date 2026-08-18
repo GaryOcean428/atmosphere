@@ -3,20 +3,20 @@ import type { Provider } from '@nestjs/common';
 import { MetaService } from '~/meta/meta.service';
 import { UsersService } from '~/services/users/users.service';
 import { JwtStrategy } from '~/strategies/jwt.strategy';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 export const JwtStrategyProvider: Provider = {
   provide: JwtStrategy,
   useFactory: async (usersService: UsersService, metaService: MetaService) => {
     const config = metaService.config;
 
-    await Noco.initJwt();
+    await Atmosphere.initJwt();
 
     const options = {
       // ignoreExpiration: false,
       jwtFromRequest: ExtractJwt.fromExtractors([
         ExtractJwt.fromHeader('xc-auth'),
-        (req: any) => req?.cookies?.nc_token || null,
+        (req: any) => req?.cookies?.atm_token || null,
       ]),
       // expiresIn: '10h',
       passReqToCallback: true,

@@ -37,7 +37,7 @@ const orderBy = computed<Record<string, SordDirectionType>>({
 const { appInfo } = useGlobal()
 
 const columns = computed(() => {
-  const cols: NcTableColumnProps[] = [
+  const cols: AtTableColumnProps[] = [
     {
       key: 'title',
       title: t('general.name'),
@@ -72,7 +72,7 @@ const customRow = (base: Record<string, any>) => ({
     if (isEeUI) {
       navigateTo(`/${base.workspace_id}/${base.id}`)
     } else {
-      navigateTo(`/nc/${base.workspace_id}/${base.id}`)
+      navigateTo(`/atm/${base.workspace_id}/${base.id}`)
     }
   },
 })
@@ -84,9 +84,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full" data-testid="nc-instance-admin-bases">
+  <div class="flex flex-col h-full" data-testid="atm-instance-admin-bases">
     <div class="h-full flex flex-col w-full">
-      <NcPageHeader>
+      <AtPageHeader>
         <template #icon>
           <div class="flex justify-center items-center h-5 w-5">
             <GeneralProjectIcon class="flex-none h-5 w-5" />
@@ -97,33 +97,33 @@ onMounted(() => {
             {{ $t('objects.projects') }}
           </span>
         </template>
-      </NcPageHeader>
+      </AtPageHeader>
 
-      <div class="nc-content-max-w flex-1 max-h-[calc(100vh_-_100px)] overflow-y-auto nc-scrollbar-thin flex flex-col gap-6 p-6">
+      <div class="atm-content-max-w flex-1 max-h-[calc(100vh_-_100px)] overflow-y-auto atm-scrollbar-thin flex flex-col gap-6 p-6">
         <div class="w-full justify-between flex items-center">
           <a-input
             v-model:value="searchInput"
             allow-clear
             placeholder="Search for a base"
-            class="nc-input-border-on-value !max-w-90 !h-8 !px-3 !py-1 !rounded-lg"
+            class="atm-input-border-on-value !max-w-90 !h-8 !px-3 !py-1 !rounded-lg"
           >
             <template #prefix>
               <GeneralIcon
                 icon="search"
-                class="mr-2 h-4 w-4 text-nc-content-gray-muted group-hover:text-nc-content-gray-extreme"
+                class="mr-2 h-4 w-4 text-atm-content-gray-muted group-hover:text-atm-content-gray-extreme"
               />
             </template>
           </a-input>
         </div>
 
-        <NcTable
+        <AtTable
           v-model:order-by="orderBy"
           :columns="columns"
           :data="sortedBases"
           :bordered="false"
           :custom-row="customRow"
-          data-testid="nc-instance-admin-bases-list"
-          class="flex-1 nc-instance-base-list"
+          data-testid="atm-instance-admin-bases-list"
+          class="flex-1 atm-instance-base-list"
         >
           <template #bodyCell="{ column, record: base }">
             <div v-if="column.key === 'title'" class="w-full flex gap-3 items-center">
@@ -134,14 +134,14 @@ onMounted(() => {
                 :icon="parseProp(base.meta).icon"
               />
 
-              <NcTooltip class="truncate max-w-[calc(100%_-_32px)]" show-on-truncate-only>
+              <AtTooltip class="truncate max-w-[calc(100%_-_32px)]" show-on-truncate-only>
                 <template #title>
                   {{ base.title }}
                 </template>
-                <span class="capitalize font-semibold text-nc-content-gray">
+                <span class="capitalize font-semibold text-atm-content-gray">
                   {{ base.title }}
                 </span>
-              </NcTooltip>
+              </AtTooltip>
             </div>
             <div v-if="column.key === 'workspaceName'" class="w-full gap-3 flex items-center">
               <GeneralWorkspaceIcon
@@ -151,20 +151,20 @@ onMounted(() => {
                   meta: parseProp(base.workspace_meta),
                 }"
               />
-              <NcTooltip class="max-w-full" show-on-truncate-only>
+              <AtTooltip class="max-w-full" show-on-truncate-only>
                 <template #title>
                   {{ base.workspace_title }}
                 </template>
                 <span class="capitalize">
                   {{ base.workspace_title }}
                 </span>
-              </NcTooltip>
+              </AtTooltip>
             </div>
             <div v-if="column.key === 'memberCount'">
               {{ base.memberCount }}
             </div>
           </template>
-        </NcTable>
+        </AtTable>
       </div>
     </div>
   </div>
@@ -172,14 +172,14 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .ant-input::placeholder {
-  @apply text-nc-content-gray-muted;
+  @apply text-atm-content-gray-muted;
 }
 
 .ant-input:placeholder-shown {
-  @apply text-nc-content-gray-muted !text-md;
+  @apply text-atm-content-gray-muted !text-md;
 }
 
 .ant-input-affix-wrapper {
-  @apply px-4 rounded-lg py-2 w-84 border-1 focus:border-nc-border-brand border-nc-border-gray-medium !ring-0;
+  @apply px-4 rounded-lg py-2 w-84 border-1 focus:border-atm-border-brand border-atm-border-gray-medium !ring-0;
 }
 </style>

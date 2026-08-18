@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type ColumnType, type SortType, type TableType, UITypes, UITypesName, isColumnInError, isVirtualCol } from 'nocodb-sdk'
+import { type ColumnType, type SortType, type TableType, UITypes, UITypesName, isColumnInError, isVirtualCol } from 'atmosphere-sdk'
 
 // Local, status-tagged sort collection for a Lookup column — the sort analogue of
 // how LTAR limit-by-filter works: NOTHING is persisted here. The field editor
@@ -160,7 +160,7 @@ defineExpose({ sorts })
 </script>
 
 <template>
-  <div class="flex flex-col gap-2" data-testid="nc-lookup-sort">
+  <div class="flex flex-col gap-2" data-testid="atm-lookup-sort">
     <SmartsheetSortList
       v-if="visibleSorts.length"
       :sorts="visibleSorts"
@@ -176,12 +176,12 @@ defineExpose({ sorts })
     />
 
     <div>
-      <NcButton v-if="availableColumns.length" type="text" size="small" data-testid="nc-lookup-sort-add" @click.stop="addSort">
+      <AtButton v-if="availableColumns.length" type="text" size="small" data-testid="atm-lookup-sort-add" @click.stop="addSort">
         <div class="flex items-center gap-1">
           <component :is="iconMap.plus" class="w-4 h-4" />
           {{ $t('activity.addSort') }}
         </div>
-      </NcButton>
+      </AtButton>
     </div>
   </div>
 </template>
@@ -191,10 +191,10 @@ defineExpose({ sorts })
      the column-editor modal's Ant select styling, so without these the controls
      render with individual rounded corners instead of one joined control. -->
 <style scoped lang="scss">
-:deep(.nc-sort-field-select) {
+:deep(.atm-sort-field-select) {
   @apply !w-44;
   .ant-select-selector {
-    @apply !rounded-none !rounded-l-lg !border-r-0 !border-nc-border-gray-medium !shadow-none !w-44;
+    @apply !rounded-none !rounded-l-lg !border-r-0 !border-atm-border-gray-medium !shadow-none !w-44;
 
     &.ant-select-focused:not(.ant-select-disabled) {
       @apply !border-r-transparent;
@@ -206,22 +206,22 @@ defineExpose({ sorts })
   }
 }
 
-:deep(.nc-select:not(.ant-select-disabled):hover) {
+:deep(.atm-select:not(.ant-select-disabled):hover) {
   &,
   .ant-select-selector {
-    @apply bg-nc-bg-gray-extralight;
+    @apply bg-atm-bg-gray-extralight;
   }
 }
 
-:deep(.nc-sort-dir-select) {
+:deep(.atm-sort-dir-select) {
   .ant-select-selector {
-    @apply !rounded-none !border-nc-border-gray-medium !shadow-none;
+    @apply !rounded-none !border-atm-border-gray-medium !shadow-none;
   }
 }
 
-.nc-sort-disabled-row {
-  .nc-sort-field-select,
-  .nc-sort-dir-select {
+.atm-sort-disabled-row {
+  .atm-sort-field-select,
+  .atm-sort-dir-select {
     @apply opacity-40 pointer-events-none;
   }
 }

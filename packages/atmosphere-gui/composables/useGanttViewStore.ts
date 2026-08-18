@@ -11,7 +11,7 @@
 // `return {}` aligned with the EE implementation's `return {}` (search for
 // `ee/composables/useGanttViewStore.ts`).
 
-import type { GanttType, TableType, ViewType } from 'nocodb-sdk'
+import type { GanttType, TableType, ViewType } from 'atmosphere-sdk'
 import type { ComputedRef } from 'vue'
 
 const [useProvideGanttViewStore, useGanttViewStore] = useInjectionState(

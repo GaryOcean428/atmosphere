@@ -17,8 +17,8 @@ import {
   type TimelineType,
   stringToViewTypeMap,
   viewTypeToStringMap,
-} from 'nocodb-sdk'
-import { PlanTitles, UITypes, ViewLockType, ViewTypes, isLinksOrLTAR } from 'nocodb-sdk'
+} from 'atmosphere-sdk'
+import { PlanTitles, UITypes, ViewLockType, ViewTypes, isLinksOrLTAR } from 'atmosphere-sdk'
 import { AiWizardTabsType } from '#imports'
 
 const props = withDefaults(defineProps<Props>(), {
@@ -223,7 +223,7 @@ const typeAlias = computed(
     }[props.type]),
 )
 
-const { isAiFeaturesEnabled, aiIntegrationAvailable, aiLoading, aiError, predictViews: _predictViews, createViews } = useNocoAi()
+const { isAiFeaturesEnabled, aiIntegrationAvailable, aiLoading, aiError, predictViews: _predictViews, createViews } = useAtmosphereAi()
 
 const aiMode = ref(false)
 
@@ -871,7 +871,7 @@ const fullAuto = async (e) => {
     !isNecessaryColumnsPresent.value ||
     aiLoading.value ||
     aiError.value ||
-    target.closest('button, input, .nc-button, textarea')
+    target.closest('button, input, .atm-button, textarea')
   ) {
     return
   }
@@ -964,21 +964,21 @@ watch(activeBaseId, () => {
 </script>
 
 <template>
-  <NcModal
+  <AtModal
     v-model:visible="vModel"
-    class="nc-view-create-modal !top-[22vh]"
+    class="atm-view-create-modal !top-[22vh]"
     :show-separator="false"
     size="xs"
     height="auto"
     :centered="false"
-    nc-modal-class-name="!p-0"
-    wrap-class-name="nc-modal-view-create-wrapper"
+    atm-modal-class-name="!p-0"
+    wrap-class-name="atm-modal-view-create-wrapper"
   >
     <div class="py-5 flex flex-col gap-5" @dblclick.stop="fullAuto">
       <div class="px-5 flex w-full flex-row justify-between items-center">
         <div class="flex font-bold text-base gap-x-3 items-center">
-          <GeneralIcon v-if="isAIViewCreateMode" icon="ncAutoAwesome" class="text-nc-content-purple-dark h-6 w-6" />
-          <GeneralViewIcon v-else :meta="{ type: form.type }" class="nc-view-icon !text-[24px] !leading-6 max-h-6 max-w-6" />
+          <GeneralIcon v-if="isAIViewCreateMode" icon="ncAutoAwesome" class="text-atm-content-purple-dark h-6 w-6" />
+          <GeneralViewIcon v-else :meta="{ type: form.type }" class="atm-view-icon !text-[24px] !leading-6 max-h-6 max-w-6" />
           <template v-if="form.type === ViewTypes.GRID">
             <template v-if="form.copy_from_id">
               {{ $t('labels.duplicateGridView') }}
@@ -1088,7 +1088,7 @@ watch(activeBaseId, () => {
               v-model:value="form.title"
               :placeholder="$t('labels.viewName')"
               autofocus
-              class="nc-view-input nc-input-sm nc-input-shadow"
+              class="atm-view-input atm-input-sm atm-input-shadow"
               @keydown.enter="onSubmit"
             />
           </a-form-item>
@@ -1096,18 +1096,18 @@ watch(activeBaseId, () => {
           <!-- Personal radio is excluded from lockTypeOptions in CE
                (EE-only concept); Collaborative + Locked remain available
                in both CE and EE. -->
-          <div class="flex flex-col gap-1.5 nc-create-view-lock-type">
-            <div class="text-[13px] font-medium text-nc-content-gray">{{ $t('labels.whoCanEdit') }}</div>
+          <div class="flex flex-col gap-1.5 atm-create-view-lock-type">
+            <div class="text-[13px] font-medium text-atm-content-gray">{{ $t('labels.whoCanEdit') }}</div>
             <a-radio-group
               v-model:value="form.lock_type"
-              class="nc-create-view-lock-radio-group !flex !flex-nowrap items-center justify-between"
+              class="atm-create-view-lock-radio-group !flex !flex-nowrap items-center justify-between"
             >
               <template v-for="option in lockTypeOptions" :key="option.value">
                 <!-- Personal is payment-gated: on unlicensed on-prem / non-Plus cloud,
                      the radio shows an upgrade badge and clicks open the upgrade
                      modal instead of setting lock_type. On a sandbox base, personal
                      views are disabled — they must be created on the master base. -->
-                <NcTooltip
+                <AtTooltip
                   v-if="option.value === ViewLockType.Personal && showEEFeatures"
                   :disabled="!option.disabled"
                   :title="$t('tooltip.personalViewDisabledOnSandbox')"
@@ -1117,7 +1117,7 @@ watch(activeBaseId, () => {
                       <a-radio
                         :value="option.value"
                         :disabled="option.disabled"
-                        :data-testid="`nc-create-view-lock-type-${option.value}`"
+                        :data-testid="`atm-create-view-lock-type-${option.value}`"
                         @click.capture="
                           (e) => {
                             if (!isPersonalViewFeatureEnabled) {
@@ -1146,8 +1146,8 @@ watch(activeBaseId, () => {
                       </a-radio>
                     </template>
                   </PaymentUpgradeBadgeProvider>
-                </NcTooltip>
-                <NcTooltip
+                </AtTooltip>
+                <AtTooltip
                   v-else
                   :disabled="!option.disabled || option.value !== ViewLockType.Locked"
                   :title="$t('tooltip.lockedViewDisabledOnSandboxMaster')"
@@ -1155,17 +1155,17 @@ watch(activeBaseId, () => {
                   <a-radio
                     :value="option.value"
                     :disabled="option.disabled"
-                    :data-testid="`nc-create-view-lock-type-${option.value}`"
+                    :data-testid="`atm-create-view-lock-type-${option.value}`"
                   >
                     <span class="inline-flex items-center gap-1.5 whitespace-nowrap text-[13px]">
                       <component :is="viewLockIcons[option.value].icon" class="w-3.5 h-3.5 flex-none" />
                       {{ $t(viewLockIcons[option.value].title) }}
                     </span>
                   </a-radio>
-                </NcTooltip>
+                </AtTooltip>
               </template>
             </a-radio-group>
-            <div class="text-[12px] text-nc-content-gray-subtle2 leading-[16px]">
+            <div class="text-[12px] text-atm-content-gray-subtle2 leading-[16px]">
               {{ $t(viewLockIcons[form.lock_type].subtitle) }}
             </div>
           </div>
@@ -1175,7 +1175,7 @@ watch(activeBaseId, () => {
             :label="`${$t('labels.coverImageField')}`"
             name="fk_cover_image_col_id"
           >
-            <NcSelect
+            <AtSelect
               v-model:value="form.fk_cover_image_col_id"
               :disabled="isMetaLoading"
               :loading="isMetaLoading"
@@ -1183,29 +1183,29 @@ watch(activeBaseId, () => {
               show-search
               :not-found-content="$t('placeholder.selectGroupFieldNotFound')"
               :placeholder="$t('placeholder.selectCoverImageField')"
-              class="nc-select-shadow w-full nc-gallery-cover-image-field-select"
+              class="atm-select-shadow w-full atm-gallery-cover-image-field-select"
             >
               <a-select-option v-for="option of viewSelectFieldOptions" :key="option.value" :value="option.value">
                 <div class="w-full flex gap-2 items-center justify-between" :title="option.label">
                   <div class="flex-1 flex items-center gap-1 max-w-[calc(100%_-_24px)]">
                     <SmartsheetHeaderIcon v-if="option.col" :column="option.col" class="!ml-0" />
 
-                    <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                       <template #title>
                         {{ option.label }}
                       </template>
                       <template #default>{{ option.label }}</template>
-                    </NcTooltip>
+                    </AtTooltip>
                   </div>
                   <GeneralIcon
                     v-if="form.fk_cover_image_col_id === option.value"
-                    id="nc-selected-item-icon"
+                    id="atm-selected-item-icon"
                     icon="check"
                     class="flex-none text-primary w-4 h-4"
                   />
                 </div>
               </a-select-option>
-            </NcSelect>
+            </AtSelect>
           </a-form-item>
           <a-form-item
             v-if="form.type === ViewTypes.KANBAN && !form.copy_from_id"
@@ -1213,7 +1213,7 @@ watch(activeBaseId, () => {
             :rules="groupingFieldColumnRules"
             name="fk_grp_col_id"
           >
-            <NcSelect
+            <AtSelect
               v-model:value="form.fk_grp_col_id"
               :disabled="isMetaLoading"
               :loading="isMetaLoading"
@@ -1221,29 +1221,29 @@ watch(activeBaseId, () => {
               dropdown-match-select-width
               :not-found-content="$t('placeholder.selectGroupFieldNotFound')"
               :placeholder="$t('placeholder.selectGroupField')"
-              class="nc-select-shadow w-full nc-kanban-grouping-field-select"
+              class="atm-select-shadow w-full atm-kanban-grouping-field-select"
             >
               <a-select-option v-for="option of viewSelectFieldOptions" :key="option.value" :value="option.value">
                 <div class="w-full flex gap-2 items-center justify-between" :title="option.label">
                   <div class="flex-1 flex items-center gap-1 max-w-[calc(100%_-_24px)]">
                     <SmartsheetHeaderIcon v-if="option.col" :column="option.col" class="!ml-0" />
 
-                    <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                    <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                       <template #title>
                         {{ option.label }}
                       </template>
                       <template #default>{{ option.label }}</template>
-                    </NcTooltip>
+                    </AtTooltip>
                   </div>
                   <GeneralIcon
                     v-if="form.fk_grp_col_id === option.value"
-                    id="nc-selected-item-icon"
+                    id="atm-selected-item-icon"
                     icon="check"
                     class="flex-none text-primary w-4 h-4"
                   />
                 </div>
               </a-select-option>
-            </NcSelect>
+            </AtSelect>
           </a-form-item>
           <a-form-item
             v-if="form.type === ViewTypes.MAP"
@@ -1251,14 +1251,14 @@ watch(activeBaseId, () => {
             :rules="geoDataFieldColumnRules"
             name="fk_geo_data_col_id"
           >
-            <NcSelect
+            <AtSelect
               v-model:value="form.fk_geo_data_col_id"
               :disabled="isMetaLoading"
               :loading="isMetaLoading"
               :not-found-content="$t('placeholder.selectGeoFieldNotFound')"
               :options="viewSelectFieldOptions"
               :placeholder="$t('placeholder.selectGeoField')"
-              class="nc-select-shadow w-full"
+              class="atm-select-shadow w-full"
             />
           </a-form-item>
           <template v-if="form.type === ViewTypes.CALENDAR && !form.copy_from_id">
@@ -1271,21 +1271,21 @@ watch(activeBaseId, () => {
               class="flex flex-col w-full gap-6"
             >
               <div class="w-full space-y-2">
-                <div class="text-nc-content-gray">
+                <div class="text-atm-content-gray">
                   {{ $t('labels.organiseBy') }}
                 </div>
 
                 <a-select
                   v-model:value="range.fk_from_column_id"
-                  class="nc-select-shadow w-full nc-from-select !rounded-lg"
+                  class="atm-select-shadow w-full atm-from-select !rounded-lg"
                   dropdown-class-name="!rounded-lg"
                   show-search
                   :placeholder="$t('placeholder.notSelected')"
-                  data-testid="nc-calendar-range-from-field-select"
+                  data-testid="atm-calendar-range-from-field-select"
                   @click.stop
                   @change="onValueChange"
                 >
-                  <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" /></template>
+                  <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" /></template>
                   <a-select-option
                     v-for="(option, id) in [...viewSelectFieldOptions!].filter((f) => {
                   // If the fk_from_column_id of first range is Date, then all the other ranges should be Date
@@ -1301,16 +1301,16 @@ watch(activeBaseId, () => {
                       <div class="flex items-center gap-1 max-w-[calc(100%_-_20px)]">
                         <SmartsheetHeaderIcon v-if="option.col" :column="option.col" />
 
-                        <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                        <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                           <template #title>
                             {{ option.label }}
                           </template>
                           <template #default>{{ option.label }}</template>
-                        </NcTooltip>
+                        </AtTooltip>
                       </div>
                       <GeneralIcon
                         v-if="option.value === range.fk_from_column_id"
-                        id="nc-selected-item-icon"
+                        id="atm-selected-item-icon"
                         icon="check"
                         class="flex-none text-primary w-4 h-4"
                       />
@@ -1321,7 +1321,7 @@ watch(activeBaseId, () => {
               <PaymentUpgradeBadgeProvider v-if="showEEFeatures" :feature="PlanFeatureTypes.FEATURE_CALENDAR_RANGE">
                 <template #default="{ click }">
                   <div class="w-full space-y-2">
-                    <NcButton
+                    <AtButton
                       v-if="range.fk_to_column_id === null"
                       size="small"
                       type="text"
@@ -1341,10 +1341,10 @@ watch(activeBaseId, () => {
                         "
                         :feature="PlanFeatureTypes.FEATURE_CALENDAR_RANGE"
                       />
-                    </NcButton>
+                    </AtButton>
 
                     <template v-else>
-                      <div class="flex gap-2 items-center text-nc-content-gray-subtle">
+                      <div class="flex gap-2 items-center text-atm-content-gray-subtle">
                         {{ $t('activity.withEndDate') }}
                         <PaymentUpgradeBadge
                           :limit-or-feature="PlanFeatureTypes.FEATURE_CALENDAR_RANGE"
@@ -1360,17 +1360,17 @@ watch(activeBaseId, () => {
                       <div class="flex">
                         <a-select
                           v-model:value="range.fk_to_column_id"
-                          class="nc-select-shadow w-full flex-1"
+                          class="atm-select-shadow w-full flex-1"
                           allow-clear
                           show-search
                           :disabled="isMetaLoading || blockCalendarRange"
                           :loading="isMetaLoading"
                           :placeholder="$t('placeholder.notSelected')"
-                          data-testid="nc-calendar-range-to-field-select"
+                          data-testid="atm-calendar-range-to-field-select"
                           dropdown-class-name="!rounded-lg"
                           @click.stop
                         >
-                          <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" /></template>
+                          <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" /></template>
 
                           <a-select-option
                             v-for="(option, id) in [...viewSelectFieldOptions].filter((f) => {
@@ -1399,16 +1399,16 @@ watch(activeBaseId, () => {
                               <div class="flex items-center gap-1 max-w-[calc(100%_-_20px)]">
                                 <SmartsheetHeaderIcon v-if="option.col" :column="option.col" />
 
-                                <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                                <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                                   <template #title>
                                     {{ option.label }}
                                   </template>
                                   <template #default>{{ option.label }}</template>
-                                </NcTooltip>
+                                </AtTooltip>
                               </div>
                               <GeneralIcon
                                 v-if="option.value === range.fk_from_column_id"
-                                id="nc-selected-item-icon"
+                                id="atm-selected-item-icon"
                                 icon="check"
                                 class="flex-none text-primary w-4 h-4"
                               />
@@ -1416,7 +1416,7 @@ watch(activeBaseId, () => {
                           </a-select-option>
                         </a-select>
                       </div>
-                      <NcButton
+                      <AtButton
                         v-if="index !== 0"
                         size="small"
                         type="secondary"
@@ -1427,27 +1427,27 @@ watch(activeBaseId, () => {
                         "
                       >
                         <component :is="iconMap.close" />
-                      </NcButton>
+                      </AtButton>
                     </template>
                   </div>
                 </template>
               </PaymentUpgradeBadgeProvider>
             </div>
 
-            <!--          <NcButton class="mt-2" size="small" type="secondary" @click="addCalendarRange">
+            <!--          <AtButton class="mt-2" size="small" type="secondary" @click="addCalendarRange">
             <component :is="iconMap.plus" />
             Add another date field
-          </NcButton> -->
+          </AtButton> -->
 
             <div
               v-if="isCalendarReadonly(form.calendar_range)"
-              class="flex flex-row p-4 border-nc-border-gray-medium border-1 gap-x-4 rounded-lg w-full"
+              class="flex flex-row p-4 border-atm-border-gray-medium border-1 gap-x-4 rounded-lg w-full"
             >
-              <div class="text-nc-content-gray-muted flex gap-4">
-                <GeneralIcon class="min-w-6 h-6 !text-nc-content-orange-medium" icon="info" />
+              <div class="text-atm-content-gray-muted flex gap-4">
+                <GeneralIcon class="min-w-6 h-6 !text-atm-content-orange-medium" icon="info" />
                 <div class="flex flex-col gap-1">
-                  <h2 class="font-semibold text-sm mb-0 text-nc-content-gray">Calendar is readonly</h2>
-                  <span class="text-nc-content-gray-muted font-default text-sm"> {{ $t('msg.info.calendarReadOnly') }}</span>
+                  <h2 class="font-semibold text-sm mb-0 text-atm-content-gray">Calendar is readonly</h2>
+                  <span class="text-atm-content-gray-muted font-default text-sm"> {{ $t('msg.info.calendarReadOnly') }}</span>
                 </div>
               </div>
             </div>
@@ -1462,21 +1462,21 @@ watch(activeBaseId, () => {
               class="flex flex-col w-full gap-6"
             >
               <div class="w-full space-y-2">
-                <div class="text-nc-content-gray">
+                <div class="text-atm-content-gray">
                   {{ $t('labels.organiseBy') }}
                 </div>
 
                 <a-select
                   v-model:value="range.fk_from_column_id"
-                  class="nc-select-shadow w-full nc-from-select !rounded-lg"
+                  class="atm-select-shadow w-full atm-from-select !rounded-lg"
                   dropdown-class-name="!rounded-lg"
                   show-search
                   :placeholder="$t('placeholder.notSelected')"
-                  data-testid="nc-timeline-range-from-field-select"
+                  data-testid="atm-timeline-range-from-field-select"
                   @click.stop
                   @change="onValueChange"
                 >
-                  <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" /></template>
+                  <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" /></template>
                   <a-select-option
                     v-for="(option, id) in [...viewSelectFieldOptions!].filter((f) => {
                   // If the fk_from_column_id of first range is Date, then all the other ranges should be Date
@@ -1492,16 +1492,16 @@ watch(activeBaseId, () => {
                       <div class="flex items-center gap-1 max-w-[calc(100%_-_20px)]">
                         <SmartsheetHeaderIcon v-if="option.col" :column="option.col" />
 
-                        <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                        <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                           <template #title>
                             {{ option.label }}
                           </template>
                           <template #default>{{ option.label }}</template>
-                        </NcTooltip>
+                        </AtTooltip>
                       </div>
                       <GeneralIcon
                         v-if="option.value === range.fk_from_column_id"
-                        id="nc-selected-item-icon"
+                        id="atm-selected-item-icon"
                         icon="check"
                         class="flex-none text-primary w-4 h-4"
                       />
@@ -1510,7 +1510,7 @@ watch(activeBaseId, () => {
                 </a-select>
               </div>
               <div class="w-full space-y-2">
-                <NcButton
+                <AtButton
                   v-if="range.fk_to_column_id === null"
                   size="small"
                   type="text"
@@ -1520,27 +1520,27 @@ watch(activeBaseId, () => {
                     <component :is="iconMap.plus" class="h-4 w-4" />
                     {{ $t('activity.endDate') }}
                   </div>
-                </NcButton>
+                </AtButton>
 
                 <template v-else>
-                  <div class="flex gap-2 items-center text-nc-content-gray-subtle">
+                  <div class="flex gap-2 items-center text-atm-content-gray-subtle">
                     {{ $t('activity.withEndDate') }}
                   </div>
 
                   <div class="flex">
                     <a-select
                       v-model:value="range.fk_to_column_id"
-                      class="nc-select-shadow w-full flex-1"
+                      class="atm-select-shadow w-full flex-1"
                       allow-clear
                       show-search
                       :disabled="isMetaLoading"
                       :loading="isMetaLoading"
                       :placeholder="$t('placeholder.notSelected')"
-                      data-testid="nc-timeline-range-to-field-select"
+                      data-testid="atm-timeline-range-to-field-select"
                       dropdown-class-name="!rounded-lg"
                       @click.stop
                     >
-                      <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-nc-content-gray-subtle" /></template>
+                      <template #suffixIcon><GeneralIcon icon="arrowDown" class="text-atm-content-gray-subtle" /></template>
 
                       <a-select-option
                         v-for="(option, id) in [...viewSelectFieldOptions].filter((f) => {
@@ -1567,16 +1567,16 @@ watch(activeBaseId, () => {
                           <div class="flex items-center gap-1 max-w-[calc(100%_-_20px)]">
                             <SmartsheetHeaderIcon v-if="option.col" :column="option.col" />
 
-                            <NcTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
+                            <AtTooltip class="flex-1 max-w-[calc(100%_-_20px)] truncate" show-on-truncate-only>
                               <template #title>
                                 {{ option.label }}
                               </template>
                               <template #default>{{ option.label }}</template>
-                            </NcTooltip>
+                            </AtTooltip>
                           </div>
                           <GeneralIcon
                             v-if="option.value === range.fk_from_column_id"
-                            id="nc-selected-item-icon"
+                            id="atm-selected-item-icon"
                             icon="check"
                             class="flex-none text-primary w-4 h-4"
                           />
@@ -1584,7 +1584,7 @@ watch(activeBaseId, () => {
                       </a-select-option>
                     </a-select>
                   </div>
-                  <NcButton
+                  <AtButton
                     v-if="index !== 0"
                     size="small"
                     type="secondary"
@@ -1595,7 +1595,7 @@ watch(activeBaseId, () => {
                     "
                   >
                     <component :is="iconMap.close" />
-                  </NcButton>
+                  </AtButton>
                 </template>
               </div>
             </div>
@@ -1604,8 +1604,8 @@ watch(activeBaseId, () => {
         <template v-else>
           <!-- Ai view wizard  -->
           <div v-if="!aiIntegrationAvailable" class="flex items-center gap-3 px-5 pt-2.5 pb-4.5">
-            <GeneralIcon icon="alertTriangleSolid" class="!text-nc-content-orange-medium w-4 h-4" />
-            <div class="text-sm text-nc-content-gray-subtle flex-1">{{ $t('title.noAiIntegrationAvailable') }}</div>
+            <GeneralIcon icon="alertTriangleSolid" class="!text-atm-content-orange-medium w-4 h-4" />
+            <div class="text-sm text-atm-content-gray-subtle flex-1">{{ $t('title.noAiIntegrationAvailable') }}</div>
           </div>
           <AiWizardTabs v-else v-model:active-tab="activeAiTab">
             <template #AutoSuggestedContent>
@@ -1613,30 +1613,30 @@ watch(activeBaseId, () => {
                 <div v-if="aiError" class="w-full flex items-center gap-3">
                   <GeneralIcon icon="ncInfoSolid" class="flex-none !text-red-700 w-4 h-4" />
 
-                  <NcTooltip class="truncate flex-1 text-sm text-nc-content-gray-subtle" show-on-truncate-only>
+                  <AtTooltip class="truncate flex-1 text-sm text-atm-content-gray-subtle" show-on-truncate-only>
                     <template #title>
                       {{ aiError }}
                     </template>
                     {{ aiError }}
-                  </NcTooltip>
+                  </AtTooltip>
 
-                  <NcButton size="small" type="text" class="!text-nc-content-brand" @click.stop="handleRefreshOnError">
+                  <AtButton size="small" type="text" class="!text-atm-content-brand" @click.stop="handleRefreshOnError">
                     {{ $t('general.refresh') }}
-                  </NcButton>
+                  </AtButton>
                 </div>
 
                 <div v-else-if="aiModeStep === 'init'">
-                  <div class="text-nc-content-purple-light text-sm h-7 flex items-center gap-2">
-                    <GeneralLoader size="regular" class="!text-nc-content-purple-dark" />
+                  <div class="text-atm-content-purple-light text-sm h-7 flex items-center gap-2">
+                    <GeneralLoader size="regular" class="!text-atm-content-purple-dark" />
 
-                    <div class="nc-animate-dots">Auto suggesting views for {{ meta?.title }}</div>
+                    <div class="atm-animate-dots">Auto suggesting views for {{ meta?.title }}</div>
                   </div>
                 </div>
                 <div v-else-if="aiModeStep === 'pick'" class="flex gap-3 items-start w-full">
                   <div class="flex-1 flex gap-2 flex-wrap w-[calc(100%_-_68px)]">
                     <template v-if="activeTabPredictedViews.length">
                       <template v-for="v of activeTabPredictedViews" :key="v.title">
-                        <NcTooltip
+                        <AtTooltip
                           :disabled="!(activeTabSelectedViews.length >= maxSelectionCount || !!v?.description)"
                           class="truncate max-w-full"
                         >
@@ -1648,16 +1648,16 @@ watch(activeBaseId, () => {
                           </template>
 
                           <a-tag
-                            class="nc-ai-suggested-tag truncate max-w-full"
+                            class="atm-ai-suggested-tag truncate max-w-full"
                             :class="{
-                              'nc-disabled': isAiSaving || (!v.selected && activeTabSelectedViews.length >= maxSelectionCount),
-                              'nc-selected': v.selected,
+                              'atm-disabled': isAiSaving || (!v.selected && activeTabSelectedViews.length >= maxSelectionCount),
+                              'atm-selected': v.selected,
                             }"
                             :disabled="activeTabSelectedViews.length >= maxSelectionCount"
                             @click="onToggleTag(v)"
                           >
                             <div class="flex flex-row items-center gap-2 py-[3px] text-small leading-[18px]">
-                              <NcCheckbox
+                              <AtCheckbox
                                 :checked="v.selected"
                                 theme="ai"
                                 class="!-mr-0.5"
@@ -1674,13 +1674,13 @@ watch(activeBaseId, () => {
                               <div class="truncate">{{ v.title }}</div>
                             </div>
                           </a-tag>
-                        </NcTooltip>
+                        </AtTooltip>
                       </template>
                     </template>
-                    <div v-else class="text-nc-content-gray-subtle2">{{ $t('labels.noData') }}</div>
+                    <div v-else class="text-atm-content-gray-subtle2">{{ $t('labels.noData') }}</div>
                   </div>
                   <div class="flex items-center gap-1">
-                    <NcTooltip
+                    <AtTooltip
                       v-if="
                         activeTabPredictHistory.length < activeTabSelectedViews.length
                           ? activeTabPredictHistory.length + activeTabSelectedViews.length < 10
@@ -1689,7 +1689,7 @@ watch(activeBaseId, () => {
                       title="Suggest more"
                       placement="top"
                     >
-                      <NcButton
+                      <AtButton
                         v-e="['a:view:ai:predict-more']"
                         size="xs"
                         class="!px-1"
@@ -1704,10 +1704,10 @@ watch(activeBaseId, () => {
                         <template #icon>
                           <GeneralIcon icon="ncPlusAi" class="!text-current" />
                         </template>
-                      </NcButton>
-                    </NcTooltip>
-                    <NcTooltip title="Clear all and Re-suggest" placement="top">
-                      <NcButton
+                      </AtButton>
+                    </AtTooltip>
+                    <AtTooltip title="Clear all and Re-suggest" placement="top">
+                      <AtButton
                         v-e="['a:view:ai:predict-refresh']"
                         size="xs"
                         mobile-size="small"
@@ -1729,8 +1729,8 @@ watch(activeBaseId, () => {
                             'animate-infinite animate-spin': aiLoading && calledFunction === 'predictRefresh',
                           }"
                         />
-                      </NcButton>
-                    </NcTooltip>
+                      </AtButton>
+                    </AtTooltip>
                   </div>
                 </div>
               </div>
@@ -1743,12 +1743,12 @@ watch(activeBaseId, () => {
                     v-model:value="prompt"
                     :disabled="isAiSaving"
                     placeholder="Enter your prompt to get view suggestions.."
-                    class="nc-ai-input nc-input-shadow !px-3 !pt-2 !pb-3 !text-sm !min-h-[120px] !rounded-lg"
+                    class="atm-ai-input atm-input-shadow !px-3 !pt-2 !pb-3 !text-sm !min-h-[120px] !rounded-lg"
                     @keydown.enter.stop
                   >
                   </a-textarea>
 
-                  <NcButton
+                  <AtButton
                     size="xs"
                     type="primary"
                     theme="ai"
@@ -1769,35 +1769,35 @@ watch(activeBaseId, () => {
                     "
                   >
                     <template #loadingIcon>
-                      <GeneralLoader class="!text-nc-content-purple-dark" size="medium" />
+                      <GeneralLoader class="!text-atm-content-purple-dark" size="medium" />
                     </template>
                     <template #icon>
                       <GeneralIcon icon="send" class="flex-none h-4 w-4" />
                     </template>
-                  </NcButton>
+                  </AtButton>
                 </div>
 
                 <div v-if="aiError" class="w-full flex items-center gap-3">
                   <GeneralIcon icon="ncInfoSolid" class="flex-none !text-red-700 w-4 h-4" />
 
-                  <NcTooltip class="truncate flex-1 text-sm text-nc-content-gray-subtle" show-on-truncate-only>
+                  <AtTooltip class="truncate flex-1 text-sm text-atm-content-gray-subtle" show-on-truncate-only>
                     <template #title>
                       {{ aiError }}
                     </template>
                     {{ aiError }}
-                  </NcTooltip>
+                  </AtTooltip>
 
-                  <NcButton size="small" type="text" class="!text-nc-content-brand" @click.stop="handleRefreshOnError">
+                  <AtButton size="small" type="text" class="!text-atm-content-brand" @click.stop="handleRefreshOnError">
                     {{ $t('general.refresh') }}
-                  </NcButton>
+                  </AtButton>
                 </div>
 
                 <div v-else-if="isPromtAlreadyGenerated" class="flex flex-col gap-3">
-                  <div class="text-nc-content-purple-dark font-semibold text-xs">Generated Views(s)</div>
+                  <div class="text-atm-content-purple-dark font-semibold text-xs">Generated Views(s)</div>
                   <div class="flex gap-2 flex-wrap">
                     <template v-if="activeTabPredictedViews.length">
                       <template v-for="v of activeTabPredictedViews" :key="v.title">
-                        <NcTooltip :disabled="!(activeTabSelectedViews.length >= maxSelectionCount || !!v?.description)">
+                        <AtTooltip :disabled="!(activeTabSelectedViews.length >= maxSelectionCount || !!v?.description)">
                           <template #title>
                             <div v-if="activeTabSelectedViews.length >= maxSelectionCount" class="w-[150px]">
                               You can only select {{ maxSelectionCount }} views to create at a time.
@@ -1806,16 +1806,16 @@ watch(activeBaseId, () => {
                           </template>
 
                           <a-tag
-                            class="nc-ai-suggested-tag"
+                            class="atm-ai-suggested-tag"
                             :class="{
-                              'nc-disabled': isAiSaving || (!v.selected && activeTabSelectedViews.length >= maxSelectionCount),
-                              'nc-selected': v.selected,
+                              'atm-disabled': isAiSaving || (!v.selected && activeTabSelectedViews.length >= maxSelectionCount),
+                              'atm-selected': v.selected,
                             }"
                             :disabled="activeTabSelectedViews.length >= maxSelectionCount"
                             @click="onToggleTag(v)"
                           >
                             <div class="flex flex-row items-center gap-2 py-[3px] text-small leading-[18px]">
-                              <NcCheckbox
+                              <AtCheckbox
                                 :checked="v.selected"
                                 theme="ai"
                                 class="!-mr-0.5"
@@ -1832,10 +1832,10 @@ watch(activeBaseId, () => {
                               <div>{{ v.title }}</div>
                             </div>
                           </a-tag>
-                        </NcTooltip>
+                        </AtTooltip>
                       </template>
                     </template>
-                    <div v-else class="text-nc-content-gray-subtle2">{{ $t('labels.noData') }}</div>
+                    <div v-else class="text-atm-content-gray-subtle2">{{ $t('labels.noData') }}</div>
                   </div>
                 </div>
               </div>
@@ -1844,32 +1844,32 @@ watch(activeBaseId, () => {
         </template>
       </a-form>
       <div v-else-if="!isNecessaryColumnsPresent" class="px-5">
-        <div class="flex flex-row p-4 border-nc-border-gray-medium border-1 gap-x-4 rounded-lg w-full">
-          <div class="text-nc-content-gray-subtle flex gap-4">
-            <GeneralIcon class="min-w-6 h-6 text-nc-content-orange-medium" icon="alertTriangle" />
+        <div class="flex flex-row p-4 border-atm-border-gray-medium border-1 gap-x-4 rounded-lg w-full">
+          <div class="text-atm-content-gray-subtle flex gap-4">
+            <GeneralIcon class="min-w-6 h-6 text-atm-content-orange-medium" icon="alertTriangle" />
             <div class="flex flex-col gap-1">
-              <h2 class="font-semibold text-sm mb-0 text-nc-content-gray">Suitable fields not present</h2>
-              <span class="text-nc-content-gray-muted font-default text-sm"> {{ errorMessages[form.type] }}</span>
+              <h2 class="font-semibold text-sm mb-0 text-atm-content-gray">Suitable fields not present</h2>
+              <span class="text-atm-content-gray-muted font-default text-sm"> {{ errorMessages[form.type] }}</span>
             </div>
           </div>
         </div>
       </div>
 
       <a-form-item v-if="enableDescription && !aiMode" class="!px-5">
-        <div class="flex gap-3 text-nc-content-gray h-7 mt-4 mb-1 items-center justify-between">
+        <div class="flex gap-3 text-atm-content-gray h-7 mt-4 mb-1 items-center justify-between">
           <span class="text-[13px]">
             {{ $t('labels.description') }}
           </span>
 
-          <NcButton type="text" class="!h-6 !w-5" size="xsmall" @click="removeDescription">
-            <GeneralIcon icon="delete" class="text-nc-content-gray-subtle w-3.5 h-3.5" />
-          </NcButton>
+          <AtButton type="text" class="!h-6 !w-5" size="xsmall" @click="removeDescription">
+            <GeneralIcon icon="delete" class="text-atm-content-gray-subtle w-3.5 h-3.5" />
+          </AtButton>
         </div>
 
         <a-textarea
           ref="descriptionInputEl"
           v-model:value="form.description"
-          class="nc-input-sm nc-input-text-area nc-input-shadow px-3 !text-nc-content-gray max-h-[150px] min-h-[100px]"
+          class="atm-input-sm atm-input-text-area atm-input-shadow px-3 !text-atm-content-gray max-h-[150px] min-h-[100px]"
           hide-details
           data-testid="create-table-title-input"
           :placeholder="$t('msg.info.enterViewDescription')"
@@ -1882,13 +1882,13 @@ watch(activeBaseId, () => {
           '-mt-2': aiMode,
         }"
       >
-        <NcButton
+        <AtButton
           v-if="!enableDescription && !aiMode && isNecessaryColumnsPresent"
           size="small"
           type="text"
           @click.stop="toggleDescription"
         >
-          <div class="flex !text-nc-content-gray-subtle items-center gap-2">
+          <div class="flex !text-atm-content-gray-subtle items-center gap-2">
             <GeneralIcon icon="plus" class="h-4 w-4" />
 
             <span class="first-letter:capitalize hidden sm:inline">
@@ -1898,14 +1898,14 @@ watch(activeBaseId, () => {
               {{ $t('labels.description') }}
             </span>
           </div>
-        </NcButton>
+        </AtButton>
         <div v-else></div>
         <div class="flex gap-2 items-center">
-          <NcButton type="secondary" size="small" :disabled="isAiSaving" @click="vModel = false">
+          <AtButton type="secondary" size="small" :disabled="isAiSaving" @click="vModel = false">
             {{ $t('general.cancel') }}
-          </NcButton>
+          </AtButton>
 
-          <NcButton
+          <AtButton
             v-if="!aiMode"
             v-e="[form.copy_from_id ? 'a:view:duplicate' : 'a:view:create']"
             :disabled="!isNecessaryColumnsPresent || isViewCreating"
@@ -1916,8 +1916,8 @@ watch(activeBaseId, () => {
           >
             {{ $t('labels.createView') }}
             <template #loading> {{ $t('labels.creatingView') }}</template>
-          </NcButton>
-          <NcButton
+          </AtButton>
+          <AtButton
             v-else-if="aiIntegrationAvailable"
             type="primary"
             size="small"
@@ -1940,25 +1940,25 @@ watch(activeBaseId, () => {
               }}
             </div>
             <template #loading> {{ $t('labels.creatingView') }} </template>
-          </NcButton>
-          <NcTooltip v-else :disabled="!isMobileMode">
+          </AtButton>
+          <AtTooltip v-else :disabled="!isMobileMode">
             <template #title> AI integration is not available in mobile mode. </template>
-            <NcButton type="primary" size="small" :disabled="!!isMobileMode" @click="handleNavigateToIntegrations">
+            <AtButton type="primary" size="small" :disabled="!!isMobileMode" @click="handleNavigateToIntegrations">
               Add AI integration
-            </NcButton>
-          </NcTooltip>
+            </AtButton>
+          </AtTooltip>
         </div>
       </div>
     </div>
-  </NcModal>
+  </AtModal>
 </template>
 
 <style lang="scss" scoped>
-.nc-input-text-area {
+.atm-input-text-area {
   padding-block: 8px !important;
 }
 .ant-form-item-required {
-  @apply !text-nc-content-gray font-medium;
+  @apply !text-atm-content-gray font-medium;
   &:before {
     @apply !content-[''];
   }
@@ -1968,23 +1968,23 @@ watch(activeBaseId, () => {
   @apply !mb-0;
 }
 
-.nc-input-sm {
+.atm-input-sm {
   @apply !mb-0;
 }
 
 // xs (448px) is a touch tight for the Who-can-edit row — bump the cap to
 // 512px so three radios fit on one line without the dialog feeling stretched.
-.nc-view-create-modal {
-  :deep(.nc-modal) {
+.atm-view-create-modal {
+  :deep(.atm-modal) {
     width: min(calc(100vw - 32px), 512px) !important;
   }
 }
 
 // Who-can-edit radios — keep all three options on one line, with compact
 // spacing that visually groups icon + label.
-.nc-create-view-lock-radio-group {
+.atm-create-view-lock-radio-group {
   :deep(.ant-radio-wrapper) {
-    @apply !mr-0 !text-nc-content-gray;
+    @apply !mr-0 !text-atm-content-gray;
   }
   :deep(.ant-radio-wrapper .ant-radio + span) {
     @apply !pl-1.5;
@@ -1992,31 +1992,31 @@ watch(activeBaseId, () => {
 }
 
 :deep(.ant-form-item-label > label) {
-  @apply !text-sm text-nc-content-gray flex;
+  @apply !text-sm text-atm-content-gray flex;
 
   &.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
     @apply content-[''] m-0;
   }
 }
 
-.nc-nocoai-footer {
-  @apply px-6 py-1 flex items-center gap-2 text-nc-content-purple-dark border-t-1 border-purple-100;
+.atm-atmosphereai-footer {
+  @apply px-6 py-1 flex items-center gap-2 text-atm-content-purple-dark border-t-1 border-purple-100;
 
-  .nc-nocoai-settings {
+  .atm-atmosphereai-settings {
     &:not(:disabled) {
-      @apply hover:!bg-nc-bg-purple-light;
+      @apply hover:!bg-atm-bg-purple-light;
     }
-    &.nc-ai-loading {
+    &.atm-ai-loading {
       @apply !cursor-wait;
     }
   }
 }
-.nc-view-ai-mode {
-  .nc-view-input {
+.atm-view-ai-mode {
+  .atm-view-input {
     &:not(:focus) {
       @apply !rounded-r-none !border-r-0;
 
-      & ~ .nc-view-ai-toggle-btn {
+      & ~ .atm-view-ai-toggle-btn {
         button {
           @apply !pl-[7px] z-11 !border-l-1;
         }
@@ -2027,7 +2027,7 @@ watch(activeBaseId, () => {
 </style>
 
 <style lang="scss">
-.nc-modal-wrapper.nc-modal-view-create-wrapper {
+.atm-modal-wrapper.atm-modal-view-create-wrapper {
   .ant-modal-content {
     @apply !rounded-5;
   }

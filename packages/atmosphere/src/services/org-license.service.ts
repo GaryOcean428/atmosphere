@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { NC_LICENSE_KEY } from '../constants';
+import { ATMOSPHERE_LICENSE_KEY } from '../constants';
 import { validatePayload } from '~/helpers';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { Store } from '~/models';
 
 @Injectable()
 export class OrgLicenseService {
   async licenseGet() {
-    const license = await Store.get(NC_LICENSE_KEY);
+    const license = await Store.get(ATMOSPHERE_LICENSE_KEY);
 
     return { key: license?.value };
   }
@@ -15,17 +15,17 @@ export class OrgLicenseService {
   async licenseSet(param: { key: string }) {
     validatePayload('swagger.json#/components/schemas/LicenseReq', param);
 
-    await Store.saveOrUpdate({ value: param.key, key: NC_LICENSE_KEY });
-    await Noco.loadEEState();
+    await Store.saveOrUpdate({ value: param.key, key: ATMOSPHERE_LICENSE_KEY });
+    await Atmosphere.loadEEState();
     return true;
   }
 
   async licenseStatus() {
-    const license = await Store.get(NC_LICENSE_KEY);
+    const license = await Store.get(ATMOSPHERE_LICENSE_KEY);
     return {
-      ee: Noco.isEE(),
+      ee: Atmosphere.isEE(),
       hasLicense: !!license?.value,
-      status: Noco.isEE() ? 'active' : 'none',
+      status: Atmosphere.isEE() ? 'active' : 'none',
     };
   }
 

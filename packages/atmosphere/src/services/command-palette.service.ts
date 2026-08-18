@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { type UserType, viewTypeAlias } from 'nocodb-sdk';
+import { type UserType, viewTypeAlias } from 'atmosphere-sdk';
 import { getCommandPaletteForUserWorkspace } from 'src/helpers/commandPaletteHelpers';
 import { deserializeJSON } from '~/utils/serialize';
 // This service is overwritten entirely in the cloud and does not extend there.
@@ -123,7 +123,7 @@ export class CommandPaletteService {
           section: 'Views',
           handler: {
             type: 'navigate',
-            payload: `/nc/${view.base_id}/${view.table_id}/${encodeURIComponent(
+            payload: `/atm/${view.base_id}/${view.table_id}/${encodeURIComponent(
               id,
             )}`,
           },

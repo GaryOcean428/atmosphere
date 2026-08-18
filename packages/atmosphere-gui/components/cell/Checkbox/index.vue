@@ -50,7 +50,7 @@ const checkboxMeta = computed(() => {
     result.color =
       result.color === '#777'
         ? getColor(themeV4Colors.gray['600'])
-        : getOppositeColorOfBackground(getColor('var(--nc-bg-default)'), result.color, ['#4a5268', '#d5dce8'])
+        : getOppositeColorOfBackground(getColor('var(--atm-bg-default)'), result.color, ['#4a5268', '#d5dce8'])
   }
 
   return result
@@ -63,8 +63,8 @@ const vModel = computed<boolean | number>({
 
 function onClick(force?: boolean, event?: MouseEvent | KeyboardEvent) {
   if (
-    (event?.target as HTMLElement)?.classList?.contains('nc-checkbox') ||
-    (event?.target as HTMLElement)?.closest('.nc-checkbox')
+    (event?.target as HTMLElement)?.classList?.contains('atm-checkbox') ||
+    (event?.target as HTMLElement)?.closest('.atm-checkbox')
   ) {
     return
   }
@@ -107,7 +107,7 @@ const wrapperClassName = computed(() => {
   return [
     isForm?.value || isGallery.value || isExpandedFormOpen.value ? 'w-full flex-start pl-2' : 'w-full justify-center',
     {
-      'nc-cell-hover-show': !vModel.value,
+      'atm-cell-hover-show': !vModel.value,
     },
   ]
 })
@@ -136,7 +136,7 @@ const childClassName = computed(() => {
       <Transition name="layout" mode="out-in" :duration="100">
         <component
           :is="getMdiIcon(vModel ? checkboxMeta.icon.checked : checkboxMeta.icon.unchecked)"
-          class="nc-checkbox"
+          class="atm-checkbox"
           :style="{
             color: checkboxMeta.color,
           }"
@@ -147,7 +147,7 @@ const childClassName = computed(() => {
 </template>
 
 <style scoped lang="scss">
-.nc-cell-hover-show {
+.atm-cell-hover-show {
   opacity: 0.3;
   transition: 0.3s opacity;
 

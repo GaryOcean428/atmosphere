@@ -1,11 +1,11 @@
-import type { MetaType } from 'nocodb-sdk';
-import type { MapType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { MetaType } from 'atmosphere-sdk';
+import type { MapType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import View from '~/models/View';
 import MapViewColumn from '~/models/MapViewColumn';
 import { extractProps } from '~/helpers/extractProps';
-import NocoCache from '~/cache/NocoCache';
-import Noco from '~/Noco';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import Atmosphere from '~/Atmosphere';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import { prepareForDb, prepareForResponse } from '~/utils/modelUtils';
 
@@ -31,13 +31,13 @@ export default class MapView implements MapType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let view =
       viewId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.MAP_VIEW}:${viewId}`,
         CacheGetType.TYPE_OBJECT,
@@ -51,16 +51,16 @@ export default class MapView implements MapType {
           fk_view_id: viewId,
         },
       );
-      await NocoCache.set(context, `${CacheScope.MAP_VIEW}:${viewId}`, view);
+      await AtmosphereCache.set(context, `${CacheScope.MAP_VIEW}:${viewId}`, view);
     }
 
     return view && new MapView(view);
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     view: Partial<MapView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = {
       base_id: view.base_id,
@@ -93,10 +93,10 @@ export default class MapView implements MapType {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     mapId: string,
     body: Partial<MapView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, ['fk_geo_data_col_id', 'meta']);
 
@@ -122,7 +122,7 @@ export default class MapView implements MapType {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.MAP_VIEW}:${mapId}`,
       prepareForResponse(updateObj),

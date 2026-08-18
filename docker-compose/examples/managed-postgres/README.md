@@ -4,15 +4,15 @@ Production-ready configuration using an external managed PostgreSQL database (AW
 
 - **PostgreSQL**: External managed database with public CA SSL
 - **Redis**: External
-- **Proxy**: None. NocoDB on port 8080. Put your own LB or proxy in front.
+- **Proxy**: None. Atmosphere on port 8080. Put your own LB or proxy in front.
 
 ## Usage
 
 ```bash
 cp -r examples/managed-postgres ./my-deployment
 cd my-deployment
-# Edit docker.env: set NC_REDIS_URL
-# Edit nocodb/db.json: set your database host, credentials, and port
+# Edit docker.env: set ATMOSPHERE_REDIS_URL
+# Edit atmosphere/db.json: set your database host, credentials, and port
 docker compose up -d
 ```
 

@@ -73,9 +73,9 @@ watch(isOpen, (val) => {
 </script>
 
 <template>
-  <NcDropdown v-model:visible="isOpen" :disabled="readonly" destroy-popup-on-hide overlay-class-name="overflow-hidden">
+  <AtDropdown v-model:visible="isOpen" :disabled="readonly" destroy-popup-on-hide overlay-class-name="overflow-hidden">
     <div
-      class="flex-none flex flex-row justify-center items-center select-none rounded-md nc-emoji"
+      class="flex-none flex flex-row justify-center items-center select-none rounded-md atm-emoji"
       :class="[
         {
           'hover:bg-gray-500 hover:bg-opacity-15 cursor-pointer': !readonly,
@@ -97,7 +97,7 @@ watch(isOpen, (val) => {
         {{ emojiRef }}
       </template>
       <template v-else>
-        <Icon :data-testid="`nc-icon-${emojiRef}`" class="text-lg" :icon="emojiRef"></Icon>
+        <Icon :data-testid="`atm-icon-${emojiRef}`" class="text-lg" :icon="emojiRef"></Icon>
       </template>
     </div>
     <template #overlay>
@@ -113,7 +113,7 @@ watch(isOpen, (val) => {
           :show-preview="false"
           color="#40444D"
           :auto-focus="true"
-          class="nc-emoji-picker"
+          class="atm-emoji-picker"
           @select="selectEmoji"
           @click.stop="() => {}"
         >
@@ -121,7 +121,7 @@ watch(isOpen, (val) => {
         <div v-if="showClearButton" class="absolute top-10 right-1.5">
           <div
             role="button"
-            class="flex flex-row items-center h-[32px] -mt-[1px] bg-nc-bg-default border-1 border-nc-border-gray-light py-0.5 px-2.5 rounded hover:bg-nc-bg-gray-light cursor-pointer"
+            class="flex flex-row items-center h-[32px] -mt-[1px] bg-atm-bg-default border-1 border-atm-border-gray-light py-0.5 px-2.5 rounded hover:bg-atm-bg-gray-light cursor-pointer"
             @click="clearEmoji"
           >
             {{ $t('general.remove') }}
@@ -129,7 +129,7 @@ watch(isOpen, (val) => {
         </div>
       </div>
     </template>
-  </NcDropdown>
+  </AtDropdown>
 </template>
 
 <style lang="scss">
@@ -138,16 +138,16 @@ watch(isOpen, (val) => {
     @apply pr-22;
   }
 }
-.nc-emoji-picker.emoji-mart {
+.atm-emoji-picker.emoji-mart {
   @apply !w-90 bg-transparent border-none;
 
   .emoji-mart-bar {
-    @apply border-b-nc-border-gray-medium;
+    @apply border-b-atm-border-gray-medium;
   }
 
   .emoji-mart-category .emoji-mart-emoji:hover:before,
   .emoji-mart-emoji-selected:before {
-    @apply bg-nc-bg-gray-medium;
+    @apply bg-atm-bg-gray-medium;
   }
 
   span.emoji-type-native {
@@ -155,13 +155,13 @@ watch(isOpen, (val) => {
   }
 
   .emoji-mart-anchor {
-    @apply h-8 py-1.5 dark:text-nc-content-gray-muted;
+    @apply h-8 py-1.5 dark:text-atm-content-gray-muted;
 
     &.emoji-mart-anchor-selected {
-      @apply dark:!text-nc-content-gray;
+      @apply dark:!text-atm-content-gray;
 
       .emoji-mart-anchor-bar {
-        @apply dark:!bg-nc-gray-400;
+        @apply dark:!bg-atm-gray-400;
       }
     }
 
@@ -184,7 +184,7 @@ watch(isOpen, (val) => {
     @apply mt-1 px-1 overflow-x-hidden;
 
     h3.emoji-mart-category-label {
-      @apply text-xs text-nc-content-gray-muted bg-nc-bg-default mb-0;
+      @apply text-xs text-atm-content-gray-muted bg-atm-bg-default mb-0;
     }
 
     .emoji-mart-category {
@@ -193,7 +193,7 @@ watch(isOpen, (val) => {
   }
 
   .emoji-mart-scroll {
-    @apply nc-scrollbar-thin;
+    @apply atm-scrollbar-thin;
 
     overflow-y: overlay;
   }

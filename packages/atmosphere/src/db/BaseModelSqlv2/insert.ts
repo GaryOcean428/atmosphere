@@ -6,9 +6,9 @@ import {
 import {
   isAttachment,
   isLinksOrLTAR,
-  NcApiVersion,
-  type NcRequest,
-} from 'nocodb-sdk';
+  AtApiVersion,
+  type AtRequest,
+} from 'atmosphere-sdk';
 import { AttachmentUrlUploadPreparator } from './attachment-url-upload-preparator';
 import type { Knex } from 'knex';
 import type { Column } from 'src/models';
@@ -22,14 +22,14 @@ import {
 } from '~/db/BaseModelSqlv2/mssql-insert-sql';
 import { handleUniqueConstraintError } from '~/helpers/uniqueConstraintErrorHandler';
 import getAst from '~/helpers/getAst';
-import { nocoExecute } from '~/utils';
+import { atmosphereExecute } from '~/utils';
 import { captureForTrace } from '~/decorators/trace-command.decorator';
 import { isReplay } from '~/helpers/replayScope';
 
 export const baseModelInsert = (baseModel: IBaseModelSqlV2) => {
   const single = async (
     data,
-    request: NcRequest,
+    request: AtRequest,
     trx?,
     _disableOptimization = false,
   ) => {
@@ -65,7 +65,7 @@ export const baseModelInsert = (baseModel: IBaseModelSqlV2) => {
         await baseModel.beforeInsert(insertObj, request);
       }
 
-      await baseModel.prepareNocoData(insertObj, true, request);
+      await baseModel.prepareAtmosphereData(insertObj, true, request);
 
       let response;
       // const driver = trx ? trx : baseModel.dbDriver;
@@ -252,13 +252,13 @@ export const baseModelInsert = (baseModel: IBaseModelSqlV2) => {
       typecast = false,
       allowSystemColumn = false,
       undo = false,
-      apiVersion = NcApiVersion.V2,
+      apiVersion = AtApiVersion.V2,
       onInsertedPks,
       skipPermissionCheck = false,
       skipAttachmentOwnershipCheck = false,
     }: {
       chunkSize?: number;
-      cookie?: NcRequest;
+      cookie?: AtRequest;
       foreign_key_checks?: boolean;
       skip_hooks?: boolean;
       raw?: boolean;
@@ -267,7 +267,7 @@ export const baseModelInsert = (baseModel: IBaseModelSqlV2) => {
       allowSystemColumn?: boolean;
       typecast?: boolean;
       undo?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       /**
        * Runtime-only sink invoked with the inserted rows' primary keys in
        * insertion order. Used by file import to correlate each inserted row
@@ -279,7 +279,7 @@ export const baseModelInsert = (baseModel: IBaseModelSqlV2) => {
       onInsertedPks?: (pks: (string | number)[]) => void;
       /** Consumed by the EE override to skip per-field edit-permission checks. */
       skipPermissionCheck?: boolean;
-      /** Trusted internal copy paths only — see `prepareNocoData`. */
+      /** Trusted internal copy paths only — see `prepareAtmosphereData`. */
       skipAttachmentOwnershipCheck?: boolean;
     } = {},
   ) => {
@@ -323,7 +323,7 @@ export const baseModelInsert = (baseModel: IBaseModelSqlV2) => {
             },
           );
 
-          await baseModel.prepareNocoData(insertObj, true, cookie, null, {
+          await baseModel.prepareAtmosphereData(insertObj, true, cookie, null, {
             ncOrder: order?.plus(index),
             undo,
             allowSystemColumn,
@@ -332,7 +332,7 @@ export const baseModelInsert = (baseModel: IBaseModelSqlV2) => {
           });
 
           // prepare nested link data for insert only if it is single record insertion
-          if (isSingleRecordInsertion || apiVersion === NcApiVersion.V3) {
+          if (isSingleRecordInsertion || apiVersion === AtApiVersion.V3) {
             const operations = await baseModel.prepareNestedLinkQb({
               nestedCols,
               data: d,
@@ -377,7 +377,7 @@ export const baseModelInsert = (baseModel: IBaseModelSqlV2) => {
         await Promise.all(
           insertDatas.map(
             async (d, i) =>
-              await baseModel.prepareNocoData(d, true, cookie, null, {
+              await baseModel.prepareAtmosphereData(d, true, cookie, null, {
                 raw,
                 undo: undo,
                 ncOrder: order?.plus(i),
@@ -578,7 +578,7 @@ export const baseModelInsert = (baseModel: IBaseModelSqlV2) => {
       }
 
       // insert nested link data for single record insertion or v3
-      if (isSingleRecordInsertion || apiVersion === NcApiVersion.V3) {
+      if (isSingleRecordInsertion || apiVersion === AtApiVersion.V3) {
         for (let i = 0; i < responses.length; i++) {
           const row = responses[i];
           const rowId = baseModel.extractCompositePK({
@@ -637,8 +637,8 @@ export const baseModelInsert = (baseModel: IBaseModelSqlV2) => {
             query: {},
             extractOnlyPrimaries: false,
           });
-          // nocoexecute
-          const insertResponses = await nocoExecute(
+          // atmosphereexecute
+          const insertResponses = await atmosphereExecute(
             ast,
             insertResponseList,
             {},

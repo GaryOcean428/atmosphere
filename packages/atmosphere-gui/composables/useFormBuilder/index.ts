@@ -7,8 +7,8 @@ import type {
   FormBuilderElement,
   FormBuilderValidator,
   FormDefinition,
-} from 'nocodb-sdk'
-import { FormBuilderValidatorType } from 'nocodb-sdk'
+} from 'atmosphere-sdk'
+import { FormBuilderValidatorType } from 'atmosphere-sdk'
 
 const [useProvideFormBuilderHelper, useFormBuilderHelper] = useInjectionState(
   (props: {

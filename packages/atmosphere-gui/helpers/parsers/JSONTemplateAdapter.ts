@@ -1,4 +1,4 @@
-import { UITypes } from 'nocodb-sdk'
+import { UITypes } from 'atmosphere-sdk'
 import { getCheckboxValue, getColumnUIDTAndMetas } from './parserHelpers'
 import TemplateGenerator, { type ProgressMessageType } from './TemplateGenerator'
 

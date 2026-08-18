@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Empty } from 'ant-design-vue'
-import { ProjectRoles } from 'nocodb-sdk'
+import { ProjectRoles } from 'atmosphere-sdk'
 
 provide(IsWsBaseListModalInj, readonly(ref(true)))
 
@@ -24,13 +24,13 @@ const baseCount = computed(() => workspaceBases.value.length)
 
 // Base attribute checkers
 const baseCheckers = {
-  starred: (base: NcProject) => !!base.starred,
-  private: (base: NcProject) => base.default_role === ProjectRoles.NO_ACCESS,
-  managed: (base: NcProject) => !!base.managed_app_id,
-  owned: (base: NcProject) => base.project_role === ProjectRoles.OWNER,
+  starred: (base: AtProject) => !!base.starred,
+  private: (base: AtProject) => base.default_role === ProjectRoles.NO_ACCESS,
+  managed: (base: AtProject) => !!base.managed_app_id,
+  owned: (base: AtProject) => base.project_role === ProjectRoles.OWNER,
 }
 
-const filterWithSearch = (bases: NcProject[]) => {
+const filterWithSearch = (bases: AtProject[]) => {
   if (!searchQuery.value) return bases
   return bases.filter((base) => searchCompare(base.title, searchQuery.value))
 }
@@ -85,7 +85,7 @@ const hasNoSearchResults = computed(() => {
 <template>
   <div class="flex flex-col h-full">
     <!-- Toolbar -->
-    <div class="w-full nc-content-max-w mx-auto px-4 pt-4 md:(px-6 pt-4) flex-none">
+    <div class="w-full atm-content-max-w mx-auto px-4 pt-4 md:(px-6 pt-4) flex-none">
       <WorkspaceBaseListHeader
         v-model:search-query="searchQuery"
         :base-count="baseCount"
@@ -95,8 +95,8 @@ const hasNoSearchResults = computed(() => {
     </div>
 
     <!-- Bases Content -->
-    <div class="flex-1 overflow-y-auto nc-scrollbar-thin w-full">
-      <div class="nc-content-max-w mx-auto px-4 md:px-6 py-4 flex flex-col relative">
+    <div class="flex-1 overflow-y-auto atm-scrollbar-thin w-full">
+      <div class="atm-content-max-w mx-auto px-4 md:px-6 py-4 flex flex-col relative">
         <WorkspaceBaseListModalBasesSection
           v-for="section in displayedSections"
           :key="section.type"
@@ -114,7 +114,7 @@ const hasNoSearchResults = computed(() => {
           inline
           transition
           class="!bg-opacity-15"
-          data-testid="nc-base-list-loading"
+          data-testid="atm-base-list-loading"
         >
           <div class="flex flex-col items-center justify-center h-full w-full mt-20">
             <a-spin size="large" />
@@ -122,14 +122,14 @@ const hasNoSearchResults = computed(() => {
         </GeneralOverlay>
 
         <!-- Empty State -->
-        <div v-else-if="emptyFilterResult" class="flex flex-col items-center justify-center h-full text-nc-content-gray-muted">
+        <div v-else-if="emptyFilterResult" class="flex flex-col items-center justify-center h-full text-atm-content-gray-muted">
           <a-empty :image="Empty.PRESENTED_IMAGE_SIMPLE" :description="$t('activity.noBases')" />
         </div>
 
         <!-- No Search Results -->
         <div
           v-else-if="hasNoSearchResults"
-          class="h-full px-2 py-6 text-nc-content-gray-muted flex flex-col items-center justify-center gap-6 text-center"
+          class="h-full px-2 py-6 text-atm-content-gray-muted flex flex-col items-center justify-center gap-6 text-center"
         >
           <img
             src="~assets/img/placeholder/no-search-result-found.png"

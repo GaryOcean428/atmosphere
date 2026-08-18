@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-  <NuxtLayout class="nc-h-screen">
+  <NuxtLayout class="atm-h-screen">
     <DashboardTopbar />
     <div class="h-full overflow-auto">
       <slot></slot>

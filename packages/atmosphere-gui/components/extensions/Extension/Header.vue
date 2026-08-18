@@ -83,23 +83,23 @@ const handleDuplicateExtension = async (id: string, open = false) => {
     v-if="(isFullscreen && fullscreen) || !isFullscreen"
     class="extension-header flex items-center"
     :class="{
-      'border-b-1 border-nc-border-gray-medium h-[49px]': !collapsed && !isFullscreen,
+      'border-b-1 border-atm-border-gray-medium h-[49px]': !collapsed && !isFullscreen,
       'collapsed border-transparent h-[48px] cursor-pointer': collapsed && !isFullscreen,
       'px-3 py-2 gap-1': !isFullscreen,
-      'gap-3 px-4 pt-3 pb-[11px] border-b-1 border-nc-border-gray-medium': isFullscreen,
+      'gap-3 px-4 pt-3 pb-[11px] border-b-1 border-atm-border-gray-medium': isFullscreen,
     }"
     @click="expandExtension"
   >
     <slot v-if="isFullscreen" name="prefix"></slot>
-    <NcButton
+    <AtButton
       v-if="!isFullscreen && extensionAccess.create"
       size="xs"
       type="text"
-      class="nc-extension-drag-handler !px-1"
+      class="atm-extension-drag-handler !px-1"
       @click.stop
     >
-      <GeneralIcon icon="ncDrag" class="flex-none text-nc-content-gray-muted" />
-    </NcButton>
+      <GeneralIcon icon="ncDrag" class="flex-none text-atm-content-gray-muted" />
+    </AtButton>
 
     <img
       v-if="extensionManifest"
@@ -136,7 +136,7 @@ const handleDuplicateExtension = async (id: string, open = false) => {
     </div>
 
     <template v-else>
-      <NcTooltip show-on-truncate-only class="truncate">
+      <AtTooltip show-on-truncate-only class="truncate">
         <template #title>
           {{ extension.title }}
         </template>
@@ -152,15 +152,15 @@ const handleDuplicateExtension = async (id: string, open = false) => {
         >
           {{ extension.title }}
         </span>
-      </NcTooltip>
+      </AtTooltip>
       <div class="flex-1 flex">
-        <NcBadgeBeta v-if="extensionManifest?.showAsBeta" />
+        <AtBadgeBeta v-if="extensionManifest?.showAsBeta" />
       </div>
     </template>
     <slot v-if="isFullscreen" name="extra"></slot>
     <ExtensionsExtensionHeaderMenu
       :is-fullscreen="isFullscreen"
-      class="nc-extension-menu"
+      class="atm-extension-menu"
       @rename="enableEditMode"
       @duplicate="handleDuplicateExtension(extension.id, true)"
       @show-details="showExtensionDetails(extension.extensionId, 'extension')"
@@ -169,35 +169,35 @@ const handleDuplicateExtension = async (id: string, open = false) => {
     />
 
     <template v-if="!isFullscreen">
-      <NcButton
+      <AtButton
         v-if="showExpandButton"
         size="xs"
         type="text"
         :disabled="disableToggleFullscreenBtn"
-        class="nc-extension-expand-btn !px-1"
+        class="atm-extension-expand-btn !px-1"
         @click.stop="toggleFullScreen"
       >
         <GeneralIcon icon="ncMaximize2" class="h-3.5 w-3.5" />
-      </NcButton>
-      <NcButton size="xs" type="text" class="!px-1" @click.stop="collapsed = !collapsed">
+      </AtButton>
+      <AtButton size="xs" type="text" class="!px-1" @click.stop="collapsed = !collapsed">
         <GeneralIcon
           icon="arrowDown"
           class="flex-none transform !transition-transform duration-200 rotate-270"
           :class="{ '!rotate-360': !collapsed }"
         />
-      </NcButton>
+      </AtButton>
     </template>
-    <NcButton v-else :size="isFullscreen ? 'small' : 'xs'" type="text" class="flex-none !px-1" @click="fullscreen = false">
+    <AtButton v-else :size="isFullscreen ? 'small' : 'xs'" type="text" class="flex-none !px-1" @click="fullscreen = false">
       <GeneralIcon icon="close" />
-    </NcButton>
+    </AtButton>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .extension-header {
   &.collapsed:not(:hover) {
-    .nc-extension-expand-btn,
-    .nc-extension-menu {
+    .atm-extension-expand-btn,
+    .atm-extension-menu {
       @apply hidden;
     }
   }

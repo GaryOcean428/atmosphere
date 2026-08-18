@@ -15,7 +15,7 @@ import { SharedBasesService } from '~/services/shared-bases.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -29,8 +29,8 @@ export class SharedBasesController {
   @HttpCode(200)
   @Acl('createSharedBaseLink')
   async createSharedBaseLink(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Body() body: any,
     @Param('baseId') baseId: string,
   ): Promise<any> {
@@ -53,8 +53,8 @@ export class SharedBasesController {
   ])
   @Acl('updateSharedBaseLink')
   async updateSharedBaseLink(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Body() body: any,
     @Param('baseId') baseId: string,
   ): Promise<any> {
@@ -78,9 +78,9 @@ export class SharedBasesController {
   ])
   @Acl('disableSharedBaseLink')
   async disableSharedBaseLink(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('baseId') baseId: string,
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ): Promise<any> {
     const sharedBase = await this.sharedBasesService.disableSharedBaseLink(
       context,
@@ -99,8 +99,8 @@ export class SharedBasesController {
   ])
   @Acl('getSharedBaseLink')
   async getSharedBaseLink(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseId') baseId: string,
   ): Promise<any> {
     const sharedBase = await this.sharedBasesService.getSharedBaseLink(

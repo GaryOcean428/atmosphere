@@ -1,5 +1,5 @@
-import type { WorkspaceUserRoles } from 'nocodb-sdk'
-import { IconType, ProjectRoles, WorkspaceRolesToProjectRoles, isCreatedOrLastModifiedByCol } from 'nocodb-sdk'
+import type { WorkspaceUserRoles } from 'atmosphere-sdk'
+import { IconType, ProjectRoles, WorkspaceRolesToProjectRoles, isCreatedOrLastModifiedByCol } from 'atmosphere-sdk'
 import { defaultOffscreen2DContext, isBoxHovered, renderSingleLineText, renderTag, roundedRect } from '../utils/canvas'
 import type { RenderRectangleProps } from '../utils/types'
 import { getSelectedUsers } from '../../../../cell/User/utils'
@@ -46,7 +46,7 @@ const usernameInitials = (username: string, email: string) => {
 
 const backgroundColor = (username: string, email: string, userIcon: ReturnType<typeof getUserIcon>, getColor: GetColorType) => {
   const color = username ? stringToColor(username) : email ? stringToColor(email) : '#FFFFFF'
-  const bgColor = getColor('var(--nc-bg-gray-light)', 'var(--nc-bg-gray-medium)')
+  const bgColor = getColor('var(--atm-bg-gray-light)', 'var(--atm-bg-gray-medium)')
 
   if (userIcon.icon) {
     switch (userIcon.iconType) {
@@ -104,7 +104,7 @@ export const UserFieldCellRenderer: CellRenderer = {
             textAlign: 'right',
             verticalAlign: 'middle',
             fontFamily: '500 13px Inter',
-            fillStyle: isDeleted ? getColor('var(--nc-content-gray-subtle2)') : getColor('var(--nc-content-gray-subtle)'),
+            fillStyle: isDeleted ? getColor('var(--atm-content-gray-subtle2)') : getColor('var(--atm-content-gray-subtle)'),
             height,
           })
           x = x + padding + tagSpacingX + ellipsisWidth
@@ -124,7 +124,7 @@ export const UserFieldCellRenderer: CellRenderer = {
         width: minTagWidth,
         height: tagHeight,
         radius: 12,
-        fillStyle: getColor('var(--nc-bg-gray-medium)', 'var(--nc-bg-gray-light)'),
+        fillStyle: getColor('var(--atm-bg-gray-medium)', 'var(--atm-bg-gray-light)'),
       })
 
       const userIcon = getUserIcon(user.meta)
@@ -140,7 +140,7 @@ export const UserFieldCellRenderer: CellRenderer = {
 
       if (enableBackground) {
         roundedRect(ctx, x, y + 6.5, circleSize, circleSize, circleRadius, {
-          backgroundColor: isDeleted ? getColor('var(--nc-bg-gray-dark)') : bgColor,
+          backgroundColor: isDeleted ? getColor('var(--atm-bg-gray-dark)') : bgColor,
         })
       }
 
@@ -161,7 +161,7 @@ export const UserFieldCellRenderer: CellRenderer = {
         }
       } else if (userIcon.icon && userIcon.iconType === IconType.ICON) {
         spriteLoader.renderIcon(ctx, {
-          color: getColor('var(--nc-content-gray)'),
+          color: getColor('var(--atm-content-gray)'),
           icon: icon as IconMapKey,
           size: 12,
           x: x + 4,
@@ -174,7 +174,7 @@ export const UserFieldCellRenderer: CellRenderer = {
           size: iconSize,
           x: x + 2.5,
           y: y + 6 + (tagHeight - iconSize) / 2,
-          color: getColor('var(--nc-content-gray-muted)'),
+          color: getColor('var(--atm-content-gray-muted)'),
         })
         needsPlaceholder = false
       } else if (initials) {
@@ -209,8 +209,8 @@ export const UserFieldCellRenderer: CellRenderer = {
         verticalAlign: 'middle',
         fontFamily: '500 13px Inter',
         fillStyle: isDeleted
-          ? getColor('var(--nc-content-gray-muted)')
-          : getColor('var(--nc-content-gray)', 'var(--nc-content-gray-subtle2)'),
+          ? getColor('var(--atm-content-gray-muted)')
+          : getColor('var(--atm-content-gray)', 'var(--atm-content-gray-subtle2)'),
         height,
       })
 

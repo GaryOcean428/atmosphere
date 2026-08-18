@@ -1,4 +1,4 @@
-import type { ColumnType, TableType } from 'nocodb-sdk'
+import type { ColumnType, TableType } from 'atmosphere-sdk'
 import type { Row } from '~/lib/types'
 
 export interface AttachmentFocusPresenceParams {

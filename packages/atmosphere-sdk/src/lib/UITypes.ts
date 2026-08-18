@@ -8,7 +8,7 @@ import {
 import { FormulaDataTypes } from './formula/enums';
 import { LinksVersion, LongTextAiMetaProp, RelationTypes } from '~/lib/globals';
 import { parseProp } from './helperFunctions';
-import { SYNC_SYSTEM_COLUMN_TITLES } from './sync';
+import { SYATMOSPHERE_SYSTEM_COLUMN_TITLES } from './sync';
 
 enum UITypes {
   ID = 'ID',
@@ -479,7 +479,7 @@ export function isHiddenCol(
   if (
     tableMeta?.synced &&
     col.title &&
-    SYNC_SYSTEM_COLUMN_TITLES.includes(col.title)
+    SYATMOSPHERE_SYSTEM_COLUMN_TITLES.includes(col.title)
   ) {
     return true;
   }

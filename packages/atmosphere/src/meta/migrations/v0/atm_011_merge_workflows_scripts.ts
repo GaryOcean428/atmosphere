@@ -1,9 +1,9 @@
 import { Logger } from '@nestjs/common';
-import { AutomationTypes } from 'nocodb-sdk';
+import { AutomationTypes } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import { MetaTable, MetaTableOldV2 } from '~/utils/globals';
 import { migrateTableInBatches } from '~/utils/migrationUtils';
-const logger = new Logger('nc_011_merge_workflows_scripts');
+const logger = new Logger('atm_011_merge_workflows_scripts');
 
 const up = async (knex: Knex) => {
   await knex.schema.createTable(MetaTable.AUTOMATIONS, (table) => {
@@ -45,13 +45,13 @@ const up = async (knex: Knex) => {
     table.text('script');
 
     // Indexes
-    table.index(['base_id', 'fk_workspace_id'], 'nc_automations_context_idx');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_automations_context_idx');
 
-    table.index(['type'], 'nc_automations_type_idx');
+    table.index(['type'], 'atm_automations_type_idx');
 
-    table.index(['enabled'], 'nc_automations_enabled_idx');
+    table.index(['enabled'], 'atm_automations_enabled_idx');
 
-    table.index(['base_id', 'order'], 'nc_automations_order_idx');
+    table.index(['base_id', 'order'], 'atm_automations_order_idx');
   });
 
   await migrateTableInBatches(

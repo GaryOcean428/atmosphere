@@ -1,14 +1,14 @@
 import {
   isLinksOrLTAR,
-  NcApiVersion,
+  AtApiVersion,
   recordsV2ToV3,
   recordV2ToV3,
   RelationTypes,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { Injectable, Logger } from '@nestjs/common';
 import { LTARColsUpdater } from 'src/db/BaseModelSqlv2/ltar-cols-updater';
-import type { ModelMeta } from 'nocodb-sdk';
+import type { ModelMeta } from 'atmosphere-sdk';
 import type {
   DataDeleteParams,
   DataInsertParams,
@@ -22,7 +22,7 @@ import type {
   DataUpsertRecordResponse,
   NestedDataListParams,
 } from '~/services/v3/data-v3.types';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { LinkToAnotherRecordColumn } from '~/models';
 import type { ReusableParams } from '~/utils';
 import type { PagedResponseImpl } from '~/helpers/PagedResponse';
@@ -31,12 +31,12 @@ import {
   getLtarDisplayValueContext,
   resolveLtarDisplayValuesToPks,
 } from '~/helpers/ltarDisplayValueResolver';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { Column, Model, Source } from '~/models';
 import { PagedResponseV3Impl } from '~/helpers/PagedResponse';
 import { DataTableService } from '~/services/data-table.service';
 import { BaseModelSqlv2 } from '~/db/BaseModelSqlv2';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import {
   MAX_NESTING_DEPTH,
   QUERY_STRING_FIELD_ID_ON_RESULT,
@@ -86,7 +86,7 @@ export class DataV3Service {
    * Get model information including primary key and columns
    */
   private async getModelInfo(
-    context: NcContext,
+    context: AtContext,
     modelId: string,
     user?: any,
   ): Promise<ModelInfo> {
@@ -110,7 +110,7 @@ export class DataV3Service {
    * Get related model information for LTAR columns
    */
   private async getRelatedModelInfo(
-    _context: NcContext,
+    _context: AtContext,
     column: Column,
   ): Promise<RelatedModelInfo | null> {
     const context = { ..._context, base_id: column.base_id };
@@ -162,7 +162,7 @@ export class DataV3Service {
    * Recurses up to MAX_NESTING_DEPTH for nested LTAR columns.
    */
   private async buildModelMaps(
-    context: NcContext,
+    context: AtContext,
     columns: Column[],
     depth: number,
     reuse: ReusableParams,
@@ -246,7 +246,7 @@ export class DataV3Service {
    * Transform a record to the v3 format {id, fields}
    */
   private async transformRecordToV3Format(param: {
-    context: NcContext;
+    context: AtContext;
     record: any;
     primaryKey: Column;
     primaryKeys?: Column[];
@@ -290,7 +290,7 @@ export class DataV3Service {
    * Transform multiple records to v3 format
    */
   public async transformRecordsToV3Format(param: {
-    context: NcContext;
+    context: AtContext;
     records: any[];
     primaryKey: Column;
     primaryKeys?: Column[];
@@ -333,7 +333,7 @@ export class DataV3Service {
   }
 
   async validateDataListQueryParams(
-    context: NcContext,
+    context: AtContext,
     param: DataListParams & { modelInfo: ModelInfo },
   ) {
     const columns = param.modelInfo.columns;
@@ -345,14 +345,14 @@ export class DataV3Service {
         try {
           parsedSortJSON = JSON.parse(param.query.sort);
         } catch {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             `Query parameter 'sort' needs to a JSON string in format of [{"field": "fieldId", "direction": "asc"}]`,
           );
         }
       } else if (typeof param.query.sort === 'object') {
         parsedSortJSON = param.query.sort;
       } else {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Query parameter 'sort' needs to be a single string`,
         );
       }
@@ -365,7 +365,7 @@ export class DataV3Service {
           (s) => s.direction && !['asc', 'desc'].includes(s.direction),
         )
       ) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Query parameter 'sort' direction value can only be 'asc' or 'desc'`,
         );
       }
@@ -379,7 +379,7 @@ export class DataV3Service {
         (field) => !hayStack.includes(field),
       );
       if (notFoundField) {
-        NcError.get(context).fieldNotFound({
+        AtError.get(context).fieldNotFound({
           field: notFoundField,
           onSection: `'sort' query parameter`,
         });
@@ -391,7 +391,7 @@ export class DataV3Service {
         if (Array.isArray(param.query.fields)) {
           fieldsArr = param.query.fields;
         } else {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             `Query parameter 'fields' needs to be a single string`,
           );
         }
@@ -402,7 +402,7 @@ export class DataV3Service {
           fieldsArr = JSON.parse(param.query.fields);
           param.query.fields = fieldsArr;
         } catch {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             `Query parameter fields need to be an array of string, or a comma separated`,
           );
         }
@@ -417,7 +417,7 @@ export class DataV3Service {
         (field) => !hayStack.includes(field),
       );
       if (notFoundField) {
-        NcError.get(context).fieldNotFound({
+        AtError.get(context).fieldNotFound({
           field: notFoundField,
           onSection: `'fields' query parameter`,
         });
@@ -426,7 +426,7 @@ export class DataV3Service {
   }
 
   async dataList<T extends boolean>(
-    context: NcContext,
+    context: AtContext,
     param: DataListParams,
     pagination: T = true as T,
   ): Promise<T extends true ? DataListResponse : DataRecord[]> {
@@ -440,7 +440,7 @@ export class DataV3Service {
         ...param.query,
         limit: +param.query?.limit || +param.query?.pageSize,
       },
-      apiVersion: NcApiVersion.V3,
+      apiVersion: AtApiVersion.V3,
     });
 
     // Extract requested fields from query parameters
@@ -542,7 +542,7 @@ export class DataV3Service {
    * would change paste and import behaviour too, so it is left alone here.
    */
   private async resolveLinkDisplayValues(
-    context: NcContext,
+    context: AtContext,
     records: { fields: Record<string, any> }[],
     ltarColumns: Column[],
   ): Promise<void> {
@@ -584,7 +584,7 @@ export class DataV3Service {
 
       const unmatched = [...uniqueValues].filter((v) => !valueToPk.has(v));
       if (unmatched.length) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Link field '${column.title}': no record in '${
             groupCtx.relatedModel.title
           }' has an exact ${
@@ -606,7 +606,7 @@ export class DataV3Service {
   }
 
   private async transformLTARFieldsToInternal(
-    context: NcContext,
+    context: AtContext,
     fields: any,
     ltarColumns: Column[],
     option?: {
@@ -673,7 +673,7 @@ export class DataV3Service {
    * Convert a record ID from v3 format to internal format
    */
   private convertRecordIdToInternal(
-    context: NcContext,
+    context: AtContext,
     nestedRecord: any,
     relatedPrimaryKey: Column,
     relatedPrimaryKeys: Column[],
@@ -686,7 +686,7 @@ export class DataV3Service {
 
       // Validate that we have the correct number of parts
       if (idParts.length !== relatedPrimaryKeys.length) {
-        NcError.get(context).unprocessableEntity(
+        AtError.get(context).unprocessableEntity(
           `Invalid composite key: expected ${relatedPrimaryKeys.length} parts but got ${idParts.length} in "${idString}"`,
         );
       }
@@ -697,7 +697,7 @@ export class DataV3Service {
 
         // Validate that the part exists and is not empty
         if (part === undefined || part === null) {
-          NcError.get(context).unprocessableEntity(
+          AtError.get(context).unprocessableEntity(
             `Invalid composite key part at index ${index}: got ${part} in "${idString}"`,
           );
         }
@@ -707,7 +707,7 @@ export class DataV3Service {
 
         // Don't allow completely empty string primary keys (after cleaning)
         if (cleanedPart === '') {
-          NcError.get(context).unprocessableEntity(
+          AtError.get(context).unprocessableEntity(
             `Empty primary key part at index ${index} after cleaning in "${idString}"`,
           );
         }
@@ -719,7 +719,7 @@ export class DataV3Service {
       // Single primary key - validate it's not empty
       const pkValue = String(nestedRecord.id);
       if (pkValue === '' || pkValue === 'undefined' || pkValue === 'null') {
-        NcError.get(context).unprocessableEntity(
+        AtError.get(context).unprocessableEntity(
           `Invalid primary key value: "${pkValue}"`,
         );
       }
@@ -731,7 +731,7 @@ export class DataV3Service {
   }
 
   async dataInsert(
-    context: NcContext,
+    context: AtContext,
     param: DataInsertParams,
   ): Promise<{ records: DataRecord[] }> {
     // validate insert
@@ -769,13 +769,13 @@ export class DataV3Service {
     const insertPayloadLimit =
       param.maxPayloadOverride ?? V3_DATA_PAYLOAD_LIMIT;
     if (transformedBody.length > insertPayloadLimit) {
-      NcError.get(context).maxPayloadLimitExceeded(insertPayloadLimit);
+      AtError.get(context).maxPayloadLimitExceeded(insertPayloadLimit);
     }
 
     const result = await this.dataTableService.dataInsert(context, {
       ...param,
       body: transformedBody,
-      apiVersion: NcApiVersion.V3,
+      apiVersion: AtApiVersion.V3,
     });
 
     // Transform the response to match the new format
@@ -787,7 +787,7 @@ export class DataV3Service {
     const source = await Source.get(context, model.source_id);
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -822,7 +822,7 @@ export class DataV3Service {
     // `records: []` and the insert looks like it silently failed.
     const fullRecords = await baseModel.chunkList({
       pks: insertedPks.map((pk) => String(pk)),
-      apiVersion: NcApiVersion.V3,
+      apiVersion: AtApiVersion.V3,
       ignoreRls: true,
       args: {
         ...(linksAsLtar ? { linksAsLtar: 'true' } : {}),
@@ -865,26 +865,26 @@ export class DataV3Service {
   }
 
   async dataUpsert(
-    context: NcContext,
+    context: AtContext,
     param: DataUpsertParams,
   ): Promise<{ records: DataUpsertRecordResponse[] }> {
     const { body } = param;
 
     // 1. Validate top-level request structure
     if (!body.records) {
-      NcError.get(context).invalidRequestBody("Property 'records' is required");
+      AtError.get(context).invalidRequestBody("Property 'records' is required");
     }
 
     const records = Array.isArray(body.records) ? body.records : [body.records];
 
     if (records.length === 0) {
-      NcError.get(context).invalidRequestBody("'records' must not be empty");
+      AtError.get(context).invalidRequestBody("'records' must not be empty");
     }
 
     // Validate each record has 'fields'
     for (const [index, record] of records.entries()) {
       if (!record.fields || typeof record.fields !== 'object') {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Property 'fields' is required on record at index ${index}`,
         );
       }
@@ -892,7 +892,7 @@ export class DataV3Service {
         (prop) => prop !== 'fields',
       );
       if (otherProps.length) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Properties ${otherProps
             .map((f) => `'${f}'`)
             .join(
@@ -903,7 +903,7 @@ export class DataV3Service {
     }
 
     if (records.length > V3_DATA_PAYLOAD_LIMIT) {
-      NcError.get(context).maxPayloadLimitExceeded(V3_DATA_PAYLOAD_LIMIT);
+      AtError.get(context).maxPayloadLimitExceeded(V3_DATA_PAYLOAD_LIMIT);
     }
 
     // 2. Get model info
@@ -920,7 +920,7 @@ export class DataV3Service {
         pkTitles.has(key),
       );
       if (pkFieldsInRecord.length) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Record at index ${index} contains primary key field${
             pkFieldsInRecord.length > 1 ? 's' : ''
           } ${pkFieldsInRecord
@@ -934,13 +934,13 @@ export class DataV3Service {
 
     // 3. Resolve merge fields to columns
     if (!body.fieldsToMergeOn?.length) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `fieldsToMergeOn is required and must contain at least one field`,
       );
     }
 
     if (body.fieldsToMergeOn.length > UPSERT_MAX_MERGE_FIELDS) {
-      NcError.get(context).invalidRequestBody(
+      AtError.get(context).invalidRequestBody(
         `fieldsToMergeOn exceeds maximum of ${UPSERT_MAX_MERGE_FIELDS} fields`,
       );
     }
@@ -952,12 +952,12 @@ export class DataV3Service {
         (c) => c.title === fieldRef || c.id === fieldRef,
       );
       if (!col) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `fieldsToMergeOn: field '${fieldRef}' does not exist in table`,
         );
       }
       if (UPSERT_DISALLOWED_UITYPES.has(col.uidt as UITypes)) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `fieldsToMergeOn: field '${col.title}' has unsupported type '${col.uidt}' for merge matching`,
         );
       }
@@ -972,7 +972,7 @@ export class DataV3Service {
           record.fields[mergeCol.title] === undefined &&
           record.fields[mergeCol.id] === undefined
         ) {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             `Record at index ${index} is missing value for merge field '${mergeCol.title}'`,
           );
         }
@@ -996,7 +996,7 @@ export class DataV3Service {
     const source = await Source.get(context, model.source_id);
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1009,7 +1009,7 @@ export class DataV3Service {
       cookie: param.cookie,
       mergeColumns,
       throwOnDuplicate: true,
-      apiVersion: NcApiVersion.V3,
+      apiVersion: AtApiVersion.V3,
       onUpsertSplit: ({ updatedPks }) => {
         updatedPkSet = new Set(updatedPks);
       },
@@ -1052,7 +1052,7 @@ export class DataV3Service {
   }
 
   async dataDelete(
-    context: NcContext,
+    context: AtContext,
     param: DataDeleteParams,
   ): Promise<{ records: DataRecordWithDeleted[] }> {
     // validate update
@@ -1083,7 +1083,7 @@ export class DataV3Service {
     }));
 
     if (recordIds.length > V3_DATA_PAYLOAD_LIMIT) {
-      NcError.get(context).maxPayloadLimitExceeded(V3_DATA_PAYLOAD_LIMIT);
+      AtError.get(context).maxPayloadLimitExceeded(V3_DATA_PAYLOAD_LIMIT);
     }
     await this.dataTableService.dataDelete(context, {
       ...param,
@@ -1100,7 +1100,7 @@ export class DataV3Service {
   }
 
   async dataUpdate(
-    context: NcContext,
+    context: AtContext,
     param: DataUpdateParams,
   ): Promise<{ records: DataRecord[] }> {
     // validate update
@@ -1145,13 +1145,13 @@ export class DataV3Service {
     const updatePayloadLimit =
       param.maxPayloadOverride ?? V3_DATA_PAYLOAD_LIMIT;
     if (transformedBody.length > updatePayloadLimit) {
-      NcError.get(context).maxPayloadLimitExceeded(updatePayloadLimit);
+      AtError.get(context).maxPayloadLimitExceeded(updatePayloadLimit);
     }
 
     await this.dataTableService.dataUpdate(context, {
       ...param,
       body: transformedBody,
-      apiVersion: NcApiVersion.V3,
+      apiVersion: AtApiVersion.V3,
     });
     profiler.log(`dataTableService.dataUpdate done`);
 
@@ -1169,7 +1169,7 @@ export class DataV3Service {
     const source = await Source.get(context, model.source_id);
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
       source,
     });
 
@@ -1234,7 +1234,7 @@ export class DataV3Service {
   }
 
   validateRequestFormat(
-    context: NcContext,
+    context: AtContext,
     param: {
       body: any;
       validateAdditionalProp?: boolean;
@@ -1252,7 +1252,7 @@ export class DataV3Service {
       // in {'Name': 'x'}` — the V8 in-error format shows the primitive's value,
       // which is what surfaced in prod. Same shielding for `null` / arrays.
       if (!row || typeof row !== 'object' || Array.isArray(row)) {
-        NcError.get(context).invalidRequestBody(
+        AtError.get(context).invalidRequestBody(
           `Record at index ${index} must be a JSON object${
             param.validateAdditionalProp ? ` with a 'fields' property` : ''
           }; got ${
@@ -1262,7 +1262,7 @@ export class DataV3Service {
       }
       if (param.validateId) {
         if (!row.id) {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             `Property 'id' is required on index ${index}`,
           );
         }
@@ -1277,7 +1277,7 @@ export class DataV3Service {
           typeof row.fields !== 'object' ||
           Array.isArray(row.fields)
         ) {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             `Property 'fields' on index ${index} must be a JSON object; got ${
               row.fields === null
                 ? 'null'
@@ -1291,7 +1291,7 @@ export class DataV3Service {
           (prop) => !['id', 'fields'].includes(prop),
         );
         if (otherProps.length) {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             `Properties ${otherProps
               .map((field) => `'${field}'`)
               .join(
@@ -1304,7 +1304,7 @@ export class DataV3Service {
   }
 
   async nestedDataList(
-    context: NcContext,
+    context: AtContext,
     param: NestedDataListParams,
   ): Promise<DataListResponse> {
     const response = await this.dataTableService.nestedDataList(context, {
@@ -1313,14 +1313,14 @@ export class DataV3Service {
         ...param.query,
         limit: +param.query?.limit || +param.query?.pageSize,
       },
-      apiVersion: NcApiVersion.V3,
+      apiVersion: AtApiVersion.V3,
     });
 
     const column = await Column.get(context, { colId: param.columnId });
     const relatedModelInfo = await this.getRelatedModelInfo(context, column);
 
     if (!relatedModelInfo) {
-      NcError.get(context).fieldNotFound(param.columnId);
+      AtError.get(context).fieldNotFound(param.columnId);
     }
 
     const { primaryKey: relatedPrimaryKey, primaryKeys: relatedPrimaryKeys } =
@@ -1474,7 +1474,7 @@ export class DataV3Service {
   }
 
   async dataRead(
-    context: NcContext,
+    context: AtContext,
     param: DataReadParams,
   ): Promise<DataRecord> {
     const { primaryKey, primaryKeys, columns } = await this.getModelInfo(
@@ -1487,7 +1487,7 @@ export class DataV3Service {
 
     const result = await this.dataTableService.dataRead(context, {
       ...(param as Omit<DataReadParams, 'req'>),
-      apiVersion: NcApiVersion.V3,
+      apiVersion: AtApiVersion.V3,
     });
 
     // Transform the response to match the new format
@@ -1560,7 +1560,7 @@ export class DataV3Service {
   }
 
   async nestedLink(
-    context: NcContext,
+    context: AtContext,
     param: {
       modelId: string;
       columnId: string;
@@ -1590,7 +1590,7 @@ export class DataV3Service {
     const baseModel = await Model.getBaseModelSQL(context, {
       id: model.id,
       viewId: view?.id,
-      dbDriver: await NcConnectionMgrv2.get(source),
+      dbDriver: await AtConnectionMgrv2.get(source),
     });
 
     const column = await this.dataTableService.getColumn(context, param);
@@ -1620,7 +1620,7 @@ export class DataV3Service {
   }
 
   async nestedUnlink(
-    context: NcContext,
+    context: AtContext,
     param: {
       modelId: string;
       columnId: string;

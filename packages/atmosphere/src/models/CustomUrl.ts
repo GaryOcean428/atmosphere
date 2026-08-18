@@ -1,5 +1,5 @@
-import type { CustomUrlType } from 'nocodb-sdk';
-import Noco from '~/Noco';
+import type { CustomUrlType } from 'atmosphere-sdk';
+import Atmosphere from '~/Atmosphere';
 
 export default class CustomUrl implements CustomUrlType {
   public id?: string;
@@ -17,21 +17,21 @@ export default class CustomUrl implements CustomUrlType {
 
   public static async get(
     _params: Partial<Pick<CustomUrl, 'id' | 'view_id' | 'custom_path'>>,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return {} as CustomUrl;
   }
 
   public static async getCustomUrlByCustomPath(
     _customPath: string,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<CustomUrl | undefined> {
     return;
   }
 
   public static async insert(
     _customUrl: Partial<CustomUrl>,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return {} as CustomUrl;
   }
@@ -43,7 +43,7 @@ export default class CustomUrl implements CustomUrlType {
         'fk_workspace_id' | 'base_id' | 'fk_model_id' | 'fk_dashboard_id'
       >
     >,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return [] as CustomUrl[];
   }
@@ -51,27 +51,27 @@ export default class CustomUrl implements CustomUrlType {
   public static async update(
     _id: string,
     _customUrl: Partial<CustomUrl>,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return {} as CustomUrl;
   }
 
   public static async checkAvailability(
     _params: Partial<Pick<CustomUrl, 'id' | 'custom_path'>>,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ) {
     return false;
   }
 
   static async delete(
     _customUrl: Partial<Pick<CustomUrl, 'id' | 'view_id' | 'fk_dashboard_id'>>,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<any> {}
 
   static async bulkDelete(
     _params: Partial<
       Pick<CustomUrl, 'fk_workspace_id' | 'base_id' | 'fk_model_id'>
     >,
-    _ncMeta = Noco.ncMeta,
+    _ncMeta = Atmosphere.ncMeta,
   ): Promise<any> {}
 }

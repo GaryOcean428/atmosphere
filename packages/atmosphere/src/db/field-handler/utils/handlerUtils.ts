@@ -5,21 +5,21 @@ import {
   parseProp,
   RelationTypes,
   UITypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type {
   ConditionParser,
   FilterOperationResult,
   FilterOptions,
 } from '~/db/field-handler/field-handler.interface';
 import type { Knex } from 'knex';
-import type { ClientType } from 'nocodb-sdk';
+import type { ClientType } from 'atmosphere-sdk';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { Column, LinkToAnotherRecordColumn, LookupColumn } from '~/models';
 import type CustomKnex from '~/db/CustomKnex';
 import { Filter, Model } from '~/models';
 import { recursiveCTEFromLookupColumn } from '~/helpers/lookupHelpers';
 import { getAliasedSoftDeleteFilter } from '~/helpers/dbHelpers';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import { getDisplayValueOfRefTable } from '~/db/generateLookupSelectQuery';
 import { DBQueryClient } from '~/dbQueryClient';
 import {
@@ -445,5 +445,5 @@ export const unsupportedFilter = async (
   },
   _options: FilterOptions,
 ): Promise<never> => {
-  return NcError._.unsupportedFilterOperation(rootArgs?.filter?.comparison_op);
+  return AtError._.unsupportedFilterOperation(rootArgs?.filter?.comparison_op);
 };

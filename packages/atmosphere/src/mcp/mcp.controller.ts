@@ -8,14 +8,14 @@ import {
 } from '@nestjs/common';
 import {
   extractRolesObj,
-  NcContext,
-  NcRequest,
+  AtContext,
+  AtRequest,
   ProjectRoles,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { MCPToken, User } from '~/models';
 import { McpService } from '~/mcp/mcp.service';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 
 @Controller()
@@ -26,12 +26,12 @@ export class McpController {
   @All('mcp/:mcpTokenId')
   async handleMcpRequest(
     @Param('mcpTokenId') tokenId: string,
-    @Request() req: NcRequest,
+    @Request() req: AtRequest,
     @Response() res,
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
   ) {
     if (!req.headers['xc-mcp-token']) {
-      NcError.unauthorized('MCP token missing');
+      AtError.unauthorized('MCP token missing');
     }
 
     const mcpToken = await MCPToken.validateToken(
@@ -47,7 +47,7 @@ export class McpController {
 
     // Check if user base_role is not no_access
     if (extractRolesObj(req.user.base_roles)[ProjectRoles.NO_ACCESS]) {
-      NcError.forbidden('User has no access');
+      AtError.forbidden('User has no access');
     }
 
     return await this.mcpService.handleRequest(tokenId, context, req, res);

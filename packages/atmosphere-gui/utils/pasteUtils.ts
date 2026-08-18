@@ -1,5 +1,5 @@
-import { ColumnHelper, UITypes, handleTZ, parseProp, renderValue } from 'nocodb-sdk'
-import type { ColumnType, TableType } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, handleTZ, parseProp, renderValue } from 'atmosphere-sdk'
+import type { ColumnType, TableType } from 'atmosphere-sdk'
 
 /**
  * When a Formula cell's rendered result is a single top-level URL token (the whole cell is one
@@ -168,7 +168,7 @@ export const serializeRange = (
   const htmlListItems: string[] = []
   let hasHtmlAnchor = false
   const clipboardItemConfig: Pick<
-    NcClipboardDataItemType,
+    AtClipboardDataItemType,
     'columns' | 'rowIds' | 'dbCellValueArr' | 'copiedPlainText' | 'copiedHtml'
   > = {
     columns: cols.map((col) => {

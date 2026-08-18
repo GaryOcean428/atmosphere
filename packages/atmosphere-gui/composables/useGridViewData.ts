@@ -1,4 +1,4 @@
-import { type ColumnType, type TableType, type ViewType, isVirtualCol } from 'nocodb-sdk'
+import { type ColumnType, type TableType, type ViewType, isVirtualCol } from 'atmosphere-sdk'
 import type { ComputedRef, Ref } from 'vue'
 import type { EventHook } from '@vueuse/core'
 import { findGroupByPath } from '../components/smartsheet/grid/canvas/utils/groupby'
@@ -374,7 +374,7 @@ export function useGridViewData(
         )
         newRows = []
       } else {
-        newRows = (await $api.dbTableRow.bulkUpdate(NOCO, metaValue?.base_id as string, metaValue?.id as string, updateArray, {
+        newRows = (await $api.dbTableRow.bulkUpdate(ATMOSPHERE, metaValue?.base_id as string, metaValue?.id as string, updateArray, {
           typecast: 'true',
         })) as Record<string, any>
       }
@@ -465,7 +465,7 @@ export function useGridViewData(
       })
 
       const bulkUpsertedRows = await $api.dbTableRow.bulkUpsert(
-        NOCO,
+        ATMOSPHERE,
         metaValue?.base_id ?? (base.value?.id as string),
         metaValue?.id as string,
         [...insertRows.map((row) => cleanRow(row.row)), ...updateRows.map((row) => cleanRow(row.row))],

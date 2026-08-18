@@ -1,13 +1,13 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useBreakpoints } from '@vueuse/core'
-import { NC_BREAKPOINTS, type NcBreakpoint } from '~/lib/constants'
+import { ATMOSPHERE_BREAKPOINTS, type AtBreakpoint } from '~/lib/constants'
 
 export const useConfigStore = defineStore('configStore', () => {
   const router = useRouter()
 
   const { isMobileMode: globalIsMobile, activeBreakpoint: globalActiveBreakpoint } = useGlobal()
 
-  const breakpoints = useBreakpoints(NC_BREAKPOINTS)
+  const breakpoints = useBreakpoints(ATMOSPHERE_BREAKPOINTS)
 
   // When set to true expanded form will auto focus on comment input and state will be set to false after focussing
   const isExpandedFormCommentMode = ref(false)
@@ -16,9 +16,9 @@ export const useConfigStore = defineStore('configStore', () => {
 
   const _activeBp = breakpoints.active()
 
-  const activeBreakpoint = computed<NcBreakpoint>(() => {
+  const activeBreakpoint = computed<AtBreakpoint>(() => {
     if (isMobileMode.value) return 'xs'
-    return (_activeBp.value || 'xs') as NcBreakpoint
+    return (_activeBp.value || 'xs') as AtBreakpoint
   })
 
   const isViewPortMobile = () => isMobileMode.value

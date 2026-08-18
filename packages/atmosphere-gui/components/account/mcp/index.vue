@@ -75,7 +75,7 @@ const columns = [
     justify: 'justify-end',
     align: 'center',
   },
-] as NcTableColumnProps[]
+] as AtTableColumnProps[]
 
 const loadUserMcpTokens = async () => {
   try {
@@ -139,7 +139,7 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col h-full">
-    <NcPageHeader>
+    <AtPageHeader>
       <template #icon>
         <GeneralIcon icon="mcp" class="flex-none h-5 w-5" />
       </template>
@@ -148,14 +148,14 @@ onMounted(async () => {
           {{ $t('title.mcpServer') }}
         </span>
       </template>
-    </NcPageHeader>
+    </AtPageHeader>
 
     <div class="flex flex-col w-full px-6 py-6 mx-auto max-w-screen-xl">
-      <div class="text-nc-content-gray-emphasis font-semibold text-lg">
+      <div class="text-atm-content-gray-emphasis font-semibold text-lg">
         {{ $t('labels.activeMcpServers') }}
       </div>
 
-      <div class="text-nc-content-gray-subtle2 mt-2 leading-5">
+      <div class="text-atm-content-gray-subtle2 mt-2 leading-5">
         {{ $t('labels.activeMcpServersLabel') }}
       </div>
 
@@ -163,7 +163,7 @@ onMounted(async () => {
         <GeneralLoader size="xlarge" />
       </div>
 
-      <NcTable
+      <AtTable
         v-else
         v-model:order-by="orderBy"
         :columns="columns"
@@ -171,66 +171,66 @@ onMounted(async () => {
         row-height="44px"
         :data="sortedMcpTokens"
         class="h-full mt-5"
-        body-row-class-name="nc-account-mcp-token-item group no-border-last cursor-pointer"
+        body-row-class-name="atm-account-mcp-token-item group no-border-last cursor-pointer"
         @row-click="handleOpenTokenModal"
       >
         <template #bodyCell="{ column, record: token }">
           <template v-if="column.key === 'name'">
-            <NcTooltip class="truncate text-nc-content-gray font-semibold text-sm">
+            <AtTooltip class="truncate text-atm-content-gray font-semibold text-sm">
               {{ token.title }}
 
               <template #title>
-                <div class="text-[10px] leading-[14px] uppercase font-semibold pt-1 text-nc-content-brand-hover">
+                <div class="text-[10px] leading-[14px] uppercase font-semibold pt-1 text-atm-content-brand-hover">
                   {{ $t('labels.createdOn') }}
                 </div>
                 <div class="mt-1 text-[13px]">
                   {{ dayjs(token.created_at).format('D MMMM YYYY, hh:mm A') }}
                 </div>
               </template>
-            </NcTooltip>
+            </AtTooltip>
           </template>
 
           <template v-if="column.key === 'workspace'">
-            <div class="text-nc-content-gray-subtle truncate">
+            <div class="text-atm-content-gray-subtle truncate">
               {{ token.workspace?.title || '-' }}
             </div>
           </template>
 
           <template v-if="column.key === 'base'">
-            <div class="text-nc-content-gray-subtle truncate">
+            <div class="text-atm-content-gray-subtle truncate">
               {{ token.base?.title || '-' }}
             </div>
           </template>
 
           <template v-if="column.key === 'action'">
-            <NcDropdown>
-              <NcButton type="secondary" class="!hidden !group-hover:block" size="small" @click.stop>
+            <AtDropdown>
+              <AtButton type="secondary" class="!hidden !group-hover:block" size="small" @click.stop>
                 <GeneralIcon icon="threeDotVertical" />
-              </NcButton>
+              </AtButton>
 
               <template #overlay>
-                <NcMenu variant="small">
-                  <NcMenuItem @click.stop="regenerateToken(token)">
+                <AtMenu variant="small">
+                  <AtMenuItem @click.stop="regenerateToken(token)">
                     <GeneralIcon icon="refresh" />
                     {{ $t('labels.regenerateToken') }}
-                  </NcMenuItem>
-                  <NcDivider />
-                  <NcMenuItem danger @click.stop="confirmDeleteToken(token)">
+                  </AtMenuItem>
+                  <AtDivider />
+                  <AtMenuItem danger @click.stop="confirmDeleteToken(token)">
                     <GeneralIcon icon="delete" />
                     {{ $t('labels.deleteToken') }}
-                  </NcMenuItem>
-                </NcMenu>
+                  </AtMenuItem>
+                </AtMenu>
               </template>
-            </NcDropdown>
+            </AtDropdown>
           </template>
 
           <template v-if="column.key === 'created_at'">
-            <div v-if="token.created_at" class="text-nc-content-gray-subtle">
+            <div v-if="token.created_at" class="text-atm-content-gray-subtle">
               {{ getFormattedDate(token.created_at, 'D MMM YYYY') }}
             </div>
           </template>
         </template>
-      </NcTable>
+      </AtTable>
 
       <DashboardSettingsBaseMCPModal
         v-if="isTokenModalVisible"
@@ -246,7 +246,7 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
-.nc-account-mcp-token-item {
-  @apply hover:bg-nc-bg-gray-extralight;
+.atm-account-mcp-token-item {
+  @apply hover:bg-atm-bg-gray-extralight;
 }
 </style>

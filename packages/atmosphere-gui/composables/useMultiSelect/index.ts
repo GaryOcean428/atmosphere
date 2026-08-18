@@ -1,6 +1,6 @@
 import type { MaybeRef } from '@vueuse/core'
-import type { AttachmentType, ColumnType, LinkToAnotherRecordType, PaginatedType, TableType, ViewType } from 'nocodb-sdk'
-import { ColumnHelper, UITypes, isSystemColumn, isVirtualCol, populateUniqueFileName } from 'nocodb-sdk'
+import type { AttachmentType, ColumnType, LinkToAnotherRecordType, PaginatedType, TableType, ViewType } from 'atmosphere-sdk'
+import { ColumnHelper, UITypes, isSystemColumn, isVirtualCol, populateUniqueFileName } from 'atmosphere-sdk'
 import { parse } from 'papaparse'
 import type { Ref } from 'vue'
 import { computed } from 'vue'
@@ -87,7 +87,7 @@ export function useMultiSelect(
 
   const { internalGet } = useInternalBatch()
 
-  const { fillRows } = useNocoAi()
+  const { fillRows } = useAtmosphereAi()
 
   const { isDataReadOnly } = useRoles()
 
@@ -185,7 +185,7 @@ export function useMultiSelect(
     const blobHTML = new Blob([copyHTML], { type: 'text/html' })
     const blobPlainText = new Blob([copyPlainText], { type: 'text/plain' })
 
-    const clipboardItem: NcClipboardDataItemType = {
+    const clipboardItem: AtClipboardDataItemType = {
       ...clipboardItemConfig,
       tableId: meta.value?.id,
       id: getClipboardItemId(),
@@ -254,7 +254,7 @@ export function useMultiSelect(
 
           await copyMimes({ 'text/plain': plainTextValue, ...clipboardContent })
 
-          const clipboardItem: NcClipboardDataItemType = {
+          const clipboardItem: AtClipboardDataItemType = {
             dbCellValueArr: [[cellValue]],
             columns: [clipboardColumn],
             copiedPlainText: plainTextValue,
@@ -1096,7 +1096,7 @@ export function useMultiSelect(
     if (clipboardData?.endsWith('\n')) {
       // Remove '\n' from the end of the clipboardData
       // When copying from XLS/XLSX files, there is an extra '\n' appended to the end
-      //   this overwrites one additional cell information when we paste in NocoDB
+      //   this overwrites one additional cell information when we paste in Atmosphere
       clipboardData = clipboardData.replace(/\n$/, '')
     }
 
@@ -1700,7 +1700,7 @@ export function useMultiSelect(
     const newAttachments: AttachmentType[] = []
 
     try {
-      const data = await batchUploadFiles(files, [NOCO, base.value.id, meta.value?.id, columnId].join('/'))
+      const data = await batchUploadFiles(files, [ATMOSPHERE, base.value.id, meta.value?.id, columnId].join('/'))
 
       // add suffix in duplicate file title
       for (const uploadedFile of data) {

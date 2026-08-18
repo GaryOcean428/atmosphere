@@ -55,7 +55,7 @@ const menuList = computed<CellStepperOption[]>(() => {
   return [{ key: CLEAR_OPTION_KEY, title: t('labels.clearSelection') }, ...props.options]
 })
 
-/** All-options menu (NcList) — writes back on pick, no-op when disabled. */
+/** All-options menu (AtList) — writes back on pick, no-op when disabled. */
 const menuValue = computed({
   get: () => props.modelValue,
   set: (value) => {
@@ -101,7 +101,7 @@ function jumpToSelected() {
 
   nextTick(() => {
     rootRef.value
-      ?.querySelector<HTMLElement>('.nc-stepper-item-selected')
+      ?.querySelector<HTMLElement>('.atm-stepper-item-selected')
       ?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   })
 }
@@ -128,7 +128,7 @@ function handleKeyDown(e: KeyboardEvent) {
       emits('update:modelValue', props.options[next]!.key)
 
       nextTick(() => {
-        const el = rootRef.value?.querySelector<HTMLElement>('.nc-stepper-item-selected')
+        const el = rootRef.value?.querySelector<HTMLElement>('.atm-stepper-item-selected')
         el?.focus({ preventScroll: true })
         el?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
       })
@@ -152,8 +152,8 @@ onMounted(() => nextTick(syncScrollState))
 <template>
   <div
     ref="rootRef"
-    class="nc-cell-stepper w-full max-w-full flex flex-col"
-    :class="{ 'nc-cell-stepper-disabled': disabled, 'nc-stepper-format-number': format === 'number' }"
+    class="atm-cell-stepper w-full max-w-full flex flex-col"
+    :class="{ 'atm-cell-stepper-disabled': disabled, 'atm-stepper-format-number': format === 'number' }"
     role="radiogroup"
     @click.stop
     @keydown="handleKeyDown"
@@ -161,15 +161,15 @@ onMounted(() => nextTick(syncScrollState))
     <!-- Top-right controls (Airtable parity): ⋯ all-options menu, then ‹ ›
          scroll arrows when the horizontal row overflows. -->
     <div class="flex items-center justify-end gap-0.5">
-      <NcDropdown v-model:visible="isMenuOpen" placement="bottomRight" overlay-class-name="nc-stepper-menu-overlay">
-        <NcButton icon-only size="xsmall" type="text" class="nc-stepper-menu-btn !px-1" data-testid="nc-stepper-all-options">
+      <AtDropdown v-model:visible="isMenuOpen" placement="bottomRight" overlay-class-name="atm-stepper-menu-overlay">
+        <AtButton icon-only size="xsmall" type="text" class="atm-stepper-menu-btn !px-1" data-testid="atm-stepper-all-options">
           <template #icon>
             <GeneralIcon icon="threeDotHorizontal" class="w-3.5 h-3.5" />
           </template>
-        </NcButton>
+        </AtButton>
 
         <template #overlay>
-          <NcList
+          <AtList
             v-model:value="menuValue"
             v-model:open="isMenuOpen"
             :list="menuList"
@@ -184,12 +184,12 @@ onMounted(() => nextTick(syncScrollState))
             <template #listItemContent="{ option, isSelected: isItemSelected }">
               <span
                 v-if="option.key === CLEAR_OPTION_KEY"
-                class="nc-stepper-menu-clear-chip"
-                data-testid="nc-stepper-clear-selection"
+                class="atm-stepper-menu-clear-chip"
+                data-testid="atm-stepper-clear-selection"
               >
                 {{ option.title }}
               </span>
-              <div v-else class="flex-1 flex min-w-0" :data-testid="`nc-stepper-menu-option-${option.title}`">
+              <div v-else class="flex-1 flex min-w-0" :data-testid="`atm-stepper-menu-option-${option.title}`">
                 <slot name="chip" :option="option" :selected="isItemSelected" :in-menu="true">
                   <span class="truncate">{{ option.title }}</span>
                 </slot>
@@ -197,13 +197,13 @@ onMounted(() => nextTick(syncScrollState))
             </template>
 
             <template #listFooter>
-              <div class="border-t-1 border-nc-border-gray-medium p-1 mt-1">
+              <div class="border-t-1 border-atm-border-gray-medium p-1 mt-1">
                 <button
                   type="button"
-                  class="nc-stepper-menu-row text-nc-content-brand"
+                  class="atm-stepper-menu-row text-atm-content-brand"
                   :disabled="!hasSelection"
-                  :class="{ '!text-nc-content-gray-muted !cursor-default': !hasSelection }"
-                  data-testid="nc-stepper-jump-to-selected"
+                  :class="{ '!text-atm-content-gray-muted !cursor-default': !hasSelection }"
+                  data-testid="atm-stepper-jump-to-selected"
                   @click="jumpToSelected"
                 >
                   <GeneralIcon icon="arrowRight" class="flex-none w-3.5 h-3.5" />
@@ -211,60 +211,60 @@ onMounted(() => nextTick(syncScrollState))
                 </button>
               </div>
             </template>
-          </NcList>
+          </AtList>
         </template>
-      </NcDropdown>
+      </AtDropdown>
 
       <template v-if="showChevrons">
-        <NcButton
+        <AtButton
           icon-only
           size="xsmall"
           type="text"
-          class="nc-stepper-chevron !px-1"
+          class="atm-stepper-chevron !px-1"
           :disabled="!canScrollLeft"
           @click="scrollByStep(-1)"
         >
           <template #icon>
             <GeneralIcon icon="chevronLeft" class="w-3.5 h-3.5" />
           </template>
-        </NcButton>
-        <NcButton
+        </AtButton>
+        <AtButton
           icon-only
           size="xsmall"
           type="text"
-          class="nc-stepper-chevron !px-1"
+          class="atm-stepper-chevron !px-1"
           :disabled="!canScrollRight"
           @click="scrollByStep(1)"
         >
           <template #icon>
             <GeneralIcon icon="chevronRight" class="w-3.5 h-3.5" />
           </template>
-        </NcButton>
+        </AtButton>
       </template>
     </div>
 
     <!-- Vertical: circle rail on the left with a continuous line through the
          indicators, chip beside each circle. -->
-    <div v-if="isVertical" class="flex flex-col items-start px-1 pb-1 max-h-[440px] overflow-y-auto nc-scrollbar-visible">
+    <div v-if="isVertical" class="flex flex-col items-start px-1 pb-1 max-h-[440px] overflow-y-auto atm-scrollbar-visible">
       <button
         v-for="(op, i) of options"
         :key="op.key"
         type="button"
         role="radio"
         :aria-checked="isSelected(op)"
-        class="nc-stepper-item nc-stepper-item-v relative flex items-center gap-3 max-w-full"
+        class="atm-stepper-item atm-stepper-item-v relative flex items-center gap-3 max-w-full"
         :class="{
-          'nc-stepper-item-selected': isSelected(op),
-          'nc-stepper-item-first': i === 0,
-          'nc-stepper-item-last': i === options.length - 1,
+          'atm-stepper-item-selected': isSelected(op),
+          'atm-stepper-item-first': i === 0,
+          'atm-stepper-item-last': i === options.length - 1,
         }"
         :disabled="disabled"
-        :data-testid="`nc-stepper-option-${op.title}`"
+        :data-testid="`atm-stepper-option-${op.title}`"
         @click="selectOption(op)"
       >
         <span
-          class="nc-stepper-indicator"
-          :class="{ 'nc-stepper-indicator-selected': isSelected(op), 'nc-stepper-indicator-radio': format === 'radio' }"
+          class="atm-stepper-indicator"
+          :class="{ 'atm-stepper-indicator-selected': isSelected(op), 'atm-stepper-indicator-radio': format === 'radio' }"
         >
           <template v-if="format === 'number'">{{ i + 1 }}</template>
         </span>
@@ -279,26 +279,26 @@ onMounted(() => nextTick(syncScrollState))
 
     <!-- Horizontal: indicator row with a continuous line through the circles,
          chip centered UNDER each circle (Airtable parity). -->
-    <div v-else ref="scrollerRef" class="nc-stepper-scroller flex items-start px-1 pb-1 pt-1">
+    <div v-else ref="scrollerRef" class="atm-stepper-scroller flex items-start px-1 pb-1 pt-1">
       <button
         v-for="(op, i) of options"
         :key="op.key"
         type="button"
         role="radio"
         :aria-checked="isSelected(op)"
-        class="nc-stepper-item nc-stepper-item-h relative flex-1 flex flex-col items-center gap-1.5"
+        class="atm-stepper-item atm-stepper-item-h relative flex-1 flex flex-col items-center gap-1.5"
         :class="{
-          'nc-stepper-item-selected': isSelected(op),
-          'nc-stepper-item-first': i === 0,
-          'nc-stepper-item-last': i === options.length - 1,
+          'atm-stepper-item-selected': isSelected(op),
+          'atm-stepper-item-first': i === 0,
+          'atm-stepper-item-last': i === options.length - 1,
         }"
         :disabled="disabled"
-        :data-testid="`nc-stepper-option-${op.title}`"
+        :data-testid="`atm-stepper-option-${op.title}`"
         @click="selectOption(op)"
       >
         <span
-          class="nc-stepper-indicator relative z-1"
-          :class="{ 'nc-stepper-indicator-selected': isSelected(op), 'nc-stepper-indicator-radio': format === 'radio' }"
+          class="atm-stepper-indicator relative z-1"
+          :class="{ 'atm-stepper-indicator-selected': isSelected(op), 'atm-stepper-indicator-radio': format === 'radio' }"
         >
           <template v-if="format === 'number'">{{ i + 1 }}</template>
         </span>
@@ -315,7 +315,7 @@ onMounted(() => nextTick(syncScrollState))
 
 <style lang="scss" scoped>
 /* Padding here, not in the template — scoped selectors outrank Windi utilities. */
-.nc-stepper-item {
+.atm-stepper-item {
   @apply p-0 border-none bg-transparent cursor-pointer min-w-0;
 
   &:disabled {
@@ -323,26 +323,26 @@ onMounted(() => nextTick(syncScrollState))
   }
 }
 
-.nc-stepper-indicator {
+.atm-stepper-indicator {
   @apply flex-none w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-semibold leading-none;
-  border: 1px solid var(--nc-border-gray-medium);
-  background: var(--nc-bg-default);
-  color: var(--nc-content-gray-muted);
+  border: 1px solid var(--atm-border-gray-medium);
+  background: var(--atm-bg-default);
+  color: var(--atm-content-gray-muted);
 
-  &.nc-stepper-indicator-selected {
-    border-color: var(--nc-content-gray);
-    background: var(--nc-content-gray);
-    color: var(--nc-bg-default);
+  &.atm-stepper-indicator-selected {
+    border-color: var(--atm-content-gray);
+    background: var(--atm-content-gray);
+    color: var(--atm-bg-default);
   }
 
   /* Radio format: keep the ring light and mark selection with an inner dot. */
-  &.nc-stepper-indicator-radio.nc-stepper-indicator-selected {
-    background: var(--nc-bg-default);
+  &.atm-stepper-indicator-radio.atm-stepper-indicator-selected {
+    background: var(--atm-bg-default);
 
     &::after {
       content: '';
       @apply w-2 h-2 rounded-full;
-      background: var(--nc-content-gray);
+      background: var(--atm-content-gray);
     }
   }
 }
@@ -350,7 +350,7 @@ onMounted(() => nextTick(syncScrollState))
 /* Continuous through-line — two half segments per item at circle-center
    height, suppressed on the outer halves of the first/last items. The
    opaque circle sits on top, so the line reads as touching the circles. */
-.nc-stepper-item-h {
+.atm-stepper-item-h {
   @apply px-2;
 
   min-width: max-content;
@@ -361,7 +361,7 @@ onMounted(() => nextTick(syncScrollState))
     position: absolute;
     top: 7.5px; /* half the 16px circle */
     height: 1px;
-    background: var(--nc-border-gray-medium);
+    background: var(--atm-border-gray-medium);
   }
 
   &::before {
@@ -376,7 +376,7 @@ onMounted(() => nextTick(syncScrollState))
 
   /* First/last hug the container edges (Airtable parity) — indicator + chip
      flush to the edge, their line segment extended under the opaque circle. */
-  &.nc-stepper-item-first {
+  &.atm-stepper-item-first {
     @apply items-start pl-0;
 
     &::after {
@@ -384,7 +384,7 @@ onMounted(() => nextTick(syncScrollState))
     }
   }
 
-  &.nc-stepper-item-last {
+  &.atm-stepper-item-last {
     @apply items-end pr-0;
 
     &::before {
@@ -393,20 +393,20 @@ onMounted(() => nextTick(syncScrollState))
   }
 
   /* Single option is both first and last — keep it left-aligned. */
-  &.nc-stepper-item-first.nc-stepper-item-last {
+  &.atm-stepper-item-first.atm-stepper-item-last {
     @apply items-start;
   }
 
-  &.nc-stepper-item-first::before {
+  &.atm-stepper-item-first::before {
     content: none;
   }
 
-  &.nc-stepper-item-last::after {
+  &.atm-stepper-item-last::after {
     content: none;
   }
 }
 
-.nc-stepper-item-v {
+.atm-stepper-item-v {
   @apply py-2;
 
   &::before,
@@ -415,7 +415,7 @@ onMounted(() => nextTick(syncScrollState))
     position: absolute;
     left: 7.5px; /* center of the 16px circle */
     width: 1px;
-    background: var(--nc-border-gray-medium);
+    background: var(--atm-border-gray-medium);
   }
 
   &::before {
@@ -428,38 +428,38 @@ onMounted(() => nextTick(syncScrollState))
     bottom: 0;
   }
 
-  &.nc-stepper-item-first::before {
+  &.atm-stepper-item-first::before {
     content: none;
   }
 
-  &.nc-stepper-item-last::after {
+  &.atm-stepper-item-last::after {
     content: none;
   }
 
-  .nc-stepper-indicator {
+  .atm-stepper-indicator {
     @apply relative z-1;
   }
 }
 
 /* Number format needs room for two digits — bigger circle, line re-centered. */
-.nc-stepper-format-number {
-  .nc-stepper-indicator {
+.atm-stepper-format-number {
+  .atm-stepper-indicator {
     @apply w-5 h-5 text-[10px];
   }
 
-  .nc-stepper-item-h::before,
-  .nc-stepper-item-h::after {
+  .atm-stepper-item-h::before,
+  .atm-stepper-item-h::after {
     top: 9.5px;
   }
 
-  .nc-stepper-item-v::before,
-  .nc-stepper-item-v::after {
+  .atm-stepper-item-v::before,
+  .atm-stepper-item-v::after {
     left: 9.5px;
   }
 }
 
 /* Chevrons live in the top-right controls — hide the native scrollbar. */
-.nc-stepper-scroller {
+.atm-stepper-scroller {
   overflow-x: auto;
   scrollbar-width: none;
 
@@ -468,11 +468,11 @@ onMounted(() => nextTick(syncScrollState))
   }
 }
 
-.nc-stepper-menu-row {
+.atm-stepper-menu-row {
   @apply w-full flex items-center gap-2 px-2 py-1.5 rounded-md border-none bg-transparent cursor-pointer text-left;
 
   &:hover:not(:disabled) {
-    @apply bg-nc-bg-gray-light;
+    @apply bg-atm-bg-gray-light;
   }
 
   &:disabled {
@@ -480,9 +480,9 @@ onMounted(() => nextTick(syncScrollState))
   }
 }
 
-.nc-stepper-menu-clear-chip {
-  @apply inline-flex items-center px-2 rounded-[12px] text-small text-nc-content-gray;
-  border: 1px solid var(--nc-border-gray-medium);
-  background: var(--nc-bg-default);
+.atm-stepper-menu-clear-chip {
+  @apply inline-flex items-center px-2 rounded-[12px] text-small text-atm-content-gray;
+  border: 1px solid var(--atm-border-gray-medium);
+  background: var(--atm-bg-default);
 }
 </style>

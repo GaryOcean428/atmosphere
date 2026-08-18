@@ -1,5 +1,5 @@
 // PR review fix #5: UITypes import no longer needed after removing redundant check
-import { type ColumnType } from 'nocodb-sdk'
+import { type ColumnType } from 'atmosphere-sdk'
 import type { PropType } from '@vue/runtime-core'
 
 export const renderIcon = (column: ColumnType, abstractType: any) => {
@@ -103,7 +103,7 @@ export default defineComponent({
       if (!column.value && !columnMeta.value) return null
 
       return h(renderIcon((columnMeta.value ?? column.value)!, abstractType.value), {
-        class: `${defaultColor.value || 'text-inherit'} mx-1 flex-none nc-cell-icon`,
+        class: `${defaultColor.value || 'text-inherit'} mx-1 flex-none atm-cell-icon`,
       })
     }
   },

@@ -1,11 +1,11 @@
 spec:
-  name: nocodb
+  name: atmosphere
   services:
-  - name: nocodb
+  - name: atmosphere
     image:
       registry_type: DOCKER_HUB
-      registry: nocodb
-      repository: nocodb
+      registry: atmosphere
+      repository: atmosphere
       tag: latest
     run_command: "./server/scripts/digitalocean-postbuild.sh"
     instance_size_slug: "basic-s"

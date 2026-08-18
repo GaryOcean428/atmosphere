@@ -8,19 +8,19 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { AppEvents, ProjectStatus, readonlyMetaAllowedTypes } from 'nocodb-sdk';
+import { AppEvents, ProjectStatus, readonlyMetaAllowedTypes } from 'atmosphere-sdk';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { generateUniqueName } from '~/helpers/exportImportHelpers';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 import { JobTypes } from '~/interface/Jobs';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { Base, Column, Model, Source } from '~/models';
 import { IJobsService } from '~/modules/jobs/jobs-service.interface';
 import { DuplicateService } from '~/modules/jobs/jobs/export-import/duplicate.service';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { BasesService } from '~/services/bases.service';
 import { DuplicateModelUtils } from '~/utils/duplicate-model.utils';
@@ -45,8 +45,8 @@ export class DuplicateController {
     scope: 'org',
   })
   public async duplicateSharedBase(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('workspaceId') _workspaceId: string,
     @Param('sharedBaseId') sharedBaseId: string,
     @Body()
@@ -67,13 +67,13 @@ export class DuplicateController {
     );
 
     if (!base) {
-      NcError.get(context).baseNotFound(sharedBaseId);
+      AtError.get(context).baseNotFound(sharedBaseId);
     }
 
     const source = (await base.getSources())[0];
 
     if (!source) {
-      NcError.get(context).noSourcesFound();
+      AtError.get(context).noSourcesFound();
     }
 
     const bases = await Base.list(context.workspace_id);
@@ -121,8 +121,8 @@ export class DuplicateController {
   @HttpCode(200)
   @Acl('duplicateBase')
   async duplicateBase(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseId') baseId: string,
     @Param('sourceId') sourceId?: string,
     @Body()
@@ -156,8 +156,8 @@ export class DuplicateController {
   @HttpCode(200)
   @Acl('duplicateModel')
   async duplicateModel(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseId') baseId: string,
     @Param('modelId') modelId?: string,
     @Body()
@@ -180,7 +180,7 @@ export class DuplicateController {
         modelId,
       });
 
-    const parentAuditId = await Noco.ncAudit.genNanoid(MetaTable.AUDIT);
+    const parentAuditId = await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT);
     this.appHooksService.emit(AppEvents.TABLE_DUPLICATE_START, {
       sourceTable: sourceModel,
       user: req.user,
@@ -215,8 +215,8 @@ export class DuplicateController {
   @HttpCode(200)
   @Acl('duplicateColumn')
   async duplicateColumn(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseId') baseId: string,
     @Param('columnId') columnId?: string,
     @Body()
@@ -230,7 +230,7 @@ export class DuplicateController {
     const base = await Base.get(context, baseId);
 
     if (!base) {
-      NcError.get(context).baseNotFound(baseId);
+      AtError.get(context).baseNotFound(baseId);
     }
 
     const column = await Column.get(context, {
@@ -239,16 +239,16 @@ export class DuplicateController {
     });
 
     if (!column) {
-      NcError.get(context).fieldNotFound(columnId);
+      AtError.get(context).fieldNotFound(columnId);
     }
 
     const model = await Model.get(context, column.fk_model_id);
 
     if (!model) {
-      NcError.get(context).tableNotFound(column?.fk_model_id);
+      AtError.get(context).tableNotFound(column?.fk_model_id);
     }
 
-    const parentAuditId = await Noco.ncAudit.genNanoid(MetaTable.AUDIT);
+    const parentAuditId = await Atmosphere.ncAudit.genNanoid(MetaTable.AUDIT);
     this.appHooksService.emit(AppEvents.COLUMN_DUPLICATE_START, {
       table: model,
       sourceColumn: column,
@@ -265,10 +265,10 @@ export class DuplicateController {
     // check if source is readonly and column type is not allowed
     if (!readonlyMetaAllowedTypes.includes(column.uidt)) {
       if (source.is_schema_readonly) {
-        NcError.get(context).sourceMetaReadOnly(source.alias);
+        AtError.get(context).sourceMetaReadOnly(source.alias);
       }
       if (source.is_data_readonly) {
-        NcError.get(context).sourceDataReadOnly(source.alias);
+        AtError.get(context).sourceDataReadOnly(source.alias);
       }
     }
 

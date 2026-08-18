@@ -1,43 +1,43 @@
 import { Injectable, Logger } from '@nestjs/common';
 import debug from 'debug';
 import PQueue from 'p-queue';
-import { UITypes } from 'nocodb-sdk';
+import { UITypes } from 'atmosphere-sdk';
 import type { MetaService } from '~/meta/meta.service';
 import type CustomKnex from '~/db/CustomKnex';
 import type SqlMgrv2 from '~/db/sql-mgr/v2/SqlMgrv2';
 import { Column, Model, Source } from '~/models';
 import { CacheScope, MetaTable } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import SimpleLRUCache from '~/utils/cache';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import ProjectMgrv2 from '~/db/sql-mgr/v2/ProjectMgrv2';
 import { getUniqueColumnName } from '~/helpers/getUniqueName';
 import getColumnPropsFromUIDT from '~/helpers/getColumnPropsFromUIDT';
 import { Altered } from '~/services/columns.service';
 import Upgrader from '~/Upgrader';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 /**
  * PHASE-2 BACKFILL — per-link Order columns for EXISTING v2 junction tables.
  *
- * The nc_099 migration + junction-creation flow give NEW v2 links their two
+ * The atm_099 migration + junction-creation flow give NEW v2 links their two
  * junction Order columns; this job backfills the columns onto junctions that
- * already existed. For each NocoDB-managed (meta/local) junction (`mm = true`)
+ * already existed. For each Atmosphere-managed (meta/local) junction (`mm = true`)
  * it: adds two system Order columns, seeds their values with a partitioned
  * ROW_NUMBER (one per FK group), creates the composite (fk, order) indexes, and
  * wires the column ids onto the relation rows (mirrors columns.service). Skips
- * external sources and already-migrated junctions. Mirrors nc_job_005 exactly.
+ * external sources and already-migrated junctions. Mirrors atm_job_005 exactly.
  *
  * NOT REGISTERED YET. To enable, register like the other migration jobs:
  *   1. add `LinkOrderColumnCreation = 'link-order-column-creation'` to
  *      MigrationJobTypes (interface/Jobs.ts)
  *   2. provide + inject this class in InitMigrationJobs, push a new
  *      `{ version: '<next>', job, service }` entry into migrationJobsList
- *   3. bump NC_MIGRATION_JOBS_VERSION (init-meta-service.provider.ts)
+ *   3. bump ATMOSPHERE_MIGRATION_JOBS_VERSION (init-meta-service.provider.ts)
  */
 const PARALLEL_LIMIT =
-  +process.env.NC_LINK_ORDER_MIGRATION_PARALLEL_LIMIT || 10;
-const TEMP_TABLE = 'nc_temp_processed_link_order_models';
+  +process.env.ATMOSPHERE_LINK_ORDER_MIGRATION_PARALLEL_LIMIT || 10;
+const TEMP_TABLE = 'atm_temp_processed_link_order_models';
 
 const propsByClientType: Record<string, any> = {};
 
@@ -54,8 +54,8 @@ const memoizedOrderProps = async (source: Source) => {
     propsByClientType[source.type] = await getColumnPropsFromUIDT(
       {
         uidt: UITypes.Order,
-        column_name: 'nc_order',
-        title: 'nc_order',
+        column_name: 'atm_order',
+        title: 'atm_order',
       } as any,
       source,
     );
@@ -65,7 +65,7 @@ const memoizedOrderProps = async (source: Source) => {
 
 @Injectable()
 export class LinkOrderColumnMigration {
-  private readonly debugLog = debug('nc:migration-jobs:link-order-column');
+  private readonly debugLog = debug('atm:migration-jobs:link-order-column');
   private readonly logger = new Logger(LinkOrderColumnMigration.name);
   private readonly log = (...msgs: string[]) =>
     this.logger.log(`${msgs.join(' ')}`);
@@ -75,8 +75,8 @@ export class LinkOrderColumnMigration {
   private cache = new SimpleLRUCache(1000);
 
   async job() {
-    if (!(await Noco.ncMeta.knexConnection.schema.hasTable(TEMP_TABLE))) {
-      await Noco.ncMeta.knexConnection.schema.createTable(
+    if (!(await Atmosphere.ncMeta.knexConnection.schema.hasTable(TEMP_TABLE))) {
+      await Atmosphere.ncMeta.knexConnection.schema.createTable(
         TEMP_TABLE,
         (table) => {
           table.increments('id').primary();
@@ -88,7 +88,7 @@ export class LinkOrderColumnMigration {
       );
     }
 
-    await Noco.ncMeta
+    await Atmosphere.ncMeta
       .knexConnection(TEMP_TABLE)
       .delete()
       .where('completed', false);
@@ -137,7 +137,7 @@ export class LinkOrderColumnMigration {
             `Error processing junction ${model.id}: ${e.message}`,
             e.stack,
           );
-          await this.updateModelStatus(Noco.ncMeta, model.id, false, e.message);
+          await this.updateModelStatus(Atmosphere.ncMeta, model.id, false, e.message);
         } finally {
           const item = this.processingModels.find(
             (m) => m.fk_model_id === model.id,
@@ -217,7 +217,7 @@ export class LinkOrderColumnMigration {
       (c) => c.uidt === UITypes.Order,
     );
     if (existingOrderCols.length >= 2) {
-      await this.updateModelStatus(Noco.ncMeta, modelId, true);
+      await this.updateModelStatus(Atmosphere.ncMeta, modelId, true);
       return;
     }
 
@@ -228,7 +228,7 @@ export class LinkOrderColumnMigration {
       .where('fk_mm_model_id', modelId);
     if (!relations.length) {
       // orphan junction with no relation rows — nothing to wire
-      await this.updateModelStatus(Noco.ncMeta, modelId, true);
+      await this.updateModelStatus(Atmosphere.ncMeta, modelId, true);
       return;
     }
 
@@ -238,7 +238,7 @@ export class LinkOrderColumnMigration {
     const colA = model.columns.find((c) => c.id === keyColIdA);
     const colB = model.columns.find((c) => c.id === keyColIdB);
     if (!colA || !colB) {
-      await this.updateModelStatus(Noco.ncMeta, modelId, true);
+      await this.updateModelStatus(Atmosphere.ncMeta, modelId, true);
       return;
     }
 
@@ -249,7 +249,7 @@ export class LinkOrderColumnMigration {
     } as any);
     source.upgraderMode = true;
 
-    const dbDriver: CustomKnex = await NcConnectionMgrv2.get(source);
+    const dbDriver: CustomKnex = await AtConnectionMgrv2.get(source);
     const baseModel = await Model.getBaseModelSQL(context, {
       model,
       source,
@@ -264,10 +264,10 @@ export class LinkOrderColumnMigration {
 
     // Build the two Order columns with distinct names.
     const orderProps = await memoizedOrderProps(source);
-    const nameA = getUniqueColumnName(model.columns, 'nc_order');
+    const nameA = getUniqueColumnName(model.columns, 'atm_order');
     const nameB = getUniqueColumnName(
       [...model.columns, { column_name: nameA }] as any,
-      'nc_order',
+      'atm_order',
     );
     const mkOrderCol = (column_name: string) => ({
       ...orderProps,
@@ -330,7 +330,7 @@ export class LinkOrderColumnMigration {
     source.upgraderQueries.push(
       dbDriver
         .raw(`CREATE INDEX ?? ON ?? (??, ??)`, [
-          `nc_lo_a_${model.id}`,
+          `atm_lo_a_${model.id}`,
           tnPath,
           colA.column_name,
           orderColA.column_name,
@@ -340,7 +340,7 @@ export class LinkOrderColumnMigration {
     source.upgraderQueries.push(
       dbDriver
         .raw(`CREATE INDEX ?? ON ?? (??, ??)`, [
-          `nc_lo_b_${model.id}`,
+          `atm_lo_b_${model.id}`,
           tnPath,
           colB.column_name,
           orderColB.column_name,
@@ -366,7 +366,7 @@ export class LinkOrderColumnMigration {
         },
         { fk_column_id: rel.fk_column_id },
       );
-      await NocoCache.del(
+      await AtmosphereCache.del(
         context,
         `${CacheScope.COL_RELATION}:${rel.fk_column_id}`,
       );
@@ -374,7 +374,7 @@ export class LinkOrderColumnMigration {
 
     await this.updateModelStatus(ncMeta, modelId, true);
 
-    const realDbDriver = await NcConnectionMgrv2.get(
+    const realDbDriver = await AtConnectionMgrv2.get(
       new Source({ ...source, upgraderMode: false } as any),
     );
     await Upgrader.flushSourceQueries(source, realDbDriver);

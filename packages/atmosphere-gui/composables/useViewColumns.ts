@@ -8,8 +8,8 @@ import type {
   MapType,
   TableType,
   ViewType,
-} from 'nocodb-sdk'
-import { CommonAggregations, ViewTypes, getFirstNonPersonalView, isHiddenCol, isSystemColumn } from 'nocodb-sdk'
+} from 'atmosphere-sdk'
+import { CommonAggregations, ViewTypes, getFirstNonPersonalView, isHiddenCol, isSystemColumn } from 'atmosphere-sdk'
 import type { ComputedRef, Ref } from 'vue'
 import type { InterfacePageDataApi } from '../lib/interfaceData'
 

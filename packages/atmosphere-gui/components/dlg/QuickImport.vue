@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { UploadChangeParam, UploadFile } from 'ant-design-vue'
 import { Upload } from 'ant-design-vue'
-import { type ColumnType, type TableType, charsetOptions, charsetOptionsMap } from 'nocodb-sdk'
+import { type ColumnType, type TableType, charsetOptions, charsetOptionsMap } from 'atmosphere-sdk'
 import { defineAsyncComponent } from 'vue'
 
 const {
@@ -96,7 +96,7 @@ const defaultParserConfig = {
 }
 
 // Post-parse decisions (what to do with the rows) live here. This matches
-// the backend shape — see `FileImportOptions` in nocodb-sdk.
+// the backend shape — see `FileImportOptions` in atmosphere-sdk.
 const defaultOptions = {
   shouldImportData: true,
   importDataOnly: false,
@@ -540,7 +540,7 @@ watch(
     :closable="false"
     :width="templateEditorModal && importDataOnly ? '640px' : '448px'"
     class="!top-[12.5vh]"
-    :wrap-class-name="`nc-modal-quick-import ${wrapClassName}`"
+    :wrap-class-name="`atm-modal-quick-import ${wrapClassName}`"
     :transition-name="transition"
     @keydown.esc="dialogShow = false"
   >
@@ -554,8 +554,8 @@ watch(
         <GeneralIcon :icon="importMeta.icon" class="w-6 h-6" />
         {{ importMeta.header }}
         <a
-          href="https://nocodb.com/docs/product-docs/tables/create-table-via-import"
-          class="!text-nc-content-gray-subtle2 text-sm font-weight-500 ml-auto"
+          href="https://atmosphere.dev/docs/product-docs/tables/create-table-via-import"
+          class="!text-atm-content-gray-subtle2 text-sm font-weight-500 ml-auto"
           target="_blank"
           rel="noopener"
         >
@@ -583,13 +583,13 @@ watch(
           :base-id="baseId"
           :source-id="sourceIdRef"
           :table-icon="importMeta.icon"
-          class="nc-quick-import-template-editor"
+          class="atm-quick-import-template-editor"
           @import="handleImport"
           @error="onError"
           @change="onChange"
         />
         <div v-else>
-          <NcTabs v-model:active-key="activeTab" class="nc-quick-import-tabs" @update:active-key="handleResetImportError">
+          <AtTabs v-model:active-key="activeTab" class="atm-quick-import-tabs" @update:active-key="handleResetImportError">
             <a-tab-pane :key="ImportTypeTabs.upload" :disabled="preImportLoading" class="!h-full">
               <template #tab>
                 <div class="flex gap-2 items-center">
@@ -600,7 +600,7 @@ watch(
                 <a-upload-dragger
                   v-model:file-list="importState.fileList"
                   name="file"
-                  class="nc-modern-drag-import nc-input-import !scrollbar-thin-dull !py-4 !transition !rounded-lg !border-nc-border-gray-medium"
+                  class="atm-modern-drag-import atm-input-import !scrollbar-thin-dull !py-4 !transition !rounded-lg !border-atm-border-gray-medium"
                   :class="{
                     hidden: hideUpload,
                   }"
@@ -614,14 +614,14 @@ watch(
                   @change="handleChange"
                   @reject="rejectDrop"
                 >
-                  <component :is="iconMap.upload" class="w-6 h-6 text-nc-content-gray-subtle" />
+                  <component :is="iconMap.upload" class="w-6 h-6 text-atm-content-gray-subtle" />
 
-                  <p class="!mt-2 text-[13px] text-nc-content-gray-subtle">
+                  <p class="!mt-2 text-[13px] text-atm-content-gray-subtle">
                     {{ $t('msg.dropYourDocHere') }} {{ $t('general.or').toLowerCase() }}
-                    <span class="text-nc-content-brand hover:underline">{{ $t('labels.browseFiles') }}</span>
+                    <span class="text-atm-content-brand hover:underline">{{ $t('labels.browseFiles') }}</span>
                   </p>
 
-                  <p class="!mt-3 text-[13px] text-nc-content-gray-muted">
+                  <p class="!mt-3 text-[13px] text-atm-content-gray-muted">
                     {{ $t('general.supported') }}: {{ importMeta.acceptTypes }}
                   </p>
 
@@ -631,34 +631,34 @@ watch(
 
                   <template #itemRender="{ file, actions }">
                     <div class="flex items-center gap-4">
-                      <div class="bg-nc-bg-gray-extralight h-9 w-9 flex flex-none items-center justify-center rounded-lg">
+                      <div class="bg-atm-bg-gray-extralight h-9 w-9 flex flex-none items-center justify-center rounded-lg">
                         <GeneralIcon :icon="importMeta.icon" class="w-5 h-5 flex-none" />
                       </div>
                       <div class="flex flex-col flex-grow min-w-[0px] w-[calc(100%_-_233px)]">
                         <div class="flex-none">
-                          <NcTooltip show-on-truncate-only class="truncate text-sm text-nc-content-gray font-weight-500">
+                          <AtTooltip show-on-truncate-only class="truncate text-sm text-atm-content-gray font-weight-500">
                             <template #title>
                               {{ file.name }}
                             </template>
 
                             {{ file.name }}
-                          </NcTooltip>
+                          </AtTooltip>
                         </div>
 
-                        <div class="text-small text-nc-content-gray-muted font-weight-500">
+                        <div class="text-small text-atm-content-gray-muted font-weight-500">
                           {{ getReadableFileSize(file.size) }}
                         </div>
                       </div>
                       <template v-if="!preImportLoading">
                         <a-form-item class="flex-1 !my-0 max-w-[120px] min-w-[120px]">
-                          <NcDropdown placement="bottomRight" overlay-class-name="overflow-hidden !w-[170px]">
+                          <AtDropdown placement="bottomRight" overlay-class-name="overflow-hidden !w-[170px]">
                             <template #default="{ visible }">
-                              <NcButton size="small" type="secondary" class="w-[120px] children:children:w-full !text-small">
-                                <NcTooltip class="flex-none w-[85px] truncate text-left !leading-[20px]" show-on-truncate-only>
+                              <AtButton size="small" type="secondary" class="w-[120px] children:children:w-full !text-small">
+                                <AtTooltip class="flex-none w-[85px] truncate text-left !leading-[20px]" show-on-truncate-only>
                                   <template #title> {{ charsetOptionsMap[file.encoding]?.sortLabel ?? '' }}</template>
 
                                   {{ charsetOptionsMap[file.encoding]?.sortLabel?.replace('Windows', 'Win') ?? '' }}
-                                </NcTooltip>
+                                </AtTooltip>
 
                                 <GeneralIcon
                                   icon="chevronDown"
@@ -667,11 +667,11 @@ watch(
                                     'rotate-180': visible,
                                   }"
                                 />
-                              </NcButton>
+                              </AtButton>
                             </template>
 
                             <template #overlay="{ visible, onChange: onChangeVisibility }">
-                              <NcList
+                              <AtList
                                 v-model:value="file.encoding"
                                 :open="visible"
                                 :list="charsetOptions"
@@ -682,33 +682,33 @@ watch(
                                 variant="small"
                                 @update:open="onChangeVisibility"
                               >
-                              </NcList>
+                              </AtList>
                             </template>
-                          </NcDropdown>
+                          </AtDropdown>
                         </a-form-item>
-                        <NcButton type="text" size="xsmall" class="flex-shrink" @click="actions?.remove?.()">
+                        <AtButton type="text" size="xsmall" class="flex-shrink" @click="actions?.remove?.()">
                           <GeneralIcon icon="deleteListItem" />
-                        </NcButton>
+                        </AtButton>
                       </template>
                       <template v-else>
-                        <NcTooltip
+                        <AtTooltip
                           :key="progressMsg"
                           class="!max-w-[120px] min-w-[120p] !leading-[18px] truncate"
                           show-on-truncate-only
                         >
                           <template #title> {{ progressMsg }}</template>
 
-                          <span class="!text-small text-nc-content-gray-muted">
+                          <span class="!text-small text-atm-content-gray-muted">
                             {{ progressMsg }}
                           </span>
-                        </NcTooltip>
-                        <GeneralLoader class="flex text-nc-content-brand" size="medium" />
+                        </AtTooltip>
+                        <GeneralLoader class="flex text-atm-content-brand" size="medium" />
                       </template>
                     </div>
                   </template>
                 </a-upload-dragger>
 
-                <NcAlert
+                <AtAlert
                   v-model:visible="showMaxFileLimitError"
                   closable
                   align="center"
@@ -745,22 +745,22 @@ watch(
                   <a-form-item v-bind="validateInfos.url" :required="false" class="!my-0 quick-import-url-form">
                     <template #label>
                       <div class="flex items-center space-x-2 w-full">
-                        <span class="flex-1 text-nc-content-gray text-sm">
+                        <span class="flex-1 text-atm-content-gray text-sm">
                           {{ importMeta.urlInputLabel }}
                         </span>
                         <template v-if="preImportLoading">
-                          <NcTooltip
+                          <AtTooltip
                             :key="progressMsg"
                             class="!max-w-1/2 min-w-[120p] !leading-[18px] truncate"
                             show-on-truncate-only
                           >
                             <template #title> {{ progressMsg }}</template>
 
-                            <span class="!text-small text-nc-content-gray-muted">
+                            <span class="!text-small text-atm-content-gray-muted">
                               {{ progressMsg }}
                             </span>
-                          </NcTooltip>
-                          <GeneralLoader class="flex text-nc-content-brand" size="medium" />
+                          </AtTooltip>
+                          <GeneralLoader class="flex text-atm-content-brand" size="medium" />
                         </template>
                       </div>
                     </template>
@@ -782,28 +782,28 @@ watch(
               </template>
               <div class="relative mt-5">
                 <div class="flex items-end gap-2">
-                  <label class="text-nc-content-gray text-sm"> {{ $t('labels.enterJson') }} </label>
+                  <label class="text-atm-content-gray text-sm"> {{ $t('labels.enterJson') }} </label>
                   <div class="flex-1" />
 
                   <template v-if="preImportLoading">
-                    <NcTooltip :key="progressMsg" class="!max-w-1/2 min-w-[120p] !leading-[25px] truncate" show-on-truncate-only>
+                    <AtTooltip :key="progressMsg" class="!max-w-1/2 min-w-[120p] !leading-[25px] truncate" show-on-truncate-only>
                       <template #title> {{ progressMsg }}</template>
 
-                      <span class="!text-small text-nc-content-gray-muted">
+                      <span class="!text-small text-atm-content-gray-muted">
                         {{ progressMsg }}
                       </span>
-                    </NcTooltip>
-                    <GeneralLoader class="flex text-nc-content-brand" size="medium" />
+                    </AtTooltip>
+                    <GeneralLoader class="flex text-atm-content-brand" size="medium" />
                   </template>
-                  <NcButton v-else type="text" size="xsmall" class="!px-2" @click="formatJson()">
+                  <AtButton v-else type="text" size="xsmall" class="!px-2" @click="formatJson()">
                     {{ $t('general.format') }}
-                  </NcButton>
+                  </AtButton>
                 </div>
 
                 <div
                   class="mx-0.5 mb-0.5 h-30 min-h-30 resize-y overflow-y-auto h-[calc(100%_-_8px)] max-h-[400px] border-1 rounded-lg mt-2 transition duration-300 focus-within:(shadow-selected border-primary)"
                   :class="{
-                    'border-nc-border-red focus-within:(shadow-error border-nc-border-red) ':
+                    'border-atm-border-red focus-within:(shadow-error border-atm-border-red) ':
                       jsonErrorText || refMonacoEditor?.error,
                   }"
                 >
@@ -811,7 +811,7 @@ watch(
                     <template #default>
                       <MonacoEditor
                         ref="refMonacoEditor"
-                        class="nc-import-monaco-editor !h-full min-h-30"
+                        class="atm-import-monaco-editor !h-full min-h-30"
                         :auto-focus="false"
                         hide-minimap
                         :monaco-config="{
@@ -828,17 +828,17 @@ watch(
                   </Suspense>
                 </div>
 
-                <div v-if="jsonErrorText || refMonacoEditor?.error" class="text-nc-content-red-medium text-small mt-2">
+                <div v-if="jsonErrorText || refMonacoEditor?.error" class="text-atm-content-red-medium text-small mt-2">
                   {{ jsonErrorText || refMonacoEditor?.error }}
                 </div>
                 <div v-else></div>
               </div>
             </a-tab-pane>
-          </NcTabs>
+          </AtTabs>
         </div>
       </div>
 
-      <NcAlert
+      <AtAlert
         :visible="!!importError"
         closable
         align="center"
@@ -855,7 +855,7 @@ watch(
 
       <div v-if="!templateEditorModal" class="mt-5">
         <div class="mb-4">
-          <NcListSourceSelector
+          <AtListSourceSelector
             ref="sourceSelectorRef"
             v-model:source-id="sourceIdRef"
             :base-id="baseId"
@@ -865,38 +865,38 @@ watch(
           />
         </div>
 
-        <NcButton type="text" size="small" @click="collapseKey = !collapseKey ? 'advanced-settings' : ''">
+        <AtButton type="text" size="small" @click="collapseKey = !collapseKey ? 'advanced-settings' : ''">
           {{ $t('title.advancedSettings') }}
           <GeneralIcon
             icon="chevronDown"
             class="ml-2 !transition-all !transform"
             :class="{ '!rotate-180': collapseKey === 'advanced-settings' }"
           />
-        </NcButton>
+        </AtButton>
 
         <a-collapse
           v-model:active-key="collapseKey"
           ghost
-          class="nc-import-collapse"
+          class="atm-import-collapse"
           :class="{
             'pointer-events-none': preImportLoading || importLoading,
           }"
         >
           <a-collapse-panel key="advanced-settings">
-            <a-form-item v-if="isImportTypeCsv || IsImportTypeExcel" class="!my-2 nc-dense-checkbox-container">
-              <NcCheckbox v-model:checked="importState.parserConfig.firstRowAsHeaders">
+            <a-form-item v-if="isImportTypeCsv || IsImportTypeExcel" class="!my-2 atm-dense-checkbox-container">
+              <AtCheckbox v-model:checked="importState.parserConfig.firstRowAsHeaders">
                 <span class="caption">{{ $t('labels.firstRowAsHeaders') }}</span>
-              </NcCheckbox>
+              </AtCheckbox>
             </a-form-item>
 
-            <a-form-item v-if="isImportTypeJson" class="!my-2 nc-dense-checkbox-container">
-              <NcCheckbox v-model:checked="importState.parserConfig.normalizeNested">
+            <a-form-item v-if="isImportTypeJson" class="!my-2 atm-dense-checkbox-container">
+              <AtCheckbox v-model:checked="importState.parserConfig.normalizeNested">
                 <span class="caption">{{ $t('labels.flattenNested') }}</span>
-              </NcCheckbox>
+              </AtCheckbox>
             </a-form-item>
 
-            <a-form-item v-if="!importDataOnly" class="!my-2 nc-dense-checkbox-container">
-              <NcCheckbox v-model:checked="importState.options.shouldImportData">{{ $t('labels.importData') }} </NcCheckbox>
+            <a-form-item v-if="!importDataOnly" class="!my-2 atm-dense-checkbox-container">
+              <AtCheckbox v-model:checked="importState.options.shouldImportData">{{ $t('labels.importData') }} </AtCheckbox>
             </a-form-item>
           </a-collapse-panel>
         </a-collapse>
@@ -905,7 +905,7 @@ watch(
 
     <template #footer>
       <div class="flex items-center gap-2 pt-5">
-        <NcButton
+        <AtButton
           v-if="templateEditorModal"
           key="back"
           type="text"
@@ -915,29 +915,29 @@ watch(
         >
           <GeneralIcon icon="chevronLeft" class="mr-1" />
           {{ $t('general.back') }}
-        </NcButton>
+        </AtButton>
 
-        <NcButton v-else key="cancel" type="text" size="small" @click="onClickCancel">
+        <AtButton v-else key="cancel" type="text" size="small" @click="onClickCancel">
           <GeneralIcon v-if="showBackBtn" icon="chevronLeft" class="mr-1" />
 
           {{ showBackBtn ? $t('general.back') : $t('general.cancel') }}
-        </NcButton>
+        </AtButton>
 
         <div class="flex-1" />
 
-        <NcButton
+        <AtButton
           v-if="!templateEditorModal"
           key="pre-import"
           size="small"
-          class="nc-btn-import"
+          class="atm-btn-import"
           :loading="preImportLoading"
           :disabled="disablePreImportButton || preImportLoading || sourceSelectorRef?.selectedSource?.ncItemDisabled"
           @click="handlePreImport"
         >
           {{ importBtnText }}
-        </NcButton>
+        </AtButton>
 
-        <NcButton
+        <AtButton
           v-else
           key="import"
           size="small"
@@ -946,27 +946,27 @@ watch(
           @click="handleImport"
         >
           {{ importBtnText }}
-        </NcButton>
+        </AtButton>
       </div>
     </template>
   </a-modal>
 </template>
 
 <style lang="scss">
-.nc-modal-quick-import .ant-modal-footer {
+.atm-modal-quick-import .ant-modal-footer {
   border: none;
   padding: 0 !important;
 }
-.nc-modal-quick-import .ant-modal-content {
+.atm-modal-quick-import .ant-modal-content {
   @apply xs:!p-4;
 }
 
-.nc-modal-quick-import .ant-collapse-content-box {
+.atm-modal-quick-import .ant-collapse-content-box {
   @apply !pb-0;
   padding-top: 0 !important;
   padding-left: 6px;
 }
-.nc-import-monaco-editor .monaco-editor {
+.atm-import-monaco-editor .monaco-editor {
   outline-width: 0 !important;
   & * {
     outline-width: 0 !important;
@@ -975,7 +975,7 @@ watch(
 }
 
 /* Keep the primary button blue during loading state */
-.nc-modal-quick-import .nc-button.ant-btn-primary.ant-btn-loading {
+.atm-modal-quick-import .atm-button.ant-btn-primary.ant-btn-loading {
   @apply bg-brand-500;
 
   /* Keep the button width consistent during loading state */
@@ -993,7 +993,7 @@ watch(
 </style>
 
 <style lang="scss" scoped>
-.nc-modal-quick-import :deep(.ant-modal-footer) {
+.atm-modal-quick-import :deep(.ant-modal-footer) {
   @apply !px-0 !pb-0;
 }
 :deep(.ant-upload-list-item-thumbnail) {
@@ -1002,32 +1002,32 @@ watch(
 :deep(.ant-upload-list-item-card-actions-btn.ant-btn-icon-only) {
   @apply !h-6;
 }
-.nc-import-collapse :deep(.ant-collapse-header) {
+.atm-import-collapse :deep(.ant-collapse-header) {
   display: none !important;
 }
-.nc-import-collapse :deep(.ant-collapse-content-box) {
+.atm-import-collapse :deep(.ant-collapse-content-box) {
   @apply !pr-0.2;
 }
-span:has(> .nc-modern-drag-import) {
+span:has(> .atm-modern-drag-import) {
   display: flex;
   flex-direction: column-reverse;
   :deep(& > .ant-upload-list:has(.ant-upload-list-picture-container)) {
-    @apply mb-4 space-y-2 transition-all nc-scrollbar-thin overflow-hidden;
+    @apply mb-4 space-y-2 transition-all atm-scrollbar-thin overflow-hidden;
   }
 }
-:deep(.nc-modern-drag-import:not(.ant-upload-disabled)) {
-  @apply bg-nc-bg-default hover:bg-nc-bg-gray-extralight;
+:deep(.atm-modern-drag-import:not(.ant-upload-disabled)) {
+  @apply bg-atm-bg-default hover:bg-atm-bg-gray-extralight;
 }
 
-:deep(.nc-modern-drag-import.hidden + .ant-upload-list) {
+:deep(.atm-modern-drag-import.hidden + .ant-upload-list) {
   @apply !mb-0;
 }
 
-:deep(.nc-dense-checkbox-container .ant-form-item-control-input) {
+:deep(.atm-dense-checkbox-container .ant-form-item-control-input) {
   min-height: unset !important;
 }
 
-.nc-quick-import-tabs {
+.atm-quick-import-tabs {
   :deep(.ant-tabs-nav) {
     @apply !pl-0;
   }
@@ -1045,7 +1045,7 @@ span:has(> .nc-modern-drag-import) {
 
   .tab-title,
   :deep(.ant-tabs-tab-btn) {
-    @apply px-2 text-nc-content-gray-subtle2 rounded-md hover:bg-nc-bg-gray-light transition-colors;
+    @apply px-2 text-atm-content-gray-subtle2 rounded-md hover:bg-atm-bg-gray-light transition-colors;
     span {
       @apply text-small !leading-[24px];
     }
@@ -1054,7 +1054,7 @@ span:has(> .nc-modern-drag-import) {
   :deep(.ant-tabs-tab-disabled) {
     .ant-tabs-tab-btn,
     .tab-title {
-      @apply text-nc-content-gray-muted hover:bg-transparent;
+      @apply text-atm-content-gray-muted hover:bg-transparent;
     }
   }
 

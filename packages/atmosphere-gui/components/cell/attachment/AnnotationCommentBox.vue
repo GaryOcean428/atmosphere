@@ -47,8 +47,8 @@ function onKeyDown(e: KeyboardEvent) {
 
 <template>
   <div
-    class="nc-annotation-comment-box w-72 rounded-xl bg-nc-bg-default shadow-lg border-1 border-nc-border-gray-medium p-2 text-left"
-    data-testid="nc-annotation-comment-box"
+    class="atm-annotation-comment-box w-72 rounded-xl bg-atm-bg-default shadow-lg border-1 border-atm-border-gray-medium p-2 text-left"
+    data-testid="atm-annotation-comment-box"
     @mousedown.stop
     @click.stop
   >
@@ -57,7 +57,7 @@ function onKeyDown(e: KeyboardEvent) {
       autofocus
       :hide-options="false"
       :placeholder="`${t('general.comment')}...`"
-      class="nc-annotation-comment-input !py-2 !px-2 cursor-text border-1 rounded-lg w-full bg-transparent !text-nc-content-gray !text-small !leading-18px !max-h-[200px]"
+      class="atm-annotation-comment-input !py-2 !px-2 cursor-text border-1 rounded-lg w-full bg-transparent !text-atm-content-gray !text-small !leading-18px !max-h-[200px]"
       @save="onSave"
       @keydown.enter.exact.prevent="onSave"
       @keydown.esc.stop.prevent="onCancel"
@@ -66,7 +66,7 @@ function onKeyDown(e: KeyboardEvent) {
 </template>
 
 <style lang="scss" scoped>
-:deep(.nc-annotation-comment-input) {
+:deep(.atm-annotation-comment-input) {
   @apply min-h-8 text-left;
   box-shadow: none;
   &::placeholder {

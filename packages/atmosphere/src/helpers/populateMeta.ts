@@ -1,13 +1,13 @@
-import { isLTARType, ModelTypes, UITypes, ViewTypes } from 'nocodb-sdk';
-import { isMMOrMMLike, isVirtualCol, RelationTypes } from 'nocodb-sdk';
+import { isLTARType, ModelTypes, UITypes, ViewTypes } from 'atmosphere-sdk';
+import { isMMOrMMLike, isVirtualCol, RelationTypes } from 'atmosphere-sdk';
 import { pluralize, singularize } from 'inflection';
-import { isLinksOrLTAR } from 'nocodb-sdk';
+import { isLinksOrLTAR } from 'atmosphere-sdk';
 import { getUniqueColumnAliasName, getUniqueColumnName } from './getUniqueName';
-import type { UserType } from 'nocodb-sdk';
+import type { UserType } from 'atmosphere-sdk';
 import type LinkToAnotherRecordColumn from '~/models/LinkToAnotherRecordColumn';
 import type Base from '~/models/Base';
 import type PGClient from '~/db/sql-client/lib/pg/PgClient';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import Source from '~/models/Source';
 import { META_COL_NAME } from '~/constants';
 import { getSourceIntrospectionSchema, normalizeDr } from '~/helpers/dbHelpers';
@@ -16,40 +16,40 @@ import mapDefaultDisplayValue from '~/helpers/mapDefaultDisplayValue';
 import getColumnUiType from '~/helpers/getColumnUiType';
 import getTableNameAlias, { getColumnNameAlias } from '~/helpers/getTableName';
 import View from '~/models/View';
-import NcHelp from '~/utils/NcHelp';
-import NcConnectionMgrv2 from '~/utils/common/NcConnectionMgrv2';
+import AtHelp from '~/utils/AtHelp';
+import AtConnectionMgrv2 from '~/utils/common/AtConnectionMgrv2';
 import Model from '~/models/Model';
 import Column from '~/models/Column';
 
 export const IGNORE_TABLES = [
-  'nc_models',
-  'nc_roles',
-  'nc_routes',
-  'nc_loaders',
-  'nc_resolvers',
-  'nc_hooks',
-  'nc_store',
+  'atm_models',
+  'atm_roles',
+  'atm_routes',
+  'atm_loaders',
+  'atm_resolvers',
+  'atm_hooks',
+  'atm_store',
   '_evolutions',
-  'nc_evolutions',
+  'atm_evolutions',
   'xc_users',
-  'nc_rpc',
-  'nc_acl',
-  'nc_cron',
-  'nc_disabled_models_for_role',
-  'nc_audit',
+  'atm_rpc',
+  'atm_acl',
+  'atm_cron',
+  'atm_disabled_models_for_role',
+  'atm_audit',
   'xc_knex_migrations',
   'xc_knex_migrations_lock',
-  'nc_plugins',
-  'nc_migrations',
-  'nc_api_tokens',
-  'nc_projects',
-  'nc_projects_users',
-  'nc_relations',
-  'nc_shared_views',
+  'atm_plugins',
+  'atm_migrations',
+  'atm_api_tokens',
+  'atm_projects',
+  'atm_projects_users',
+  'atm_relations',
+  'atm_shared_views',
 ];
 
 async function isMMRelationExist(
-  context: NcContext,
+  context: AtContext,
   model: Model,
   assocModel: Model,
   belongsToCol: Column<LinkToAnotherRecordColumn>,
@@ -79,7 +79,7 @@ async function isMMRelationExist(
 
 // @ts-ignore
 export async function extractAndGenerateManyToManyRelations(
-  context: NcContext,
+  context: AtContext,
   modelsArr: Array<Model>,
 ) {
   for (const assocModel of modelsArr) {
@@ -242,7 +242,7 @@ export async function extractAndGenerateManyToManyRelations(
 }
 
 export async function populateMeta(
-  context: NcContext,
+  context: AtContext,
   {
     source,
     base,
@@ -266,7 +266,7 @@ export async function populateMeta(
   };
 
   const t = process.hrtime();
-  const sqlClient = await NcConnectionMgrv2.getSqlClient(source);
+  const sqlClient = await AtConnectionMgrv2.getSqlClient(source);
 
   if (!source.is_meta) {
     try {
@@ -335,14 +335,14 @@ export async function populateMeta(
 
   // await this.syncRelations();
 
-  // Detect NocoDB-created tables by presence of all 6 system columns.
+  // Detect Atmosphere-created tables by presence of all 6 system columns.
   // If all are found together, remap them to their proper UITypes and mark as system.
-  const NC_SYSTEM_COL_UIDT: Record<string, UITypes> = {
+  const ATMOSPHERE_SYSTEM_COL_UIDT: Record<string, UITypes> = {
     created_at: UITypes.CreatedTime,
     updated_at: UITypes.LastModifiedTime,
     created_by: UITypes.CreatedBy,
     updated_by: UITypes.LastModifiedBy,
-    nc_order: UITypes.Order,
+    atm_order: UITypes.Order,
     [META_COL_NAME]: UITypes.Meta,
   };
 
@@ -376,14 +376,14 @@ export async function populateMeta(
           : tableRelations.filter((r) => r.tn === table.tn);
 
       const columnNameSet = new Set(columns.map((c) => c.cn));
-      const isNcCreatedTable = Object.keys(NC_SYSTEM_COL_UIDT).every((name) =>
+      const isNcCreatedTable = Object.keys(ATMOSPHERE_SYSTEM_COL_UIDT).every((name) =>
         columnNameSet.has(name),
       );
 
       for (const column of columns) {
-        // Remap NocoDB system columns to their proper UITypes
-        if (isNcCreatedTable && NC_SYSTEM_COL_UIDT[column.cn]) {
-          column.uidt = NC_SYSTEM_COL_UIDT[column.cn];
+        // Remap Atmosphere system columns to their proper UITypes
+        if (isNcCreatedTable && ATMOSPHERE_SYSTEM_COL_UIDT[column.cn]) {
+          column.uidt = ATMOSPHERE_SYSTEM_COL_UIDT[column.cn];
           column.system = true;
         } else if (!column.uidt) {
           column.uidt = getColumnUiType(source, column);
@@ -428,7 +428,7 @@ export async function populateMeta(
 
       // await Model.insert(base.id, base.id, meta);
 
-      /* create nc_models and its rows if it doesn't exists  */
+      /* create atm_models and its rows if it doesn't exists  */
       models2[table.table_name] = await Model.insert(
         context,
         base.id,
@@ -451,19 +451,19 @@ export async function populateMeta(
         if (source.type === 'databricks') {
           if (column.pk && !column.cdf) {
             column.meta = {
-              ag: 'nc',
+              ag: 'atm',
             };
           }
         }
 
         // MSSQL: a PK that is neither IDENTITY (auto-increment → AI) nor backed
-        // by a DB default (e.g. NEWID()) must be NocoDB-generated (AG). Identity
+        // by a DB default (e.g. NEWID()) must be Atmosphere-generated (AG). Identity
         // columns report no column_default, so the !ai guard is required to
         // avoid mis-tagging them as AG.
         if (source.type === 'mssql') {
           if (column.pk && !column.cdf && !column.ai) {
             column.meta = {
-              ag: 'nc',
+              ag: 'atm',
             };
           }
         }
@@ -564,8 +564,8 @@ export async function populateMeta(
   });
 
   /* handle xc_tables update in parallel */
-  await NcHelp.executeOperations(tableMetasInsert, source.type);
-  await NcHelp.executeOperations(virtualColumnsInsert, source.type);
+  await AtHelp.executeOperations(tableMetasInsert, source.type);
+  await AtHelp.executeOperations(virtualColumnsInsert, source.type);
   await extractAndGenerateManyToManyRelations(context, Object.values(models2));
 
   let views: Array<{ order: number; table_name: string; title: string }> = (
@@ -601,7 +601,7 @@ export async function populateMeta(
 
       mapDefaultDisplayValue(columns);
 
-      /* create nc_models and its rows if it doesn't exists  */
+      /* create atm_models and its rows if it doesn't exists  */
       models2[table.table_name] = await Model.insert(
         context,
         base.id,
@@ -635,7 +635,7 @@ export async function populateMeta(
     };
   });
 
-  await NcHelp.executeOperations(viewMetasInsert, source.type);
+  await AtHelp.executeOperations(viewMetasInsert, source.type);
 
   // fix pv column for created grid views
   const models = await Model.list(context, {

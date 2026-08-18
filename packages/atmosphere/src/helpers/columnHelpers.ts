@@ -9,21 +9,21 @@ import {
   RelationTypes,
   UITypes,
   WebhookActions,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { pluralize, singularize } from 'inflection';
-import { REGEXSTR_INTL_LETTER, REGEXSTR_NUMERIC_ARABIC } from 'nocodb-sdk';
-import { NcError } from './ncError';
+import { REGEXSTR_INTL_LETTER, REGEXSTR_NUMERIC_ARABIC } from 'atmosphere-sdk';
+import { AtError } from './ncError';
 import type {
   BoolType,
   ColumnReqType,
   LookupColumnReqType,
-  NcRequest,
+  AtRequest,
   RollupColumnReqType,
   TableType,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type LinkToAnotherRecordColumn from '~/models/LinkToAnotherRecordColumn';
 import type LookupColumn from '~/models/LookupColumn';
-import type { NcContext } from '~/interface/config';
+import type { AtContext } from '~/interface/config';
 import type { RollupColumn, View } from '~/models';
 import type { ColumnWebhookManager } from '~/utils/column-webhook-manager';
 import type Model from '~/models/Model';
@@ -32,8 +32,8 @@ import { GridViewColumn } from '~/models';
 import validateParams from '~/helpers/validateParams';
 import { getUniqueColumnAliasName } from '~/helpers/getUniqueName';
 import Column from '~/models/Column';
-import { DriverClient } from '~/utils/nc-config';
-import Noco from '~/Noco';
+import { DriverClient } from '~/utils/atm-config';
+import Atmosphere from '~/Atmosphere';
 import { META_COL_NAME } from '~/constants';
 
 export const randomID = customAlphabet(
@@ -42,8 +42,8 @@ export const randomID = customAlphabet(
 );
 
 export async function createHmAndBtColumn(
-  context: NcContext,
-  req: NcRequest,
+  context: AtContext,
+  req: AtRequest,
   child: Model,
   parent: Model,
   childColumn: Column,
@@ -134,7 +134,7 @@ export async function createHmAndBtColumn(
       },
     });
     if (!isSystemCol)
-      Noco.appHooksService.emit(AppEvents.COLUMN_CREATE, {
+      Atmosphere.appHooksService.emit(AppEvents.COLUMN_CREATE, {
         table: child,
         column: childRelCol,
         columnId: childRelCol.id,
@@ -200,7 +200,7 @@ export async function createHmAndBtColumn(
       },
     });
     if (!isSystemCol)
-      Noco.appHooksService.emit(AppEvents.COLUMN_CREATE, {
+      Atmosphere.appHooksService.emit(AppEvents.COLUMN_CREATE, {
         table: parent,
         column: savedColumn,
         columnId: savedColumn.id,
@@ -227,8 +227,8 @@ export async function createHmAndBtColumn(
  * @param {any} [colExtra] - Additional column parameters.
  */
 export async function createOOColumn(
-  context: NcContext,
-  req: NcRequest,
+  context: AtContext,
+  req: AtRequest,
   child: Model,
   parent: Model,
   childColumn: Column,
@@ -317,7 +317,7 @@ export async function createOOColumn(
         base_id: childRelCol.base_id,
       },
     });
-    Noco.appHooksService.emit(AppEvents.COLUMN_CREATE, {
+    Atmosphere.appHooksService.emit(AppEvents.COLUMN_CREATE, {
       table: child,
       column: childRelCol,
       columnId: childRelCol.id,
@@ -386,7 +386,7 @@ export async function createOOColumn(
         base_id: savedColumn.base_id,
       },
     });
-    Noco.appHooksService.emit(AppEvents.COLUMN_CREATE, {
+    Atmosphere.appHooksService.emit(AppEvents.COLUMN_CREATE, {
       table: parent,
       column: savedColumn,
       columnId: savedColumn.id,
@@ -399,7 +399,7 @@ export async function createOOColumn(
 }
 
 export async function validateRollupPayload(
-  context: NcContext,
+  context: AtContext,
   payload: ColumnReqType | Column,
 ) {
   validateParams(
@@ -418,13 +418,13 @@ export async function validateRollupPayload(
   });
 
   if (!column) {
-    NcError.get(context).relationFieldNotFound(
+    AtError.get(context).relationFieldNotFound(
       (payload as RollupColumnReqType).fk_relation_column_id,
     );
   }
 
   if (!isLinksOrLTAR(column)) {
-    NcError.get(context).badRequest(
+    AtError.get(context).badRequest(
       `A rollup must aggregate through a link field, but "${column.title}" is ${column.uidt}.`,
     );
   }
@@ -434,7 +434,7 @@ export async function validateRollupPayload(
   );
 
   if (!relation) {
-    NcError.get(context).relationFieldNotFound(
+    AtError.get(context).relationFieldNotFound(
       (payload as RollupColumnReqType).fk_relation_column_id,
     );
   }
@@ -465,7 +465,7 @@ export async function validateRollupPayload(
   );
 
   if (!rollupColumn)
-    NcError.get(context).badRequest('Rollup column not found in related table');
+    AtError.get(context).badRequest('Rollup column not found in related table');
 
   // Rolling up a link/lookup/barcode-style column would build SQL against a
   // column that doesn't physically exist, breaking every read of the table.
@@ -479,7 +479,7 @@ export async function validateRollupPayload(
       )
       .map((c) => c.title);
 
-    NcError.get(context).badRequest(
+    AtError.get(context).badRequest(
       `Field "${rollupColumn.title}" (${rollupColumn.uidt}) in "${relatedTable.title}" cannot be aggregated by a rollup.` +
         (aggregatable.length
           ? ` Aggregatable fields are: ${aggregatable.join(', ')}.`
@@ -492,7 +492,7 @@ export async function validateRollupPayload(
       (payload as RollupColumnReqType).rollup_function,
     )
   ) {
-    NcError.get(context).badRequest(
+    AtError.get(context).badRequest(
       `Rollup function (${
         (payload as RollupColumnReqType).rollup_function
       }) not available for type (${rollupColumn.uidt})`,
@@ -501,7 +501,7 @@ export async function validateRollupPayload(
 }
 
 export async function validateLookupPayload(
-  context: NcContext,
+  context: AtContext,
   payload: ColumnReqType,
   columnId?: string,
 ) {
@@ -516,7 +516,7 @@ export async function validateLookupPayload(
   });
 
   if (!column) {
-    NcError.get(context).relationFieldNotFound(
+    AtError.get(context).relationFieldNotFound(
       (payload as LookupColumnReqType).fk_relation_column_id,
     );
   }
@@ -533,7 +533,7 @@ export async function validateLookupPayload(
     while (lkCol) {
       // check if lookup column is same as column itself
       if (columnId === lkCol.fk_lookup_column_id)
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'Circular lookup reference not allowed',
         );
       lkCol = await Column.get(refContext, {
@@ -548,7 +548,7 @@ export async function validateLookupPayload(
   }
 
   if (!relation) {
-    NcError.get(context).relationFieldNotFound(
+    AtError.get(context).relationFieldNotFound(
       (payload as LookupColumnReqType).fk_relation_column_id,
     );
   }
@@ -582,7 +582,7 @@ export async function validateLookupPayload(
       (c) => c.id === (payload as LookupColumnReqType).fk_lookup_column_id,
     )
   )
-    NcError.get(context).badRequest('Lookup column not found in related table');
+    AtError.get(context).badRequest('Lookup column not found in related table');
 }
 
 export const validateRequiredField = (
@@ -629,7 +629,7 @@ export async function populateRollupForLTAR({
   columnMeta,
   alias,
 }: {
-  context: NcContext;
+  context: AtContext;
   column: Column;
   columnMeta?: any;
   alias?: string;
@@ -672,8 +672,8 @@ export async function populateRollupForLTAR({
 
 export const sanitizeColumnName = (name: string, sourceType?: DriverClient) => {
   if (
-    process.env.NC_DATABASE_COLUMN_NAME_SANITIZE_ENABLED === 'false' ||
-    process.env.NC_SANITIZE_COLUMN_NAME === 'false'
+    process.env.ATMOSPHERE_DATABASE_COLUMN_NAME_SANITIZE_ENABLED === 'false' ||
+    process.env.ATMOSPHERE_SANITIZE_COLUMN_NAME === 'false'
   )
     return name;
   let columnName = name.replace(
@@ -697,7 +697,7 @@ export const sanitizeColumnName = (name: string, sourceType?: DriverClient) => {
 // if column is an alias column then return the original column
 // for example CreatedTime is an alias column for CreatedTime system column
 export const getRefColumnIfAlias = async (
-  context: NcContext,
+  context: AtContext,
   column: Column,
   columns?: Column[],
 ) => {
@@ -726,7 +726,7 @@ export const travelLookupColumn = async ({
   context,
   column,
 }: {
-  context: NcContext;
+  context: AtContext;
   column: Column;
 }): Promise<Column | null> => {
   const lookupColOptions = await column.getColOptions<LookupColumn>(context);
@@ -794,21 +794,21 @@ export const TableSystemColumns = (isMetaColSupport = false, isMeta = true) => [
   },
   {
     column_name: 'created_by',
-    title: 'nc_created_by',
+    title: 'atm_created_by',
     uidt: UITypes.CreatedBy,
     allowNonSystem: true,
     system: true,
   },
   {
     column_name: 'updated_by',
-    title: 'nc_updated_by',
+    title: 'atm_updated_by',
     uidt: UITypes.LastModifiedBy,
     allowNonSystem: true,
     system: true,
   },
   {
-    column_name: 'nc_order',
-    title: 'nc_order',
+    column_name: 'atm_order',
+    title: 'atm_order',
     uidt: UITypes.Order,
     allowNonSystem: false,
     system: true,

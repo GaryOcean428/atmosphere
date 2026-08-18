@@ -3,7 +3,7 @@ import { MetaTable } from '~/utils/globals';
 import { isEE } from '~/utils';
 
 const up = async (knex: Knex) => {
-  console.time('nc_074_missing_context_indexes');
+  console.time('atm_074_missing_context_indexes');
 
   if (!isEE) {
     await knex.schema.alterTable(MetaTable.COL_BUTTON, (table) => {
@@ -13,11 +13,11 @@ const up = async (knex: Knex) => {
 
   await knex.schema.alterTable(MetaTable.COL_BUTTON, (table) => {
     table.index('fk_column_id');
-    table.index(['base_id', 'fk_workspace_id'], 'nc_col_button_context');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_col_button_context');
   });
 
   await knex.schema.alterTable(MetaTable.COL_LONG_TEXT, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_col_long_text_context');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_col_long_text_context');
   });
 
   await knex.schema.alterTable(MetaTable.DATA_REFLECTION, (table) => {
@@ -25,14 +25,14 @@ const up = async (knex: Knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.JOBS, (table) => {
-    table.index(['base_id', 'fk_workspace_id'], 'nc_jobs_context');
+    table.index(['base_id', 'fk_workspace_id'], 'atm_jobs_context');
   });
 
   await knex.schema.alterTable(MetaTable.USERS, (table) => {
     table.index('email');
   });
 
-  console.timeEnd('nc_074_missing_context_indexes');
+  console.timeEnd('atm_074_missing_context_indexes');
 };
 
 const down = async (knex) => {
@@ -44,11 +44,11 @@ const down = async (knex) => {
 
   await knex.schema.alterTable(MetaTable.COL_BUTTON, (table) => {
     table.dropIndex('fk_column_id');
-    table.dropIndex(['base_id', 'fk_workspace_id'], 'nc_col_button_context');
+    table.dropIndex(['base_id', 'fk_workspace_id'], 'atm_col_button_context');
   });
 
   await knex.schema.alterTable(MetaTable.COL_LONG_TEXT, (table) => {
-    table.dropIndex(['base_id', 'fk_workspace_id'], 'nc_col_long_text_context');
+    table.dropIndex(['base_id', 'fk_workspace_id'], 'atm_col_long_text_context');
   });
 
   await knex.schema.alterTable(MetaTable.DATA_REFLECTION, (table) => {
@@ -56,7 +56,7 @@ const down = async (knex) => {
   });
 
   await knex.schema.alterTable(MetaTable.JOBS, (table) => {
-    table.dropIndex(['base_id', 'fk_workspace_id'], 'nc_jobs_context');
+    table.dropIndex(['base_id', 'fk_workspace_id'], 'atm_jobs_context');
   });
 
   await knex.schema.alterTable(MetaTable.USERS, (table) => {

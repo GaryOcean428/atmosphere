@@ -1,5 +1,5 @@
-import { arrGetDuplicate, type NcContext } from 'nocodb-sdk';
-import { NcError } from '~/helpers/ncError';
+import { arrGetDuplicate, type AtContext } from 'atmosphere-sdk';
+import { AtError } from '~/helpers/ncError';
 
 export function parseMetaProp(
   model: any,
@@ -71,7 +71,7 @@ export function prepareForResponse(
 }
 
 export async function validateImportSchema(
-  context: NcContext,
+  context: AtContext,
   data: {
     model: any;
     views: any[];
@@ -86,7 +86,7 @@ export async function validateImportSchema(
 ) {
   // validate table names
   if (data.some((each) => !each.model.title && !each.model.table_name)) {
-    NcError.get(context).invalidRequestBody(
+    AtError.get(context).invalidRequestBody(
       'Missing table `title` property in request body',
     );
   }
@@ -104,7 +104,7 @@ export async function validateImportSchema(
     modelNamedData.map((each) => each.model.title),
   );
   if (aliasDuplicate) {
-    NcError.get(context).duplicateAlias({
+    AtError.get(context).duplicateAlias({
       alias: aliasDuplicate as string,
       base: context.base_id,
       type: 'table',
@@ -114,7 +114,7 @@ export async function validateImportSchema(
     modelNamedData.map((each) => each.model.table_name),
   );
   if (tableNameDuplicate) {
-    NcError.get(context).duplicateAlias({
+    AtError.get(context).duplicateAlias({
       alias: tableNameDuplicate as string,
       base: context.base_id,
       type: 'table',

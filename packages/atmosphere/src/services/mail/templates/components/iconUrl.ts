@@ -1,5 +1,5 @@
-import { RelationTypes, UITypes } from 'nocodb-sdk';
-import { NC_EMAIL_ASSETS_BASE_URL } from '~/constants';
+import { RelationTypes, UITypes } from 'atmosphere-sdk';
+import { ATMOSPHERE_EMAIL_ASSETS_BASE_URL } from '~/constants';
 
 // Default icon for unknown/unsupported types
 const DEFAULT_ICON = 'SingleLineText';
@@ -30,10 +30,10 @@ export function getFieldIconUrl(
   ) {
     const relationIcon = RELATION_ICON_MAP[relationType];
     if (relationIcon) {
-      return `${NC_EMAIL_ASSETS_BASE_URL}/icons/${relationIcon}.png`;
+      return `${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/icons/${relationIcon}.png`;
     }
   }
 
   const iconName = uidt || DEFAULT_ICON;
-  return `${NC_EMAIL_ASSETS_BASE_URL}/icons/${iconName}.png`;
+  return `${ATMOSPHERE_EMAIL_ASSETS_BASE_URL}/icons/${iconName}.png`;
 }

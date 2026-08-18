@@ -1,4 +1,4 @@
-import type { TableType, ViewType } from 'nocodb-sdk'
+import type { TableType, ViewType } from 'atmosphere-sdk'
 
 export interface ListViewRow {
   __nc_depth: number

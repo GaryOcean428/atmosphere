@@ -1,4 +1,4 @@
-import { isSystemColumn } from 'nocodb-sdk';
+import { isSystemColumn } from 'atmosphere-sdk';
 import type { SwaggerColumn } from '../getSwaggerColumnMetas';
 
 export const getModelSchemas = (ctx: {

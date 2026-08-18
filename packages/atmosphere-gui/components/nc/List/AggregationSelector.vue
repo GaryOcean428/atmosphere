@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { CommonAggregations, UITypes, getAvailableAggregations } from 'nocodb-sdk'
-import type { ColumnType } from 'nocodb-sdk'
+import { CommonAggregations, UITypes, getAvailableAggregations } from 'atmosphere-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 
 interface Props {
   baseId?: string
@@ -153,8 +153,8 @@ defineExpose({
 <template>
   <a-form-item
     name="aggregationId"
-    class="!mb-0 nc-aggregation-selector"
-    :class="`nc-force-layout-${forceLayout}`"
+    class="!mb-0 atm-aggregation-selector"
+    :class="`atm-force-layout-${forceLayout}`"
     :validate-status="selectedAggregation?.ncItemDisabled ? 'error' : ''"
     :help="selectedAggregation?.ncItemDisabled ? [selectedAggregation.ncItemTooltip] : []"
     @click.stop
@@ -165,27 +165,27 @@ defineExpose({
         <slot name="label">{{ t('general.aggregation') }}</slot>
       </div>
     </template>
-    <NcListDropdown
+    <AtListDropdown
       v-model:is-open="isOpenAggregationSelectDropdown"
       :disabled="isLoading || disabled"
       :has-error="!!selectedAggregation?.ncItemDisabled"
     >
       <div class="flex-1 flex items-center gap-2 min-w-0">
-        <NcTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
+        <AtTooltip hide-on-click class="flex-1 truncate" show-on-truncate-only>
           <span
             v-if="selectedAggregation"
             :key="selectedAggregation?.value"
             class="text-sm flex-1 truncate"
-            :class="{ 'text-nc-content-gray-muted': !selectedAggregation }"
+            :class="{ 'text-atm-content-gray-muted': !selectedAggregation }"
           >
             {{ selectedAggregation?.label }}
           </span>
-          <span v-else class="text-sm flex-1 truncate text-nc-content-gray-muted">-- Select aggregation --</span>
+          <span v-else class="text-sm flex-1 truncate text-atm-content-gray-muted">-- Select aggregation --</span>
 
           <template #title>
             {{ selectedAggregation?.label || 'Select aggregation' }}
           </template>
-        </NcTooltip>
+        </AtTooltip>
         <GeneralIcon
           icon="ncChevronDown"
           class="flex-none h-4 w-4 transition-transform opacity-70"
@@ -193,7 +193,7 @@ defineExpose({
         />
       </div>
       <template #overlay="{ onEsc }">
-        <NcList
+        <AtList
           v-model:open="isOpenAggregationSelectDropdown"
           :value="modelValue || selectedAggregation?.value || ''"
           :list="aggregationList"
@@ -203,8 +203,8 @@ defineExpose({
           @update:value="handleValueUpdate"
           @escape="onEsc"
         >
-        </NcList>
+        </AtList>
       </template>
-    </NcListDropdown>
+    </AtListDropdown>
   </a-form-item>
 </template>

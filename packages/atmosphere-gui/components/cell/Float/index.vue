@@ -51,7 +51,7 @@ const focus: VNodeRef = (el) =>
     v-if="editEnabled"
     :ref="focus"
     v-model="vModel"
-    class="nc-cell-field outline-none px-1 border-none w-full h-full"
+    class="atm-cell-field outline-none px-1 border-none w-full h-full"
     type="number"
     step="0.1"
     @blur="editEnabled = false"
@@ -64,8 +64,8 @@ const focus: VNodeRef = (el) =>
     @selectstart.capture.stop
     @mousedown.stop
   />
-  <span v-else-if="vModel === null && showNull" class="nc-cell-field nc-null uppercase">{{ $t('general.null') }}</span>
-  <span v-else class="nc-cell-field">{{ vModel }}</span>
+  <span v-else-if="vModel === null && showNull" class="atm-cell-field atm-null uppercase">{{ $t('general.null') }}</span>
+  <span v-else class="atm-cell-field">{{ vModel }}</span>
 </template>
 
 <style scoped lang="scss">

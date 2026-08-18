@@ -23,12 +23,12 @@ provide(IsKanbanInj, ref(true))
     v-if="!IsPublic && isUIAllowed('fieldEdit')"
     v-model:visible="open"
     :trigger="['click']"
-    overlay-class-name="nc-dropdown-kanban-add-edit-stack-menu rounded-2xl"
+    overlay-class-name="atm-dropdown-kanban-add-edit-stack-menu rounded-2xl"
   >
-    <div class="nc-kanban-btn">
+    <div class="atm-kanban-btn">
       <a-button
         v-e="['c:kanban:edit-or-add-stack']"
-        class="nc-kanban-add-edit-stack-menu-btn nc-toolbar-btn"
+        class="atm-kanban-add-edit-stack-menu-btn atm-toolbar-btn"
         :disabled="isLocked"
       >
         <div class="flex items-center gap-1">
@@ -42,7 +42,7 @@ provide(IsKanbanInj, ref(true))
       </a-button>
     </div>
     <template #overlay>
-      <div class="nc-edit-or-add-provider-wrapper">
+      <div class="atm-edit-or-add-provider-wrapper">
         <LazySmartsheetColumnEditOrAddProvider
           v-if="open"
           :column="groupingFieldColumn"

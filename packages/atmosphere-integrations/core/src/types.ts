@@ -7,7 +7,7 @@ import {
   SyncCategory,
   UITypes,
   EntitySelectorMode,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { IntegrationWrapper } from './integration';
 
 export interface IntegrationManifest {

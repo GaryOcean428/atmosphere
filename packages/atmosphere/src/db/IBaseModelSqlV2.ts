@@ -8,13 +8,13 @@ import type {
   AuditV1OperationTypes,
   BulkAuditV1OperationTypes,
   FilterType,
-  NcApiVersion,
-  NcContext,
-  NcRequest,
+  AtApiVersion,
+  AtContext,
+  AtRequest,
   PermissionEntity,
   PermissionKey,
   RelationTypes,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import type CustomKnex from '~/db/CustomKnex';
 import type { Column, Filter, Model, Sort, Source, View } from '~/models';
@@ -27,7 +27,7 @@ import type { DisplacedRecord } from '~/command-registry/types';
 import type PQueue from 'p-queue';
 
 export interface IBaseModelSqlV2 {
-  context: NcContext;
+  context: AtContext;
   model: Model;
   tnPath: string | Knex.Raw<any>;
   queryQueue: PQueue;
@@ -41,7 +41,7 @@ export interface IBaseModelSqlV2 {
       getHiddenColumn?: boolean;
       throwErrorIfInvalidParams?: boolean;
       extractOnlyPrimaries?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       extractOrderColumn?: boolean;
     },
   ): Promise<any>;
@@ -56,7 +56,7 @@ export interface IBaseModelSqlV2 {
     options?: ExecAndParseOptions,
   ): Promise<Record<string, any>[]>;
 
-  prepareNocoData(
+  prepareAtmosphereData(
     data,
     isInsertData,
     cookie?: { user?: any; system?: boolean },
@@ -124,7 +124,7 @@ export interface IBaseModelSqlV2 {
       getHiddenColumn?: boolean;
       throwErrorIfInvalidParams?: boolean;
       extractOnlyPrimaries?: boolean;
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       extractOrderColumn?: boolean;
     },
   ): Promise<any>;
@@ -162,7 +162,7 @@ export interface IBaseModelSqlV2 {
     refColumnTitle: string;
     rowId: unknown;
     refRowId: unknown;
-    req: NcRequest;
+    req: AtRequest;
     model?: Model;
     refModel?: Model;
     displayValue: unknown;
@@ -187,7 +187,7 @@ export interface IBaseModelSqlV2 {
     refColumnTitle: string;
     rowId: unknown;
     refRowId: unknown;
-    req: NcRequest;
+    req: AtRequest;
     model: Model;
     refModel: Model;
     displayValue: unknown;
@@ -202,7 +202,7 @@ export interface IBaseModelSqlV2 {
   }: {
     data: any;
     insertData: any;
-    req: NcRequest;
+    req: AtRequest;
   }): Promise<void>;
 
   afterUpdate(
@@ -254,14 +254,14 @@ export interface IBaseModelSqlV2 {
     qb: any;
     data?: Record<string, any>;
     conditions: FilterType[];
-    req: NcRequest;
+    req: AtRequest;
     event: BulkAuditV1OperationTypes;
   }): Promise<void>;
 
   _getListArgs(
     args: XcFilterWithAlias,
     options?: {
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
       nested?: boolean;
     },
   ): XcFilter;
@@ -292,7 +292,7 @@ export interface IBaseModelSqlV2 {
     nestedCols: Column[];
     data: Record<string, any>;
     insertObj: Record<string, any>;
-    req: NcRequest;
+    req: AtRequest;
   }): Promise<{
     postInsertOps: ((
       rowId: any,
@@ -334,7 +334,7 @@ export interface IBaseModelSqlV2 {
       columnId: string;
       refColumnTitle: string;
       refColumnId: string;
-      req: NcRequest;
+      req: AtRequest;
     },
     auditObjs: Array<{
       rowId: unknown;
@@ -346,7 +346,7 @@ export interface IBaseModelSqlV2 {
   ): Promise<void>;
 
   sanitizeQuery(query: string | string[]): any;
-  getNestedColumn(column: Column, context?: NcContext): Promise<Column | any>;
+  getNestedColumn(column: Column, context?: AtContext): Promise<Column | any>;
 
   checkPermission(params: {
     entity: PermissionEntity;
@@ -359,7 +359,7 @@ export interface IBaseModelSqlV2 {
   chunkList(args: {
     pks: string[];
     chunkSize?: number;
-    apiVersion?: NcApiVersion;
+    apiVersion?: AtApiVersion;
     args?: any;
     extractOnlyPrimaries?: boolean;
     deletedOnly?: boolean;
@@ -377,7 +377,7 @@ export interface IBaseModelSqlV2 {
       limitOverride?: number;
       pks?: string;
       customConditions?: Filter[];
-      apiVersion?: NcApiVersion;
+      apiVersion?: AtApiVersion;
     },
     options?: {
       ignoreViewFilterAndSort?: boolean;
@@ -402,7 +402,7 @@ export interface IBaseModelSqlV2 {
     fk_display_value_column_id?: string | null;
   }): Promise<void>;
   getProto(param?: {
-    apiVersion?: NcApiVersion;
+    apiVersion?: AtApiVersion;
     linksAsLtar?: boolean;
   }): Promise<
     {
@@ -457,7 +457,7 @@ export interface IBaseModelSqlV2 {
   getSoftDeleteFilter(): Promise<Knex.QueryCallback | null>;
   updateLinkedRecordsOnDelete(deletedIds: any[], cookie?: any): Promise<void>;
   afterSoftDeleteCompleted(params: {
-    cookie: NcRequest;
+    cookie: AtRequest;
     operationNow: string;
   }): Promise<void>;
 }

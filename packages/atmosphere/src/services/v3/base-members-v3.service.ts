@@ -4,11 +4,11 @@ import type {
   BaseMemberCreateV3Type,
   BaseMemberUpdateV3Type,
   ProjectUserReqType,
-} from 'nocodb-sdk';
-import type { NcContext, NcRequest } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext, AtRequest } from '~/interface/config';
 import type { ApiV3DataTransformationBuilder } from '~/utils/api-v3-data-transformation.builder';
-import Noco from '~/Noco';
-import { NcBaseError, NcError } from '~/helpers/catchError';
+import Atmosphere from '~/Atmosphere';
+import { AtBaseError, AtError } from '~/helpers/catchError';
 import { BaseUser, User } from '~/models';
 import { builderGenerator } from '~/utils/api-v3-data-transformation.builder';
 import { BaseUsersService } from '~/services/base-users/base-users.service';
@@ -51,7 +51,7 @@ export class BaseMembersV3Service {
   }
 
   async userList(
-    context: NcContext,
+    context: AtContext,
     param: { baseId: string; mode?: 'full' | 'viewer' },
   ) {
     const baseUsers = await BaseUser.getUsersList(context, {
@@ -63,11 +63,11 @@ export class BaseMembersV3Service {
   }
 
   async userInvite(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseId: string;
       baseMembers: BaseMemberCreateV3Type;
-      req: NcRequest;
+      req: AtRequest;
     },
   ): Promise<any> {
     validatePayload(
@@ -77,9 +77,9 @@ export class BaseMembersV3Service {
     );
 
     if (param.baseMembers?.length > V3_META_REQUEST_LIMIT) {
-      NcError.get(context).maxPayloadLimitExceeded(V3_META_REQUEST_LIMIT);
+      AtError.get(context).maxPayloadLimitExceeded(V3_META_REQUEST_LIMIT);
     }
-    const ncMeta = await Noco.ncMeta.startTransaction();
+    const ncMeta = await Atmosphere.ncMeta.startTransaction();
     const userIds = [];
     try {
       for (const baseUser of param.baseMembers) {
@@ -89,14 +89,14 @@ export class BaseMembersV3Service {
         if ('user_id' in baseUser && baseUser.user_id) {
           user = await User.get(baseUser.user_id, ncMeta);
           if (!user) {
-            NcError.get(context).userNotFound(baseUser.user_id);
+            AtError.get(context).userNotFound(baseUser.user_id);
           }
           userEmail = user.email;
         } else if ('email' in baseUser && baseUser.email) {
           user = await User.getByEmail(baseUser.email, ncMeta);
           userEmail = baseUser.email;
         } else {
-          NcError.get(context).invalidRequestBody(
+          AtError.get(context).invalidRequestBody(
             'Either email or id is required',
           );
         }
@@ -120,9 +120,9 @@ export class BaseMembersV3Service {
     } catch (e) {
       // on error rollback the transaction and throw the error
       await ncMeta.rollback();
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error('Error inviting base members', e);
-      NcError.get(context).baseUserError('Bad Request');
+      AtError.get(context).baseUserError('Bad Request');
     }
     return this.builder().build(
       await BaseUser.getUsersList(context, {
@@ -133,7 +133,7 @@ export class BaseMembersV3Service {
   }
 
   async baseMemberUpdate(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseMembers: BaseMemberUpdateV3Type;
       req: any;
@@ -148,9 +148,9 @@ export class BaseMembersV3Service {
     );
 
     if (param.baseMembers?.length > V3_META_REQUEST_LIMIT) {
-      NcError.get(context).maxPayloadLimitExceeded(V3_META_REQUEST_LIMIT);
+      AtError.get(context).maxPayloadLimitExceeded(V3_META_REQUEST_LIMIT);
     }
-    const ncMeta = await Noco.ncMeta.startTransaction();
+    const ncMeta = await Atmosphere.ncMeta.startTransaction();
     const userIds = [];
     try {
       for (const baseUser of param.baseMembers) {
@@ -176,7 +176,7 @@ export class BaseMembersV3Service {
       // on error rollback the transaction and throw the error
       await ncMeta.rollback();
       this.logger.error('Error updating base members', e);
-      NcError.get(context).baseUserError('Bad Request');
+      AtError.get(context).baseUserError('Bad Request');
     }
     return this.builder().build(
       await BaseUser.getUsersList(context, {
@@ -187,14 +187,14 @@ export class BaseMembersV3Service {
   }
 
   /*  async baseUserDelete(
-    context: NcContext,
+    context: AtContext,
     param: {
       baseUsers: any[];
       baseId: string;
       req: any;
     },
   ): Promise<any> {
-    const ncMeta = await Noco.ncMeta.startTransaction();
+    const ncMeta = await Atmosphere.ncMeta.startTransaction();
     const userIds = [];
     try {
     for (const baseUser of param.baseUsers) {
@@ -211,7 +211,7 @@ export class BaseMembersV3Service {
         if (user) {
           userId = user.id;
         } else {
-          NcError.userNotFound(baseUser.email);
+          AtError.userNotFound(baseUser.email);
         }
       }
 

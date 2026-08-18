@@ -10,7 +10,7 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isBetween from 'dayjs/plugin/isBetween'
 import advanced from 'dayjs/plugin/advancedFormat'
-import { jalaliPlugin } from 'nocodb-sdk'
+import { jalaliPlugin } from 'atmosphere-sdk'
 
 export default defineNuxtPlugin(() => {
   extend(utc)

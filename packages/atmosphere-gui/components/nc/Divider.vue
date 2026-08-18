@@ -7,11 +7,11 @@ const dividerClass = toRef(props, 'dividerClass')
 </script>
 
 <template>
-  <a-divider :class="dividerClass" class="nc-divider" />
+  <a-divider :class="dividerClass" class="atm-divider" />
 </template>
 
 <style lang="scss">
-.nc-divider.ant-divider {
+.atm-divider.ant-divider {
   @apply my-1.25;
 }
 </style>

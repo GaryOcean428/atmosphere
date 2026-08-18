@@ -4,7 +4,7 @@
  * Tabbed select component
  *
  * @example
- * <NcSelectTab :items="items" v-model="modelValue" />
+ * <AtSelectTab :items="items" v-model="modelValue" />
  */
 
 interface Props {
@@ -25,17 +25,17 @@ const modelValue = defineModel<string>()
 </script>
 
 <template>
-  <NcTooltip :disabled="!props.tooltip">
+  <AtTooltip :disabled="!props.tooltip">
     <template #title>
       {{ props.tooltip }}
     </template>
     <div
-      class="flex flex-row p-1 bg-nc-bg-gray-medium rounded-lg gap-x-0.5"
+      class="flex flex-row p-1 bg-atm-bg-gray-medium rounded-lg gap-x-0.5"
       :class="{
         '!cursor-not-allowed opacity-50': props.disabled,
       }"
     >
-      <NcTooltip
+      <AtTooltip
         v-for="item of props.items.filter((it) => !it.hidden)"
         :key="item.value"
         :disabled="!item.tooltip || props.disabled"
@@ -51,18 +51,18 @@ const modelValue = defineModel<string>()
           @click="modelValue = item.value"
         >
           <GeneralIcon :icon="item.icon" class="tab-icon" />
-          <div v-if="item.title" class="tab-title nc-tab">
+          <div v-if="item.title" class="tab-title atm-tab">
             {{ $t(item.title) }}
           </div>
         </div>
-      </NcTooltip>
+      </AtTooltip>
     </div>
-  </NcTooltip>
+  </AtTooltip>
 </template>
 
 <style scoped>
 .tab {
-  @apply flex flex-row items-center h-6 justify-center px-2 py-1 rounded-md gap-x-2 text-nc-content-gray-subtle2 hover:text-nc-content-gray-extreme cursor-pointer transition-all duration-300 select-none;
+  @apply flex flex-row items-center h-6 justify-center px-2 py-1 rounded-md gap-x-2 text-atm-content-gray-subtle2 hover:text-atm-content-gray-extreme cursor-pointer transition-all duration-300 select-none;
 }
 
 .tab-icon {
@@ -78,7 +78,7 @@ const modelValue = defineModel<string>()
 }
 
 .active {
-  @apply bg-nc-bg-default text-nc-content-brand-disabled hover:text-nc-content-brand-disabled;
+  @apply bg-atm-bg-default text-atm-content-brand-disabled hover:text-atm-content-brand-disabled;
 
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.06), 0px 5px 3px -2px rgba(0, 0, 0, 0.02);
 }

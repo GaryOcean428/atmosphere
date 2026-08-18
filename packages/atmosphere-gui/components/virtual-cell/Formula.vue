@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { FormulaDataTypes, getEffectiveDisplayColumn, handleTZ } from 'nocodb-sdk'
-import type { ColumnType } from 'nocodb-sdk'
+import { FormulaDataTypes, getEffectiveDisplayColumn, handleTZ } from 'atmosphere-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import { useDetachedLongText } from '../smartsheet/grid/canvas/composables/useDetachedLongText'
 
@@ -88,25 +88,25 @@ const renderAsCell = computed(() => {
   <LazySmartsheetFormulaWrapperCell v-if="renderAsCell" :column="updatedColumn" />
   <template v-else-if="showNull && (ncIsNull(cellValue) || ncIsUndefined(cellValue))">
     <div
-      class="nc-cell w-full h-full relative nc-display-value-cell"
+      class="atm-cell w-full h-full relative atm-display-value-cell"
       :class="{ 'text-right': isNumber && isGrid && !isExpandedFormOpen }"
     >
       <LazyCellNull />
     </div>
   </template>
   <div v-else class="w-full" :class="{ 'text-right': isNumber && isGrid && !isExpandedFormOpen }">
-    <NcTooltip
+    <AtTooltip
       v-if="column && column.colOptions && column.colOptions.error"
       placement="bottom"
-      class="text-nc-content-orange-dark"
+      class="text-atm-content-orange-dark"
     >
       <template #title>
         <span class="font-bold">{{ column.colOptions.error }}</span>
       </template>
       <span>ERR!</span>
-    </NcTooltip>
+    </AtTooltip>
 
-    <div v-else class="nc-cell-field group py-1" @dblclick="activateShowEditNonEditableFieldWarning">
+    <div v-else class="atm-cell-field group py-1" @dblclick="activateShowEditNonEditableFieldWarning">
       <div
         v-if="urls"
         v-dompurify-html="urls"
@@ -130,24 +130,24 @@ const renderAsCell = computed(() => {
         {{ $t('msg.info.computedFieldDeleteWarning') }}
       </div>
 
-      <NcTooltip
+      <AtTooltip
         v-if="isStringDataType"
         placement="bottom"
-        class="nc-action-icon hidden group-hover:block absolute right-4 top-1"
+        class="atm-action-icon hidden group-hover:block absolute right-4 top-1"
       >
         <template #title>{{ isExpandedFormOpen ? $t('title.expand') : $t('tooltip.expandShiftSpace') }}</template>
-        <NcButton
+        <AtButton
           type="secondary"
           size="xsmall"
-          class="nc-textarea-expand !p-0 !w-5 !h-5 !min-w-[fit-content]"
+          class="atm-textarea-expand !p-0 !w-5 !h-5 !min-w-[fit-content]"
           @click.stop="openLongText"
         >
           <component
             :is="iconMap.maximize"
-            class="transform group-hover:(!text-nc-content-gray) text-nc-content-gray-subtle w-3 h-3"
+            class="transform group-hover:(!text-atm-content-gray) text-atm-content-gray-subtle w-3 h-3"
           />
-        </NcButton>
-      </NcTooltip>
+        </AtButton>
+      </AtTooltip>
     </div>
   </div>
 </template>

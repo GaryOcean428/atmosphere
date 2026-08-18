@@ -2,10 +2,10 @@ import groupBy from 'lodash/groupBy';
 import {
   extractFilterFromXwhere,
   getFirstNonPersonalView,
-  NcApiVersion,
+  AtApiVersion,
   ViewTypes,
-} from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type { Logger } from '@nestjs/common';
 import type { IBaseModelSqlV2 } from '~/db/IBaseModelSqlV2';
 import type { LinkToAnotherRecordColumn } from '~/models';
@@ -15,8 +15,8 @@ import { _wherePk, applyPaginate } from '~/helpers/dbHelpers';
 import getAst from '~/helpers/getAst';
 import { Filter, Model, View } from '~/models';
 import { hasTableVisibilityAccess } from '~/helpers/tableHelpers';
-import Noco from '~/Noco';
-import { nocoExecute } from '~/utils/nocoExecute';
+import Atmosphere from '~/Atmosphere';
+import { atmosphereExecute } from '~/utils/atmosphereExecute';
 
 const GROUP_COL = '__nc_group_id';
 
@@ -49,7 +49,7 @@ export const relationDataFetcher = (param: {
   const { baseModel } = param;
 
   async function postProcessData(
-    context: NcContext,
+    context: AtContext,
     {
       data,
       model,
@@ -60,7 +60,7 @@ export const relationDataFetcher = (param: {
       query: any;
     },
   ) {
-    if (Noco.isEE()) {
+    if (Atmosphere.isEE()) {
       return data;
     }
 
@@ -77,8 +77,8 @@ export const relationDataFetcher = (param: {
     // set context.cacheMap `relation_postProcessData` to ensure non-infinite loop
     context.cacheMap.set('relation_postProcessData', true);
 
-    // nocoexecute
-    const result = await nocoExecute(ast, data, {}, parsedQuery);
+    // atmosphereexecute
+    const result = await atmosphereExecute(ast, data, {}, parsedQuery);
     return result;
   }
 
@@ -93,7 +93,7 @@ export const relationDataFetcher = (param: {
       }: {
         colId: string;
         ids: any[];
-        apiVersion?: NcApiVersion;
+        apiVersion?: AtApiVersion;
         nested?: boolean;
         linksAsLtar?: boolean;
       },
@@ -188,7 +188,7 @@ export const relationDataFetcher = (param: {
                 // get one extra record to check if there are more records in case of v3 api and nested
                 query.limit(
                   (+rest?.limit || 25) +
-                    (apiVersion === NcApiVersion.V3 && nested ? 1 : 0),
+                    (apiVersion === AtApiVersion.V3 && nested ? 1 : 0),
                 );
                 query.offset(+rest?.offset || 0);
 
@@ -227,7 +227,7 @@ export const relationDataFetcher = (param: {
       }: {
         colId: string;
         parentId: any;
-        apiVersion?: NcApiVersion;
+        apiVersion?: AtApiVersion;
         nested?: boolean;
         linksAsLtar?: boolean;
       },
@@ -360,7 +360,7 @@ export const relationDataFetcher = (param: {
           );
           if (linkOrderCol) {
             // Drop the default related-table order applied above (the related
-            // model's own `nc_order`/PK sort). Without this the per-link order is
+            // model's own `atm_order`/PK sort). Without this the per-link order is
             // only appended as a tiebreaker, so the related table's row order
             // wins and the manual link arrangement is ignored. Safe here: this
             // branch runs only when there is NO explicit sort AND no view sort,
@@ -380,7 +380,7 @@ export const relationDataFetcher = (param: {
         // get one extra record to check if there are more records in case of v3 api and nested
         qb.limit(
           (+rest?.limit || 25) +
-            (apiVersion === NcApiVersion.V3 && nested ? 1 : 0),
+            (apiVersion === AtApiVersion.V3 && nested ? 1 : 0),
         );
       }
       qb.offset(selectAllRecords ? 0 : +rest?.offset || 0);
@@ -591,7 +591,7 @@ export const relationDataFetcher = (param: {
       }: {
         colId: string;
         id: any;
-        apiVersion?: NcApiVersion;
+        apiVersion?: AtApiVersion;
         nested?: boolean;
         linksAsLtar?: boolean;
       },
@@ -811,7 +811,7 @@ export const relationDataFetcher = (param: {
       }: {
         colId: string;
         parentIds: any[];
-        apiVersion?: NcApiVersion;
+        apiVersion?: AtApiVersion;
         nested?: boolean;
         linksAsLtar?: boolean;
       },
@@ -922,7 +922,7 @@ export const relationDataFetcher = (param: {
           // get one extra record to check if there are more records in case of v3 api and nested
           query.limit(
             (+rest?.limit || 25) +
-              (apiVersion === NcApiVersion.V3 && nested ? 1 : 0),
+              (apiVersion === AtApiVersion.V3 && nested ? 1 : 0),
           );
           query.offset(+rest?.offset || 0);
           return wrapUnionMember(baseModel, query);

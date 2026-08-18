@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 import { type Ref, ref } from 'vue'
 import { forcedNextTick } from '../../utils/browserUtils'
 
@@ -191,9 +191,9 @@ onMounted(() => {
   forcedNextTick(() => {
     if (onCellEvent(canvasCellEventData.event)) return
 
-    if (getElementAtMouse('.nc-canvas-table-editable-cell-wrapper .nc-many-to-many-plus-icon', clientMousePosition)) {
+    if (getElementAtMouse('.atm-canvas-table-editable-cell-wrapper .atm-many-to-many-plus-icon', clientMousePosition)) {
       openListDlg()
-    } else if (getElementAtMouse('.nc-canvas-table-editable-cell-wrapper .nc-many-to-many-maximize-icon', clientMousePosition)) {
+    } else if (getElementAtMouse('.atm-canvas-table-editable-cell-wrapper .atm-many-to-many-maximize-icon', clientMousePosition)) {
       openChildList()
     } else if (hasEditPermission.value) {
       openListDlg()
@@ -212,7 +212,7 @@ onUnmounted(() => {
 
 <template>
   <LazyVirtualCellComponentsLinkRecordDropdown v-model:is-open="isOpen" :variant="isSimpleLinkRecordList ? 'simple' : 'classic'">
-    <div class="nc-cell-field flex items-center gap-1 w-full chips-wrapper min-h-6.5 relative">
+    <div class="atm-cell-field flex items-center gap-1 w-full chips-wrapper min-h-6.5 relative">
       <div
         class="chips flex items-center img-container flex-1 hm-items min-w-0 overflow-y-auto overflow-x-hidden"
         :class="{ 'flex-wrap': rowHeight !== 1 }"
@@ -240,32 +240,32 @@ onUnmounted(() => {
         :class="{ active }"
         @click.stop
       >
-        <NcButton
+        <AtButton
           v-if="hasEditPermission && !isSimpleLinkRecordList"
           size="xxsmall"
           type="secondary"
-          class="nc-action-icon nc-many-to-many-plus-icon !h-5 !w-5 !min-w-5"
+          class="atm-action-icon atm-many-to-many-plus-icon !h-5 !w-5 !min-w-5"
           @click.stop="openListDlg"
         >
-          <GeneralIcon icon="plus" class="text-sm nc-plus h-3 w-3" />
-        </NcButton>
+          <GeneralIcon icon="plus" class="text-sm atm-plus h-3 w-3" />
+        </AtButton>
         <!-- Simple picker context: plain select-style chevron, no button chrome -->
         <GeneralIcon
           v-if="isSimpleLinkRecordList"
           icon="chevronDown"
-          class="nc-action-icon nc-many-to-many-maximize-icon select-none !text-md text-nc-content-gray-muted cursor-pointer"
+          class="atm-action-icon atm-many-to-many-maximize-icon select-none !text-md text-atm-content-gray-muted cursor-pointer"
           @click.stop="openChildList"
         />
-        <NcTooltip v-else :title="$t('tooltip.expandShiftSpace')" :disabled="isExpandedForm" class="flex">
-          <NcButton
+        <AtTooltip v-else :title="$t('tooltip.expandShiftSpace')" :disabled="isExpandedForm" class="flex">
+          <AtButton
             size="xxsmall"
             type="secondary"
-            class="nc-action-icon nc-many-to-many-maximize-icon !h-5 !w-5 !min-w-5"
+            class="atm-action-icon atm-many-to-many-maximize-icon !h-5 !w-5 !min-w-5"
             @click.stop="openChildList"
           >
             <GeneralIcon icon="maximize" class="!h-3 !w-3" />
-          </NcButton>
-        </NcTooltip>
+          </AtButton>
+        </AtTooltip>
       </div>
     </div>
 
@@ -313,8 +313,8 @@ onUnmounted(() => {
 </style>
 
 <style lang="scss">
-.nc-default-value-wrapper,
-.nc-expanded-cell,
+.atm-default-value-wrapper,
+.atm-expanded-cell,
 .ant-form-item-control-input {
   .many-to-many-actions {
     @apply !flex;

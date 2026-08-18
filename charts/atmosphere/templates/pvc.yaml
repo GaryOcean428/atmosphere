@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "nocodb.fullname" . }}-data
+  name: {{ include "atmosphere.fullname" . }}-data
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "nocodb.labels" . | nindent 4 }}
-  {{- with include "nocodb.annotations" (dict "context" . "extraAnnotations" dict) }}
+    {{- include "atmosphere.labels" . | nindent 4 }}
+  {{- with include "atmosphere.annotations" (dict "context" . "extraAnnotations" dict) }}
   annotations:
     {{- . | nindent 4 }}
   {{- end }}

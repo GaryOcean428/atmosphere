@@ -56,7 +56,7 @@ const toggleFullScreenState = () => {
 </script>
 
 <template>
-  <NcTooltip
+  <AtTooltip
     v-if="showToggleFullscreenBtn"
     :key="`${isFullScreen}`"
     hide-on-click
@@ -73,7 +73,7 @@ const toggleFullScreenState = () => {
       '!cursor-wait': showLockResetLoading,
     }"
   >
-    <NcButton
+    <AtButton
       :type="isFullScreen ? 'primary' : 'text'"
       size="xs"
       :class="{
@@ -88,6 +88,6 @@ const toggleFullScreenState = () => {
         <GeneralIcon v-else icon="ncMinimize2" />
       </template>
       <template v-if="isFullScreen">{{ $t('labels.exitFullscreen') }}</template>
-    </NcButton>
-  </NcTooltip>
+    </AtButton>
+  </AtTooltip>
 </template>

@@ -171,8 +171,8 @@ export enum TiptapMarksTypes {
   underline = 'underline',
 }
 
-export enum NcDataErrorCodes {
-  NC_ERR_MM_MODEL_NOT_FOUND = 'NC_ERR_MM_MODEL_NOT_FOUND',
+export enum AtDataErrorCodes {
+  ATMOSPHERE_ERR_MM_MODEL_NOT_FOUND = 'ATMOSPHERE_ERR_MM_MODEL_NOT_FOUND',
 }
 
 /**
@@ -188,9 +188,9 @@ export enum SsoFailureCode {
   SSO_FAILED = 'SSO_FAILED',
 }
 
-export const NC_ERROR_SENTINEL = '_____NC_ERROR_____';
+export const ATMOSPHERE_ERROR_SENTINEL = '_____ATMOSPHERE_ERROR_____';
 
-export enum NcErrorType {
+export enum AtErrorType {
   ERR_AUTHENTICATION_REQUIRED = 'ERR_AUTHENTICATION_REQUIRED',
   ERR_FORBIDDEN = 'ERR_FORBIDDEN',
   ERR_API_TOKEN_NOT_ALLOWED = 'ERR_API_TOKEN_NOT_ALLOWED',
@@ -245,8 +245,8 @@ export enum NcErrorType {
   ERR_MAX_WORKSPACE_LIMIT_REACHED = 'ERR_MAX_WORKSPACE_LIMIT_REACHED',
   ERR_BASE_COLLABORATION = 'ERR_BASE_COLLABORATION',
   ERR_ORG_USER = 'ERR_ORG_USER',
-  ERR_SYNC_TABLE_OPERATION_PROHIBITED = 'ERR_SYNC_TABLE_OPERATION_PROHIBITED',
-  ERR_SYNC_CONFIG_NOT_FOUND = 'ERR_SYNC_CONFIG_NOT_FOUND',
+  ERR_SYATMOSPHERE_TABLE_OPERATION_PROHIBITED = 'ERR_SYATMOSPHERE_TABLE_OPERATION_PROHIBITED',
+  ERR_SYATMOSPHERE_CONFIG_NOT_FOUND = 'ERR_SYATMOSPHERE_CONFIG_NOT_FOUND',
   ERR_INVALID_REQUEST_BODY = 'ERR_INVALID_REQUEST_BODY',
   ERR_TRASH_NOT_FOUND = 'ERR_TRASH_NOT_FOUND',
   ERR_PARENT_IN_TRASH = 'ERR_PARENT_IN_TRASH',
@@ -298,7 +298,7 @@ export enum NcErrorType {
   ERR_EXTENSION_NOT_FOUND = 'ERR_EXTENSION_NOT_FOUND',
   ERR_SCRIPT_NOT_FOUND = 'ERR_SCRIPT_NOT_FOUND',
   ERR_RLS_POLICY_NOT_FOUND = 'ERR_RLS_POLICY_NOT_FOUND',
-  ERR_TABLE_SYNC_NOT_FOUND = 'ERR_TABLE_SYNC_NOT_FOUND',
+  ERR_TABLE_SYATMOSPHERE_NOT_FOUND = 'ERR_TABLE_SYATMOSPHERE_NOT_FOUND',
   FIELD_UNIQUE_CONSTRAINT_VIOLATION = 'FIELD_UNIQUE_CONSTRAINT_VIOLATION',
   ERR_METHOD_NOT_ALLOWED = 'ERR_METHOD_NOT_ALLOWED',
 
@@ -348,7 +348,7 @@ export const LongTextAiMetaProp = 'ai';
 export const LongTextRichModeMetaProp = 'richMode';
 export const LongTextSmartModeMetaProp = 'smartMode';
 
-export const NO_SCOPE = 'nc';
+export const NO_SCOPE = 'atm';
 
 export const NON_SEAT_ROLES = [
   WorkspaceUserRoles.NO_ACCESS,
@@ -388,7 +388,7 @@ export type DeepPartial<T> = T extends object
 export type RowColoringInfoFilterRow = {
   id: string;
   is_set_as_background: boolean;
-  nc_order: number;
+  atm_order: number;
   color: string;
   type?: string;
   fk_target_column_id?: string;

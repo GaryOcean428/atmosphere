@@ -13,5 +13,5 @@ defineEmits(['closeModal'])
 </script>
 
 <template>
-  <NcSpanHidden />
+  <AtSpanHidden />
 </template>

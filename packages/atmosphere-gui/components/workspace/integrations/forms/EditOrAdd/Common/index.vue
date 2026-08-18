@@ -130,45 +130,45 @@ const onTestConnection = async () => {
     @update:open="vOpen = $event"
   >
     <template #headerRight>
-      <NcButton
+      <AtButton
         v-if="activeIntegrationItem.type === 'auth'"
         size="small"
         :type="!testConnectionResult?.success ? 'primary' : 'ghost'"
         :disabled="testConnectionLoading"
         :loading="testConnectionLoading"
-        class="nc-extdb-btn-test-connection"
+        class="atm-extdb-btn-test-connection"
         @click="onTestConnection"
       >
         <div class="flex items-center gap-2">
           <GeneralIcon v-if="testConnectionResult?.success === true" icon="circleCheckSolid" class="text-success w-4 h-4" />
-          <NcTooltip v-if="testConnectionResult?.success === false" placement="top">
+          <AtTooltip v-if="testConnectionResult?.success === false" placement="top">
             <template #title>{{ testConnectionResult?.message }}</template>
             <GeneralIcon icon="alertTriangleSolid" class="text-warning w-4 h-4" />
-          </NcTooltip>
+          </AtTooltip>
           Test connection
         </div>
-      </NcButton>
-      <NcButton
+      </AtButton>
+      <AtButton
         size="small"
         type="primary"
         :disabled="isLoading || (!testConnectionResult?.success && activeIntegrationItem.type === 'auth')"
         :loading="isLoading"
-        class="nc-extdb-btn-submit"
+        class="atm-extdb-btn-submit"
         @click="submit"
       >
         {{ pageMode === IntegrationsPageMode.ADD ? 'Create integration' : 'Update integration' }}
-      </NcButton>
+      </AtButton>
     </template>
     <template #leftPanel="{ class: leftPanelClass }">
       <div :class="leftPanelClass">
-        <NcFormBuilder class="px-2" />
+        <AtFormBuilder class="px-2" />
         <WorkspaceIntegrationsSyncPanel v-if="activeIntegrationItem.type === 'sync'" class="px-2" />
         <div class="mt-10"></div>
       </div>
     </template>
   </WorkspaceIntegrationsFormsEditOrAddCommonWrapper>
   <WorkspaceIntegrationsConnect
-    v-if="activeIntegration && activeIntegration.sub_type === SyncDataType.NOCODB"
+    v-if="activeIntegration && activeIntegration.sub_type === SyncDataType.ATMOSPHERE"
     v-bind="props"
     @update:open="vOpen = $event"
   />
@@ -176,7 +176,7 @@ const onTestConnection = async () => {
 </template>
 
 <style lang="scss" scoped>
-.nc-form-item {
+.atm-form-item {
   padding-right: 24px;
   margin-bottom: 12px;
 }

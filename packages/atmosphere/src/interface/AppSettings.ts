@@ -1,5 +1,5 @@
 /**
- * Application-wide settings stored in nc_store
+ * Application-wide settings stored in atm_store
  */
 export interface AppSettings {
   /**

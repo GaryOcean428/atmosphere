@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { IntegrationsType } from 'nocodb-sdk'
-import type { IntegrationType, UserType, WorkspaceUserType } from 'nocodb-sdk'
+import { IntegrationsType } from 'atmosphere-sdk'
+import type { IntegrationType, UserType, WorkspaceUserType } from 'atmosphere-sdk'
 import dayjs from 'dayjs'
 
 withDefaults(
@@ -59,10 +59,10 @@ const isLoadingGetLinkedSources = ref(false)
 const isBaseAssignmentOpen = ref(false)
 const baseAssignmentIntegration = ref<IntegrationType | null>(null)
 
-// The NocoDB row is injected client-side with a placeholder id (`nc-data-reflection`) and has no
+// The Atmosphere row is injected client-side with a placeholder id (`atm-data-reflection`) and has no
 // integration record, so the base-assignment endpoints 404 on it.
 function canManageBaseAccess(integration: IntegrationType) {
-  return integration.sub_type !== SyncDataType.NOCODB
+  return integration.sub_type !== SyncDataType.ATMOSPHERE
 }
 
 function openBaseAssignment(integration: IntegrationType) {
@@ -179,7 +179,7 @@ const openDeleteIntegration = async (source: IntegrationType) => {
 }
 
 const openEditIntegration = (integration: IntegrationType) => {
-  if (!isFeatureEnabled(FEATURE_FLAG.DATA_REFLECTION) && integration.sub_type === SyncDataType.NOCODB) {
+  if (!isFeatureEnabled(FEATURE_FLAG.DATA_REFLECTION) && integration.sub_type === SyncDataType.ATMOSPHERE) {
     return
   }
 
@@ -333,7 +333,7 @@ const columns = [
     width: 100,
     justify: 'justify-end',
   },
-] as NcTableColumnProps[]
+] as AtTableColumnProps[]
 
 const customRow = (record: Record<string, any>) => ({
   onclick: () => {
@@ -343,18 +343,18 @@ const customRow = (record: Record<string, any>) => ({
 </script>
 
 <template>
-  <div class="h-full flex flex-col gap-6 nc-workspace-connections nc-content-max-w mx-auto">
+  <div class="h-full flex flex-col gap-6 atm-workspace-connections atm-content-max-w mx-auto">
     <div class="flex flex-col justify-between gap-2">
-      <h2 v-if="showTitle" class="text-lg font-semibold text-nc-content-gray mb-0">
+      <h2 v-if="showTitle" class="text-lg font-semibold text-atm-content-gray mb-0">
         {{ $t('general.activeConnections') }}
       </h2>
 
-      <div class="text-sm font-normal text-nc-content-gray-subtle2">
+      <div class="text-sm font-normal text-atm-content-gray-subtle2">
         <div>
           {{ $t('msg.manageConnections') }}
           <a
             target="_blank"
-            href="https://nocodb.com/docs/product-docs/integrations/actions-on-connection"
+            href="https://atmosphere.dev/docs/product-docs/integrations/actions-on-connection"
             rel="noopener noreferrer"
           >
             {{ $t('msg.learnMore') }}
@@ -366,18 +366,18 @@ const customRow = (record: Record<string, any>) => ({
           ref="connectionsSearchInputRef"
           v-model:value="searchQuery"
           type="text"
-          class="nc-search-integration-input !rounded-lg !py-2 !h-9 flex-1"
+          class="atm-search-integration-input !rounded-lg !py-2 !h-9 flex-1"
           :placeholder="`${$t('general.search')} ${$t('general.connections').toLowerCase()}`"
           allow-clear
           @input="handleSearchConnection"
         >
           <template #prefix>
-            <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-nc-content-gray-muted" />
+            <GeneralIcon icon="search" class="mr-2 h-4 w-4 text-atm-content-gray-muted" />
           </template>
         </a-input>
       </div>
     </div>
-    <NcTable
+    <AtTable
       v-model:order-by="orderBy"
       :columns="columns"
       :data="filteredIntegrations"
@@ -388,16 +388,16 @@ const customRow = (record: Record<string, any>) => ({
     >
       <template #bodyCell="{ column, record: integration }">
         <div v-if="column.key === 'title'" class="w-full flex items-center gap-3">
-          <NcTooltip placement="bottom" class="truncate !text-nc-content-gray font-semibold" show-on-truncate-only>
+          <AtTooltip placement="bottom" class="truncate !text-atm-content-gray font-semibold" show-on-truncate-only>
             <template #title> {{ integration.title }}</template>
             {{ integration.title }}
-          </NcTooltip>
+          </AtTooltip>
           <span v-if="integration.is_private">
-            <NcBadge :border="false" class="text-primary !h-4.5 bg-nc-bg-brand text-xs">{{ $t('general.private') }}</NcBadge>
+            <AtBadge :border="false" class="text-primary !h-4.5 bg-atm-bg-brand text-xs">{{ $t('general.private') }}</AtBadge>
           </span>
         </div>
 
-        <NcTooltip
+        <AtTooltip
           v-if="column.key === 'sub_type'"
           placement="bottom"
           class="h-8 w-8 flex-none flex items-center justify-center children:flex-none"
@@ -406,23 +406,23 @@ const customRow = (record: Record<string, any>) => ({
 
           <GeneralIntegrationIcon
             :type="integration.sub_type"
-            :size="integration.sub_type === SyncDataType.NOCODB ? 'xxl' : 'lg'"
+            :size="integration.sub_type === SyncDataType.ATMOSPHERE ? 'xxl' : 'lg'"
           />
-        </NcTooltip>
+        </AtTooltip>
 
-        <NcTooltip v-if="column.key === 'created_at'" placement="bottom" show-on-truncate-only>
+        <AtTooltip v-if="column.key === 'created_at'" placement="bottom" show-on-truncate-only>
           <template #title> {{ dayjs(integration.created_at).local().format('DD MMM YYYY') }}</template>
 
           {{ dayjs(integration.created_at).local().format('DD MMM YYYY') }}
-        </NcTooltip>
+        </AtTooltip>
         <template v-if="column.key === 'created_by'">
-          <div v-if="integration.sub_type === SyncDataType.NOCODB" class="flex items-center gap-3">
+          <div v-if="integration.sub_type === SyncDataType.ATMOSPHERE" class="flex items-center gap-3">
             <div class="h-8 w-8 grid place-items-center">
-              <GeneralIcon icon="nocodb1" />
+              <GeneralIcon icon="atmosphere1" />
             </div>
-            <div class="text-sm !leading-5 capitalize font-semibold truncate">NocoDB Cloud</div>
+            <div class="text-sm !leading-5 capitalize font-semibold truncate">Atmosphere Cloud</div>
           </div>
-          <NcTooltip v-else :disabled="!isUserDeleted(integration.created_by)" class="w-full">
+          <AtTooltip v-else :disabled="!isUserDeleted(integration.created_by)" class="w-full">
             <template #title>
               {{ `User not part of this ${isEeUI ? 'workspace' : 'organisation'} anymore` }}
             </template>
@@ -447,11 +447,11 @@ const customRow = (record: Record<string, any>) => ({
               />
               <div class="flex-1 flex flex-col max-w-[calc(100%_-_44px)]">
                 <div class="w-full flex gap-3">
-                  <NcTooltip
+                  <AtTooltip
                     class="text-sm !leading-5 capitalize font-semibold truncate"
                     :class="{
-                      'text-nc-content-gray': !isUserDeleted(integration.created_by),
-                      'text-nc-content-gray-muted': isUserDeleted(integration.created_by),
+                      'text-atm-content-gray': !isUserDeleted(integration.created_by),
+                      'text-atm-content-gray-muted': isUserDeleted(integration.created_by),
                     }"
                     :disabled="isUserDeleted(integration.created_by)"
                     show-on-truncate-only
@@ -461,13 +461,13 @@ const customRow = (record: Record<string, any>) => ({
                       {{ getUserNameByCreatedBy(integration.created_by) }}
                     </template>
                     {{ getUserNameByCreatedBy(integration.created_by) }}
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
-                <NcTooltip
+                <AtTooltip
                   class="text-xs !leading-4 truncate"
                   :class="{
-                    'text-nc-content-gray-subtle2': !isUserDeleted(integration.created_by),
-                    'text-nc-content-gray-muted': isUserDeleted(integration.created_by),
+                    'text-atm-content-gray-subtle2': !isUserDeleted(integration.created_by),
+                    'text-atm-content-gray-muted': isUserDeleted(integration.created_by),
                   }"
                   :disabled="isUserDeleted(integration.created_by)"
                   show-on-truncate-only
@@ -477,15 +477,15 @@ const customRow = (record: Record<string, any>) => ({
                     {{ collaboratorsMap.get(integration.created_by)?.email }}
                   </template>
                   {{ collaboratorsMap.get(integration.created_by)?.email }}
-                </NcTooltip>
+                </AtTooltip>
               </div>
             </div>
-            <div v-else class="w-full truncate text-nc-content-gray-muted">{{ integration.created_by }}</div>
-          </NcTooltip>
+            <div v-else class="w-full truncate text-atm-content-gray-muted">{{ integration.created_by }}</div>
+          </AtTooltip>
         </template>
 
         <div v-if="column.key === 'base_access'" class="text-sm">
-          <NcBadge
+          <AtBadge
             v-if="!integration.is_restricted"
             size="xs"
             color="green"
@@ -494,8 +494,8 @@ const customRow = (record: Record<string, any>) => ({
             @click.stop="openBaseAssignment(integration)"
           >
             {{ $t('activity.allBases') }}
-          </NcBadge>
-          <NcBadge
+          </AtBadge>
+          <AtBadge
             v-else
             size="xs"
             color="gray"
@@ -504,7 +504,7 @@ const customRow = (record: Record<string, any>) => ({
             @click.stop="openBaseAssignment(integration)"
           >
             {{ $t('labels.restricted') }}
-          </NcBadge>
+          </AtBadge>
         </div>
 
         <div v-if="column.key === 'action'" @click.stop>
@@ -519,14 +519,14 @@ const customRow = (record: Record<string, any>) => ({
       <template #tableFooter>
         <div
           v-if="integrationPaginationData.totalRows"
-          class="flex flex-row justify-center items-center bg-nc-bg-gray-extralight min-h-10"
+          class="flex flex-row justify-center items-center bg-atm-bg-gray-extralight min-h-10"
           :class="{
             'pointer-events-none': isLoadingIntegrations,
           }"
         >
           <div class="flex justify-between items-center w-full px-6">
             <div>&nbsp;</div>
-            <NcPagination
+            <AtPagination
               v-model:current="integrationPaginationData.page"
               v-model:page-size="integrationPaginationData.pageSize"
               :total="+integrationPaginationData.totalRows"
@@ -539,13 +539,13 @@ const customRow = (record: Record<string, any>) => ({
               @update:current="loadConnections(undefined, undefined, false)"
               @update:page-size="loadConnections(integrationPaginationData.page, $event, false)"
             />
-            <div class="text-nc-content-gray-muted text-xs">
+            <div class="text-atm-content-gray-muted text-xs">
               {{ integrationPaginationData.totalRows }} {{ integrationPaginationData.totalRows === 1 ? 'record' : 'records' }}
             </div>
           </div>
         </div>
       </template>
-    </NcTable>
+    </AtTable>
 
     <GeneralDeleteModal
       v-model:visible="isDeleteIntegrationModalOpen"
@@ -563,9 +563,9 @@ const customRow = (record: Record<string, any>) => ({
             <a-skeleton-input active class="h-9 !rounded-md !w-full"></a-skeleton-input>
           </div>
         </template>
-        <div v-else-if="toBeDeletedIntegration" class="w-full flex flex-col text-nc-content-gray">
+        <div v-else-if="toBeDeletedIntegration" class="w-full flex flex-col text-atm-content-gray">
           <div
-            class="flex flex-row items-center py-2 px-3.25 bg-nc-bg-gray-extralight rounded-lg text-nc-content-inverted-secondary mb-4"
+            class="flex flex-row items-center py-2 px-3.25 bg-atm-bg-gray-extralight rounded-lg text-atm-content-inverted-secondary mb-4"
           >
             <GeneralIntegrationIcon :type="toBeDeletedIntegration.sub_type" />
             <div
@@ -577,14 +577,14 @@ const customRow = (record: Record<string, any>) => ({
           </div>
           <div
             v-if="toBeDeletedIntegration?.sources?.length"
-            class="flex flex-col pb-2 text-small leading-[18px] text-nc-content-gray-muted"
+            class="flex flex-col pb-2 text-small leading-[18px] text-atm-content-gray-muted"
           >
             <div class="mb-1">{{ $t('msg.deleteIntegrationSourcesWarning') }}</div>
             <ul class="!list-disc ml-6 mb-0">
               <li
                 v-for="(source, idx) of toBeDeletedIntegration.sources"
                 :key="idx"
-                class="marker:text-nc-content-gray-muted !marker:(flex items-center !-mt-1)"
+                class="marker:text-atm-content-gray-muted !marker:(flex items-center !-mt-1)"
               >
                 <div class="flex items-center gap-1">
                   <div class="flex items-center">
@@ -598,13 +598,13 @@ const customRow = (record: Record<string, any>) => ({
                     />
                   </div>
 
-                  <NcTooltip class="!truncate !max-w-[45%] flex-none" show-on-truncate-only>
+                  <AtTooltip class="!truncate !max-w-[45%] flex-none" show-on-truncate-only>
                     <template #title>
                       {{ source.project_title }}
                     </template>
 
                     {{ source.project_title }}
-                  </NcTooltip>
+                  </AtTooltip>
                   >
                   <GeneralBaseLogo
                     class="!grayscale min-w-4 flex-none"
@@ -613,13 +613,13 @@ const customRow = (record: Record<string, any>) => ({
                     }"
                   />
 
-                  <NcTooltip class="truncate !max-w-[45%] capitalize" show-on-truncate-only>
+                  <AtTooltip class="truncate !max-w-[45%] capitalize" show-on-truncate-only>
                     <template #title>
                       {{ source.alias }}
                     </template>
 
                     {{ source.alias }}
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
               </li>
             </ul>
@@ -629,7 +629,7 @@ const customRow = (record: Record<string, any>) => ({
       </template>
     </GeneralDeleteModal>
 
-    <NcModal v-model:visible="successConfirmModal.isOpen" centered size="small" @keydown.esc="successConfirmModal.isOpen = false">
+    <AtModal v-model:visible="successConfirmModal.isOpen" centered size="small" @keydown.esc="successConfirmModal.isOpen = false">
       <div class="flex gap-4">
         <div>
           <GeneralIcon icon="circleCheckSolid" class="flex-none !text-green-700 mt-0.5 !h-6 !w-6" />
@@ -640,24 +640,24 @@ const customRow = (record: Record<string, any>) => ({
             <h3 class="!m-0 text-base font-weight-700 flex-1">
               {{ successConfirmModal.title }}
             </h3>
-            <NcButton size="xsmall" type="text" @click="successConfirmModal.isOpen = false">
-              <GeneralIcon icon="close" class="text-nc-content-gray-subtle2" />
-            </NcButton>
+            <AtButton size="xsmall" type="text" @click="successConfirmModal.isOpen = false">
+              <GeneralIcon icon="close" class="text-atm-content-gray-subtle2" />
+            </AtButton>
           </div>
-          <div class="text-sm text-nc-content-inverted-secondary">
+          <div class="text-sm text-atm-content-inverted-secondary">
             {{ successConfirmModal.description }}
           </div>
 
           <a
             target="_blank"
-            href="https://nocodb.com/docs/product-docs/data-sources/connect-to-data-source"
+            href="https://atmosphere.dev/docs/product-docs/data-sources/connect-to-data-source"
             rel="noopener noreferrer"
           >
             {{ $t('msg.learnMore') }}
           </a>
         </div>
       </div>
-    </NcModal>
+    </AtModal>
 
     <!-- Base Assignment Dialog -->
     <WorkspaceIntegrationsBaseAssignment
@@ -671,15 +671,15 @@ const customRow = (record: Record<string, any>) => ({
 
 <style lang="scss" scoped>
 .source-card-link {
-  @apply !text-nc-content-gray-extreme !no-underline;
+  @apply !text-atm-content-gray-extreme !no-underline;
 
-  .nc-new-integration-type-title {
-    @apply text-sm font-weight-600 text-nc-content-gray-subtle2;
+  .atm-new-integration-type-title {
+    @apply text-sm font-weight-600 text-atm-content-gray-subtle2;
   }
 }
 
 .source-card {
-  @apply flex items-center border-1 rounded-lg p-3 cursor-pointer hover:bg-nc-bg-gray-extralight;
+  @apply flex items-center border-1 rounded-lg p-3 cursor-pointer hover:bg-atm-bg-gray-extralight;
   width: 288px;
 
   .name {
@@ -687,13 +687,13 @@ const customRow = (record: Record<string, any>) => ({
   }
 }
 
-:deep(.ant-input-affix-wrapper.nc-search-integration-input) {
+:deep(.ant-input-affix-wrapper.atm-search-integration-input) {
   &:not(:has(.ant-input-clear-icon-hidden)):has(.ant-input-clear-icon) {
     @apply border-[var(--ant-primary-5)];
   }
 }
 
-.nc-new-integration-type-wrapper {
+.atm-new-integration-type-wrapper {
   @apply flex flex-col gap-3;
 }
 </style>

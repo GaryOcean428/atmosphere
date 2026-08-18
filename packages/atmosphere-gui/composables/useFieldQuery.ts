@@ -9,7 +9,7 @@ import {
   isNumericCol,
   isVirtualCol,
   ncIsNaN,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 export interface FieldQueryType {
   field: string

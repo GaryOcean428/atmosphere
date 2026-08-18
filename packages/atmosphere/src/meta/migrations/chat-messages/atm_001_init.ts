@@ -15,7 +15,7 @@ const up = async (knex: Knex) => {
     table.timestamps(true, true);
 
     table.primary(['fk_workspace_id', 'id']);
-    table.index('fk_session_id', 'nc_chat_messages_session_idx');
+    table.index('fk_session_id', 'atm_chat_messages_session_idx');
   });
 };
 

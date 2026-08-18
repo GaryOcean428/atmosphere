@@ -1,6 +1,6 @@
-# NocoDB Integrations Core
+# Atmosphere Integrations Core
 
-This package contains the core interfaces, types, and utilities that all NocoDB integrations depend on.
+This package contains the core interfaces, types, and utilities that all Atmosphere integrations depend on.
 
 ## Overview
 
@@ -25,7 +25,7 @@ The core package defines abstract base classes for the following integration typ
 Integration packages should import and extend the appropriate abstract classes from this package.
 
 ```typescript
-import { AiIntegration } from '@noco-integrations/core';
+import { AiIntegration } from '@atmosphere-integrations/core';
 
 export class MyAiIntegration extends AiIntegration {
   // Implementation...

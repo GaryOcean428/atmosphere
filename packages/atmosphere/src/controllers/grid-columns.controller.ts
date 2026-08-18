@@ -7,13 +7,13 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { GridColumnReqType } from 'nocodb-sdk';
+import { GridColumnReqType } from 'atmosphere-sdk';
 import { GlobalGuard } from '~/guards/global/global.guard';
 import { GridColumnsService } from '~/services/grid-columns.service';
 import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { MetaApiLimiterGuard } from '~/guards/meta-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(MetaApiLimiterGuard, GlobalGuard)
@@ -26,7 +26,7 @@ export class GridColumnsController {
   ])
   @Acl('columnList')
   async columnList(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('gridViewId') gridViewId: string,
   ) {
     return await this.gridColumnsService.columnList(context, {
@@ -39,11 +39,11 @@ export class GridColumnsController {
   ])
   @Acl('gridColumnUpdate')
   async gridColumnUpdate(
-    @TenantContext() context: NcContext,
+    @TenantContext() context: AtContext,
     @Param('gridViewColumnId') gridViewColumnId: string,
     @Body() body: GridColumnReqType,
 
-    @Req() req: NcRequest,
+    @Req() req: AtRequest,
   ) {
     return this.gridColumnsService.gridColumnUpdate(context, {
       gridViewColumnId,

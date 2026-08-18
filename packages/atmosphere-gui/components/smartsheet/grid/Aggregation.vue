@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { UITypes } from 'nocodb-sdk'
+import { UITypes } from 'atmosphere-sdk'
 import type { Group } from '~/lib/types'
 
 const props = defineProps<{
@@ -59,7 +59,7 @@ const { visibleFieldsComputed, updateAggregate, getAggregations } = useViewAggre
         true,
       )}px`"
     ></div>
-    <NcDropdown
+    <AtDropdown
       v-if="field && column?.id"
       :disabled="
         [UITypes.SpecificDBType, UITypes.ForeignKey, UITypes.Button].includes(column?.uidt!) ||
@@ -67,14 +67,14 @@ const { visibleFieldsComputed, updateAggregate, getAggregations } = useViewAggre
         !isViewOperationsAllowed ||
         isMmTable
       "
-      overlay-class-name="max-h-64 relative scroll-container nc-scrollbar-thin overflow-auto"
+      overlay-class-name="max-h-64 relative scroll-container atm-scrollbar-thin overflow-auto"
       @click.stop
     >
       <div
-        class="flex items-center overflow-x-hidden justify-end group-aggregation text-nc-content-gray-muted transition-all transition-linear px-3 py-2"
+        class="flex items-center overflow-x-hidden justify-end group-aggregation text-atm-content-gray-muted transition-all transition-linear px-3 py-2"
         :class="{
           'cursor-pointer': !isLocked && isViewOperationsAllowed && !isMmTable,
-          'hover:bg-nc-bg-gray-light': isViewOperationsAllowed && !isMmTable,
+          'hover:bg-atm-bg-gray-light': isViewOperationsAllowed && !isMmTable,
           'cursor-auto': !isViewOperationsAllowed || isMmTable,
         }"
         :style="{
@@ -86,16 +86,16 @@ const { visibleFieldsComputed, updateAggregate, getAggregations } = useViewAggre
         <template v-if="!isMmTable && ![UITypes.SpecificDBType, UITypes.ForeignKey, UITypes.Button].includes(column?.uidt!)">
           <div
             v-if="field?.aggregation === 'none' || field?.aggregation === null"
-            class="text-nc-content-gray-muted opacity-0 transition"
+            class="text-atm-content-gray-muted opacity-0 transition"
             :class="{
               'group-hover-aggregation': !isLocked && isViewOperationsAllowed,
             }"
           >
-            <GeneralIcon class="text-nc-content-gray-muted" icon="arrowDown" />
+            <GeneralIcon class="text-atm-content-gray-muted" icon="arrowDown" />
             <span class="text-[10px] font-semibold"> {{ $t('labels.summary') }} </span>
           </div>
 
-          <NcTooltip
+          <AtTooltip
             v-else-if="value !== undefined"
             show-on-truncate-only
             :style="{
@@ -103,11 +103,11 @@ const { visibleFieldsComputed, updateAggregate, getAggregations } = useViewAggre
             }"
           >
             <div class="flex gap-2 truncate text-nowrap overflow-hidden items-center">
-              <span class="text-nc-content-gray-muted text-[12px] leading-4">
+              <span class="text-atm-content-gray-muted text-[12px] leading-4">
                 {{ $t(`aggregation.${field.aggregation}`).replace('Percent ', '') }}
               </span>
 
-              <span class="text-nc-content-gray-subtle2 font-semibold text-[12px]">
+              <span class="text-atm-content-gray-subtle2 font-semibold text-[12px]">
                 {{
                   getFormattedAggrationValue(field.aggregation, group.aggregations[column.title], column, [], {
                     meta,
@@ -139,32 +139,32 @@ const { visibleFieldsComputed, updateAggregate, getAggregations } = useViewAggre
                 </span>
               </div>
             </template>
-          </NcTooltip>
+          </AtTooltip>
         </template>
       </div>
 
       <template #overlay>
-        <NcMenu variant="small">
-          <NcMenuItem
+        <AtMenu variant="small">
+          <AtMenuItem
             v-for="(agg, i) in getAggregations(column)"
             :key="i"
-            class="!flex-1 nc-aggregation-menu"
+            class="!flex-1 atm-aggregation-menu"
             @click="updateAggregate(column.id, agg)"
           >
-            <div class="flex !flex-grow-1 !w-full text-[13px] text-nc-content-gray items-center justify-between">
+            <div class="flex !flex-grow-1 !w-full text-[13px] text-atm-content-gray items-center justify-between">
               {{ $t(`aggregation_type.${agg}`) }}
 
-              <GeneralIcon v-if="field?.aggregation === agg" class="text-nc-content-brand" icon="check" />
+              <GeneralIcon v-if="field?.aggregation === agg" class="text-atm-content-brand" icon="check" />
             </div>
-          </NcMenuItem>
-        </NcMenu>
+          </AtMenuItem>
+        </AtMenu>
       </template>
-    </NcDropdown>
+    </AtDropdown>
   </template>
 </template>
 
 <style scoped lang="scss">
-:deep(.nc-menu-item-inner) {
+:deep(.atm-menu-item-inner) {
   @apply w-full;
 }
 

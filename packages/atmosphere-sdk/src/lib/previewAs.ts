@@ -14,7 +14,7 @@
  * preview-as: base owner/creator; base-wide view-as: base owner).
  */
 
-export const NC_PREVIEW_AS_HEADER = 'xc-preview-as';
+export const ATMOSPHERE_PREVIEW_AS_HEADER = 'xc-preview-as';
 
 export type PreviewAsTargetType = 'user' | 'role' | 'team';
 

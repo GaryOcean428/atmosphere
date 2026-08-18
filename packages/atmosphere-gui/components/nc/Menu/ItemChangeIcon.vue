@@ -13,10 +13,10 @@ const emits = defineEmits<{
 </script>
 
 <template>
-  <NcMenuItem :disabled="disabled" class="nc-menu-item-change-icon" @click="emits('changeIcon')">
+  <AtMenuItem :disabled="disabled" class="atm-menu-item-change-icon" @click="emits('changeIcon')">
     <div class="flex gap-2 items-center">
       <GeneralIcon icon="ncSmile" class="opacity-80" />
       {{ $t('general.changeIcon') }}
     </div>
-  </NcMenuItem>
+  </AtMenuItem>
 </template>

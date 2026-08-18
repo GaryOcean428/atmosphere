@@ -5,16 +5,16 @@ import {
   OrgUserRoles,
   PluginCategory,
   WorkspaceUserRoles,
-} from 'nocodb-sdk';
+} from 'atmosphere-sdk';
 import { v4 as uuidv4 } from 'uuid';
 import validator from 'validator';
-import type { UserType } from 'nocodb-sdk';
-import type { NcRequest } from '~/interface/config';
+import type { UserType } from 'atmosphere-sdk';
+import type { AtRequest } from '~/interface/config';
 import { AppHooksService } from '~/services/app-hooks/app-hooks.service';
 import { BaseUsersService } from '~/services/base-users/base-users.service';
 import { MailService } from '~/services/mail/mail.service';
 import { validatePayload } from '~/helpers';
-import { NcBaseError, NcError } from '~/helpers/catchError';
+import { AtBaseError, AtError } from '~/helpers/catchError';
 import { extractProps } from '~/helpers/extractProps';
 import { randomTokenString } from '~/helpers/stringHelpers';
 import {
@@ -27,7 +27,7 @@ import {
 } from '~/models';
 import WorkspaceUser from '~/models/WorkspaceUser';
 
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { MetaTable, RootScopes } from '~/utils/globals';
 import { MailEvent } from '~/interface/Mail';
 import { ensureUserInDefaultWorkspace } from '~/helpers/verifyDefaultWorkspace';
@@ -52,9 +52,9 @@ export class OrgUsersService {
     await PresignedUrl.signMetaIconImage(users);
 
     // Augment with workspace roles from default workspace
-    if (Noco.ncDefaultWorkspaceId) {
+    if (Atmosphere.ncDefaultWorkspaceId) {
       const wsUsers = await WorkspaceUser.userList({
-        fk_workspace_id: Noco.ncDefaultWorkspaceId,
+        fk_workspace_id: Atmosphere.ncDefaultWorkspaceId,
       });
       const wsRoleMap = new Map(wsUsers.map((wu) => [wu.fk_user_id, wu.roles]));
       for (const user of users) {
@@ -69,7 +69,7 @@ export class OrgUsersService {
     // todo: better typing
     user: Partial<UserType>;
     userId: string;
-    req: NcRequest;
+    req: AtRequest;
   }) {
     validatePayload('swagger.json#/components/schemas/OrgUserReq', param.user);
 
@@ -81,13 +81,13 @@ export class OrgUsersService {
         updateBody.roles as OrgUserRoles,
       )
     ) {
-      NcError.badRequest('Invalid role');
+      AtError.badRequest('Invalid role');
     }
 
     const user = await User.get(param.userId);
 
     if (extractRolesObj(user.roles)[OrgUserRoles.SUPER_ADMIN]) {
-      NcError.badRequest('Cannot update super admin roles');
+      AtError.badRequest('Cannot update super admin roles');
     }
 
     await this.mailService.sendMail({
@@ -113,13 +113,13 @@ export class OrgUsersService {
     });
 
     // Also update workspace role in the default workspace
-    if (Noco.ncDefaultWorkspaceId && updateBody.roles) {
+    if (Atmosphere.ncDefaultWorkspaceId && updateBody.roles) {
       const wsRole =
         updateBody.roles === OrgUserRoles.CREATOR
           ? WorkspaceUserRoles.CREATOR
           : WorkspaceUserRoles.VIEWER;
       try {
-        await WorkspaceUser.update(Noco.ncDefaultWorkspaceId, param.userId, {
+        await WorkspaceUser.update(Atmosphere.ncDefaultWorkspaceId, param.userId, {
           roles: wsRole,
         });
       } catch {
@@ -130,25 +130,25 @@ export class OrgUsersService {
     return result;
   }
 
-  async userDelete(param: { userId: string; req?: NcRequest }) {
-    const ncMeta = await Noco.ncMeta.startTransaction();
+  async userDelete(param: { userId: string; req?: AtRequest }) {
+    const ncMeta = await Atmosphere.ncMeta.startTransaction();
     try {
       const user = await User.get(param.userId, ncMeta);
 
       if (extractRolesObj(user.roles)[OrgUserRoles.SUPER_ADMIN]) {
-        NcError.badRequest('Cannot delete super admin');
+        AtError.badRequest('Cannot delete super admin');
       }
 
       // Block deletion if user is SCIM-managed in any workspace
       const hasScimColumn = await ncMeta
-        .knexConnection('nc_workspace_users')
+        .knexConnection('atm_workspace_users')
         .columnInfo()
         .then((cols) => 'scim_managed' in cols)
         .catch(() => false);
 
       if (hasScimColumn) {
         const scimCount = await ncMeta
-          .knexConnection('nc_workspace_users')
+          .knexConnection('atm_workspace_users')
           .where('fk_user_id', param.userId)
           .where('scim_managed', true)
           .where(function () {
@@ -158,7 +158,7 @@ export class OrgUsersService {
           .first();
 
         if (scimCount && Number(scimCount.count) > 0) {
-          NcError.badRequest(
+          AtError.badRequest(
             'This user is managed via SCIM in one or more workspaces. Removal must be done from the identity provider.',
           );
         }
@@ -210,9 +210,9 @@ export class OrgUsersService {
       });
     } catch (e) {
       await ncMeta.rollback(e);
-      if (e instanceof NcError || e instanceof NcBaseError) throw e;
+      if (e instanceof AtError || e instanceof AtBaseError) throw e;
       this.logger.error('Error deleting user', e);
-      NcError.orgUserError('Bad Request');
+      AtError.orgUserError('Bad Request');
     }
 
     return true;
@@ -221,7 +221,7 @@ export class OrgUsersService {
   async userAdd(param: {
     user: UserType;
     // todo: refactor
-    req: NcRequest;
+    req: AtRequest;
   }) {
     validatePayload('swagger.json#/components/schemas/OrgUserReq', param.user);
 
@@ -232,7 +232,7 @@ export class OrgUsersService {
         param.user.roles as OrgUserRoles,
       )
     ) {
-      NcError.badRequest('Invalid role');
+      AtError.badRequest('Invalid role');
     }
 
     // extract emails from request body
@@ -246,10 +246,10 @@ export class OrgUsersService {
     const invalidEmails = emails.filter((v) => !validator.isEmail(v));
 
     if (!emails.length) {
-      return NcError.badRequest('Invalid email address');
+      return AtError.badRequest('Invalid email address');
     }
     if (invalidEmails.length) {
-      NcError.badRequest('Invalid email address : ' + invalidEmails.join(', '));
+      AtError.badRequest('Invalid email address : ' + invalidEmails.join(', '));
     }
 
     const error = [];
@@ -260,7 +260,7 @@ export class OrgUsersService {
       let user = await User.getByCanonicalEmail(email);
 
       if (user) {
-        NcError.badRequest('User already exist');
+        AtError.badRequest('User already exist');
       } else {
         try {
           // create new user with invite token
@@ -321,7 +321,7 @@ export class OrgUsersService {
         } catch (e) {
           this.logger.error(e.message, e.stack);
           if (emails.length === 1) {
-            NcError.orgUserError('Bad Request');
+            AtError.orgUserError('Bad Request');
           } else {
             error.push({ email, error: e.message });
           }
@@ -339,17 +339,17 @@ export class OrgUsersService {
   }
 
   async userSettings(_param): Promise<any> {
-    NcError.notImplemented();
+    AtError.notImplemented();
   }
 
   async userInviteResend(param: {
     userId: string;
-    req: NcRequest;
+    req: AtRequest;
   }): Promise<any> {
     const user = await User.get(param.userId);
 
     if (!user) {
-      NcError.userNotFound(param.userId);
+      AtError.userNotFound(param.userId);
     }
 
     const invite_token = uuidv4();
@@ -359,7 +359,7 @@ export class OrgUsersService {
       invite_token_expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
-    const pluginData = await Noco.ncMeta.metaGet2(
+    const pluginData = await Atmosphere.ncMeta.metaGet2(
       RootScopes.ROOT,
       RootScopes.ROOT,
       MetaTable.PLUGIN,
@@ -370,7 +370,7 @@ export class OrgUsersService {
     );
 
     if (!pluginData) {
-      NcError.badRequest(
+      AtError.badRequest(
         `No Email Plugin is found. Please go to App Store to configure first or copy the invitation URL to users instead.`,
       );
     }
@@ -396,7 +396,7 @@ export class OrgUsersService {
     const user = await User.get(param.userId);
 
     if (!user) {
-      NcError.userNotFound(param.userId);
+      AtError.userNotFound(param.userId);
     }
     const token = uuidv4();
     await User.update(user.id, {
@@ -413,11 +413,11 @@ export class OrgUsersService {
   }
 
   async appSettingsGet() {
-    return await Noco.getAppSettings();
+    return await Atmosphere.getAppSettings();
   }
 
   async appSettingsSet(param: { settings: any }) {
-    await Noco.updateAppSettings(param.settings);
+    await Atmosphere.updateAppSettings(param.settings);
     return true;
   }
 }

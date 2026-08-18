@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import dayjs from 'dayjs'
-import type { ColumnType } from 'nocodb-sdk'
+import type { ColumnType } from 'atmosphere-sdk'
 import {
   CALENDAR_CARD_MAX_FIELDS,
   CALENDAR_CARD_ROW_GAP,
@@ -716,7 +716,7 @@ const addRecord = (date: dayjs.Dayjs) => {
 </script>
 
 <template>
-  <div class="flex relative flex-col prevent-select" data-testid="nc-calendar-week-view" @drop="dropEvent">
+  <div class="flex relative flex-col prevent-select" data-testid="atm-calendar-week-view" @drop="dropEvent">
     <div class="flex h-6">
       <div
         v-for="(date, weekIndex) in weekDates"
@@ -725,7 +725,7 @@ const addRecord = (date: dayjs.Dayjs) => {
           'selected-date-header': dayjs(date).isSame(selectedDate, 'day'),
         }"
         :style="{ width: columnWidthPct(weekIndex) }"
-        class="cursor-pointer text-center text-[10px] font-semibold leading-4 flex items-center justify-center uppercase text-nc-content-gray-muted py-1 border-nc-border-gray-medium border-l-nc-border-gray-extralight border-t-nc-border-gray-extralight last:border-r-0 border-b-1 border-r-1 bg-nc-bg-gray-extralight"
+        class="cursor-pointer text-center text-[10px] font-semibold leading-4 flex items-center justify-center uppercase text-atm-content-gray-muted py-1 border-atm-border-gray-medium border-l-atm-border-gray-extralight border-t-atm-border-gray-extralight last:border-r-0 border-b-1 border-r-1 bg-atm-bg-gray-extralight"
         @click="selectDate(date)"
         @dblclick="addRecord(date)"
       >
@@ -744,13 +744,13 @@ const addRecord = (date: dayjs.Dayjs) => {
         :class="[
           {
             'selected-date': dayjs(date).isSame(selectedDate, 'day'),
-            '!bg-nc-bg-gray-extralight': date.get('day') === 0 || date.get('day') === 6,
+            '!bg-atm-bg-gray-extralight': date.get('day') === 0 || date.get('day') === 6,
           },
           isExpanded ? 'min-h-full' : 'min-h-[100vh]',
         ]"
         :style="{ width: columnWidthPct(dateIndex) }"
         class="flex cursor-pointer flex-col border-r-1 last:border-r-0 items-center"
-        data-testid="nc-calendar-week-day"
+        data-testid="atm-calendar-week-day"
         @click="selectDate(date)"
         @dblclick="addRecord(date)"
       ></div>
@@ -758,19 +758,19 @@ const addRecord = (date: dayjs.Dayjs) => {
     <div
       ref="recordScrollContainer"
       class="absolute z-2 mt-6 pointer-events-none inset-0"
-      :class="isExpanded ? 'overflow-visible' : 'nc-scrollbar-md overflow-y-auto'"
-      data-testid="nc-calendar-week-record-container"
+      :class="isExpanded ? 'overflow-visible' : 'atm-scrollbar-md overflow-y-auto'"
+      data-testid="atm-calendar-week-record-container"
     >
       <template v-for="(record, id) in visibleRecords" :key="id">
         <div
           v-if="record.rowMeta.style?.display !== 'none'"
-          :data-testid="`nc-calendar-week-record-${record.row[displayField!.title!]}`"
+          :data-testid="`atm-calendar-week-record-${record.row[displayField!.title!]}`"
           :data-unique-id="record.rowMeta.id"
           :style="{
             ...record.rowMeta.style,
             lineHeight: '18px',
           }"
-          class="absolute group draggable-record pointer-events-auto nc-calendar-week-record-card"
+          class="absolute group draggable-record pointer-events-auto atm-calendar-week-record-card"
           @mouseleave="hoverRecord = null"
           @mouseover="hoverRecord = record.rowMeta.id"
           @mousedown.stop="dragStart($event, record)"
@@ -801,7 +801,7 @@ const addRecord = (date: dayjs.Dayjs) => {
               </template>
               <div
                 v-if="hiddenFieldCount(record) > 0"
-                class="nc-calendar-card-more truncate leading-5 text-bodySm text-nc-content-gray-muted"
+                class="atm-calendar-card-more truncate leading-5 text-bodySm text-atm-content-gray-muted"
               >
                 {{ $t('msg.chat.showMore', { count: hiddenFieldCount(record) }) }}
               </div>
@@ -824,7 +824,7 @@ const addRecord = (date: dayjs.Dayjs) => {
 }
 
 .selected-date {
-  @apply relative !bg-nc-bg-brand;
+  @apply relative !bg-atm-bg-brand;
   &:first-of-type::after {
     @apply left-0.5 w-[calc(100%_-_2px)];
   }

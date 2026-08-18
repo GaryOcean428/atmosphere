@@ -1,17 +1,17 @@
 import CryptoJS from 'crypto-js';
-import { BaseVariableValueType } from 'nocodb-sdk';
-import type { BaseVariableInheritance, BaseVariableType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
-import Noco from '~/Noco';
+import { BaseVariableValueType } from 'atmosphere-sdk';
+import type { BaseVariableInheritance, BaseVariableType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
-import { NcError } from '~/helpers/ncError';
+import { AtError } from '~/helpers/ncError';
 import {
   CacheDelDirection,
   CacheGetType,
   CacheScope,
   MetaTable,
 } from '~/utils/globals';
-import NocoCache from '~/cache/NocoCache';
+import AtmosphereCache from '~/cache/AtmosphereCache';
 import { getCredentialEncryptSecret } from '~/utils/encryptDecrypt';
 import { isReplay } from '~/helpers/replayScope';
 
@@ -90,11 +90,11 @@ export default class BaseVariable implements BaseVariableType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     variableId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    let data = await NocoCache.get(
+    let data = await AtmosphereCache.get(
       context,
       `${CacheScope.BASE_VARIABLE}:${variableId}`,
       CacheGetType.TYPE_OBJECT,
@@ -109,7 +109,7 @@ export default class BaseVariable implements BaseVariableType {
       );
 
       if (data) {
-        NocoCache.set(
+        AtmosphereCache.set(
           context,
           `${CacheScope.BASE_VARIABLE}:${variableId}`,
           data,
@@ -125,11 +125,11 @@ export default class BaseVariable implements BaseVariableType {
   }
 
   public static async list(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
-    const cachedList = await NocoCache.getList(
+    const cachedList = await AtmosphereCache.getList(
       context,
       CacheScope.BASE_VARIABLE,
       [baseId],
@@ -149,7 +149,7 @@ export default class BaseVariable implements BaseVariableType {
       );
 
       if (list) {
-        await NocoCache.setList(
+        await AtmosphereCache.setList(
           context,
           CacheScope.BASE_VARIABLE,
           [baseId],
@@ -168,9 +168,9 @@ export default class BaseVariable implements BaseVariableType {
    * Secret values are decrypted. Empty values are skipped.
    */
   public static async listAsMap(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Record<string, string>> {
     const variables = await BaseVariable.list(context, baseId, ncMeta);
     const map: Record<string, string> = {};
@@ -183,9 +183,9 @@ export default class BaseVariable implements BaseVariableType {
   }
 
   public static async insert(
-    context: NcContext,
+    context: AtContext,
     data: Partial<BaseVariable>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(data, [
       'base_id',
@@ -207,13 +207,13 @@ export default class BaseVariable implements BaseVariableType {
 
     // Validate key format
     if (!insertObj.key || !KEY_REGEX.test(insertObj.key)) {
-      NcError.badRequest(
+      AtError.badRequest(
         'Variable key must be UPPER_SNAKE_CASE (e.g., MY_VARIABLE)',
       );
     }
 
     if (insertObj.value && insertObj.value.length > MAX_VALUE_LENGTH) {
-      NcError.badRequest('Variable value exceeds 64KB limit');
+      AtError.badRequest('Variable value exceeds 64KB limit');
     }
 
     if (insertObj.order === null || insertObj.order === undefined) {
@@ -231,7 +231,7 @@ export default class BaseVariable implements BaseVariableType {
     );
 
     return this.get(context, id, ncMeta).then(async (res) => {
-      await NocoCache.appendToList(
+      await AtmosphereCache.appendToList(
         context,
         CacheScope.BASE_VARIABLE,
         [data.base_id],
@@ -242,10 +242,10 @@ export default class BaseVariable implements BaseVariableType {
   }
 
   public static async update(
-    context: NcContext,
+    context: AtContext,
     variableId: string,
     data: Partial<BaseVariable>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(data, [
       'value',
@@ -259,7 +259,7 @@ export default class BaseVariable implements BaseVariableType {
     ]);
 
     if (updateObj.value && updateObj.value.length > MAX_VALUE_LENGTH) {
-      NcError.badRequest('Variable value exceeds 64KB limit');
+      AtError.badRequest('Variable value exceeds 64KB limit');
     }
 
     // Resolve effective type after the patch and the existing row so we can
@@ -305,7 +305,7 @@ export default class BaseVariable implements BaseVariableType {
     // Cache mirrors the DB row exactly: SECRET stores ciphertext, PLAIN stores
     // plaintext. Reads route through prepareForRead, which decrypts based on
     // the row's current `type`.
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.BASE_VARIABLE}:${variableId}`,
       updateObj,
@@ -315,9 +315,9 @@ export default class BaseVariable implements BaseVariableType {
   }
 
   public static async delete(
-    context: NcContext,
+    context: AtContext,
     variableId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const res = await ncMeta.metaDelete(
       context.workspace_id,
@@ -326,7 +326,7 @@ export default class BaseVariable implements BaseVariableType {
       variableId,
     );
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.BASE_VARIABLE}:${variableId}`,
       CacheDelDirection.CHILD_TO_PARENT,
@@ -336,9 +336,9 @@ export default class BaseVariable implements BaseVariableType {
   }
 
   public static async deleteByBaseId(
-    context: NcContext,
+    context: AtContext,
     baseId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     await ncMeta.metaDelete(
       context.workspace_id,
@@ -347,7 +347,7 @@ export default class BaseVariable implements BaseVariableType {
       { base_id: baseId },
     );
 
-    await NocoCache.deepDel(
+    await AtmosphereCache.deepDel(
       context,
       `${CacheScope.BASE_VARIABLE}:${baseId}:list`,
       CacheDelDirection.PARENT_TO_CHILD,

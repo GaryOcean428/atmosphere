@@ -30,7 +30,7 @@ export enum EventType {
   CHAT_EVENT = 'event-chat',
   DOCUMENT_EVENT = 'event-document',
   DOCUMENT_COMMENT_EVENT = 'event-document-comment',
-  DOCUMENT_SYNC_EVENT = 'event-document-sync',
+  DOCUMENT_SYATMOSPHERE_EVENT = 'event-document-sync',
   SMART_TEXT_EVENT = 'event-smart-text',
   CREDIT_EVENT = 'event-credit',
 }
@@ -48,7 +48,7 @@ export function getDocSyncRoom(
   baseId: string,
   docId: string
 ): string {
-  return `${EventType.DOCUMENT_SYNC_EVENT}:${workspaceId}:${baseId}:${docId}`;
+  return `${EventType.DOCUMENT_SYATMOSPHERE_EVENT}:${workspaceId}:${baseId}:${docId}`;
 }
 
 /**
@@ -243,7 +243,7 @@ export interface RealtimeUser {
  * - **active** — the whole `resource` is absent: there is no addressable resource
  *
  * Server→client frames broadcast to the base room never carry `id`; the located tier is
- * emitted into access-scoped rooms instead. See the tiering in `NocoPresence`.
+ * emitted into access-scoped rooms instead. See the tiering in `AtmospherePresence`.
  */
 export interface PresenceResource {
   id?: string;
@@ -420,7 +420,7 @@ export interface ChatEventPayload extends BaseSocketPayload {
   followUps?: string[];
   // action: 'error'
   error?: string;
-  /** Machine-readable `NcErrorType` when the failure has one (e.g.
+  /** Machine-readable `AtErrorType` when the failure has one (e.g.
    * `ERR_CREDITS_EXHAUSTED`) — the UI branches on it for recovery CTAs. */
   code?: string;
   /** Structured payload of the coded error (remaining balance, period end). */

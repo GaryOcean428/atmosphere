@@ -1,14 +1,14 @@
-import { EnterpriseOrgUserRoles } from 'nocodb-sdk';
+import { EnterpriseOrgUserRoles } from 'atmosphere-sdk';
 import type { Knex } from 'knex';
 import {
   MetaTable,
-  NC_DEFAULT_ORG_ID,
-  NC_STORE_DEFAULT_ORG_ID_KEY,
+  ATMOSPHERE_DEFAULT_ORG_ID,
+  ATMOSPHERE_STORE_DEFAULT_ORG_ID_KEY,
 } from '~/utils/globals';
 import { isOnPrem } from '~/utils/constants';
 
 /**
- * Batch insert users into nc_org_users, skipping duplicates.
+ * Batch insert users into atm_org_users, skipping duplicates.
  * Uses DB-specific syntax for conflict handling.
  */
 async function batchInsertOrgUsers(
@@ -58,11 +58,11 @@ async function batchInsertOrgUsers(
 
 export async function up(knex: Knex) {
   const migrationStart = Date.now();
-  console.log('[nc_202604071200_default_org] Starting migration...');
+  console.log('[atm_202604071200_default_org] Starting migration...');
 
-  // Step 1: Fix nc_org_users PK — change from fk_org_id only to composite (fk_org_id, fk_user_id)
+  // Step 1: Fix atm_org_users PK — change from fk_org_id only to composite (fk_org_id, fk_user_id)
   const step1Start = Date.now();
-  console.log('[nc_202604071200_default_org] Step 1: Fix nc_org_users PK...');
+  console.log('[atm_202604071200_default_org] Step 1: Fix atm_org_users PK...');
   const hasOrgUsersTable = await knex.schema.hasTable(MetaTable.ORG_USERS);
 
   if (hasOrgUsersTable) {
@@ -72,10 +72,10 @@ export async function up(knex: Knex) {
       // Check how many columns the PK has — skip if already composite
       const pkColCount = await knex.raw(`
         SELECT COUNT(*) as cnt FROM information_schema.key_column_usage
-        WHERE table_name = 'nc_org_users'
+        WHERE table_name = 'atm_org_users'
           AND constraint_name IN (
             SELECT constraint_name FROM information_schema.table_constraints
-            WHERE table_name = 'nc_org_users' AND constraint_type = 'PRIMARY KEY'
+            WHERE table_name = 'atm_org_users' AND constraint_type = 'PRIMARY KEY'
           )
       `);
 
@@ -87,7 +87,7 @@ export async function up(knex: Knex) {
 
         const pkResult = await knex.raw(`
           SELECT constraint_name FROM information_schema.table_constraints
-          WHERE table_name = 'nc_org_users' AND constraint_type = 'PRIMARY KEY'
+          WHERE table_name = 'atm_org_users' AND constraint_type = 'PRIMARY KEY'
         `);
 
         if (pkResult.rows?.length) {
@@ -106,7 +106,7 @@ export async function up(knex: Knex) {
       }
     } else if (client === 'sqlite3') {
       await knex.raw(`
-        CREATE TABLE IF NOT EXISTS nc_org_users_new (
+        CREATE TABLE IF NOT EXISTS atm_org_users_new (
           fk_org_id VARCHAR(20) NOT NULL,
           fk_user_id VARCHAR(20) NOT NULL,
           roles VARCHAR(255),
@@ -116,17 +116,17 @@ export async function up(knex: Knex) {
         )
       `);
       await knex.raw(
-        `INSERT OR IGNORE INTO nc_org_users_new SELECT fk_org_id, fk_user_id, roles, created_at, updated_at FROM ${MetaTable.ORG_USERS}`,
+        `INSERT OR IGNORE INTO atm_org_users_new SELECT fk_org_id, fk_user_id, roles, created_at, updated_at FROM ${MetaTable.ORG_USERS}`,
       );
       await knex.raw(`DROP TABLE ${MetaTable.ORG_USERS}`);
       await knex.raw(
-        `ALTER TABLE nc_org_users_new RENAME TO ${MetaTable.ORG_USERS}`,
+        `ALTER TABLE atm_org_users_new RENAME TO ${MetaTable.ORG_USERS}`,
       );
     } else {
       // MySQL / MariaDB
       const pkColCount = await knex.raw(`
         SELECT COUNT(*) as cnt FROM information_schema.key_column_usage
-        WHERE table_name = 'nc_org_users' AND constraint_name = 'PRIMARY'
+        WHERE table_name = 'atm_org_users' AND constraint_name = 'PRIMARY'
       `);
 
       if (Number(pkColCount[0]?.[0]?.cnt) < 2) {
@@ -146,24 +146,24 @@ export async function up(knex: Knex) {
     // Add index on fk_user_id for reverse lookups
     if (client === 'pg' || client === 'postgresql') {
       await knex.raw(
-        `CREATE INDEX IF NOT EXISTS nc_org_users_fk_user_id_index ON ${MetaTable.ORG_USERS} (fk_user_id)`,
+        `CREATE INDEX IF NOT EXISTS atm_org_users_fk_user_id_index ON ${MetaTable.ORG_USERS} (fk_user_id)`,
       );
     } else if (client === 'sqlite3') {
       const idx = await knex.raw(
-        `SELECT name FROM sqlite_master WHERE type='index' AND name='nc_org_users_fk_user_id_index'`,
+        `SELECT name FROM sqlite_master WHERE type='index' AND name='atm_org_users_fk_user_id_index'`,
       );
       if (!idx?.length) {
         await knex.schema.alterTable(MetaTable.ORG_USERS, (table) => {
-          table.index(['fk_user_id'], 'nc_org_users_fk_user_id_index');
+          table.index(['fk_user_id'], 'atm_org_users_fk_user_id_index');
         });
       }
     } else {
       const idx = await knex.raw(
-        `SHOW INDEX FROM ${MetaTable.ORG_USERS} WHERE Key_name = 'nc_org_users_fk_user_id_index'`,
+        `SHOW INDEX FROM ${MetaTable.ORG_USERS} WHERE Key_name = 'atm_org_users_fk_user_id_index'`,
       );
       if (!idx?.[0]?.length) {
         await knex.schema.alterTable(MetaTable.ORG_USERS, (table) => {
-          table.index(['fk_user_id'], 'nc_org_users_fk_user_id_index');
+          table.index(['fk_user_id'], 'atm_org_users_fk_user_id_index');
         });
       }
     }
@@ -182,16 +182,16 @@ export async function up(knex: Knex) {
   }
 
   console.log(
-    `[nc_202604071200_default_org] Step 1 completed in ${
+    `[atm_202604071200_default_org] Step 1 completed in ${
       Date.now() - step1Start
     }ms`,
   );
 
   // Step 2: Create default org for on-prem / CE (idempotent)
   const step2Start = Date.now();
-  console.log('[nc_202604071200_default_org] Step 2: Create default org...');
+  console.log('[atm_202604071200_default_org] Step 2: Create default org...');
   const existingOrg = await knex(MetaTable.ORG)
-    .where('id', NC_DEFAULT_ORG_ID)
+    .where('id', ATMOSPHERE_DEFAULT_ORG_ID)
     .first();
 
   // Only create default org on on-prem (cloud creates orgs via admin flow)
@@ -202,14 +202,14 @@ export async function up(knex: Knex) {
 
     if (superUser) {
       await knex(MetaTable.ORG).insert({
-        id: NC_DEFAULT_ORG_ID,
+        id: ATMOSPHERE_DEFAULT_ORG_ID,
         title: 'Default Organization',
         fk_user_id: superUser.id,
         deleted: false,
       });
 
       await knex(MetaTable.ORG_USERS).insert({
-        fk_org_id: NC_DEFAULT_ORG_ID,
+        fk_org_id: ATMOSPHERE_DEFAULT_ORG_ID,
         fk_user_id: superUser.id,
         roles: EnterpriseOrgUserRoles.ADMIN,
       });
@@ -217,7 +217,7 @@ export async function up(knex: Knex) {
       // Link all workspaces with no org to the default org
       await knex(MetaTable.WORKSPACE)
         .whereNull('fk_org_id')
-        .update({ fk_org_id: NC_DEFAULT_ORG_ID });
+        .update({ fk_org_id: ATMOSPHERE_DEFAULT_ORG_ID });
 
       // Backfill all active workspace users into org (batch insert, skip duplicates)
       const workspaceUsers = await knex(MetaTable.WORKSPACE_USER)
@@ -233,7 +233,7 @@ export async function up(knex: Knex) {
 
       await batchInsertOrgUsers(
         knex,
-        NC_DEFAULT_ORG_ID,
+        ATMOSPHERE_DEFAULT_ORG_ID,
         userIds,
         EnterpriseOrgUserRoles.VIEWER,
       );
@@ -241,8 +241,8 @@ export async function up(knex: Knex) {
       // Store default org ID
       try {
         await knex(MetaTable.STORE).insert({
-          key: NC_STORE_DEFAULT_ORG_ID_KEY,
-          value: NC_DEFAULT_ORG_ID,
+          key: ATMOSPHERE_STORE_DEFAULT_ORG_ID_KEY,
+          value: ATMOSPHERE_DEFAULT_ORG_ID,
         });
       } catch {
         // Already exists — idempotent
@@ -251,17 +251,17 @@ export async function up(knex: Knex) {
   }
 
   console.log(
-    `[nc_202604071200_default_org] Step 2 completed in ${
+    `[atm_202604071200_default_org] Step 2 completed in ${
       Date.now() - step2Start
     }ms`,
   );
 
-  // Step 3: Backfill cloud orgs — add workspace users to nc_org_users
+  // Step 3: Backfill cloud orgs — add workspace users to atm_org_users
   const step3Start = Date.now();
-  console.log('[nc_202604071200_default_org] Step 3: Backfill cloud orgs...');
+  console.log('[atm_202604071200_default_org] Step 3: Backfill cloud orgs...');
   // Runs on ALL deployments (including cloud) independently of Step 2
   const cloudOrgs = await knex(MetaTable.ORG)
-    .whereNot('id', NC_DEFAULT_ORG_ID)
+    .whereNot('id', ATMOSPHERE_DEFAULT_ORG_ID)
     .select('id');
 
   for (const org of cloudOrgs) {
@@ -291,13 +291,13 @@ export async function up(knex: Knex) {
   }
 
   console.log(
-    `[nc_202604071200_default_org] Step 3 completed in ${
+    `[atm_202604071200_default_org] Step 3 completed in ${
       Date.now() - step3Start
     }ms`,
   );
 
   console.log(
-    `[nc_202604071200_default_org] Migration completed in ${
+    `[atm_202604071200_default_org] Migration completed in ${
       Date.now() - migrationStart
     }ms`,
   );
@@ -306,18 +306,18 @@ export async function up(knex: Knex) {
 export async function down(knex: Knex) {
   // Remove backfilled org users (except admin)
   await knex(MetaTable.ORG_USERS)
-    .where('fk_org_id', NC_DEFAULT_ORG_ID)
+    .where('fk_org_id', ATMOSPHERE_DEFAULT_ORG_ID)
     .whereNot('roles', EnterpriseOrgUserRoles.ADMIN)
     .del();
 
   // Unlink workspaces
   await knex(MetaTable.WORKSPACE)
-    .where('fk_org_id', NC_DEFAULT_ORG_ID)
+    .where('fk_org_id', ATMOSPHERE_DEFAULT_ORG_ID)
     .update({ fk_org_id: null });
 
   // Remove store entry
-  await knex(MetaTable.STORE).where('key', NC_STORE_DEFAULT_ORG_ID_KEY).del();
+  await knex(MetaTable.STORE).where('key', ATMOSPHERE_STORE_DEFAULT_ORG_ID_KEY).del();
 
   // Remove default org
-  await knex(MetaTable.ORG).where('id', NC_DEFAULT_ORG_ID).del();
+  await knex(MetaTable.ORG).where('id', ATMOSPHERE_DEFAULT_ORG_ID).del();
 }

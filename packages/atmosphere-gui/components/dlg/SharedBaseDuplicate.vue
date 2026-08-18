@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { WorkspaceUserRoles } from 'nocodb-sdk'
+import { WorkspaceUserRoles } from 'atmosphere-sdk'
 
 const props = defineProps<{
   modelValue: boolean
@@ -17,14 +17,14 @@ const _duplicate = async () => {
   if (!selectedWorkspace.value && isEeUI) return
 
   await duplicateSharedBase({
-    workspaceId: selectedWorkspace.value ?? 'nc',
+    workspaceId: selectedWorkspace.value ?? 'atm',
     onComplete: () => {
       dialogShow.value = false
     },
   })
 }
 
-const filterWorkspace = (workspace: NcWorkspace) => {
+const filterWorkspace = (workspace: AtWorkspace) => {
   if (!workspace) return false
 
   return [WorkspaceUserRoles.OWNER, WorkspaceUserRoles.CREATOR].includes(workspace.roles as WorkspaceUserRoles)
@@ -36,7 +36,7 @@ const filterWorkspace = (workspace: NcWorkspace) => {
     v-model:visible="dialogShow"
     :mask-closable="!isLoading"
     class="!w-[30rem]"
-    wrap-class-name="nc-modal-project-duplicate"
+    wrap-class-name="atm-modal-project-duplicate"
   >
     <div>
       <div class="prose-xl font-bold self-center">
@@ -53,7 +53,7 @@ const filterWorkspace = (workspace: NcWorkspace) => {
           }}
         </div>
 
-        <NcListWorkspaceSelector
+        <AtListWorkspaceSelector
           v-model:value="selectedWorkspace"
           placeholder="Select workspace"
           force-layout="vertical"
@@ -81,10 +81,10 @@ const filterWorkspace = (workspace: NcWorkspace) => {
         'mt-4.5': isUseThisTemplate,
       }"
     >
-      <NcButton key="back" type="secondary" :disabled="isLoading" @click="dialogShow = false">{{
+      <AtButton key="back" type="secondary" :disabled="isLoading" @click="dialogShow = false">{{
         $t('general.cancel')
-      }}</NcButton>
-      <NcButton
+      }}</AtButton>
+      <AtButton
         key="submit"
         v-e="['a:shared-base:duplicate']"
         :loading="isLoading"
@@ -92,7 +92,7 @@ const filterWorkspace = (workspace: NcWorkspace) => {
         @click="_duplicate"
       >
         {{ isUseThisTemplate ? $t('general.apply') : $t('general.confirm') }}
-      </NcButton>
+      </AtButton>
     </div>
   </GeneralModal>
 </template>

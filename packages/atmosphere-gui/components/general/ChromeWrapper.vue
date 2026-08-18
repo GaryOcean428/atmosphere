@@ -28,14 +28,14 @@ const picked = computed({
 
 <style lang="scss">
 .vc-chrome-body {
-  @apply !bg-nc-bg-default;
+  @apply !bg-atm-bg-default;
 
   .vc-input__input {
-    @apply rounded-lg border-1 !border-nc-border-gray-extralight shadow-none;
+    @apply rounded-lg border-1 !border-atm-border-gray-extralight shadow-none;
   }
 
   .vc-chrome-toggle-icon-highlight {
-    @apply dark:bg-nc-bg-gray-dark;
+    @apply dark:bg-atm-bg-gray-dark;
   }
 }
 </style>

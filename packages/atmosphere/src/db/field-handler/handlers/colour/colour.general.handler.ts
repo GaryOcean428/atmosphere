@@ -1,5 +1,5 @@
-import { type NcContext, normalizeHexColour } from 'nocodb-sdk';
-import { NcError } from 'src/helpers/catchError';
+import { type AtContext, normalizeHexColour } from 'atmosphere-sdk';
+import { AtError } from 'src/helpers/catchError';
 import type { IBaseModelSqlV2 } from 'src/db/IBaseModelSqlV2';
 import type { MetaService } from 'src/meta/meta.service';
 import type { Column } from '~/models';
@@ -11,7 +11,7 @@ export class ColourGeneralHandler extends GenericFieldHandler {
    *
    * Accepts hex colours with or without a `#` prefix (e.g. `FF5733` or
    * `#ff5733`).  The value is normalised to uppercase `#RRGGBB` format.
-   * Invalid input triggers {@link NcError.invalidValueForField}.
+   * Invalid input triggers {@link AtError.invalidValueForField}.
    */
   async parseUserInput(params: {
     value: any;
@@ -19,7 +19,7 @@ export class ColourGeneralHandler extends GenericFieldHandler {
     column: Column;
     options?: {
       baseModel?: IBaseModelSqlV2;
-      context?: NcContext;
+      context?: AtContext;
       metaService?: MetaService;
     };
   }): Promise<{ value: any }> {
@@ -32,7 +32,7 @@ export class ColourGeneralHandler extends GenericFieldHandler {
     const normalized = normalizeHexColour(value);
 
     if (!normalized) {
-      NcError.invalidValueForField({
+      AtError.invalidValueForField({
         value,
         column: column.title,
         type: column.uidt,

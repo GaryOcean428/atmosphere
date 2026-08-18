@@ -10,7 +10,7 @@ import {
   isDateMonthFormat,
   isLTAR,
   isLink,
-} from 'nocodb-sdk'
+} from 'atmosphere-sdk'
 
 type FormViewColumn = ColumnType & Record<string, any>
 

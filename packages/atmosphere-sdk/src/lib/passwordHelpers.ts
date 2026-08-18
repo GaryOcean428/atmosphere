@@ -26,7 +26,7 @@ export function validatePassword(p) {
  * "password unchanged" — the backend strips it from the update payload
  * so the stored hash is not re-hashed.
  */
-export const NC_VIEW_PASSWORD_PROTECTED_SENTINEL = '__NC_PASSWORD_MASKED__';
+export const ATMOSPHERE_VIEW_PASSWORD_PROTECTED_SENTINEL = '__ATMOSPHERE_PASSWORD_MASKED__';
 
 /**
  * Returns true when `value` looks like a bcrypt hash. Matches every bcrypt

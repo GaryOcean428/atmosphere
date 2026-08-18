@@ -168,7 +168,7 @@ const columns = [
 ]
 
 const customRow = (record: Record<string, any>) => ({
-  class: `nc-metasync-row nc-metasync-row-${record.table_name}`,
+  class: `atm-metasync-row atm-metasync-row-${record.table_name}`,
 })
 </script>
 
@@ -178,10 +178,10 @@ const customRow = (record: Record<string, any>) => ({
       <div class="flex flex-row justify-between items-center w-full mb-4">
         <div class="flex">
           <div v-if="isDifferent">
-            <NcButton
+            <AtButton
               v-e="['a:proj-meta:meta-data:sync']"
               size="small"
-              class="nc-btn-metasync-sync-now"
+              class="atm-btn-metasync-sync-now"
               :disabled="isLoading"
               @click="syncMetaDiff"
             >
@@ -190,7 +190,7 @@ const customRow = (record: Record<string, any>) => ({
                 <component :is="iconMap.databaseSync" v-else />
                 {{ $t('activity.metaSync') }}
               </div>
-            </NcButton>
+            </AtButton>
           </div>
 
           <div v-else>
@@ -201,23 +201,23 @@ const customRow = (record: Record<string, any>) => ({
           </div>
         </div>
         <!--        Reload -->
-        <NcButton
+        <AtButton
           v-e="['a:proj-meta:meta-data:reload']"
           size="small"
           type="secondary"
-          class="self-start !rounded-md nc-btn-metasync-reload"
+          class="self-start !rounded-md atm-btn-metasync-reload"
           @click="loadMetaDiff()"
         >
-          <div class="flex items-center gap-2 text-nc-content-gray-subtle2 font-light">
+          <div class="flex items-center gap-2 text-atm-content-gray-subtle2 font-light">
             <component :is="iconMap.reload" :class="{ 'animate-infinite animate-spin !text-success': isLoading }" />
             {{ $t('general.reload') }}
           </div>
-        </NcButton>
+        </AtButton>
       </div>
       <div v-if="triggeredSync" class="flex flex-col justify-center items-center h-full overflow-y-auto">
         <GeneralProgressPanel ref="progressRef" class="w-1/2 h-full" />
         <div class="flex justify-center">
-          <NcButton
+          <AtButton
             html-type="submit"
             class="mt-4 mb-8"
             :class="{
@@ -228,10 +228,10 @@ const customRow = (record: Record<string, any>) => ({
             @click="onBack"
           >
             {{ $t('general.back') }}
-          </NcButton>
+          </AtButton>
         </div>
       </div>
-      <NcTable
+      <AtTable
         v-else
         :columns="columns"
         :data="metadiff ?? []"
@@ -239,38 +239,38 @@ const customRow = (record: Record<string, any>) => ({
         header-row-height="44px"
         :is-data-loading="isLoading"
         :custom-row="customRow"
-        class="nc-metasync-table h-[calc(100%_-_58px)] w-full"
+        class="atm-metasync-table h-[calc(100%_-_58px)] w-full"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'table_name'">
             <div class="flex items-center gap-2 max-w-full">
               <div class="min-w-5 flex items-center justify-center">
-                <GeneralTableIcon :meta="record" class="text-nc-content-gray-muted" />
+                <GeneralTableIcon :meta="record" class="text-atm-content-gray-muted" />
               </div>
 
-              <NcTooltip class="truncate" show-on-truncate-only>
+              <AtTooltip class="truncate" show-on-truncate-only>
                 <template #title>{{ record.title || record.table_name }}</template>
                 {{ record.title || record.table_name }}
-              </NcTooltip>
+              </AtTooltip>
             </div>
           </template>
           <template v-if="column.key === 'syncState'">
             <div class="flex items-center gap-2 max-w-full">
-              <NcTooltip class="truncate" show-on-truncate-only>
+              <AtTooltip class="truncate" show-on-truncate-only>
                 <template #title> {{ record?.syncState || $t('msg.info.metaNoChange') }} </template>
                 <span
                   :class="{
-                    'text-nc-content-red-medium': record?.syncState,
-                    'text-nc-content-gray-muted': !record?.syncState,
+                    'text-atm-content-red-medium': record?.syncState,
+                    'text-atm-content-gray-muted': !record?.syncState,
                   }"
                 >
                   {{ record?.syncState || $t('msg.info.metaNoChange') }}
                 </span>
-              </NcTooltip>
+              </AtTooltip>
             </div>
           </template>
         </template>
-      </NcTable>
+      </AtTable>
     </div>
 
     <div class="flex place-content-center item-center">

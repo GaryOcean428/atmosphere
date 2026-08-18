@@ -1,4 +1,4 @@
-import type { ColumnType, LinkToAnotherRecordType, TableType } from 'nocodb-sdk'
+import type { ColumnType, LinkToAnotherRecordType, TableType } from 'atmosphere-sdk'
 import { isBoxHovered } from '../../utils/canvas'
 import { PlainCellRenderer } from '../Plain'
 import { renderAsCellLookupOrLtarValue } from '../../utils/cell'
@@ -72,7 +72,7 @@ export const OneToOneCellRenderer: CellRenderer = {
         textColor: getColor(themeV4Colors.brand['500']),
         tag: {
           renderAsTag: true,
-          tagBgColor: getColor(themeV4Colors.brand['50'], 'var(--nc-bg-gray-light)'),
+          tagBgColor: getColor(themeV4Colors.brand['50'], 'var(--atm-bg-gray-light)'),
           tagHeight: 24,
         },
         meta: relatedTableMeta,

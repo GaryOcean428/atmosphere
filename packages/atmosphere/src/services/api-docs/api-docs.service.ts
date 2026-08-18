@@ -2,23 +2,23 @@ import { Injectable } from '@nestjs/common';
 import getSwaggerJSON from './swagger/getSwaggerJSON';
 import getSwaggerJSONV2 from './swaggerV2/getSwaggerJSONV2';
 import getSwaggerJSONV3 from './swaggerV3/getSwaggerJSONV3';
-import type { NcRequest } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { AtRequest } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import type { Source } from '~/models';
 import type { SourcesMap } from '~/services/api-docs/types';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { Base, Model } from '~/models';
 import { hasTableVisibilityAccess } from '~/helpers/tableHelpers';
 
 @Injectable()
 export class ApiDocsService {
   async swaggerJson(
-    context: NcContext,
-    param: { baseId: string; siteUrl: string; req: NcRequest },
+    context: AtContext,
+    param: { baseId: string; siteUrl: string; req: AtRequest },
   ) {
     const base = await Base.get(context, param.baseId);
 
-    if (!base) NcError.baseNotFound(param.baseId);
+    if (!base) AtError.baseNotFound(param.baseId);
 
     const models = await this.extractVisibleModels(context, param);
     // Fetch sources once for the entire base to avoid repeated queries
@@ -41,7 +41,7 @@ export class ApiDocsService {
         variables: {
           customUrl: {
             default: param.siteUrl,
-            description: 'Provide custom nocodb app base url',
+            description: 'Provide custom atmosphere app base url',
           },
         },
       },
@@ -51,8 +51,8 @@ export class ApiDocsService {
   }
 
   private async extractVisibleModels(
-    context: NcContext,
-    param: { baseId: string; siteUrl: string; req: NcRequest },
+    context: AtContext,
+    param: { baseId: string; siteUrl: string; req: AtRequest },
   ) {
     const allModels = await Model.list(context, {
       base_id: param.baseId,
@@ -74,12 +74,12 @@ export class ApiDocsService {
   }
 
   async swaggerJsonV2(
-    context: NcContext,
-    param: { baseId: string; siteUrl: string; req: NcRequest },
+    context: AtContext,
+    param: { baseId: string; siteUrl: string; req: AtRequest },
   ) {
     const base = await Base.get(context, param.baseId);
 
-    if (!base) NcError.baseNotFound(param.baseId);
+    if (!base) AtError.baseNotFound(param.baseId);
 
     const models = await this.extractVisibleModels(context, param);
     // Fetch sources once for the entire base to avoid repeated queries
@@ -102,7 +102,7 @@ export class ApiDocsService {
         variables: {
           customUrl: {
             default: param.siteUrl,
-            description: 'Provide custom nocodb app base url',
+            description: 'Provide custom atmosphere app base url',
           },
         },
       },
@@ -112,12 +112,12 @@ export class ApiDocsService {
   }
 
   async swaggerJsonV3(
-    context: NcContext,
-    param: { baseId: string; siteUrl: string; req: NcRequest },
+    context: AtContext,
+    param: { baseId: string; siteUrl: string; req: AtRequest },
   ) {
     const base = await Base.get(context, param.baseId);
 
-    if (!base) NcError.baseNotFound(param.baseId);
+    if (!base) AtError.baseNotFound(param.baseId);
 
     const models = await this.extractVisibleModels(context, param);
 
@@ -141,7 +141,7 @@ export class ApiDocsService {
         variables: {
           customUrl: {
             default: param.siteUrl,
-            description: 'Provide custom nocodb app base url',
+            description: 'Provide custom atmosphere app base url',
           },
         },
       },

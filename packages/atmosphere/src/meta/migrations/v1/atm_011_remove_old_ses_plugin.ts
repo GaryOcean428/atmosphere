@@ -2,11 +2,11 @@
 import type { Knex } from 'knex';
 
 const up = async (knex: Knex) => {
-  await knex('nc_plugins').del().where({ title: 'SES' });
+  await knex('atm_plugins').del().where({ title: 'SES' });
 };
 
 const down = async (_: Knex) => {
-  // await knex('nc_plugins').insert([ses]);
+  // await knex('atm_plugins').insert([ses]);
 };
 
 export { up, down };

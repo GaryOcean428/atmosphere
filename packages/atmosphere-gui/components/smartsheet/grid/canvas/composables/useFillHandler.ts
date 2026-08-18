@@ -1,5 +1,5 @@
-import { type ColumnType, type TableType, UITypes, type ViewType } from 'nocodb-sdk'
-import { ColumnHelper, ComputedTypePasteError, TypeConversionError } from 'nocodb-sdk'
+import { type ColumnType, type TableType, UITypes, type ViewType } from 'atmosphere-sdk'
+import { ColumnHelper, ComputedTypePasteError, TypeConversionError } from 'atmosphere-sdk'
 import { clearTextCache } from '../utils/canvas'
 import type { Row } from '../../../../../lib/types'
 import convertCellData from '../../../../../composables/useMultiSelect/convertCellData'
@@ -53,7 +53,7 @@ export function useFillHandler({
 
   const { metas } = useMetas()
 
-  const { fillRows } = useNocoAi()
+  const { fillRows } = useAtmosphereAi()
 
   const { base } = storeToRefs(useBase())
 

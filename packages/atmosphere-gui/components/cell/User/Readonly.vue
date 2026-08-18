@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Checkbox, CheckboxGroup, Radio, RadioGroup } from 'ant-design-vue'
-import { CURRENT_USER_TOKEN, type UserFieldRecordType } from 'nocodb-sdk'
+import { CURRENT_USER_TOKEN, type UserFieldRecordType } from 'atmosphere-sdk'
 import { getOptions, getSelectedUsers, getSystemUserFilterOptions } from './utils'
 
 interface Props {
@@ -95,12 +95,12 @@ const isCollaborator = (userIdOrEmail) => {
 </script>
 
 <template>
-  <div class="nc-cell-field nc-user-select h-full w-full flex items-center read-only">
+  <div class="atm-cell-field atm-user-select h-full w-full flex items-center read-only">
     <div v-if="isForm && parseProp(column.meta)?.isList" class="w-full max-w-full">
       <component
         :is="isMultiple ? CheckboxGroup : RadioGroup"
         :value="selectedUsersListLayout"
-        class="nc-field-layout-list"
+        class="atm-field-layout-list"
         disabled
       >
         <template v-for="op of options" :key="op.id || op.email">
@@ -108,7 +108,7 @@ const isCollaborator = (userIdOrEmail) => {
             :is="isMultiple ? Checkbox : Radio"
             v-if="!op.deleted"
             :key="op.id || op.email"
-            :class="`nc-select-option-${column.title}-${op.email}`"
+            :class="`atm-select-option-${column.title}-${op.email}`"
             :data-testid="`select-option-${column.title}-${location === 'filter' ? 'filter' : rowIndex}`"
             :value="op.id"
           >
@@ -122,13 +122,13 @@ const isCollaborator = (userIdOrEmail) => {
                 <div>
                   <GeneralUserIcon :disabled="!isCollaborator(op.id)" :user="op" class="!text-[0.5rem] !h-[16.8px]" size="auto" />
                 </div>
-                <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+                <AtTooltip class="truncate max-w-full" show-on-truncate-only>
                   <template #title>
                     {{ extractUserDisplayNameOrEmail(op) }}
                   </template>
                   <span
                     :class="{
-                      'text-nc-content-gray-subtle2': !isCollaborator(op.id || op.email),
+                      'text-atm-content-gray-subtle2': !isCollaborator(op.id || op.email),
                     }"
                     :style="{
                       wordBreak: 'keep-all',
@@ -139,7 +139,7 @@ const isCollaborator = (userIdOrEmail) => {
                   >
                     {{ extractUserDisplayNameOrEmail(op) }}
                   </span>
-                </NcTooltip>
+                </AtTooltip>
               </span>
             </a-tag>
           </component>
@@ -174,13 +174,13 @@ const isCollaborator = (userIdOrEmail) => {
           :color="
             selectedOpt.value === CURRENT_USER_TOKEN
               ? themeV4Colors.brand[50]
-              : getColor('var(--nc-bg-gray-medium)', 'var(--nc-bg-gray-light)')
+              : getColor('var(--atm-bg-gray-medium)', 'var(--atm-bg-gray-light)')
           "
         >
           <span
             :class="{ 'text-sm': isKanban, 'text-small': !isKanban }"
             :style="{
-              color: getSelectTypeOptionTextColor(getColor('var(--nc-bg-gray-medium)', 'var(--nc-bg-gray-light)'), getColor),
+              color: getSelectTypeOptionTextColor(getColor('var(--atm-bg-gray-medium)', 'var(--atm-bg-gray-light)'), getColor),
             }"
             class="flex items-stretch gap-2"
           >
@@ -196,19 +196,19 @@ const isCollaborator = (userIdOrEmail) => {
                 }"
                 class="!text-[0.5rem] !h-[16.8px]"
                 :class="{
-                  '!bg-nc-bg-default': selectedOpt.value === CURRENT_USER_TOKEN,
+                  '!bg-atm-bg-default': selectedOpt.value === CURRENT_USER_TOKEN,
                 }"
                 :show-placeholder-icon="selectedOpt.value === CURRENT_USER_TOKEN"
               />
             </div>
-            <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+            <AtTooltip class="truncate max-w-full" show-on-truncate-only>
               <template #title>
                 {{ selectedOpt.value === CURRENT_USER_TOKEN ? selectedOpt.label : extractUserDisplayNameOrEmail(selectedOpt) }}
               </template>
               <span
                 :class="{
-                  'text-nc-content-gray-muted': !isCollaborator(selectedOpt.value) && selectedOpt.value !== CURRENT_USER_TOKEN,
-                  'text-nc-content-brand': selectedOpt.value === CURRENT_USER_TOKEN,
+                  'text-atm-content-gray-muted': !isCollaborator(selectedOpt.value) && selectedOpt.value !== CURRENT_USER_TOKEN,
+                  'text-atm-content-brand': selectedOpt.value === CURRENT_USER_TOKEN,
                   'font-600': isInFilter,
                 }"
                 :style="{
@@ -220,7 +220,7 @@ const isCollaborator = (userIdOrEmail) => {
               >
                 {{ selectedOpt.value === CURRENT_USER_TOKEN ? selectedOpt.label : extractUserDisplayNameOrEmail(selectedOpt) }}
               </span>
-            </NcTooltip>
+            </AtTooltip>
           </span>
         </a-tag>
       </template>
@@ -261,14 +261,14 @@ const isCollaborator = (userIdOrEmail) => {
 }
 
 .rounded-tag {
-  @apply bg-nc-bg-gray-medium px-2 rounded-[12px];
+  @apply bg-atm-bg-gray-medium px-2 rounded-[12px];
 }
 
 :deep(.ant-tag) {
   @apply "rounded-tag" my-[1px];
 }
 
-:deep(.nc-user-avatar) {
+:deep(.atm-user-avatar) {
   @apply min-h-4.2;
 }
 </style>

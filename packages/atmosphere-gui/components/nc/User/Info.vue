@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { UserType } from 'nocodb-sdk'
+import type { UserType } from 'atmosphere-sdk'
 
 interface Props {
   user: UserType
@@ -14,16 +14,16 @@ const { user, disabled } = toRefs(props)
 </script>
 
 <template>
-  <div class="nc-user-info w-full flex gap-3 items-center">
+  <div class="atm-user-info w-full flex gap-3 items-center">
     <template v-if="user?.email">
-      <GeneralUserIcon size="base" :user="user" class="flex-none nc-user-info-icon" />
+      <GeneralUserIcon size="base" :user="user" class="flex-none atm-user-info-icon" />
       <div class="flex flex-col flex-1 max-w-[calc(100%_-_44px)]">
         <div class="flex items-center gap-1">
-          <NcTooltip
-            class="truncate max-w-full capitalize font-semibold nc-user-info-name"
+          <AtTooltip
+            class="truncate max-w-full capitalize font-semibold atm-user-info-name"
             :class="{
-              'text-nc-content-gray': !disabled,
-              'text-nc-content-gray-muted': disabled,
+              'text-atm-content-gray': !disabled,
+              'text-atm-content-gray-muted': disabled,
             }"
             show-on-truncate-only
           >
@@ -31,21 +31,21 @@ const { user, disabled } = toRefs(props)
               {{ extractUserDisplayNameOrEmail(user) }}
             </template>
             {{ extractUserDisplayNameOrEmail(user) }}
-          </NcTooltip>
+          </AtTooltip>
         </div>
-        <NcTooltip
-          class="truncate max-w-full text-xs nc-user-info-email"
-          :class="{ 'text-nc-content-gray-muted': disabled, 'text-nc-content-gray-subtle2': !disabled }"
+        <AtTooltip
+          class="truncate max-w-full text-xs atm-user-info-email"
+          :class="{ 'text-atm-content-gray-muted': disabled, 'text-atm-content-gray-subtle2': !disabled }"
           show-on-truncate-only
         >
           <template #title>
             {{ user.email }}
           </template>
           {{ user.email }}
-        </NcTooltip>
+        </AtTooltip>
       </div>
     </template>
-    <div v-else class="nc-user-info-email">
+    <div v-else class="atm-user-info-email">
       {{ user?.id || user?.fk_user_id }}
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { ModelTypes } from 'nocodb-sdk';
+import { ModelTypes } from 'atmosphere-sdk';
 
 /**
  * xcCondition to filter out soft-deleted records.

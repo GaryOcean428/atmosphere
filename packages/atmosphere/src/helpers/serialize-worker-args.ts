@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { getCircularReplacer } from 'nocodb-sdk';
+import { getCircularReplacer } from 'atmosphere-sdk';
 
 const logger = new Logger('SerializeWorkerArgs');
 

@@ -13,7 +13,7 @@ const TITLE_TO_LICENSE_TYPE: Array<[string, string]> = [
 const up = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.PLANS, (table) => {
     table.string('license_type', 40).nullable();
-    table.index('license_type', 'nc_plans_license_type_idx');
+    table.index('license_type', 'atm_plans_license_type_idx');
   });
 
   // Backfill existing rows. Cloud-only titles (Free / Plus / Business /
@@ -28,7 +28,7 @@ const up = async (knex: Knex) => {
 
 const down = async (knex: Knex) => {
   await knex.schema.alterTable(MetaTable.PLANS, (table) => {
-    table.dropIndex('license_type', 'nc_plans_license_type_idx');
+    table.dropIndex('license_type', 'atm_plans_license_type_idx');
     table.dropColumn('license_type');
   });
 };

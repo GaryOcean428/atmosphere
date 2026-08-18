@@ -1,4 +1,4 @@
-import { ColumnHelper, UITypes, isValidHexColour } from 'nocodb-sdk'
+import { ColumnHelper, UITypes, isValidHexColour } from 'atmosphere-sdk'
 import { renderTag, truncateText } from '../utils/canvas'
 
 /** Fixed swatch size in the grid cell — matches the HTML Editor (w-4 h-4 = 16px). */

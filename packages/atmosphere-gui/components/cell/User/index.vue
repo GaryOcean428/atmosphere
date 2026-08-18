@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { SelectOptionType } from 'nocodb-sdk'
+import type { SelectOptionType } from 'atmosphere-sdk'
 import { getOptions } from './utils'
 
 interface Props {

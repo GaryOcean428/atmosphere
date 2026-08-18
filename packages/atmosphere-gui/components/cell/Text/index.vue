@@ -41,7 +41,7 @@ const textareaValue = computed({
       v-if="!isExpandedFormOpen"
       :ref="focus"
       v-model="vModel"
-      class="nc-cell-field h-full w-full outline-none py-1 bg-transparent"
+      class="atm-cell-field h-full w-full outline-none py-1 bg-transparent"
       @blur="editEnabled = false"
       @keydown.down.stop
       @keydown.left.stop
@@ -53,23 +53,23 @@ const textareaValue = computed({
       @mousedown.stop
     />
 
-    <NcAutoSizeTextarea
+    <AtAutoSizeTextarea
       v-else
       :ref="focus"
       v-model:model-value="textareaValue"
       :hide-scrollbar="false"
       :bordered="false"
-      class="!px-2 !py-1 !min-h-7 !max-h-7.5rem resize-none nc-scrollbar-thin"
+      class="!px-2 !py-1 !min-h-7 !max-h-7.5rem resize-none atm-scrollbar-thin"
       style="color: inherit"
       @keydown.enter.prevent
     />
   </template>
 
-  <span v-else-if="vModel === null && showNull" class="nc-cell-field nc-null uppercase">{{ $t('general.null') }}</span>
+  <span v-else-if="vModel === null && showNull" class="atm-cell-field atm-null uppercase">{{ $t('general.null') }}</span>
 
   <LazyCellClampedText
     v-else
-    class="nc-cell-field clamped-text"
+    class="atm-cell-field clamped-text"
     :value="vModel"
     :lines="rowHeight"
     :style="{ 'word-break': 'break-word' }"

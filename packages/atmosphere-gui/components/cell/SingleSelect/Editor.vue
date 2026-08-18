@@ -309,7 +309,7 @@ onMounted(() => {
 
 <template>
   <div
-    class="nc-cell-field h-full w-full flex items-center nc-single-select focus:outline-transparent"
+    class="atm-cell-field h-full w-full flex items-center atm-single-select focus:outline-transparent"
     :class="{ 'read-only': readOnly, 'max-w-full': isForm }"
     @click="toggleMenu"
     @keydown.enter.stop="onRootEnter"
@@ -334,14 +334,14 @@ onMounted(() => {
 
       <div
         v-if="!readOnly && editAllowed && vModel"
-        class="inline-block px-2 pt-2 cursor-pointer text-xs text-nc-content-gray-muted hover:text-nc-content-gray"
+        class="inline-block px-2 pt-2 cursor-pointer text-xs text-atm-content-gray-muted hover:text-atm-content-gray"
         @click="vModel = ''"
       >
         {{ $t('labels.clearSelection') }}
       </div>
     </div>
 
-    <NcSelect
+    <AtSelect
       v-else
       ref="aselect"
       v-model:value="vModel"
@@ -353,7 +353,7 @@ onMounted(() => {
       :disabled="readOnly || !editAllowed"
       :show-search="!isMobileMode && isOpen && active"
       :show-arrow="hasEditRoles && !readOnly && active && (vModel === null || vModel === undefined) && !searchVal"
-      :dropdown-class-name="`nc-dropdown-single-select-cell !min-w-156px ${isOpen && active ? 'active' : ''}`"
+      :dropdown-class-name="`atm-dropdown-single-select-cell !min-w-156px ${isOpen && active ? 'active' : ''}`"
       :dropdown-match-select-width="true"
       :search-value="searchVal ?? ''"
       @select="onSelect"
@@ -368,7 +368,7 @@ onMounted(() => {
         :value="op.title"
         class="gap-2"
         :data-testid="`select-option-${column.title}-${rowIndex}`"
-        :class="`nc-select-option-${column.title}-${op.title}`"
+        :class="`atm-select-option-${column.title}-${op.title}`"
         @click.stop
       >
         <a-tag
@@ -384,7 +384,7 @@ onMounted(() => {
             }"
             :class="{ 'text-sm': isKanban, 'text-small': !isKanban }"
           >
-            <NcTooltip class="truncate max-w-full" show-on-truncate-only>
+            <AtTooltip class="truncate max-w-full" show-on-truncate-only>
               <template #title>
                 {{ op.title }}
               </template>
@@ -398,19 +398,19 @@ onMounted(() => {
               >
                 {{ op.title }}
               </span>
-            </NcTooltip>
+            </AtTooltip>
           </span>
         </a-tag>
       </a-select-option>
       <a-select-option v-if="searchVal && isOptionMissing && isNewOptionCreateEnabled" :key="searchVal" :value="searchVal">
-        <div class="flex gap-2 text-nc-content-gray-muted dark:text-nc-content-gray-subtle2 items-center h-full">
+        <div class="flex gap-2 text-atm-content-gray-muted dark:text-atm-content-gray-subtle2 items-center h-full">
           <component :is="iconMap.plusThick" class="min-w-4" />
           <div class="text-xs whitespace-normal">
             {{ $t('msg.selectOption.createNewOptionNamed') }} <strong>{{ searchVal }}</strong>
           </div>
         </div>
       </a-select-option>
-    </NcSelect>
+    </AtSelect>
   </div>
 </template>
 
@@ -428,7 +428,7 @@ onMounted(() => {
   border-radius: 100%;
 }
 
-.nc-single-select:not(.read-only) {
+.atm-single-select:not(.read-only) {
   :deep(.ant-select-selector),
   :deep(.ant-select-selector input) {
     @apply !cursor-pointer;

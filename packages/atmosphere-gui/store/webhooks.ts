@@ -1,5 +1,5 @@
-import { pickFields } from 'nocodb-sdk'
-import type { FilterReqType, FilterType, HookReqType, HookType, TableType } from 'nocodb-sdk'
+import { pickFields } from 'atmosphere-sdk'
+import type { FilterReqType, FilterType, HookReqType, HookType, TableType } from 'atmosphere-sdk'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 
 const HOOK_API_FIELDS = [

@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "nocodb.fullname" . }}
+  name: {{ include "atmosphere.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "nocodb.labels" . | nindent 4 }}
-  {{- with include "nocodb.annotations" (dict "context" . "extraAnnotations" .Values.service.annotations) }}
+    {{- include "atmosphere.labels" . | nindent 4 }}
+  {{- with include "atmosphere.annotations" (dict "context" . "extraAnnotations" .Values.service.annotations) }}
   annotations:
     {{- . | nindent 4 }}
   {{- end }}
@@ -17,5 +17,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "nocodb.selectorLabels" . | nindent 4 }}
+    {{- include "atmosphere.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: app

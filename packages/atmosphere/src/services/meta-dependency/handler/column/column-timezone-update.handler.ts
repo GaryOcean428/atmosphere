@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { MetaEventType, parseProp, UITypes } from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+import { MetaEventType, parseProp, UITypes } from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type {
   AffectedDependencyResult,
   MetaDependencyEventRequest,
@@ -9,7 +9,7 @@ import type {
 import { Filter } from '~/models';
 import { MetaTable } from '~/cli';
 import { parseMetaProp, stringifyMetaProp } from '~/utils/modelUtils';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 
 /**
  * @class ColumnTimezoneUpdateDependencyHandler
@@ -21,9 +21,9 @@ import Noco from '~/Noco';
 export class ColumnTimezoneUpdateDependencyHandler implements MetaEventHandler {
   triggerMetaEvents: MetaEventType[] = [MetaEventType.COLUMN_UPDATED];
   async getAffectedDependency(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<AffectedDependencyResult> {
     let validForProcess = false;
     const affectedColumnIds: string[] = [];
@@ -63,11 +63,11 @@ export class ColumnTimezoneUpdateDependencyHandler implements MetaEventHandler {
   }
 
   async handle(
-    context: NcContext,
+    context: AtContext,
     param: MetaDependencyEventRequest & {
       affectedDependencyResult: AffectedDependencyResult;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<void> {
     if (!param.affectedDependencyResult.filters?.length) {
       return;

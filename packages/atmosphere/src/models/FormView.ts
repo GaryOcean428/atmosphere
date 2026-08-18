@@ -5,17 +5,17 @@ import type {
   BoolType,
   FormType,
   MetaType,
-} from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+} from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import { PresignedUrl } from '~/models';
 import FormViewColumn from '~/models/FormViewColumn';
 import View from '~/models/View';
 import { extractProps } from '~/helpers/extractProps';
 import { isSafeRedirectUrl } from '~/helpers/isSafeRedirectUrl';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { isEE } from '~/utils';
-import NocoCache from '~/cache/NocoCache';
-import Noco from '~/Noco';
+import AtmosphereCache from '~/cache/AtmosphereCache';
+import Atmosphere from '~/Atmosphere';
 import { deserializeJSON, serializeJSON } from '~/utils/serialize';
 import { CacheGetType, CacheScope, MetaTable } from '~/utils/globals';
 import { prepareForDb, prepareForResponse } from '~/utils/modelUtils';
@@ -56,13 +56,13 @@ export default class FormView implements FormViewType {
   }
 
   public static async get(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     let view =
       viewId &&
-      (await NocoCache.get(
+      (await AtmosphereCache.get(
         context,
         `${CacheScope.FORM_VIEW}:${viewId}`,
         CacheGetType.TYPE_OBJECT,
@@ -79,7 +79,7 @@ export default class FormView implements FormViewType {
 
       if (view) {
         view.meta = deserializeJSON(view.meta);
-        await NocoCache.set(context, `${CacheScope.FORM_VIEW}:${viewId}`, view);
+        await AtmosphereCache.set(context, `${CacheScope.FORM_VIEW}:${viewId}`, view);
       } else {
         return null;
       }
@@ -100,9 +100,9 @@ export default class FormView implements FormViewType {
   }
 
   static async insert(
-    context: NcContext,
+    context: AtContext,
     view: Partial<FormView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const insertObj = extractProps(view, [
       'fk_view_id',
@@ -131,7 +131,7 @@ export default class FormView implements FormViewType {
       insertObj.redirect_url.trim() &&
       !isSafeRedirectUrl(insertObj.redirect_url)
     ) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Invalid redirect_url: only http(s) or relative URLs are allowed',
       );
     }
@@ -167,10 +167,10 @@ export default class FormView implements FormViewType {
   }
 
   static async update(
-    context: NcContext,
+    context: AtContext,
     formId: string,
     body: Partial<FormView>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const updateObj = extractProps(body, [
       'heading',
@@ -196,7 +196,7 @@ export default class FormView implements FormViewType {
       updateObj.redirect_url.trim() &&
       !isSafeRedirectUrl(updateObj.redirect_url)
     ) {
-      NcError.get(context).badRequest(
+      AtError.get(context).badRequest(
         'Invalid redirect_url: only http(s) or relative URLs are allowed',
       );
     }
@@ -222,7 +222,7 @@ export default class FormView implements FormViewType {
       },
     );
 
-    await NocoCache.update(
+    await AtmosphereCache.update(
       context,
       `${CacheScope.FORM_VIEW}:${formId}`,
       prepareForResponse(updateObj),
@@ -231,7 +231,7 @@ export default class FormView implements FormViewType {
     return res;
   }
 
-  async getColumns(context: NcContext, ncMeta = Noco.ncMeta) {
+  async getColumns(context: AtContext, ncMeta = Atmosphere.ncMeta) {
     return (this.columns = await FormViewColumn.list(
       context,
       this.fk_view_id,
@@ -240,9 +240,9 @@ export default class FormView implements FormViewType {
   }
 
   static async getWithInfo(
-    context: NcContext,
+    context: AtContext,
     formViewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const form = await this.get(context, formViewId, ncMeta);
     await form.getColumns(context, ncMeta);
@@ -267,7 +267,7 @@ export default class FormView implements FormViewType {
 
   protected static async convertAttachmentType(
     formAttachments: Record<string, any>,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     try {
       if (formAttachments) {
@@ -297,9 +297,9 @@ export default class FormView implements FormViewType {
   }
 
   static async validateFormScheduling(
-    context: NcContext,
+    context: AtContext,
     viewId: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     if (!isEE) return;
 
@@ -310,7 +310,7 @@ export default class FormView implements FormViewType {
 
     if (formView.starts_at) {
       if (dayjs.utc(formView.starts_at).isAfter(now)) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'This form is not yet accepting responses',
         );
       }
@@ -318,7 +318,7 @@ export default class FormView implements FormViewType {
 
     if (formView.expires_at) {
       if (dayjs.utc(formView.expires_at).isBefore(now)) {
-        NcError.get(context).badRequest(
+        AtError.get(context).badRequest(
           'This form is no longer accepting responses',
         );
       }

@@ -34,7 +34,7 @@ export enum TriggerTestMode {
  * Check if a node is a trigger node
  * Trigger nodes include:
  * - core.trigger (generic trigger placeholder)
- * - nocodb.trigger.* (NocoDB-specific triggers)
+ * - atmosphere.trigger.* (Atmosphere-specific triggers)
  * - *.trigger (external service triggers like github.trigger, gitlab.trigger)
  */
 export function isTriggerNode(nodeType: string | undefined): boolean {
@@ -42,7 +42,7 @@ export function isTriggerNode(nodeType: string | undefined): boolean {
 
   return (
     nodeType === GeneralNodeID.TRIGGER ||
-    nodeType.startsWith('nocodb.trigger.') ||
+    nodeType.startsWith('atmosphere.trigger.') ||
     nodeType.includes('.trigger')
   );
 }

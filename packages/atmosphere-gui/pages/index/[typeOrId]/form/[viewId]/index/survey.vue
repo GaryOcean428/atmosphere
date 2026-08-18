@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { UITypes, isVirtualCol } from 'nocodb-sdk'
+import { UITypes, isVirtualCol } from 'atmosphere-sdk'
 import { breakpointsTailwind } from '@vueuse/core'
 
 enum TransitionDirection {
@@ -160,9 +160,9 @@ async function goPrevious(animationTarget?: AnimationTarget) {
 function focusInput() {
   if (document && typeof document !== 'undefined') {
     const inputEl =
-      (document.querySelector('.nc-cell input') as HTMLInputElement) ||
-      (document.querySelector('.nc-cell textarea') as HTMLTextAreaElement) ||
-      (document.querySelector('.nc-cell [tabindex="0"]') as HTMLElement)
+      (document.querySelector('.atm-cell input') as HTMLInputElement) ||
+      (document.querySelector('.atm-cell textarea') as HTMLTextAreaElement) ||
+      (document.querySelector('.atm-cell [tabindex="0"]') as HTMLElement)
 
     if (inputEl) {
       activeCell.value = inputEl
@@ -211,9 +211,9 @@ const showSubmitConfirmModal = async () => {
   dialogShow.value = true
 
   setTimeout(() => {
-    // NcButton will only focus if document has already focused element
-    document.querySelector('.nc-survery-form__confirmation_modal div[tabindex="0"]')?.focus()
-    document.querySelector('.nc-survey-form-btn-submit.nc-button')?.focus()
+    // AtButton will only focus if document has already focused element
+    document.querySelector('.atm-survery-form__confirmation_modal div[tabindex="0"]')?.focus()
+    document.querySelector('.atm-survey-form-btn-submit.atm-button')?.focus()
   }, 50)
 }
 
@@ -243,7 +243,7 @@ onKeyStroke(['Enter'], async (e) => {
     } else {
       const activeElement = document.activeElement as HTMLElement
 
-      if (activeElement?.classList && activeElement.classList.contains('nc-survey-form__btn-next')) return
+      if (activeElement?.classList && activeElement.classList.contains('atm-survey-form__btn-next')) return
 
       goNext(AnimationTarget.OkButton, true)
     }
@@ -290,16 +290,16 @@ const { message: templatedMessage } = useTemplatedMessage(
             :banner-image-url="sharedFormView.banner_image_url"
             class="flex-none mb-4"
           />
-          <div class="rounded-3xl border-1 border-nc-border-gray-medium p-6 lg:p-12 bg-nc-bg-default">
-            <h1 class="text-2xl font-bold text-nc-content-gray-emphasis mb-4" data-testid="nc-survey-form__heading">
+          <div class="rounded-3xl border-1 border-atm-border-gray-medium p-6 lg:p-12 bg-atm-bg-default">
+            <h1 class="text-2xl font-bold text-atm-content-gray-emphasis mb-4" data-testid="atm-survey-form__heading">
               {{ sharedFormView.heading }}
             </h1>
 
             <div v-if="submitted" class="flex flex-col justify-center items-center text-center">
               <a-alert
-                class="nc-survey-form__success-msg !p-4 !rounded-lg text-left w-full !bg-nc-bg-default !border-nc-border-gray-medium !items-start"
+                class="atm-survey-form__success-msg !p-4 !rounded-lg text-left w-full !bg-atm-bg-default !border-atm-border-gray-medium !items-start"
                 type="success"
-                data-testid="nc-survey-form__success-msg"
+                data-testid="atm-survey-form__success-msg"
                 outlined
                 show-icon
               >
@@ -334,20 +334,20 @@ const { message: templatedMessage } = useTemplatedMessage(
                 "
                 class="mt-16 w-full flex justify-between items-center flex-wrap gap-3"
               >
-                <p v-if="sharedFormView?.show_blank_form" class="text-sm text-nc-content-gray-muted m-0">
+                <p v-if="sharedFormView?.show_blank_form" class="text-sm text-atm-content-gray-muted m-0">
                   {{ $t('labels.newFormLoaded') }} {{ secondsRemain }} {{ $t('general.seconds').toLowerCase() }}
                 </p>
 
                 <div class="flex-1 self-end flex justify-end">
-                  <NcButton
+                  <AtButton
                     v-if="sharedFormView?.submit_another_form"
                     type="secondary"
                     :size="isMobileMode ? 'medium' : 'small'"
-                    data-testid="nc-survey-form__btn-submit-another-form"
+                    data-testid="atm-survey-form__btn-submit-another-form"
                     @click="resetForm"
                   >
                     {{ $t('activity.submitAnotherForm') }}
-                  </NcButton>
+                  </AtButton>
                 </div>
               </div>
             </div>
@@ -355,33 +355,33 @@ const { message: templatedMessage } = useTemplatedMessage(
               <div v-if="sharedFormView.subheading?.trim()">
                 <LazyCellRichText
                   :value="sharedFormView.subheading"
-                  class="font-medium text-base text-nc-content-gray-muted !h-auto mb-4 -ml-1"
+                  class="font-medium text-base text-atm-content-gray-muted !h-auto mb-4 -ml-1"
                   is-form-field
                   read-only
                   sync-value-change
-                  data-testid="nc-survey-form__sub-heading"
+                  data-testid="atm-survey-form__sub-heading"
                 />
               </div>
 
               <div class="flex justify-end mt-12">
                 <div class="flex items-center gap-3">
-                  <div class="hidden md:flex text-sm items-center gap-1 text-nc-content-gray">
+                  <div class="hidden md:flex text-sm items-center gap-1 text-atm-content-gray">
                     <span> {{ $t('labels.pressEnter') }} ↵ </span>
                   </div>
-                  <NcButton
+                  <AtButton
                     :size="isMobileMode ? 'medium' : 'small'"
-                    data-testid="nc-survey-form__fill-form-btn"
+                    data-testid="atm-survey-form__fill-form-btn"
                     @click="onStart()"
                   >
                     {{ $t('labels.fillForm') }}
-                  </NcButton>
+                  </AtButton>
                 </div>
               </div>
             </template>
           </div>
         </template>
         <div v-else class="px-6 lg:px-12">
-          <h1 class="text-2xl font-bold text-nc-content-gray-emphasis line-clamp-2 text-center mb-2rem md:mb-4rem">
+          <h1 class="text-2xl font-bold text-atm-content-gray-emphasis line-clamp-2 text-center mb-2rem md:mb-4rem">
             {{ sharedFormView.heading }}
           </h1>
         </div>
@@ -398,23 +398,23 @@ const { message: templatedMessage } = useTemplatedMessage(
               <div
                 ref="el"
                 :key="field?.title"
-                class="flex flex-col gap-4 w-full m-auto rounded-xl border-1 border-nc-border-gray-medium bg-nc-bg-default p-6 lg:p-12"
+                class="flex flex-col gap-4 w-full m-auto rounded-xl border-1 border-atm-border-gray-medium bg-atm-bg-default p-6 lg:p-12"
               >
-                <div class="select-none text-nc-content-gray-muted mb-4 md:mb-2" data-testid="nc-survey-form__footer">
+                <div class="select-none text-atm-content-gray-muted mb-4 md:mb-2" data-testid="atm-survey-form__footer">
                   {{ index + 1 }} / {{ formColumns?.length }}
                 </div>
 
                 <div v-if="field" class="flex flex-col gap-2">
-                  <div class="nc-form-column-label text-sm font-semibold text-nc-content-gray" data-testid="nc-form-column-label">
+                  <div class="atm-form-column-label text-sm font-semibold text-atm-content-gray" data-testid="atm-form-column-label">
                     <span>
                       {{ field.label || field.title }}
                     </span>
-                    <span v-if="isRequired(field)" class="text-nc-content-red-medium text-base leading-[18px]">&nbsp;*</span>
+                    <span v-if="isRequired(field)" class="text-atm-content-red-medium text-base leading-[18px]">&nbsp;*</span>
                   </div>
                   <div
                     v-if="field?.description"
-                    class="nc-form-column-description text-nc-content-gray-muted text-sm"
-                    data-testid="nc-survey-form__field-description"
+                    class="atm-form-column-description text-atm-content-gray-muted text-sm"
+                    data-testid="atm-survey-form__field-description"
                   >
                     <LazyCellRichText
                       :value="field?.description"
@@ -425,24 +425,24 @@ const { message: templatedMessage } = useTemplatedMessage(
                     />
                   </div>
 
-                  <NcTooltip :disabled="!field?.read_only">
+                  <AtTooltip :disabled="!field?.read_only">
                     <template #title> {{ $t('activity.preFilledFields.lockedFieldTooltip') }} </template>
                     <a-form-item
                       v-if="field.title && fieldMappings[field.title]"
                       :name="fieldMappings[field.title]"
-                      class="nc-input-required-error"
+                      class="atm-input-required-error"
                       v-bind="validateInfos[fieldMappings[field.title]]"
                     >
-                      <SmartsheetDivDataCell class="relative nc-form-data-cell" @click.stop="handleFocus">
+                      <SmartsheetDivDataCell class="relative atm-form-data-cell" @click.stop="handleFocus">
                         <LazySmartsheetVirtualCell
                           v-if="isVirtualCol(field)"
                           v-model="formState[field.title]"
-                          class="mt-0 nc-input h-auto"
+                          class="mt-0 atm-input h-auto"
                           :class="{
                             readonly: field?.read_only,
                           }"
                           :row="{ row: {}, oldRow: {}, rowMeta: {} }"
-                          :data-testid="`nc-survey-form__input-${toSafeClassName(field.title)}`"
+                          :data-testid="`atm-survey-form__input-${toSafeClassName(field.title)}`"
                           :column="field"
                           :read-only="field?.read_only"
                           @update:model-value="validateField(field.title)"
@@ -451,17 +451,17 @@ const { message: templatedMessage } = useTemplatedMessage(
                         <LazySmartsheetCell
                           v-else
                           v-model="formState[field.title]"
-                          class="nc-input h-auto"
+                          class="atm-input h-auto"
                           :class="{ 'layout-list': parseProp(field?.meta)?.isList, 'readonly': field?.read_only }"
-                          :data-testid="`nc-survey-form__input-${toSafeClassName(field.title)}`"
+                          :data-testid="`atm-survey-form__input-${toSafeClassName(field.title)}`"
                           :column="field"
                           :edit-enabled="!field?.read_only"
                           :read-only="field?.read_only"
                           @update:model-value="validateField(field.title)"
                         />
                         <template v-if="field.uidt === UITypes.LongText" #help>
-                          <div class="flex flex-col gap-2 text-nc-content-gray-muted text-xs mt-2">
-                            <div class="hidden text-sm text-nc-content-gray-muted md:flex flex-wrap items-center">
+                          <div class="flex flex-col gap-2 text-atm-content-gray-muted text-xs mt-2">
+                            <div class="hidden text-sm text-atm-content-gray-muted md:flex flex-wrap items-center">
                               {{ $t('general.shift') }} <span class="text-primary"> &nbsp;⇧&nbsp; </span> +
                               {{ $t('general.enter') }}
                               <span class="text-primary"> &nbsp;↵&nbsp; </span>
@@ -471,13 +471,13 @@ const { message: templatedMessage } = useTemplatedMessage(
                         </template>
                       </SmartsheetDivDataCell>
                     </a-form-item>
-                  </NcTooltip>
+                  </AtTooltip>
                 </div>
 
                 <div class="ml-1 mt-4 flex w-full text-lg">
                   <div class="flex-1 flex justify-end">
                     <div v-if="isLast">
-                      <NcButton
+                      <AtButton
                         :size="isMobileMode ? 'medium' : 'small'"
                         :class="
                           animationTarget === AnimationTarget.SubmitButton && isAnimating
@@ -485,24 +485,24 @@ const { message: templatedMessage } = useTemplatedMessage(
                             : ''
                         "
                         :disabled="fieldHasError"
-                        data-testid="nc-survey-form__btn-submit-confirm"
+                        data-testid="atm-survey-form__btn-submit-confirm"
                         @click="showSubmitConfirmModal"
                       >
                         {{ $t('general.submit') }} {{ $t('objects.viewType.form') }}
-                      </NcButton>
+                      </AtButton>
                     </div>
 
                     <div v-else class="flex items-center gap-3">
                       <div
                         class="hidden md:flex text-sm items-center gap-1"
-                        :class="fieldHasError ? 'text-gray-200' : 'text-nc-content-gray'"
+                        :class="fieldHasError ? 'text-gray-200' : 'text-atm-content-gray'"
                       >
                         <span> {{ $t('labels.pressEnter') }} ↵ </span>
                       </div>
-                      <NcButton
+                      <AtButton
                         :size="isMobileMode ? 'medium' : 'small'"
-                        data-testid="nc-survey-form__btn-next"
-                        class="nc-survey-form__btn-next"
+                        data-testid="atm-survey-form__btn-next"
+                        class="atm-survey-form__btn-next"
                         :class="[
                           animationTarget === AnimationTarget.OkButton && isAnimating
                             ? 'transform translate-y-[2px] translate-x-[2px] after:(!ring !ring-accent !ring-opacity-100)'
@@ -512,7 +512,7 @@ const { message: templatedMessage } = useTemplatedMessage(
                         @click="goNext()"
                       >
                         {{ $t('labels.next') }}
-                      </NcButton>
+                      </AtButton>
                     </div>
                   </div>
                 </div>
@@ -522,7 +522,7 @@ const { message: templatedMessage } = useTemplatedMessage(
         </template>
       </div>
       <div class="lg:(absolute bottom-0 right-0 px-4 pb-4) lg:px-10 lg:pb-10">
-        <div class="flex justify-end items-center gap-4 nc-survey-form-branding">
+        <div class="flex justify-end items-center gap-4 atm-survey-form-branding">
           <div class="flex justify-center">
             <GeneralFormBranding
               class="inline-flex mx-auto"
@@ -532,55 +532,55 @@ const { message: templatedMessage } = useTemplatedMessage(
             />
           </div>
           <div v-if="isStarted && !submitted" class="flex items-center gap-3">
-            <NcButton
+            <AtButton
               type="secondary"
               :size="isMobileMode ? 'medium' : 'small'"
-              data-testid="nc-survey-form__icon-prev"
+              data-testid="atm-survey-form__icon-prev"
               :disabled="isFirst"
               @click="goPrevious()"
             >
               <GeneralIcon icon="ncArrowLeft"
-            /></NcButton>
+            /></AtButton>
 
-            <NcButton
+            <AtButton
               :size="isMobileMode ? 'medium' : 'small'"
               type="secondary"
-              data-testid="nc-survey-form__icon-next"
+              data-testid="atm-survey-form__icon-next"
               :disabled="isLast || fieldHasError"
               @click="goNext()"
             >
               <GeneralIcon icon="ncArrowRight" />
-            </NcButton>
+            </AtButton>
           </div>
         </div>
       </div>
     </div>
 
-    <NcModal v-model:visible="dialogShow" size="small" class="nc-survery-form__confirmation_modal">
+    <AtModal v-model:visible="dialogShow" size="small" class="atm-survery-form__confirmation_modal">
       <div>
         <div class="text-lg font-bold">{{ $t('general.submit') }} {{ $t('objects.viewType.form') }}</div>
         <div class="mt-1 text-sm">{{ $t('title.surveyFormSubmitConfirmMsg') }}</div>
         <div class="flex justify-end mt-7 gap-x-2">
-          <NcButton type="secondary" :size="isMobileMode ? 'medium' : 'small'" @click="dialogShow = false">{{
+          <AtButton type="secondary" :size="isMobileMode ? 'medium' : 'small'" @click="dialogShow = false">{{
             $t('general.back')
-          }}</NcButton>
-          <NcButton
+          }}</AtButton>
+          <AtButton
             type="primary"
             :size="isMobileMode ? 'medium' : 'small'"
-            data-testid="nc-survey-form__btn-submit"
-            class="nc-survey-form-btn-submit"
+            data-testid="atm-survey-form__btn-submit"
+            class="atm-survey-form-btn-submit"
             @click="submit"
           >
             {{ $t('general.submit') }}
-          </NcButton>
+          </AtButton>
         </div>
       </div>
-    </NcModal>
+    </AtModal>
   </div>
 </template>
 
 <style lang="scss" scoped>
-:deep(.ant-form-item.nc-input-required-error) {
+:deep(.ant-form-item.atm-input-required-error) {
   @apply !mt-0;
 
   &:not(.ant-form-item-with-help) {
@@ -592,7 +592,7 @@ const { message: templatedMessage } = useTemplatedMessage(
   }
 }
 
-.nc-input-required-error {
+.atm-input-required-error {
   max-width: 100%;
   white-space: pre-line;
   :deep(.ant-form-item-explain-error) {
@@ -603,7 +603,7 @@ const { message: templatedMessage } = useTemplatedMessage(
 
   &:focus-within {
     :deep(.ant-form-item-explain-error) {
-      @apply text-nc-content-gray-disabled;
+      @apply text-atm-content-gray-disabled;
     }
   }
 }
@@ -622,17 +622,17 @@ const { message: templatedMessage } = useTemplatedMessage(
 }
 
 .survey {
-  .nc-form-column-label {
-    .nc-icon {
+  .atm-form-column-label {
+    .atm-icon {
       @apply mr-2;
     }
   }
 
-  .nc-form-column-label__checkbox {
+  .atm-form-column-label__checkbox {
     @apply flex items-center justify-center gap-2 text-left;
   }
 
-  .nc-form-data-cell.nc-data-cell {
+  .atm-form-data-cell.atm-data-cell {
     @apply !border-none rounded-none;
 
     &:focus-within {
@@ -640,7 +640,7 @@ const { message: templatedMessage } = useTemplatedMessage(
     }
   }
 
-  .nc-survey-form__success-msg {
+  .atm-survey-form__success-msg {
     .ant-alert-icon {
       @apply flex items-start;
     }
@@ -648,7 +648,7 @@ const { message: templatedMessage } = useTemplatedMessage(
 }
 
 @media (min-width: 1024px) and (max-width: 1170px) {
-  .nc-survey-form-branding {
+  .atm-survey-form-branding {
     @apply flex-col;
   }
 }

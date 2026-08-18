@@ -8,4 +8,4 @@ defineProps<{
 defineEmits(['update:visible'])
 </script>
 
-<template><NcSpanHidden /></template>
+<template><AtSpanHidden /></template>

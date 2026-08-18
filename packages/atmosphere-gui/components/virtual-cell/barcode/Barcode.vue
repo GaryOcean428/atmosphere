@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NC_ERROR_SENTINEL, isColumnInError } from 'nocodb-sdk'
+import { ATMOSPHERE_ERROR_SENTINEL, isColumnInError } from 'atmosphere-sdk'
 import type { ComputedRef } from 'vue'
 import { IsCanvasInjectionInj } from '../../../context'
 import JsBarcodeWrapper from './JsBarcodeWrapper.vue'
@@ -47,7 +47,7 @@ const showBarcode = computed(
   () =>
     barcodeValue?.value.length > 0 &&
     !tooManyCharsForBarcode.value &&
-    barcodeValue?.value !== NC_ERROR_SENTINEL &&
+    barcodeValue?.value !== ATMOSPHERE_ERROR_SENTINEL &&
     !hasColError.value,
 )
 
@@ -83,7 +83,7 @@ onMounted(() => {
   <a-modal
     v-model:visible="modalVisible"
     :class="{ active: modalVisible }"
-    wrap-class-name="nc-barcode-large barcode-modal"
+    wrap-class-name="atm-barcode-large barcode-modal"
     :body-style="{ padding: '0px' }"
     :footer="null"
     :closable="false"
@@ -93,7 +93,7 @@ onMounted(() => {
     <template #title>
       <div class="flex gap-2 items-center w-full">
         <h1 class="font-weight-700 m-0">{{ column?.title }}</h1>
-        <div class="h-5 px-1 bg-nc-bg-gray-medium text-nc-content-gray-subtle2 rounded-md justify-center items-center flex">
+        <div class="h-5 px-1 bg-atm-bg-gray-medium text-atm-content-gray-subtle2 rounded-md justify-center items-center flex">
           <SmartsheetHeaderIcon
             v-if="meta?.columnsById?.[valueFieldId]"
             :column="meta?.columnsById?.[valueFieldId]"
@@ -103,9 +103,9 @@ onMounted(() => {
           <div class="text-sm font-medium">{{ meta?.columnsById?.[valueFieldId]?.title }}</div>
         </div>
         <div class="flex-1"></div>
-        <NcButton class="nc-barcode-close !px-1" type="text" size="xs" @click="modalVisible = false">
-          <GeneralIcon class="text-md text-nc-content-gray-subtle h-4 w-4" icon="close" />
-        </NcButton>
+        <AtButton class="atm-barcode-close !px-1" type="text" size="xs" @click="modalVisible = false">
+          <GeneralIcon class="text-md text-atm-content-gray-subtle h-4 w-4" icon="close" />
+        </AtButton>
       </div>
     </template>
     <JsBarcodeWrapper
@@ -132,7 +132,7 @@ onMounted(() => {
       :custom-style="{
         height,
       }"
-      class="nc-barcode-container"
+      class="atm-barcode-container"
       @on-click-barcode="showBarcodeModal"
     >
       <template #barcodeRenderError>
@@ -146,7 +146,7 @@ onMounted(() => {
       tabindex="-1"
       :barcode-value="barcodeValue"
       :barcode-format="barcodeMeta.barcodeFormat"
-      class="nc-barcode-container"
+      class="atm-barcode-container"
       @on-click-barcode="showBarcodeModal"
     >
       <template #barcodeRenderError>
@@ -155,28 +155,28 @@ onMounted(() => {
         </div>
       </template>
     </JsBarcodeWrapper>
-    <NcTooltip v-else-if="hasColError" placement="bottom" class="text-nc-content-orange-dark">
+    <AtTooltip v-else-if="hasColError" placement="bottom" class="text-atm-content-orange-dark">
       <template #title>
         <span class="font-bold">{{ column?.colOptions?.error }}</span>
       </template>
       <span>ERR!</span>
-    </NcTooltip>
-    <NcTooltip
-      v-else-if="!showBarcode && barcodeValue === NC_ERROR_SENTINEL"
+    </AtTooltip>
+    <AtTooltip
+      v-else-if="!showBarcode && barcodeValue === ATMOSPHERE_ERROR_SENTINEL"
       placement="bottom"
-      class="text-nc-content-orange-dark"
+      class="text-atm-content-orange-dark"
     >
       <template #title>
         <span class="font-bold">Please select a target field!</span>
       </template>
       <span>ERR!</span>
-    </NcTooltip>
+    </AtTooltip>
   </div>
 
-  <div v-if="tooManyCharsForBarcode" class="nc-cell-field text-left text-wrap text-[#e65100] text-xs">
+  <div v-if="tooManyCharsForBarcode" class="atm-cell-field text-left text-wrap text-[#e65100] text-xs">
     {{ $t('labels.barcodeValueTooLong') }}
   </div>
-  <div v-if="showClearNonEditableFieldWarning" class="nc-cell-field text-left text-wrap mt-2 text-[#e65100] text-xs">
+  <div v-if="showClearNonEditableFieldWarning" class="atm-cell-field text-left text-wrap mt-2 text-[#e65100] text-xs">
     {{ $t('msg.warning.nonEditableFields.barcodeFieldsCannotBeDirectlyChanged') }}
   </div>
 </template>
@@ -193,7 +193,7 @@ onMounted(() => {
 .barcode-modal .ant-modal-content {
   padding: 0 !important;
   .ant-modal-header {
-    @apply border-b-1 border-b-nc-border-gray-medium;
+    @apply border-b-1 border-b-atm-border-gray-medium;
     position: relative;
     padding: 8px 16px;
     border-top-left-radius: 1em;
@@ -206,12 +206,12 @@ onMounted(() => {
   }
 }
 
-.nc-data-cell {
-  &:has(.nc-virtual-cell-barcode) {
+.atm-data-cell {
+  &:has(.atm-virtual-cell-barcode) {
     @apply !border-none outline-none;
     box-shadow: none !important;
 
-    &:focus-within:not(.nc-readonly-div-data-cell):not(.nc-system-field) {
+    &:focus-within:not(.atm-readonly-div-data-cell):not(.atm-system-field) {
       @apply outline-none;
       box-shadow: none !important;
     }

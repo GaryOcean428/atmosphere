@@ -44,7 +44,7 @@ const activeTabLabel = computed(() => {
 })
 
 function navigateToBases() {
-  const typeOrId = route.value.params.typeOrId || activeWorkspaceId.value || 'nc'
+  const typeOrId = route.value.params.typeOrId || activeWorkspaceId.value || 'atm'
 
   router.push({ name: 'index-typeOrId', params: { typeOrId } })
 }
@@ -74,20 +74,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex items-center gap-2 px-2 sm:px-4 h-[var(--topbar-height)] flex-none border-b-1 border-nc-border-gray-light">
+  <div class="flex items-center gap-2 px-2 sm:px-4 h-[var(--topbar-height)] flex-none border-b-1 border-atm-border-gray-light">
     <div class="flex-1 flex items-center gap-2 min-w-0">
       <GeneralOpenLeftSidebarBtn />
-      <div class="flex items-center gap-1.5 min-w-0 text-bodyDefaultSm" data-testid="nc-ws-home-topbar-breadcrumb">
+      <div class="flex items-center gap-1.5 min-w-0 text-bodyDefaultSm" data-testid="atm-ws-home-topbar-breadcrumb">
         <span
-          class="text-nc-content-gray-muted capitalize truncate"
-          :class="{ 'cursor-pointer hover:text-nc-content-gray': activeTabKey !== 'bases' }"
-          data-testid="nc-ws-home-topbar-title"
+          class="text-atm-content-gray-muted capitalize truncate"
+          :class="{ 'cursor-pointer hover:text-atm-content-gray': activeTabKey !== 'bases' }"
+          data-testid="atm-ws-home-topbar-title"
           @click="onWorkspaceCrumbClick"
         >
           {{ workspaceTitle }}
         </span>
-        <span class="text-nc-content-gray-muted">/</span>
-        <span class="text-bodyDefaultSmBold text-nc-content-gray truncate">{{ activeTabLabel }}</span>
+        <span class="text-atm-content-gray-muted">/</span>
+        <span class="text-bodyDefaultSmBold text-atm-content-gray truncate">{{ activeTabLabel }}</span>
       </div>
     </div>
 
@@ -96,21 +96,21 @@ onMounted(() => {
       <a-input
         v-model:value="searchQuery"
         type="text"
-        class="nc-ws-home-search nc-input-shadow !h-9 !pl-2 !pr-1.5 !py-1 !rounded-lg"
+        class="atm-ws-home-search atm-input-shadow !h-9 !pl-2 !pr-1.5 !py-1 !rounded-lg"
         :placeholder="$t('placeholder.searchBasesInWorkspace', { workspace: workspaceTitle })"
-        data-testid="nc-ws-home-topbar-search"
+        data-testid="atm-ws-home-topbar-search"
         allow-clear
         @keydown.stop
       >
         <template #prefix>
           <div class="flex items-center gap-1 mr-1">
             <GeneralLoader v-if="isBaseListAllLoading" size="regular" class="h-4 w-4" />
-            <GeneralIcon v-else icon="search" class="h-4 w-4 text-nc-content-gray-muted" />
+            <GeneralIcon v-else icon="search" class="h-4 w-4 text-atm-content-gray-muted" />
           </div>
         </template>
         <template #suffix>
           <div
-            class="px-1 text-bodySmBold text-nc-content-gray-subtle bg-nc-bg-gray-medium rounded cursor-pointer"
+            class="px-1 text-bodySmBold text-atm-content-gray-subtle bg-atm-bg-gray-medium rounded cursor-pointer"
             @click="openCommandPalette"
           >
             {{ renderCmdOrCtrlKey(true) }} K

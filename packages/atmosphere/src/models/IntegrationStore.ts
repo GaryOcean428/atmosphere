@@ -1,9 +1,9 @@
-import type { IntegrationType } from 'nocodb-sdk';
-import type { NcContext } from '~/interface/config';
+import type { IntegrationType } from 'atmosphere-sdk';
+import type { AtContext } from '~/interface/config';
 import { MetaTable, RootScopes } from '~/utils/globals';
-import Noco from '~/Noco';
+import Atmosphere from '~/Atmosphere';
 import { extractProps } from '~/helpers/extractProps';
-import { NcError } from '~/helpers/catchError';
+import { AtError } from '~/helpers/catchError';
 import { isEE } from '~/utils';
 import {
   IntegrationSlotTypes,
@@ -56,16 +56,16 @@ export default class IntegrationStore {
   }
 
   public static async insert(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     integration: IntegrationType,
     fk_user_id: string | null,
     data: IntegrationStore,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ) {
     const storeDefinition = STORE_DEFINITIONS[integration.type];
 
     if (!storeDefinition) {
-      NcError.badRequest('Invalid integration type');
+      AtError.badRequest('Invalid integration type');
     }
 
     const storeKeys = Object.keys(storeDefinition);
@@ -73,7 +73,7 @@ export default class IntegrationStore {
     const insertObj = extractProps(data, [...storeKeys]);
 
     if (isEE && !context.workspace_id) {
-      NcError.badRequest('Missing required fields');
+      AtError.badRequest('Missing required fields');
     }
 
     insertObj.fk_workspace_id = context.workspace_id;
@@ -84,7 +84,7 @@ export default class IntegrationStore {
 
     for (const [k, v] of Object.entries(storeDefinition)) {
       if (v.required && !insertObj[k]) {
-        NcError.badRequest(`Missing required field: ${v.id}`);
+        AtError.badRequest(`Missing required field: ${v.id}`);
       }
 
       if (
@@ -92,7 +92,7 @@ export default class IntegrationStore {
         v.type === IntegrationSlotTypes.NUMBER &&
         isNaN(Number(insertObj[k]))
       ) {
-        NcError.badRequest(`Invalid type for field: ${v.id}`);
+        AtError.badRequest(`Invalid type for field: ${v.id}`);
       }
 
       if (v.type === IntegrationSlotTypes.BOOLEAN) {
@@ -104,12 +104,12 @@ export default class IntegrationStore {
           try {
             insertObj[k] = JSON.parse(insertObj[k]);
           } catch (e) {
-            NcError.badRequest(`Invalid type for field: ${v.id}`);
+            AtError.badRequest(`Invalid type for field: ${v.id}`);
           }
         }
 
         if (!Array.isArray(insertObj[k])) {
-          NcError.badRequest(`Invalid type for field: ${v.id}`);
+          AtError.badRequest(`Invalid type for field: ${v.id}`);
         }
 
         insertObj[k] = JSON.stringify(insertObj[k]);
@@ -120,12 +120,12 @@ export default class IntegrationStore {
           try {
             insertObj[k] = JSON.parse(insertObj[k]);
           } catch (e) {
-            NcError.badRequest(`Invalid type for field: ${v.id}`);
+            AtError.badRequest(`Invalid type for field: ${v.id}`);
           }
         }
 
         if (typeof insertObj[k] !== 'object') {
-          NcError.badRequest(`Invalid type for field: ${v.id}`);
+          AtError.badRequest(`Invalid type for field: ${v.id}`);
         }
 
         insertObj[k] = JSON.stringify(insertObj[k]);
@@ -136,7 +136,7 @@ export default class IntegrationStore {
         v.type === IntegrationSlotTypes.STRING &&
         typeof insertObj[k] !== 'string'
       ) {
-        NcError.badRequest(`Invalid type for field: ${v.id}`);
+        AtError.badRequest(`Invalid type for field: ${v.id}`);
       }
 
       if (k !== v.id) {
@@ -164,9 +164,9 @@ export default class IntegrationStore {
   }
 
   static async get(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     id: string,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<IntegrationStore> {
     const integrationStoreData = await ncMeta.metaGet2(
       context.workspace_id ? context.workspace_id : RootScopes.WORKSPACE,
@@ -183,7 +183,7 @@ export default class IntegrationStore {
     const storeDefinition = STORE_DEFINITIONS[integrationStoreData.type];
 
     if (!storeDefinition) {
-      NcError.badRequest('Invalid integration type');
+      AtError.badRequest('Invalid integration type');
     }
 
     const data = prepareResponse(integrationStoreData, storeDefinition);
@@ -192,14 +192,14 @@ export default class IntegrationStore {
   }
 
   static async list(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     integration: IntegrationType,
     args: {
       limit?: number;
       offset?: number;
       ignorePagination?: boolean;
     },
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<{
     list: IntegrationStore[];
     pagination: { isLastPage: boolean; offset: number };
@@ -236,7 +236,7 @@ export default class IntegrationStore {
       const storeDefinition = STORE_DEFINITIONS[d.type];
 
       if (!storeDefinition) {
-        NcError.badRequest('Invalid integration type');
+        AtError.badRequest('Invalid integration type');
       }
 
       const data = prepareResponse(d, storeDefinition);
@@ -251,24 +251,24 @@ export default class IntegrationStore {
   }
 
   static async sum(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     integration: IntegrationType,
     fields: string[],
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<Record<string, number>> {
     const storeDefinition = STORE_DEFINITIONS[integration.type];
 
     if (!storeDefinition) {
-      NcError.badRequest('Invalid integration type');
+      AtError.badRequest('Invalid integration type');
     }
 
     for (const field of fields) {
       if (!storeDefinition[field]) {
-        NcError.badRequest('Invalid field');
+        AtError.badRequest('Invalid field');
       }
 
       if (storeDefinition[field].type !== IntegrationSlotTypes.NUMBER) {
-        NcError.badRequest(
+        AtError.badRequest(
           'This operation is only supported for number fields',
         );
       }
@@ -292,14 +292,14 @@ export default class IntegrationStore {
   }
 
   static async getLatest(
-    context: Omit<NcContext, 'base_id'>,
+    context: Omit<AtContext, 'base_id'>,
     integration: IntegrationType,
-    ncMeta = Noco.ncMeta,
+    ncMeta = Atmosphere.ncMeta,
   ): Promise<IntegrationStore> {
     const storeDefinition = STORE_DEFINITIONS[integration.type];
 
     if (!storeDefinition) {
-      NcError.badRequest('Invalid integration type');
+      AtError.badRequest('Invalid integration type');
     }
 
     const result = await ncMeta

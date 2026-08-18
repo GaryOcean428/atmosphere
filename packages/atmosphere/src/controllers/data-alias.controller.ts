@@ -19,7 +19,7 @@ import { Acl } from '~/middlewares/extract-ids/extract-ids.middleware';
 import { DatasService } from '~/services/datas.service';
 import { DataApiLimiterGuard } from '~/guards/data-api-limiter.guard';
 import { TenantContext } from '~/decorators/tenant-context.decorator';
-import { NcContext, NcRequest } from '~/interface/config';
+import { AtContext, AtRequest } from '~/interface/config';
 
 @Controller()
 @UseGuards(DataApiLimiterGuard, GlobalGuard)
@@ -33,8 +33,8 @@ export class DataAliasController {
   ])
   @Acl('dataList')
   async dataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
@@ -75,8 +75,8 @@ export class DataAliasController {
   ])
   @Acl('dataFindOne')
   async dataFindOne(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Param('viewName') viewName: string,
@@ -95,8 +95,8 @@ export class DataAliasController {
   ])
   @Acl('dataGroupBy')
   async dataGroupBy(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Param('viewName') viewName: string,
@@ -116,8 +116,8 @@ export class DataAliasController {
   ])
   @Acl('dataGroupBy')
   async dataGroupByCount(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Param('viewName') viewName: string,
@@ -137,8 +137,8 @@ export class DataAliasController {
   ])
   @Acl('dataCount')
   async dataCount(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
@@ -162,8 +162,8 @@ export class DataAliasController {
   @HttpCode(200)
   @Acl('dataInsert')
   async dataInsert(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Param('viewName') viewName: string,
@@ -192,8 +192,8 @@ export class DataAliasController {
   ])
   @Acl('dataUpdate')
   async dataUpdate(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Param('viewName') viewName: string,
@@ -217,8 +217,8 @@ export class DataAliasController {
   ])
   @Acl('dataDelete')
   async dataDelete(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Param('viewName') viewName: string,
@@ -239,8 +239,8 @@ export class DataAliasController {
   ])
   @Acl('dataRead')
   async dataRead(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
     @Param('viewName') viewName: string,
@@ -266,8 +266,8 @@ export class DataAliasController {
   ])
   @Acl('dataExist')
   async dataExist(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,
@@ -294,8 +294,8 @@ export class DataAliasController {
   ])
   @Acl('groupedDataList')
   async groupedDataList(
-    @TenantContext() context: NcContext,
-    @Req() req: NcRequest,
+    @TenantContext() context: AtContext,
+    @Req() req: AtRequest,
     @Res() res: Response,
     @Param('baseName') baseName: string,
     @Param('tableName') tableName: string,

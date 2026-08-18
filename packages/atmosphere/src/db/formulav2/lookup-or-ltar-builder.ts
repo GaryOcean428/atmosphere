@@ -5,8 +5,8 @@ import {
   isMMOrMMLike,
   RelationTypes,
   UITypes,
-} from 'nocodb-sdk';
-import type { NcContext } from 'nocodb-sdk';
+} from 'atmosphere-sdk';
+import type { AtContext } from 'atmosphere-sdk';
 import type CustomKnex from '~/db/CustomKnex';
 import type {
   FormulaQueryBuilderBaseParams,
@@ -37,7 +37,7 @@ import { DBQueryClient } from '~/dbQueryClient';
 export const lookupOrLtarBuilder =
   (
     params: FormulaQueryBuilderBaseParams & {
-      context?: NcContext;
+      context?: AtContext;
       knex?: CustomKnex;
       _formulaQueryBuilder: (
         params: FormulaQueryBuilderBaseParams,

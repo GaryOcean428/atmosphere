@@ -117,11 +117,11 @@ watch(
 </script>
 
 <template>
-  <div class="nc-advance-color-picker w-[336px] pt-2" click.stop>
-    <NcTabs v-model:active-key="isDefaultColorTab" class="nc-advance-color-picker-tab w-full">
+  <div class="atm-advance-color-picker w-[336px] pt-2" click.stop>
+    <AtTabs v-model:active-key="isDefaultColorTab" class="atm-advance-color-picker-tab w-full">
       <a-tab-pane key="true">
         <template #tab>
-          <div class="tab" data-testid="nc-default-colors-tab">{{ $t('labels.defaultColours') }}</div>
+          <div class="tab" data-testid="atm-default-colors-tab">{{ $t('labels.defaultColours') }}</div>
         </template>
         <div class="h-full p-2">
           <div class="flex flex-col gap-1">
@@ -129,7 +129,7 @@ watch(
               <div
                 v-for="(color, j) of colorGroup"
                 :key="`color-${i}-${j}`"
-                class="p-1 rounded-md flex h-8 hover:bg-nc-bg-gray-medium"
+                class="p-1 rounded-md flex h-8 hover:bg-atm-bg-gray-medium"
               >
                 <button
                   class="color-selector"
@@ -162,7 +162,7 @@ watch(
       </a-tab-pane>
       <a-tab-pane key="false">
         <template #tab>
-          <div class="tab" data-testid="nc-custom-colors-tab">
+          <div class="tab" data-testid="atm-custom-colors-tab">
             <div>{{ $t('labels.customColours') }}</div>
           </div>
         </template>
@@ -170,13 +170,13 @@ watch(
           <LazyGeneralChromeWrapper v-model="picked" class="!w-full !shadow-none" />
         </div>
       </a-tab-pane>
-    </NcTabs>
+    </AtTabs>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .color-picker {
-  @apply flex flex-col items-center justify-center bg-nc-bg-default p-2.5;
+  @apply flex flex-col items-center justify-center bg-atm-bg-default p-2.5;
 }
 .color-picker-row {
   @apply flex flex-row space-x-1;
@@ -184,7 +184,7 @@ watch(
 .color-selector {
   @apply h-6 w-6 rounded;
   -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: var(--nc-bg-default);
+  -webkit-text-stroke-color: var(--atm-bg-default);
 }
 .color-selector:hover {
   filter: brightness(90%);
@@ -192,9 +192,9 @@ watch(
 }
 .color-selector:focus,
 .color-selector.selected,
-.nc-more-colors-trigger:focus {
+.atm-more-colors-trigger:focus {
   outline: none;
-  box-shadow: 0px 0px 0px 2px var(--nc-bg-default), 0px 0px 0px 4px var(--nc-fill-primary);
+  box-shadow: 0px 0px 0px 2px var(--atm-bg-default), 0px 0px 0px 4px var(--atm-fill-primary);
 }
 
 :deep(.vc-chrome-toggle-icon) {

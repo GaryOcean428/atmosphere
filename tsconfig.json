@@ -16,13 +16,13 @@
     "skipLibCheck": true
   },
   "references": [
-    { "path": "packages/nocodb-sdk" },
-    { "path": "packages/nocodb" },
-    { "path": "packages/nc-gui" }
+    { "path": "packages/atmosphere-sdk" },
+    { "path": "packages/atmosphere" },
+    { "path": "packages/atmosphere-gui" }
   ],
   "exclude": [
     "node_modules",
-    "packages/noco-integrations",
-    "packages/noco-integrations-v2"
+    "packages/atmosphere-integrations",
+    "packages/atmosphere-integrations-v2"
   ]
 }
