@@ -5,7 +5,6 @@
     "outDir": "build/main",
     "rootDir": "src",
     "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
     "module": "commonjs",
     "declaration": true,
     "inlineSourceMap": true,
