@@ -34,6 +34,7 @@ import {
   MAX_SELECTED_ROWS,
 } from '../utils/constants'
 import { parseCellWidth } from '../utils/cell'
+import { getColumnDropTargetIndex } from '../utils/headerUtils'
 import {
   calculateGroupHeight,
   calculateGroupRange,
@@ -48,6 +49,7 @@ import { ElementTypes } from '../utils/CanvasElement'
 import type { RenderTagProps } from '../utils/types'
 import { getSafe2DContext } from '../utils/safeCanvas'
 import type { MarkdownLoader } from '../loaders/markdownLoader'
+import type { GridRemoteFieldMap, GridRemoteFocus, GridRemoteFocusMap, GridRemoteRecordMap } from '~/lib/types'
 
 export function useCanvasRender({
   width,
@@ -61,6 +63,9 @@ export function useCanvasRender({
   rowHeight,
   headerRowHeight,
   activeCell,
+  remoteFocuses,
+  remoteRecords,
+  remoteFields,
   dragOver,
   hoverRow,
   selection,
@@ -114,6 +119,10 @@ export function useCanvasRender({
   isRecordSelected,
   isViewOperationsAllowed,
   groupSelectionAggregations,
+  freezeDrag,
+  canAdjustFrozen,
+  freezeDividerX,
+  isFreezeDividerHovered,
 }: {
   width: Ref<number>
   height: Ref<number>
@@ -127,6 +136,9 @@ export function useCanvasRender({
     column?: number
     path?: Array<number>
   }>
+  remoteFocuses: Ref<GridRemoteFocusMap>
+  remoteRecords: Ref<GridRemoteRecordMap>
+  remoteFields: Ref<GridRemoteFieldMap>
   scrollLeft: Ref<number>
   scrollTop: Ref<number>
   cachedGroups: Ref<Map<number, CanvasGroup>>
@@ -203,6 +215,10 @@ export function useCanvasRender({
   isRecordSelected: (row: Row) => boolean
   isViewOperationsAllowed: ComputedRef<boolean>
   groupSelectionAggregations: ComputedRef<Map<string, { values: Record<string, string | undefined>; scopedTitles: Set<string> }>>
+  freezeDrag: Ref<{ previewCount: number; previewX: number; hasMoved: boolean } | null>
+  canAdjustFrozen: ComputedRef<boolean>
+  freezeDividerX: ComputedRef<number>
+  isFreezeDividerHovered: ComputedRef<boolean>
 }) {
   const canvasRef = ref<HTMLCanvasElement>()
 
@@ -211,7 +227,7 @@ export function useCanvasRender({
   // a first click activates the field, a second on the button opens its menu.
   const interfacePageDataApi = inject(InterfacePageDataInj, undefined)
   const colResizeHoveredColIds = ref(new Set())
-  const { tryShowTooltip } = useTooltipStore()
+  const { tryShowTooltip, showTooltip, hideTooltip } = useTooltipStore()
   const { isMobileMode, isAddNewRecordGridMode, appInfo } = useGlobal()
   const { isWsOwner } = useEeConfig()
   const { isColumnSortedOrFiltered, appearanceConfig: filteredOrSortedAppearanceConfig } = useColumnFilteredOrSorted()
@@ -236,6 +252,20 @@ export function useCanvasRender({
     if (!expandedFormPanelStore?.isOpen.value) return null
     return expandedFormPanelStore.activePath.value ?? []
   })
+
+  // Whether THIS viewer has the row open in the side panel. Shared by the brand accent
+  // bar in renderRowMeta and the remote-record bar, which shifts right when both land on
+  // the same row so neither is lost.
+  function isExpandedPanelRow(row: Row) {
+    return (
+      expandedPanelRowIndex.value === row.rowMeta.rowIndex &&
+      expandedPanelPath.value !== null &&
+      // Default both sides to [] — flat rows have row.rowMeta.path === undefined,
+      // and comparePath requires arrays on both sides, so the highlight would
+      // never paint in non-group-by views without this normalisation.
+      comparePath(expandedPanelPath.value, row.rowMeta?.path ?? [])
+    )
+  }
 
   const { isDark, getColor } = useTheme()
 
@@ -512,6 +542,8 @@ export function useCanvasRender({
             fillStyle: getColor(themeV4Colors.brand['500'], themeV4Colors.brand['400'], 0.18),
           })
         }
+
+        drawHeaderFieldFocus(ctx, colObj.id, xOffset - _scrollLeft, width, _headerRowHeight)
       }
 
       ctx.fillStyle = getColor(themeV4Colors.gray['500'], themeV4Colors.gray['600'])
@@ -690,7 +722,7 @@ export function useCanvasRender({
         (fillHandler && xOffset - _scrollLeft + 1 >= fillHandler.x && xOffset - _scrollLeft - 1 <= fillHandler.x)
       ) {
         // Draw line above active state
-        ctx.strokeStyle = getColor(themeV4Colors.gray['100'])
+        ctx.strokeStyle = getColor(themeV4Colors.gray['200'], themeV4Colors.gray['100'])
         if (fillHandler && activeState?.y) {
           ctx.beginPath()
           ctx.moveTo(xOffset - _scrollLeft, _headerRowHeight)
@@ -732,7 +764,7 @@ export function useCanvasRender({
         // Draw full line if not intersecting with active state
         // To avoid rendering the line inside fixed columns, set the xOffset to the right of fixed columns if xOffset is less than fixedColsWidth
         const verticalLineXOffset = Math.max(fixedColsWidth.value, xOffset - _scrollLeft)
-        ctx.strokeStyle = getColor(themeV4Colors.gray['100'])
+        ctx.strokeStyle = getColor(themeV4Colors.gray['200'], themeV4Colors.gray['100'])
         ctx.beginPath()
         ctx.moveTo(verticalLineXOffset, _headerRowHeight)
         ctx.lineTo(
@@ -803,6 +835,8 @@ export function useCanvasRender({
               fillStyle: getColor(themeV4Colors.brand['500'], themeV4Colors.brand['400'], 0.18),
             })
           }
+
+          drawHeaderFieldFocus(ctx, column.columnObj.id, xOffset, width, _headerRowHeight)
         }
 
         ctx.fillStyle = getColor(themeV4Colors.gray['500'], themeV4Colors.gray['600'])
@@ -942,15 +976,16 @@ export function useCanvasRender({
         const isNearEdge =
           mousePosition && Math.abs(xOffset - mousePosition.x) <= resizeHandleWidth && mousePosition.y <= _headerRowHeight
 
-        // Right border for row number field
-        if (column.id === 'row_number') {
-          ctx.strokeStyle = getColor(themeV4Colors.gray['200'])
-          ctx.lineWidth = 2
-          ctx.beginPath()
-          ctx.moveTo(xOffset, 0)
-          ctx.lineTo(xOffset, _headerRowHeight)
-          ctx.stroke()
-        }
+        // Right border for the row-number gutter, separator between frozen
+        // header cells otherwise (the scrollable pass skips fixed columns, and
+        // the fixed backgrounds repaint over its strokes). The last one is
+        // overpainted by renderFreezeBoundary's darker full-height line.
+        ctx.strokeStyle = getColor(themeV4Colors.gray['200'])
+        ctx.lineWidth = column.id === 'row_number' ? 2 : 1
+        ctx.beginPath()
+        ctx.moveTo(xOffset, 0)
+        ctx.lineTo(xOffset, _headerRowHeight)
+        ctx.stroke()
 
         if (isNearEdge && column.id !== 'row_number' && !isLocked.value && isViewOperationsAllowed.value) {
           colResizeHoveredColIds.value.add(column.id)
@@ -969,25 +1004,17 @@ export function useCanvasRender({
         }
       })
 
-      if (_scrollLeft) {
-        ctx.strokeStyle = getColor(themeV4Colors.gray['300'])
-        ctx.beginPath()
-        ctx.lineWidth = 1
-        ctx.moveTo(xOffset, 0)
-        ctx.lineTo(xOffset, isGroupBy.value ? height.value : _headerRowHeight)
-        ctx.stroke()
+      // Redraw the bottom border across the fixed region — the fixed-column
+      // backgrounds are painted after the shared bottom border and cover its top
+      // half. gray-300 (vs gray-200 elsewhere) matches the freeze boundary line.
+      ctx.strokeStyle = getColor(themeV4Colors.gray['300'])
+      ctx.lineWidth = 1
+      ctx.beginPath()
+      ctx.moveTo(0, _headerRowHeight)
+      ctx.lineTo(xOffset, _headerRowHeight)
+      ctx.stroke()
 
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.04)'
-        ctx.rect(xOffset, 0, 4, isGroupBy.value ? height.value : _headerRowHeight)
-        ctx.fill()
-      } else {
-        ctx.strokeStyle = getColor(themeV4Colors.gray['200'])
-        ctx.beginPath()
-        ctx.lineWidth = 1
-        ctx.moveTo(xOffset, 0)
-        ctx.lineTo(xOffset, isGroupBy.value ? height.value : _headerRowHeight)
-        ctx.stroke()
-      }
+      // Freeze boundary line is drawn full-height by renderFreezeBoundary
       ctx.shadowColor = 'transparent'
       ctx.shadowBlur = 0
       ctx.shadowOffsetX = 0
@@ -1211,14 +1238,7 @@ export function useCanvasRender({
 
     ctx.fillRect(xOffset, yOffset, width, rowHeight.value)
 
-    if (
-      expandedPanelRowIndex.value === row.rowMeta.rowIndex &&
-      expandedPanelPath.value !== null &&
-      // Default both sides to [] — flat rows have row.rowMeta.path === undefined,
-      // and comparePath requires arrays on both sides, so the highlight would
-      // never paint in non-group-by views without this normalisation.
-      comparePath(expandedPanelPath.value, row.rowMeta?.path ?? [])
-    ) {
+    if (isExpandedPanelRow(row)) {
       ctx.fillStyle = getColor(themeV4Colors.brand['500'])
       ctx.fillRect(xOffset, yOffset, 3, rowHeight.value)
     }
@@ -1623,11 +1643,11 @@ export function useCanvasRender({
     selectionBg: '',
     // selection tint overlaid on rows that carry a custom row colour
     selectionBgOnRowColor: '',
-    gray200: '',
-    gray100: '',
+    borderMedium: '',
+    borderLight: '',
     gray50: '',
     white: '',
-    gray300: '',
+    borderDark: '',
   }
 
   function _updateRowColors() {
@@ -1637,11 +1657,256 @@ export function useCanvasRender({
     _rowColors = {
       selectionBg: whiteLabelled ? getColor(themeV4Colors.brand['50']) : getColor('#F6F7FE', themeV4Colors.brand['50']),
       selectionBgOnRowColor: whiteLabelled ? getColor(themeV4Colors.brand['500'], undefined, 0.05) : '#3366ff0d',
-      gray200: getColor(themeV4Colors.gray['200']),
-      gray100: getColor(themeV4Colors.gray['100']),
+      // Grid lines are one shade darker in light theme — the same gray tokens
+      // have ~half the contrast on white than on the dark theme background
+      borderMedium: getColor(themeV4Colors.gray['300'], themeV4Colors.gray['200']),
+      borderLight: getColor(themeV4Colors.gray['200'], themeV4Colors.gray['100']),
       gray50: getColor(themeV4Colors.gray['50']),
       white: getColor(themeV4Colors.base.white),
-      gray300: getColor(themeV4Colors.gray['300']),
+      borderDark: getColor(themeV4Colors.gray['300']),
+    }
+  }
+
+  // ── Remote focus presence (other collaborators' cell cursors) ──
+  // Boxes are collected during the row render (where the row PK and the cell
+  // rect are already in hand) and drawn as a single clipped overlay after the
+  // rows, so the coloured borders sit on top of cell content. Keyed by row PK +
+  // field id, so a cursor follows its data even as rows scroll / reorder.
+  interface RemoteFocusBox {
+    x: number
+    y: number
+    width: number
+    height: number
+    focuses: GridRemoteFocus[]
+    /** Whether the cell belongs to a frozen column — decides if the fixed-area clip applies. */
+    fixed: boolean
+    /** The viewer's own active cell — demoted to a corner marker so the native selection/edit UI wins. */
+    ownCell: boolean
+    /** The group's row clip, when rendered inside a grouped view (see renderGroupRows). */
+    clip?: { x: number; y: number; width: number; height: number }
+  }
+
+  const remoteFocusBoxes: RemoteFocusBox[] = []
+
+  // ── Remote record presence (collaborators with the record open) ──
+  // Collected once per row (where the PK is already in hand) and drawn as a left accent
+  // bar in the overlay pass. In MODAL mode this is the only grid signal for an expanded
+  // record — opening one suppresses that connection's cell cursor. In side-panel mode the
+  // cursor stays live, so a collaborator can show both this bar and a cell cursor, on
+  // different rows.
+  interface RemoteRecordMark {
+    x: number
+    y: number
+    height: number
+    focuses: GridRemoteFocus[]
+  }
+
+  const remoteRecordMarks: RemoteRecordMark[] = []
+
+  const RECORD_MARK_WIDTH = 3
+
+  function collectRemoteRecord(pk: string | null | undefined, row: Row, x: number, y: number, height: number) {
+    if (!pk) return
+    const map = remoteRecords.value
+    if (!map.size) return
+    const focuses = map.get(pk)
+    if (!focuses?.length) return
+
+    // This pass runs after renderRowMeta, so drawing the full strip would silently
+    // replace the viewer's own side-panel bar — which in panel mode is their only cue for
+    // which row they have open. Share it instead: brand keeps the top half, the
+    // collaborator takes the bottom. Split vertically rather than sideways so the mark
+    // stays inside the original 3px — the row-meta drag handle starts 4px in, and this
+    // pass would draw over it.
+    const shared = isExpandedPanelRow(row)
+    const splitAt = shared ? Math.floor(height / 2) : 0
+
+    // `x` must be the row-meta column's own left edge — the same origin renderRowMeta
+    // draws the brand bar from, so the two share one lane. Callers pass it rather than
+    // `initialXOffset`, which in flat views also carries the horizontal scroll offset and
+    // would send the bar drifting out into the data area.
+    remoteRecordMarks.push({ x: Math.max(0, x), y: y + splitAt, height: height - splitAt, focuses })
+  }
+
+  function drawRemoteRecordMarks(ctx: CanvasRenderingContext2D) {
+    if (!remoteRecordMarks.length) return
+    ctx.save()
+    for (const mark of remoteRecordMarks) {
+      // First collaborator only — the bar carries no identity, so a second colour would
+      // just be noise. Who is where comes from the topbar avatars.
+      const primary = mark.focuses[0]
+      if (!primary) continue
+      ctx.fillStyle = primary.color
+      ctx.fillRect(mark.x, mark.y, RECORD_MARK_WIDTH, mark.height)
+    }
+    ctx.restore()
+  }
+
+  /**
+   * Field-config-editor presence: a coloured underline on the column header while a
+   * collaborator has that field's edit dropdown open. Called from both header passes
+   * (scrolling + fixed columns).
+   */
+  function drawHeaderFieldFocus(
+    ctx: CanvasRenderingContext2D,
+    fieldId: string | undefined,
+    x: number,
+    width: number,
+    headerHeight: number,
+  ) {
+    if (!fieldId) return
+    const map = remoteFields.value
+    if (!map.size) return
+    const focuses = map.get(fieldId)
+    if (!focuses?.length) return
+    ctx.save()
+    ctx.fillStyle = focuses[0]!.color
+    ctx.fillRect(x, headerHeight - 2.5, width, 2.5)
+    ctx.restore()
+  }
+
+  function collectRemoteFocus(
+    pk: string | null | undefined,
+    fieldId: string | undefined,
+    x: number,
+    y: number,
+    cellWidth: number,
+    cellHeight: number,
+    fixed: boolean,
+    ownCell: boolean,
+    clip?: { x: number; y: number; width: number; height: number },
+  ) {
+    if (!pk || !fieldId) return
+    const map = remoteFocuses.value
+    if (!map.size) return
+    const focuses = map.get(pk)?.get(fieldId)
+    if (focuses?.length) remoteFocusBoxes.push({ x, y, width: cellWidth, height: cellHeight, focuses, fixed, ownCell, clip })
+  }
+
+  function drawRemoteFocusBoxes(ctx: CanvasRenderingContext2D) {
+    if (!remoteFocusBoxes.length) return
+
+    // `row_number` is always fixed, so fixedWidth is non-zero on every view.
+    const fixedWidth = columns.value.filter((col) => col.fixed).reduce((sum, col) => sum + parseCellWidth(col.width), 0)
+
+    for (const box of remoteFocusBoxes) {
+      const primary = box.focuses[0]
+      if (!primary) continue
+
+      // Mirror renderActiveState's fixed-area geometry EXACTLY — same `<=` comparison,
+      // same +1 reposition — so the presence border lands on the same pixels as the
+      // active border. Anything else shows as a skew on a cell carrying both; the first
+      // scrollable column (x === fixedWidth) is the giveaway.
+      let drawX = box.x
+      let drawW = box.width
+      if (!box.fixed && box.x <= fixedWidth) {
+        // Entirely under the fixed area — the fixed columns repainted over it.
+        if (box.x + box.width <= fixedWidth) continue
+        // +1 for the border separating the fixed and scrollable columns.
+        drawX = fixedWidth + 1
+        drawW = box.width - (fixedWidth - box.x)
+      }
+
+      ctx.save()
+
+      // Grouped views clip each row to the group's indent and width, but that clip is
+      // restored long before this pass runs — without re-applying it the box bleeds past
+      // the group indent on the left and the group edge on the right.
+      if (box.clip) {
+        ctx.beginPath()
+        ctx.rect(box.clip.x, box.clip.y, box.clip.width, box.clip.height)
+        ctx.clip()
+      }
+
+      const color = primary.color
+
+      // The viewer is on this cell too: their own selection/edit UI wins. A corner
+      // wedge in the collaborator's colour keeps the "someone else is here" hint
+      // without competing with the active border or hiding under the DOM editor.
+      // Inset by 1 so the active border stroke stays fully visible — on overlap the
+      // active border wins, the wedge tucks inside it.
+      if (box.ownCell) {
+        const size = 8
+        ctx.beginPath()
+        ctx.moveTo(drawX + drawW - 1 - size, box.y + 1)
+        ctx.lineTo(drawX + drawW - 1, box.y + 1)
+        ctx.lineTo(drawX + drawW - 1, box.y + 1 + size)
+        ctx.closePath()
+        ctx.fillStyle = color
+        ctx.fill()
+        ctx.restore()
+        continue
+      }
+
+      const isEditing = box.focuses.some((f) => f.editing)
+
+      if (isEditing) {
+        ctx.globalAlpha = 0.1
+        ctx.fillStyle = color
+        ctx.fillRect(drawX, box.y, drawW, box.height)
+        ctx.globalAlpha = 1
+      }
+
+      // Same geometry as renderActiveState, so a collaborator's cell reads like the
+      // viewer's own active cell — only the colour differs.
+      roundedRect(ctx, drawX, box.y, drawW, box.height, 2, {
+        borderColor: color,
+        borderWidth: 1,
+      })
+
+      // Collaborator name label (bottom-right tab) — no avatar/emoji, just the name
+      // so it's clear who's on the cell. While they're editing it reads "… is typing".
+      const extra = box.focuses.length > 1 ? ` +${box.focuses.length - 1}` : ''
+      const labelFont = '600 11px Inter'
+      const padX = 5
+      const labelH = 16
+      // The label is drawn INSIDE the cell over its content, so sizing it to the cell
+      // lets an unbounded display name blanket exactly what the viewer is trying to
+      // read. Grow with the column, but never past 3/4 of the cell — the content keeps
+      // the last quarter — with a 140px floor so narrow columns still get a legible name.
+      const maxLabelW = Math.min(drawW - 2, Math.max(140, ((drawW - 2) * 3) / 4))
+      const maxTextW = Math.max(0, maxLabelW - padX * 2)
+      // Truncate the NAME, never the suffixes: "is typing…" / "+N" are the states the
+      // label exists to show, and composing before truncating lets a long name push
+      // them out entirely.
+      const suffixW = renderSingleLineText(ctx, {
+        text: (isEditing ? t('labels.userIsTyping', { name: '' }) : '') + extra,
+        fontFamily: labelFont,
+        render: false,
+      }).width
+      const { text: fittedName } = renderSingleLineText(ctx, {
+        text: primary.name,
+        fontFamily: labelFont,
+        maxWidth: Math.max(0, maxTextW - suffixW),
+        render: false,
+      })
+      // `editing` is authoritative — the editor's client only broadcasts it for cells it can
+      // actually edit (read-only/computed/synced/no-permission cells are never "editing").
+      const labelText = (isEditing ? t('labels.userIsTyping', { name: fittedName }) : fittedName) + extra
+      const measured = renderSingleLineText(ctx, { text: labelText, fontFamily: labelFont, maxWidth: maxTextW, render: false })
+      const labelW = Math.min(maxLabelW, measured.width + padX * 2)
+      // Anchored on the border path itself (the 1px stroke is centered on it), so the
+      // label background meets the border line with no gap.
+      const labelX = drawX + drawW - labelW
+      const labelY = box.y + box.height - labelH
+      roundedRect(ctx, labelX, labelY, labelW, labelH, { topLeft: 6, bottomRight: 2 }, { backgroundColor: color })
+      renderSingleLineText(ctx, {
+        x: labelX + padX,
+        y: labelY,
+        height: labelH,
+        text: labelText,
+        fontFamily: labelFont,
+        maxWidth: maxTextW,
+        // 150, not the default 128: the presence palette is saturated mid-tone accents
+        // (emerald #10b981 scores 128.1) that need white text despite passing the
+        // default cutoff. At 150 only the genuinely light ones (amber, lime) keep black.
+        fillStyle: isColorDark(color, 150) ? '#ffffff' : '#000000',
+        textAlign: 'left',
+        verticalAlign: 'middle',
+        isTagLabel: true,
+      })
+
+      ctx.restore()
     }
   }
 
@@ -1656,6 +1921,7 @@ export function useCanvasRender({
       yOffset,
       group,
       rowBgAlreadyApplied = false,
+      clipRect,
     }: {
       row: Row
       initialXOffset: number
@@ -1665,6 +1931,12 @@ export function useCanvasRender({
       rowIdx: number
       group?: CanvasGroup
       rowBgAlreadyApplied?: boolean
+      /**
+       * The clip the caller has applied around this row, if any. Only grouped views set it.
+       * Carried so overlays drawn after the row pass (remote focus boxes) can re-apply the
+       * same bounds — by then the caller's ctx.restore() has already dropped them.
+       */
+      clipRect?: { x: number; y: number; width: number; height: number }
     },
   ) {
     let activeState: {
@@ -1715,11 +1987,15 @@ export function useCanvasRender({
       }
 
       // Batch vertical borders: collect line x-coordinates by color, stroke once per color
-      const bordersGray100: number[] = []
-      const bordersGray200: number[] = []
+      const bordersLight: number[] = []
+      const bordersMedium: number[] = []
       const _scrollLeft = scrollLeft.value
       const _yOffset = yOffset
       const _rowH = rowHeight.value
+
+      // Mirrors both fixed-column passes below (`xOffset = isGroupBy ? initialXOffset : 0`),
+      // which is where renderRowMeta paints the brand side-panel bar.
+      collectRemoteRecord(pk, row, isGroupBy.value ? initialXOffset : 0, _yOffset, _rowH)
 
       visibleCols.forEach((column, colIdx) => {
         let width = parseCellWidth(column.width)
@@ -1757,13 +2033,13 @@ export function useCanvasRender({
           isCellInRange || (hasActiveSelection && selection.value.isCellInRange({ row: rowIdx, col: absoluteColIdx - 1 }))
 
         // Collect vertical border coordinates for batched stroke.
-        // Use gray-200 (darker) for colored rows — gray-100 has near-zero contrast
-        // against colored backgrounds. Matches fixed columns behavior (line ~1629).
+        // Use the medium (darker) border for colored rows — the light border has
+        // near-zero contrast against colored backgrounds. Matches fixed columns behavior.
         const borderX = xOffset - _scrollLeft
         if (needsHighlightedBorders || isColumnInSelection || columnState || prevColumnState || rowColor) {
-          bordersGray200.push(borderX)
+          bordersMedium.push(borderX)
         } else {
-          bordersGray100.push(borderX)
+          bordersLight.push(borderX)
         }
 
         // add white background color for active cell
@@ -1783,6 +2059,8 @@ export function useCanvasRender({
             height: _rowH,
           }
         }
+
+        collectRemoteFocus(pk, column.columnObj?.id, xOffset - _scrollLeft, yOffset, width, _rowH, false, isActive, clipRect)
 
         const value = row.row[column.title]
 
@@ -1824,21 +2102,21 @@ export function useCanvasRender({
 
       // Batch-stroke all vertical borders (2 strokes instead of N per row)
       ctx.lineWidth = 1
-      if (bordersGray100.length) {
-        ctx.strokeStyle = _rowColors.gray100
+      if (bordersLight.length) {
+        ctx.strokeStyle = _rowColors.borderLight
         ctx.beginPath()
-        for (let i = 0; i < bordersGray100.length; i++) {
-          ctx.moveTo(bordersGray100[i], _yOffset)
-          ctx.lineTo(bordersGray100[i], _yOffset + _rowH)
+        for (let i = 0; i < bordersLight.length; i++) {
+          ctx.moveTo(bordersLight[i], _yOffset)
+          ctx.lineTo(bordersLight[i], _yOffset + _rowH)
         }
         ctx.stroke()
       }
-      if (bordersGray200.length) {
-        ctx.strokeStyle = _rowColors.gray200
+      if (bordersMedium.length) {
+        ctx.strokeStyle = _rowColors.borderMedium
         ctx.beginPath()
-        for (let i = 0; i < bordersGray200.length; i++) {
-          ctx.moveTo(bordersGray200[i], _yOffset)
-          ctx.lineTo(bordersGray200[i], _yOffset + _rowH)
+        for (let i = 0; i < bordersMedium.length; i++) {
+          ctx.moveTo(bordersMedium[i], _yOffset)
+          ctx.lineTo(bordersMedium[i], _yOffset + _rowH)
         }
         ctx.stroke()
       }
@@ -1904,6 +2182,9 @@ export function useCanvasRender({
                 height: _rowH,
               }
             }
+
+            collectRemoteFocus(pk, column.columnObj?.id, xOffset, yOffset, width, _rowH, true, isActive, clipRect)
+
             if (isColumnRequiredAndNull(column.columnObj, row.row)) {
               renderRedBorders.push({ rowIndex: rowIdx, column })
             }
@@ -1943,7 +2224,9 @@ export function useCanvasRender({
             isCellInRange || (hasActiveSelection && selection.value.isCellInRange({ row: rowIdx, col: colIdx - 1 }))
 
           ctx.strokeStyle =
-            idx !== 0 && (needsHighlightedBorders || isColumnInSelection || rowColor) ? _rowColors.gray200 : _rowColors.gray100
+            idx !== 0 && (needsHighlightedBorders || isColumnInSelection || rowColor)
+              ? _rowColors.borderMedium
+              : _rowColors.borderLight
           ctx.lineWidth = 1
 
           ctx.beginPath()
@@ -1954,25 +2237,7 @@ export function useCanvasRender({
           xOffset += width
         })
 
-        if (scrollLeft.value && !isGroupBy.value) {
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.04)'
-          ctx.rect(xOffset, yOffset, 4, _rowH)
-          ctx.fill()
-          ctx.strokeStyle = _rowColors.gray300
-          ctx.beginPath()
-          ctx.moveTo(xOffset, yOffset)
-          ctx.lineTo(xOffset, yOffset + _rowH)
-          ctx.stroke()
-        }
-
-        if (!visibleCols.some((f) => !f.fixed)) {
-          ctx.strokeStyle = _rowColors.gray100
-          ctx.beginPath()
-          ctx.moveTo(xOffset, yOffset)
-          ctx.lineTo(xOffset, yOffset + _rowH)
-          ctx.stroke()
-        }
-
+        // Freeze boundary line + scroll tint are drawn full-height by renderFreezeBoundary
         ctx.fillStyle = 'transparent'
         ctx.strokeStyle = _rowColors.white
         ctx.shadowColor = 'transparent'
@@ -2020,7 +2285,7 @@ export function useCanvasRender({
           ctx.fillRect(xOffset - scrollLeft.value, yOffset, width, rowHeight.value)
         }
 
-        ctx.strokeStyle = getColor(themeV4Colors.gray['100'])
+        ctx.strokeStyle = _rowColors.borderLight
         ctx.beginPath()
         ctx.moveTo(xOffset - scrollLeft.value, yOffset)
         ctx.lineTo(xOffset - scrollLeft.value, yOffset + rowHeight.value)
@@ -2082,7 +2347,7 @@ export function useCanvasRender({
             drawShimmerEffect(ctx, xOffset, yOffset, width, rowIdx)
           }
 
-          ctx.strokeStyle = getColor(themeV4Colors.gray['100'])
+          ctx.strokeStyle = _rowColors.borderLight
           ctx.beginPath()
 
           ctx.moveTo(xOffset, yOffset)
@@ -2092,7 +2357,7 @@ export function useCanvasRender({
           xOffset += width
         })
 
-        ctx.strokeStyle = getColor(themeV4Colors.gray['100'])
+        ctx.strokeStyle = _rowColors.borderLight
         ctx.beginPath()
         ctx.moveTo(xOffset, yOffset)
         ctx.lineTo(xOffset, yOffset + rowHeight.value)
@@ -2146,8 +2411,8 @@ export function useCanvasRender({
     // Use pre-computed colors (resolved once via _updateRowColors, not per frame)
     const colorGray50 = _rowColors.gray50
     const colorWhite = _rowColors.white
-    const colorGray200 = _rowColors.gray200
-    const colorGray300 = _rowColors.gray300
+    const colorBorderMedium = _rowColors.borderMedium
+    const colorBorderDark = _rowColors.borderDark
     let warningRow: { row: Row; yOffset: number } | null = null
     const dataCache = getDataCache()
 
@@ -2224,8 +2489,8 @@ export function useCanvasRender({
           isNextRowCellSelected ||
           isNextRowSelected ||
           rowColor
-            ? colorGray300
-            : colorGray200
+            ? colorBorderDark
+            : colorBorderMedium
         ctx.lineWidth = 1
         ctx.beginPath()
         ctx.moveTo(0, yOffset + _rowH)
@@ -2265,7 +2530,7 @@ export function useCanvasRender({
           : getColor(themeV4Colors.base.white)
       ctx.fillRect(0, yOffset, adjustedWidth, _headerRowHeight)
       // Bottom border for new row
-      ctx.strokeStyle = getColor(themeV4Colors.gray['100'])
+      ctx.strokeStyle = _rowColors.borderLight
       ctx.beginPath()
       ctx.moveTo(0, yOffset + _headerRowHeight)
       ctx.lineTo(adjustedWidth, yOffset + _headerRowHeight)
@@ -2385,25 +2650,32 @@ export function useCanvasRender({
   const renderColumnDragIndicator = (ctx: CanvasRenderingContext2D) => {
     if (!dragOver.value || !isViewOperationsAllowed.value) return
 
+    // Edge the field would land on — right of the drop target, so a drop on the
+    // display value shows at its right edge (that is where it inserts)
+    const edgeIndex = getColumnDropTargetIndex(columns.value, dragOver.value.index) + 1
+
     let xPosition = 0
-    for (let i = 0; i < dragOver.value.index; i++) {
+    for (let i = 0; i < edgeIndex; i++) {
       xPosition += parseCellWidth(columns.value[i]?.width)
     }
 
-    const width = parseCellWidth(columns.value[dragOver.value.index - 1]?.width)
+    const width = parseCellWidth(columns.value[edgeIndex - 1]?.width)
+
+    // Fixed columns render at absolute x — no scroll offset for in-band targets
+    const drawX = columns.value[dragOver.value.index]?.fixed ? xPosition : xPosition - scrollLeft.value
 
     // Draw a Ghost Column
     ctx.fillStyle = getColor(themeV4Colors.gray['100'])
     ctx.globalAlpha = 0.6
 
-    ctx.fillRect(xPosition - scrollLeft.value, 0, width, height.value)
+    ctx.fillRect(drawX, 0, width, height.value)
     ctx.globalAlpha = 1
 
     ctx.strokeStyle = getColor(themeV4Colors.brand['500'])
     ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.moveTo(xPosition - scrollLeft.value, 0)
-    ctx.lineTo(xPosition - scrollLeft.value, height.value)
+    ctx.moveTo(drawX, 0)
+    ctx.lineTo(drawX, height.value)
     ctx.stroke()
   }
 
@@ -2424,6 +2696,93 @@ export function useCanvasRender({
     ctx.restore()
   }
 
+  // Always-visible freeze boundary: a full-height line (header → footer, past
+  // the last row) one shade darker than column borders, so the frozen region
+  // reads without hovering or scrolling. Scroll adds the elevation tint.
+  const renderFreezeBoundary = (ctx: CanvasRenderingContext2D) => {
+    if (!fixedCols.value.length) return
+
+    // +0.5 keeps the 1px stroke crisp on non-retina displays
+    const x = fixedColsWidth.value - 1 + 0.5
+
+    ctx.save()
+    ctx.strokeStyle = getColor(themeV4Colors.gray['300'])
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(x, 0)
+    ctx.lineTo(x, height.value)
+    ctx.stroke()
+
+    if (scrollLeft.value) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.04)'
+      ctx.fillRect(x, 0, 4, height.value)
+    }
+    ctx.restore()
+  }
+
+  // Freeze divider affordance: grip pill on hover, full-height guideline while
+  // dragging (snapped to the previewed field boundary).
+  const renderFreezeDivider = (ctx: CanvasRenderingContext2D) => {
+    if (!canAdjustFrozen.value) return
+
+    const dragging = freezeDrag.value
+    if (!dragging && !isFreezeDividerHovered.value) return
+
+    const x = dragging ? dragging.previewX : freezeDividerX.value
+    const top = headerRowHeight.value
+    const bottom = height.value - AGGREGATION_HEIGHT
+
+    ctx.save()
+
+    ctx.strokeStyle = getColor(themeV4Colors.brand['500'])
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(x + 0.5, dragging ? 0 : top)
+    ctx.lineTo(x + 0.5, bottom)
+    ctx.stroke()
+
+    const gripHeight = 24
+    const gripWidth = 6
+    const gripY = Math.min(Math.max(mousePosition.y - gripHeight / 2, top + 4), bottom - gripHeight - 4)
+
+    roundedRect(ctx, x - gripWidth / 2, gripY, gripWidth, gripHeight, 3, {
+      backgroundColor: getColor(themeV4Colors.brand['500']),
+    })
+
+    ctx.restore()
+
+    const gripRect = { x: x - 5, y: gripY, width: 10, height: gripHeight }
+
+    if (dragging) {
+      // Nothing to announce until the drag has moved the divider — grabbing it
+      // just restates the current count. handleMouseMove deliberately does not
+      // clear tooltips mid-drag (that would blink the label on every move), so
+      // hiding it here is this pass's job.
+      if (!dragging.hasMoved) {
+        hideTooltip()
+        return
+      }
+
+      // Anchored to the previewed boundary rather than the pointer, which sits
+      // between snap points — a hover test against the grip would miss it.
+      showTooltip({
+        mousePosition,
+        text: t('tooltip.freezeColumnsCount', { count: dragging.previewCount }, dragging.previewCount),
+        rect: gripRect,
+        placement: 'right',
+      })
+
+      return
+    }
+
+    tryShowTooltip({
+      mousePosition,
+      text: t('tooltip.dragToAdjustFrozenFields'),
+      rect: gripRect,
+      placement: 'right',
+    })
+  }
+
   function renderAggregations(ctx: CanvasRenderingContext2D) {
     // Snapshot reactive values once at the top of the pass so every offset within
     // this footer pass is computed against the same values — guards against any
@@ -2440,7 +2799,7 @@ export function useCanvasRender({
 
     // Top border
     ctx.beginPath()
-    ctx.strokeStyle = getColor(themeV4Colors.gray['200'])
+    ctx.strokeStyle = _rowColors.borderMedium
     ctx.moveTo(0, _height - AGGREGATION_HEIGHT - 0.5)
     ctx.lineTo(_width, _height - AGGREGATION_HEIGHT - 0.5)
     ctx.stroke()
@@ -2478,18 +2837,14 @@ export function useCanvasRender({
           },
           mousePosition,
         ) && isViewOperationsAllowed.value
-      ctx.fillStyle = isHovered ? getColor(themeV4Colors.gray['100']) : getColor(themeV4Colors.gray['50'])
       if (column.aggregationSuppressed) {
         // Selection-mode footer: column is either out-of-selection or has no
-        // aggregator configured. Render the divider but skip value + hover.
-        ctx.beginPath()
-        ctx.strokeStyle = getColor(themeV4Colors.gray['100'])
-        ctx.moveTo(xOffset - _scrollLeft, _height - AGGREGATION_HEIGHT)
-        ctx.lineTo(xOffset - _scrollLeft, _height)
-        ctx.stroke()
+        // aggregator configured. Skip value + hover.
         xOffset += width
         return
       }
+
+      ctx.fillStyle = isHovered ? getColor(themeV4Colors.gray['100']) : getColor(themeV4Colors.gray['50'])
       if (column.agg_fn && ![AllAggregations.None].includes(column.agg_fn as any)) {
         ctx.save()
         ctx.beginPath()
@@ -2569,12 +2924,6 @@ export function useCanvasRender({
           })
         }
       }
-
-      ctx.beginPath()
-      ctx.strokeStyle = getColor(themeV4Colors.gray['100'])
-      ctx.moveTo(xOffset - _scrollLeft, _height - AGGREGATION_HEIGHT)
-      ctx.lineTo(xOffset - _scrollLeft, _height)
-      ctx.stroke()
 
       xOffset += width
     })
@@ -2775,12 +3124,6 @@ export function useCanvasRender({
           })
         }
 
-        ctx.strokeStyle = getColor(themeV4Colors.gray['200'])
-        ctx.beginPath()
-        ctx.moveTo(xOffset, _height - AGGREGATION_HEIGHT)
-        ctx.lineTo(xOffset, _height)
-        ctx.stroke()
-
         xOffset += mergedWidth
 
         fixedCols.value.slice(2).forEach((column) => {
@@ -2799,7 +3142,7 @@ export function useCanvasRender({
           ctx.fillStyle = getColor(themeV4Colors.gray['50'])
           ctx.fillRect(xOffset, _height - AGGREGATION_HEIGHT, width, AGGREGATION_HEIGHT)
 
-          const aggregationValue = firstFixedCol.aggregation?.toString()
+          const aggregationValue = column.aggregation?.toString()
 
           if (isValidValue(aggregationValue)) {
             ctx.save()
@@ -2850,20 +3193,8 @@ export function useCanvasRender({
             ctx.restore()
           }
 
-          ctx.strokeStyle = getColor(themeV4Colors.gray['200'])
-          ctx.beginPath()
-          ctx.moveTo(xOffset, _height - AGGREGATION_HEIGHT)
-          ctx.lineTo(xOffset, _height)
-          ctx.stroke()
-
           xOffset += width
         })
-
-        ctx.strokeStyle = getColor(themeV4Colors.gray['100'])
-        ctx.beginPath()
-        ctx.moveTo(xOffset, _height - AGGREGATION_HEIGHT)
-        ctx.lineTo(xOffset, _height)
-        ctx.stroke()
 
         ctx.shadowColor = 'transparent'
         ctx.shadowBlur = 0
@@ -3040,6 +3371,7 @@ export function useCanvasRender({
         rowIdx: i,
         yOffset,
         group,
+        clipRect: { x: indent, y: yOffset, width: adjustedWidth, height: rowHeight.value },
       })
       ctx.restore()
       elementMap.addElement({
@@ -3058,7 +3390,7 @@ export function useCanvasRender({
       renderRedBorders = [...renderRedBorders, ...renderedProp.renderRedBorders]
 
       // Bottom border for each row
-      ctx.strokeStyle = getColor(themeV4Colors.gray['200'])
+      ctx.strokeStyle = _rowColors.borderMedium
       ctx.beginPath()
       ctx.moveTo(indent, yOffset + rowHeight.value)
       ctx.lineTo(adjustedWidth + indent, yOffset + rowHeight.value)
@@ -3300,12 +3632,13 @@ export function useCanvasRender({
     const missingChunks = []
 
     const _headerRowHeight = headerRowHeight.value
-    const rowNumberCol = fixedCols.value.find((col) => col.id === 'row_number')
-    const firstFixedCol = fixedCols.value.find((col) => col.id !== 'row_number')
     const xOffset = (level + 1) * 13
     const isMmTable = !!meta.value?.mm
 
-    const mergedWidth = parseCellWidth(rowNumberCol?.width) + parseCellWidth(firstFixedCol?.width) - xOffset
+    // Group title band spans the whole frozen region (per-column aggregations
+    // are only rendered for scrollable columns). -1 strips fixedColsWidth's
+    // divider-pixel seed.
+    const mergedWidth = fixedColsWidth.value - 1 - xOffset
     const adjustedWidth = Math.max(
       fixedColsWidth.value - (level + 1) * 13,
       totalWidth.value - scrollLeft.value - 256 < width.value
@@ -4032,6 +4365,8 @@ export function useCanvasRender({
       let activeState
 
       elementMap.clear()
+      remoteFocusBoxes.length = 0
+      remoteRecordMarks.length = 0
       let postRenderCbk
 
       const _headerRowHeight = headerRowHeight.value
@@ -4081,11 +4416,25 @@ export function useCanvasRender({
 
       renderAggregations(ctx)
 
+      renderFreezeBoundary(ctx)
+
+      renderFreezeDivider(ctx)
+
       // render the active cell state and clip the header and aggregation footer areas
       ctx.beginPath()
       ctx.rect(0, _headerRowHeight, totalWidth.value, _height - _headerRowHeight - AGGREGATION_HEIGHT)
       ctx.clip()
+
+      // Presence overlay BEFORE the active-cell UI: adjacent cells share their border
+      // pixels, so whichever draws last owns the shared line — and that must be the
+      // viewer's own border and fill handle. Grouped views re-draw them via
+      // postRenderCbk; flat views via the explicit calls (renderActiveState no-ops on
+      // an undefined activeState, which is the grouped case).
+      drawRemoteFocusBoxes(ctx)
+      drawRemoteRecordMarks(ctx)
       postRenderCbk?.()
+      renderActiveState(ctx, activeState)
+      renderFillHandle(ctx)
     } finally {
       ctx.restore()
     }

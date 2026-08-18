@@ -278,6 +278,21 @@ export interface InterfaceFieldElementConfig {
   click_into_details?: boolean;
   /** Record-detail page (layout = RECORD_DETAIL) of the LINKED table. */
   fk_detail_page_id?: string | null;
+  /**
+   * Links/LTAR detail layouts: consumers may link/unlink records — gates the
+   * linked-records block's per-record unlink and its "+ Add record" picker.
+   * Absent = DISABLED (the block is a read-only display).
+   */
+  allow_link_unlink?: boolean;
+  /**
+   * Link-picker candidate scope — 'all' (default) offers every related
+   * record; 'specific' constrains candidates to `filters` over the LINKED
+   * table (the record-layout twin of the grid's "Limit record selection").
+   */
+  link_record_selection?: {
+    mode: 'all' | 'specific';
+    filters?: InterfaceFilterGroup | null;
+  };
   appearance?: {
     size?: 'default' | 'lg' | 'xl';
     /**
@@ -298,10 +313,19 @@ export interface InterfaceFieldElementConfig {
      */
     viz?: InterfaceVisualizationConfig;
     /**
+     * Links/LTAR `style: 'cards'` — related-table column ids rendered on each
+     * card beside the title, in display order (the "Field visibility and
+     * order" curation). Absent = the default heuristic (first few plain
+     * columns after the display value).
+     */
+    card_field_ids?: string[];
+    /**
      * Attachment hero/carousel only — images shown per view (1-4). 1 = hero,
      * >1 = carousel; the builder keeps `style` and this in sync.
      */
     quantity?: number;
+    /** Stepper style only — indicator format; absent = 'radio'. */
+    format?: 'radio' | 'number';
     /** Horizontal cap within the field's layout row — absent = full. */
     width?: 'third' | 'half' | 'full';
   };

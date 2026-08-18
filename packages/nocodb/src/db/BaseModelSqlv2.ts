@@ -113,6 +113,7 @@ import {
   dataWrapper,
   deletedColValue,
   displayValueMapKey,
+  extractLinkFieldsByTitle,
   extractSortsObject,
   formatDataForAudit,
   getBaseModelSqlFromModelId,
@@ -221,6 +222,21 @@ class DataLoaderWithArgs<K, V> extends DataLoader<K, V> {
 }
 
 /**
+ * Fresh Filter instances for a memoized condition tree — conditionV2 normalizes
+ * `comparison_op` / `value` in place, so handing out the cached objects would let
+ * one query's normalization reach the next.
+ */
+function cloneFilters(filters: Filter[]): Filter[] {
+  return filters.map(
+    (filter) =>
+      new Filter({
+        ...filter,
+        ...(filter.children ? { children: cloneFilters(filter.children) } : {}),
+      }),
+  );
+}
+
+/**
  * Base class for models
  *
  * @class
@@ -246,6 +262,7 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   protected _queryQueue: PQueue;
   protected _columns = {};
   protected _softDeleteFilter: Promise<Knex.QueryCallback | null> | undefined;
+  protected _rlsConditions: Promise<Filter[]> | undefined;
   protected source: Source;
   public model: Model;
   public context: NcContext;
@@ -3492,6 +3509,8 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       mergeColumns,
       throwOnDuplicate = false,
       typecast = false,
+      apiVersion,
+      onUpsertSplit,
     }: {
       chunkSize?: number;
       cookie?: any;
@@ -3501,6 +3520,14 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       mergeColumns?: Column[];
       throwOnDuplicate?: boolean;
       typecast?: boolean;
+      /** V3 honours inline link fields; earlier versions ignore them. */
+      apiVersion?: NcApiVersion;
+      /**
+       * Reports which pks were matched-and-updated. The return value merges
+       * updates and inserts, so callers that need per-record status (v3
+       * `status: inserted | updated`) can't derive it otherwise.
+       */
+      onUpsertSplit?: (split: { updatedPks: string[] }) => void;
     } = {},
   ) {
     let trx;
@@ -3539,6 +3566,15 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
               );
             }),
           );
+
+      // Link columns are virtual, so `mapAliasToColumn` strips them from the
+      // prepared rows — the values survive only on the originals. The split
+      // below shuffles prepared rows into toInsert/toUpdate, so key the
+      // originals by prepared-object identity to find them again afterwards.
+      const originalByPrepared = new Map<any, any>();
+      preparedDatas.forEach((prepared, i) =>
+        originalByPrepared.set(prepared, datas[i]),
+      );
 
       const toInsert = [];
       const toUpdate = [];
@@ -3689,7 +3725,53 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
         }
       }
 
+      // V3 accepts inline link fields on upsert. Inserted rows reuse the same
+      // preparator `bulkInsert` uses; it mutates `insertObj` with the FK for
+      // BELONGS_TO / MANY_TO_ONE, so it has to run before the INSERT is built.
+      const nestedCols =
+        !raw && apiVersion === NcApiVersion.V3
+          ? columns.filter((col) => isLinksOrLTAR(col))
+          : [];
+
+      const linkPreInsertOps: ((
+        trx?: Knex | Knex.Transaction,
+      ) => Promise<string>)[] = [];
+      const linkPostInsertOpsMap: Record<
+        number,
+        ((rowId: any, trx?: Knex | Knex.Transaction) => Promise<string>)[]
+      > = {};
+
+      if (nestedCols.length) {
+        for (let i = 0; i < toInsert.length; i++) {
+          const original = originalByPrepared.get(toInsert[i]);
+          if (!original) continue;
+
+          const operations = await this.prepareNestedLinkQb({
+            nestedCols,
+            // The preparator matches link fields by title only; re-key
+            // id/column_name payloads so an inserted row honours the same keys
+            // a matched row does.
+            data: {
+              ...original,
+              ...extractLinkFieldsByTitle(original, nestedCols),
+            },
+            insertObj: toInsert[i],
+            req: cookie,
+          });
+
+          linkPostInsertOpsMap[i] = operations.postInsertOps;
+          linkPreInsertOps.push(...operations.preInsertOps);
+        }
+      }
+
       trx = await this.dbDriver.transaction();
+
+      if (linkPreInsertOps.length) {
+        await this.runOps(
+          linkPreInsertOps.map((f) => f(trx)),
+          trx,
+        );
+      }
 
       const updatedPks = [];
 
@@ -3708,6 +3790,53 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
             : data;
           await trx(this.tnPath).update(dataToUpdate).where(wherePk);
         }
+      }
+
+      // Matched rows get replace semantics, the same as PATCH: the sent link
+      // set becomes the row's link set.
+      const linkUpdateDatas = [];
+
+      if (nestedCols.length && toUpdate.length) {
+        for (const data of toUpdate) {
+          const original = originalByPrepared.get(data);
+          if (!original) continue;
+
+          const linkFields = extractLinkFieldsByTitle(original, nestedCols);
+
+          // `null` means "unlink all". The shared updater would turn it into
+          // `[null]` and then fail resolving that id, so send `[]` instead.
+          for (const title of Object.keys(linkFields)) {
+            linkFields[title] ??= [];
+          }
+
+          if (!Object.keys(linkFields).length) continue;
+
+          linkUpdateDatas.push({
+            ...this.model.primaryKeys.reduce((acc, pk) => {
+              acc[pk.title] = data[pk.column_name];
+              return acc;
+            }, {}),
+            ...linkFields,
+          });
+        }
+      }
+
+      // Everywhere but sqlite the link writes join `trx`, so a rejected link id
+      // rolls the field writes back with it. sqlite's pool is a single
+      // connection, and in CE a meta source shares it with `Noco.ncMeta`, so
+      // there the link writer's own queries would wait on the connection `trx`
+      // is holding — a deadlock that only ends at the 60s acquire timeout.
+      // Those links are written after the commit instead, giving up atomicity.
+      // TODO: drop the split once the sqlite pool can hand out a second
+      // connection.
+      const deferLinkUpdates = this.isSqlite;
+
+      if (linkUpdateDatas.length && !deferLinkUpdates) {
+        await this.updateLTARCols({
+          datas: linkUpdateDatas,
+          cookie,
+          trx,
+        });
       }
 
       if (toInsert.length > 0) {
@@ -3822,12 +3951,38 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
           }
         }
         insertedDatas.push(...responses);
+
+        // Inserted rows only get their pk here, so the link writes that need it
+        // run now — still inside `trx`, matching bulkInsert's ordering.
+        for (let i = 0; i < responses.length; i++) {
+          const ops = linkPostInsertOpsMap[i];
+          if (!ops?.length) continue;
+
+          const rowId = this.extractCompositePK({
+            rowId: responses[i][this.model.primaryKey?.title],
+            ai: aiPkCol,
+            ag: agPkCol,
+            insertObj: toInsert[i],
+          });
+
+          await this.runOps(
+            ops.map((f) => f(rowId, trx)),
+            trx,
+          );
+        }
       }
 
       await trx.commit();
       // Transaction is finalized; clear the reference so a post-commit
       // failure below can't trigger rollback() on an already-closed trx.
       trx = null;
+
+      if (linkUpdateDatas.length && deferLinkUpdates) {
+        await this.updateLTARCols({
+          datas: linkUpdateDatas,
+          cookie,
+        });
+      }
 
       const updatedRecords = await this.chunkList({
         pks: updatedPks,
@@ -3918,6 +4073,8 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       } else {
         await this.afterBulkUpdate(existingRecords, updatedDataList, cookie);
       }
+
+      onUpsertSplit?.({ updatedPks: updatedPks.map((pk) => String(pk)) });
 
       return [...updatedDataList, ...insertedDataList];
     } catch (e) {
@@ -4175,6 +4332,8 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       onInsertedPks?: (pks: (string | number)[]) => void;
       /** Consumed by the EE override to skip per-field edit-permission checks. */
       skipPermissionCheck?: boolean;
+      /** Trusted internal copy paths only — see `prepareNocoData`. */
+      skipAttachmentOwnershipCheck?: boolean;
     },
   ) {
     return await baseModelInsert(this).bulk(datas, params);
@@ -4425,10 +4584,19 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
     }
   }
 
-  async updateLTARCols({ datas, cookie }: { datas: any[]; cookie: NcRequest }) {
+  async updateLTARCols({
+    datas,
+    cookie,
+    trx,
+  }: {
+    datas: any[];
+    cookie: NcRequest;
+    trx?: Knex.Transaction;
+  }) {
     return LTARColsUpdater({ baseModel: this, logger }).updateLTARCols({
       datas,
       cookie,
+      trx,
     });
   }
 
@@ -6626,10 +6794,19 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
   /**
    * Extract distinct group column values for grouping operations
    * Handles options parameter, SingleSelect columns, and other column types
+   *
+   * The distinct-value query is scoped to the same rows the caller's row query
+   * can see (RLS + view filter + any link conditions). Without that, a value
+   * occurring only in filtered-out rows leaks as a group key — the row list
+   * comes back empty, but the key itself is the secret.
    */
   public async extractGroupingValues(
     column: Column,
     options?: (string | number | null | boolean)[],
+    scope?: {
+      ignoreViewFilterAndSort?: boolean;
+      extraConditions?: Filter[];
+    },
   ): Promise<Set<any>> {
     // TODO: Add virtual column support
     if (isVirtualCol(column)) {
@@ -6656,6 +6833,42 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       const softDeleteFilter = await this.getSoftDeleteFilter();
       if (softDeleteFilter) {
         qb.where(softDeleteFilter);
+      }
+
+      const rlsConditions = await this.getRlsConditions();
+      const scopeConditions: Filter[] = [];
+
+      if (rlsConditions.length) {
+        scopeConditions.push(
+          new Filter({ children: rlsConditions, is_group: true }),
+        );
+      }
+
+      if (!scope?.ignoreViewFilterAndSort && this.viewId) {
+        scopeConditions.push(
+          new Filter({
+            children:
+              (await Filter.rootFilterList(this.context, {
+                viewId: this.viewId,
+              })) || [],
+            is_group: true,
+            logical_op: 'and',
+          }),
+        );
+      }
+
+      if (scope?.extraConditions?.length) {
+        scopeConditions.push(
+          new Filter({
+            children: scope.extraConditions,
+            is_group: true,
+            logical_op: 'and',
+          }),
+        );
+      }
+
+      if (scopeConditions.length) {
+        await conditionV2(this, scopeConditions, qb);
       }
 
       groupingValues = new Set(
@@ -6696,6 +6909,13 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       const groupingValues = await this.extractGroupingValues(
         column,
         args.options,
+        {
+          ignoreViewFilterAndSort: args.ignoreViewFilterAndSort,
+          // The interface/kanban path builds its baseModel without a viewId and
+          // carries its confinement here instead, so `this.viewId` alone would
+          // leave the values unscoped.
+          extraConditions: args.filterArr,
+        },
       );
 
       const qb = this.dbDriver(this.tnPath);
@@ -8766,6 +8986,10 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
       // Consumed by the EE override to skip per-field edit-permission checks
       // on trusted internal data-load paths (duplication / snapshot / import).
       skipPermissionCheck?: boolean;
+      // Skip the attachment ownership check below. Set only by trusted internal
+      // copy paths, which re-insert another base's rows verbatim and so can
+      // never satisfy it. Not settable over HTTP.
+      skipAttachmentOwnershipCheck?: boolean;
     },
   ): Promise<void> {
     const runAfterForLoop = [];
@@ -9075,6 +9299,45 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
                 !sanitizedAttachment.id ||
                 regenerateIds.includes(sanitizedAttachment.id)
               ) {
+                // A client-supplied `path` — or a `url` that resolves to our
+                // own object storage rather than a genuinely external file — is
+                // a disk-resolvable reference. Accepting an arbitrary one lets a
+                // caller embed another base's attachment and later have it
+                // signed & served (cross-tenant disclosure). `insert` below
+                // persists `file_url: url ?? path`, and read-time signing
+                // (`getSignedUrl`) reduces even an http(s) `url` to its pathname
+                // and, on external storage, signs THAT as a storage key — so a
+                // crafted `https://anything/nc/uploads/<victim>/secret.pdf`
+                // discloses another tenant's object. We therefore check any
+                // reference whose resolved storage key lives under `nc/uploads/`
+                // (using the same `getPathFromUrl` normalisation `getSignedUrl`
+                // applies, so URL-encoding can't slip past this), plus any
+                // non-http(s) `url` (an opaque local path). Only a reference the
+                // caller already owns — one they uploaded, or already stored in
+                // this base — is accepted.
+                const diskResolvableRefs = extra?.skipAttachmentOwnershipCheck
+                  ? []
+                  : [
+                      sanitizedAttachment.path,
+                      sanitizedAttachment.url,
+                    ].filter((ref) => attachmentRefResolvesToStorage(ref));
+
+                for (const ref of diskResolvableRefs) {
+                  const accessible =
+                    await FileReference.isFileUrlAccessibleForWrite(
+                      this.context,
+                      {
+                        fileUrl: ref,
+                        userId: cookie?.user?.id,
+                      },
+                    );
+                  if (!accessible) {
+                    NcError.get(this.context).unprocessableEntity(
+                      'Invalid attachment reference',
+                    );
+                  }
+                }
+
                 const source = await this.getSource();
                 sanitizedAttachment.id = await FileReference.insert(
                   this.context,
@@ -10030,10 +10293,25 @@ class BaseModelSqlv2 implements IBaseModelSqlV2 {
 
   /**
    * Returns RLS (Row-Level Security) filter conditions for the current user.
-   * CE version: no-op, returns empty array (no RLS).
-   * EE version: resolves applicable policies and returns filter conditions.
+   *
+   * Memoized per instance — `Model.getBaseModelSQL` constructs a fresh
+   * BaseModelSqlv2 on every call and `this.context` is never reassigned after
+   * construction, so one instance is always one user. A single request can hit
+   * this a dozen times (list + count + each grouped-list query), and the EE
+   * resolution is a team expansion plus per-policy filter loads.
+   *
+   * Callers get their own Filter instances because conditionV2 mutates the
+   * filters it is handed (`comparison_op` / `value` normalization).
    */
   public async getRlsConditions(): Promise<Filter[]> {
+    this._rlsConditions ??= this.resolveRlsConditions();
+    return cloneFilters(await this._rlsConditions);
+  }
+
+  /**
+   * CE: no-op, no RLS. EE overrides with policy resolution.
+   */
+  protected async resolveRlsConditions(): Promise<Filter[]> {
     return [];
   }
 

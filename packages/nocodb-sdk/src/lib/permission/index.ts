@@ -9,6 +9,8 @@ export enum PermissionKey {
   RECORD_FIELD_EDIT = 'RECORD_FIELD_EDIT',
   DOCUMENT_VISIBILITY = 'DOCUMENT_VISIBILITY',
   DOCUMENT_EDIT = 'DOCUMENT_EDIT',
+  DASHBOARD_VISIBILITY = 'DASHBOARD_VISIBILITY',
+  DASHBOARD_EDIT = 'DASHBOARD_EDIT',
 }
 
 export enum PermissionGrantedType {
@@ -21,6 +23,7 @@ export enum PermissionEntity {
   TABLE = 'table',
   FIELD = 'field',
   DOCUMENT = 'document',
+  DASHBOARD = 'dashboard',
 }
 
 export enum PermissionRole {
@@ -156,6 +159,20 @@ export const PermissionMeta = {
     userSelectorDescription:
       'Only members selected here will be able to edit this page.',
   },
+  [PermissionKey.DASHBOARD_VISIBILITY]: {
+    minimumRole: PermissionRole.VIEWER,
+    label: 'Who can view this dashboard',
+    description: 'can view dashboard',
+    userSelectorDescription:
+      'Only members selected here will be able to view this dashboard.',
+  },
+  [PermissionKey.DASHBOARD_EDIT]: {
+    minimumRole: PermissionRole.EDITOR,
+    label: 'Who can edit this dashboard',
+    description: 'can edit dashboard',
+    userSelectorDescription:
+      'Only members selected here will be able to edit this dashboard.',
+  },
 };
 
 // Restrictiveness order for document permission inheritance (lower = more permissive).
@@ -200,6 +217,11 @@ export const DOCUMENT_PERMISSION_KEYS = [
   PermissionKey.DOCUMENT_EDIT,
 ];
 
+export const DASHBOARD_PERMISSION_KEYS = [
+  PermissionKey.DASHBOARD_VISIBILITY,
+  PermissionKey.DASHBOARD_EDIT,
+];
+
 // Utility functions for permission management
 export const getPermissionOption = (
   value: string
@@ -236,4 +258,93 @@ export const getPermissionOptionValue = (
   }
   // Default for table visibility is everyone, for others it's editors and up
   return PermissionOptionValue.EDITORS_AND_UP;
+};
+
+/** A permission subject — a user or a team, optionally with a team hierarchy scope. */
+export interface PermissionSubject {
+  type: 'user' | 'team' | string;
+  id: string;
+  hierarchy_scope?: SubjectHierarchyScope;
+}
+
+/** Minimal shape of a resolved permission the evaluator needs. */
+export interface EvaluablePermission {
+  granted_type?: PermissionGrantedType | string;
+  granted_role?: PermissionRole | string;
+  subjects?: PermissionSubject[];
+}
+
+/**
+ * Whether a user's direct-team memberships satisfy a team subject, using the
+ * team `path` (ancestor chain) — a PURE, DB-free rule for callers that already
+ * hold the user's `{ team_id, path }[]` (e.g. the frontend). Backends that must
+ * also apply org/workspace visibility gating resolve team matching their own
+ * way and feed the boolean into `evaluatePermission` instead.
+ *
+ * - `self_only`      → direct member of exactly the subject team
+ * - `self_and_descendants` (default) → direct member of the subject team OR of
+ *   any descendant (a team whose path contains the subject id as a segment)
+ */
+export const matchesTeamSubjectByPaths = (
+  subject: Pick<PermissionSubject, 'id' | 'hierarchy_scope'>,
+  directTeams: { team_id: string; path: string }[]
+): boolean => {
+  if (subject.hierarchy_scope === 'self_only') {
+    return directTeams.some((t) => t.team_id === subject.id);
+  }
+  return directTeams.some((t) => {
+    if (t.team_id === subject.id) return true;
+    return t.path.split('/').filter(Boolean).includes(subject.id);
+  });
+};
+
+/**
+ * The single, shared permission decision — the same rule the frontend
+ * (`usePermissions`) and the backend (`Permission.isAllowed`) must agree on, so
+ * they can never drift.
+ *
+ * Team-subject matching is intentionally NOT done here: it differs by tier
+ * (the frontend matches on cached team paths; the backend does DB-backed
+ * descendant expansion plus org/workspace visibility gating). Each caller
+ * resolves its own team match and passes the boolean as `matchedTeamSubject`.
+ *
+ * @param permission the resolved permission (null/undefined ⇒ allowed)
+ * @param principal.userId caller's user id (for `user` subject matching)
+ * @param principal.permissionRole caller's role ALREADY mapped through
+ *   `PermissionRoleMap` (a `PermissionRole` key) — used for ROLE grants
+ * @param principal.matchedTeamSubject caller-resolved team-subject match
+ */
+export const evaluatePermission = (
+  permission: EvaluablePermission | null | undefined,
+  principal: {
+    userId?: string;
+    permissionRole?: PermissionRole | string;
+    matchedTeamSubject?: boolean;
+  }
+): boolean => {
+  if (!permission) return true;
+
+  if (permission.granted_type === PermissionGrantedType.USER) {
+    const userMatch = permission.subjects?.some(
+      (s) => s.type === 'user' && s.id === principal.userId
+    );
+    if (userMatch) return true;
+    return !!principal.matchedTeamSubject;
+  }
+
+  if (permission.granted_type === PermissionGrantedType.ROLE) {
+    const rolePower =
+      PermissionRolePower[
+        principal.permissionRole as keyof typeof PermissionRolePower
+      ];
+    if (rolePower === undefined) return false;
+    return (
+      rolePower >=
+      PermissionRolePower[
+        permission.granted_role as keyof typeof PermissionRolePower
+      ]
+    );
+  }
+
+  return false;
 };

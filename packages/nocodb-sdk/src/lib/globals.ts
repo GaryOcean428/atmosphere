@@ -175,6 +175,19 @@ export enum NcDataErrorCodes {
   NC_ERR_MM_MODEL_NOT_FOUND = 'NC_ERR_MM_MODEL_NOT_FOUND',
 }
 
+/**
+ * Coarse buckets for SSO sign-in failures, surfaced to the browser as
+ * `/sso?error=<code>`. Deliberately coarse — the precise reason stays in the
+ * server log, since the redirect endpoint is unauthenticated.
+ */
+export enum SsoFailureCode {
+  SSO_STATE_INVALID = 'SSO_STATE_INVALID',
+  SSO_TOKEN_INVALID = 'SSO_TOKEN_INVALID',
+  SSO_PROVIDER_ERROR = 'SSO_PROVIDER_ERROR',
+  SSO_ACCOUNT_NOT_ALLOWED = 'SSO_ACCOUNT_NOT_ALLOWED',
+  SSO_FAILED = 'SSO_FAILED',
+}
+
 export const NC_ERROR_SENTINEL = '_____NC_ERROR_____';
 
 export enum NcErrorType {
@@ -246,6 +259,7 @@ export enum NcErrorType {
   ERR_CHAT_SESSION_NOT_FOUND = 'ERR_CHAT_SESSION_NOT_FOUND',
   ERR_CHAT_MESSAGE_NOT_FOUND = 'ERR_CHAT_MESSAGE_NOT_FOUND',
   ERR_VIEW_SECTION_NOT_FOUND = 'ERR_VIEW_SECTION_NOT_FOUND',
+  ERR_BASE_SECTION_NOT_FOUND = 'ERR_BASE_SECTION_NOT_FOUND',
   ERR_SHARED_DASHBOARD_PASSWORD_INVALID = 'ERR_SHARED_DASHBOARD_PASSWORD_INVALID',
   ERR_SHARED_INTERFACE_PAGE_PASSWORD_INVALID = 'ERR_SHARED_INTERFACE_PAGE_PASSWORD_INVALID',
   ERR_DUPLICATE_IN_ALIAS = 'ERR_DUPLICATE_IN_ALIAS',

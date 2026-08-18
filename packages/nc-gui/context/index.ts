@@ -148,6 +148,14 @@ export const ActiveSourceInj: InjectionKey<
   >
 > = Symbol('active-source-injection')
 
+/**
+ * Extra left indent (px) carried by a sidebar row nested inside a base-level
+ * section, provided by the table node so its view rows shift with it. The
+ * indent lives on each row's own padding — indenting a container instead would
+ * inset the rows' hover background away from the sidebar edge.
+ */
+export const SidebarSectionIndentInj: InjectionKey<Ref<number> | ComputedRef<number>> = Symbol('sidebar-section-indent-injection')
+
 export const IsToolbarIconMode: InjectionKey<ComputedRef<boolean>> = Symbol('toolbar-icon-mode-injection')
 export const FieldNameAlias: InjectionKey<ComputedRef<Record<string, string>> | Ref<Record<string, string>>> =
   Symbol('field-name-alias')
@@ -276,6 +284,18 @@ export interface LinkRecordExpandApi {
 export const LinkRecordExpandInj: InjectionKey<Ref<LinkRecordExpandApi | null>> = Symbol('link-record-expand')
 
 /**
+ * Element addressing for LTAR picker calls made from inside a record-form
+ * FIELD — an overlay record sheet fetches through its ORIGIN viz's adapter,
+ * so an unaddressed picker call resolves against that viz and inherits its
+ * per-column "Limit record selection". Addressed, the server reads THIS
+ * element's own "Link/unlink records" selection instead. Provided per-field
+ * by the interface record-form field row (EE); absent on viz inline cells,
+ * which genuinely are the viz's own surface.
+ */
+export const InterfaceFieldElementInj: InjectionKey<Ref<{ fieldElementId: string; fieldPageId?: string } | null> | undefined> =
+  Symbol('interface-field-element')
+
+/**
  * Record-sidebar adapter for the comment + revision-history panels of an
  * interface record overlay — the record-scoped sibling of `InterfacePageDataInj`.
  * Provided by the overlay (EE); when present, the base comment/revision
@@ -323,6 +343,26 @@ export const InterfacePublicPageInj: InjectionKey<Ref<InterfacePublicPageState |
 export const UiRolesOverrideInj: InjectionKey<Ref<Record<string, boolean> | null>> = Symbol('ui-roles-override')
 
 /**
+ * Companion to `UiRolesOverrideInj` for base table/field permission checks
+ * (`usePermissions.isAllowed`): the previewed PRINCIPAL, not just its role.
+ * User-subject grants need the previewed user's id — evaluating the builder's
+ * own id would show a field as editable merely because the BUILDER is in the
+ * grant's subject list. `userId` is unset for bare-role targets (a generic
+ * principal of that role). Null when not previewing.
+ */
+export const PermissionPrincipalOverrideInj: InjectionKey<Ref<{ userId?: string; role?: string } | null>> =
+  Symbol('permission-principal-override')
+
+/**
+ * Explanation for WHY the surface under it is read-only, surfaced as a toast
+ * when the user attempts an edit that the read-only state silently swallows
+ * (e.g. the interface editor's read-only "Preview as" — selection still works,
+ * so the blue cell border reads as editable). Null when the read-only state
+ * needs no callout.
+ */
+export const ReadonlyEditNoticeInj: InjectionKey<Ref<string | null>> = Symbol('readonly-edit-notice')
+
+/**
  * Interface EDITOR only: a callback that selects the mounted visualization
  * element — moving the properties panel to its `Page › <Viz>` pane, exactly like
  * clicking a button element opens its pane. Provided by the interface page
@@ -332,6 +372,16 @@ export const UiRolesOverrideInj: InjectionKey<Ref<Record<string, boolean> | null
  * record.
  */
 export const InterfaceVizEditSelectInj: InjectionKey<Ref<(() => void) | null>> = Symbol('interface-viz-edit-select')
+
+/**
+ * Interface EDITOR only: called when a double-click (or Enter) tries to edit a
+ * cell while the element's "Edit records inline" option is off — the wrapper
+ * surfaces guidance toward that option instead of letting the attempt die
+ * silently. Provided by the interface page wrapper (EE) while editing; null in
+ * the published view and outside interface pages, so every other readonly
+ * context (locked views, shared views) stays silent.
+ */
+export const InterfaceInlineEditHintInj: InjectionKey<Ref<(() => void) | null>> = Symbol('interface-inline-edit-hint')
 
 /**
  * Interface pages with a "new record" FORM configured (an OPEN_RECORD_FORM

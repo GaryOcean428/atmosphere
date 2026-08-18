@@ -405,6 +405,13 @@ const {
   rowColouringBorderWidth,
   isRecordSelected,
   isViewOperationsAllowed,
+  followedFocus,
+  findFocusRowIndex,
+
+  // Freeze divider
+  isInFreezeDividerZone,
+  handleFreezeDividerMouseDown,
+  isFreezeDividerDragging,
 } = useCanvasTable({
   rowHeightEnum,
   cachedRows,
@@ -418,6 +425,7 @@ const {
   width,
   height,
   scrollToCell,
+  scrollToLeftEdge,
   scrollTop,
   aggregations,
   vSelectedAllRecords,
@@ -568,6 +576,11 @@ function setCursor(cursor: CursorType, customCondition?: (prevValue: CursorType)
    */
   if (isRowReorderActive.value) {
     cursor = 'grabbing'
+  }
+
+  // Freeze divider hover/drag owns the cursor over every other hover state
+  if (isFreezeDividerDragging.value || isInFreezeDividerZone(mousePosition.x, mousePosition.y)) {
+    cursor = 'col-resize'
   }
 
   if (activeCursor.value !== cursor) {
@@ -1356,6 +1369,18 @@ async function handleMouseDown(e: MouseEvent) {
 
   const clickType = getMouseClickType(e)
   if (!clickType) return
+
+  // Freeze divider drag (or too-narrow reset modal) — consumes the event
+  // before any cell/selection handling; its own document listeners drive the drag.
+  if (clickType === MouseClickType.SINGLE_CLICK && handleFreezeDividerMouseDown(e, rect)) {
+    if (mouseUpListener) {
+      document.removeEventListener('mouseup', mouseUpListener)
+      mouseUpListener = null
+    }
+    triggerRefreshCanvas()
+    return
+  }
+
   // Handle all Column Header Operations
   if (y <= headerRowHeight.value) {
     // If x less than 80px, use is hovering over the row meta column
@@ -1473,6 +1498,19 @@ async function handleMouseDown(e: MouseEvent) {
 const PADDING_BOTTOM = 96
 const FIXED_COLUMN_PADDING = 128
 
+/**
+ * Freeze-divider drag entry point. Snap targets are absolute widths (where a
+ * boundary lands once those fields are frozen), while unfrozen fields paint at
+ * `absolute - scrollLeft` — so the preview only tells the truth at the left
+ * edge. Jump there instantly, before the drag starts; animating would slide the
+ * snap targets out from under a pointer that is already down.
+ */
+function scrollToLeftEdge(): void {
+  if (!scrollLeft.value) return
+
+  scroller.value?.scrollTo({ left: 0 })
+}
+
 function scrollToCell(row?: number, column?: number, path?: Array<number>, horizontalScroll: boolean = true): void {
   const currentRow = row ?? activeCell.value.row ?? -1
   const currentColumn = column ?? activeCell.value.column ?? -1
@@ -1542,6 +1580,21 @@ function scrollToCell(row?: number, column?: number, path?: Array<number>, horiz
     })
   }
 }
+
+// Follow mode: keep the followed collaborator's cursor scrolled into view as it
+// moves. Value-compared, not identity-compared — every remoteFocuses rebuild
+// (any peer's frame, keepalives) produces a fresh object for the same cell, and
+// only an actual cell change may move the viewport. Skipped while this viewer is
+// editing: yanking the viewport out from under an open editor loses their input.
+watch(followedFocus, (focus, prev) => {
+  if (!focus) return
+  if (prev && prev.rowPk === focus.rowPk && prev.fieldId === focus.fieldId) return
+  if (editEnabled.value) return
+  const rowIndex = findFocusRowIndex(focus.rowPk)
+  if (rowIndex === null) return
+  const colIndex = columns.value.findIndex((c) => c.columnObj?.id === focus.fieldId)
+  scrollToCell(rowIndex, colIndex === -1 ? 0 : colIndex, [], colIndex !== -1)
+})
 
 function clearColAutoScrollTimer() {
   if (colAutoScrollTimerId) {
@@ -2299,8 +2352,23 @@ const handleMouseMove = (e: MouseEvent) => {
   mousePosition.y = e.clientY - rect.top
 
   let cursor = colResizeHoveredColIds.value.size ? 'col-resize' : 'auto'
-  hideTooltip()
+  // Hover tooltips are re-published by the render pass, so clearing per move is
+  // what makes them appear only once the pointer settles. The freeze-drag label
+  // has to stay put while the pointer moves — renderFreezeDivider owns showing
+  // and hiding that one.
+  if (!isFreezeDividerDragging.value) hideTooltip()
   scheduleHideDescriptionPopover()
+
+  // Freeze divider: repaint per move while the grip is visible (it tracks mouse y);
+  // while dragging, skip all other hover handling entirely.
+  if (isFreezeDividerDragging.value || isInFreezeDividerZone(mousePosition.x, mousePosition.y)) {
+    triggerRefreshCanvas()
+    if (isFreezeDividerDragging.value) {
+      setCursor('col-resize')
+      return
+    }
+  }
+
   const fixedCols = columns.value.filter((col) => col.fixed)
 
   if (mousePosition.y < headerRowHeight.value) {
@@ -2335,10 +2403,8 @@ const handleMouseMove = (e: MouseEvent) => {
     }
 
     // Now we check if the mouse is over the x positions of the fixed columns
-    const isMouseOverFixedRegions = fixedCols.some((col) => {
-      const width = parseCellWidth(col.width)
-      return mousePosition.x >= 0 && mousePosition.x <= width
-    })
+    const fixedWidth = fixedCols.reduce((sum, col) => sum + parseCellWidth(col.width), 0)
+    const isMouseOverFixedRegions = mousePosition.x >= 0 && mousePosition.x <= fixedWidth
 
     // We do not want to process the tooltip & pointer for the non-fixed columns if the mouse is over the fixed columns
     // If the mouse is not over the fixed columns, we show the tooltip for the non-fixed columns
@@ -2347,8 +2413,6 @@ const handleMouseMove = (e: MouseEvent) => {
       for (let i = 0; i < colSlice.value.start; i++) {
         initialOffset += parseCellWidth(columns.value[i]!.width)
       }
-
-      const fixedWidth = fixedCols.reduce((sum, col) => sum + parseCellWidth(col.width), 0)
 
       if (mousePosition.x >= fixedWidth) {
         const tooltipRegions = getHeaderTooltipRegions(colSlice.value.start, colSlice.value.end, initialOffset, scrollLeft.value)
@@ -2377,7 +2441,12 @@ const handleMouseMove = (e: MouseEvent) => {
   } else if (isDragging.value || resizeableColumn.value) {
     const fixedWidth = fixedCols.reduce((sum, col) => sum + parseCellWidth(col.width), 0)
 
-    if (mousePosition.x >= width.value - 200) {
+    // A frozen-band drag never auto-scrolls: the whole band sits left of
+    // `fixedWidth` (up to 75% of the viewport), so the left-edge test below would
+    // fire for every pointer move — and targets can't cross the divider anyway.
+    const canAutoScroll = !isDragging.value || !columns.value.find((c) => c.id === dragStart.value?.id)?.fixed
+
+    if (canAutoScroll && mousePosition.x >= width.value - 200) {
       scroller.value?.scrollTo({
         left: scrollLeft.value + 10,
       })
@@ -2406,7 +2475,7 @@ const handleMouseMove = (e: MouseEvent) => {
           }
         }, 0)
       }
-    } else if (mousePosition.x <= fixedWidth) {
+    } else if (canAutoScroll && mousePosition.x <= fixedWidth) {
       scroller.value?.scrollTo({
         left: scrollLeft.value - 10,
       })

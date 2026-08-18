@@ -44,6 +44,16 @@ export interface InterfaceVizFieldConfig {
   click_into_details?: boolean;
   /** Record-detail page (layout = RECORD_DETAIL) of the LINKED table. */
   fk_detail_page_id?: string | null;
+  /**
+   * Links/LTAR columns only: "Limit record selection" — constrain the inline
+   * cell's link-picker candidates to `filters` over the LINKED table. Composes
+   * (AND) with the column's own link conditions; the record-layout twin is the
+   * field element's `link_record_selection`.
+   */
+  link_record_selection?: {
+    mode: 'all' | 'specific';
+    filters?: InterfaceFilterGroup | null;
+  };
   /** Grid footer / group-header summary aggregation for this column ('sum',
    *  'avg', … — the Aggregations families). Absent/'none' = no summary. */
   aggregation?: string;
@@ -114,6 +124,8 @@ export interface InterfaceGridVizConfig
   group_by?: InterfaceGridGroupByConfig[];
   /** Drop the null/uncategorized group when grouping (mirrors the grid view's `hide_empty_groups` meta). */
   hide_empty_groups?: boolean;
+  /** Frozen field count, 1-3 incl. the display value (mirrors the grid view's `frozen_column_count` meta). */
+  frozen_column_count?: number;
 }
 
 /**
@@ -196,6 +208,18 @@ export interface InterfaceListLevelConfig {
   click_into_details?: boolean;
   /** RECORD_DETAIL layout of THIS level's table — null/absent = default layout. */
   fk_detail_page_id?: string | null;
+  /**
+   * Nested records — leaf level (index 0) only. Renders the leaf's rows as a
+   * depth-first tree over a self-link. Mirrors the List view's level config;
+   * meaningless on parent levels.
+   */
+  enable_nested_records?: boolean;
+  /**
+   * Self-link column (leaf table → itself) driving the nested tree. Single-
+   * parent shapes only (HM/BT/OM/MO) — matches `resolveNestedConfig` in the
+   * backend's list-datas.service.
+   */
+  fk_self_link_column_id?: string | null;
 }
 
 export interface InterfaceListVizConfig
@@ -212,6 +236,11 @@ export interface InterfaceListVizConfig
   show_field_descriptions?: boolean;
   /** Sections start collapsed; expanding is the viewer's explicit action. */
   collapse_all_default?: boolean;
+  /**
+   * Keep parent sections with no matching children visible. Mirrors the List
+   * view meta flag of the same name — absent = show (`!== false` semantics).
+   */
+  show_empty_parents?: boolean;
 }
 
 export interface InterfaceDateRangeConfig {

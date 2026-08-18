@@ -110,6 +110,8 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
 
     const { isUIAllowed } = useRoles()
 
+    const { flushSmartTextDrafts } = useSmartTextDraftFlush()
+
     const { handleUpgradePlan, isPaymentEnabled } = useEeConfig()
 
     const { isAllowed } = usePermissions()
@@ -433,6 +435,20 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
           ...(ltarState || {}),
         })
 
+        // Persist any SmartText (LongText + smartMode) drafts that were staged while
+        // the record was still new — the editor's rowId-keyed backend op couldn't run
+        // until the row existed (#9954). Awaited here so it completes before the form
+        // closes/reloads. Drafts whose flush fails are kept buffered so the SmartText
+        // modal can restore and re-save them instead of the rich content being lost.
+        const smartTextDrafts = row.value.rowMeta?.smartTextDrafts
+        let unflushedSmartTextDrafts: Record<string, Record<string, any> | null> = {}
+        if (smartTextDrafts && Object.keys(smartTextDrafts).length) {
+          const newRowId = extractPkFromRow(data, meta.value.columns as ColumnType[])
+          unflushedSmartTextDrafts = newRowId
+            ? await flushSmartTextDrafts(meta.value, newRowId, smartTextDrafts, data)
+            : smartTextDrafts
+        }
+
         Object.assign(row.value, {
           row: data,
           rowMeta: {
@@ -441,6 +457,9 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
             // Links were persisted via the create payload — clear the buffer so the
             // record is no longer flagged as having unsaved relational changes (#14013).
             ltarState: {},
+            // SmartText drafts have been flushed to the backend — drop the buffer,
+            // keeping only drafts whose flush failed (recovered via the modal).
+            smartTextDrafts: unflushedSmartTextDrafts,
           },
           oldRow: { ...data },
         })
@@ -980,7 +999,10 @@ const [useProvideExpandedFormStore, useExpandedFormStore] = useInjectionState(
   'expanded-form-store',
 )
 
-export { useProvideExpandedFormStore }
+// The non-throw consumer is exported too: hosts that may mount OUTSIDE an
+// expanded form (e.g. the comment typing indicator inside the interface
+// record sidebar) probe for the store and degrade gracefully.
+export { useProvideExpandedFormStore, useExpandedFormStore }
 
 export function useExpandedFormStoreOrThrow() {
   const expandedFormStore = useExpandedFormStore()

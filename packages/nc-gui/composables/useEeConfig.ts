@@ -86,6 +86,7 @@ export const useEeConfig = createSharedComposable(() => {
   const blockInterfaceViewWidget = computed(() => true)
   const blockInterfaceIframeWidget = computed(() => true)
   const blockInterfaceUserFilters = computed(() => true)
+  const blockCopyViewSettingFromOther = computed(() => true)
   const blockInterfaceToolbarToggles = computed(() => true)
   const blockInterfaceDrafts = computed(() => true)
   const blockInterfacePreviewAs = computed(() => true)
@@ -335,6 +336,10 @@ export const useEeConfig = createSharedComposable(() => {
 
   const showUpgradeToUseViewSections = (..._args: any[]) => {}
 
+  const blockBaseSections = computed(() => true)
+
+  const showUpgradeToUseBaseSections = (..._args: any[]) => {}
+
   const blockBaseVariables = computed(() => true)
 
   const showUpgradeToUseBaseVariables = (..._args: any[]) => {}
@@ -517,6 +522,7 @@ export const useEeConfig = createSharedComposable(() => {
     blockAddNewInterface,
     isInterfacePageLimitReached,
     blockInterfaceMultiViz,
+    blockCopyViewSettingFromOther,
     blockInterfaceMetricColorConditions,
     blockInterfacePivotWidget,
     blockInterfaceViewWidget,
@@ -588,6 +594,8 @@ export const useEeConfig = createSharedComposable(() => {
     showUpgradeToUseFormScheduling,
     blockViewSections,
     showUpgradeToUseViewSections,
+    blockBaseSections,
+    showUpgradeToUseBaseSections,
     blockBaseVariables,
     showUpgradeToUseBaseVariables,
     blockListView,

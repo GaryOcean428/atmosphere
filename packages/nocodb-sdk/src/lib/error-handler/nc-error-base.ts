@@ -17,6 +17,7 @@ import {
 } from '../globals';
 import {
   HigherPlan,
+  PlanFeatureAddonMessages,
   PlanFeatureTypes,
   PlanFeatureUpgradeMessages,
 } from '../payment';
@@ -177,6 +178,16 @@ export class NcErrorBase {
   viewSectionNotFound(id: string, args?: NcErrorArgs): never {
     throw this.errorCodex.generateError(
       NcErrorType.ERR_VIEW_SECTION_NOT_FOUND,
+      {
+        params: id,
+        ...args,
+      }
+    );
+  }
+
+  baseSectionNotFound(id: string, args?: NcErrorArgs): never {
+    throw this.errorCodex.generateError(
+      NcErrorType.ERR_BASE_SECTION_NOT_FOUND,
       {
         params: id,
         ...args,
@@ -800,6 +811,21 @@ export class NcErrorBase {
     },
     args?: NcErrorArgs
   ) {
+    // Add-on-only: no plan tier grants it, so skip the upgrade prefix entirely.
+    // On-prem entitlement is signed into the license key, hence sales-assisted.
+    const addonMessage = PlanFeatureAddonMessages[props.feature];
+    if (addonMessage) {
+      throw this.errorCodex.generateError(
+        NcErrorType.ERR_FEATURE_NOT_SUPPORTED,
+        {
+          params: props.isOnPrem
+            ? `${addonMessage} Contact sales to add it to your license.`
+            : `${addonMessage} Add it from your workspace billing settings.`,
+          ...args,
+        }
+      );
+    }
+
     if (props.isOnPrem) {
       throw this.errorCodex.generateError(
         NcErrorType.ERR_FEATURE_NOT_SUPPORTED,

@@ -8,6 +8,8 @@ export interface DashboardType {
   fk_workspace_id?: string;
   meta?: any;
   order?: number;
+  /** Base-level sidebar section this dashboard is grouped under. */
+  fk_base_section_id?: string | null;
   created_at?: string;
   updated_at?: string;
   created_by?: string;
@@ -16,6 +18,14 @@ export interface DashboardType {
   password?: string;
   fk_custom_url_id?: string;
   uuid?: string;
+
+  /**
+   * Transient (response-only): true when an explicit DASHBOARD_VISIBILITY
+   * restriction exists. Set by dashboardGet/dashboardList so the client can
+   * disable the public-share toggle (sharing is refused server-side while
+   * this is true). Mirrors Document `has_visibility_permission`.
+   */
+  has_visibility_permission?: boolean;
 }
 
 export enum WidgetTypes {
