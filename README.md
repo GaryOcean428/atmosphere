@@ -12,13 +12,10 @@
 Atmosphere is the fastest and easiest way to build databases online.
 </p>
 
-
 <p align="center">
     <a href="http://www.atmosphere.dev"><b>Website</b></a> •
     <a href="https://docs.atmosphere.dev/"><b>Documentation</b></a>
 </p>
-
-
 
 <div align="center">
 
@@ -60,6 +57,7 @@ docker run -d \
   ```
 
 ## Docker with PG
+
 ```bash
 docker run -d \
   --name atmosphere \
@@ -71,6 +69,7 @@ docker run -d \
 ```
 
 ## Auto-upstall
+
 Auto-upstall is a single command that sets up Atmosphere on a server for production usage.
 Behind the scenes it auto-generates docker-compose for you.
 
@@ -79,12 +78,13 @@ bash <(curl -sSL http://install.atmosphere.dev/atmosphere.sh) <(mktemp)
 ```
 
 Auto-upstall does the following: 🕊
+
 - 🐳 Automatically installs all pre-requisites like docker, docker-compose
 - 🚀 Automatically installs Atmosphere with PostgreSQL, Redis, Traefik gateway using Docker Compose. 🐘 🗄️ 🌐
 - 🔄 Automatically upgrades Atmosphere to the latest version when you run the command again.
 - 🔒 Automatically setups SSL and also renews it. Needs a domain or subdomain as input while installation.
-> install.atmosphere.dev/atmosphere.sh script can be found [here in our github](https://raw.githubusercontent.com/atmosphere/atmosphere/develop/docker-compose/1_Auto_Upstall/atmosphere.sh)
 
+> install.atmosphere.dev/atmosphere.sh script can be found [here in our github](https://raw.githubusercontent.com/atmosphere/atmosphere/develop/docker-compose/1_Auto_Upstall/atmosphere.sh)
 
 ## Other Methods
 
@@ -99,12 +99,12 @@ Auto-upstall does the following: 🕊
 | 🪟 Windows arm64 <br>(Binary) | `iwr http://get.atmosphere.dev/win-arm64.exe -OutFile Atmosphere-win-arm64.exe && .\Atmosphere-win-arm64.exe`                                                                                                                                                                                                                                                                              |
 | 🪟 Windows x64 <br>(Binary)   | `iwr http://get.atmosphere.dev/win-x64.exe -OutFile Atmosphere-win-x64.exe && .\Atmosphere-win-x64.exe`                                                                                                                                                                                                                                                                                    |
 
-
 > When running locally access atmosphere by visiting: [http://localhost:8080/dashboard](http://localhost:8080/dashboard)
 
 For more installation methods, please refer to [our docs](https://atmosphere.dev/docs/self-hosting)
 
 # Screenshots
+
 ![2](https://github.com/GaryOcean428/atmosphere/assets/86527202/a127c05e-2121-4af2-a342-128e0e2d0291)
 ![3](https://github.com/GaryOcean428/atmosphere/assets/86527202/674da952-8a06-4848-a0e8-a7b02d5f5c88)
 ![4](https://github.com/GaryOcean428/atmosphere/assets/86527202/cbc5152a-9caf-4f77-a8f7-92a9d06d025b)
