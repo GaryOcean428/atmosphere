@@ -16,7 +16,7 @@
     "url": "https://github.com/GaryOcean428/atmosphere/issues"
   },
   "engines": {
-    "node": ">=22"
+    "node": "24.x"
   },
   "license": "Sustainable Use License",
   "scripts": {
