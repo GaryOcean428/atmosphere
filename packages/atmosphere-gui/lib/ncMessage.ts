@@ -3,7 +3,7 @@ import type { MessageArgsProps } from 'ant-design-vue/es'
 import type { VueNode } from 'ant-design-vue/es/_util/type'
 import type { VNode } from 'vue'
 import { isPrimitiveValue } from 'atmosphere-sdk'
-import AtAlert, { type AtAlertProps } from '../components/atm/Alert.vue'
+import AtAlert, { type AtAlertProps } from '../components/nc/Alert.vue'
 import { getI18n } from '~/plugins/a.i18n'
 
 interface AtAlertMessageProps
