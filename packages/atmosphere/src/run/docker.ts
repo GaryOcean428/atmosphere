@@ -2,6 +2,7 @@ import dns from 'node:dns';
 import cors from 'cors';
 import express from 'express';
 import Atmosphere from '~/Atmosphere';
+import { getCorsOptions } from '~/helpers/cors';
 import { handleUncaughtErrors } from '~/utils';
 handleUncaughtErrors(process);
 
@@ -12,12 +13,7 @@ const server = express();
 server.enable('trust proxy');
 server.disable('etag');
 server.disable('x-powered-by');
-server.use(
-  cors({
-    exposedHeaders:
-      'xc-db-response, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-Policy, Retry-After',
-  }),
-);
+server.use(cors(getCorsOptions()));
 
 server.set('view engine', 'ejs');
 
