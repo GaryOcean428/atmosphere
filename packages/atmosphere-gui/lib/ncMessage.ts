@@ -1,10 +1,10 @@
-import { message } from 'ant-design-vue/es'
 import type { MessageArgsProps } from 'ant-design-vue/es'
+import { message } from 'ant-design-vue/es'
 import type { VueNode } from 'ant-design-vue/es/_util/type'
-import type { VNode } from 'vue'
 import { isPrimitiveValue } from 'atmosphere-sdk'
-import AtAlert, { type AtAlertProps } from '../components/nc/Alert.vue'
+import type { VNode } from 'vue'
 import { getI18n } from '~/plugins/a.i18n'
+import AtAlert, { type AtAlertProps } from '../components/nc/Alert.vue'
 
 interface AtAlertMessageProps
   extends Pick<
@@ -18,7 +18,7 @@ interface AtAlertMessageProps
     | 'descriptionClass'
     | 'duration'
     | 'showDuration'
-  > {}
+  > { }
 
 /**
  * `AtMessageObjectProps` defines the properties allowed in `ncMessage`,
@@ -49,7 +49,7 @@ export type AtMessageProps = AtMessageObjectProps | VueNode
  * Use `copyText` & `copyBtnTooltip` to set the copy text & tooltip for the copy button if params is primitive value
  */
 export interface AtMessageExtraProps
-  extends Pick<AtMessageObjectProps, 'showDefaultMessage' | 'showCopyBtn' | 'copyText' | 'copyBtnTooltip'> {}
+  extends Pick<AtMessageObjectProps, 'showDefaultMessage' | 'showCopyBtn' | 'copyText' | 'copyBtnTooltip'> { }
 
 const defaultNcMessageExtraProps = {
   showDefaultMessage: false,
@@ -254,29 +254,29 @@ const showMessage = (
     key,
     content: renderAsNcAlert
       ? () =>
-          h(
-            AtAlert,
-            {
-              ...ncAlertProps,
-              message: title,
-              description: content,
-              type,
-              isNotification: true,
-              onClose: () => {
-                onClose?.()
-                message.destroy(key)
-              },
-              duration: ncDuration,
+        h(
+          AtAlert,
+          {
+            ...ncAlertProps,
+            message: title,
+            description: content,
+            type,
+            isNotification: true,
+            onClose: () => {
+              onClose?.()
+              message.destroy(key)
             },
-            {
-              action: ncIsFunction(ncAlertProps.action)
-                ? ncAlertProps.action
-                : ncAlertProps.action
+            duration: ncDuration,
+          },
+          {
+            action: ncIsFunction(ncAlertProps.action)
+              ? ncAlertProps.action
+              : ncAlertProps.action
                 ? () => ncAlertProps.action
                 : undefined,
-              icon: ncIsFunction(ncAlertProps.icon) ? ncAlertProps.icon : ncAlertProps.icon ? () => ncAlertProps.icon : undefined,
-            },
-          )
+            icon: ncIsFunction(ncAlertProps.icon) ? ncAlertProps.icon : ncAlertProps.icon ? () => ncAlertProps.icon : undefined,
+          },
+        )
       : content,
     type: !renderAsNcAlert && type !== 'toast' ? type : undefined,
     duration: ncDuration,
@@ -379,8 +379,8 @@ const ncMessage = {
   toast: (
     params:
       | (Omit<AtMessageObjectProps, 'content'> & {
-          content: string | number | null | undefined
-        })
+        content: string | number | null | undefined
+      })
       | string
       | number
       | null
