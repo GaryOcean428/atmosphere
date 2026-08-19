@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AtTooltip from '~/components/atm/Tooltip.vue'
+import AtTooltip from '~/components/nc/Tooltip.vue'
 
 const props = withDefaults(
   defineProps<{

@@ -1,4 +1,4 @@
-import AtModalConfirm, { type AtConfirmModalProps } from '../components/atm/ModalConfirm.vue'
+import AtModalConfirm, { type AtConfirmModalProps } from '../components/nc/ModalConfirm.vue'
 
 export type AtShowConfirmModalProps = Pick<
   AtConfirmModalProps,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
-import AtModal from '../atm/Modal.vue'
+import AtModal from '../nc/Modal.vue'
 
 const props = defineProps<Props>()
 

@@ -27,28 +27,34 @@ import {
 
 const isEE = process.env.EE
 
+const windiColorsWithoutDeprecatedAliases = Object.fromEntries(
+  Object.entries(Object.getOwnPropertyDescriptors(windiColors))
+    .filter(([, descriptor]) => 'value' in descriptor)
+    .map(([name, descriptor]) => [name, descriptor.value]),
+)
+
 export default defineConfig({
   extract: {
     include: [
       ...(isEE
         ? [
-            '../**/*.{vue,html,jsx,tsx,css,scss}',
-            '../extensions/**/*.md',
-            '../composables/useColumnFilteredOrSorted.ts',
-            '../components/smartsheet/header/*.ts',
-            '../components/smartsheet/grid/canvas/cells/*.ts',
-            '../components/smartsheet/grid/canvas/cells/**/*.ts',
-            '../utils/cssUtils.ts',
-          ]
+          '../**/*.{vue,html,jsx,tsx,css,scss}',
+          '../extensions/**/*.md',
+          '../composables/useColumnFilteredOrSorted.ts',
+          '../components/smartsheet/header/*.ts',
+          '../components/smartsheet/grid/canvas/cells/*.ts',
+          '../components/smartsheet/grid/canvas/cells/**/*.ts',
+          '../utils/cssUtils.ts',
+        ]
         : [
-            '**/*.{vue,html,jsx,tsx,css,scss}',
-            'extensions/**/*.md',
-            'composables/useColumnFilteredOrSorted.ts',
-            'components/smartsheet/header/*.ts',
-            'components/smartsheet/grid/canvas/cells/*.ts',
-            'components/smartsheet/grid/canvas/cells/**/*.ts',
-            'utils/cssUtils.ts',
-          ]),
+          '**/*.{vue,html,jsx,tsx,css,scss}',
+          'extensions/**/*.md',
+          'composables/useColumnFilteredOrSorted.ts',
+          'components/smartsheet/header/*.ts',
+          'components/smartsheet/grid/canvas/cells/*.ts',
+          'components/smartsheet/grid/canvas/cells/**/*.ts',
+          'utils/cssUtils.ts',
+        ]),
     ],
     exclude: ['node_modules', '.git'],
   },
@@ -199,7 +205,7 @@ export default defineConfig({
         'disabled': '0 0 0 2px rgba(106, 113, 132, 0.24)',
       },
       colors: {
-        ...windiColors,
+        ...windiColorsWithoutDeprecatedAliases,
         ...themeColors,
         ...themeV2Colors,
         ...themeV3Colors,

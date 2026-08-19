@@ -3,7 +3,7 @@ import type { ColumnType, TableType, ViewType } from 'atmosphere-sdk'
 import { ExpandedFormMode, PermissionEntity, PermissionKey, ViewTypes } from 'atmosphere-sdk'
 import type { Ref } from 'vue'
 import { Drawer } from 'ant-design-vue'
-import AtModal from '../../atm/Modal.vue'
+import AtModal from '../../nc/Modal.vue'
 
 interface Props {
   modelValue?: boolean

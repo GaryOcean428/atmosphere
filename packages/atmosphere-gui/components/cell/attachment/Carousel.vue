@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { CarouselApi } from '../../atm/Carousel/interface'
+import type { CarouselApi } from '../../nc/Carousel/interface'
 import { useAttachmentCell } from './utils'
 import { isOffice } from '~/utils/fileUtils'
 

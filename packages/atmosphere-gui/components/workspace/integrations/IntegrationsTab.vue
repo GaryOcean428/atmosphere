@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VNodeRef } from '@vue/runtime-core'
 import { IntegrationCategoryType, PlanFeatureTypes } from 'atmosphere-sdk'
-import AtModal from '~/components/atm/Modal.vue'
+import AtModal from '~/components/nc/Modal.vue'
 
 import { type IntegrationItemType, SyncDataType } from '#imports'
 

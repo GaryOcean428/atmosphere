@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { UseVirtualList } from '@vueuse/components'
 import type { AtButtonProps } from './Button.vue'
-import AtTooltip from '~/components/atm/Tooltip.vue'
+import AtTooltip from '~/components/nc/Tooltip.vue'
 
 const props = withDefaults(
   defineProps<{

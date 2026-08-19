@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AtButtonProps } from '../atm/Button.vue'
+import type { AtButtonProps } from '../nc/Button.vue'
 
 export interface GeneralCopyButtonProps extends /* @vue-ignore */ AtButtonProps {
   content?: string | number

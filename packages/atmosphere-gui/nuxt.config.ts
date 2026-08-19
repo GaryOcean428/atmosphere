@@ -40,9 +40,9 @@ export default defineNuxtConfig({
     pageTransition: process.env.NUXT_PAGE_TRANSITION_DISABLE
       ? false
       : {
-          name: 'page',
-          mode: 'out-in',
-        },
+        name: 'page',
+        mode: 'out-in',
+      },
     // layoutTransition: process.env.NUXT_PAGE_TRANSITION_DISABLE
     //   ? false
     //   : {
@@ -69,15 +69,15 @@ export default defineNuxtConfig({
 
         ...(process.env.ATMOSPHERE_CDN_URL
           ? [
-              {
-                rel: 'preload',
-                as: 'font',
-                href: new URL('/shared/style/material.woff2', process.env.ATMOSPHERE_CDN_URL).href,
-                type: 'font/woff2',
-                crossorigin: 'anonymous',
-              } as any,
-              { rel: 'stylesheet', href: new URL('/shared/style/fonts-new.css', process.env.ATMOSPHERE_CDN_URL).href },
-            ]
+            {
+              rel: 'preload',
+              as: 'font',
+              href: new URL('/shared/style/material.woff2', process.env.ATMOSPHERE_CDN_URL).href,
+              type: 'font/woff2',
+              crossorigin: 'anonymous',
+            } as any,
+            { rel: 'stylesheet', href: new URL('/shared/style/fonts-new.css', process.env.ATMOSPHERE_CDN_URL).href },
+          ]
           : []),
       ],
       meta: [
@@ -396,7 +396,6 @@ export default defineNuxtConfig({
       { name: 'Empty', from: 'ant-design-vue/es' },
       { name: 'Form', from: 'ant-design-vue/es' },
       { name: 'useJwt', from: '@vueuse/integrations/useJwt' },
-      { name: 'storeToRefs', from: 'pinia' },
     ],
   },
 
