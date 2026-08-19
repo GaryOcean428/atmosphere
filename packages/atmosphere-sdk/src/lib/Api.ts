@@ -14631,13 +14631,25 @@ export class Api<
   };
   dbCalendarViewRow = {
     /**
-     * @description List all rows in Calendar View of a Table
-     *
-     * @tags DB Calendar View Row
-     * @name List
-     * @summary List rows in Calendar View of a Table
-     * @request GET:/api/v1/db/calendar-data/{orgs}/{baseName}/{tableName}/views/{viewName}
-     */
+ * @description List all rows in Calendar View of a Table
+ * 
+ * @tags DB Calendar View Row
+ * @name List
+ * @summary List rows in Calendar View of a Table
+ * @request GET:/api/v1/db/calendar-data/{orgs}/{baseName}/{tableName}/views/{viewName}
+ * @response `200` `{
+  \** List of calendar view rows *\
+  list: (object)[],
+  \** Paginated Info *\
+  pageInfo: PaginatedType,
+
+}` OK
+ * @response `400` `{
+  \** @example BadRequest [Error]: <ERROR MESSAGE> *\
+  msg: string,
+
+}`
+ */
     list: (
       orgs: string,
       baseName: string,
@@ -14657,21 +14669,45 @@ export class Api<
       },
       params: RequestParams = {}
     ) =>
-      this.request<any, any>({
+      this.request<
+        {
+          /** List of calendar view rows */
+          list: object[];
+          /** Paginated Info */
+          pageInfo: PaginatedType;
+        },
+        {
+          /** @example BadRequest [Error]: <ERROR MESSAGE> */
+          msg: string;
+        }
+      >({
         path: `/api/v1/db/calendar-data/${orgs}/${baseName}/${tableName}/views/${viewName}`,
         method: 'GET',
         query: query,
+        format: 'json',
         ...params,
       }),
 
     /**
-     * @description List all rows in Calendar View of a Table
-     *
-     * @tags DB Calendar View Row
-     * @name PublicDataCalendarRowList
-     * @summary List rows in Calendar View of a Table
-     * @request GET:/api/v1/db/public/calendar-view/{sharedViewUuid}
-     */
+ * @description List all rows in Calendar View of a Table
+ * 
+ * @tags DB Calendar View Row
+ * @name PublicDataCalendarRowList
+ * @summary List rows in Calendar View of a Table
+ * @request GET:/api/v1/db/public/calendar-view/{sharedViewUuid}
+ * @response `200` `{
+  \** List of calendar view rows *\
+  list: (object)[],
+  \** Paginated Info *\
+  pageInfo: PaginatedType,
+
+}` OK
+ * @response `400` `{
+  \** @example BadRequest [Error]: <ERROR MESSAGE> *\
+  msg: string,
+
+}`
+ */
     publicDataCalendarRowList: (
       sharedViewUuid: string,
       query: {
@@ -14688,45 +14724,22 @@ export class Api<
       },
       params: RequestParams = {}
     ) =>
-      this.request<any, any>({
+      this.request<
+        {
+          /** List of calendar view rows */
+          list: object[];
+          /** Paginated Info */
+          pageInfo: PaginatedType;
+        },
+        {
+          /** @example BadRequest [Error]: <ERROR MESSAGE> */
+          msg: string;
+        }
+      >({
         path: `/api/v1/db/public/calendar-view/${sharedViewUuid}`,
         method: 'GET',
         query: query,
-        ...params,
-      }),
-  };
-  api = {
-    /**
-     * No description
-     *
-     * @name ResponsesApi
-     * @request RESPONSES:/api/v1/db/calendar-data/{orgs}/{baseName}/{tableName}/views/{viewName}
-     */
-    responsesApi: (
-      orgs: string,
-      baseName: string,
-      tableName: string,
-      viewName: string,
-      params: RequestParams = {}
-    ) =>
-      this.request<any, any>({
-        path: `/api/v1/db/calendar-data/${orgs}/${baseName}/${tableName}/views/${viewName}`,
-        method: 'RESPONSES',
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @name ResponsesApi2
-     * @request RESPONSES:/api/v1/db/public/calendar-view/{sharedViewUuid}
-     * @originalName responsesApi
-     * @duplicate
-     */
-    responsesApi2: (sharedViewUuid: string, params: RequestParams = {}) =>
-      this.request<any, any>({
-        path: `/api/v1/db/public/calendar-view/${sharedViewUuid}`,
-        method: 'RESPONSES',
+        format: 'json',
         ...params,
       }),
   };
